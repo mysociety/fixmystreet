@@ -2,8 +2,8 @@
 
 $body-font: MuseoSans, Helmet, Freesans, sans-serif !default;
 $meta-font: Helmet, Freesans, sans-serif !default;
-$heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
-$menu-image: 'menu-white' !default;
+$heading-font: "Museo300-display", MuseoSans, Helmet, Freesans, sans-serif !default;
+$menu-image: "menu-white" !default;
 $close-menu-image: "close-#{$menu-image}" !default;
 
 $link-color: #005ea5 !default;
@@ -18,7 +18,7 @@ $primary_link_hover_decoration: $primary_link_decoration !default;
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #666 !default;
-$col_fixed_label: #00BD08 !default;
+$col_fixed_label: #00bd08 !default;
 $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
 
 $form-control-border-color: #aaaaaa !default;
@@ -35,13 +35,12 @@ $geolocation-link-border: $geolocation-link !default;
 
 body {
   font-family: $body-font;
-  margin:0;
-  font-size:1em;
-  line-height:1.5;
+  margin: 0;
+  font-size: 1em;
+  line-height: 1.5;
   color: #222;
   background-color: #fff;
 }
-
 
 p {
   font-size: 1em;
@@ -49,7 +48,7 @@ p {
   margin: 0 0 1em;
 }
 
-small{
+small {
   font-family: $meta-font;
   font-style: italic;
   font-size: 0.8125em;
@@ -89,7 +88,7 @@ h2 {
 
 h3 {
   font-size: 1.25em;
-  line-height: 1.20em;
+  line-height: 1.2em;
   margin-top: 1.2em;
   margin-bottom: 0.8em;
   font-weight: normal;
@@ -102,23 +101,24 @@ h4 {
 }
 
 // default list styles
-ul, ol {
+ul,
+ol {
   font-size: 1em;
   margin-bottom: 2em;
   margin-#{$left}: 2em;
-  padding:0;
+  padding: 0;
 }
 
-li{
+li {
   margin-bottom: 0.5em;
 }
 
-ul li{
+ul li {
   list-style: square;
 }
 
 ol li {
-  list-style:decimal;
+  list-style: decimal;
 }
 
 // lets you have a traditional ol but with nicely styled numbers
@@ -131,15 +131,15 @@ ol.big-numbers {
     position: relative;
     list-style: none;
     padding: flip(0 0 0 2.5em, 0 2.5em 0 0);
-    margin-bottom:2em;
+    margin-bottom: 2em;
     &:before {
       content: counter(li); // set the content to be whatever the 'li' var is
       counter-increment: li; // add to the counter var
       position: absolute;
       #{$left}: 0;
-      top:-0.2em;
-      color:$col_big_numbers;
-      line-height:1;
+      top: -0.2em;
+      color: $col_big_numbers;
+      line-height: 1;
       font-family: $meta-font;
       font-weight: bold;
       font-size: 2.5rem;
@@ -164,10 +164,10 @@ dl {
 
 blockquote {
   p:before {
-    content: '“';
+    content: "“";
   }
   p:after {
-    content: '”';
+    content: "”";
   }
 }
 
@@ -178,15 +178,17 @@ pre {
 img {
   //do this otherwise IE will just not display
   //any img without a height defined
-  height:auto;
+  height: auto;
   max-width: 100%;
 }
 // So that map popups display correctly
 #popup img {
-    max-width: none;
+  max-width: none;
 }
 
-select, input, textarea {
+select,
+input,
+textarea {
   font-size: 99%;
 }
 
@@ -225,51 +227,51 @@ a,
 .small-print {
   @extend small;
   margin-bottom: 1.2307em;
-  color:#666666;
+  color: #666666;
 }
-.meta{
-  color:#555555;
+.meta {
+  color: #555555;
   font-style: italic;
   margin-bottom: 0px;
 }
-.meta-2{
+.meta-2 {
   font-family: $meta-font;
-  color:#666666;
+  color: #666666;
   font-style: italic;
   font-size: 0.75em;
 }
 
-h4.static{
+h4.static {
   font-family: $meta-font;
   text-transform: uppercase;
   font-size: 0.875em;
   line-height: 1.71428em;
-  color:#666;
+  color: #666;
   margin-top: 2em;
 }
-h4.static-with-rule{
+h4.static-with-rule {
   @extend.static;
   background: #f6f6f6;
   border-top: 0.25em solid $primary;
-  margin-bottom:0.25em;
+  margin-bottom: 0.25em;
   padding: 0.5em 1em;
 }
 
 /* FORMS */
 
-input[type=file] {
-    width: 100%;
+input[type="file"] {
+  width: 100%;
 }
 
-input[type=tel],
-input[type=number],
-input[type=text],
-input[type=password],
-input[type=email],
-input[type=date],
-input[type=time],
-input[type=datetime],
-input[type=url],
+input[type="tel"],
+input[type="number"],
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+input[type="datetime"],
+input[type="url"],
 textarea {
   @include box-sizing(border-box);
   display: block;
@@ -305,36 +307,36 @@ legend,
 }
 
 .form-control {
-    display: block;
-    background-color: #fff;
-    border: 1px solid $form-control-border-color;
-    @include border-radius(4px);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-    font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
-    margin-bottom: 0.5em;
+  display: block;
+  background-color: #fff;
+  border: 1px solid $form-control-border-color;
+  @include border-radius(4px);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
+  margin-bottom: 0.5em;
 
-    &[readonly] {
-        box-shadow: none;
-        color: #888888;
-    }
-    &[disabled] {
-        background-color: #eee;
-    }
+  &[readonly] {
+    box-shadow: none;
+    color: #888888;
+  }
+  &[disabled] {
+    background-color: #eee;
+  }
 }
 
 select.form-control {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    height: 2.2em; // roughly equal to default input height
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  height: 2.2em; // roughly equal to default input height
 
-    &[multiple] {
-        height: auto;
-    }
+  &[multiple] {
+    height: auto;
+  }
 
-    // Prevent a flash of tall select elements
-    // before $.multiSelect() has replaced them.
-    .js &.js-multiple[multiple] {
-        height: 2.2em;
-    }
+  // Prevent a flash of tall select elements
+  // before $.multiSelect() has replaced them.
+  .js &.js-multiple[multiple] {
+    height: 2.2em;
+  }
 }
 
 .form-group {
@@ -351,7 +353,7 @@ select.form-control {
   margin-top: 1.5em; // match margin-top on regular labels
   padding-left: 2em;
   position: relative;
-  
+
   & > input {
     position: absolute;
     top: 0.3em;
@@ -392,80 +394,81 @@ select.form-control {
 }
 
 .form-section-heading {
-    font-family: inherit;
-    color: inherit;
-    font-weight: bold;
-    margin-bottom: 0.25em;
+  font-family: inherit;
+  color: inherit;
+  font-weight: bold;
+  margin-bottom: 0.25em;
 }
 
 .form-section-heading--private {
-    &:before {
-        content: "";
-        display: inline-block;
-        width: 16px;
-        height: 18px;
-        background-repeat: no-repeat;
-        @include svg-background-image('/cobrands/fixmystreet/images/padlock');
-        background-size: 16px 18px;
-        margin-#{$right}: 0.5em;
-    }
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 18px;
+    background-repeat: no-repeat;
+    @include svg-background-image("/cobrands/fixmystreet/images/padlock");
+    background-size: 16px 18px;
+    margin-#{$right}: 0.5em;
+  }
 }
 
 .form-section-description {
-    color: #666;
-    line-height: 1em * (22/16);
+  color: #666;
+  line-height: 1em * (22/16);
 }
 
 .form-section-preview {
-    // If social_auth_enabled, but no javascript, we want the "Next" preview
-    // to be visible but without any other styling. Once javascript is enabled,
-    // the "next"/"back" buttons will work, so we want the styling back.
-    html.js & {
-        background-color: #eee;
-        border-radius: 4px;
-        padding: 1em;
+  // If social_auth_enabled, but no javascript, we want the "Next" preview
+  // to be visible but without any other styling. Once javascript is enabled,
+  // the "next"/"back" buttons will work, so we want the styling back.
+  html.js & {
+    background-color: #eee;
+    border-radius: 4px;
+    padding: 1em;
 
-        .form-section-heading {
-          margin: 0 0 0.5em 0;
-        }
+    .form-section-heading {
+      margin: 0 0 0.5em 0;
     }
+  }
 
-    small {
-        margin: 0.5em auto;
-        display: block;
-        text-align: center;
-        font-style: normal;
-        width: 75%;
-    }
+  small {
+    margin: 0.5em auto;
+    display: block;
+    text-align: center;
+    font-style: normal;
+    width: 75%;
+  }
 }
 
 // Purposefully *not* wrapped in `html.js` because the margin-top helps
 // separate the social login buttons from the .description_tips list.
 .form-section-preview--next {
-    margin-top: 1.5em;
+  margin-top: 1.5em;
 }
 
 /* On a reporting page MyW/anon */
 small#or {
-    margin: 1em auto;
-    width: 100%;
+  margin: 1em auto;
+  width: 100%;
 }
-small#or:before, small#or:after {
-    background-color: #fff;
-    content: "";
-    display: inline-block;
-    height: 2px;
-    position: relative;
-    vertical-align: middle;
-    width: 50%;
+small#or:before,
+small#or:after {
+  background-color: #fff;
+  content: "";
+  display: inline-block;
+  height: 2px;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
 }
 small#or:before {
-    right: 1em;
-    margin-left: -50%;
+  right: 1em;
+  margin-left: -50%;
 }
 small#or:after {
-    left: 1em;
-    margin-right: -50%;
+  left: 1em;
+  margin-right: -50%;
 }
 
 // grey background, full width box
@@ -474,8 +477,8 @@ small#or:after {
   background: #eee;
   padding: 1em;
 
-  & > input[type=text],
-  & > input[type=email] {
+  & > input[type="text"],
+  & > input[type="email"] {
     margin-bottom: 1em;
   }
 
@@ -505,30 +508,30 @@ small#or:after {
 }
 
 .change_location {
-    color: #666;
-    margin: 0 0 1em;
+  color: #666;
+  margin: 0 0 1em;
 
-    // No need for this element on mobile, where they can't click the map,
-    // and there's already a "Report" button in the header that leads to
-    // the homepage search form. But we'll want to unhide in layout.scss.
-    display: none;
+  // No need for this element on mobile, where they can't click the map,
+  // and there's already a "Report" button in the header that leads to
+  // the homepage search form. But we'll want to unhide in layout.scss.
+  display: none;
 
-    li {
-      list-style: none;
-      padding-#{$left}: 24px;
-      margin: 0.3em 0 0 0;
-      background-size: 14px 14px;
-      background-repeat: no-repeat;
-      background-position: flip(0 50%, 100% 50%);
-    }
+  li {
+    list-style: none;
+    padding-#{$left}: 24px;
+    margin: 0.3em 0 0 0;
+    background-size: 14px 14px;
+    background-repeat: no-repeat;
+    background-position: flip(0 50%, 100% 50%);
+  }
 }
 
 .change_location__map {
-  @include svg-background-image('/cobrands/fixmystreet/images/change-location-arrow');
+  @include svg-background-image("/cobrands/fixmystreet/images/change-location-arrow");
 }
 
 .change_location__search {
-  @include svg-background-image('/cobrands/fixmystreet/images/change-location-search');
+  @include svg-background-image("/cobrands/fixmystreet/images/change-location-search");
 }
 
 // Space between the .change_location list and any
@@ -541,17 +544,17 @@ small#or:after {
   @include clearfix();
   @include flex-container();
   @include flex-wrap(wrap);
-  input[type=password],
-  input[type=tel],
-  input[type=number],
-  input[type=text],
-  input[type=email],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="text"],
+  input[type="email"],
   select {
     width: auto;
     max-width: none;
     @include flex(72 0 auto);
   }
-  input[type=submit] {
+  input[type="submit"] {
     @include flex(28 0 auto);
     margin: 0 0.25em 0.5em;
     padding-top: 0.6em;
@@ -560,7 +563,7 @@ small#or:after {
 }
 
 .checkbox-group {
-  margin:1em 0;
+  margin: 1em 0;
 }
 
 .label-containing-checkbox {
@@ -575,14 +578,13 @@ small#or:after {
   }
 }
 
-
 // form errors
 div.form-error,
 p.form-error {
   @include inline-block;
-  background:#ff0000;
-  color:#fff;
-  padding:0 0.5em;
+  background: #ff0000;
+  color: #fff;
+  padding: 0 0.5em;
   @include border-radius(0.25em 0.25em 0 0);
   a {
     color: white;
@@ -595,20 +597,20 @@ p.form-error {
 
 input.form-error,
 textarea.form-error {
-  border-color:#ff0000;
+  border-color: #ff0000;
   @include border-radius(0 0.25em 0.25em 0.25em);
 }
 
 .form-error__box {
-    border: solid 2px #ff0000;
-    padding: 0.5em;
-    margin-bottom: 0.5em;
+  border: solid 2px #ff0000;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 ul.error {
-  background:#ff0000;
-  color:#fff;
-  padding:0 0.5em;
+  background: #ff0000;
+  color: #fff;
+  padding: 0 0.5em;
   @include border-radius(0.25em);
 }
 
@@ -620,16 +622,16 @@ ul.error {
 }
 
 .duplicate-report-suggestions {
-    position: relative;
+  position: relative;
 
-    .item-list__item--expandable {
-      border-top: 1px solid #ddd;
-    }
+  .item-list__item--expandable {
+    border-top: 1px solid #ddd;
+  }
 
-    .item-list {
-        margin: 0 -1em 1em -1em;
-        border-bottom: 1px solid #ddd;
-    }
+  .item-list {
+    margin: 0 -1em 1em -1em;
+    border-bottom: 1px solid #ddd;
+  }
 }
 
 .js .js-reporting-page {
@@ -659,31 +661,31 @@ ul.error {
 /*** LAYOUT ***/
 
 .skiplink {
-    display: inline-block;
-    padding: 1em;
-    position: absolute;
-    left: -9999em;
+  display: inline-block;
+  padding: 1em;
+  position: absolute;
+  left: -9999em;
 }
 .skiplink:focus {
-   outline: 3px solid transparent;
-   color: $primary_text;
-   background-color: $primary;
-   text-decoration: none;
-   left: 0;
-   z-index: 2;
+  outline: 3px solid transparent;
+  color: $primary_text;
+  background-color: $primary;
+  text-decoration: none;
+  left: 0;
+  z-index: 2;
 }
 
 .dev-site-notice {
-    font-size: 1.5em;
-    color: #fff;
-    background-color: #f00;
-    position: absolute;
-    padding: 1em 5em;
-    top: 1em;
-    left: -5em;
-    transform: rotate(-45deg);
-    z-index: 2;
-    pointer-events: none;
+  font-size: 1.5em;
+  color: #fff;
+  background-color: #f00;
+  position: absolute;
+  padding: 1em 5em;
+  top: 1em;
+  left: -5em;
+  transform: rotate(-45deg);
+  z-index: 2;
+  pointer-events: none;
 }
 
 // Padding creates page margins on mobile
@@ -739,7 +741,8 @@ label[for="main-nav-btn"] {
   }
 }
 
-#nav-link, #report-cta {
+#nav-link,
+#report-cta {
   display: block;
   position: absolute;
   top: 50%;
@@ -757,18 +760,19 @@ label[for="main-nav-btn"] {
   padding: 0.4em;
   border-radius: 0.3em;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     text-decoration: none;
     background-color: $nav_hover_background_colour;
   }
 }
 
 html.mobile.js-nav-open #js-menu-open-modal {
-    position: absolute;
-    bottom: -1000px; // Just to be sure
-    left: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  bottom: -1000px; // Just to be sure
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 #main-nav {
@@ -781,8 +785,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
 }
 
 #main-nav-btn {
-    position: absolute;
-    #{$left}: -9999px;
+  position: absolute;
+  #{$left}: -9999px;
 }
 
 #main-nav-btn:checked ~ #main-nav {
@@ -791,7 +795,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
 .nav-menu {
   @include list-reset-soft;
-  a, span {
+  a,
+  span {
     display: block;
     padding: 0.5em 1em;
     background-color: #fff;
@@ -846,7 +851,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
     border: none;
   }
 
-  a, button {
+  a,
+  button {
     display: block;
     background-color: #f5f5f5;
     background-repeat: no-repeat;
@@ -859,9 +865,10 @@ html.mobile.js-nav-open #js-menu-open-modal {
     white-space: normal;
     border-radius: 0;
 
-    &:hover, &.hover {
-      text-decoration:none;
-      background-color:#333;
+    &:hover,
+    &.hover {
+      text-decoration: none;
+      background-color: #333;
       color: #fff !important;
     }
 
@@ -874,7 +881,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
       vertical-align: -0.25em;
       background-size: 112px 16px;
       background-repeat: no-repeat;
-      @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+      @include svg-background-image("/cobrands/fixmystreet/images/report-tools");
     }
 
     &.abuse:after {
@@ -907,31 +914,31 @@ html.mobile.js-nav-open #js-menu-open-modal {
 }
 
 #report-share {
-    .btn {
-        padding-#{$left}: 1.5em;
-        padding-#{$right}: 1.5em;
-        display: inline-block;
-    }
+  .btn {
+    padding-#{$left}: 1.5em;
+    padding-#{$right}: 1.5em;
+    display: inline-block;
+  }
 
-    .btn + .btn {
-        margin-#{$left}: 1em;
-    }
+  .btn + .btn {
+    margin-#{$left}: 1em;
+  }
 }
 
 //footer blocks
 footer {
-    margin-top: 1em;
+  margin-top: 1em;
 }
 
 #footer-mobileapps {
   margin: 0 -1em;
   padding: 1em 1em 0;
   h4 {
-    margin:0;
+    margin: 0;
   }
   p {
-	font-size: 0.75em;
-	padding-bottom: 0;
+    font-size: 0.75em;
+    padding-bottom: 0;
   }
 }
 
@@ -939,21 +946,20 @@ footer {
   ul {
     @include list-reset-soft;
     li {
-      border-bottom:1px solid #AFAFAF;
+      border-bottom: 1px solid #afafaf;
       &:last-child {
-        border-bottom:none;
+        border-bottom: none;
       }
       h4 {
-        margin:0.75em 0 0.25em;
+        margin: 0.75em 0 0.25em;
       }
       p {
-        font-size:0.75em;
+        font-size: 0.75em;
         margin-bottom: 0;
       }
     }
   }
 }
-
 
 /*BUTTONS*/
 
@@ -978,13 +984,13 @@ footer {
 .btn-primary,
 .green-btn,
 .btn--primary {
-  @include button-variant(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
+  @include button-variant(#9fde23, #7fb900, #5b9700, #fff, #9fde23, #7fb900, #5b9700, #fff);
 }
 
 .btn-danger,
 .red-btn,
 .btn--danger {
-  @include button-variant(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
+  @include button-variant(#ff0038, #bf002a, #80001c, #fff, #ff0038, #bf002a, #80001c, #fff);
 }
 
 .final-submit,
@@ -994,25 +1000,43 @@ input.final-submit {
 }
 
 .btn--facebook {
-    @include button-variant(#3b5998, darken(#3b5998, 10%), #3b5998, #fff, darken(#3b5998, 5%), darken(#3b5998, 10%), #3b5998, #fff);
+  @include button-variant(
+    #3b5998,
+    darken(#3b5998, 10%),
+    #3b5998,
+    #fff,
+    darken(#3b5998, 5%),
+    darken(#3b5998, 10%),
+    #3b5998,
+    #fff
+  );
 
-    img {
-        margin-#{$right}: 0.5em;
-        vertical-align: -0.2em;
-        height: 1.3em;
-        width: auto;
-    }
+  img {
+    margin-#{$right}: 0.5em;
+    vertical-align: -0.2em;
+    height: 1.3em;
+    width: auto;
+  }
 }
 
 .btn--twitter {
-    @include button-variant(#55acee, darken(#55acee, 10%), #55acee, #fff, darken(#55acee, 5%), darken(#55acee, 10%), #55acee, #fff);
+  @include button-variant(
+    #55acee,
+    darken(#55acee, 10%),
+    #55acee,
+    #fff,
+    darken(#55acee, 5%),
+    darken(#55acee, 10%),
+    #55acee,
+    #fff
+  );
 
-    img {
-        margin-#{$right}: 0.5em;
-        vertical-align: -0.2em;
-        height: 1.3em;
-        width: auto;
-    }
+  img {
+    margin-#{$right}: 0.5em;
+    vertical-align: -0.2em;
+    height: 1.3em;
+    width: auto;
+  }
 }
 
 .btn--back,
@@ -1022,81 +1046,81 @@ input.final-submit {
 .btn--geolocate,
 .btn--shortlist,
 .btn--shortlisted {
-    &:before {
-        content: "";
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        background-repeat: no-repeat;
-        background-size: 112px 16px;
-        @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
-        margin-#{$right}: 0.5em;
-        vertical-align: -0.1em; // vertically centre icon in button
-    }
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-size: 112px 16px;
+    @include svg-background-image("/cobrands/fixmystreet/images/button-icons");
+    margin-#{$right}: 0.5em;
+    vertical-align: -0.1em; // vertically centre icon in button
+  }
 }
 
 .btn--back {
-    &:before {
-        background-position: flip(0 0, -16px 0);
-    }
+  &:before {
+    background-position: flip(0 0, -16px 0);
+  }
 }
 
 .btn--forward {
-    &:before {
-        background-position: flip(-16px 0, 0 0);
-    }
+  &:before {
+    background-position: flip(-16px 0, 0 0);
+  }
 }
 
 .btn--cancel {
-    &:before {
-        background-position: -32px 0;
-    }
+  &:before {
+    background-position: -32px 0;
+  }
 }
 
 .btn--navigate {
-    &:before {
-        background-position: -80px 0;
-    }
+  &:before {
+    background-position: -80px 0;
+  }
 }
 
 .btn--geolocate {
-    &:before {
-        background-position: -96px 0;
-    }
+  &:before {
+    background-position: -96px 0;
+  }
 }
 
 .btn--shortlist {
-    &:before {
-        background-position: -64px 0;
-    }
+  &:before {
+    background-position: -64px 0;
+  }
 }
 
 .btn--shortlisted {
-    &:before {
-        background-position: -48px 0;
-    }
+  &:before {
+    background-position: -48px 0;
+  }
 }
 
 .btn--provide-update {
-    display: block;
-    width: 100%;
-    margin-bottom: 1em;
+  display: block;
+  width: 100%;
+  margin-bottom: 1em;
 }
 
 .btn--block {
-    display: block;
-    // Need to force 100% width if this is applied to <button> or <input> elements
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    @include box-sizing(border-box);
+  display: block;
+  // Need to force 100% width if this is applied to <button> or <input> elements
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  @include box-sizing(border-box);
 }
 
 // Don't want space between block-level buttons,
 // because they don't sit beside each other anyway.
 .btn--block + .btn--block {
-    margin-#{$left}: 0;
-    margin-top: 1em;
+  margin-#{$left}: 0;
+  margin-top: 1em;
 }
 
 .btn--small {
@@ -1107,7 +1131,7 @@ input.final-submit {
 // This means the final submit button can end up uncomfortably close to the
 // bottom of the final input. Add a class of `btn--final` to fix this.
 .btn--final {
-    margin-top: 1.25em; // matches margin-top on `label`
+  margin-top: 1.25em; // matches margin-top on `label`
 }
 
 /*OTHER*/
@@ -1115,7 +1139,7 @@ input.final-submit {
 .plain-list {
   @include list-reset-soft;
   li {
-    margin-bottom:1em;
+    margin-bottom: 1em;
   }
 }
 
@@ -1156,7 +1180,9 @@ input.final-submit {
     display: block;
     padding: 0.5em 1em;
   }
-  a:hover, a:focus, &.hovered a {
+  a:hover,
+  a:focus,
+  &.hovered a {
     background-color: $itemlist_item_background_hover;
     text-decoration: none;
   }
@@ -1262,15 +1288,15 @@ input.final-submit {
 // Add this to your .item-list__item--indented element if you
 // need to display both an action button *and* up/down arrows
 .item-list__item--act-and-sort {
-    a {
-        padding-#{$left}: 4.5em; // make space for the extra buttons
-    }
+  a {
+    padding-#{$left}: 4.5em; // make space for the extra buttons
+  }
 
-    .item-list__item__shortlist-up,
-    .item-list__item__shortlist-down {
-        width: 36px; // down from 48px
-        #{$left}: 3.5em; // up from 1em
-    }
+  .item-list__item__shortlist-up,
+  .item-list__item__shortlist-down {
+    width: 36px; // down from 48px
+    #{$left}: 3.5em; // up from 1em
+  }
 }
 
 %list-item-action-button {
@@ -1299,31 +1325,31 @@ input.final-submit {
 
 .item-list__item__shortlist-add {
   @extend %list-item-action-button;
-  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive');
+  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-inactive");
 
   &:hover,
   &:focus {
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive-hover');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-inactive-hover");
   }
 }
 
 .item-list__item__shortlist-remove {
   @extend %list-item-action-button;
-  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-active');
+  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-active");
 
   &:hover,
   &:focus {
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-active-hover');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-active-hover");
   }
 }
 
 .item-list__item__shortlist-take {
   @extend %list-item-action-button;
-  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken');
+  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-taken");
 
   &:hover,
   &:focus {
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken-hover');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-taken-hover");
   }
 }
 
@@ -1333,18 +1359,18 @@ input.final-submit {
   padding-top: 24px; // half the normal height, because shorter icon
   background-size: 24px 14px;
 
-  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
+  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-up");
 
   &:hover,
   &:focus {
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-up-hover');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-up-hover");
   }
 
   &[disabled] {
     opacity: 0.5;
     cursor: default;
 
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-up");
   }
 }
 
@@ -1355,32 +1381,32 @@ input.final-submit {
   padding-top: 24px; // half the normal height, because shorter icon
   background-size: 24px 14px;
 
-  @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
+  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-down");
 
   &:hover,
   &:focus {
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-down-hover');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-down-hover");
   }
 
   &[disabled] {
     opacity: 0.5;
     cursor: default;
 
-    @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
+    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-down");
   }
 }
 
 // List of potential duplicate reports (or a single confirmed duplicate)
 // that appears in Inspector form, when closing a report as a duplicate.
 .item-list--inspect-duplicates {
-    border-bottom: none;
-    background-color: rgba(255, 255, 255, 0.5);
+  border-bottom: none;
+  background-color: rgba(255, 255, 255, 0.5);
 
-    .item-list__item--selected,
-    .js & .item-list__item--selected.expanded:hover {
-        border: 0.25em solid $primary;
-        background-color: #fff;
-    }
+  .item-list__item--selected,
+  .js & .item-list__item--selected.expanded:hover {
+    border: 0.25em solid $primary;
+    background-color: #fff;
+  }
 }
 
 .item-list__heading {
@@ -1440,61 +1466,61 @@ input.final-submit {
   padding: 1em;
 
   .js & {
-      cursor: pointer;
+    cursor: pointer;
 
-      &:hover,
-      &.hovered {
-          background-color: $itemlist_item_background_hover;
-      }
+    &:hover,
+    &.hovered {
+      background-color: $itemlist_item_background_hover;
+    }
 
-      &.item-list__item--selected,
-      &.item-list__item--selected:hover,
-      &.item-list__item--selected.hovered {
-          cursor: default;
-          background-color: #fff;
-      }
+    &.item-list__item--selected,
+    &.item-list__item--selected:hover,
+    &.item-list__item--selected.hovered {
+      cursor: default;
+      background-color: #fff;
+    }
   }
 
   h3 {
-      margin: 0;
+    margin: 0;
   }
 
   .img {
-      float: $right;
-      width: 90px;
-      height: auto;
-      margin: flip(0 0 0.5em 1em, 0 1em 0.5em 0);
+    float: $right;
+    width: 90px;
+    height: auto;
+    margin: flip(0 0 0.5em 1em, 0 1em 0.5em 0);
   }
 
   small {
-      color: #666;
-      display: block;
-      margin-top: 0.5em;
+    color: #666;
+    display: block;
+    margin-top: 0.5em;
   }
 
   // A sort of hybrid between the .problem-header meta rows,
   // and the regular .list-item meta row.
   .report_meta_info,
   .council_sent_info {
-      color: #666;
-      font-family: $meta-font;
-      font-style: italic;
-      font-size: 0.8125em;
+    color: #666;
+    font-family: $meta-font;
+    font-style: italic;
+    font-size: 0.8125em;
   }
 
   p {
-      line-height: 1.4em;
-      margin-top: 0.5em;
+    line-height: 1.4em;
+    margin-top: 0.5em;
   }
 
   &.expanded {
-      .js & {
-          cursor: default;
+    .js & {
+      cursor: default;
 
-          &:hover {
-              background-color: $itemlist_item_background;
-          }
+      &:hover {
+        background-color: $itemlist_item_background;
       }
+    }
   }
 }
 
@@ -1503,7 +1529,7 @@ input.final-submit {
   @include flex-container();
 
   & > * {
-      @include flex(1); // Force equal width children
+    @include flex(1); // Force equal width children
   }
 }
 
@@ -1511,13 +1537,13 @@ input.final-submit {
   display: none;
 
   .expanded & {
-      display: block;
+    display: block;
   }
 }
 
 .item-list__item--expandable__hide-when-expanded {
   .expanded & {
-      display: none;
+    display: none;
   }
 }
 
@@ -1526,7 +1552,8 @@ input.final-submit {
   padding: 1em;
   background-color: $itemlist_item_background_hover;
 
-  p, label {
+  p,
+  label {
     margin: 0 0 0.5em 0;
   }
 }
@@ -1539,31 +1566,31 @@ input.final-submit {
 
 .problem-header .update-img,
 .item-list .update-img {
-    float: $right;
-    margin: flip(0.3em 0 0.5em 1em, 0.3em 1em 0.5em 0); // gutter between text and floated image
-    width: 33%;
+  float: $right;
+  margin: flip(0.3em 0 0.5em 1em, 0.3em 1em 0.5em 0); // gutter between text and floated image
+  width: 33%;
 }
 .questionnaire-report-reminder .update-img {
-    float: $left;
-    margin: flip(0.1em 1em 1em 0, 0.1em 0 1em 1em);
-    width: 120px;
+  float: $left;
+  margin: flip(0.1em 1em 1em 0, 0.1em 0 1em 1em);
+  width: 120px;
 }
 
 // A wrapper that's put around .update-imgs if there are more than 1 in a row
 .update-img-set {
-    text-align: center;
-    margin: 0 0 1em;
+  text-align: center;
+  margin: 0 0 1em;
 
-    .update-img {
-        float: none;
-        display: inline-block;
-        margin: 0;
-        width: 31%;
-    }
+  .update-img {
+    float: none;
+    display: inline-block;
+    margin: 0;
+    width: 31%;
+  }
 
-    .update-img + .update-img {
-        margin: flip(0 0 0 0.5em, 0 0.5em 0 0);
-    }
+  .update-img + .update-img {
+    margin: flip(0 0 0 0.5em, 0 0.5em 0 0);
+  }
 }
 
 // fancybox gallery images have a magnifying glass in the corner
@@ -1586,7 +1613,7 @@ input.final-submit {
       background-repeat: no-repeat;
       background-position: 50% 50%;
       background-size: 16px 16px;
-      @include svg-background-image('/cobrands/fixmystreet/images/magnify');
+      @include svg-background-image("/cobrands/fixmystreet/images/magnify");
     }
 
     &:hover span {
@@ -1603,7 +1630,9 @@ input.final-submit {
   padding: 0.9em 1em;
   border-bottom: 0.2em solid #eee;
 
-  &:link, &:visited, &:hover {
+  &:link,
+  &:visited,
+  &:hover {
     color: #666;
   }
 
@@ -1616,7 +1645,7 @@ input.final-submit {
     vertical-align: -0.15em;
     background-size: 112px 16px;
     background-repeat: no-repeat;
-    @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+    @include svg-background-image("/cobrands/fixmystreet/images/report-tools");
     background-position: flip(0 0, -16px 0);
   }
 }
@@ -1706,7 +1735,7 @@ input.final-submit {
   background-position: 1em 50%;
   background-repeat: no-repeat;
   background-size: 2em 2em;
-  @include svg-background-image('/cobrands/fixmystreet/images/shortlist');
+  @include svg-background-image("/cobrands/fixmystreet/images/shortlist");
 
   h3 {
     margin: 0;
@@ -1735,7 +1764,8 @@ input.final-submit {
     position: absolute;
 
     &.heatmap-active {
-      .olLayerGrid, .olBackBuffer {
+      .olLayerGrid,
+      .olBackBuffer {
         filter: grayscale(0.75);
       }
     }
@@ -1767,7 +1797,7 @@ html.js #map .noscript {
 #fms_pan_zoom_pandown,
 #fms_pan_zoom_panleft,
 #fms_pan_zoom_panright {
-    display: none;
+  display: none;
 }
 
 #fms_pan_zoom_panup,
@@ -1782,7 +1812,7 @@ html.js #map .noscript {
   height: 0;
   padding-top: 36px;
   overflow: hidden;
-  @include svg-background-image('/cobrands/fixmystreet/images/fms-pan-zoom');
+  @include svg-background-image("/cobrands/fixmystreet/images/fms-pan-zoom");
   background-size: 156px 72px;
   background-repeat: no-repeat;
   filter: none !important; // Override OpenLayers PNG handling of the navigation
@@ -1834,14 +1864,14 @@ html.js #map .noscript {
   display: none; // Not shown unless full screen on mobile
   position: absolute;
   #{$right}: $panzoom-gutter;
-  top: $panzoom-gutter + ( $panzoom-button-height * 2 );
+  top: $panzoom-gutter + ($panzoom-button-height * 2);
 
   @include clearfix();
 
   .map-reporting & {
     // #fms_pan_zoom has { top: 2.75em } during reporting,
     // rather than { top: 0.5em }.
-    top: 2.75em + ( $panzoom-button-height * 2 );
+    top: 2.75em + ($panzoom-button-height * 2);
   }
 
   .map-fullscreen & {
@@ -1864,7 +1894,8 @@ html.js #map .noscript {
     border-radius: 5px;
     margin-top: $panzoom-gutter; // vertical space between links
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       opacity: 1;
     }
     &:hover {
@@ -1880,27 +1911,27 @@ html.js #map .noscript {
   }
 
   .map-layer-toggle {
-    @include svg-background-image('/cobrands/fixmystreet/images/map-layer-aerial');
+    @include svg-background-image("/cobrands/fixmystreet/images/map-layer-aerial");
   }
 
   .map-layer-toggle.roads {
-    @include svg-background-image('/cobrands/fixmystreet/images/map-layer-roads');
+    @include svg-background-image("/cobrands/fixmystreet/images/map-layer-roads");
   }
 
   .map-pins-toggle {
-    @include svg-background-image('/cobrands/fixmystreet/images/hide-pins-link');
+    @include svg-background-image("/cobrands/fixmystreet/images/hide-pins-link");
   }
 }
 
 %sub-map-link-icon {
-    content: "";
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-#{$left}: 8px;
-    vertical-align: -0.1em;
-    background-size: 108px 12px;
-    @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-#{$left}: 8px;
+  vertical-align: -0.1em;
+  background-size: 108px 12px;
+  @include svg-background-image("/cobrands/fixmystreet/images/map-tools");
 }
 
 // Generic component for presenting a semi-transparent black toolbar
@@ -1910,73 +1941,73 @@ html.js #map .noscript {
 // in the mobile reporting view, and for the "Hide pins / Get updates"
 // etc links on mobile and desktop map pages.
 .sub-map-links {
-    @include flex-container();
+  @include flex-container();
 
-    position: absolute;
-    #{$left}: 0;
-    #{$right}: 0;
-    bottom: 0;
-    margin: 0;
+  position: absolute;
+  #{$left}: 0;
+  #{$right}: 0;
+  bottom: 0;
+  margin: 0;
 
-    a {
-        @include box-sizing(border-box);
-        @include flex(1 1 auto);
+  a {
+    @include box-sizing(border-box);
+    @include flex(1 1 auto);
 
-        display: inline-block; // fallback for non-flexbox browsers
-        color: inherit;
-        padding: 0.5em;
-        font-size: 1em;
-        text-align: center;
+    display: inline-block; // fallback for non-flexbox browsers
+    color: inherit;
+    padding: 0.5em;
+    font-size: 1em;
+    text-align: center;
 
-        &:hover,
-        &:focus {
-            background-color: #000;
-            text-decoration: none;
-        }
+    &:hover,
+    &:focus {
+      background-color: #000;
+      text-decoration: none;
     }
+  }
 
-    #problems_nearby,
-    #mob_ok {
-        width: 50%;
-    }
+  #problems_nearby,
+  #mob_ok {
+    width: 50%;
+  }
 
-    .feed:after {
-        @extend %sub-map-link-icon;
-        background-position: -12px 0;
-    }
+  .feed:after {
+    @extend %sub-map-link-icon;
+    background-position: -12px 0;
+  }
 
-    #fms_shortlist_all:after {
-        @extend %sub-map-link-icon;
-        background-position: -60px 0;
-    }
+  #fms_shortlist_all:after {
+    @extend %sub-map-link-icon;
+    background-position: -60px 0;
+  }
 
-    #toggle-fullscreen:after {
-        @extend %sub-map-link-icon;
-        background-position: -72px 0;
-    }
+  #toggle-fullscreen:after {
+    @extend %sub-map-link-icon;
+    background-position: -72px 0;
+  }
 
-    #toggle-fullscreen.compress:after {
-        @extend %sub-map-link-icon;
-        background-position: -84px 0;
-    }
+  #toggle-fullscreen.compress:after {
+    @extend %sub-map-link-icon;
+    background-position: -84px 0;
+  }
 
-    #map_filter:after {
-        @extend %sub-map-link-icon;
-        background-position: -96px 0;
-    }
+  #map_filter:after {
+    @extend %sub-map-link-icon;
+    background-position: -96px 0;
+  }
 }
 
 // Want some visual consistency between the top and bottom bars on mobile.
 .mobile-map-banner,
 .sub-map-links {
-    background-color: #333;
-    background-color: rgba(#000, 0.7);
-    color: #fff;
+  background-color: #333;
+  background-color: rgba(#000, 0.7);
+  color: #fff;
 }
 
 // "Selected" styling for the report-list-filter toggle when selected.
 .mobile-filters-active #map_filter {
-    background: #000;
+  background: #000;
 }
 
 .big-green-banner {
@@ -2001,78 +2032,79 @@ html.js #map .noscript {
   text-align: center;
   font-family: $heading-font;
   line-height: 1em;
-  margin:0;
+  margin: 0;
   position: absolute;
-  top:0;
+  top: 0;
   #{$left}: 0;
   #{$right}: 0;
-  font-size:0.75em;
-  padding:0.75em 30px;
+  font-size: 0.75em;
+  padding: 0.75em 30px;
   a {
     @include button-reset(#333, #1a1a1a, #1a1a1a, #fff, #333, #1a1a1a, #1a1a1a, #fff);
     font-weight: normal;
     font-size: 0.875em;
-    line-height:1;
-    padding:0.5em 0.75em;
-    position:absolute;
+    line-height: 1;
+    padding: 0.5em 0.75em;
+    position: absolute;
     #{$left}: 0.3em;
-    top:0.3em;
+    top: 0.3em;
   }
 }
 
 #change_asset_mobile,
 .map-page .js-mobile-not-an-asset,
 .only-map .category_meta_message {
-    position: absolute;
-    bottom: 3em;
-    #{$left}: 0.25em;
-    #{$right}: 0.25em;
-    padding: 0.25em;
-    color: #fff;
-    background-color: black;
+  position: absolute;
+  bottom: 3em;
+  #{$left}: 0.25em;
+  #{$right}: 0.25em;
+  padding: 0.25em;
+  color: #fff;
+  background-color: black;
 }
 
 .olControlAttribution {
-    bottom: 3.25em !important;
-    #{$right}: 0.25em !important;
-    #{$left}: 0.25em !important;
-    color: #222222;
-    font-size:0.75em !important;
+  bottom: 3.25em !important;
+  #{$right}: 0.25em !important;
+  #{$left}: 0.25em !important;
+  color: #222222;
+  font-size: 0.75em !important;
 }
 .olControlAttribution img {
-    vertical-align: bottom;
+  vertical-align: bottom;
 }
 .olControlDragFeatureFMSOver {
-    cursor: move;
-    cursor: -webkit-grab;
-    cursor: grab;
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: grab;
 }
 .olControlDragFeatureFMSActive.olControlDragFeatureFMSOver.olDragDown {
-    cursor: move;
-    cursor: -webkit-grabbing;
-    cursor: grabbing;
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 
 /* Drag is only present in noscript form. XXX Copy from core. */
 #drag {
-    input, img {
-        position: absolute;
-        border: none;
-        max-width: none;
-    }
-    input {
-        cursor: crosshair;
-        background-color: #cccccc;
-    }
-    img {
-        cursor: move;
-    }
+  input,
+  img {
+    position: absolute;
+    border: none;
+    max-width: none;
+  }
+  input {
+    cursor: crosshair;
+    background-color: #cccccc;
+  }
+  img {
+    cursor: move;
+  }
 }
 
 /* For non-JS situations, as the image file is 2x pixel size */
 img.pin {
-    width: 48px;
-    height: 64px;
+  width: 48px;
+  height: 64px;
 }
 
 .rap-notes-trigger {
@@ -2082,7 +2114,7 @@ img.pin {
 #report-a-problem-sidebar {
   margin-bottom: 2em;
   padding: 1em;
-  background-color: #E9F2FF;
+  background-color: #e9f2ff;
 }
 
 .mobile #map_box {
@@ -2122,7 +2154,8 @@ img.pin {
   }
 }
 
-.only-map, .mobile.js-nav-open {
+.only-map,
+.mobile.js-nav-open {
   height: 100%;
   body {
     height: 100%;
@@ -2216,40 +2249,41 @@ label .muted {
 }
 
 .box-warning {
-    padding: 2em 2em;
-    background-color: mix(#fff, $primary, 70%);
+  padding: 2em 2em;
+  background-color: mix(#fff, $primary, 70%);
 
-    h1 {
-        font-size: 1.4em;
+  h1 {
+    font-size: 1.4em;
+  }
+
+  p {
+    margin-bottom: 0.5em;
+  }
+
+  dd:last-child {
+    margin-bottom: 0;
+  }
+
+  .btn,
+  .btn-primary {
+    margin: 0.5em 0 1em 0;
+
+    &:first-child {
+      margin-top: 0;
     }
 
-    p {
-        margin-bottom: 0.5em;
+    &:last-child {
+      margin-bottom: 0;
     }
+  }
 
-    dd:last-child {
-        margin-bottom: 0;
+  .segmented-control {
+    .btn {
+      &:last-child {
+        margin-bottom: 1em;
+      }
     }
-
-    .btn, .btn-primary {
-        margin: 0.5em 0 1em 0;
-
-        &:first-child {
-            margin-top: 0;
-        }
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    .segmented-control {
-        .btn {
-            &:last-child {
-                margin-bottom: 1em;
-            }
-        }
-    }
+  }
 }
 
 .category_meta_message.btn {
@@ -2261,15 +2295,15 @@ label .muted {
 }
 
 .asset-spot:before {
-    content: "";
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border: 2px solid #000;
-    background-color: #ffff00;
-    margin: 0 0.3em 0 0.2em;
-    border-radius: 100%;
-    vertical-align: -2px;
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #000;
+  background-color: #ffff00;
+  margin: 0 0.3em 0 0.2em;
+  border-radius: 100%;
+  vertical-align: -2px;
 }
 
 // The coloured sidebar column on .with-actions pages.
@@ -2277,7 +2311,7 @@ label .muted {
 #side-inspect {
   padding: 1em;
   margin: 0 -1em;
-  background-color: #E9F2FF;
+  background-color: #e9f2ff;
 
   #detailed_information_length {
     float: #{$right};
@@ -2317,28 +2351,28 @@ label .muted {
   display: none;
 }
 
-
 .alert {
   margin: 0 -1em 1em;
-  background:#ff0000;
-  padding:1em;
-  color:#fff;
-  a, a:hover {
-    color:$primary;
+  background: #ff0000;
+  padding: 1em;
+  color: #fff;
+  a,
+  a:hover {
+    color: $primary;
   }
 }
 
 .pagination {
-  text-align:center;
-  padding:0.5em 1em;
-  background:#eee;
-  position:relative;
+  text-align: center;
+  padding: 0.5em 1em;
+  background: #eee;
+  position: relative;
   .prev {
-    position:absolute;
+    position: absolute;
     #{$left}: 0.5em;
   }
   .next {
-    position:absolute;
+    position: absolute;
     #{$right}: 0.5em;
   }
   a {
@@ -2348,15 +2382,15 @@ label .muted {
     padding-#{$left}: 0.5em;
     padding-#{$right}: 0.5em;
     &:hover {
-      text-decoration:none;
-      background:$primary/1.1;
+      text-decoration: none;
+      background: $primary/1.1;
     }
   }
 }
 
 // this is a bit of a hack to get some differentation between desk and mobile
 .desk-only {
-  display:none;
+  display: none;
 }
 
 // hide anything with this class if js is working
@@ -2371,28 +2405,27 @@ label .muted {
   visibility: hidden;
 }
 
-
 /* Front page */
 #front-main {
-  text-align:center;
+  text-align: center;
   margin: 1em;
   h2 {
     font-style: italic;
     font-family: $meta-font;
     font-size: 1.1875em;
-    color:#4d4d4d;
+    color: #4d4d4d;
   }
   p {
     margin: 0.5em 0 0;
   }
   #postcodeForm {
     margin: 0 -1em;
-    padding:1em;
+    padding: 1em;
     color: $primary_text;
     background: $primary;
     font-family: $meta-font;
     label {
-      margin:0;
+      margin: 0;
     }
     .form-hint {
       margin-bottom: 0.5em;
@@ -2401,24 +2434,25 @@ label .muted {
       @include flex-container;
       @include flex-wrap(wrap);
       width: 100%;
-      background:#fff;
-      border:1px solid $primary_b;
+      background: #fff;
+      border: 1px solid $primary_b;
       input#pc {
         @include flex(86 0 auto);
         width: 50%;
-        border:none;
-        background:none;
-        line-height:1.5em;
+        border: none;
+        background: none;
+        line-height: 1.5em;
       }
       input#sub {
-        border:none;
+        border: none;
         padding: 0.5em;
         @include flex(14 0 auto);
-        background:#000;
-        color:#fff;
+        background: #000;
+        color: #fff;
         @include border-radius(0);
-        &:hover, &:focus {
-          background:#333;
+        &:hover,
+        &:focus {
+          background: #333;
         }
       }
     }
@@ -2481,47 +2515,47 @@ a#geolocate_link {
 }
 
 #front_stats {
-  display:table;
-  width:100%;
+  display: table;
+  width: 100%;
   color: $primary_text;
   background: $primary;
   font-family: $meta-font;
   div {
-    display:table-cell;
-    text-align:center;
-    padding:1em;
-    line-height:1.25em;
+    display: table-cell;
+    text-align: center;
+    padding: 1em;
+    line-height: 1.25em;
     font-size: 0.8125em;
     font-weight: bold;
   }
   big {
-    display:block;
-    margin-bottom:0.5em;
-    font-size:1.5385em;
+    display: block;
+    margin-bottom: 0.5em;
+    font-size: 1.5385em;
   }
 }
 
 // Shown at bottom of homepage, among other places
 .footer-marketing {
-    text-align: center;
-    margin-top: 2em;
+  text-align: center;
+  margin-top: 2em;
 
-    & > :last-child {
-        margin-bottom: 0;
-    }
+  & > :last-child {
+    margin-bottom: 0;
+  }
 }
 
 #alerts {
-    ul {
-        margin-bottom: 1em;
-    }
-    li {
-        padding: 0em;
-        margin-bottom: 0.5em;
-    }
-    .a {
-        background: #f6f6f6;
-    }
+  ul {
+    margin-bottom: 1em;
+  }
+  li {
+    padding: 0em;
+    margin-bottom: 0.5em;
+  }
+  .a {
+    background: #f6f6f6;
+  }
 }
 
 .alerts-rss-link {
@@ -2536,46 +2570,46 @@ a#geolocate_link {
 }
 
 .alerts__nearby-activity {
-    background-color: #f6f6f6;
-    margin: 1em -1em;
-    padding: 1em;
+  background-color: #f6f6f6;
+  margin: 1em -1em;
+  padding: 1em;
 
-    & > :first-child {
-        margin-top: 0;
-    }
+  & > :first-child {
+    margin-top: 0;
+  }
 }
 
 .alerts__nearby-activity__photos {
-    white-space: nowrap;
-    overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
 
-    a {
-        margin-#{$right}: 0.5em;
-        text-decoration: none; // avoid underline showing between images
-    }
+  a {
+    margin-#{$right}: 0.5em;
+    text-decoration: none; // avoid underline showing between images
+  }
 }
 
 .alerts__cta-box {
-    @extend .form-box;
-    background-color: mix($primary, #fff, 10%);
-    margin-top: 2em;
-    margin-bottom: 2em;
+  @extend .form-box;
+  background-color: mix($primary, #fff, 10%);
+  margin-top: 2em;
+  margin-bottom: 2em;
 
-    & > :first-child {
-        margin-top: 0;
-    }
+  & > :first-child {
+    margin-top: 0;
+  }
 
-    .form-txt-submit-box {
-        max-width: 32em;
-    }
+  .form-txt-submit-box {
+    max-width: 32em;
+  }
 }
 
 #rss_local_alt {
-    // Match .label-containing-checkbox
-    padding-#{$left}: 24px;
+  // Match .label-containing-checkbox
+  padding-#{$left}: 24px;
 
-    // Close up space between this and #rss_local
-    margin-top: -0.5em;
+  // Close up space between this and #rss_local
+  margin-top: -0.5em;
 }
 
 .confirmation-header {
@@ -2596,7 +2630,8 @@ a#geolocate_link {
     background-image: url(/cobrands/fixmystreet/images/phone-in-circle-100px.png);
   }
 
-  h1, h2 {
+  h1,
+  h2 {
     margin: 0;
     line-height: 1.2em;
   }
@@ -2609,7 +2644,7 @@ a#geolocate_link {
       &:hover,
       &:focus {
         text-decoration: none;
-        color: #0BA7D1; // default link colour
+        color: #0ba7d1; // default link colour
       }
     }
   }
@@ -2726,7 +2761,7 @@ a#geolocate_link {
     background: $primary;
     border-color: darken($primary, 5%);
     background-image: none; // remove gradient
-    box-shadow: inset 0 0.1em 0.2em rgba(0,0,0,0.2);
+    box-shadow: inset 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
     border-#{$right}-width: 1px; // add a realistic coloured border to all sides
   }
 
@@ -2763,7 +2798,6 @@ a#geolocate_link {
   visibility: hidden;
 }
 
-
 @media screen {
   .print-only {
     display: none !important;
@@ -2776,7 +2810,9 @@ a#geolocate_link {
   }
 
   // Firefox leaves a big blanking gap if the content is floated...
-  .content { float: none !important; }
+  .content {
+    float: none !important;
+  }
 
   .shadow-wrap,
   .nav-wrapper,
@@ -2815,8 +2851,8 @@ a#geolocate_link {
   }
 
   #map_sidebar {
-      // Prevent sidebar from clearing below floated map
-      overflow: visible !important;
+    // Prevent sidebar from clearing below floated map
+    overflow: visible !important;
   }
 
   #map {
@@ -2839,50 +2875,53 @@ $nicetable-stripe-background: rgba($primary, 0.05) !default;
 $nicetable-hover-background: rgba($primary, 0.15) !default;
 
 .nicetable {
-    width: 100%;
-    margin-bottom: 1.5em;
+  width: 100%;
+  margin-bottom: 1.5em;
 
-    td, th {
-        padding: $nicetable-cell-padding;
-        padding-#{$left}: 0;
-        border-bottom: 1px solid $nicetable-border-color;
-        text-align: $left;
+  td,
+  th {
+    padding: $nicetable-cell-padding;
+    padding-#{$left}: 0;
+    border-bottom: 1px solid $nicetable-border-color;
+    text-align: $left;
 
-        &:last-child {
-            padding-#{$right}: 0;
-        }
+    &:last-child {
+      padding-#{$right}: 0;
+    }
+  }
+
+  // Give your .nicetable an extra .stripe class to stripe alternate rows.
+  &.stripe {
+    td,
+    th {
+      padding: $nicetable-cell-padding;
     }
 
-    // Give your .nicetable an extra .stripe class to stripe alternate rows.
-    &.stripe {
-        td, th {
-            padding: $nicetable-cell-padding;
-        }
+    tr:nth-child(even) {
+      background: $nicetable-stripe-background;
+    }
+  }
 
-        tr:nth-child(even) {
-            background: $nicetable-stripe-background;
-        }
+  // Give your .nicetable an extra .hover class to enable row hover effect.
+  &.hover {
+    td,
+    th {
+      padding: $nicetable-cell-padding;
     }
 
-    // Give your .nicetable an extra .hover class to enable row hover effect.
-    &.hover {
-        td, th {
-            padding: $nicetable-cell-padding;
-        }
-
-        tr:hover {
-            background: $nicetable-hover-background;
-        }
-
-        thead tr:hover {
-            background: transparent;
-        }
+    tr:hover {
+      background: $nicetable-hover-background;
     }
 
-    // For table cells containing numbers (and their associated header cells).
-    .data {
-        text-align: $right;
+    thead tr:hover {
+      background: transparent;
     }
+  }
+
+  // For table cells containing numbers (and their associated header cells).
+  .data {
+    text-align: $right;
+  }
 }
 
 $emergency-message-border: 1px solid #525252 !default;
