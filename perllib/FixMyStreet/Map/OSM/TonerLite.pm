@@ -10,11 +10,10 @@
 # Email: hakim@mysociety.org; WWW: http://www.mysociety.org/
 
 package FixMyStreet::Map::OSM::TonerLite;
-use base 'FixMyStreet::Map::OSM';
+use Moo;
+extends 'FixMyStreet::Map::OSM';
 
-use strict;
-
-sub map_type { 'OpenLayers.Layer.Stamen' }
+has '+map_type' => ( default => 'OpenLayers.Layer.Stamen' );
 
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.fixmystreet.js',
@@ -23,9 +22,9 @@ sub map_javascript { [
     '/js/map-toner-lite.js',
 ] }
 
-sub copyright {
+has '+copyright' => ( default => 
     'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-}
+);
 
 sub map_tiles {
     my ( $self, %params ) = @_;

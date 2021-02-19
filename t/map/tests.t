@@ -24,7 +24,7 @@ my $requires = {
 };
 
 foreach (FixMyStreet::Map->maps) {
-    next if /WMTSBase|UKCouncilWMTS|WMSBase|WMXBase/; # Only its subclasses have JS
+    next if /Base|UKCouncilWMTS/; # Only its subclasses have JS
     my $js = $_->map_javascript;
     my $test_file = $js->[-1];
     s/.*:://;

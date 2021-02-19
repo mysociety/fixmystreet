@@ -1,8 +1,9 @@
 package FixMyStreet::Map::Tester;
-use base 'FixMyStreet::Map::FMS';
 
-use constant ZOOM_LEVELS    => 99;
-use constant MIN_ZOOM_LEVEL => 88;
+use Moo;
+extends 'FixMyStreet::Map::FMS';
+has '+zoom_levels' => ( default => 99 );
+has '+min_zoom_level' => ( default => 88 );
 
 1;
 

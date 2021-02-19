@@ -5,10 +5,9 @@
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
 package FixMyStreet::Map::Bromley;
-use base 'FixMyStreet::Map::FMS';
+use Moo;
+extends 'FixMyStreet::Map::FMS';
 
-use strict;
-
-sub map_tile_base { "bromley" }
+has '+base_tile_url' => ( default => '//%stilma.mysociety.org/bromley' );
 
 1;

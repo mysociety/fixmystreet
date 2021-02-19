@@ -36,10 +36,11 @@ my $expected = {
 };
 
 subtest "Correct tiles with various parameters" => sub {
+    my $map = FixMyStreet::Map::FMS->new;
     for my $aerial (0, 1) {
         for my $ni (0, 1) {
             for my $zoom (qw(10 13 16)) {
-                my $tiles = FixMyStreet::Map::FMS->map_tiles(
+                my $tiles = $map->map_tiles(
                     x_tile => 32421, y_tile => 21505, zoom_act => $zoom,
                     aerial => $aerial,
                     latitude => $ni ? 55 : 51,

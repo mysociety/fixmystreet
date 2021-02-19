@@ -1,8 +1,8 @@
 package FixMyStreet::Map::HighwaysEngland;
-use base 'FixMyStreet::Map::FMS';
 
-use strict;
+use Moo;
+extends 'FixMyStreet::Map::FMS';
 
-use constant MIN_ZOOM_LEVEL => 12;
+has '+min_zoom_level' => ( default => 12 );
 
 1;

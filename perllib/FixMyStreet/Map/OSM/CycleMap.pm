@@ -5,14 +5,12 @@
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
 package FixMyStreet::Map::OSM::CycleMap;
-use base 'FixMyStreet::Map::OSM';
 
-use strict;
+use Moo;
+extends 'FixMyStreet::Map::OSM';
 
-sub map_type { 'OpenLayers.Layer.OSM.CycleMap' }
+has '+map_type' => ( default => 'OpenLayers.Layer.OSM.CycleMap' );
 
-sub base_tile_url {
-    return 'tile.opencyclemap.org/cycle';
-}
+has '+base_tile_url' => ( default => 'tile.opencyclemap.org/cycle' );
 
 1;

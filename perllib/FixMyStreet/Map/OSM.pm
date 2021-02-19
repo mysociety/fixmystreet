@@ -6,19 +6,15 @@
 
 package FixMyStreet::Map::OSM;
 
-use strict;
+use Moo;
+extends 'FixMyStreet::Map::Base';
+
 use Math::Trig;
-use FixMyStreet::Gaze;
 use Utils;
 
-use constant ZOOM_LEVELS    => 7;
-use constant MIN_ZOOM_LEVEL => 13;
-use constant MIN_ZOOM_LEVEL_ANY => 0;
-use constant DEFAULT_ZOOM   => 3;
+has map_type => ( is => 'ro', default => 'OpenLayers.Layer.OSM.Mapnik' );
 
-sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
-
-sub map_template { 'osm' }
+has map_template => ( is => 'ro', default => 'osm' );
 
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wfs.js',
@@ -40,83 +36,32 @@ sub map_tiles {
     ];
 }
 
-sub base_tile_url {
-    return 'tile.openstreetmap.org';
-}
+has base_tile_url => ( is => 'ro', default => 'tile.openstreetmap.org' );
 
-sub copyright {
+has copyright => ( is => 'lazy', default => sub {
     _('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
-}
-
-# display_map C PARAMS
-# PARAMS include:
-# latitude, longitude for the centre point of the map
-# CLICKABLE is set if the map is clickable
-# PINS is array of pins to show, location and colour
-sub display_map {
-    my ($self, $c, %params) = @_;
-
-    # Map centre may be overridden in the query string
-    $params{latitude} = Utils::truncate_coordinate($c->get_param('lat') + 0)
-        if defined $c->get_param('lat');
-    $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
-        if defined $c->get_param('lon');
-    $params{zoomToBounds} = $params{any_zoom} && !defined $c->get_param('zoom');
-
-    $params{aerial} = $c->get_param("aerial") && FixMyStreet->config('BING_MAPS_API_KEY') ? 1 : 0;
-
-    my %data;
-    $data{cobrand} = $c->cobrand;
-    $data{distance} = $c->stash->{distance};
-    $data{zoom} = $c->get_param('zoom') + 0 if defined $c->get_param('zoom');
-
-    $c->stash->{map} = $self->generate_map_data(\%data, %params);
-}
+});
 
 sub generate_map_data {
-    my ($self, $data, %params) = @_;
+    my ($self, %params) = @_;
 
-    my $numZoomLevels = $self->ZOOM_LEVELS;
-    my $zoomOffset = $self->MIN_ZOOM_LEVEL;
-    my $anyZoomOffset = $self->MIN_ZOOM_LEVEL_ANY;
+    my $zoom_params = $self->calculate_zoom(%params);
+    $params{zoom_act} = $zoom_params->{zoom_act};
 
-    # Adjust zoom level dependent upon population density if cobrand hasn't
-    # specified a default zoom.
-    my $default_zoom;
-    if (my $cobrand_default_zoom = $data->{cobrand}->default_map_zoom) {
-        $default_zoom = $cobrand_default_zoom;
-    } else {
-        my $dist = $data->{distance}
-            || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
-        $default_zoom = $dist < 10 ? $self->DEFAULT_ZOOM : $self->DEFAULT_ZOOM - 1;
-    }
-
-    if ($params{any_zoom}) {
-        $numZoomLevels += $zoomOffset - $anyZoomOffset;
-        $default_zoom += $zoomOffset - $anyZoomOffset;
-        $zoomOffset = $anyZoomOffset;
-    }
-
-    my $zoom = $data->{zoom} || $default_zoom;
-    $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
-    $zoom = 0 if $zoom < 0;
-    $params{zoom_act} = $zoomOffset + $zoom;
-    ($params{x_tile}, $params{y_tile}) = $self->latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $params{zoom_act});
+    ($params{x_tile}, $params{y_tile}) = $self->latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom_params->{zoom_act});
 
     foreach my $pin (@{$params{pins}}) {
-        ($pin->{px}, $pin->{py}) = $self->latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $params{zoom_act});
+        ($pin->{px}, $pin->{py}) = $self->latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $zoom_params->{zoom_act});
     }
 
     return {
         %params,
+        %$zoom_params,
         type => $self->map_template(),
         map_type => $self->map_type(),
         tiles => $self->map_tiles( %params ),
         copyright => $self->copyright(),
-        zoom => $zoom,
-        zoomOffset => $zoomOffset,
-        numZoomLevels => $numZoomLevels,
-        compass => $self->compass( $params{x_tile}, $params{y_tile}, $params{zoom_act} ),
+        compass => $self->compass( $params{x_tile}, $params{y_tile}, $zoom_params->{zoom_act} ),
     };
 }
 
@@ -191,12 +136,13 @@ sub click_to_tile {
 
 # Given some click co-ords (the tile they were on, and where in the
 # tile they were), convert to WGS84 and return.
-# XXX Note use of MIN_ZOOM_LEVEL here.
+# XXX Note use of min_zoom_level here.
 sub click_to_wgs84 {
-    my ($self, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
+    my ($cls, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
+    my $self = $cls->new;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
-    my $zoom = $self->MIN_ZOOM_LEVEL + (defined $c->get_param('zoom') ? $c->get_param('zoom') : 3);
+    my $zoom = $self->min_zoom_level + (defined $c->get_param('zoom') ? $c->get_param('zoom') : 3);
     my ($lat, $lon) = $self->tile_to_latlon($tile_x, $tile_y, $zoom);
     return ( $lat, $lon );
 }

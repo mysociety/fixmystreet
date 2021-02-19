@@ -15,6 +15,7 @@ is_deeply $c->stash->{map}, {
     zoomOffset => 0,
     numZoomLevels => 20,
     zoom_act => 15,
+    aerial => 0,
 };
 
 done_testing();

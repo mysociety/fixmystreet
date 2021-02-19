@@ -5,13 +5,13 @@
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
 package FixMyStreet::Map::FMS;
-use base 'FixMyStreet::Map::Bing';
 
-use strict;
+use Moo;
+extends 'FixMyStreet::Map::Bing';
 
-use constant ZOOM_LEVELS => 6;
+has '+zoom_levels' => ( default => 6 );
 
-sub map_template { 'fms' }
+has '+map_template' => ( default => 'fms' );
 
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wfs.js',
@@ -20,7 +20,7 @@ sub map_javascript { [
     '/js/map-fms.js',
 ] }
 
-sub map_tile_base { "oml" }
+has '+base_tile_url' => ( default => '//%stilma.mysociety.org/oml' );
 
 sub map_tiles {
     my ( $self, %params ) = @_;
@@ -29,7 +29,7 @@ sub map_tiles {
     if ($params{aerial} || $ni || $z <= 11) {
         return $self->SUPER::map_tiles(%params);
     } elsif ($z >= 16) {
-        my $tile_base = '//%stilma.mysociety.org/' . $self->map_tile_base . '/%d/%d/%d.png';
+        my $tile_base = $self->base_tile_url . '/%d/%d/%d.png';
         return [
             sprintf($tile_base, 'a-', $z, $x-1, $y-1),
             sprintf($tile_base, 'b-', $z, $x, $y-1),
@@ -50,7 +50,7 @@ sub map_tiles {
 
 sub in_northern_ireland_box {
     my ($lat, $lon) = @_;
-    return 1 if $lat >= 54.015 && $lat <= 55.315 && $lon >= -8.18 && $lon <= -5.415;
+    return 1 if $lat && $lon && $lat >= 54.015 && $lat <= 55.315 && $lon >= -8.18 && $lon <= -5.415;
     return 0;
 }
 

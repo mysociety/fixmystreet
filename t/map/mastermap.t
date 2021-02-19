@@ -3,12 +3,13 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Map::MasterMap;
 
 subtest 'correct map tiles used' => sub {
+    my $map = FixMyStreet::Map::MasterMap->new;
     my %test = (
         16 => [ '-', 'oml' ],
         20 => [ '.', 'mastermap-staging' ]
     );
     foreach my $zoom (qw(16 20)) {
-        my $tiles = FixMyStreet::Map::MasterMap->map_tiles(x_tile => 123, y_tile => 456, zoom_act => $zoom);
+        my $tiles = $map->map_tiles(x_tile => 123, y_tile => 456, zoom_act => $zoom);
         my ($sep, $lyr) = @{$test{$zoom}};
         is_deeply $tiles, [
             "//a${sep}tilma.mysociety.org/$lyr/$zoom/122/455.png",
