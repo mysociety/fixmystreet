@@ -13,6 +13,7 @@
         - Use div for inspector form wrapped extra questions. #3250
         - Fix Open311 JSON services output. #3279
         - Send email reports in staff-only categories.
+        - Fix checked order of updates in dashboard export.
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
