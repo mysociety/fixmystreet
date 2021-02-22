@@ -1,9 +1,9 @@
 package Integrations::Echo;
 
-use strict;
-use warnings;
-use DateTime;
 use Moo;
+with 'FixMyStreet::Roles::SOAPIntegration';
+
+use DateTime;
 use Tie::IxHash;
 use FixMyStreet;
 
@@ -453,33 +453,6 @@ sub dt_to_hash {
         'dataContract:OffsetMinutes' => $dt->offset / 60,
     );
     return $dt;
-}
-
-sub force_arrayref {
-    my ($res, $key) = @_;
-    return [] unless $res;
-    my $data = $res->{$key};
-    return [] unless $data;
-    $data = [ $data ] unless ref $data eq 'ARRAY';
-    return $data;
-}
-
-sub make_soap_structure {
-    my @out;
-    for (my $i=0; $i<@_; $i+=2) {
-        my $name = $_[$i] =~ /:/ ? $_[$i] : $_[$i];
-        my $v = $_[$i+1];
-        my $val = $v;
-        my $d = SOAP::Data->name($name);
-        if (ref $v eq 'HASH') {
-            $val = \SOAP::Data->value(make_soap_structure(%$v));
-        } elsif (ref $v eq 'ARRAY') {
-            my @map = map { make_soap_structure(%$_) } @$v;
-            $val = \SOAP::Data->value(SOAP::Data->name('dummy' => @map));
-        }
-        push @out, $d->value($val);
-    }
-    return @out;
 }
 
 1;
