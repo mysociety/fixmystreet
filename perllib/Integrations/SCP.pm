@@ -1,16 +1,13 @@
 package Integrations::SCP;
 
-use strict;
-use warnings;
-use DateTime;
 use Moo;
-use XML::Simple;
+with 'FixMyStreet::Roles::SOAPIntegration';
+
+use DateTime;
 use MIME::Base64;
 use Digest::HMAC;
 use Crypt::Digest::SHA256;
-use DateTime;
-use SOAP::Lite +trace => [qw(method debug)];
-use FixMyStreet;
+use SOAP::Lite; # +trace => [qw(method debug)];
 
 has config => (
     is => 'ro'
@@ -35,7 +32,7 @@ sub call {
 
     my $res = $self->endpoint->call(
         SOAP::Data->name($method)->attr({ xmlns => 'http://www.capita-software-services.com/scp/simple' }),
-        make_soap_structure(@params),
+        make_soap_structure_with_attr(@params),
     );
 
     if ( $res ) {
@@ -141,28 +138,5 @@ sub version {
 
     return $res;
 }
-
-sub make_soap_structure {
-    my @out;
-    for (my $i=0; $i<@_; $i+=2) {
-        my $name = $_[$i] =~ /:/ ? $_[$i] : $_[$i];
-        my $v = $_[$i+1];
-        if (ref $v eq 'HASH') {
-            my $attr = delete $v->{attr};
-            my $value = delete $v->{value};
-
-            my $d = SOAP::Data->name($name => $value ? $value : \SOAP::Data->value(make_soap_structure(%$v)));
-
-            $d->attr( $attr ) if $attr;
-            push @out, $d;
-        } elsif (ref $v eq 'ARRAY') {
-            push @out, map { SOAP::Data->name($name => \SOAP::Data->value(make_soap_structure(%$_))) } @$v;
-        } else {
-            push @out, SOAP::Data->name($name => $v);
-        }
-    }
-    return @out;
-}
-
 
 1;
