@@ -7,6 +7,7 @@ fixmystreet.maps.setup_wmts_base_map = function() {
     OpenLayers.DOTS_PER_INCH = fixmystreet.wmts_config.tile_dpi;
 
     fixmystreet.map_options = {
+        tileSize: new OpenLayers.Size(fixmystreet.wmts_config.tile_size, fixmystreet.wmts_config.tile_size),
         maxExtent: this.layer_bounds,
         units: 'm',
         scales: fixmystreet.wmts_config.scales

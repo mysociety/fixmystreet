@@ -11,92 +11,48 @@ fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
 
 fixmystreet.maps.matrix_ids = [
   {
-    "matrixHeight": 7,
     "scaleDenominator": 241904.761905,
     "identifier": "0",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 13
   },
   {
-    "matrixHeight": 14,
     "scaleDenominator": 120952.380952,
     "identifier": "1",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 25
   },
   {
-    "matrixHeight": 28,
     "scaleDenominator": 60476.1904761,
     "identifier": "2",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 49
   },
   {
-    "matrixHeight": 56,
     "scaleDenominator": 30238.0952382,
     "identifier": "3",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 97
   },
   {
-    "matrixHeight": 111,
     "scaleDenominator": 15119.0476189,
     "identifier": "4",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 194
   },
   {
-    "matrixHeight": 222,
     "scaleDenominator": 7559.52380964,
     "identifier": "5",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 388
   },
   {
-    "matrixHeight": 443,
     "scaleDenominator": 3779.76190464,
     "identifier": "6",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 776
   },
   {
-    "matrixHeight": 886,
     "scaleDenominator": 1889.8809525,
     "identifier": "7",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 1551
   },
   {
-    "matrixHeight": 1772,
     "scaleDenominator": 944.940476071,
     "identifier": "8",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 3101
   },
   {
-    "matrixHeight": 3544,
     "scaleDenominator": 472.470238214,
     "identifier": "9",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 6201
   },
   {
-    "matrixHeight": 7087,
     "scaleDenominator": 236.235118929,
     "identifier": "10",
-    "tileWidth": 512,
-    "tileHeight": 512,
-    "matrixWidth": 12402
   }
 ];
 
