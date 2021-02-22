@@ -461,6 +461,17 @@ sub munge_red_route_categories {
     }
 }
 
+sub is_hardcoded_category {
+    my ($self, $category) = @_;
+
+    my %cats = (
+        %{ $self->feature('safety_critical_categories') || {} },
+        map { $_ => 1 } @{ $self->_tlrn_categories }, @{ $self->_tfl_council_categories }, @{ $self->_tfl_no_resend_categories },
+    );
+
+    return $cats{$category};
+}
+
 # Reports in these categories can only be made on a red route
 sub _tlrn_categories { [
     "All out - three or more street lights in a row",
