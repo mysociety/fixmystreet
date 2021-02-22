@@ -4,54 +4,54 @@
 
 // From 'fullExtent' from http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled95/LuftbildHybrid/MapServer?f=pjson
 fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
-    2672499, // W
-    1238999, // S
-    2689999, // E
-    1256999); // N
+    2480237, // W
+    1062032, // S
+    2846837, // E
+    1315832); // N
 
 fixmystreet.maps.matrix_ids = [
   {
-    "scaleDenominator": 241904.761905,
+    "scaleDenominator": 256000,
     "identifier": "0",
   },
   {
-    "scaleDenominator": 120952.380952,
+    "scaleDenominator": 128000,
     "identifier": "1",
   },
   {
-    "scaleDenominator": 60476.1904761,
+    "scaleDenominator": 64000,
     "identifier": "2",
   },
   {
-    "scaleDenominator": 30238.0952382,
+    "scaleDenominator": 32000,
     "identifier": "3",
   },
   {
-    "scaleDenominator": 15119.0476189,
+    "scaleDenominator": 16000,
     "identifier": "4",
   },
   {
-    "scaleDenominator": 7559.52380964,
+    "scaleDenominator": 8000,
     "identifier": "5",
   },
   {
-    "scaleDenominator": 3779.76190464,
+    "scaleDenominator": 4000,
     "identifier": "6",
   },
   {
-    "scaleDenominator": 1889.8809525,
+    "scaleDenominator": 2000,
     "identifier": "7",
   },
   {
-    "scaleDenominator": 944.940476071,
+    "scaleDenominator": 1000,
     "identifier": "8",
   },
   {
-    "scaleDenominator": 472.470238214,
+    "scaleDenominator": 500,
     "identifier": "9",
   },
   {
-    "scaleDenominator": 236.235118929,
+    "scaleDenominator": 250,
     "identifier": "10",
   }
 ];

@@ -25,17 +25,17 @@ sub tile_parameters {
           'https://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
           'https://www.ogc.stadt-zuerich.ch/mapproxy/wmts/',
         ],
-        layer_names     => [ 'LuftbildHybrid', 'Stadtplan3D' ],
+        layer_names     => [ 'basiskarte_zuerich_orthofoto', 'basiskarte_zuerich_gebaeudeschraegansicht' ],
         wmts_version    => '1.0.0',
         layer_style     => 'default',
-        matrix_set      => 'stzh',
-        suffix          => '.jpeg', # appended to tile URLs
+        matrix_set      => 'ktzh',
+        suffix          => '.png', # appended to tile URLs
         size            => 512, # pixels
         dpi             => 96,
         inches_per_unit => 39.3701, # BNG uses metres
         projection      => 'EPSG:2056',
-        origin_x        => 2672499.0,
-        origin_y        => 1256999.0,
+        origin_x        => 2480237.0,
+        origin_y        => 1315832.0,
     };
     return $params;
 }
