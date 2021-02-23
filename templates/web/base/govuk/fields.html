@@ -1,5 +1,9 @@
 [% BLOCK form %]
-  [% FOR field IN form.sorted_fields %]
+  [% SET form_fields = override_fields OR form.sorted_fields %]
+  [% FOR field IN form_fields %]
+    [% IF override_fields %]
+        [% field = form.field(field) %]
+    [% END %]
     [% NEXT IF field.name == 'back' %]
     [% SET error = field.errors.join(' ') ~%]
     <div class="govuk-form-group[% IF error %] govuk-form-group--error[% END %][% ' hidden-js' IF field.get_tag('initial_hidden') %]" id="form-[% field.id %]-row">
@@ -7,7 +11,7 @@
         [% field.render_element | safe %]
     [% ELSIF field.widget == 'Hidden' %]
         [% PROCESS hidden %]
-    [% ELSIF field.widget == 'Text' %]
+    [% ELSIF field.widget == 'Text' || field.type == 'Password' %]
         [% PROCESS text %]
     [% ELSIF field.widget == 'Textarea' %]
         [% PROCESS textarea %]
@@ -207,12 +211,13 @@
         <span class="govuk-visually-hidden">Error:</span> [% error %]
     </span>
   [% END %]
-    <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="[% field.id %]" name="[% field.html_name %]" type="text"
+    <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="[% field.id %]" name="[% field.html_name %]" type="[% field.type == 'Password' ? 'password' : 'text' %]"
          value="[% field.fif %]"
+    [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
     [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
     [%~ IF field.disabled %] disabled[% END ~%]
     [%~ IF field.get_tag('hint') OR error %]
-      aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
+      aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
     [%~ END %]>
 [% END %]
 
@@ -233,7 +238,7 @@
     <textarea class="govuk-textarea[% IF error %] govuk-textarea--error[% END %]" id="[% field.id %]"
         name="[% field.html_name %]" rows="5"
     [%~ IF field.get_tag('hint') OR error %]
-        aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
+        aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
     [%~ END %]>[% field.fif %]</textarea>
 [% END %]
 
