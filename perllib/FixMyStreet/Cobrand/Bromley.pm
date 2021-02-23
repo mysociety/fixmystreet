@@ -602,6 +602,12 @@ sub bin_services_for_address {
         544 => 4,
     );
 
+    $self->{c}->stash->{garden_subs} = {
+        New => 1,
+        Renew => 2,
+        Amend => 3,
+    };
+
     my $result = $self->{api_serviceunits};
     return [] unless @$result;
 
@@ -637,8 +643,6 @@ sub bin_services_for_address {
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
         my $service_name = $service_name_override{$_->{ServiceId}} || $_->{ServiceName};
-
-        my $request_max = $quantity_max{$_->{ServiceId}};
 
         my $garden = 0;
         my $garden_bins;

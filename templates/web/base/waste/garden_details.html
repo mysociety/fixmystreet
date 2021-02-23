@@ -1,0 +1,40 @@
+[% SET bodyclass = 'waste' %]
+
+[% INCLUDE header.html %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
+
+<div style="background-color: #eee; padding: 1em; width: 50%;" class="clearfix">
+    <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt=""
+        style="float:left;margin: 0 1em 0 0;height:5em">
+  
+    <p style="margin: 0.25em 0 0">
+        Each wheelie bin holds the equivalent of 5 or 6 bags of green garden waste,
+        and will be collected fortnightly during gardening season (March–November)
+        and monthly outside of gardening season (December–February).
+    </p>
+</div>
+
+<form method="post">
+    <h2>How many bins do you need us to collect?</h2>
+
+  [% PROCESS form override_fields=['current_bins', 'new_bins', 'payment_method'] %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title">Collection address</dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+  [% PROCESS form override_fields=['billing_differ', 'billing_address'] %]
+
+  [% PROCESS form override_fields=['name', 'email', 'phone', 'password', 'continue_review' ] %]
+
+  [% PROCESS form override_fields=['saved_data', 'token', 'process', 'category', 'service_id'] %]
+
+</form>
+
+[% INCLUDE footer.html %]
