@@ -57,6 +57,14 @@ sub abuse_reports_only { 1 }
 
 sub send_questionnaires { 0 }
 
+sub anonymous_account {
+    my $self = shift;
+    return {
+        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
+        name => 'Anonymous user',
+    };
+}
+
 # TODO These values may not be accurate
 sub lookup_site_code_config { {
     buffer => 200, # metres
