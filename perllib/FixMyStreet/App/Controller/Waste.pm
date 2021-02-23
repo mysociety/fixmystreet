@@ -11,6 +11,9 @@ use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Enquiry;
+use FixMyStreet::App::Form::Waste::Garden;
+use FixMyStreet::App::Form::Waste::Garden::Modify;
+use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
 
@@ -515,6 +518,89 @@ sub process_enquiry_data : Private {
     return 1;
 }
 
+sub garden : Chained('property') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
+    $c->forward('form');
+}
+
+sub garden_modify : Chained('property') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $pick = $c->get_param('task') || '';
+    if ($pick eq 'problem') {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/enquiry?template=problem&service_id=545'); # XXX
+        $c->detach;
+    }
+    if ($pick eq 'cancel') {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/garden_cancel');
+        $c->detach;
+    }
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
+    $c->forward('form');
+}
+
+sub garden_cancel : Chained('property') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Cancel';
+    $c->forward('form');
+}
+
+sub process_garden_cancellation : Private {
+    my ($self, $c, $form) = @_;
+    # TODO Cancel subscription here
+    return 1;
+}
+
+sub process_garden_modification : Private {
+    my ($self, $c, $form) = @_;
+    # TODO Modify subscription here
+    return 1;
+}
+
+sub process_garden_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    my $address = $c->stash->{property}->{address};
+
+    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+
+    $data->{title} = $data->{category};
+    $data->{detail} = "$data->{category}\n\n$address";
+
+    $c->set_param('service_id', $data->{service_id});
+    $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
+    $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste'});
+    $c->set_param('Subscription_Details_Quantity', $data->{current_bins} + $data->{new_bins});
+    $c->set_param('Container_Request_Details_Container_Type', $container_types{'Garden Waste'});
+    $c->set_param('Container_Request_Details_Quantity', $data->{new_bins});
+    $c->set_param('current_containers', $data->{current_bins});
+    $c->set_param('new_containers', $data->{new_bins});
+    $c->set_param('payment', $c->get_param('total'));
+
+    $c->forward('add_report', [ $data, 1 ]) or return;
+
+    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+        $c->stash->{message} = 'Payment skipped on staging';
+        $c->stash->{reference} = $c->stash->{report}->id;
+        $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+    } else {
+        if ( $data->{payment_method} eq 'direct_debit' ) {
+            $c->forward('direct_debit');
+        } else {
+            $c->forward('pay');
+        }
+    }
+    return 1;
+}
+
 sub load_form {
     my ($c, $previous_form) = @_;
 
@@ -526,7 +612,7 @@ sub load_form {
     }
 
     my $form = $c->stash->{form_class}->new(
-        page_list => $c->stash->{page_list},
+        page_list => $c->stash->{page_list} || [],
         $c->stash->{field_list} ? (field_list => $c->stash->{field_list}) : (),
         page_name => $page,
         csrf_token => $c->stash->{csrf_token},
@@ -562,6 +648,7 @@ sub form : Private {
     $c->stash->{template} = $form->template || 'waste/index.html'
         unless $c->stash->{sent_confirmation_message};
     $c->stash->{form} = $form;
+    $c->stash->{label_for_field} = \&label_for_field;
 }
 
 sub get_page : Private {
@@ -578,7 +665,7 @@ sub get_page : Private {
 }
 
 sub add_report : Private {
-    my ( $self, $c, $data ) = @_;
+    my ( $self, $c, $data, $no_confirm ) = @_;
 
     $c->stash->{cobrand_data} = 'waste';
     $c->stash->{override_confirmation_template} = 'waste/confirmation.html';
@@ -751,6 +838,12 @@ sub uprn_redirect : Path('/property') : Args(1) {
     my $result = $echo->GetPointAddress($uprn, 'Uprn');
     $c->detach( '/page_error_404_not_found', [] ) unless $result;
     $c->res->redirect('/waste/' . $result->{Id});
+}
+sub label_for_field {
+    my ($form, $field, $key) = @_;
+    foreach ($form->field($field)->options) {
+        return $_->{label} if $_->{value} eq $key;
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
