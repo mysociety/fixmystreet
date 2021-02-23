@@ -31,7 +31,36 @@
     <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
     <input type="submit" value="Request a [% unit.garden_waste ? 'replacement' : 'new' %] [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
   </form>
+[% ELSIF unit.garden_waste %]
+  <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" value="Request more [% unit.service_name FILTER lower %] containers" class="waste-service-descriptor waste-service-link">
+  </form>
 [% END %]
+
+[% IF unit.garden_waste %]
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Subscription</dt>
+        <dd class="govuk-summary-list__value">???</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Renewal</dt>
+        <dd class="govuk-summary-list__value">???</dd>
+      </div>
+    </dl>
+
+  <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" value="Modify your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+  </form>
+  <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+  </form>
+[% END %]
+
   <form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
     <input type="hidden" name="service_id" value="[% unit.service_id %]">
     <input type="hidden" name="category" id="category" value="General Enquiry">

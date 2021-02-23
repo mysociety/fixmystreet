@@ -1,0 +1,15 @@
+[% SET bodyclass = 'waste' %]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+  <p>
+  This is an intro page for Garden Waste Subscriptions
+  </p>
+<form method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]
