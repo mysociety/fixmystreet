@@ -43,6 +43,8 @@ sub export {
     if (@categories) {
         my @contacts = $body->contacts->search({
             category => { -in => \@categories },
+        }, {
+            order_by => 'category',
         })->all;
         die "Categories mismatch" unless scalar @categories == scalar @contacts;
         for (@contacts) {
@@ -56,7 +58,7 @@ sub export {
         }
     }
 
-    my $templates = $body->response_templates;
+    my $templates = $body->response_templates->search(undef, { order_by => 'title' });
     if (@categories) {
         $templates = $templates->search({
             'contact.category' => { -in => \@categories }
@@ -69,27 +71,27 @@ sub export {
             title => $_->title,
             text => $_->text,
             state => $_->state,
-            categories => [ map { $_->category } $_->contacts->all ],
+            categories => [ sort map { $_->category } $_->contacts->all ],
             auto_response => $_->auto_response,
             external_status_code => $_->external_status_code,
         };
     }
 
-    for ($body->roles->all) {
+    for ($body->roles->search(undef, { order_by => 'name' })->all) {
         push @{$out{roles}}, {
             permissions => $_->permissions,
             name => $_->name,
         };
     }
 
-    for ($body->users->all) {
+    for ($body->users->search(undef, { order_by => 'name' })->all) {
         my $cats = $_->get_extra_metadata('categories');
-        my @cat_names = map { $body->contacts->find({id => $_})->category } @$cats;
+        my @cat_names = sort map { $body->contacts->find({id => $_})->category } @$cats;
         push @{$out{users}}, {
             email => $_->email,
             name => $_->name,
             password => $_->password,
-            roles => [ map { $_->name } $_->roles->all ],
+            roles => [ sort map { $_->name } $_->roles->all ],
             categories => \@cat_names,
             areas => $_->area_ids || [],
         };
