@@ -267,6 +267,32 @@ sub GetServiceUnitsForObject {
                 },
             } ] },
         } },
+    }, {
+        Id => 1005,
+        ServiceId => 545,
+        ServiceName => 'Garden waste collection',
+        ServiceTasks => { ServiceTask => {
+            Id => 405,
+            ScheduleDescription => 'every other Monday',
+            ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                },
+            }, {
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 567, 890 ] } },
+                },
+            } ] },
+        } },
     } ] if $self->sample_data;
     # uncoverable statement
     my $res = $self->call('GetServiceUnitsForObject',

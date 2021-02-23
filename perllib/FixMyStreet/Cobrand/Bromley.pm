@@ -526,6 +526,7 @@ sub bin_services_for_address {
         13 => 'Wheeled Bin (Paper)',
         9 => 'Kitchen Caddy',
         10 => 'Outside Food Waste Container',
+        44 => 'Garden Waste',
         45 => 'Wheeled Bin (Food)',
     };
     my %service_to_containers = (
@@ -545,6 +546,12 @@ sub bin_services_for_address {
         542 => 6,
         544 => 4,
     );
+
+    $self->{c}->stash->{garden_subs} = {
+        New => 1,
+        Renew => 2,
+        Amend => 3,
+    };
 
     my $result = $self->{api_serviceunits};
     return [] unless @$result;
@@ -582,10 +589,12 @@ sub bin_services_for_address {
 
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
+        my $service_name = $service_name_override{$_->{ServiceId}} || $_->{ServiceName};
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
-            service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
+            service_name => $service_name,
+            garden_waste => $service_name eq 'Garden Waste',
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_open => $open_request,
