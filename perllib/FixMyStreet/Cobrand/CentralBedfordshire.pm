@@ -26,6 +26,8 @@ sub disambiguate_location {
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
+sub admin_user_domain { 'centralbedfordshire.gov.uk' }
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
