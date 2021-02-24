@@ -372,10 +372,10 @@ sub _premises_for_postcode {
     return $self->{c}->session->{$key};
 }
 
-sub _clear_premises_for_postcode_cache {
-    my $self = shift;
-    my $pc = shift;
+sub clear_cached_lookups {
+    my ($self, $id) = @_;
 
+    my ($pc, $uprn) = split ":", $id;
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
 
     delete $self->{c}->session->{$key};
@@ -525,8 +525,16 @@ sub bin_services_for_address {
             schedule => $schedules{$_->{JobName}}->{Frequency},
             service_id => $container_id,
             request_containers => $container_request_ids{$container_id},
+
+            # can this container type be requested?
             request_allowed => $container_request_ids{$container_id} ? 1 : 0,
+            # what's the maximum number of this container that can be request?
             request_max => $container_request_max{$container_id} || 0,
+            # can this collection be reported as having been missed?
+            # allowed if we're within 24 hours of the last collection
+            report_allowed => DateTime->now < $last->add(hours => 24),
+            # is there already a missed collection report open for this container?
+            report_open => 0,
         };
         push @out, $row;
     }
@@ -541,6 +549,7 @@ sub bin_services_for_address {
         request_allowed => 1,
         request_max => 1,
         request_only => 1,
+        report_only => 1,
     };
     push @out, {
         id => "_ALL_BINS",
@@ -570,9 +579,34 @@ sub waste_munge_request_data {
         $data->{detail} .= "\n\nReason: $reason";
     }
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$id" })->category;
+}
 
-    my ($pc, $uprn) = split ":", $c->stash->{property}->{id};
-    $self->_clear_premises_for_postcode_cache($pc);
+sub waste_munge_report_data {
+    my ($self, $id, $data) = @_;
+
+    my %container_service_ids = (
+        6533 => 255, # 240L Black
+        6534 => 254, # 240L Green
+        6579 => 253, # 240L Brown
+        6836 => undef, # Refuse 1100l
+        6837 => undef, # Refuse 660l
+        6839 => undef, # Refuse 240l
+        6840 => undef, # Recycling 1100l
+        6841 => undef, # Recycling 660l
+        6843 => undef, # Recycling 240l
+        # black 360L?
+    );
+
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $service_id = $container_service_ids{$id};
+    my $container = $c->stash->{containers}{$id};
+    $data->{title} = "Report missed $container";
+    $data->{detail} = "$data->{title}\n\n$address";
+
+    $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
 
 
