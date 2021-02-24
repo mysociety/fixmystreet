@@ -6,7 +6,8 @@ if (!fixmystreet.maps) {
 
 fixmystreet.maps.banes_defaults = {
     http_options: {
-        url: "https://isharemaps.bathnes.gov.uk/getows.ashx",
+        // Use tilma proxy for staging sites to avoid CORS issues.
+        url: fixmystreet.staging ? "https://tilma.mysociety.org/proxy/bathnes/isharemaps/" : "https://isharemaps.bathnes.gov.uk/getows.ashx",
         params: {
             mapsource: "BathNES/WFS",
             SERVICE: "WFS",
@@ -234,5 +235,59 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     attribution: " © Crown Copyright. All rights reserved. 1000233344"
 });
 
+// List of categories which are Curo Group's responsibility
+var curo_categories = [
+    'Allotment issue',
+    'Obstructive vegetation',
+    'Play area safety issue',
+    'Trees and woodland',
+    'Dead animals',
+    'Dog fouling',
+    'Excessive or dangerous littering',
+    'Household bins left out',
+    'Needles'
+];
+
+fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "Curo_Land_Registry"
+        }
+    },
+    asset_type: 'area',
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    non_interactive: true,
+    always_visible: true,
+    all_categories: true, // Not really, but we deal with that in the found action handler.
+    nearest_radius: 0.1,
+    road: true,
+    no_asset_msg_id: '#js-curo-group-restriction',
+    actions: {
+        found: function(layer) {
+            var category = fixmystreet.reporting.selectedCategory().category;
+            if (curo_categories.indexOf(category) === -1) {
+                fixmystreet.message_controller.road_found(layer);
+                return;
+            }
+
+            fixmystreet.message_controller.road_not_found(layer);
+            $('#js-roads-responsibility > strong').hide();
+
+            var domain = '@curo-group.co.uk';
+            var email = 'estates';
+            if (category === 'Household bins left out early or after collection day') {
+                email = 'tennancycompliance&support';
+            }
+            var email_string = $(layer.fixmystreet.no_asset_msg_id).find('.js-roads-asset');
+            if (email_string) {
+                email_string.html('<a href="mailto:' + email + domain + '">' + email + domain + '</a>');
+            }
+        },
+        not_found: function(layer) {
+            $('#js-roads-responsibility > strong').show();
+            fixmystreet.message_controller.road_found(layer);
+        }
+    }
+});
 
 })();

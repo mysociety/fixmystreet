@@ -1215,8 +1215,11 @@ fixmystreet.message_controller = (function() {
         }
     }
 
-    // This shows the reporting form
+    // Show the reporting form, unless the road responsibility message is visible.
     function enable_report_form() {
+        if ( $('#js-roads-responsibility').is(':visible') ) {
+            return;
+        }
         $('.js-reporting-page--next').prop('disabled', false);
         $("#mob_ok, #toggle-fullscreen").removeClass('hidden-js');
     }
@@ -1301,9 +1304,7 @@ fixmystreet.message_controller = (function() {
         var matching = $.grep(stoppers, is_matching_stopper);
         if (!matching.length) {
             $id.remove();
-            if ( !$('#js-roads-responsibility').is(':visible') ) {
-                enable_report_form();
-            }
+            enable_report_form();
             return;
         }
 
