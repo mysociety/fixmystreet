@@ -15,6 +15,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'Bromley Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+$user->update({ phone => "07123 456789" });
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
@@ -128,6 +129,19 @@ FixMyStreet::override_config {
 
         is $user->alerts->count, 1;
         $mech->clear_emails_ok;
+    };
+    subtest 'About You form is pre-filled when logged in' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
+        $mech->follow_link_ok({ text => 'Report a missed collection' });
+        $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
+        $user->discard_changes;
+        $mech->content_contains($user->name);
+        $mech->content_contains($user->email);
+        $mech->content_contains($user->phone);
+        $mech->log_out_ok;
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
