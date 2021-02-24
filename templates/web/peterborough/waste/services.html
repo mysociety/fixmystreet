@@ -11,7 +11,7 @@
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
 [% ELSE %]
-  <span class="waste-service-descriptor">Please note that missed collections can only be reported within 2 working days of your scheduled collection day.</span>
+  <span class="waste-service-descriptor">Please note that missed collections can only be reported within 36 hours of the end of your last scheduled collection day.</span>
 [% END %]
   <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
 [% IF unit.request_open %]
