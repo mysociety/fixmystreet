@@ -492,6 +492,11 @@ sub bin_services_for_address {
         424 => "Large food caddy",
         423 => "Small food caddy",
         428 => "Food bags",
+
+        # For missed collections
+        6533 => "240L Black",
+        6534 => "240L Green",
+        6579 => "240L Brown",
     };
 
     my %container_request_ids = (
@@ -561,8 +566,15 @@ sub bin_services_for_address {
             schedule => $schedules{$name}->{Frequency},
             service_id => $container_id,
             request_containers => $container_request_ids{$container_id},
+
+            # can this container type be requested?
             request_allowed => $container_request_ids{$container_id} ? 1 : 0,
+            # what's the maximum number of this container that can be request?
             request_max => $container_request_max{$container_id} || 0,
+            # can this collection be reported as having been missed?
+            report_allowed => $self->_waste_report_allowed($last),
+            # is there already a missed collection report open for this container?
+            report_open => 0,
         };
         push @out, $row;
     }
@@ -577,6 +589,7 @@ sub bin_services_for_address {
         request_allowed => 1,
         request_max => 1,
         request_only => 1,
+        report_only => 1,
     };
     push @out, {
         id => "_ALL_BINS",
@@ -591,6 +604,17 @@ sub bin_services_for_address {
     return \@out;
 }
 
+sub _waste_report_allowed {
+    my ($self, $last) = @_;
+
+    # missed bin reports are allowed if we're within 36 hours of end the last collection day
+    # e.g.:
+    #  A bin not collected on Tuesday can be rung though any time on collection day
+    #  Then any time the next day
+    #  Then up to noon the next day, which is when missed bins are collected
+
+    return DateTime->now < $last->truncate(to => 'day')->add(hours => 60);
+}
 
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
@@ -606,6 +630,34 @@ sub waste_munge_request_data {
         $data->{detail} .= "\n\nReason: $reason";
     }
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$id" })->category;
+}
+
+sub waste_munge_report_data {
+    my ($self, $id, $data) = @_;
+
+    my %container_service_ids = (
+        6533 => 255, # 240L Black
+        6534 => 254, # 240L Green
+        6579 => 253, # 240L Brown
+        6836 => undef, # Refuse 1100l
+        6837 => undef, # Refuse 660l
+        6839 => undef, # Refuse 240l
+        6840 => undef, # Recycling 1100l
+        6841 => undef, # Recycling 660l
+        6843 => undef, # Recycling 240l
+        # black 360L?
+    );
+
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $service_id = $container_service_ids{$id};
+    my $container = $c->stash->{containers}{$id};
+    $data->{title} = "Report missed $container";
+    $data->{detail} = "$data->{title}\n\n$address";
+
+    $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
 
 

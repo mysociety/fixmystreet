@@ -79,6 +79,17 @@ FixMyStreet::override_config {
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Reason";
         is $report->title, 'Request new All bins';
     };
+    subtest 'Report missed collection' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480/report');
+        $mech->submit_form_ok({ with_fields => { 'service-6534' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry has been submitted'); # TODO
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "Report missed 240L Green\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->title, 'Report missed 240L Green';
+    };
 };
 
 done_testing;
