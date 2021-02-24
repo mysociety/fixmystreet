@@ -67,6 +67,11 @@ FixMyStreet::override_config {
         $mech->content_contains('1 Pope Way, Peterborough');
         $mech->content_contains('Every two weeks');
     };
+    subtest 'Future collection calendar' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
+        $mech->content_contains('DTSTART;VALUE=DATE:20210808');
+        $mech->content_contains('DTSTART;VALUE=DATE:20210819');
+    };
     subtest 'Request a new container' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
