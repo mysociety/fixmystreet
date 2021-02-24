@@ -1015,6 +1015,32 @@ sub waste_munge_request_data {
     }
 }
 
+sub waste_munge_report_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $service = $c->stash->{services}{$id}{service_name};
+    $data->{title} = "Report missed $service";
+    $data->{detail} = "$data->{title}\n\n$address";
+    $c->set_param('service_id', $id);
+}
+
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    foreach (grep { /^extra_/ } keys %$data) {
+        $detail .= "$data->{$_}\n\n";
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+}
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};
