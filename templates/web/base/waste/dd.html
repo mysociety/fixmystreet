@@ -2,7 +2,7 @@
 
 <h1 class="govuk-heading-xl">DD</h1>
 
-<form name="post" method="post" action="[% payment_details.dd_url %]/pages/registration.aspx?.Client=[% payment_details.dd_client_id %]&.PaymentPlans=[% payment_details.dd_payment_plan %]">
+<form name="post" method="post" action="[% payment_details.dd_push_url %]/pages/registration.aspx?.Client=[% payment_details.dd_client_id %]&.PaymentPlans=[% payment_details.dd_payment_plan %]">
 <div class="govuk-form-group">
     <label class="govuk-label" for="txtTitle">Title</label>
     <input class="govuk-input" type="text" name="txtTitle" id="txtTitle"  value="[% title %]" />
@@ -20,7 +20,7 @@
 
 <div class="govuk-form-group">
     <label class="govuk-label" for="addr1">Address 1</label>
-    <input class="govuk-input" type="text" name="addr1" id="addr1"  value="[% adddress1 %]" />
+    <input class="govuk-input" type="text" name="addr1" id="addr1"  value="[% address1 %]" />
 </div>
 
 <div class="govuk-form-group">
@@ -55,12 +55,14 @@
 
 <div class="govuk-form-group">
     <label class="govuk-label" for="txtAccountHolders">Account Holder</label>
-    <input class="govuk-input" type="text" name="txtAccountHolders" id="txtAccountHolders"  value="" />
+    <input class="govuk-input" type="text" name="txtAccountHolders" id="txtAccountHolders"  value="[% account_holder %]" />
 </div>
 
 
 <input type="hidden" name="txtReference" id="txtReference" value="[% reference %]" />
 <input type="hidden" name="txtRegularAmount" id="txtRegularAmount"  value="[% amount %]" />
+<input type="hidden" name="lstPaymentDay" value="[% day %]" />
+<input type="hidden" name="PaymentMonth" value="[% month %]" />
 <input type="hidden" name="PaymentYear" value="[% year %]" />
 <input type="hidden" name="end" value="until_notice" />
 <input type="hidden" name="arrayvars" value="productcode*|*WASTE*|*reference*|*[% reference %]">
