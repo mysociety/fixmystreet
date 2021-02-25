@@ -77,13 +77,15 @@ sub pay : Path('pay') : Args(0) {
         config => $c->cobrand->feature('payment_gateway')
     });
 
+    my $p = $c->stash->{report};
+
     my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay') . '',
+        returnUrl => $c->uri_for('pay_complete', $p->id ) . '',
         backUrl => $c->uri_for('pay') . '',
-        ref => time(),
-        request_id => time(),
-        description => 'This is a test',
-        amount => '1000',
+        ref => $p->id,
+        request_id => $p->id,
+        description => $p->title,
+        amount => $p->get_extra_field( name => 'payment' )->{value} * 100,
     });
 
     if ( $result ) {
@@ -99,6 +101,9 @@ sub pay : Path('pay') : Args(0) {
         #
         if ( $result->{transactionState} eq 'COMPLETE' &&
              $result->{invokeResult}->{status} eq 'SUCCESS' ) {
+
+             $p->set_extra_metadata('scpReference', $result->{scpReference});
+             $p->update;
 
              # need to save scpReference against request here
              my $redirect = $result->{invokeResult}->{redirectURL};
@@ -118,7 +123,7 @@ sub pay_complete : Path('pay_complete') : Args(1) {
 
 
     # load report
-    # my $p = $c->model('Problem')->find( id => $id );
+    my $p = $c->model('Problem')->find( id => $id );
     # need to get some ID Things which I guess we stored in pay
 
     my $payment = Integrations::SCP->new(
@@ -126,20 +131,27 @@ sub pay_complete : Path('pay_complete') : Args(1) {
     );
 
     my $resp = $payment->query({
-        #scpReference = $p->get_extra_metadata('scpReference'),
+        scpReference => $p->get_extra_metadata('scpReference'),
     });
 
     if ($resp->{transactionState} eq 'COMPLETE') {
         if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
             # create sub in echo
+            my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
             $c->stash->{message} = 'Payment succesful';
+            $c->stash->{reference} = $ref;
+            $p->set_extra_metadata('payment_reference', $ref);
+            $p->confirm;
+            $p->update;
         } else {
             # cancelled, not attempted, logged out - try again option
             # card rejected - try again with different card/cancel
             # otherwise error page?
+            $c->stash->{error} = 'Payment failed: ' . $resp->{paymentResult}->{status};
         }
     } else {
         # retry if in progress, error if invalid ref.
+        $c->stash->{error} = 'Payment failed: ' . $resp->{transactionState};
     }
 }
 
