@@ -964,9 +964,12 @@ sub call_api {
     # We cannot fork directly under mod_fcgid, so
     # call an external script that calls back in.
     my $data;
-    if (FixMyStreet->test_mode) {
+    my $echo = $self->feature('echo');
+    # uncoverable branch false
+    if (FixMyStreet->test_mode || $echo->{sample_data}) {
         $data = $self->_parallel_api_calls(@_);
     } else {
+        # uncoverable statement
         system(@cmd);
         $data = Storable::fd_retrieve($tmp);
     }
@@ -979,7 +982,8 @@ sub _parallel_api_calls {
     $echo = Integrations::Echo->new(%$echo);
 
     my %calls;
-    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode ? 0 : 10);
+    # uncoverable branch false
+    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode || $echo->sample_data ? 0 : 10);
     $pm->run_on_finish(sub {
         my ($pid, $exit_code, $ident, $exit_signal, $core_dump, $data) = @_;
         %calls = ( %calls, %$data );
