@@ -158,20 +158,54 @@ sub pay_complete : Path('pay_complete') : Args(1) {
 sub direct_debit : Path('dd') : Args(0) {
     my ($self, $c) = @_;
 
+    my $address = $c->stash->{property}{address};
+
+    my @parts = split ',', $address;
+
+    my $name = $c->stash->{report}->name;
+    my ($first, $last) = split /\s/, $name, 2;
+
+    $c->stash->{account_holder} = $name;
+    $c->stash->{first_name} = $first;
+    $c->stash->{last_name} = $last;
+    $c->stash->{address1} = shift @parts;
+    $c->stash->{address2} = shift @parts;
+    $c->stash->{postcode} = pop @parts;
+    $c->stash->{town} = pop @parts;
+    $c->stash->{address3} = join ', ', @parts;
+
+
     my $dt = DateTime->now;
+    if ($dt->day < 15) {
+        $dt->set_day(15);
+    } else {
+        $dt->add( months => 1 );
+        $dt->set_day(15);
+    }
+
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
-    $c->stash->{amount} = $payment_details->{ggw_cost},
-    $c->stash->{reference} = time;
+    $c->stash->{amount} = $c->stash->{report}->get_extra_field(name => 'payment')->{value},
+    $c->stash->{reference} = $c->stash->{report}->id;
+    $c->stash->{day} = $dt->day;
+    $c->stash->{month} = $dt->month;
     $c->stash->{year} = $dt->year;
     $c->stash->{template} = 'waste/dd.html';
     $c->detach;
 }
 
+# we process direct debit payments when they happen so this page
+# is only for setting expectations
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
     my ($self, $c) = @_;
 
-    $c->res->body('NOT IMPLEMENTED');
+    my $ref = $c->get_param('reference');
+    my $p = $c->model('DB::Problem')->find( id => $ref );
+
+    $c->stash->{message} = "Direct Debit set up";
+    $c->stash->{report} = $p;
+
+    $c->stash->{template} = 'waste/dd_complete.html';
 }
 
 sub direct_debit_cancelled : Path('dd_cancelled') : Args(0) {
