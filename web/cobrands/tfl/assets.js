@@ -46,8 +46,14 @@ var asset_defaults = $.extend(true, {}, defaults, {
     body: 'TfL',
     select_action: true,
     actions: {
-        asset_found: fixmystreet.message_controller.asset_found,
-        asset_not_found: fixmystreet.message_controller.asset_not_found
+        asset_found: function(asset) {
+            fixmystreet.message_controller.asset_found.call(this, asset);
+            fixmystreet.assets.named_select_action_found.call(this, asset);
+        },
+        asset_not_found: function() {
+            fixmystreet.message_controller.asset_not_found.call(this);
+            fixmystreet.assets.named_select_action_not_found.call(this);
+        }
     }
 });
 
@@ -78,6 +84,15 @@ fixmystreet.assets.add(asset_defaults, {
     },
     asset_group: "Bus Stops and Shelters",
     asset_item: 'bus stop'
+});
+
+fixmystreet.assets.add(asset_defaults, {
+    http_options: { params: { TYPENAME: "busstations" } },
+    asset_id_field: 'Name',
+    feature_code: 'Name',
+    attributes: { station_name: 'Name' },
+    asset_group: "Bus Stations",
+    asset_item: 'bus station'
 });
 
 /* Roadworks asset layer */
