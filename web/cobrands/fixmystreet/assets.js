@@ -450,7 +450,8 @@ function check_zoom_message_visibility() {
         return;
     }
     if (this.relevant()) {
-        var category = fixmystreet.reporting.selectedCategory().category,
+        var selected = fixmystreet.reporting.selectedCategory(),
+            category = this.fixmystreet.asset_group ? selected.group : selected.category,
             prefix = category.replace(/[^a-z]/gi, ''),
             id = "category_meta_message_" + prefix,
             $p = $('.category_meta_message'),
