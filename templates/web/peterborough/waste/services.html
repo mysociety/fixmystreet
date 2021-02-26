@@ -13,7 +13,7 @@
 [% ELSE %]
   <span class="waste-service-descriptor">Please note that missed collections can only be reported within 36 hours of the end of your last scheduled collection day.</span>
 [% END %]
-  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %]</a>
 [% IF unit.request_open %]
   <span class="waste-service-descriptor">
     A new [% unit.service_name FILTER lower %] container request has been made
@@ -27,8 +27,3 @@
     <input type="submit" value="Request a new [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
-  <form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
-    <input type="hidden" name="service_id" value="[% unit.service_id %]">
-    <input type="hidden" name="category" id="category" value="General Enquiry">
-    <input type="submit" value="Contact us about a [% unit.service_name FILTER lower %] collection" class="waste-service-descriptor waste-service-link">
-  </form>
