@@ -95,6 +95,18 @@ FixMyStreet::override_config {
         is $report->detail, "Report missed 240L Green\n\n1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 240L Green';
     };
+    subtest 'Report broken bin' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+        $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
+        $mech->submit_form_ok({ with_fields => { continue => 'Continue' } }); # TODO
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry has been submitted'); # TODO
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, 'Repair: 240L Black Lid';
+        is $report->detail, "Repair: 240L Black Lid\n\n1 Pope Way, Peterborough, PE1 3NA";
+    };
 };
 
 done_testing;
