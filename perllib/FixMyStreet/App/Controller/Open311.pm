@@ -102,31 +102,23 @@ sub get_discovery : Private {
     my ( $self, $c ) = @_;
 
     my $contact_email = $c->cobrand->contact_email;
-    my $prod_url = 'http://www.fiksgatami.no/open311';
-    my $test_url = 'http://fiksgatami-dev.nuug.no/open311';
-    my $prod_changeset = '2011-04-08T00:00:00Z';
-    my $test_changeset = $prod_changeset;
+    my $endpoint_url = $c->request->uri;
+    $endpoint_url->path_query('/open311');
+    my $changeset = '2021-03-01T00:00:00Z';
     my $spec_url = 'http://wiki.open311.org/GeoReport_v2';
     my $info =
     {
         'contact' => "Send email to $contact_email.",
-        'changeset' => $prod_changeset,
+        'changeset' => $changeset,
         'max_requests' => $c->config->{OPEN311_LIMIT} || 1000,
         'endpoints' => [
             {
                 'formats' => [ 'text/xml', 'application/json', 'text/html' ],
                 'specification' => $spec_url,
-                'changeset' => $prod_changeset,
-                'url' => $prod_url,
-                'type' => 'production'
+                'changeset' => $changeset,
+                'url' => $endpoint_url->as_string,
+                'type' => $c->config->{STAGING_SITE} ? 'test' : 'production'
             },
-            {
-                'formats' => [ 'text/xml', 'application/json', 'text/html' ],
-                'specification' => $spec_url,
-                'changeset' => $test_changeset,
-                'url' => $test_url,
-                'type' => 'test'
-            }
         ]
     };
     $c->forward( 'format_output', [ {
