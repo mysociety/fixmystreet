@@ -20,6 +20,10 @@ body.waste {
         font-size: 19px; font-size: 1.1875rem; line-height: 1.31579;
       }
     }
+
+    .govuk-form-group.loading {
+        background: url("/cobrands/fixmystreet/images/spinner-white.gif") flip(0%,100%) 100% no-repeat;
+    }
 }
 
 .waste__collections,

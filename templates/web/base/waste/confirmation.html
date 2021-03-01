@@ -6,7 +6,7 @@ ELSIF first_page == 'report';
 ELSE;
     title = 'Enquiry submitted';
 END ~%]
-[% INCLUDE header.html %]
+[% PROCESS 'waste/header.html' %]
 
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">

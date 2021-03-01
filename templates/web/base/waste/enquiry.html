@@ -1,6 +1,4 @@
-[% SET bodyclass = 'waste' %]
-[% INCLUDE header.html %]
-
+[% PROCESS 'waste/header.html' %]
 [% PROCESS 'waste/govuk/fields.html' %]
 [% PROCESS title %]
 [% SET service_id = c.req.params.service_id %]
@@ -15,7 +13,7 @@
     <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
 </dl>
 
-<form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
+<form class="waste" method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
     <div class="govuk-form-group">
     [% PROCESS radio field = {
       id = 'category',
