@@ -8,6 +8,7 @@ use JSON::MaybeXS;
 use XML::Simple;
 use DateTime::Format::W3CDTF;
 use FixMyStreet::MapIt;
+use URI::Escape;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -50,7 +51,59 @@ Displays some summary information for the requests.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-    # don't need to do anything here - should just pass through.
+
+    $c->stash->{show_agency_responsible} = 1;
+    my $jurisdiction_id = $c->cobrand->jurisdiction_id_example;
+    my $example_category = $c->model('DB::Contact')->active->first->category;
+    my $example_category_uri_escaped = URI::Escape::uri_escape_utf8($example_category);
+    my $example_lat = 60;
+    my $example_long = 11;
+
+    if ($c->cobrand->moniker eq 'zurich') {
+        $c->stash->{show_agency_responsible} = 0;
+        $example_lat = 47.3;
+        $example_long = 8.5;
+    }
+
+    $c->stash->{examples} = [
+        {
+            url => "/open311/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",
+            info => 'discovery information',
+        },
+        {
+            url => "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id",
+            info => 'list of services provided',
+        },
+        {
+            url => "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id&lat=$example_lat&long=$example_long",
+            info => "list of services provided for WGS84 coordinate latitude $example_lat longitude $example_long",
+        },
+        {
+            url => "/open311/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id",
+            info => 'Request number 1',
+        },
+        {
+            url => "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=$example_category_uri_escaped",
+            info => "All requests with the category '$example_category'",
+        },
+        {
+            url => "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=closed",
+            info => 'All closed requests',
+        },
+    ];
+
+    if ($c->stash->{show_agency_responsible}) {
+        push(@{$c->stash->{examples}}, (
+            {
+                url => "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10",
+                info => 'All open requests reported before 2011-03-10 to Trondheim (id 1601)',
+            },
+            {
+                url => "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220",
+                info => 'All open requests in Asker (id 220) and Bærum (id 219)',
+            },
+        ));
+    }
 }
 
 sub old_uri : Regex('^open311\.cgi') : Args(0) {

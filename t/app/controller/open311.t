@@ -60,4 +60,21 @@ subtest "hidden reports aren't available" => sub {
     is @$problems, 0;
 };
 
+subtest "Zurich open311 docs differ from main docs" => sub {
+    $mech->get_ok('/open311');
+    $mech->content_contains('agency_responsible');
+    $mech->content_contains('list of services provided for WGS84 coordinate latitude 60 longitude 11');
+    $mech->content_contains('&lt;description&gt;Mangler brustein');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'zurich',
+    }, sub {
+        ok $mech->host("www.zueriwieneu.ch"), 'host to zueriwieneu';
+        $mech->get_ok('/open311');
+        $mech->content_lacks('agency_responsible');
+        $mech->content_contains('list of services provided for WGS84 coordinate latitude 47.3 longitude 8.5');
+        $mech->content_contains('&lt;description&gt;Unebener');
+    };
+};
+
 done_testing();
