@@ -164,7 +164,6 @@ sub get_body_sender {
         if ( $emails->{flytipping} ) {
             my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
             $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
-            $problem->update;
             return { method => 'Email', contact => $contact};
         }
     }
@@ -179,6 +178,21 @@ sub munge_sendreport_params {
         $params->{To} = [ [
             $row->get_extra_metadata('flytipping_email'), $self->council_name
         ] ];
+    }
+}
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    my $emails = $self->feature('open311_email');
+    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+    if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
+        my $dest = [ $emails->{flytipping}, "Environmental Services" ];
+        my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
+        $sender->send($row, $h);
     }
 }
 
@@ -207,6 +221,7 @@ sub post_report_sent {
             problem_state => 'closed',
             text => $text,
         });
+        $problem->unset_extra_metadata('flytipping_email');
     }
 }
 
