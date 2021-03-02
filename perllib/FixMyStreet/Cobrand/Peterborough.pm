@@ -182,6 +182,21 @@ sub munge_sendreport_params {
     }
 }
 
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    my $emails = $self->feature('open311_email');
+    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+    if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
+        my $dest = [ $emails->{flytipping}, "Environmental Services" ];
+        my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
+        $sender->send($row, $h);
+    }
+}
+
 sub post_report_sent {
     my ($self, $problem) = @_;
 
