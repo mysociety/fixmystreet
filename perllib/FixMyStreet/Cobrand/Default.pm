@@ -1137,10 +1137,13 @@ pressed in the front end, rather than whenever a username is not provided.
 =cut
 
 sub allow_anonymous_reports {
-    my ($self, $category_name) = @_;
+    my ($self, $category_name, $lookup) = @_;
 
     $category_name ||= $self->{c}->stash->{category};
-    if ( $category_name && $self->can('body') and $self->body ) {
+    return 0 unless $category_name;
+
+    return $lookup->{$category_name} if defined $lookup->{$category_name};
+    if ( $self->can('body') and $self->body ) {
         my $category_rs = FixMyStreet::DB->resultset("Contact")->search({
             body_id => $self->body->id,
             category => $category_name

@@ -1,5 +1,7 @@
-[% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.cobrand_name) %][% END %]
-[% DEFAULT list_of_names = default_list %]
+[% IF NOT list_of_names %]
+    [% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.cobrand_name) %][% END %]
+    [% SET list_of_names = default_list %]
+[% END %]
 [% category = mark_safe(category) %]
 
 <div id="category_meta">

@@ -228,11 +228,28 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         $contribute_as->{body} = $ca_body if $ca_body;
     }
 
+    my $lookups;
+    my $cobrand_body = $c->cobrand->can('body') && $c->cobrand->body;
+    foreach (@{$c->stash->{contacts}}) {
+        my $category = $_->category;
+        my $unresponsive = $c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL};
+        next if $unresponsive->{$_->body_id};
+        my $body = $_->body;
+        push @{$lookups->{bodies}{$category}}, {
+            name => $body->name,
+            cobrand_name => $body->cobrand_name,
+        };
+        $lookups->{hints}{$category}->{title} ||= $_->get_extra_metadata('title_hint');
+        $lookups->{hints}{$category}->{detail} ||= $_->get_extra_metadata('detail_hint');
+        # Copy of Default's lookup using cobrand's body check (to save DB lookups)
+        $lookups->{anonymous_allowed}{$category} = $cobrand_body && $cobrand_body->id == $_->body_id && $_->get_extra_metadata('anonymous_allowed') ? 'button': '';
+    }
+
     my %by_category;
     foreach my $contact (@{$c->stash->{category_options}}) {
         next unless $contact->category; # Ignore the 'Pick a category' line
         my $cat = $c->stash->{category} = $contact->category;
-        my $body = $c->forward('by_category_ajax_data', [ 'all', $cat ]);
+        my $body = $c->forward('by_category_ajax_data', [ $cat, $lookups ]);
         $by_category{$cat} = $body;
     }
 
@@ -250,48 +267,47 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         unresponsive => $c->stash->{unresponsive}->{ALL} || '',
         by_category => \%by_category,
     };
-    $c->detach('send_json_response');
+    $c->forward('send_json_response');
 }
 
 sub category_extras_ajax : Path('category_extras') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('initialize_report');
-    if ( ! $c->forward('determine_location') ) {
-        $c->stash->{json_response} = { error => _("Sorry, we could not find that location.") };
-        $c->detach('send_json_response');
-    }
-    $c->forward('setup_categories_and_bodies');
-    $c->forward('setup_report_extra_fields');
-
+    $c->forward('report_form_ajax');
     $c->forward('check_for_category', []);
-    $c->stash->{json_response} = $c->forward('by_category_ajax_data', [ 'one', $c->stash->{category} ]);
+    my $category = $c->stash->{category};
+
+    my $json;
+    if ($category) {
+        $json = $c->stash->{json_response}->{by_category}->{$category};
+    } else {
+        $json = {
+            bodies => [ map { $_->name } values %{$c->stash->{bodies_to_list}} ],
+        };
+    }
+
+    # unresponsive must return empty string if okay, as that's what mobile app checks
+    my $unresponsive = $c->stash->{unresponsive}->{$category} || $c->stash->{unresponsive}->{ALL} || '';
+    $json->{unresponsive} = $unresponsive;
+
+    $c->stash->{json_response} = $json;
     $c->forward('send_json_response');
 }
 
 sub by_category_ajax_data : Private {
-    my ($self, $c, $type, $category) = @_;
+    my ($self, $c, $category, $lookups) = @_;
 
-    my @bodies;
-    my $bodies = [];
-    my $vars = {};
-    if ($category) {
-        $bodies = $c->forward('contacts_to_bodies', [ $category ]);
-        @bodies = @$bodies;
-        $vars->{list_of_names} = [ map { $_->cobrand_name } @bodies ];
-    } else {
-        @bodies = values %{$c->stash->{bodies_to_list}};
-    }
+    my $bodies = $lookups->{bodies}{$category};
+    $c->stash->{list_of_names} = [ map { $_->{cobrand_name} } @$bodies ];
 
-    my $non_public = $c->stash->{non_public_categories}->{$category};
-    my $anon_button = ($c->cobrand->allow_anonymous_reports($category) eq 'button');
+    my $anon_button = ($c->cobrand->allow_anonymous_reports($category, $lookups->{anonymous_allowed}) eq 'button');
     my $body = {
-        bodies => [ map { $_->name } @bodies ],
-        $non_public ? ( non_public => JSON->true ) : (),
+        bodies => [ map { $_->{name} } @$bodies ],
         $anon_button ? ( allow_anonymous => JSON->true ) : (),
     };
 
-    if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
+    my $extras = $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1;
+    if ($extras) {
         my $disable_form = $c->forward('disable_form_message');
         $body->{disable_form} = $disable_form if %$disable_form;
 
@@ -301,38 +317,31 @@ sub by_category_ajax_data : Private {
         } @{$c->stash->{category_extras}->{$c->stash->{category}}};
     }
 
-    if (($c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1) or
-            $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
-        $body->{category_extra} = $c->render_fragment('report/new/category_extras.html', $vars);
+    if ($extras or $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
+        $body->{category_extra} = $c->render_fragment('report/new/category_extras.html');
         $body->{category_extra_json} = $c->forward('generate_category_extra_json');
         $body->{extra_hidden} = 1 if $c->stash->{category_extras_hidden}->{$category};
     }
 
-    my $unresponsive = $c->stash->{unresponsive}->{$category};
-    $unresponsive ||= $c->stash->{unresponsive}->{ALL} || '' if $type eq 'one';
-
-    # unresponsive must return empty string if okay, as that's what mobile app checks
     # councils_text.html must be rendered if it differs from the default output,
     # which currently means for unresponsive and non_public categories.
-    if ($type eq 'one' || ($type eq 'all' && $unresponsive)) {
+    if (my $unresponsive = $c->stash->{unresponsive}->{$category}) {
         $body->{unresponsive} = $unresponsive;
         # Check for no bodies here, because if there are any (say one
         # unresponsive, one not), can use default display code for that.
-        if ($type eq 'all' && !@$bodies) {
-            $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html', $vars);
+        if (!@$bodies) {
+            $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
             $body->{councils_text_private} = $c->render_fragment( 'report/new/councils_text_private.html');
         }
     }
-    if ($non_public) {
-        $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html', $vars);
+    if (my $non_public = $c->stash->{non_public_categories}->{$category}) {
+        $body->{non_public} = JSON->true;
+        $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
     }
 
-    if ($category) {
-        my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
-        my $hints = form_field_hints(@contacts);
-        $body->{title_hint} = $hints->{title} if $hints->{title};
-        $body->{detail_hint} = $hints->{detail} if $hints->{detail};
-    }
+    my $hints = $lookups->{hints}{$category};
+    $body->{title_hint} = $hints->{title} if $hints->{title};
+    $body->{detail_hint} = $hints->{detail} if $hints->{detail};
 
     return $body;
 }
