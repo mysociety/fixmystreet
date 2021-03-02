@@ -230,7 +230,7 @@ for my $test (
     };
 }
 
-subtest "flytipping on PCC land is sent by open311" => sub {
+subtest "flytipping on PCC land is sent by open311 and email" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
@@ -265,15 +265,17 @@ subtest "flytipping on PCC land is sent by open311" => sub {
         my $test_data = FixMyStreet::Script::Reports::send();
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
-        ok !$p->get_extra_metadata('flytipping_email'), 'flytipping_email extra metadata not set';
-        ok !$p->get_extra_metadata('sent_to'), 'sent_to extra metadata not set';
+        is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata is set';
         is $p->state, 'confirmed', 'report state unchanged';
         is $p->comments->count, 0, 'no comment added';
         ok $test_data->{test_req_used}, 'open311 sent';
         my $cgi = CGI::Simple->new($test_data->{test_req_used}->content);
         is $cgi->param('service_code'), 'FLY', 'service code is correct';
 
-        $mech->email_count_is(0);
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
     };
 };
 
@@ -314,7 +316,6 @@ subtest "flytipping on non PCC land is emailed" => sub {
 
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
-        is $p->get_extra_metadata('flytipping_email'), 'flytipping@example.org', 'flytipping_email extra metadata set';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
