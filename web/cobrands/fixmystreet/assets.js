@@ -35,7 +35,10 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
       if (layer.relevant) {
           relevant = layer.relevant({category: category, group: group});
       } else if (layer.asset_group) {
-          relevant = (layer.asset_group === group);
+          // Check both group and category because e.g. Isle of Wight has
+          // layers attached with groups that should also apply to categories
+          // with the same name
+          relevant = (layer.asset_group === group || layer.asset_group === category);
       } else {
           relevant = (OpenLayers.Util.indexOf(layer.asset_category, category) != -1);
       }
