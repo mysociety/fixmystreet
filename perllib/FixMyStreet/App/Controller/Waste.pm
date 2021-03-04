@@ -140,9 +140,7 @@ sub pay_complete : Path('pay_complete') : Args(1) {
             my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
             $c->stash->{message} = 'Payment succesful';
             $c->stash->{reference} = $ref;
-            $p->set_extra_metadata('payment_reference', $ref);
-            $p->confirm;
-            $p->update;
+            $c->forward( 'confirm_subscription', [ $ref ] );
         } else {
             # cancelled, not attempted, logged out - try again option
             # card rejected - try again with different card/cancel
@@ -153,6 +151,17 @@ sub pay_complete : Path('pay_complete') : Args(1) {
         # retry if in progress, error if invalid ref.
         $c->stash->{error} = 'Payment failed: ' . $resp->{transactionState};
     }
+}
+
+sub confirm_subscription : Private {
+    my ($self, $c, $reference) = @_;
+
+    my $p = $c->stash->{report};
+    $p->set_extra_metadata('payment_reference', $reference);
+    $p->confirm;
+    $p->update;
+    $c->stash->{template} = 'waste/confirm_subscription.html';
+    $c->detach;
 }
 
 sub direct_debit : Path('dd') : Args(0) {
