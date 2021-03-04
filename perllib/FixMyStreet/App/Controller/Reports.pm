@@ -68,7 +68,7 @@ sub index : Path : Args(0) {
     } else {
         my @bodies = $c->model('DB::Body')->search(undef, {
             columns => [ "id", "name" ],
-        })->active->translated->with_area_count->all_sorted;
+        })->translated->with_area_count->all_sorted;
         @bodies = @{$c->cobrand->call_hook('reports_hook_restrict_bodies_list', \@bodies) || \@bodies };
         $c->stash->{bodies} = \@bodies;
     }
