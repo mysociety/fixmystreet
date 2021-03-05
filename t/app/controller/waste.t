@@ -42,6 +42,16 @@ create_contact({ category => 'General enquiry', email => 'general@example.org' }
     { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'Source', required => 0, automated => 'hidden_field' },
 );
+create_contact({ category => 'New Garden Subscription', email => 'garden@example.com'},
+        { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'current_containers', required => 1, automated => 'hidden_field' },
+        { code => 'new_containers', required => 1, automated => 'hidden_field' },
+        { code => 'payment', required => 1, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
@@ -294,13 +304,17 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
     COBRAND_FEATURES => {
-        echo => { bromley => { url => 'http://example.org' } },
+        echo => { bromley => { url => 'http://example.org', sample_data => 1 } },
         waste => { bromley => 1 },
-        payment_gateway => { bromley => { cc_url => 'http://example.com' } },
+        payment_gateway => { bromley => { cc_url => 'http://example.com', ggw_cost => 20 } },
     },
 }, sub {
+    my $sent_params;
     my $pay = Test::MockModule->new('Integrations::SCP');
+
     $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
         return {
             transactionState => 'COMPLETE',
             invokeResult => {
@@ -319,9 +333,21 @@ FixMyStreet::override_config {
     });
 
     subtest 'check payment gateway' => sub {
-        $mech->get_ok('/waste/pay');
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.org'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $mech->res->previous->code, 302, 'payments issues a redirect';
         is $mech->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        is $sent_params->{amount}, 2000, 'correct amount used';
     }
 };
 
