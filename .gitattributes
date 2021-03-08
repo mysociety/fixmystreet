@@ -3,3 +3,7 @@
 # breaks if they e.g. run vagrant up.
 
 * -text
+
+# Fix language detection on GitHub:
+*.pm linguist-language=Perl
+*.t linguist-language=Perl
