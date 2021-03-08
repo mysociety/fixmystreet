@@ -196,13 +196,18 @@ sub create_alert : Private {
         $alert->insert();
     }
 
+    $c->stash->{alert} = $alert;
+
     if ( $c->user_exists && ($c->user->id == $alert->user->id || $c->stash->{can_create_for_another})) {
         $alert->confirm();
+        if ($c->stash->{can_create_for_another} && $c->user->id != $alert->user->id) {
+            # User has been subscribed to the new_updates alert email by a staff member. Send them an email to let them know.
+            $c->forward('send_subscribed_email');
+        }
     } else {
         $alert->confirmed(0);
     }
 
-    $c->stash->{alert} = $alert;
 }
 
 =head2 set_update_alert_options
@@ -303,6 +308,30 @@ sub send_confirmation_email : Private {
 
     $c->stash->{email_type} = 'alert';
     $c->stash->{template} = 'email_sent.html';
+}
+
+=head2 send_subscribed_email
+
+Send an email to an address that has been subscribed to alerts by a staff user.
+
+=cut
+
+sub send_subscribed_email : Private {
+    my ( $self, $c ) = @_;
+
+    my $user = $c->stash->{alert}->user;
+
+    my $token = $c->model("DB::Token")->create( {
+        scope => 'alert',
+        data  => {
+            id => $c->stash->{alert}->id,
+            type => 'unsubscribe',
+        }
+    } );
+    $c->stash->{unsubscribe_url} = $c->cobrand->base_url( $c->stash->{alert_options}->{cobrand_data} ) . '/A/' . $token->token;
+    $c->stash->{problem_url} = $c->cobrand->base_url_for_report($c->stash->{problem}) . $c->stash->{problem}->url;
+
+    $c->send_email( 'alert-subscribed.txt', { to => $user->email } );
 }
 
 =head2 prettify_pc
