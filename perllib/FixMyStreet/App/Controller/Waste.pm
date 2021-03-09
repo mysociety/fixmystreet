@@ -163,7 +163,7 @@ sub confirm_subscription : Private {
     $p->set_extra_metadata('payment_reference', $reference);
     $p->confirm;
     $p->update;
-    $c->stash->{template} = 'waste/confirm_subscription.html';
+    $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
     $c->detach;
 }
 
