@@ -10,21 +10,21 @@ has_field total => ( type => 'Hidden' );
 
 has_page intro => (
     title => 'Subscribe to the Green Garden Waste collection service',
-    template => 'waste/garden_intro.html',
+    template => 'waste/garden/subscribe_intro.html',
     fields => ['continue'],
     next => 'existing',
 );
 
 has_page existing => (
     title => 'Subscribe to Green Garden Waste collections',
-    template => 'waste/garden_existing.html',
+    template => 'waste/garden/subscribe_existing.html',
     fields => ['existing', 'existing_number', 'continue'],
     next => 'details',
 );
 
 has_page details => (
     title => 'Subscribe to Green Garden Waste collections',
-    template => 'waste/garden_details.html',
+    template => 'waste/garden/subscribe_details.html',
     fields => ['current_bins', 'new_bins', 'payment_method', 'billing_differ', 'billing_address', 'name', 'email', 'phone', 'password', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
@@ -39,7 +39,7 @@ has_page details => (
 has_page summary => (
     fields => ['total', 'tandc', 'submit'],
     title => 'Submit container request',
-    template => 'waste/summary_garden.html',
+    template => 'waste/garden/subscribe_summary.html',
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
