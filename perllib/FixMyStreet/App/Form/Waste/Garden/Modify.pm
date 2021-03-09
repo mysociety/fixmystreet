@@ -6,14 +6,14 @@ extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
     title => 'Modify your green garden waste subscription',
-    template => 'waste/garden_modify_pick.html',
+    template => 'waste/garden/modify_pick.html',
     fields => ['task', 'continue'],
     next => 'alter',
 );
 
 has_page alter => (
     title => 'Modify your green garden waste subscription',
-    template => 'waste/garden_modify.html',
+    template => 'waste/garden/modify.html',
     fields => ['bin_number', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
@@ -29,7 +29,7 @@ has_page alter => (
 has_page summary => (
     fields => ['tandc', 'submit'],
     title => 'Modify your green garden waste subscription',
-    template => 'waste/summary_garden_modify.html',
+    template => 'waste/garden/modify_summary.html',
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
@@ -51,7 +51,7 @@ has_page summary => (
 
 has_page done => (
     title => 'Subscription amended',
-    template => 'waste/garden_amended.html',
+    template => 'waste/garden/amended.html',
 );
 
 has_field task => (
