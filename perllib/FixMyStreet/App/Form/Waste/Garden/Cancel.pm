@@ -6,7 +6,7 @@ extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
     title => 'Cancel your green garden waste subscription',
-    template => 'waste/garden_cancel.html',
+    template => 'waste/garden/cancel.html',
     fields => ['confirm', 'submit'],
     finished => sub {
         return $_[0]->wizard_finished('process_garden_cancellation');
@@ -16,7 +16,7 @@ has_page intro => (
 
 has_page done => (
     title => 'Subscription cancelled',
-    template => 'waste/garden_cancel_confirmation.html',
+    template => 'waste/garden/cancel_confirmation.html',
 );
 
 has_field confirm => (
