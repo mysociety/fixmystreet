@@ -590,11 +590,28 @@ sub bin_services_for_address {
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
         my $service_name = $service_name_override{$_->{ServiceId}} || $_->{ServiceName};
+
+        my $garden = 0;
+        my $garden_bins;
+        if ($service_name eq 'Garden Waste') {
+            $garden = 1;
+            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+            foreach (@$data) {
+                next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
+                    $garden_bins = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+                }
+            }
+        }
+
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
             service_name => $service_name,
-            garden_waste => $service_name eq 'Garden Waste',
+            garden_waste => $garden,
+            garden_bins => $garden_bins,
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}},
             request_open => $open_request,
@@ -607,6 +624,7 @@ sub bin_services_for_address {
             schedule => $servicetask->{ScheduleDescription},
             last => $schedules->{last},
             next => $schedules->{next},
+            end_date => $schedules->{end_date},
         };
         if ($row->{last}) {
             my $ref = join(',', @{$row->{last}{ref}});
@@ -711,9 +729,9 @@ sub _parse_schedules {
     $schedules = [ $schedules ] unless ref $schedules eq 'ARRAY';
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($min_next, $max_last, $next_changed);
+    my ($min_next, $max_last, $next_changed, $end_date);
     foreach my $schedule (@$schedules) {
-        my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
+        $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
         next if $end_date lt $today;
 
         my $next = $schedule->{NextInstance};
@@ -752,6 +770,7 @@ sub _parse_schedules {
     return {
         next => $min_next,
         last => $max_last,
+        end_date => $end_date,
     };
 }
 
