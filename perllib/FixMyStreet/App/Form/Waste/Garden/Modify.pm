@@ -15,6 +15,14 @@ has_page alter => (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden_modify.html',
     fields => ['bin_number', 'continue_review'],
+    update_field_list => sub {
+        my $form = shift;
+        my $c = $form->c;
+        my $data = $c->stash->{garden_form_data};
+        return {
+            bin_number => { default => $data->{bins} },
+        };
+    },
     next => 'summary',
 );
 
@@ -63,7 +71,7 @@ has_field bin_number => (
     label => 'How many bins do you need in your subscription?',
     tags => { number => 1 },
     required => 1,
-    range_start => 0,
+    range_start => 1,
     range_end => 3,
 );
 
