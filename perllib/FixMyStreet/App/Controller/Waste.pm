@@ -539,6 +539,18 @@ sub garden_modify : Chained('property') : Args(0) {
         $c->detach;
     }
 
+    my $service = 545;
+    $service = $c->stash->{services}{$service};
+    if (!$service) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+
+    $c->stash->{garden_form_data} = {
+        bins => $service->{garden_bins},
+        end_date => $service->{end_date},
+    };
+
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
     $c->forward('form');
