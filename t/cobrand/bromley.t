@@ -482,6 +482,10 @@ FixMyStreet::override_config {
         waste => { bromley => 1 }
     },
 }, sub {
+  subtest 'test special cases on waste pages' => sub {
+    eval "use SOAP::Lite";
+    plan skip_all => 'SOAP::Lite required' if $@;
+
     subtest 'test open enquiries' => sub {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/12345');
@@ -604,6 +608,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Subscribe to Green Garden Waste');
     };
 
+  };
 };
 
 subtest 'test waste max-per-day' => sub {
@@ -646,6 +651,9 @@ sub new { my $c = shift; bless { @_ }, $c; }
 package main;
 
 subtest 'updating of waste reports' => sub {
+    eval "use SOAP::Lite";
+    plan skip_all => 'SOAP::Lite required' if $@;
+
     my $integ = Test::MockModule->new('SOAP::Lite');
     $integ->mock(call => sub {
         my ($cls, @args) = @_;
@@ -1026,6 +1034,9 @@ subtest 'check pro-rata calculation' => sub {
 };
 
 subtest 'check direct debit reconcilliation' => sub {
+    eval "use SOAP::Lite";
+    plan skip_all => 'SOAP::Lite required' if $@;
+
     set_fixed_time('2021-03-19T12:00:00Z'); # After sample food waste collection
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetServiceUnitsForObject' => sub {

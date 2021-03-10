@@ -4,8 +4,10 @@ use Test::More;
 use Test::MockModule;
 use Test::MockTime ':all';
 use Path::Tiny;
-use SOAP::Lite;
-use SOAP::Transport::HTTP;
+
+eval "use SOAP::Lite";
+plan skip_all => 'SOAP::Lite required' if $@;
+eval "use SOAP::Transport::HTTP";
 use HTTP::Request::Common;
 
 use Integrations::SCP;
