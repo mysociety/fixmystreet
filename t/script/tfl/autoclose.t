@@ -187,7 +187,25 @@ subtest 'check that changing state accounted for' => sub {
         state => 'confirmed',
         problem_state => 'action scheduled',
         user => $body_user,
-        confirmed => $now
+        confirmed => $now->clone->add( hours => -2 ),
+    });
+
+    # regression test for problem_state not always being set
+    FixMyStreet::DB->resultset('Comment')->create({
+        problem => $p,
+        text => 'comment',
+        state => 'confirmed',
+        problem_state => undef,
+        user => $body_user,
+        confirmed => $now->clone->add( hours => -1 ),
+    });
+    FixMyStreet::DB->resultset('Comment')->create({
+        problem => $p,
+        text => 'comment',
+        state => 'confirmed',
+        problem_state => 'action scheduled',
+        user => $body_user,
+        confirmed => $now,
     });
 
     ok $close->close_reports({ 'Grafitti' => $t2 }), "close reports ran";
