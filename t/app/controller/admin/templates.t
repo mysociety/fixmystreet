@@ -326,6 +326,9 @@ subtest "category groups are shown" => sub {
 };
 
 subtest "TfL cobrand only shows TfL templates" => sub {
+    eval "use Net::Subnet";
+    plan skip_all => 'Net::Subnet required' if $@;
+
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'tfl' ],
         COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },

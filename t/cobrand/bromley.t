@@ -372,6 +372,9 @@ sub new { my $c = shift; bless { @_ }, $c; }
 package main;
 
 subtest 'updating of waste reports' => sub {
+    eval "use SOAP::Lite";
+    plan skip_all => 'SOAP::Lite required' if $@;
+
     my $integ = Test::MockModule->new('SOAP::Lite');
     $integ->mock(call => sub {
         my ($cls, @args) = @_;

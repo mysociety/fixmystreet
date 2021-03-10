@@ -264,6 +264,9 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => { echo => { bromley => { url => 'http://example.org' } }, waste => { bromley => 1 } },
 }, sub {
     subtest 'Address lookup, mocking SOAP call' => sub {
+        eval "use SOAP::Lite";
+        plan skip_all => 'SOAP::Lite required' if $@;
+
         my $integ = Test::MockModule->new('SOAP::Lite');
         $integ->mock(call => sub {
             return SOAP::Result->new(result => {
