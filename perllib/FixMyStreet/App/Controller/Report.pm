@@ -501,8 +501,6 @@ sub inspect : Private {
 
                 $update_params{problem_state} = $problem->state;
 
-                my $state = $problem->state;
-
                 # If an inspector has changed the state, subscribe them to
                 # updates
                 my $options = {
@@ -590,6 +588,7 @@ sub inspect : Private {
                     confirmed => $timestamp,
                     user => $c->user->obj,
                     photo => $c->stash->{upload_fileid} || undef,
+                    problem_state => $problem->state,
                     %update_params,
                 } );
             }

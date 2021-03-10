@@ -387,6 +387,13 @@ FixMyStreet::override_config {
       is $alert_count, 1 , 'User has only one alert';
     };
 
+    subtest "adding update without changing state sets problem_state" =>sub {
+      is $report->comments->search({ problem_state => 'investigating' })->count, 1;
+      $mech->get_ok("/report/$report_id");
+      $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Investigating', public_update => "We're still investigating.", include_update => "1" } });
+      is $report->comments->search({ problem_state => 'investigating' })->count, 2;
+    };
+
     subtest "marking a report as a duplicate doesn't clobber user-provided update" => sub {
         my $old_state = $report->state;
         $report->comments->delete_all;
