@@ -202,6 +202,19 @@ sub open311_munge_update_params {
     }
 }
 
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete open311 protected contacts when importing.
+    # WDM contacts are managed manually in the admin instead of via
+    # open311-populate-service-list, and this flag is used to stop them
+    # being deleted when that script runs.
+    return $contacts->search({
+        extra => { -not_like => '%T15:open311_protect,I1:1%' },
+    });
+}
+
+
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 
