@@ -521,20 +521,20 @@ sub bin_services_for_address {
 
     $self->{c}->stash->{containers} = {
         1 => 'Green Box (Plastic)',
-        2 => 'Wheeled Bin (Plastic)',
+        3 => 'Wheeled Bin (Plastic)',
         12 => 'Black Box (Paper)',
-        13 => 'Wheeled Bin (Paper)',
+        14 => 'Wheeled Bin (Paper)',
         9 => 'Kitchen Caddy',
         10 => 'Outside Food Waste Container',
-        45 => 'Wheeled Bin (Food)',
+        46 => 'Wheeled Bin (Food)',
     };
     my %service_to_containers = (
         535 => [ 1 ],
-        536 => [ 2 ],
+        536 => [ 3 ],
         537 => [ 12 ],
-        541 => [ 13 ],
+        541 => [ 14 ],
         542 => [ 9, 10 ],
-        544 => [ 45 ],
+        544 => [ 46 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
