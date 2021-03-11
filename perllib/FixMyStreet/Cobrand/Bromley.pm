@@ -595,7 +595,7 @@ sub bin_services_for_address {
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
             service_task_type_id => $servicetask->{TaskTypeId},
-            schedule => $servicetask->{ScheduleDescription},
+            schedule => $schedules->{description},
             last => $schedules->{last},
             next => $schedules->{next},
         };
@@ -702,10 +702,12 @@ sub _parse_schedules {
     $schedules = [ $schedules ] unless ref $schedules eq 'ARRAY';
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($min_next, $max_last, $next_changed);
+    my ($min_next, $max_last, $next_changed, $description);
     foreach my $schedule (@$schedules) {
         my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
         next if $end_date lt $today;
+
+        $description = $schedule->{ScheduleDescription};
 
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
@@ -743,6 +745,7 @@ sub _parse_schedules {
     return {
         next => $min_next,
         last => $max_last,
+        description => $description,
     };
 }
 

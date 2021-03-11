@@ -187,8 +187,8 @@ sub GetServiceUnitsForObject {
         ServiceName => 'Refuse collection',
         ServiceTasks => { ServiceTask => {
             Id => 401,
-            ScheduleDescription => 'every Wednesday',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every Wednesday',
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
@@ -207,8 +207,8 @@ sub GetServiceUnitsForObject {
         ServiceName => 'Paper recycling collection',
         ServiceTasks => { ServiceTask => {
             Id => 402,
-            ScheduleDescription => 'every other Wednesday',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every other Wednesday',
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
@@ -227,8 +227,8 @@ sub GetServiceUnitsForObject {
         ServiceName => 'Domestic Container Mix Collection',
         ServiceTasks => { ServiceTask => {
             Id => 403,
-            ScheduleDescription => 'every other Wednesday',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every other Wednesday',
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
@@ -247,14 +247,15 @@ sub GetServiceUnitsForObject {
         ServiceName => 'Food waste collection',
         ServiceTasks => { ServiceTask => {
             Id => 404,
-            ScheduleDescription => 'every other Monday',
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                ScheduleDescription => 'every other Monday',
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
+                ScheduleDescription => 'every other Monday',
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-02T00:00:00Z' },
