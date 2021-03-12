@@ -78,7 +78,7 @@ sub GetTasks {
 
     my @refs;
     foreach my $ref (@_) {
-        tie(my %a, 'Tie::IxHash',
+        my $a = ixhash(
             Key => 'Handle',
             Type => "Task",
             Value => [
@@ -86,7 +86,7 @@ sub GetTasks {
                 { 'msArray:anyType' => $ref->[1] },
             ],
         );
-        push @refs, \%a;
+        push @refs, $a;
     }
 
     if ($self->sample_data) {
@@ -131,21 +131,20 @@ sub GetTasks {
 
 sub _id_ref {
     require SOAP::Lite;
-    my $id = shift;
-    tie(my %obj, 'Tie::IxHash',
+    my ($id, $type) = @_;
+    return ixhash(
         Key => 'Id',
-        Type => 'PointAddress',
+        Type => $type,
         Value => [
             { 'msArray:anyType' => SOAP::Data->value($id) },
         ],
     );
-    return \%obj;
 }
 
 sub GetPointAddress {
     my $self = shift;
     my $id = shift;
-    my $obj = _id_ref($id);
+    my $obj = _id_ref($id, 'PointAddress');
     return {
         Id => '12345',
         SharedRef => { Value => { anyType => '1000000002' } },
@@ -161,7 +160,7 @@ sub GetPointAddress {
 sub FindPoints {
     my $self = shift;
     my $pc = shift;
-    tie(my %obj, 'Tie::IxHash',
+    my $obj = ixhash(
         PointType => 'PointAddress',
         Postcode => $pc,
     );
@@ -172,14 +171,14 @@ sub FindPoints {
         { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
         { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => 1000000005 } } },
     ] if $self->sample_data;
-    my $res = $self->call('FindPoints', query => \%obj);
+    my $res = $self->call('FindPoints', query => $obj);
     return force_arrayref($res, 'PointInfo');
 }
 
 sub GetServiceUnitsForObject {
     my $self = shift;
     my $id = shift;
-    my $obj = _id_ref($id);
+    my $obj = _id_ref($id, 'PointAddress');
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     return [ {
         Id => 1001,
@@ -286,13 +285,7 @@ sub GetServiceTaskInstances {
 
     my @objects;
     foreach (@tasks) {
-        my $obj = ixhash(
-            Key => 'Id',
-            Type => 'ServiceTask',
-            Value => [
-                { 'msArray:anyType' => $_ },
-            ],
-        );
+        my $obj = _id_ref($_, 'ServiceTask');
         push @objects, { ObjectRef => $obj };
     }
     my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
@@ -332,11 +325,7 @@ sub GetEvent {
 
 sub GetEventType {
     my ($self, $id) = @_;
-    $self->call('GetEventType', ref => ixhash(
-        Key => 'Id',
-        Type => 'EventType',
-        Value => { 'msArray:anyType' => $id },
-    ));
+    $self->call('GetEventType', ref => _id_ref($id, 'EventType'));
 }
 
 sub GetEventsForObject {
@@ -375,17 +364,9 @@ sub GetEventsForObject {
 
     # uncoverable statement
     my $res = $self->call('GetEventsForObject',
-        objectRef => ixhash(
-            Key => 'Id',
-            Type => $type,
-            Value => { 'msArray:anyType' => $id },
-        ),
+        objectRef => _id_ref($id, $type),
         query => ixhash(
-            $event_type ? (EventTypeRef => ixhash(
-                Key => 'Id',
-                Type => 'EventType',
-                Value => { 'msArray:anyType' => $event_type },
-            )) : (),
+            $event_type ? (EventTypeRef => _id_ref($event_type, 'EventType')) : (),
             From => dt_to_hash($from),
         ),
     );
