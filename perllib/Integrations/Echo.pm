@@ -160,14 +160,24 @@ sub GetPointAddress {
 sub FindPoints {
     my $self = shift;
     my $pc = shift;
+    my $cfg = shift;
+
     my $obj = ixhash(
         PointType => 'PointAddress',
         Postcode => $pc,
     );
+    if ($cfg->{address_types}) {
+        my @types;
+        foreach (@{$cfg->{address_types}}) {
+            my $obj = _id_ref($_, 'PointAddressType');
+            push @types, { ObjectRef => $obj };
+        }
+        $obj->{TypeRefs} = \@types;
+    }
     return [
         { Description => '1 Example Street, Bromley, BR1 1AA', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
         { Description => '2 Example Street, Bromley, BR1 1AA', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
-        { Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => 1000000003 } } },
+        $cfg->{address_types} ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => 1000000003 } } }),
         { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
         { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => 1000000005 } } },
     ] if $self->sample_data;

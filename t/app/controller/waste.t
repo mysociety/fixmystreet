@@ -40,6 +40,19 @@ create_contact({ category => 'General enquiry', email => 'general@example.org' }
     { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' });
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    COBRAND_FEATURES => { echo => { bromley => {
+        sample_data => 1, address_types => [ 1, 2, 3 ],
+    } }, waste => { bromley => 1 } },
+}, sub {
+    subtest 'Address type check' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
+        $mech->content_lacks('13345');
+    };
+};
+
+FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['bromley', 'fixmystreet'],
     COBRAND_FEATURES => { echo => { bromley => { sample_data => 1 } }, waste => { bromley => 1 } },
     MAPIT_URL => 'http://mapit.uk/',
@@ -48,6 +61,7 @@ FixMyStreet::override_config {
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
+        $mech->content_contains('13345'); # For comparing against type check below
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
         $mech->content_contains('can’t find your address');
     };

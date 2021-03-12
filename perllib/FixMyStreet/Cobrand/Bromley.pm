@@ -426,9 +426,9 @@ sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
 
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
-    my $points = $echo->FindPoints($pc);
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $points = $echo->FindPoints($pc, $cfg);
     my $data = [ map { {
         value => $_->{Id},
         label => FixMyStreet::Template::title($_->{Description}),
