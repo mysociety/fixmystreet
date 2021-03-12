@@ -13,13 +13,17 @@
 
 #site-logo {
     width: 190px;
-    height: 41px;
-    padding: 11px 0;
-    background: url(/cobrands/northamptonshire/img/new-ncc-logo.png) 0 50% no-repeat;
+    background: url(/cobrands/northamptonshire/img/NorthAndWestLogo.png) 0 50% no-repeat;
+    background-size: contain;
 }
 
 #postcodeForm .form-hint {
     color: $white;
+}
+
+#report-cta {
+    color: $white;
+    background-color: $primary_b;
 }
 
 .btn-primary,
