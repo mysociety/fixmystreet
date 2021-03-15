@@ -128,14 +128,27 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
-    return [
-        { name => 'external_id', value => $row->id },
-        { name => 'northing', value => $h->{northing} },
-        { name => 'easting', value => $h->{easting} },
-        $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
-    ];
+    if ($contact->email =~ /^Alloy/) {
+        return [
+            { name => 'report_url',
+            value => $h->{url} },
+            { name => 'title',
+            value => $row->title },
+            { name => 'description',
+            value => $row->detail },
+            { name => 'category',
+            value => $row->category },
+        ];
+    } else { # WDM
+        return [
+            { name => 'external_id', value => $row->id },
+            { name => 'northing', value => $h->{northing} },
+            { name => 'easting', value => $h->{easting} },
+            $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
+        ];
+    }
 }
 
 sub open311_config_updates {
