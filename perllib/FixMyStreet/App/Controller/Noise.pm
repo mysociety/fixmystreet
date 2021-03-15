@@ -157,6 +157,12 @@ Noise details: $data->{more_details}
 Is the noise happening now? $now
 $time_detail
 EOF
+        if ($report->is_closed || $report->is_fixed) {
+            $shared{mark_open} = 1;
+            $report->state('confirmed');
+            $report->lastupdate( \'current_timestamp' );
+            $report->update;
+        }
         $object = $c->model('DB::Comment')->new({
             problem => $report,
             text => $text,

@@ -247,6 +247,30 @@ FixMyStreet::override_config {
         is $update->text, "Kind of noise: Music\nNoise details: Details\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Friday, Saturday\nWhat time does the noise happen? Night\n";
         like $mech->get_text_body_from_email, qr/Kind of noise: Music/;
     };
+    subtest 'Report another instance on existing marked-fixed report' => sub {
+        my $report = $user->problems->first;
+        $report->update({ state => 'fixed - council' });
+        $mech->get_ok('/noise');
+        $mech->submit_form_ok({ button => 'start' });
+        $mech->submit_form_ok({ with_fields => { existing => 1 } });
+        $mech->submit_form_ok({ with_fields => { report => $report->id } });
+        $mech->submit_form_ok({ with_fields => { kind => 'music' } });
+        $mech->submit_form_ok({ with_fields => {
+            happening_now => 1,
+            happening_pattern => 1,
+        } });
+        $mech->submit_form_ok({ with_fields => {
+            happening_days => [['friday', 'saturday'], 1],
+            happening_time => 'night',
+        } });
+        $mech->submit_form_ok({ with_fields => { more_details => 'Details' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your additional report has been submitted');
+        my $update = $user->comments->first;
+        $report->discard_changes;
+        is $update->problem_state, 'confirmed';
+        is $report->state, 'confirmed';
+    };
 };
 
 done_testing;
