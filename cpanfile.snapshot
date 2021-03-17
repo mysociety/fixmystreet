@@ -7525,16 +7525,16 @@ DISTRIBUTIONS
       List::Util 1.09
       Scalar::Util 1.09
       Test::Builder 0
-  Test-Differences-0.64
-    pathname: D/DC/DCANTRELL/Test-Differences-0.64.tar.gz
+  Test-Differences-0.67
+    pathname: D/DC/DCANTRELL/Test-Differences-0.67.tar.gz
     provides:
-      Test::Differences 0.64
+      Test::Differences 0.67
     requirements:
       Capture::Tiny 0.24
       Data::Dumper 2.126
       ExtUtils::MakeMaker 0
       Test::More 0.88
-      Text::Diff 0.35
+      Text::Diff 1.43
   Test-Exception-0.43
     pathname: E/EX/EXODIST/Test-Exception-0.43.tar.gz
     provides:
@@ -8028,17 +8028,18 @@ DISTRIBUTIONS
       Test::Harness 0
       Test::More 0.71
       perl 5.006001
-  Text-Diff-1.41
-    pathname: O/OV/OVID/Text-Diff-1.41.tar.gz
+  Text-Diff-1.45
+    pathname: N/NE/NEILB/Text-Diff-1.45.tar.gz
     provides:
-      Text::Diff 1.41
-      Text::Diff::Base 1.41
-      Text::Diff::Config 1.41
-      Text::Diff::Table 1.41
+      Text::Diff 1.45
+      Text::Diff::Base 1.45
+      Text::Diff::Config 1.44
+      Text::Diff::Table 1.44
     requirements:
       Algorithm::Diff 1.19
       Exporter 0
       ExtUtils::MakeMaker 0
+      perl 5.006
   Text-German-0.06
     pathname: U/UL/ULPFR/Text-German-0.06.tar.gz
     provides:
