@@ -110,7 +110,7 @@ requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.11';
 requires 'Net::OAuth';
 requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
-requires 'Number::Phone', '3.5000';
+requires 'Number::Phone', '3.7002';
 requires 'OIDC::Lite';
 requires 'Parallel::ForkManager';
 requires 'Path::Class';
