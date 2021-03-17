@@ -390,4 +390,93 @@ $(function() {
     }
 });
 
+// Alloy street lighting stuff from here
+// TODO: Remove obsolete street lighting code above
+// TODO: Further reduce duplicate between here & Northamptonshire
+
+var street_lighting_layer = 'layers_streetLightingAssets';
+var base_url = fixmystreet.staging ?
+      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://oxfordshire.staging/${layerid}/${x}/${y}/${z}/cluster" :
+      "https://tilma.mysociety.org/resource-proxy/proxy.php?https://oxfordshire.assets/${layerid}/${x}/${y}/${z}/cluster";
+
+var url_with_style = base_url + '?styleIds=${styleid}';
+
+var layers = [
+    {
+        categories: [
+            "Mains Supply Fault",
+            "Day Burner",
+            "Flashing Lamp",
+            "Twisted Lantern",
+            "Twisted Bracket",
+            "Missing No",
+            "Low Output",
+            "Lamp Out"
+        ],
+        item_name: "street light",
+        layer_name: "Street Lights",
+        styleid: '5e0e0edfca31500efc379151',
+    }
+];
+
+// default options for these assets include
+// a) checking for multiple assets in same location
+// b) preventing submission unless an asset is selected
+var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
+  stylemap: occ_stylemap,
+  class: OpenLayers.Layer.AlloyVectorAsset,
+  protocol_class: OpenLayers.Protocol.AlloyV2,
+  http_options: {
+      base: url_with_style,
+      layerid: street_lighting_layer
+  },
+  non_interactive: false,
+  body: "Oxfordshire County Council",
+  attributes: {
+    asset_resource_id: function() {
+      return this.fid;
+    }
+  },
+  select_action: true,
+  actions: {
+    asset_found: function(asset) {
+      if (fixmystreet.message_controller.asset_found.call(this)) {
+          return;
+      }
+      var lonlat = asset.geometry.getBounds().getCenterLonLat();
+      // Features considered overlapping if within 1M of each other
+      // TODO: Should zoom/marker size be considered when determining if markers overlap?
+      var overlap_threshold = 1;
+      var overlapping_features = this.getFeaturesWithinDistance(
+          new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+          overlap_threshold
+      );
+      if (overlapping_features.length > 1) {
+          // TODO: In an ideal world we'd be able to show the user a photo of each
+          // of the assets and ask them to pick one.
+          // However the Alloy API requires authentication for photos which we
+          // don't have in FMS JS. Instead, we tell the user there are multiple things here
+          // and ask them to describe the asset in the description field.
+          var $p = $("#overlapping_features_msg");
+          if (!$p.length) {
+              $p = $("<p id='overlapping_features_msg' class='hidden box-warning'>" +
+              "There is more than one <span class='overlapping_item_name'></span> at this location. " +
+              "Please describe which <span class='overlapping_item_name'></span> has the problem clearly.</p>");
+              $('#category_meta').before($p).closest('.js-reporting-page').removeClass('js-reporting-page--skip');
+          }
+          $p.find(".overlapping_item_name").text(this.fixmystreet.asset_item);
+          $p.removeClass('hidden');
+      } else {
+          $("#overlapping_features_msg").addClass('hidden');
+      }
+    },
+    asset_not_found: function() {
+      $("#overlapping_features_msg").addClass('hidden');
+      fixmystreet.message_controller.asset_not_found.call(this);
+    }
+  }
+});
+
+fixmystreet.alloy_add_layers(oxfordshire_defaults, layers);
+
 })();
