@@ -8,6 +8,35 @@ var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.myso
 var tilma_url = "https://" + wfs_host + "/mapserver/oxfordshire";
 var proxy_base_url = "https://" + wfs_host + "/proxy/occ/";
 
+var lighting_categories = [
+    "Cover Hanging",
+    "Door Missing",
+    "Flashing Lamp",
+    "Vehicle/ Accident Damage",
+    "Knocked Down Bollard",
+    "Lamp Appears Dim",
+    "Lamp On During Day",
+    "Lamp Out of Light",
+    "Other Lighting Issue",
+    "Twisted Lantern"
+];
+var road_categories = lighting_categories.concat([
+    "Bridges",
+    "Carriageway Defect",
+    "Current Roadworks",
+    "Drainage",
+    "Gully and Catchpits",
+    "Highway Schemes",
+    "Ice/Snow",
+    "Manhole",
+    "Pavements",
+    "Pothole",
+    "Road Traffic Signs and Road Markings",
+    "Roads/highways",
+    "Traffic Lights (permanent only)",
+    "Trees"
+]);
+
 var defaults = {
     wfs_url: tilma_url,
     asset_type: 'spot',
@@ -107,40 +136,6 @@ fixmystreet.assets.add(defaults, {
     asset_category: ["Traffic Lights (permanent only)"],
     asset_item: 'traffic light',
     feature_code: 'Site',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
-});
-
-var streetlight_select = $.extend({
-    label: "${UNITNO}",
-    fontColor: "#FFD800",
-    labelOutlineColor: "black",
-    labelOutlineWidth: 3,
-    labelYOffset: 69,
-    fontSize: '18px',
-    fontWeight: 'bold'
-}, fixmystreet.assets.style_default_select.defaultStyle);
-
-var streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': occ_default,
-  'select': new OpenLayers.Style(streetlight_select),
-  'hover': occ_hover
-});
-
-fixmystreet.assets.add(defaults, {
-    select_action: true,
-    stylemap: streetlight_stylemap,
-    wfs_feature: "Street_Lights",
-    asset_id_field: 'UNITID',
-    attributes: {
-        feature_id: 'UNITID',
-        column_no: 'UNITNO'
-    },
-    asset_category: ["Street lighting"],
-    asset_item: 'street light',
-    feature_code: 'UNITNO',
     actions: {
         asset_found: fixmystreet.assets.named_select_action_found,
         asset_not_found: fixmystreet.assets.named_select_action_not_found
@@ -307,23 +302,7 @@ fixmystreet.assets.add(defaults, {
         },
         not_found: fixmystreet.message_controller.road_not_found
     },
-    asset_category: [
-        "Bridges",
-        "Carriageway Defect",
-        "Current Roadworks",
-        "Drainage",
-        "Gully and Catchpits",
-        "Highway Schemes",
-        "Ice/Snow",
-        "Manhole",
-        "Pavements",
-        "Pothole",
-        "Road Traffic Signs and Road Markings",
-        "Roads/highways",
-        "Street lighting",
-        "Traffic Lights (permanent only)",
-        "Trees"
-    ]
+    asset_category: road_categories
 });
 
 // Track open popup for defect pins
@@ -389,5 +368,107 @@ $(function() {
         fixmystreet.markers.events.triggerEvent('refresh');
     }
 });
+
+// Alloy street lighting stuff from here
+// TODO: Further reduce duplicate between here & Northamptonshire
+
+var streetlight_select = $.extend({
+    label: "${title}",
+    fontColor: "#FFD800",
+    labelOutlineColor: "black",
+    labelOutlineWidth: 3,
+    labelYOffset: 69,
+    fontSize: '18px',
+    fontWeight: 'bold'
+}, fixmystreet.assets.style_default_select.defaultStyle);
+
+var streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': occ_default,
+  'select': new OpenLayers.Style(streetlight_select),
+  'hover': occ_hover
+});
+
+var street_lighting_layer = 'layers_streetLightingAssets';
+var base_url = fixmystreet.staging ?
+      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://oxfordshire.staging/${layerid}/${x}/${y}/${z}/cluster" :
+      "https://tilma.mysociety.org/resource-proxy/proxy.php?https://oxfordshire.assets/${layerid}/${x}/${y}/${z}/cluster";
+
+var url_with_style = base_url + '?styleIds=${styleid}';
+
+var layers = [
+    {
+        categories: lighting_categories,
+        max_resolution: 1.194328566789627,
+        item_name: "street light",
+        layer_name: "Street Lights",
+        styleid: '5e0e0edfca31500efc379151',
+    }
+];
+
+// default options for these assets include
+// a) checking for multiple assets in same location
+// b) preventing submission unless an asset is selected
+var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
+  stylemap: streetlight_stylemap,
+  class: OpenLayers.Layer.AlloyVectorAsset,
+  protocol_class: OpenLayers.Protocol.AlloyV2,
+  http_options: {
+      base: url_with_style,
+      layerid: street_lighting_layer
+  },
+  non_interactive: false,
+  body: "Oxfordshire County Council",
+  attributes: {
+    // feature_id
+    unit_number: "title",
+    asset_resource_id: function() {
+      return this.fid;
+    }
+  },
+  select_action: true,
+  feature_code: 'title',
+  asset_id_field: 'itemId',
+  actions: {
+    asset_found: function(asset) {
+      if (fixmystreet.message_controller.asset_found.call(this)) {
+          return;
+      }
+      fixmystreet.assets.named_select_action_found.call(this, asset);
+      var lonlat = asset.geometry.getBounds().getCenterLonLat();
+      // Features considered overlapping if within 1M of each other
+      // TODO: Should zoom/marker size be considered when determining if markers overlap?
+      var overlap_threshold = 1;
+      var overlapping_features = this.getFeaturesWithinDistance(
+          new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+          overlap_threshold
+      );
+      if (overlapping_features.length > 1) {
+          // TODO: In an ideal world we'd be able to show the user a photo of each
+          // of the assets and ask them to pick one.
+          // However the Alloy API requires authentication for photos which we
+          // don't have in FMS JS. Instead, we tell the user there are multiple things here
+          // and ask them to describe the asset in the description field.
+          var $p = $("#overlapping_features_msg");
+          if (!$p.length) {
+              $p = $("<p id='overlapping_features_msg' class='hidden box-warning'>" +
+              "There is more than one <span class='overlapping_item_name'></span> at this location. " +
+              "Please describe which <span class='overlapping_item_name'></span> has the problem clearly.</p>");
+              $('#category_meta').before($p).closest('.js-reporting-page').removeClass('js-reporting-page--skip');
+          }
+          $p.find(".overlapping_item_name").text(this.fixmystreet.asset_item);
+          $p.removeClass('hidden');
+      } else {
+          $("#overlapping_features_msg").addClass('hidden');
+      }
+    },
+    asset_not_found: function() {
+      $("#overlapping_features_msg").addClass('hidden');
+      fixmystreet.message_controller.asset_not_found.call(this);
+      fixmystreet.assets.named_select_action_not_found.call(this);
+    }
+  }
+});
+
+fixmystreet.alloy_add_layers(oxfordshire_defaults, layers);
 
 })();
