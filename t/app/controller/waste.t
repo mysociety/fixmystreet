@@ -79,25 +79,25 @@ FixMyStreet::override_config {
         $mech->content_contains('A paper &amp; cardboard collection has been reported as missed'); # as part of service unit, not property
     };
     subtest 'Report a missed bin' => sub {
-        $mech->content_contains('service-101', 'Can report, last collection was 27th');
+        $mech->content_contains('service-531', 'Can report, last collection was 27th');
         $mech->content_lacks('service-537', 'Cannot report, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
         $mech->content_lacks('service-542', 'Cannot report, last collection was 18th');
         $mech->follow_link_ok({ text => 'Report a missed collection' });
-        $mech->content_contains('service-101', 'Checkbox, last collection was 27th');
+        $mech->content_contains('service-531', 'Checkbox, last collection was 27th');
         $mech->content_lacks('service-537', 'No checkbox, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'No checkbox, last collection was 20th');
         $mech->content_lacks('service-542', 'No checkbox, last collection was 18th');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->content_contains('Please specify what was missed');
-        $mech->submit_form_ok({ with_fields => { 'service-101' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test" } });
         $mech->content_contains('Please enter your full name');
         $mech->content_contains('Please specify at least one of phone or email');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", phone => '+441234567890' } });
         $mech->content_contains('Please specify an email address');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org' } });
-        $mech->content_contains('Refuse collection');
+        $mech->content_contains('Non-Recyclable Refuse');
         $mech->content_contains('Test McTest');
         $mech->content_contains('test@example.org');
         $mech->submit_form_ok({ form_number => 3 });
@@ -144,6 +144,7 @@ FixMyStreet::override_config {
     };
     subtest 'Request a new container' => sub {
         $mech->get_ok('/waste/12345/request');
+        $mech->content_like(qr/<span id="quantity-44-hint" class="govuk-hint">\s*You can request a maximum of one container\s*<\/span>/);
         $mech->submit_form_ok({ form_number => 2 });
         $mech->content_contains('Please specify what you need');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
@@ -207,7 +208,7 @@ FixMyStreet::override_config {
         shift @events; # Header
         my $i = 0;
         foreach (@events) {
-            $i++ if /DTSTART;VALUE=DATE:20200701/ && /SUMMARY:Refuse collection/;
+            $i++ if /DTSTART;VALUE=DATE:20200701/ && /SUMMARY:Non-Recyclable Refuse/;
             $i++ if /DTSTART;VALUE=DATE:20200708/ && /SUMMARY:Paper & Cardboard/;
         }
         is $i, 2, 'Two events from the sample data in the calendar';

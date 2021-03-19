@@ -299,14 +299,14 @@ FixMyStreet::override_config {
     subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
+        $mech->content_like(qr/Non-Recyclable Refuse.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
         $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(In progress\)/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_lacks('Waste spillage');
 
         set_fixed_time('2020-05-27T19:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
+        $mech->content_like(qr/Non-Recyclable Refuse.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
         $mech->content_like(qr/Paper &amp; Cardboard.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s*<\/dd>/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_contains('Waste spillage');
@@ -330,16 +330,16 @@ FixMyStreet::override_config {
         $mech->content_contains('(completed at 10:00am)');
         $mech->content_contains('We could not collect your waste as it was not correctly presented.');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
-        $mech->content_contains('Report a refuse collection');
+        $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a refuse collection');
+        $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-29T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a refuse collection');
+        $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-30T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Report a refuse collection');
+        $mech->content_lacks('Report a non-recyclable refuse collection');
         restore_time();
     };
 };

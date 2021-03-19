@@ -192,8 +192,8 @@ sub GetServiceUnitsForObject {
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     return [ {
         Id => 1001,
-        ServiceId => 101,
-        ServiceName => 'Refuse collection',
+        ServiceId => 531,
+        ServiceName => 'Non-Recyclable Refuse',
         ServiceTasks => { ServiceTask => {
             Id => 401,
             ServiceTaskSchedules => { ServiceTaskSchedule => {
@@ -274,6 +274,42 @@ sub GetServiceUnitsForObject {
                     OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     Ref => { Value => { anyType => [ 456, 789 ] } },
+                },
+            } ] },
+        } },
+    }, {
+        Id => 1005,
+        ServiceId => 545,
+        ServiceName => 'Garden waste collection',
+        ServiceTasks => { ServiceTask => {
+            Id => 405,
+            Data => { ExtensibleDatum => [ {
+                DatatypeName => 'LBB - GW Container',
+                ChildData => { ExtensibleDatum => [ {
+                    DatatypeName => 'Quantity',
+                    Value => 1,
+                }, {
+                    DatatypeName => 'Container',
+                    Value => 44,
+                } ] },
+            } ] },
+            ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                },
+            }, {
+                ScheduleDescription => 'every other Monday',
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 567, 890 ] } },
                 },
             } ] },
         } },
