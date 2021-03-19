@@ -1214,7 +1214,14 @@ $.extend(fixmystreet.set_up, {
     // (due to not wanting around form to submit, though good thing anyway)
     $('body').on('click', '#alert_rss_button', function(e) {
         e.preventDefault();
-        var feed = $('input[name=feed][type=radio]:checked').parent().prevAll('a').attr('href');
+        var a = $('input[name=feed][type=radio]:checked').parent().prevAll('a');
+        var feed = a.attr('href');
+        if (a.hasClass('js-alert-local')) {
+            var dist = $('#distance').val();
+            if (parseInt(dist)) {
+                feed += '/' + dist;
+            }
+        }
         window.location.href = feed;
     });
     $('body').on('click', '#alert_email_button', function(e) {

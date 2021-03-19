@@ -10,6 +10,7 @@
         - Add support for the OS Maps API. #3328
         - Speed up /report/new/ajax call. #3335
         - Improve `#geolocate_link` display, especially for smaller screens. #2048
+        - Allow email alert radius to be specified. #68
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.

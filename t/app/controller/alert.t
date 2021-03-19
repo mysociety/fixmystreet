@@ -31,10 +31,7 @@ FixMyStreet::override_config {
     $mech->content_like(qr/Local RSS feeds and email alerts for .EH1 1BB/);
     $mech->content_contains('html class="no-js" lang="en-gb"');
     $mech->content_contains('Problems within 10.0km');
-    $mech->content_contains('rss/pc/EH11BB/2');
-    $mech->content_contains('rss/pc/EH11BB/5');
-    $mech->content_contains('rss/pc/EH11BB/10');
-    $mech->content_contains('rss/pc/EH11BB/20');
+    $mech->content_contains('rss/pc/EH11BB');
     $mech->content_contains('Problems within Edinburgh City');
     $mech->content_contains('Problems within City Centre ward');
     $mech->content_contains('/rss/reports/Edinburgh');

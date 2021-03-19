@@ -41,12 +41,13 @@ __PACKAGE__->add_columns(
   "whensubscribed",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "whendisabled",
   { data_type => "timestamp", is_nullable => 1 },
+  "parameter3",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
@@ -69,8 +70,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pWmsXAFvvjr4x1Q3Zsu4Cg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2021-03-19 17:41:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zgS7etsaoE3DeFST6VjcOQ
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 

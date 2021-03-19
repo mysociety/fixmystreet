@@ -11,12 +11,12 @@ FixMyStreet::override_config {
     GEOCODER => '',
 }, sub {
     $mech->get_ok('/alert/list?pc=0045');
-    $mech->content_contains('rss/l/59.9,10.9/2');
+    $mech->content_contains('rss/l/59.9,10.9');
     $mech->content_contains('/rss/reports/Oslo');
     $mech->content_contains('council:' . $oslo->id . ':Oslo');
 
     $mech->get_ok('/alert/list?pc=3290');
-    $mech->content_contains('rss/l/59,10/5');
+    $mech->content_contains('rss/l/59,10');
     $mech->content_contains('/rss/area/Larvik');
     $mech->content_contains('/rss/area/Vestfold');
     $mech->content_contains('/rss/reports/Larvik');

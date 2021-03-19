@@ -99,7 +99,9 @@ sub rss : Private {
         $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
+        my $distance = $c->forward('get_distance');
         $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
+        $url .= "/$distance" if $distance;
         $c->res->redirect($url);
     }
     else {
@@ -257,6 +259,8 @@ sub set_local_alert_options : Private {
     {
         $type = 'local_problems';
         push @params, $2, $1; # Note alert parameters are lon,lat
+        my $distance = $c->forward('get_distance');
+        push @params, $distance if $distance;
     }
     return unless $type;
 
@@ -267,10 +271,13 @@ sub set_local_alert_options : Private {
 
     if ( scalar @params == 1 ) {
         $options->{parameter} = $params[0];
-    }
-    elsif ( scalar @params == 2 ) {
+    } elsif ( scalar @params == 2 ) {
         $options->{parameter}  = $params[0];
         $options->{parameter2} = $params[1];
+    } elsif ( scalar @params == 3 ) {
+        $options->{parameter}  = $params[0];
+        $options->{parameter2} = $params[1];
+        $options->{parameter3} = $params[2];
     }
 
     $c->stash->{alert_options} = $options;
@@ -415,11 +422,6 @@ sub setup_coordinate_rss_feeds : Private {
 
     $c->stash->{rss_feed_uri} = $rss_feed;
 
-    $c->stash->{rss_feed_2k}  = $rss_feed . '/2';
-    $c->stash->{rss_feed_5k}  = $rss_feed . '/5';
-    $c->stash->{rss_feed_10k} = $rss_feed . '/10';
-    $c->stash->{rss_feed_20k} = $rss_feed . '/20';
-
     return 1;
 }
 
@@ -529,6 +531,15 @@ sub setup_request : Private {
     $c->stash->{template} = 'alert/list-ajax.html' if $c->get_param('ajax');
 
     return 1;
+}
+
+sub get_distance : Private {
+    my ($self, $c) = @_;
+
+    my $distance = $c->get_param('distance') || '';
+    $distance = 0 unless $distance =~ /^\d+$/;
+    $distance = 150 if $distance > 150; # Match Gaze maximum
+    return $distance;
 }
 
 =head1 AUTHOR

@@ -237,7 +237,8 @@ sub send() {
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
-        my $d = FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
+        my $d = $alert->parameter3;
+        $d ||= FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {
             sprintf("%f", $d);

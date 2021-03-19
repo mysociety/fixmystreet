@@ -1,0 +1,4 @@
+BEGIN;
+ALTER TABLE alert
+    ADD COLUMN parameter3 TEXT;
+COMMIT;

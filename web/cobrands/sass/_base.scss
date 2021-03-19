@@ -2610,6 +2610,11 @@ a#geolocate_link {
 
   // Close up space between this and #rss_local
   margin-top: -0.5em;
+
+  input {
+    width: 4em;
+    display: inline-block;
+  }
 }
 
 .confirmation-header {

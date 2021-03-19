@@ -405,6 +405,7 @@ create table alert (
     alert_type text not null references alert_type(ref),
     parameter text, -- e.g. Problem ID for new updates, Longitude for local problem alerts
     parameter2 text, -- e.g. Latitude for local problem alerts
+    parameter3 text, -- e.g. optional distance for local problem alerts
     user_id int references users(id) not null,
     confirmed integer not null default 0,
     lang text not null default 'en-gb',

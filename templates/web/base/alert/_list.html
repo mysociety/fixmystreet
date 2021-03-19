@@ -25,8 +25,8 @@
   [% PROCESS 'alert/_list_rss_local.html' %]
 
   <p id="rss_local_alt">
-  [% SET distance_options = '<a href="' _ rss_feed_2k _ ' ">2km</a> / <a href="' _ rss_feed_5k _ ' ">5km</a> / <a href="' _ rss_feed_10k _ '">10km</a> / <a href="' _ rss_feed_20k _ '">20km</a>' %]
-  [% tprintf(loc('(we also have RSS feeds for problems within %s)', "%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]"), mark_safe(distance_options)) %]
+    [% loc('Or specify a different radius distance:') %]
+    <input class="form-control" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*"> km
   </p>
 
   [% FOREACH option IN options %]
