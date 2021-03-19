@@ -11,13 +11,24 @@ my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
 $ukc->mock('_fetch_features', sub {
     my ($self, $cfg, $x, $y) = @_;
     is $y, 238194, 'Correct latitude';
-    return [{
-        properties => { streetref1 => 'Road ID' },
-        geometry => {
-            type => 'LineString',
-            coordinates => [ [ $x-1, $y-1 ], [ $x+1, $y+1 ] ],
-        }
-    }];
+    return [
+        {
+            properties => { streetref1 => 'Road ID' },
+            geometry => {
+                type => 'LineString',
+                coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+            }
+        },
+        # regression test to ensure that a closer feature with no streetref1
+        # isn't picked for NSGRef.
+        {
+            properties => { streetref1 => '' },
+            geometry => {
+                type => 'LineString',
+                coordinates => [ [ $x-1, $y-1 ], [ $x+1, $y-1 ] ],
+            }
+        },
+    ];
 });
 
 my $mech = FixMyStreet::TestMech->new;
