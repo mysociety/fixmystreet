@@ -7,6 +7,7 @@ requires 'Class::Unload';
 requires 'ExtUtils::MakeMaker', '7.20';
 requires 'ExtUtils::ParseXS', '3.30'; # [1]
 # requires 'MooseX::NonMoose'; # [2]
+requires 'Test::Differences', '0.67'; # [3]
 
 # Minimum versions of dependencies to upgrade for bugfixes
 requires 'CGI', '4.43';
@@ -110,7 +111,7 @@ requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.11';
 requires 'Net::OAuth';
 requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
-requires 'Number::Phone', '3.5000';
+requires 'Number::Phone', '3.7002';
 requires 'OIDC::Lite';
 requires 'Parallel::ForkManager';
 requires 'Path::Class';
@@ -204,3 +205,7 @@ requires 'Mozilla::CA', '20200520';
 # fails. The easiest solution here is to include MooseX::NonMoose in
 # cpanfile.snapshot so it can be found, though I guess it shouldn't be trying
 # to install it if it's already thought that 0.22 was installed...
+#
+# [3] Test::Differences 0.64 had a Build.PL that required Text::Diff 0.35, but
+# a Makefile.PL that required 1.43. This can confuse installation, so make sure
+# we have a more recent version of Test::Differences to resolve this.

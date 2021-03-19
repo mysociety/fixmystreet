@@ -2498,6 +2498,98 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       PadWalker 0.08
       Test::More 0
+  Devel-CheckOS-1.85
+    pathname: D/DC/DCANTRELL/Devel-CheckOS-1.85.tar.gz
+    provides:
+      Devel::AssertOS 1.21
+      Devel::AssertOS::AIX 1.2
+      Devel::AssertOS::Amiga 1.2
+      Devel::AssertOS::Android 1.2
+      Devel::AssertOS::Apple 1.3
+      Devel::AssertOS::BSDOS 1.2
+      Devel::AssertOS::BeOS 1.4
+      Devel::AssertOS::Bitrig 1.0
+      Devel::AssertOS::Cygwin 1.3
+      Devel::AssertOS::DEC 1.4
+      Devel::AssertOS::DGUX 1.2
+      Devel::AssertOS::DragonflyBSD 1.2
+      Devel::AssertOS::Dynix 1.2
+      Devel::AssertOS::EBCDIC 1.0
+      Devel::AssertOS::FreeBSD 1.2
+      Devel::AssertOS::GNUkFreeBSD 1.1
+      Devel::AssertOS::HPUX 1.2
+      Devel::AssertOS::Haiku 1.1
+      Devel::AssertOS::Hurd 1.0
+      Devel::AssertOS::Interix 1.2
+      Devel::AssertOS::Irix 1.2
+      Devel::AssertOS::Linux 1.3
+      Devel::AssertOS::Linux::Debian 1.1
+      Devel::AssertOS::Linux::Raspbian 1.0
+      Devel::AssertOS::Linux::RealDebian 1.0
+      Devel::AssertOS::Linux::Ubuntu 1.0
+      Devel::AssertOS::Linux::UnknownDebianLike 1.0
+      Devel::AssertOS::Linux::v2_6 1.3
+      Devel::AssertOS::MPEiX 1.2
+      Devel::AssertOS::MSDOS 1.2
+      Devel::AssertOS::MSWin32 1.3
+      Devel::AssertOS::MSYS 1.0
+      Devel::AssertOS::MacOSX 1.3
+      Devel::AssertOS::MacOSX::v10_0 1.0
+      Devel::AssertOS::MacOSX::v10_1 1.0
+      Devel::AssertOS::MacOSX::v10_10 1.0
+      Devel::AssertOS::MacOSX::v10_11 1.0
+      Devel::AssertOS::MacOSX::v10_12 1.0
+      Devel::AssertOS::MacOSX::v10_13 1.0
+      Devel::AssertOS::MacOSX::v10_14 1.0
+      Devel::AssertOS::MacOSX::v10_15 1.0
+      Devel::AssertOS::MacOSX::v10_2 1.0
+      Devel::AssertOS::MacOSX::v10_3 1.0
+      Devel::AssertOS::MacOSX::v10_4 1.4
+      Devel::AssertOS::MacOSX::v10_5 1.0
+      Devel::AssertOS::MacOSX::v10_6 1.0
+      Devel::AssertOS::MacOSX::v10_7 1.0
+      Devel::AssertOS::MacOSX::v10_8 1.0
+      Devel::AssertOS::MacOSX::v10_9 1.0
+      Devel::AssertOS::MacOSclassic 1.2
+      Devel::AssertOS::MachTen 1.2
+      Devel::AssertOS::MicrosoftWindows 1.4
+      Devel::AssertOS::MidnightBSD 1.1
+      Devel::AssertOS::Minix 1.0
+      Devel::AssertOS::MirOSBSD 1.2
+      Devel::AssertOS::NeXT 1.2
+      Devel::AssertOS::NetBSD 1.2
+      Devel::AssertOS::Netware 1.2
+      Devel::AssertOS::OS2 1.1
+      Devel::AssertOS::OS390 1.2
+      Devel::AssertOS::OS400 1.2
+      Devel::AssertOS::OSF 1.2
+      Devel::AssertOS::OSFeatures::POSIXShellRedirection 1.4
+      Devel::AssertOS::OpenBSD 1.2
+      Devel::AssertOS::POSIXBC 1.2
+      Devel::AssertOS::QNX 1.2
+      Devel::AssertOS::QNX::Neutrino 1.1
+      Devel::AssertOS::QNX::v4 1.1
+      Devel::AssertOS::RISCOS 1.2
+      Devel::AssertOS::Realtime 1.2
+      Devel::AssertOS::SCO 1.2
+      Devel::AssertOS::Solaris 1.2
+      Devel::AssertOS::Sun 1.3
+      Devel::AssertOS::SunOS 1.2
+      Devel::AssertOS::SysVr4 1.2
+      Devel::AssertOS::SysVr5 1.2
+      Devel::AssertOS::Unicos 1.2
+      Devel::AssertOS::Unix 1.6
+      Devel::AssertOS::VMESA 1.2
+      Devel::AssertOS::VMS 1.2
+      Devel::AssertOS::VOS 1.2
+      Devel::AssertOS::iOS 1.0
+      Devel::CheckOS 1.85
+    requirements:
+      ExtUtils::MakeMaker 0
+      File::Find::Rule 0.28
+      File::Temp 0.19
+      Test::More 0.88
+      perl 5.006000
   Devel-GlobalDestruction-0.11
     pathname: H/HA/HAARG/Devel-GlobalDestruction-0.11.tar.gz
     provides:
@@ -5546,28 +5638,29 @@ DISTRIBUTIONS
       Carp 0
       ExtUtils::MakeMaker 0
       POSIX 0
-  Number-Phone-3.5000
-    pathname: D/DC/DCANTRELL/Number-Phone-3.5000.tar.gz
+  Number-Phone-3.7002
+    pathname: D/DC/DCANTRELL/Number-Phone-3.7002.tar.gz
     provides:
-      Number::Phone 3.5000
-      Number::Phone::Country 1.94
-      Number::Phone::Country::Data 2.20190302235311
+      Number::Phone 3.7002
+      Number::Phone::Country 1.97
+      Number::Phone::Country::Data 2.20210309172028
+      Number::Phone::Data undef
       Number::Phone::Formatter 1.0
       Number::Phone::Formatter::National 1.0
       Number::Phone::Formatter::NationallyPreferredIntl 1.0
       Number::Phone::Formatter::Raw undef
       Number::Phone::Lib 1.0
-      Number::Phone::NANP 1.7000
+      Number::Phone::NANP 1.7001
       Number::Phone::NANP::AG 1.1
       Number::Phone::NANP::AI 1.1
       Number::Phone::NANP::AS 1.1
       Number::Phone::NANP::BB 1.1
       Number::Phone::NANP::BM 1.1
       Number::Phone::NANP::BS 1.1
-      Number::Phone::NANP::CA 1.1
+      Number::Phone::NANP::CA 1.1001
       Number::Phone::NANP::DM 1.1
       Number::Phone::NANP::DO 1.1
-      Number::Phone::NANP::Data 1.201903032
+      Number::Phone::NANP::Data 1.20210309172029
       Number::Phone::NANP::GD 1.1
       Number::Phone::NANP::GU 1.1
       Number::Phone::NANP::JM 1.1
@@ -5580,274 +5673,280 @@ DISTRIBUTIONS
       Number::Phone::NANP::SX 1
       Number::Phone::NANP::TC 1.1
       Number::Phone::NANP::TT 1.1
-      Number::Phone::NANP::US 1.1
+      Number::Phone::NANP::US 1.1001
       Number::Phone::NANP::VC 1.1
       Number::Phone::NANP::VG 1.1
       Number::Phone::NANP::VI 1.1
-      Number::Phone::StubCountry 1.4000
-      Number::Phone::StubCountry::AC 1.201903032
-      Number::Phone::StubCountry::AD 1.201903032
-      Number::Phone::StubCountry::AE 1.201903032
-      Number::Phone::StubCountry::AF 1.201903032
-      Number::Phone::StubCountry::AG 1.201903032
-      Number::Phone::StubCountry::AI 1.201903032
-      Number::Phone::StubCountry::AL 1.201903032
-      Number::Phone::StubCountry::AM 1.201903032
-      Number::Phone::StubCountry::AO 1.201903032
-      Number::Phone::StubCountry::AR 1.201903032
-      Number::Phone::StubCountry::AS 1.201903032
-      Number::Phone::StubCountry::AT 1.201903032
-      Number::Phone::StubCountry::AU 1.201903032
-      Number::Phone::StubCountry::AW 1.201903032
-      Number::Phone::StubCountry::AX 1.201903032
-      Number::Phone::StubCountry::AZ 1.201903032
-      Number::Phone::StubCountry::BA 1.201903032
-      Number::Phone::StubCountry::BB 1.201903032
-      Number::Phone::StubCountry::BD 1.201903032
-      Number::Phone::StubCountry::BE 1.201903032
-      Number::Phone::StubCountry::BF 1.201903032
-      Number::Phone::StubCountry::BG 1.201903032
-      Number::Phone::StubCountry::BH 1.201903032
-      Number::Phone::StubCountry::BI 1.201903032
-      Number::Phone::StubCountry::BJ 1.201903032
-      Number::Phone::StubCountry::BL 1.201903032
-      Number::Phone::StubCountry::BM 1.201903032
-      Number::Phone::StubCountry::BN 1.201903032
-      Number::Phone::StubCountry::BO 1.201903032
-      Number::Phone::StubCountry::BQ 1.201903032
-      Number::Phone::StubCountry::BR 1.201903032
-      Number::Phone::StubCountry::BS 1.201903032
-      Number::Phone::StubCountry::BT 1.201903032
-      Number::Phone::StubCountry::BW 1.201903032
-      Number::Phone::StubCountry::BY 1.201903032
-      Number::Phone::StubCountry::BZ 1.201903032
-      Number::Phone::StubCountry::CA 1.201903032
-      Number::Phone::StubCountry::CC 1.201903032
-      Number::Phone::StubCountry::CD 1.201903032
-      Number::Phone::StubCountry::CF 1.201903032
-      Number::Phone::StubCountry::CG 1.201903032
-      Number::Phone::StubCountry::CH 1.201903032
-      Number::Phone::StubCountry::CI 1.201903032
-      Number::Phone::StubCountry::CK 1.201903032
-      Number::Phone::StubCountry::CL 1.201903032
-      Number::Phone::StubCountry::CM 1.201903032
-      Number::Phone::StubCountry::CN 1.201903032
-      Number::Phone::StubCountry::CO 1.201903032
-      Number::Phone::StubCountry::CR 1.201903032
-      Number::Phone::StubCountry::CU 1.201903032
-      Number::Phone::StubCountry::CV 1.201903032
-      Number::Phone::StubCountry::CW 1.201903032
-      Number::Phone::StubCountry::CX 1.201903032
-      Number::Phone::StubCountry::CY 1.201903032
-      Number::Phone::StubCountry::CZ 1.201903032
-      Number::Phone::StubCountry::DE 1.201903032
-      Number::Phone::StubCountry::DJ 1.201903032
-      Number::Phone::StubCountry::DK 1.201903032
-      Number::Phone::StubCountry::DM 1.201903032
-      Number::Phone::StubCountry::DO 1.201903032
-      Number::Phone::StubCountry::DZ 1.201903032
-      Number::Phone::StubCountry::EC 1.201903032
-      Number::Phone::StubCountry::EE 1.201903032
-      Number::Phone::StubCountry::EG 1.201903032
-      Number::Phone::StubCountry::EH 1.201903032
-      Number::Phone::StubCountry::ER 1.201903032
-      Number::Phone::StubCountry::ES 1.201903032
-      Number::Phone::StubCountry::ET 1.201903032
-      Number::Phone::StubCountry::FI 1.201903032
-      Number::Phone::StubCountry::FJ 1.201903032
-      Number::Phone::StubCountry::FK 1.201903032
-      Number::Phone::StubCountry::FM 1.201903032
-      Number::Phone::StubCountry::FO 1.201903032
-      Number::Phone::StubCountry::FR 1.201903032
-      Number::Phone::StubCountry::GA 1.201903032
-      Number::Phone::StubCountry::GB 1.201903032
-      Number::Phone::StubCountry::GD 1.201903032
-      Number::Phone::StubCountry::GE 1.201903032
-      Number::Phone::StubCountry::GF 1.201903032
-      Number::Phone::StubCountry::GG 1.201903032
-      Number::Phone::StubCountry::GH 1.201903032
-      Number::Phone::StubCountry::GI 1.201903032
-      Number::Phone::StubCountry::GL 1.201903032
-      Number::Phone::StubCountry::GM 1.201903032
-      Number::Phone::StubCountry::GN 1.201903032
-      Number::Phone::StubCountry::GP 1.201903032
-      Number::Phone::StubCountry::GQ 1.201903032
-      Number::Phone::StubCountry::GR 1.201903032
-      Number::Phone::StubCountry::GT 1.201903032
-      Number::Phone::StubCountry::GU 1.201903032
-      Number::Phone::StubCountry::GW 1.201903032
-      Number::Phone::StubCountry::GY 1.201903032
-      Number::Phone::StubCountry::HK 1.201903032
-      Number::Phone::StubCountry::HN 1.201903032
-      Number::Phone::StubCountry::HR 1.201903032
-      Number::Phone::StubCountry::HT 1.201903032
-      Number::Phone::StubCountry::HU 1.201903032
-      Number::Phone::StubCountry::ID 1.201903032
-      Number::Phone::StubCountry::IE 1.201903032
-      Number::Phone::StubCountry::IL 1.201903032
-      Number::Phone::StubCountry::IM 1.201903032
-      Number::Phone::StubCountry::IN 1.201903032
-      Number::Phone::StubCountry::IO 1.201903032
-      Number::Phone::StubCountry::IQ 1.201903032
-      Number::Phone::StubCountry::IR 1.201903032
-      Number::Phone::StubCountry::IS 1.201903032
-      Number::Phone::StubCountry::IT 1.201903032
-      Number::Phone::StubCountry::JE 1.201903032
-      Number::Phone::StubCountry::JM 1.201903032
-      Number::Phone::StubCountry::JO 1.201903032
-      Number::Phone::StubCountry::JP 1.201903032
-      Number::Phone::StubCountry::KE 1.201903032
-      Number::Phone::StubCountry::KG 1.201903032
-      Number::Phone::StubCountry::KH 1.201903032
-      Number::Phone::StubCountry::KI 1.201903032
-      Number::Phone::StubCountry::KM 1.201903032
-      Number::Phone::StubCountry::KN 1.201903032
-      Number::Phone::StubCountry::KP 1.201903032
-      Number::Phone::StubCountry::KR 1.201903032
-      Number::Phone::StubCountry::KW 1.201903032
-      Number::Phone::StubCountry::KY 1.201903032
-      Number::Phone::StubCountry::KZ 1.201903032
-      Number::Phone::StubCountry::LA 1.201903032
-      Number::Phone::StubCountry::LB 1.201903032
-      Number::Phone::StubCountry::LC 1.201903032
-      Number::Phone::StubCountry::LI 1.201903032
-      Number::Phone::StubCountry::LK 1.201903032
-      Number::Phone::StubCountry::LR 1.201903032
-      Number::Phone::StubCountry::LS 1.201903032
-      Number::Phone::StubCountry::LT 1.201903032
-      Number::Phone::StubCountry::LU 1.201903032
-      Number::Phone::StubCountry::LV 1.201903032
-      Number::Phone::StubCountry::LY 1.201903032
-      Number::Phone::StubCountry::MA 1.201903032
-      Number::Phone::StubCountry::MC 1.201903032
-      Number::Phone::StubCountry::MD 1.201903032
-      Number::Phone::StubCountry::ME 1.201903032
-      Number::Phone::StubCountry::MF 1.201903032
-      Number::Phone::StubCountry::MG 1.201903032
-      Number::Phone::StubCountry::MH 1.201903032
-      Number::Phone::StubCountry::MK 1.201903032
-      Number::Phone::StubCountry::ML 1.201903032
-      Number::Phone::StubCountry::MM 1.201903032
-      Number::Phone::StubCountry::MN 1.201903032
-      Number::Phone::StubCountry::MO 1.201903032
-      Number::Phone::StubCountry::MP 1.201903032
-      Number::Phone::StubCountry::MQ 1.201903032
-      Number::Phone::StubCountry::MR 1.201903032
-      Number::Phone::StubCountry::MS 1.201903032
-      Number::Phone::StubCountry::MT 1.201903032
-      Number::Phone::StubCountry::MU 1.201903032
-      Number::Phone::StubCountry::MV 1.201903032
-      Number::Phone::StubCountry::MW 1.201903032
-      Number::Phone::StubCountry::MX 1.201903032
-      Number::Phone::StubCountry::MY 1.201903032
-      Number::Phone::StubCountry::MZ 1.201903032
-      Number::Phone::StubCountry::NA 1.201903032
-      Number::Phone::StubCountry::NC 1.201903032
-      Number::Phone::StubCountry::NE 1.201903032
-      Number::Phone::StubCountry::NF 1.201903032
-      Number::Phone::StubCountry::NG 1.201903032
-      Number::Phone::StubCountry::NI 1.201903032
-      Number::Phone::StubCountry::NL 1.201903032
-      Number::Phone::StubCountry::NO 1.201903032
-      Number::Phone::StubCountry::NP 1.201903032
-      Number::Phone::StubCountry::NR 1.201903032
-      Number::Phone::StubCountry::NU 1.201903032
-      Number::Phone::StubCountry::NZ 1.201903032
-      Number::Phone::StubCountry::OM 1.201903032
-      Number::Phone::StubCountry::PA 1.201903032
-      Number::Phone::StubCountry::PE 1.201903032
-      Number::Phone::StubCountry::PF 1.201903032
-      Number::Phone::StubCountry::PG 1.201903032
-      Number::Phone::StubCountry::PH 1.201903032
-      Number::Phone::StubCountry::PK 1.201903032
-      Number::Phone::StubCountry::PL 1.201903032
-      Number::Phone::StubCountry::PM 1.201903032
-      Number::Phone::StubCountry::PR 1.201903032
-      Number::Phone::StubCountry::PS 1.201903032
-      Number::Phone::StubCountry::PT 1.201903032
-      Number::Phone::StubCountry::PW 1.201903032
-      Number::Phone::StubCountry::PY 1.201903032
-      Number::Phone::StubCountry::QA 1.201903032
-      Number::Phone::StubCountry::RE 1.201903032
-      Number::Phone::StubCountry::RO 1.201903032
-      Number::Phone::StubCountry::RS 1.201903032
-      Number::Phone::StubCountry::RU 1.201903032
-      Number::Phone::StubCountry::RW 1.201903032
-      Number::Phone::StubCountry::SA 1.201903032
-      Number::Phone::StubCountry::SB 1.201903032
-      Number::Phone::StubCountry::SC 1.201903032
-      Number::Phone::StubCountry::SD 1.201903032
-      Number::Phone::StubCountry::SE 1.201903032
-      Number::Phone::StubCountry::SG 1.201903032
-      Number::Phone::StubCountry::SH 1.201903032
-      Number::Phone::StubCountry::SI 1.201903032
-      Number::Phone::StubCountry::SJ 1.201903032
-      Number::Phone::StubCountry::SK 1.201903032
-      Number::Phone::StubCountry::SL 1.201903032
-      Number::Phone::StubCountry::SM 1.201903032
-      Number::Phone::StubCountry::SN 1.201903032
-      Number::Phone::StubCountry::SO 1.201903032
-      Number::Phone::StubCountry::SR 1.201903032
-      Number::Phone::StubCountry::SS 1.201903032
-      Number::Phone::StubCountry::ST 1.201903032
-      Number::Phone::StubCountry::SV 1.201903032
-      Number::Phone::StubCountry::SX 1.201903032
-      Number::Phone::StubCountry::SY 1.201903032
-      Number::Phone::StubCountry::SZ 1.201903032
-      Number::Phone::StubCountry::TA 1.201903032
-      Number::Phone::StubCountry::TC 1.201903032
-      Number::Phone::StubCountry::TD 1.201903032
-      Number::Phone::StubCountry::TG 1.201903032
-      Number::Phone::StubCountry::TH 1.201903032
-      Number::Phone::StubCountry::TJ 1.201903032
-      Number::Phone::StubCountry::TK 1.201903032
-      Number::Phone::StubCountry::TL 1.201903032
-      Number::Phone::StubCountry::TM 1.201903032
-      Number::Phone::StubCountry::TN 1.201903032
-      Number::Phone::StubCountry::TO 1.201903032
-      Number::Phone::StubCountry::TR 1.201903032
-      Number::Phone::StubCountry::TT 1.201903032
-      Number::Phone::StubCountry::TV 1.201903032
-      Number::Phone::StubCountry::TW 1.201903032
-      Number::Phone::StubCountry::TZ 1.201903032
-      Number::Phone::StubCountry::UA 1.201903032
-      Number::Phone::StubCountry::UG 1.201903032
-      Number::Phone::StubCountry::US 1.201903032
-      Number::Phone::StubCountry::UY 1.201903032
-      Number::Phone::StubCountry::UZ 1.201903032
-      Number::Phone::StubCountry::VA 1.201903032
-      Number::Phone::StubCountry::VC 1.201903032
-      Number::Phone::StubCountry::VE 1.201903032
-      Number::Phone::StubCountry::VG 1.201903032
-      Number::Phone::StubCountry::VI 1.201903032
-      Number::Phone::StubCountry::VN 1.201903032
-      Number::Phone::StubCountry::VU 1.201903032
-      Number::Phone::StubCountry::WF 1.201903032
-      Number::Phone::StubCountry::WS 1.201903032
-      Number::Phone::StubCountry::XK 1.201903032
-      Number::Phone::StubCountry::YE 1.201903032
-      Number::Phone::StubCountry::YT 1.201903032
-      Number::Phone::StubCountry::ZA 1.201903032
-      Number::Phone::StubCountry::ZM 1.201903032
-      Number::Phone::StubCountry::ZW 1.201903032
-      Number::Phone::UK 1.68
+      Number::Phone::StubCountry 1.5001
+      Number::Phone::StubCountry::AC 1.20210309172128
+      Number::Phone::StubCountry::AD 1.20210309172128
+      Number::Phone::StubCountry::AE 1.20210309172128
+      Number::Phone::StubCountry::AF 1.20210309172128
+      Number::Phone::StubCountry::AG 1.20210309172128
+      Number::Phone::StubCountry::AI 1.20210309172128
+      Number::Phone::StubCountry::AL 1.20210309172128
+      Number::Phone::StubCountry::AM 1.20210309172128
+      Number::Phone::StubCountry::AO 1.20210309172128
+      Number::Phone::StubCountry::AR 1.20210309172128
+      Number::Phone::StubCountry::AS 1.20210309172128
+      Number::Phone::StubCountry::AT 1.20210309172128
+      Number::Phone::StubCountry::AU 1.20210309172128
+      Number::Phone::StubCountry::AW 1.20210309172128
+      Number::Phone::StubCountry::AX 1.20210309172128
+      Number::Phone::StubCountry::AZ 1.20210309172128
+      Number::Phone::StubCountry::BA 1.20210309172128
+      Number::Phone::StubCountry::BB 1.20210309172128
+      Number::Phone::StubCountry::BD 1.20210309172128
+      Number::Phone::StubCountry::BE 1.20210309172128
+      Number::Phone::StubCountry::BF 1.20210309172128
+      Number::Phone::StubCountry::BG 1.20210309172128
+      Number::Phone::StubCountry::BH 1.20210309172128
+      Number::Phone::StubCountry::BI 1.20210309172128
+      Number::Phone::StubCountry::BJ 1.20210309172128
+      Number::Phone::StubCountry::BL 1.20210309172128
+      Number::Phone::StubCountry::BM 1.20210309172128
+      Number::Phone::StubCountry::BN 1.20210309172128
+      Number::Phone::StubCountry::BO 1.20210309172128
+      Number::Phone::StubCountry::BQ 1.20210309172128
+      Number::Phone::StubCountry::BR 1.20210309172128
+      Number::Phone::StubCountry::BS 1.20210309172129
+      Number::Phone::StubCountry::BT 1.20210309172129
+      Number::Phone::StubCountry::BW 1.20210309172129
+      Number::Phone::StubCountry::BY 1.20210309172129
+      Number::Phone::StubCountry::BZ 1.20210309172129
+      Number::Phone::StubCountry::CA 1.20210309172129
+      Number::Phone::StubCountry::CC 1.20210309172129
+      Number::Phone::StubCountry::CD 1.20210309172129
+      Number::Phone::StubCountry::CF 1.20210309172129
+      Number::Phone::StubCountry::CG 1.20210309172129
+      Number::Phone::StubCountry::CH 1.20210309172129
+      Number::Phone::StubCountry::CI 1.20210309172129
+      Number::Phone::StubCountry::CK 1.20210309172129
+      Number::Phone::StubCountry::CL 1.20210309172129
+      Number::Phone::StubCountry::CM 1.20210309172129
+      Number::Phone::StubCountry::CN 1.20210309172129
+      Number::Phone::StubCountry::CO 1.2021030917213
+      Number::Phone::StubCountry::CR 1.2021030917213
+      Number::Phone::StubCountry::CU 1.2021030917213
+      Number::Phone::StubCountry::CV 1.2021030917213
+      Number::Phone::StubCountry::CW 1.2021030917213
+      Number::Phone::StubCountry::CX 1.2021030917213
+      Number::Phone::StubCountry::CY 1.20210309172131
+      Number::Phone::StubCountry::CZ 1.20210309172131
+      Number::Phone::StubCountry::DE 1.20210309172131
+      Number::Phone::StubCountry::DJ 1.20210309172131
+      Number::Phone::StubCountry::DK 1.20210309172131
+      Number::Phone::StubCountry::DM 1.20210309172131
+      Number::Phone::StubCountry::DO 1.20210309172131
+      Number::Phone::StubCountry::DZ 1.20210309172131
+      Number::Phone::StubCountry::EC 1.20210309172131
+      Number::Phone::StubCountry::EE 1.20210309172131
+      Number::Phone::StubCountry::EG 1.20210309172131
+      Number::Phone::StubCountry::EH 1.20210309172131
+      Number::Phone::StubCountry::ER 1.20210309172131
+      Number::Phone::StubCountry::ES 1.20210309172131
+      Number::Phone::StubCountry::ET 1.20210309172131
+      Number::Phone::StubCountry::FI 1.20210309172131
+      Number::Phone::StubCountry::FJ 1.20210309172131
+      Number::Phone::StubCountry::FK 1.20210309172131
+      Number::Phone::StubCountry::FM 1.20210309172131
+      Number::Phone::StubCountry::FO 1.20210309172131
+      Number::Phone::StubCountry::FR 1.20210309172131
+      Number::Phone::StubCountry::GA 1.20210309172131
+      Number::Phone::StubCountry::GB 1.20210309172131
+      Number::Phone::StubCountry::GD 1.20210309172131
+      Number::Phone::StubCountry::GE 1.20210309172131
+      Number::Phone::StubCountry::GF 1.20210309172131
+      Number::Phone::StubCountry::GG 1.20210309172131
+      Number::Phone::StubCountry::GH 1.20210309172131
+      Number::Phone::StubCountry::GI 1.20210309172131
+      Number::Phone::StubCountry::GL 1.20210309172131
+      Number::Phone::StubCountry::GM 1.20210309172131
+      Number::Phone::StubCountry::GN 1.20210309172131
+      Number::Phone::StubCountry::GP 1.20210309172131
+      Number::Phone::StubCountry::GQ 1.20210309172131
+      Number::Phone::StubCountry::GR 1.20210309172131
+      Number::Phone::StubCountry::GT 1.20210309172131
+      Number::Phone::StubCountry::GU 1.20210309172131
+      Number::Phone::StubCountry::GW 1.20210309172131
+      Number::Phone::StubCountry::GY 1.20210309172131
+      Number::Phone::StubCountry::HK 1.20210309172131
+      Number::Phone::StubCountry::HN 1.20210309172131
+      Number::Phone::StubCountry::HR 1.20210309172131
+      Number::Phone::StubCountry::HT 1.20210309172131
+      Number::Phone::StubCountry::HU 1.20210309172131
+      Number::Phone::StubCountry::ID 1.20210309172131
+      Number::Phone::StubCountry::IE 1.20210309172131
+      Number::Phone::StubCountry::IL 1.20210309172131
+      Number::Phone::StubCountry::IM 1.20210309172131
+      Number::Phone::StubCountry::IN 1.20210309172131
+      Number::Phone::StubCountry::IO 1.20210309172131
+      Number::Phone::StubCountry::IQ 1.20210309172131
+      Number::Phone::StubCountry::IR 1.20210309172131
+      Number::Phone::StubCountry::IS 1.20210309172131
+      Number::Phone::StubCountry::IT 1.20210309172131
+      Number::Phone::StubCountry::JE 1.20210309172131
+      Number::Phone::StubCountry::JM 1.20210309172131
+      Number::Phone::StubCountry::JO 1.20210309172131
+      Number::Phone::StubCountry::JP 1.20210309172131
+      Number::Phone::StubCountry::KE 1.20210309172132
+      Number::Phone::StubCountry::KG 1.20210309172132
+      Number::Phone::StubCountry::KH 1.20210309172132
+      Number::Phone::StubCountry::KI 1.20210309172132
+      Number::Phone::StubCountry::KM 1.20210309172132
+      Number::Phone::StubCountry::KN 1.20210309172132
+      Number::Phone::StubCountry::KP 1.20210309172132
+      Number::Phone::StubCountry::KR 1.20210309172132
+      Number::Phone::StubCountry::KW 1.20210309172132
+      Number::Phone::StubCountry::KY 1.20210309172132
+      Number::Phone::StubCountry::KZ 1.20210309172132
+      Number::Phone::StubCountry::LA 1.20210309172132
+      Number::Phone::StubCountry::LB 1.20210309172132
+      Number::Phone::StubCountry::LC 1.20210309172132
+      Number::Phone::StubCountry::LI 1.20210309172132
+      Number::Phone::StubCountry::LK 1.20210309172132
+      Number::Phone::StubCountry::LR 1.20210309172132
+      Number::Phone::StubCountry::LS 1.20210309172132
+      Number::Phone::StubCountry::LT 1.20210309172132
+      Number::Phone::StubCountry::LU 1.20210309172132
+      Number::Phone::StubCountry::LV 1.20210309172132
+      Number::Phone::StubCountry::LY 1.20210309172132
+      Number::Phone::StubCountry::MA 1.20210309172132
+      Number::Phone::StubCountry::MC 1.20210309172132
+      Number::Phone::StubCountry::MD 1.20210309172132
+      Number::Phone::StubCountry::ME 1.20210309172132
+      Number::Phone::StubCountry::MF 1.20210309172132
+      Number::Phone::StubCountry::MG 1.20210309172132
+      Number::Phone::StubCountry::MH 1.20210309172132
+      Number::Phone::StubCountry::MK 1.20210309172132
+      Number::Phone::StubCountry::ML 1.20210309172132
+      Number::Phone::StubCountry::MM 1.20210309172132
+      Number::Phone::StubCountry::MN 1.20210309172132
+      Number::Phone::StubCountry::MO 1.20210309172132
+      Number::Phone::StubCountry::MP 1.20210309172132
+      Number::Phone::StubCountry::MQ 1.20210309172132
+      Number::Phone::StubCountry::MR 1.20210309172132
+      Number::Phone::StubCountry::MS 1.20210309172132
+      Number::Phone::StubCountry::MT 1.20210309172132
+      Number::Phone::StubCountry::MU 1.20210309172132
+      Number::Phone::StubCountry::MV 1.20210309172132
+      Number::Phone::StubCountry::MW 1.20210309172132
+      Number::Phone::StubCountry::MX 1.20210309172132
+      Number::Phone::StubCountry::MY 1.20210309172132
+      Number::Phone::StubCountry::MZ 1.20210309172132
+      Number::Phone::StubCountry::NA 1.20210309172132
+      Number::Phone::StubCountry::NC 1.20210309172132
+      Number::Phone::StubCountry::NE 1.20210309172132
+      Number::Phone::StubCountry::NF 1.20210309172132
+      Number::Phone::StubCountry::NG 1.20210309172132
+      Number::Phone::StubCountry::NI 1.20210309172132
+      Number::Phone::StubCountry::NL 1.20210309172132
+      Number::Phone::StubCountry::NO 1.20210309172132
+      Number::Phone::StubCountry::NP 1.20210309172132
+      Number::Phone::StubCountry::NR 1.20210309172132
+      Number::Phone::StubCountry::NU 1.20210309172132
+      Number::Phone::StubCountry::NZ 1.20210309172132
+      Number::Phone::StubCountry::OM 1.20210309172132
+      Number::Phone::StubCountry::PA 1.20210309172132
+      Number::Phone::StubCountry::PE 1.20210309172132
+      Number::Phone::StubCountry::PF 1.20210309172132
+      Number::Phone::StubCountry::PG 1.20210309172132
+      Number::Phone::StubCountry::PH 1.20210309172132
+      Number::Phone::StubCountry::PK 1.20210309172132
+      Number::Phone::StubCountry::PL 1.20210309172132
+      Number::Phone::StubCountry::PM 1.20210309172132
+      Number::Phone::StubCountry::PR 1.20210309172132
+      Number::Phone::StubCountry::PS 1.20210309172132
+      Number::Phone::StubCountry::PT 1.20210309172132
+      Number::Phone::StubCountry::PW 1.20210309172132
+      Number::Phone::StubCountry::PY 1.20210309172132
+      Number::Phone::StubCountry::QA 1.20210309172132
+      Number::Phone::StubCountry::RE 1.20210309172132
+      Number::Phone::StubCountry::RO 1.20210309172132
+      Number::Phone::StubCountry::RS 1.20210309172132
+      Number::Phone::StubCountry::RU 1.20210309172132
+      Number::Phone::StubCountry::RW 1.20210309172132
+      Number::Phone::StubCountry::SA 1.20210309172132
+      Number::Phone::StubCountry::SB 1.20210309172132
+      Number::Phone::StubCountry::SC 1.20210309172132
+      Number::Phone::StubCountry::SD 1.20210309172132
+      Number::Phone::StubCountry::SE 1.20210309172132
+      Number::Phone::StubCountry::SG 1.20210309172132
+      Number::Phone::StubCountry::SH 1.20210309172132
+      Number::Phone::StubCountry::SI 1.20210309172132
+      Number::Phone::StubCountry::SJ 1.20210309172132
+      Number::Phone::StubCountry::SK 1.20210309172132
+      Number::Phone::StubCountry::SL 1.20210309172132
+      Number::Phone::StubCountry::SM 1.20210309172132
+      Number::Phone::StubCountry::SN 1.20210309172132
+      Number::Phone::StubCountry::SO 1.20210309172132
+      Number::Phone::StubCountry::SR 1.20210309172132
+      Number::Phone::StubCountry::SS 1.20210309172132
+      Number::Phone::StubCountry::ST 1.20210309172133
+      Number::Phone::StubCountry::SV 1.20210309172133
+      Number::Phone::StubCountry::SX 1.20210309172133
+      Number::Phone::StubCountry::SY 1.20210309172133
+      Number::Phone::StubCountry::SZ 1.20210309172133
+      Number::Phone::StubCountry::TA 1.20210309172133
+      Number::Phone::StubCountry::TC 1.20210309172133
+      Number::Phone::StubCountry::TD 1.20210309172133
+      Number::Phone::StubCountry::TG 1.20210309172133
+      Number::Phone::StubCountry::TH 1.20210309172133
+      Number::Phone::StubCountry::TJ 1.20210309172133
+      Number::Phone::StubCountry::TK 1.20210309172133
+      Number::Phone::StubCountry::TL 1.20210309172133
+      Number::Phone::StubCountry::TM 1.20210309172133
+      Number::Phone::StubCountry::TN 1.20210309172133
+      Number::Phone::StubCountry::TO 1.20210309172133
+      Number::Phone::StubCountry::TR 1.20210309172133
+      Number::Phone::StubCountry::TT 1.20210309172133
+      Number::Phone::StubCountry::TV 1.20210309172133
+      Number::Phone::StubCountry::TW 1.20210309172133
+      Number::Phone::StubCountry::TZ 1.20210309172133
+      Number::Phone::StubCountry::UA 1.20210309172133
+      Number::Phone::StubCountry::UG 1.20210309172133
+      Number::Phone::StubCountry::US 1.20210309172133
+      Number::Phone::StubCountry::UY 1.20210309172133
+      Number::Phone::StubCountry::UZ 1.20210309172133
+      Number::Phone::StubCountry::VA 1.20210309172133
+      Number::Phone::StubCountry::VC 1.20210309172133
+      Number::Phone::StubCountry::VE 1.20210309172133
+      Number::Phone::StubCountry::VG 1.20210309172133
+      Number::Phone::StubCountry::VI 1.20210309172133
+      Number::Phone::StubCountry::VN 1.20210309172133
+      Number::Phone::StubCountry::VU 1.20210309172133
+      Number::Phone::StubCountry::WF 1.20210309172133
+      Number::Phone::StubCountry::WS 1.20210309172133
+      Number::Phone::StubCountry::XK 1.20210309172133
+      Number::Phone::StubCountry::YE 1.20210309172133
+      Number::Phone::StubCountry::YT 1.20210309172133
+      Number::Phone::StubCountry::ZA 1.20210309172133
+      Number::Phone::StubCountry::ZM 1.20210309172133
+      Number::Phone::StubCountry::ZW 1.20210309172133
+      Number::Phone::UK 1.70
       Number::Phone::UK::Data 2.0001
-      Number::Phone::UK::Exchanges 1.200608231
+      Number::Phone::UK::Exchanges 1.20060823121334
       Number::Phone::UK::GG 1
       Number::Phone::UK::IM 1
       Number::Phone::UK::JE 1
     requirements:
       Cwd 0
       DBM::Deep 2.0008
+      Devel::CheckOS 1.83
       Digest::MD5 0
       ExtUtils::Install 0
       ExtUtils::MakeMaker 6.52
       ExtUtils::Manifest 0
       File::Basename 0
+      File::Find::Rule 0
       File::ShareDir 1.104
       File::ShareDir::Install 0.11
       File::Spec 0
+      I18N::LangTags 0
+      I18N::LangTags::Detect 0
+      Parallel::ForkManager v0.7.6
       Scalar::Util 1.48
+      Test::Differences 0.62
       Test::More 0.96
       Test::utf8 0
   OAuth-Lite2-0.11
@@ -7426,16 +7525,16 @@ DISTRIBUTIONS
       List::Util 1.09
       Scalar::Util 1.09
       Test::Builder 0
-  Test-Differences-0.64
-    pathname: D/DC/DCANTRELL/Test-Differences-0.64.tar.gz
+  Test-Differences-0.67
+    pathname: D/DC/DCANTRELL/Test-Differences-0.67.tar.gz
     provides:
-      Test::Differences 0.64
+      Test::Differences 0.67
     requirements:
       Capture::Tiny 0.24
       Data::Dumper 2.126
       ExtUtils::MakeMaker 0
       Test::More 0.88
-      Text::Diff 0.35
+      Text::Diff 1.43
   Test-Exception-0.43
     pathname: E/EX/EXODIST/Test-Exception-0.43.tar.gz
     provides:
@@ -7929,17 +8028,18 @@ DISTRIBUTIONS
       Test::Harness 0
       Test::More 0.71
       perl 5.006001
-  Text-Diff-1.41
-    pathname: O/OV/OVID/Text-Diff-1.41.tar.gz
+  Text-Diff-1.45
+    pathname: N/NE/NEILB/Text-Diff-1.45.tar.gz
     provides:
-      Text::Diff 1.41
-      Text::Diff::Base 1.41
-      Text::Diff::Config 1.41
-      Text::Diff::Table 1.41
+      Text::Diff 1.45
+      Text::Diff::Base 1.45
+      Text::Diff::Config 1.44
+      Text::Diff::Table 1.44
     requirements:
       Algorithm::Diff 1.19
       Exporter 0
       ExtUtils::MakeMaker 0
+      perl 5.006
   Text-German-0.06
     pathname: U/UL/ULPFR/Text-German-0.06.tar.gz
     provides:
