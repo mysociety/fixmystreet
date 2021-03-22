@@ -42,6 +42,7 @@ sub disambiguate_location {
 sub map_type {
     my $self = shift;
     return 'OS::FMS' if $self->feature('os_maps_url') || $self->feature('os_maps_api_key');
+    return $self->next::method();
 }
 
 sub process_open311_extras {
