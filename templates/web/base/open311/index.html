@@ -80,49 +80,16 @@ for council problem-reporting systems.</p>
 
 <p>[% loc('In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site).') %]</p>
 
+[% IF show_agency_responsible %]
 <p>[% loc('The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification.') %]</p>
 
 <p>[% tprintf( loc('With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href="%s">MaPit</a>.'), c.config.MAPIT_URL ) %]</p>
+[% END %]
 
 <p>[% loc('Examples:') %]</p>
 
 <ul>
 
-[% jurisdiction_id = c.cobrand.jurisdiction_id_example %]
-[% examples = [
-    {
-        url = "/open311/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",
-        info = 'discovery information',
-    },
-    {
-        url = "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id",
-        info = 'list of services provided',
-    },
-    {
-        url = "/open311/v2/services.xml?jurisdiction_id=$jurisdiction_id&lat=60&long=11",
-        info = 'list of services provided for WGS84 coordinate latitude 60 longitude 11',
-    },
-    {
-        url = "/open311/v2/requests/1.xml?jurisdiction_id=$jurisdiction_id",
-        info = 'Request number 1',
-    },
-    {
-        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=1601&end_date=2011-03-10",
-        info = 'All open requests reported before 2011-03-10 to Trondheim (id 1601)',
-    },
-    {
-        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=open&agency_responsible=219|220",
-        info = 'All open requests in Asker (id 220) and Bærum (id 219)',
-    },
-    {
-        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&service_code=Vannforsyning",
-        info = "All requests with the category 'Vannforsyning'",
-    },
-    {
-        url = "/open311/v2/requests.xml?jurisdiction_id=$jurisdiction_id&status=closed",
-        info = 'All closed requests',
-    },
-] %]
 [% FOREACH examples %]
     <li>[% info %]: <a href="[% url %]">XML</a> or <a href="[% url.replace('xml', 'json') %]">JSON</a>
     <br>[% url.replace('xml', '<i>format</i>') | safe %]</li>
@@ -154,9 +121,11 @@ for council problem-reporting systems.</p>
 <dd>Only return requests with requested_datetime set before the date
   and time specified.  Same format as start_date.</dd>
 
+[% IF show_agency_responsible %]
 <dt>agency_responsible</dt>
 <dd>ID of government body receiving the request.  Several IDs can be
   specified with | as a separator.</dd>
+[% END %]
 
 <dt>interface_used<dt>
 <dd>Name / identifier of interface used.</dd>
@@ -175,6 +144,28 @@ call, the value provided is ignored.</dd>
 
 <p>The search result might look like this:</p>
 
+[% IF c.cobrand.moniker == 'zurich' %]
+<pre>[% "
+  <service_requests>
+    <request>
+      <agency_sent_datetime>2013-04-04T07:25:05+02:00</agency_sent_datetime>
+      <description>Unebener Bürgersteig: Auf dem Asphalt des Bürgersteigs hat es eine Erhebung, die man wirklich nicht sieht und immer wieder drüber stolpert.</description>
+      <detail>Auf dem Asphalt des Bürgersteigs hat es eine Erhebung, die man wirklich nicht sieht und immer wieder drüber stolpert.</detail>
+      <interface_used>Web interface</interface_used>
+      <lat>47.374042</lat>
+      <long>8.484223</long>
+      <requested_datetime>2013-03-17T00:38:14+01:00</requested_datetime>
+      <service_code>Strasse/Trottoir/Platz</service_code>
+      <service_name>Strasse/Trottoir/Platz</service_name>
+      <service_notice>Diese Reparatur wird von uns in den kommenden Wochen / Monaten ausgeführt.</service_notice>
+      <service_request_id>1</service_request_id>
+      <status>closed</status>
+      <title>Unebener Bürgersteig</title>
+      <updated_datetime>2013-04-12T07:59:30+02:00</updated_datetime>
+    </request>
+  </service_requests>
+" | html %]</pre>
+[% ELSE %]
 <pre>[% "
   <requests>
     <request>
@@ -199,6 +190,7 @@ call, the value provided is ignored.</dd>
     </request>
   </requests>
 " | html %]</pre>
+[% END %]
 
 [% INCLUDE 'footer.html' %]
 
