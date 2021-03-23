@@ -139,6 +139,11 @@ sub open311_extra_data_include {
         }
     }
 
+    # Add private comments field
+    push @$open311_only,
+        { name => 'private_comments', description => 'Private comments',
+          value => $row->get_extra_metadata('private_comments') || '' };
+
     return $open311_only;
 }
 
@@ -245,6 +250,10 @@ sub update_anonymous_message {
 
     my $staff = $update->user->from_body || $update->get_extra_metadata('is_body_user') || $update->get_extra_metadata('is_superuser');
     return sprintf('Posted anonymously by a non-staff user at %s', $t) if !$staff;
+}
+
+sub report_form_extras {
+    ( { name => 'private_comments' } )
 }
 
 1;
