@@ -1070,6 +1070,7 @@ subtest 'users at the top level can be edited' => sub {
 
 subtest 'A visit to /reports is okay' => sub {
     $mech->get_ok('/reports');
+    $mech->content_contains('<option value="Cat1">');
 };
 
 };

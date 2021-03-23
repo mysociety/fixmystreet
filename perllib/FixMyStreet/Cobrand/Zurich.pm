@@ -314,6 +314,7 @@ sub report_page_data {
     })->all_sorted;
     $c->stash->{filter_categories} = \@categories;
     $c->stash->{filter_category} = { map { $_ => 1 } $c->get_param_list('filter_category', 1) };
+    $c->forward('/report/stash_category_groups', [ \@categories ]);
 
     my $pins = $c->stash->{pins};
     FixMyStreet::Map::display_map(
