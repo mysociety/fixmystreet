@@ -369,15 +369,93 @@ FixMyStreet::override_config {
         };
     });
     $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
         return {
             transactionState => 'COMPLETE',
             paymentResult => {
                 status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
             }
         };
     });
 
-    subtest 'check payment gateway' => sub {
+    my $dd_sent_params = {};
+    my $dd = Test::MockModule->new('Integrations::Pay360');
+    $dd->mock('one_off_payment', sub {
+        my $self = shift;
+        $dd_sent_params->{'one_off_payment'} = shift;
+    });
+
+    $dd->mock('amend_plan', sub {
+        my $self = shift;
+        $dd_sent_params->{'amend_plan'} = shift;
+    });
+
+    $dd->mock('cancel_plan', sub {
+        my $self = shift;
+        $dd_sent_params->{'cancel_plan'} = shift;
+    });
+
+    subtest 'check new sub bin limits' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'yes' } });
+        $mech->content_contains('Please specify how many bins you already have');
+        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 0 } });
+        $mech->content_contains('Please specify how many bins you already have');
+        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 4 } });
+        $mech->content_contains('Existing bin count must be between 1 and 3');
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        my $form = $mech->form_with_fields( qw(current_bins new_bins payment_method) );
+        ok $form, "form found";
+        is $mech->value('current_bins'), 0, "current bins is set to 0";
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 0,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('The total number of bins must be at least 1');
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 2,
+                new_bins => 2,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('The total number of bins cannot exceed 3');
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 4,
+                new_bins => 0,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Value must be between 0 and 3');
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 4,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Value must be between 0 and 3');
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
+        $form = $mech->form_with_fields( qw(current_bins new_bins payment_method) );
+        ok $form, "form found";
+        is $mech->value('current_bins'), 2, "current bins is set to 2";
+    };
+
+    subtest 'check new sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
