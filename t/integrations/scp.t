@@ -54,7 +54,9 @@ $transport->mock(send_receive => sub {
         my $self = shift;
         my %args = @_;
 
-        my $action = \&{ $args{action} };
+         my ($method) = ( $args{envelope} =~ /Body><(\w*)/ );
+
+        my $action = \&{ $method };
         my $resp = $action->(%args);
         return gen_full_response( $resp );
     }
