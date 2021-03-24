@@ -556,10 +556,39 @@ sub image_for_service {
     return $images->{$service_id};
 }
 
-sub bin_services_for_address {
-    my $self = shift;
-    my $property = shift;
+sub available_bin_services_for_address {
+    my ($self, $property) = @_;
 
+    my $result = $self->{api_serviceunits};
+    return {} unless @$result;
+
+    my $services = {};
+    for my $service ( @$result ) {
+        my $name = $self->service_name_override->{$service->{ServiceId}} || $service->{ServiceName};
+        $name =~ s/ /_/g;
+        $services->{$name} = {
+            service_id => $service->{ServiceId},
+            is_active => defined $service->{ServiceTasks} && $service->{ServiceTasks} ne '',
+        };
+    }
+
+    return $services;
+}
+
+sub garden_waste_service_id {
+    return 545;
+}
+
+sub get_current_garden_bins {
+    my ($self) = @_;
+
+    my $service = $self->garden_waste_service_id;
+    my $bin_count = $self->{c}->stash->{services}{$service}->{garden_bins};
+
+    return $bin_count;
+}
+
+sub service_name_override {
     my %service_name_override = (
         531 => 'Non-Recyclable Refuse',
         532 => 'Non-Recyclable Refuse',
@@ -573,6 +602,14 @@ sub bin_services_for_address {
         545 => 'Garden Waste',
     );
 
+    return \%service_name_override;
+}
+
+
+sub bin_services_for_address {
+    my $self = shift;
+    my $property = shift;
+
     $self->{c}->stash->{containers} = {
         1 => 'Green Box (Plastic)',
         3 => 'Wheeled Bin (Plastic)',
@@ -583,6 +620,12 @@ sub bin_services_for_address {
         44 => 'Garden Waste Container',
         46 => 'Wheeled Bin (Food)',
     };
+
+    $self->{c}->stash->{container_actions} = {
+        deliver => 1,
+        remove => 2
+    };
+
     my %service_to_containers = (
         535 => [ 1 ],
         536 => [ 3 ],
@@ -600,7 +643,10 @@ sub bin_services_for_address {
         541 => 4,
         542 => 6,
         544 => 4,
+        545 => 3,
     );
+
+    $self->{c}->stash->{quantity_max} = \%quantity_max;
 
     $self->{c}->stash->{garden_subs} = {
         New => 1,
@@ -642,10 +688,15 @@ sub bin_services_for_address {
 
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
-        my $service_name = $service_name_override{$_->{ServiceId}} || $_->{ServiceName};
+        my $service_name = $self->service_name_override->{$_->{ServiceId}} || $_->{ServiceName};
+
+        my $request_max = $quantity_max{$_->{ServiceId}};
 
         my $garden = 0;
         my $garden_bins;
+        my $garden_cost = 0;
+        my $garden_due = $self->waste_sub_due($schedules->{end_date});
+        my $garden_overdue = $self->waste_sub_overdue($schedules->{end_date});
         if ($service_name eq 'Garden Waste') {
             $garden = 1;
             my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
@@ -654,7 +705,10 @@ sub bin_services_for_address {
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                 foreach (@$moredata) {
                     # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
-                    $garden_bins = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+                    if ( $_->{DatatypeName} eq 'Quantity' ) {
+                        $garden_bins = $_->{Value};
+                        $garden_cost = $self->garden_waste_cost($garden_bins) / 100;
+                    }
                 }
             }
             $request_max = $garden_bins;
@@ -666,6 +720,9 @@ sub bin_services_for_address {
             service_name => $service_name,
             garden_waste => $garden,
             garden_bins => $garden_bins,
+            garden_cost => $garden_cost,
+            garden_due => $garden_due,
+            garden_overdue => $garden_overdue,
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
             request_allowed => $request_allowed{$_->{ServiceId}} && $request_max && $schedules->{next},
             request_open => $open_request,
@@ -960,6 +1017,7 @@ sub waste_fetch_events {
 sub construct_waste_open311_update {
     my ($self, $cfg, $event) = @_;
 
+    return undef unless $event;
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}} ||= $self->waste_get_event_type($cfg, $event->{EventTypeId});
     my $state_id = $event->{EventStateId};
     my $resolution_id = $event->{ResolutionCodeId} || '';
@@ -1102,6 +1160,28 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
     $self->_set_user_source;
 }
+sub waste_get_next_dd_day {
+    my $self = shift;
+
+    my $dd_delay = 10; # No days to set up a DD
+
+    my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+
+    my $next_day = $wd->add_days( $dt, $dd_delay );
+
+    return $next_day;
+}
+
+sub waste_get_pro_rata_cost {
+    my ($self, $bins, $end) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($end);
+    my $cost = $bins * $self->{c}->cobrand->waste_get_pro_rata_bin_cost( $sub_end, $now );
+
+    return $cost;
+}
 
 sub waste_get_pro_rata_bin_cost {
     my ($self, $end, $start) = @_;
@@ -1115,6 +1195,26 @@ sub waste_get_pro_rata_bin_cost {
     my $cost = $base + ( $weeks * $weekly_cost );
 
     return $cost;
+}
+
+
+sub waste_display_payment_method {
+    my ($self, $method) = @_;
+
+    my $display = {
+        direct_debit => _('Direct Debit'),
+        credit_card => _('Credit Card'),
+    };
+
+    return $display->{$method};
+}
+
+sub garden_waste_cost {
+    my ($self, $bin_count) = @_;
+
+    $bin_count ||= 1;
+
+    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
 }
 
 sub admin_templates_external_status_code_hook {
