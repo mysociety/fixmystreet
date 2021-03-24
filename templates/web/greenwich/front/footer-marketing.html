@@ -1,4 +1,7 @@
 <hr />
+
+[% USE date %]
+
 <div class="tablewrapper">
     <div id="footer-mobileapps">
         <p>
@@ -25,7 +28,7 @@
         <li><a href="http://www.royalgreenwich.gov.uk/terms" rel="nofollow">Terms &amp; disclaimer</a></li>
         <li><a href="http://www.royalgreenwich.gov.uk/accessibility" rel="nofollow">Accessibility statement</a></li>
         <li><a href="http://www.royalgreenwich.gov.uk/statistics" rel="nofollow">Website statistics</a></li>
-        <li>&copy; 2015 Royal Borough of Greenwich</li>
+        <li>&copy; [% date.format(date.now, '%Y') %] Royal Borough of Greenwich</li>
         <li class="last"><a href="http://www.royalgreenwich.gov.uk/cookies">Cookies</a></li>
     </ul>
 </div>

@@ -1,3 +1,4 @@
+[% USE date %]
 <footer class="site-footer">
     <div class="footer-container">
         <div class="column span-12">
@@ -33,7 +34,7 @@
         </div>
         <div class="column span-12">
             <div class="copyright">
-                <p class="first-child">© 2015 London Borough of Bromley</p>
+                <p class="first-child">&copy; [% date.format(date.now, '%Y') %] London Borough of Bromley</p>
             </div><!--copyright-->
         </div><!--column-->
     </div><!--footer-container-->
