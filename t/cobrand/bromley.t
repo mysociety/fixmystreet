@@ -1,6 +1,7 @@
 use CGI::Simple;
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use DateTime;
 use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
@@ -681,6 +682,83 @@ subtest 'parks lookup' => sub {
         $mech->get_ok('/');
         $mech->submit_form_ok({ with_fields => { pc => 'The Green' } });
         $mech->content_contains('51.3396');
+    };
+};
+
+subtest 'check pro-rata calculation' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            payment_gateway => {
+                bromley => {
+                    ggw_cost => 2000,
+                    pro_rata_weekly => 86,
+                    pro_rata_minimum => 1586,
+                }
+            }
+        },
+    }, sub {
+        my $c = FixMyStreet::Cobrand::Bromley->new;
+
+        my $start = DateTime->new(
+            year => 2021,
+            month => 02,
+            day => 19
+        );
+
+        for my $test (
+            {
+                year => 2021,
+                month => 2,
+                day => 23,
+                expected => 1586,
+                desc => '4 days remaining',
+            },
+            {
+                year => 2021,
+                month => 2,
+                day => 26,
+                expected => 1586,
+                desc => 'one week remaining',
+            },
+            {
+                year => 2021,
+                month => 3,
+                day => 5,
+                expected => 1672,
+                desc => 'two weeks remaining',
+            },
+            {
+                year => 2021,
+                month => 3,
+                day => 8,
+                expected => 1672,
+                desc => 'two and a half weeks remaining',
+            },
+            {
+                year => 2021,
+                month => 8,
+                day => 19,
+                expected => 3650,
+                desc => '25 weeks remaining',
+            },
+            {
+                year => 2022,
+                month => 2,
+                day => 14,
+                expected => 5886,
+                desc => '51 weeks remaining',
+            },
+        ) {
+
+            my $end = DateTime->new(
+                year => $test->{year},
+                month => $test->{month},
+                day => $test->{day},
+            );
+
+            is $c->waste_get_pro_rata_bin_cost($end, $start), $test->{expected}, $test->{desc};
+        }
     };
 };
 

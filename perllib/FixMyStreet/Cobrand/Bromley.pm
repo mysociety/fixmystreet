@@ -1103,6 +1103,20 @@ sub waste_munge_enquiry_data {
     $self->_set_user_source;
 }
 
+sub waste_get_pro_rata_bin_cost {
+    my ($self, $end, $start) = @_;
+
+    my $weeks = $end->delta_days($start)->in_units('weeks');
+    $weeks -= 1 if $weeks > 0;
+
+    my $base = $self->feature('payment_gateway')->{pro_rata_minimum};
+    my $weekly_cost = $self->feature('payment_gateway')->{pro_rata_weekly};
+
+    my $cost = $base + ( $weeks * $weekly_cost );
+
+    return $cost;
+}
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};
