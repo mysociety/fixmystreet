@@ -28,6 +28,12 @@ has_field saved_data => ( type => 'JSON' );
 has_field token => ( type => 'Hidden', required => 1 );
 has_field process => ( type => 'Hidden', required => 1 );
 
+sub has_page_called {
+    my ($self, $page_name) = @_;
+
+    return grep { $_->name eq $page_name } $self->all_pages;
+}
+
 sub next {
     my $self = shift;
     my $next = $self->current_page->next;

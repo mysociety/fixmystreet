@@ -274,6 +274,13 @@ sub GetServiceUnitsForObject {
         ServiceTasks => { ServiceTask => {
             Id => 405,
             ScheduleDescription => 'every other Monday',
+            Data => { ExtensibleDatum => [ {
+                DatatypeName => 'LBB - GW Container',
+                ChildData => { ExtensibleDatum => {
+                    DatatypeName => 'Quantity',
+                    Value => 1,
+                } },
+            } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
@@ -281,7 +288,7 @@ sub GetServiceUnitsForObject {
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
-                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
                     OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
