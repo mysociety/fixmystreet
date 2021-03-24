@@ -11,7 +11,7 @@ sub index :Path :Args(0) {
     $c->detach('edit_emergency_message', [$c->user->from_body]) unless $c->user->is_superuser;
 
     # Superusers can see a list of all bodies with emergency messages.
-    my @bodies = $c->model('DB::Body')->search(undef, { order_by => [ 'name', 'id' ] });
+    my @bodies = $c->model('DB::Body')->active->search(undef, { order_by => [ 'name', 'id' ] });
     $c->stash->{bodies} = \@bodies;
 }
 
