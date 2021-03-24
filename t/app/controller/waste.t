@@ -79,6 +79,11 @@ create_contact({ category => 'Renew Garden Subscription', email => 'garden_renew
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
         { code => 'payment', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'Cancel Garden Subscription', email => 'garden_renew@example.com'},
+        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
@@ -701,6 +706,27 @@ FixMyStreet::override_config {
             "error message displayed if try to renew by direct debit");
     };
 
+    subtest 'cancel direct debit sub' => sub {
+        $mech->log_out_ok();
+        $mech->get_ok('/waste/12345/garden_cancel');
+        is $mech->uri->path, '/auth', 'have to be logged in to cancel subscription';
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->state, 'unconfirmed', 'report confirmed';
+
+        is_deeply $dd_sent_params->{cancel_plan}, {
+            payer_reference => 1,
+        }, "correct direct debit cancellation params sent";
+    };
+
     $p->update_extra_field({ name => 'payment_method', value => 'credit_card' });
     $p->update;
 
@@ -903,6 +929,22 @@ FixMyStreet::override_config {
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
     };
 
+    subtest 'cancel credit card sub' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->state, 'confirmed', 'report confirmed';
+    };
 };
 
 done_testing;
