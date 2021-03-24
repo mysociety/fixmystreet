@@ -143,4 +143,8 @@ sub get_recent_payments {
     return { error => "unknown error" };
 }
 
+sub cancel_plan {
+    return 1;
+}
+
 1;
