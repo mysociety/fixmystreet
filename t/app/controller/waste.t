@@ -46,10 +46,12 @@ create_contact({ category => 'New Garden Subscription', email => 'garden@example
         { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
         { code => 'current_containers', required => 1, automated => 'hidden_field' },
         { code => 'new_containers', required => 1, automated => 'hidden_field' },
+        { code => 'payment_method', required => 1, automated => 'hidden_field' },
         { code => 'payment', required => 1, automated => 'hidden_field' },
 );
 
@@ -68,7 +70,7 @@ FixMyStreet::override_config {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['bromley', 'fixmystreet'],
-    COBRAND_FEATURES => { echo => { bromley => { sample_data => 1 } }, waste => { bromley => 1 } },
+    COBRAND_FEATURES => { echo => { bromley => { sample_data => 1 } }, waste => { bromley => 1 }, payment_gateway => { bromley => { ggw_cost => 1000 } } },
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->host('bromley.fixmystreet.com');
@@ -341,14 +343,117 @@ FixMyStreet::override_config {
                 new_bins => 1,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
-                email => 'test@example.org'
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        # external redirects make Test::WWW::Mechanize unhappy so clone
+        # the mech for the redirect
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+        my $url = $sent_params->{returnUrl};
+        my ($report_id) = ( $url =~ m#/(\d+)$# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->find( { id => $report_id } );
+
+        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        is $sent_params->{amount}, 2000, 'correct amount used';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        $mech->get_ok('/waste/pay_complete/' . $new_report->id);
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+    };
+
+    subtest 'check new sub credit card payment with no bins required' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 1,
+                new_bins => 0,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        # external redirects make Test::WWW::Mechanize unhappy so clone
+        # the mech for the redirect
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+        my $url = $sent_params->{returnUrl};
+        my ($report_id) = ( $url =~ m#/(\d+)$# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->find( { id => $report_id } );
+
+        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), '', 'no container request';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        is $sent_params->{amount}, 2000, 'correct amount used';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        $mech->get_ok('/waste/pay_complete/' . $new_report->id);
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+    };
+
+    subtest 'check new sub direct debit payment' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 1,
+                payment_method => 'direct_debit',
+                name => 'Test McTest',
+                email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $mech->res->previous->code, 302, 'payments issues a redirect';
-        is $mech->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
-        is $sent_params->{amount}, 2000, 'correct amount used';
-    }
+        $mech->content_like( qr/txtRegularAmount[^>]*"20.00"/, 'payment amount correct');
+
+        my ($report_id) = ( $mech->content =~ m#reference\*\|\*([^"]*)# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->find( { id => $report_id } );
+
+        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $mech->get_ok("/waste/dd_complete?reference=$report_id");
+        $mech->content_contains('Direct Debit set up');
+
+        $new_report->discard_changes;
+        is $new_report->state, 'unconfirmed', 'report still not confirmed';
+    };
 };
 
 done_testing;
