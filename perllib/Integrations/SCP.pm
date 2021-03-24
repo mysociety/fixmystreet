@@ -19,8 +19,8 @@ has endpoint => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        SOAP::Lite->soapversion(1.2);
-        my $soap = SOAP::Lite->on_action( sub { $_[1]; } )->proxy($self->config->{cc_url});
+        SOAP::Lite->soapversion(1.1);
+        my $soap = SOAP::Lite->on_action( sub { ''; } )->proxy($self->config->{cc_url});
         $soap->autotype(0);
         return $soap;
     }
