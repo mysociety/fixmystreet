@@ -14,6 +14,7 @@ use FixMyStreet::App::Form::Waste::Enquiry;
 use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
+use FixMyStreet::App::Form::Waste::Garden::Renew;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
 
@@ -251,6 +252,13 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
         payer_reference => 1, # XXX
         amount => sprintf('%.2f', $total / 100),
     } );
+}
+
+
+sub direct_debit_renew : Path('dd_renew') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->res->body('ERROR - DD renewal is automatic');
 }
 
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
@@ -615,6 +623,37 @@ sub garden_cancel : Chained('property') : Args(0) {
     $c->forward('form');
 }
 
+sub garden_renew : Chained('property') : Args(0) {
+    my ($self, $c) = @_;
+
+    unless ( $c->user_exists ) {
+        $c->detach( '/auth/redirect' );
+    }
+
+    $c->forward('get_original_sub');
+
+    # direct debit renewal is automatic so you should not
+    # be doing this
+    my $payment_method = $c->forward('get_current_payment_method');
+    if ( $payment_method eq 'direct_debit' ) {
+        $c->stash->{template} = 'waste/garden/dd_renewal_error.html';
+        $c->detach;
+    }
+
+    my $service = $c->cobrand->garden_waste_service_id;
+    my $max_bins = $c->stash->{quantity_max}->{$service};
+    $service = $c->stash->{services}{$service};
+    $c->stash->{garden_form_data} = {
+        max_bins => $max_bins,
+        bins => $service->{garden_bins},
+    };
+
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
+    $c->forward('form');
+}
+
 sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
     # TODO Cancel subscription here
@@ -757,6 +796,27 @@ sub process_garden_renew : Private {
 
     $c->set_param('payment', $payment);
 
+    $c->forward('setup_garden_sub_params', [ $data ]);
+    $c->forward('add_report', [ $data, 1 ]) or return;
+
+    # it should not be possible to get to here if it's direct debit but
+    # grab this so we can check and redirect to an information page if
+    # they manage to get here
+    my $payment_method = $c->forward('get_current_payment_method');
+
+    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+        $c->stash->{message} = 'Payment skipped on staging';
+        $c->stash->{reference} = $c->stash->{report}->id;
+        $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+    } else {
+        if ( $payment_method eq 'direct_debit' ) {
+            $c->forward('direct_debit_renew');
+        } else {
+            $c->forward('pay');
+        }
+    }
+
+    return 1;
 }
 
 sub process_garden_data : Private {
