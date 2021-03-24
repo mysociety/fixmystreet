@@ -28,6 +28,7 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $id = $c->get_param('address')) {
+        $c->cobrand->call_hook('clear_cached_lookups', => $id );
         $c->detach('redirect_to_id', [ $id ]);
     }
 
@@ -235,6 +236,13 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     $c->forward('/auth/get_csrf_token');
 
+    # clear this every time they visit this page to stop stale content.
+    $c->log->debug($c->req->path);
+    if ( $c->req->path =~ m#^waste/\d+$# ) {
+        $c->log->debug('clear cache');
+        $c->cobrand->call_hook( 'clear_cached_lookups' => $id );
+    }
+
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property;
 
@@ -243,6 +251,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
+    $c->stash->{services_available} = $c->cobrand->call_hook(available_bin_services_for_address => $property) || {};
 }
 
 sub bin_days : Chained('property') : PathPart('') : Args(0) {
@@ -689,6 +698,8 @@ sub add_report : Private {
         cobrand => $report->cobrand,
         lang => $report->lang,
     })->confirm;
+
+    $c->cobrand->call_hook( 'clear_cached_lookups' => $c->stash->{property}{id} );
 
     return 1;
 }
