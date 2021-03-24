@@ -173,6 +173,13 @@ sub confirm_subscription : Private {
     $c->detach;
 }
 
+sub cancel_subscription : Private {
+    my ($self, $c, $reference) = @_;
+
+    $c->stash->{template} = 'waste/garden/cancel_confirmation.html';
+    $c->detach;
+}
+
 sub direct_debit : Path('dd') : Args(0) {
     my ($self, $c) = @_;
 
@@ -254,6 +261,17 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
     } );
 }
 
+sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $p = $c->stash->{report};
+
+    my $i = Integrations::Pay360->new( { config => $c->cobrand->feature('payment_gateway') } );
+
+    my $update_ref = $i->cancel_plan( {
+        payer_reference => 1, # XXX
+    } );
+}
 
 sub direct_debit_renew : Path('dd_renew') : Args(0) {
     my ($self, $c) = @_;
@@ -618,6 +636,12 @@ sub garden_modify : Chained('property') : Args(0) {
 sub garden_cancel : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    unless ( $c->user_exists ) {
+        $c->detach( '/auth/redirect' );
+    }
+
+    $c->forward('get_original_sub');
+
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Cancel';
     $c->forward('form');
@@ -656,7 +680,34 @@ sub garden_renew : Chained('property') : Args(0) {
 
 sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
-    # TODO Cancel subscription here
+
+    my $data = $form->saved_data;
+
+    $data->{name} = $c->user->name;
+    $data->{email} = $c->user->email;
+    $data->{phone} = $c->user->phone;
+    $data->{category} = 'Cancel Garden Subscription';
+
+    my $bin_count = $c->cobrand->get_current_garden_bins;
+
+    $data->{new_bins} = $bin_count * -1;
+    $c->forward('setup_garden_sub_params', [ $data ]);
+
+    $c->forward('add_report', [ $data, 1 ]) or return;
+
+    my $payment_method = $c->forward('get_current_payment_method');
+
+    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+        $c->stash->{report}->confirm;
+        $c->stash->{report}->update;
+    } else {
+        if ( $payment_method eq 'direct_debit' ) {
+            $c->forward('direct_debit_cancel_sub');
+        } else {
+            $c->stash->{report}->confirm;
+            $c->stash->{report}->update;
+        }
+    }
     return 1;
 }
 
