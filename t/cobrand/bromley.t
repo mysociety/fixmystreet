@@ -289,6 +289,7 @@ subtest 'check heatmap page' => sub {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
     COBRAND_FEATURES => {
+        payment_gateway => { bromley => { ggw_cost => 1000 } },
         echo => { bromley => { sample_data => 1 } },
         waste => { bromley => 1 }
     },
@@ -365,6 +366,7 @@ subtest 'test waste max-per-day' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
         COBRAND_FEATURES => {
+            payment_gateway => { bromley => { ggw_cost => 1000 } },
             echo => { bromley => { max_per_day => 1, sample_data => 1 } },
             waste => { bromley => 1 }
         },

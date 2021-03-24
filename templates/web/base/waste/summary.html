@@ -36,6 +36,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
     </dd>
+    [% IF form.has_page_called('about_you') %]
     <dd class="govuk-summary-list__actions">
     <form method="post">
         <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
@@ -43,6 +44,7 @@
         <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
     </form>
     </dd>
+    [% END %]
   </div>
 
     <div class="govuk-summary-list__row">
