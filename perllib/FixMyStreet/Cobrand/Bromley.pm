@@ -1197,6 +1197,24 @@ sub waste_get_pro_rata_bin_cost {
     return $cost;
 }
 
+sub waste_sub_due {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
+
+    my $diff = $now->delta_days($sub_end)->in_units('weeks');
+    return $diff < 6;
+}
+
+sub waste_sub_overdue {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
+
+    return $now > $sub_end;
+}
 
 sub waste_display_payment_method {
     my ($self, $method) = @_;

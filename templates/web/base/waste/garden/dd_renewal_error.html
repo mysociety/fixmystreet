@@ -1,0 +1,20 @@
+[% SET bodyclass = 'waste' %]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title">Collection address</dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+  <p>
+  This property has a direct debit subscription which will renew automatically.
+  </p>
+
+[% INCLUDE footer.html %]
