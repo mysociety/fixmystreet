@@ -54,6 +54,19 @@ create_contact({ category => 'New Garden Subscription', email => 'garden@example
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
         { code => 'payment', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'Amend Garden Subscription', email => 'garden_amend@example.com'},
+        { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'current_containers', required => 1, automated => 'hidden_field' },
+        { code => 'new_containers', required => 1, automated => 'hidden_field' },
+        { code => 'payment_method', required => 1, automated => 'hidden_field' },
+        { code => 'payment', required => 1, automated => 'hidden_field' },
+        { code => 'pro_rata', required => 1, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
@@ -467,6 +480,206 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
     };
+
+    subtest 'check modify sub credit card payment' => sub {
+        $mech->log_out_ok();
+        $mech->get_ok('/waste/12345/garden_modify');
+        is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->content_contains('40.00');
+        $mech->content_contains('5.50');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 550, 'correct amount used';
+
+        my $url = $sent_params->{returnUrl};
+        my ($report_id) = ( $url =~ m#/(\d+)$# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->find( { id => $report_id } );
+
+        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+
+        $mech->get_ok('/waste/pay_complete/' . $new_report->id);
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+    };
+
+    subtest 'check modify sub credit card payment reducing bin count' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $sent_params = undef;
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 405,
+                    ScheduleDescription => 'every other Monday',
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => {
+                            DatatypeName => 'Quantity',
+                            Value => 2,
+                        } },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                        },
+                    }, {
+                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            Ref => { Value => { anyType => [ 567, 890 ] } },
+                        },
+                    } ] },
+                } },
+            } ];
+        });
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+
+        is $sent_params, undef, "no one off payment if reducing bin count";
+    };
+
+    $p->category('New Garden Subscription');
+    $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
+    $p->update;
+
+    subtest 'check modify sub direct debit payment' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 4 } });
+        $mech->content_contains('Value must be between 1 and 3');
+        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->content_contains('40.00');
+        $mech->content_contains('5.50');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        is_deeply $dd_sent_params->{one_off_payment}, {
+            payer_reference => 1,
+            amount => '5.50',
+            reference => $new_report->id,
+            comments => '',
+        }, "correct direct debit ad hoc payment params sent";
+        is_deeply $dd_sent_params->{amend_plan}, {
+            payer_reference => 1,
+            amount => '40.00',
+        }, "correct direct debit amendment params sent";
+    };
+
+    $dd_sent_params = {};
+    subtest 'check modify sub direct debit payment reducing bin count' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 405,
+                    ScheduleDescription => 'every other Monday',
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => {
+                            DatatypeName => 'Quantity',
+                            Value => 2,
+                        } },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                        },
+                    }, {
+                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            Ref => { Value => { anyType => [ 567, 890 ] } },
+                        },
+                    } ] },
+                } },
+            } ];
+        });
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        is $dd_sent_params->{one_off_payment}, undef, "no one off payment if reducing bin count";
+        is_deeply $dd_sent_params->{amend_plan}, {
+            payer_reference => 1,
+            amount => '20.00',
+        }, "correct direct debit amendment params sent";
+    };
+
 };
 
 done_testing;
