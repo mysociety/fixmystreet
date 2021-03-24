@@ -67,6 +67,11 @@ h1.main {
   color: #fff;
 }
 
+.emergency-message {
+    padding: 1em;
+    font-size: 1em;
+}
+
 // We have slightly different content in our lists of issues to what
 // reports_list.scss expects, so we need to tweak the padding back to normal.
 // This stops the spacing being too large.
