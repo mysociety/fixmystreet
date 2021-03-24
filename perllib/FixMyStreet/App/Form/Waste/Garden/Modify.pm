@@ -32,15 +32,21 @@ has_page summary => (
     template => 'waste/garden/modify_summary.html',
     update_field_list => sub {
         my $form = shift;
+        my $c = $form->{c};
         my $data = $form->saved_data;
-        # TODO needs to work out amount to pay now? pro-rata?
-        # Can't be editable so don't really want it as a hidden form field
-        #my $cost = $form->{c}->cobrand->feature('payment_gateway')->{ggw_cost};
-        #my $total = ( $data->{new_bins} + $data->{current_bins} ) * $cost;
-        #$data->{total} = $total;
-        #return {
-        #    total => { default => $total },
-        #};
+        my $current_bins = $c->stash->{garden_form_data}->{bins};
+        my $new_bins = $data->{bin_number} - $current_bins;
+        my $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
+        my $total = $c->cobrand->garden_waste_cost($data->{bin_number});
+
+        $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
+        $data->{billing_address} = $c->stash->{garden_form_data}->{billing_address} || $c->stash->{property}{address};
+        $data->{display_pro_rata} = $pro_rata / 100;
+        $data->{display_total} = $total / 100;
+
+        $data->{name} = $c->user->name;
+        $data->{email} = $c->user->email;
+        $data->{phone} = $c->user->phone;
         return {};
     },
     finished => sub {

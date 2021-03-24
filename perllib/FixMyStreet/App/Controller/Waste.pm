@@ -82,13 +82,18 @@ sub pay : Path('pay') : Args(0) {
 
     my $p = $c->stash->{report};
 
+    my $amount = $p->get_extra_field( name => 'pro_rata' );
+    unless ($amount) {
+        $amount = $p->get_extra_field( name => 'payment' );
+    }
+
     my $result = $payment->pay({
         returnUrl => $c->uri_for('pay_complete', $p->id ) . '',
         backUrl => $c->uri_for('pay') . '',
         ref => $p->id,
         request_id => $p->id,
         description => $p->title,
-        amount => $p->get_extra_field( name => 'payment' )->{value} * 100,
+        amount => $amount->{value},
     });
 
     if ( $result ) {
@@ -124,10 +129,10 @@ sub pay : Path('pay') : Args(0) {
 sub pay_complete : Path('pay_complete') : Args(1) {
     my ($self, $c, $id) = @_;
 
-
     # load report
-    my $p = $c->model('Problem')->find( id => $id );
+    my $p = $c->model('DB::Problem')->find({ id => $id });
     # need to get some ID Things which I guess we stored in pay
+    $c->stash->{report} = $p;
 
     my $payment = Integrations::SCP->new(
         config => $c->cobrand->feature('payment_gateway')
@@ -186,18 +191,11 @@ sub direct_debit : Path('dd') : Args(0) {
     $c->stash->{town} = pop @parts;
     $c->stash->{address3} = join ', ', @parts;
 
-
-    my $dt = DateTime->now;
-    if ($dt->day < 15) {
-        $dt->set_day(15);
-    } else {
-        $dt->add( months => 1 );
-        $dt->set_day(15);
-    }
+    my $dt = $c->cobrand->waste_get_next_dd_day;
 
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
-    $c->stash->{amount} = $c->stash->{report}->get_extra_field(name => 'payment')->{value},
+    $c->stash->{amount} = sprintf( '%.2f', $c->stash->{report}->get_extra_field(name => 'payment')->{value} / 100 ),
     $c->stash->{reference} = $c->stash->{report}->id;
     $c->stash->{day} = $dt->day;
     $c->stash->{month} = $dt->month;
@@ -212,7 +210,8 @@ sub direct_debit_complete : Path('dd_complete') : Args(0) {
     my ($self, $c) = @_;
 
     my $ref = $c->get_param('reference');
-    my $p = $c->model('DB::Problem')->find( id => $ref );
+
+    my $p = $c->model('DB::Problem')->find( { id => $ref } );
 
     $c->stash->{message} = "Direct Debit set up";
     $c->stash->{report} = $p;
@@ -224,6 +223,34 @@ sub direct_debit_cancelled : Path('dd_cancelled') : Args(0) {
     my ($self, $c) = @_;
 
     $c->res->body('NOT IMPLEMENTED');
+}
+
+sub direct_debit_modify : Path('dd_amend') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $p = $c->stash->{report};
+
+    my $ad_hoc = $p->get_extra_field_value('pro_rata');
+    my $total = $p->get_extra_field_value('payment');
+
+    my $i = Integrations::Pay360->new( { config => $c->cobrand->feature('payment_gateway') } );
+
+    # if reducing bin count then there won't be an ad-hoc payment
+    if ( $ad_hoc ) {
+        my $dt = $c->cobrand->waste_get_next_dd_day;
+
+        my $one_off_ref = $i->one_off_payment( {
+                payer_reference => 1, # XXX
+                amount => sprintf('%.2f', $ad_hoc / 100),
+                reference => $p->id,
+                comments => '',
+        } );
+    }
+
+    my $update_ref = $i->amend_plan( {
+        payer_reference => 1, # XXX
+        amount => sprintf('%.2f', $total / 100),
+    } );
 }
 
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
@@ -522,6 +549,10 @@ sub process_enquiry_data : Private {
 sub garden : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    my $service = $c->cobrand->garden_waste_service_id;
+    $c->stash->{garden_form_data} = {
+        max_bins => $c->stash->{quantity_max}->{$service}
+    };
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
     $c->forward('form');
@@ -530,9 +561,17 @@ sub garden : Chained('property') : Args(0) {
 sub garden_modify : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    unless ( $c->user_exists ) {
+        $c->detach( '/auth/redirect' );
+    }
+
+    $c->forward('get_original_sub');
+
+    my $service = $c->cobrand->garden_waste_service_id;
+
     my $pick = $c->get_param('task') || '';
     if ($pick eq 'problem') {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/enquiry?template=problem&service_id=545'); # XXX
+        $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/enquiry?template=problem&service_id=' . $service);
         $c->detach;
     }
     if ($pick eq 'cancel') {
@@ -540,16 +579,27 @@ sub garden_modify : Chained('property') : Args(0) {
         $c->detach;
     }
 
-    my $service = 545;
+    my $max_bins = $c->stash->{quantity_max}->{$service};
     $service = $c->stash->{services}{$service};
     if (!$service) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
 
+    my $payment_method = 'credit_card';
+    my $billing_address;
+    if ( $c->stash->{orig_sub} ) {
+        my $orig_sub = $c->stash->{orig_sub};
+        $payment_method = $orig_sub->get_extra_field_value('payment_method') if $orig_sub->get_extra_field_value('payment_method');
+        $billing_address = $orig_sub->get_extra_field_value('billing_address');
+    }
+
     $c->stash->{garden_form_data} = {
+        max_bins => $max_bins,
         bins => $service->{garden_bins},
         end_date => $service->{end_date},
+        payment_method => $payment_method,
+        billing_address => $billing_address,
     };
 
     $c->stash->{first_page} = 'intro';
@@ -571,15 +621,48 @@ sub process_garden_cancellation : Private {
     return 1;
 }
 
-sub process_garden_modification : Private {
-    my ($self, $c, $form) = @_;
-    # TODO Modify subscription here
+# XXX the payment method will be stored in Echo so we should check there instead once
+# this is in place
+sub get_current_payment_method : Private {
+    my ($self, $c) = @_;
+
+    if ( !$c->stash->{orig_sub} ) {
+        $c->forward('get_original_sub');
+    }
+
+    my $payment_method;
+
+    if ($c->stash->{orig_sub}) {
+        $payment_method = $c->stash->{orig_sub}->get_extra_field_value('payment_method');
+    }
+
+    return $payment_method || 'credit_card';
+
+}
+
+sub get_original_sub : Private {
+    my ($self, $c) = @_;
+
+    my $p = $c->model('DB::Problem')->search({
+        user_id => $c->user->id,
+        category => 'New Garden Subscription',
+        extra => { like => '%property_id,T5:value,I_:'. $c->stash->{property}{id} . '%' }
+    },
+    {
+        order_by => { -desc => 'id' }
+    });
+
+    if ( $p->count == 1) {
+        $c->stash->{orig_sub} = $p->first;
+    } else {
+        $c->stash->{orig_sub} = $p->first; # XXX
+    }
+
     return 1;
 }
 
-sub process_garden_data : Private {
-    my ($self, $c, $form) = @_;
-    my $data = $form->saved_data;
+sub setup_garden_sub_params : Private {
+    my ($self, $c, $data) = @_;
 
     my $address = $c->stash->{property}->{address};
 
@@ -588,15 +671,91 @@ sub process_garden_data : Private {
     $data->{title} = $data->{category};
     $data->{detail} = "$data->{category}\n\n$address";
 
-    $c->set_param('service_id', $data->{service_id});
-    $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
+    $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
     $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste'});
-    $c->set_param('Subscription_Details_Quantity', $data->{current_bins} + $data->{new_bins});
-    $c->set_param('Container_Request_Details_Container_Type', $container_types{'Garden Waste'});
-    $c->set_param('Container_Request_Details_Quantity', $data->{new_bins});
+    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    if ( $data->{new_bins} ) {
+        if ( $data->{new_bins} > 0 ) {
+            $c->set_param('Container_Request_Details_Action', $c->stash->{container_actions}->{deliver} );
+        } elsif ( $data->{new_bins} < 0 ) {
+            $c->set_param('Container_Request_Details_Action',  $c->stash->{container_actions}->{remove} );
+        }
+        $c->set_param('Container_Request_Details_Container_Type', $container_types{'Garden Waste'});
+        $c->set_param('Container_Request_Details_Quantity', abs($data->{new_bins}));
+    }
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
-    $c->set_param('payment', $c->get_param('total'));
+    $c->set_param('payment_method', $data->{payment_method});
+}
+
+sub process_garden_modification : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    $data->{category} = 'Amend Garden Subscription'; # XXX
+    $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Amend});
+
+    my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
+    my $new_bins = $data->{bin_number} - $c->stash->{garden_form_data}->{bins};
+
+    $data->{new_bins} = $new_bins;
+    $data->{bin_count} = $data->{bin_number};
+
+    my $pro_rata;
+    if ( $new_bins > 0 ) {
+        $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
+        $c->set_param('pro_rata', $pro_rata);
+    }
+    my $payment = $data->{bin_number} * $cost;
+    $c->set_param('payment', $payment);
+
+    $c->forward('setup_garden_sub_params', [ $data ]);
+    $c->forward('add_report', [ $data, 1 ]) or return;
+
+    my $payment_method = $c->stash->{garden_form_data}->{payment_method};
+
+    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+        $c->stash->{message} = 'Payment skipped on staging';
+        $c->stash->{reference} = $c->stash->{report}->id;
+        $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+    } else {
+        if ( $payment_method eq 'direct_debit' ) {
+            $c->forward('direct_debit_modify');
+        } elsif ( $pro_rata ) {
+            $c->forward('pay');
+        } else {
+            $c->forward('confirm_subscription', [ undef ]);
+        }
+    }
+    return 1;
+}
+
+sub process_garden_renew : Private {
+    my ($self, $c, $form) = @_;
+
+    my $data = $form->saved_data;
+    my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
+
+    my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
+    my $total_bins = $data->{current_bins} + $data->{new_bins};
+    my $payment = $total_bins * $cost;
+    $data->{bin_count} = $total_bins;
+
+
+    if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
+        $data->{category} = 'New Garden Subscription';
+        $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
+    } else {
+        $data->{category} = 'Renew Garden Subscription';
+        $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Renew});
+
+        # only override the new bin count if we know the current bin number
+        my $current_bins = $c->cobrand->get_current_garden_bins;
+        $data->{new_bins} = $total_bins - $current_bins;
+    }
+
+
+    $c->set_param('payment', $payment);
 
     $c->forward('add_report', [ $data, 1 ]) or return;
 
