@@ -165,7 +165,7 @@ sub confirm_subscription : Private {
     my ($self, $c, $reference) = @_;
 
     my $p = $c->stash->{report};
-    $p->set_extra_metadata('payment_reference', $reference);
+    $p->set_extra_metadata('payment_reference', $reference) if $reference;
     $p->confirm;
     $p->update;
     $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
@@ -757,6 +757,22 @@ sub process_garden_renew : Private {
 
     $c->set_param('payment', $payment);
 
+}
+
+sub process_garden_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
+
+    my $bin_count = $data->{new_bins} + $data->{current_bins};
+    $data->{bin_count} = $bin_count;
+
+    my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
+    my $total = $bin_count * $cost;
+    $c->set_param('payment', $total);
+
+    $c->forward('setup_garden_sub_params', [ $data ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
