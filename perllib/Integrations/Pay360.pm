@@ -16,7 +16,7 @@ has endpoint => (
     default => sub {
         my $self = shift;
         SOAP::Lite->soapversion(1.2);
-        my $soap = SOAP::Lite->on_action( sub { $_[1]; } )->proxy($self->config->{dd_url});
+        my $soap = SOAP::Lite->on_action( sub { $_[1]; } )->proxy($self->config->{dd_api_url});
         $soap->autotype(0);
         return $soap;
     }

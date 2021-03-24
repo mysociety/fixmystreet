@@ -136,7 +136,7 @@ $transport->mock(send_receive => sub {
 
 my $integration = Integrations::Pay360->new(
     config => {
-        dd_url => 'http://localhost/',
+        dd_api_url => 'http://localhost/',
         dd_sun => 1234,
         dd_client_id => 'qpio-rstu-vwxy',
         dd_username => 'username',
