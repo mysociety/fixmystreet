@@ -118,6 +118,11 @@ sub pay : Path('pay') : Args(0) {
              my $redirect = $result->{invokeResult}->{redirectURL};
              $c->res->redirect( $redirect );
              $c->detach;
+         } else {
+             # XXX - should this do more?
+            $c->stash->{error} = 'Unknown error';
+            $c->stash->{template} = 'waste/pay.html';
+            $c->detach;
          }
      } else {
         $c->stash->{error} = 'Unknown error';
@@ -154,11 +159,15 @@ sub pay_complete : Path('pay_complete') : Args(1) {
             # cancelled, not attempted, logged out - try again option
             # card rejected - try again with different card/cancel
             # otherwise error page?
+            $c->stash->{template} = 'waste/pay.html';
             $c->stash->{error} = 'Payment failed: ' . $resp->{paymentResult}->{status};
+            $c->detach;
         }
     } else {
         # retry if in progress, error if invalid ref.
+        $c->stash->{template} = 'waste/pay.html';
         $c->stash->{error} = 'Payment failed: ' . $resp->{transactionState};
+        $c->detach;
     }
 }
 
