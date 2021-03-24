@@ -43,6 +43,7 @@ sub edit_emergency_message :Private {
         }
 
         $body->update;
+        $c->stash->{status_message} = _('Updated!');
     }
 
     $c->forward('/auth/get_csrf_token');

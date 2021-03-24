@@ -1,4 +1,7 @@
 [% INCLUDE 'admin/header.html' title=loc('Emergency message') %]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% INCLUDE status_message %]
 
 <p>[% loc('This emergency message will be shown on the homepage.') %]</p>
 

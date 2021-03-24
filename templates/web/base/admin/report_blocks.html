@@ -39,5 +39,7 @@ SET state_groups = c.cobrand.state_groups_admin;
 [% END %]
 
 [% BLOCK status_message %]
+  [% IF status_message %]
     <p><em>[% status_message %]</em></p>
+  [% END %]
 [% END %]
