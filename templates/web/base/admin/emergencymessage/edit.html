@@ -13,12 +13,22 @@
         <div class="form-error">[% errors.emergency_message %]</div>
     [% END %]
     <p>
-        <strong>[% loc('Emergency message:') %] </strong>
-        <textarea name="emergency_message" class="form-control" rows="20">[% emergency_message %]</textarea>
+        <strong>[% loc('Message') %]:</strong>
+        <textarea name="emergency_message" class="form-control" rows="10">[% emergency_message %]</textarea>
     </p>
+
+  [% IF body.get_cobrand_handler.feature('waste') %]
+    <p>The waste message will be shown on all waste pages.</p>
+
+    <p>
+        <strong>Waste message:</strong>
+        <textarea name="emergency_message_waste" class="form-control" rows="10">[% emergency_message_waste %]</textarea>
+    </p>
+  [% END %]
+
     <p>
     <input type="hidden" name="token" value="[% csrf_token %]" >
-    <input type="submit" class="btn" value="[% emergency_message ? loc('Update message') : loc('Create message') %]" >
+    <input type="submit" class="btn" value="[% emergency_message OR emergency_message_waste ? loc('Update message') : loc('Create message') %]" >
     </p>
 </form>
 
