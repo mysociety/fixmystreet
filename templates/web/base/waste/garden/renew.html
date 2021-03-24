@@ -1,0 +1,23 @@
+[% INCLUDE waste/header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title">Collection address</dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+  <p>
+  This is the text to say you will not get your money back, will carry on to end of current season, etc.
+  </p>
+
+<form method="post">
+
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]
