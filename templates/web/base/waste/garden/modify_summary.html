@@ -2,35 +2,33 @@
 title = 'Subscribe to green garden waste collections';
 thing = 'garden subscription';
 summary_title = 'Subscription';
-step1 = 'details';
+step1 = 'alter';
 %]
 
 [% BLOCK answers %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste collection</dt>
-        <dd class="govuk-summary-list__value">[% data.bin_number %] bin/bins</dd>
+        <dd class="govuk-summary-list__value">[% data.bin_number %] [% nget('bin', 'bins', data.bin_number) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total</dt>
-        <dd class="govuk-summary-list__value">???</dd>
+        <dd class="govuk-summary-list__value">£[% tprintf('%.2f', data.display_total) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Payment method</dt>
-        <dd class="govuk-summary-list__value">???</dd>
+        <dd class="govuk-summary-list__value">[% c.cobrand.waste_display_payment_method(data.payment_method) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total to pay today</dt>
-        <dd class="govuk-summary-list__value">???</dd>
+        <dd class="govuk-summary-list__value">£[% tprintf('%.2f', data.display_pro_rata) %]</dd>
     </div>
 
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Billing address</dt>
         <dd class="govuk-summary-list__value">
-        ???
+        [% data.billing_address %]
         </dd>
     </div>
-
-???
 
 [% END %]
 

@@ -284,7 +284,7 @@ package main;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
-    COBRAND_FEATURES => { echo => { bromley => { url => 'http://example.org' } }, waste => { bromley => 1 } },
+    COBRAND_FEATURES => { echo => { bromley => { url => 'http://example.org' } }, waste => { bromley => 1 }, payment_gateway => { bromley => { ggw_cost => 1000 } } },
 }, sub {
     subtest 'Address lookup, mocking SOAP call' => sub {
         my $integ = Test::MockModule->new('SOAP::Lite');
@@ -308,9 +308,21 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         echo => { bromley => { url => 'http://example.org', sample_data => 1 } },
         waste => { bromley => 1 },
-        payment_gateway => { bromley => { cc_url => 'http://example.com', ggw_cost => 20 } },
+        payment_gateway => { bromley => {
+            cc_url => 'http://example.com',
+            ggw_cost => 2000,
+            pro_rata_minimum => 500,
+            pro_rata_weekly => 25,
+        } },
     },
 }, sub {
+    my ($p) = $mech->create_problems_for_body(1, $body->id, 'New Garden Subscription', {
+        user_id => $user->id,
+        category => 'Request new container',
+    });
+    $p->update_extra_field({ name => 'property_id', value => 12345});
+    $p->update;
+
     my $sent_params;
     my $pay = Test::MockModule->new('Integrations::SCP');
 
@@ -319,6 +331,7 @@ FixMyStreet::override_config {
         $sent_params = shift;
         return {
             transactionState => 'COMPLETE',
+            scpReference => '12345',
             invokeResult => {
                 status => 'SUCCESS',
                 redirectURL => 'http://example.org/faq'
