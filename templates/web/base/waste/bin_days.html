@@ -91,7 +91,9 @@
             [% IF any_request_allowed %]
               <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
             [% END %]
-              <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">GGW sub</a></li>
+            [% IF !services_available.Garden_Waste.is_active %]
+              <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Set up GGW sub</a></li>
+          [% END %]
           </ul>
         </div>
        [% END %]
