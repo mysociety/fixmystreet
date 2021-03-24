@@ -422,6 +422,15 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+sub clear_cached_lookups {
+    my ($self, $id) = @_;
+
+    my $key = "bromley:echo:look_up_property:$id";
+    delete $self->{c}->session->{$key};
+    $key = "bromley:echo:bin_services_for_address:$id";
+    delete $self->{c}->session->{$key};
+}
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
@@ -450,6 +459,7 @@ sub look_up_property {
     }
 
     my $calls = $self->call_api(
+        "look_up_property:$id",
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
@@ -567,7 +577,7 @@ sub bin_services_for_address {
     }
     push @to_fetch, GetTasks => \@task_refs if @task_refs;
 
-    my $calls = $self->call_api(@to_fetch);
+    my $calls = $self->call_api('bin_services_for_address:' . $property->{id}, @to_fetch);
 
     my @out;
     my %task_ref_to_row;
@@ -954,7 +964,10 @@ sub admin_templates_external_status_code_hook {
 }
 
 sub call_api {
-    my $self = shift;
+    my ($self, $key) = (shift, shift);
+
+    $key = "bromley:echo:$key";
+    return $self->{c}->session->{$key} if !FixMyStreet->test_mode && $self->{c}->session->{$key};
 
     my $tmp = File::Temp->new;
     my @cmd = (
@@ -975,6 +988,7 @@ sub call_api {
         system(@cmd);
         $data = Storable::fd_retrieve($tmp);
     }
+    $self->{c}->session->{$key} = $data;
     return $data;
 }
 

@@ -24,6 +24,7 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $id = $c->get_param('address')) {
+        $c->cobrand->call_hook( clear_cached_lookups => $id );
         $c->detach('redirect_to_id', [ $id ]);
     }
 
@@ -77,6 +78,11 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     }
 
     $c->forward('/auth/get_csrf_token');
+
+    # clear this every time they visit this page to stop stale content.
+    if ( $c->req->path =~ m#^waste/\d+$# ) {
+        $c->cobrand->call_hook( clear_cached_lookups => $id );
+    }
 
     my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id, $staff);
@@ -437,6 +443,8 @@ sub add_report : Private {
         cobrand => $report->cobrand,
         lang => $report->lang,
     })->confirm;
+
+    $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
 
     return 1;
 }
