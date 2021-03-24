@@ -305,7 +305,7 @@ sub GetServiceUnitsForObject {
                 },
             }, {
                 ScheduleDescription => 'every other Monday',
-                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
                     OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
