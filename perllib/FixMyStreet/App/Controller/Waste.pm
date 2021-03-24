@@ -249,6 +249,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
+    $c->stash->{services_available} = $c->cobrand->call_hook(available_bin_services_for_address => $property) || {};
 }
 
 sub bin_days : Chained('property') : PathPart('') : Args(0) {
@@ -710,6 +711,8 @@ sub add_report : Private {
     $c->forward('/report/new/redirect_or_confirm_creation');
 
     $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
+
+    $c->cobrand->call_hook( 'clear_cached_lookups' => $c->stash->{property}{id} );
 
     return 1;
 }
