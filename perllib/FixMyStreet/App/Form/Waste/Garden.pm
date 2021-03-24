@@ -6,7 +6,6 @@ extends 'FixMyStreet::App::Form::Waste';
 
 has_field category => ( type => 'Hidden', default => 'New Garden Subscription' );
 has_field service_id => ( type => 'Hidden' );
-has_field total => ( type => 'Hidden' );
 
 has_page intro => (
     title => 'Subscribe to the Green Garden Waste collection service',
@@ -29,15 +28,18 @@ has_page details => (
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
+        my $existing = $data->{existing_number} || 0;
+        $existing = 0 if $data->{existing} eq 'no';
         return {
-            current_bins => { default => $data->{existing_number} || 0 },
+            current_bins => { default => $existing },
         };
     },
     next => 'summary',
 );
 
+
 has_page summary => (
-    fields => ['total', 'tandc', 'submit'],
+    fields => ['tandc', 'submit'],
     title => 'Submit container request',
     template => 'waste/garden/subscribe_summary.html',
     update_field_list => sub {
@@ -45,10 +47,8 @@ has_page summary => (
         my $data = $form->saved_data;
         my $cost = $form->{c}->cobrand->feature('payment_gateway')->{ggw_cost};
         my $total = ( $data->{new_bins} + $data->{current_bins} ) * $cost;
-        $data->{total} = $total;
-        return {
-            total => { default => $total },
-        };
+        $data->{display_total} = $total / 100;
+        return {};
     },
     finished => sub {
         return $_[0]->wizard_finished('process_garden_data');
@@ -77,10 +77,20 @@ has_field existing => (
 
 has_field existing_number => (
     type => 'Integer',
-    label => 'How many? (0-3)',
+    label => 'How many? (1-3)',
     tags => { number => 1 },
-    range_start => 0,
-    range_end => 3,
+    validate_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        if ( $self->parent->field('existing')->value eq 'yes' ) {
+            $self->add_error('Please specify how many bins you already have')
+                unless $self->value;
+            $self->add_error("Existing bin count must be between 1 and $max_bins")
+                if $self->value < 1 || $self->value > $max_bins;
+        } else {
+            return 1;
+        }
+    },
 );
 
 has_field current_bins => (
@@ -195,6 +205,16 @@ sub validate {
     my $self = shift;
     $self->add_form_error('Please specify how many bins you already have')
         unless $self->field('existing')->is_inactive || $self->field('existing')->value eq 'no' || $self->field('existing_number')->value;
+
+    my $max_bins = $self->{c}->stash->{garden_form_data}->{max_bins};
+    unless ( $self->field('current_bins')->is_inactive ) {
+        my $total = $self->field('current_bins')->value + $self->field('new_bins')->value;
+        $self->add_form_error('The total number of bins cannot exceed ' . $max_bins)
+            if $total > $max_bins;
+
+        $self->add_form_error('The total number of bins must be at least 1')
+            if $total == 0;
+    }
 }
 
 1;
