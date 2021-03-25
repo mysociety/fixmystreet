@@ -9,6 +9,7 @@ use FixMyStreet::Script::UpdateAllReports;
 
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
 my $resolver = Test::MockModule->new('Email::Valid');
@@ -54,11 +55,9 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok({ with_fields => { name => 'Someone', username => 'someone@birmingham.gov.uk' }});
         $mech->content_contains('Now check your email');
-        # XXX Check email arrives, click link
 
-        $mech->log_in_ok('someone@birmingham.gov.uk');
-        # Logged in, redirects
-        $mech->get_ok('/about/council-dashboard');
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
         is $mech->uri->path, '/reports/Birmingham/summary';
         $mech->content_contains('Where we send Birmingham');
         $mech->content_contains('lights@example.com');
@@ -112,6 +111,8 @@ FixMyStreet::override_config {
         $body->update();
         $mech->get_ok('/about/council-dashboard');
         $mech->content_contains('Reports are currently not being sent');
+        $body->send_method('');
+        $body->update();
 
         $mech->log_out_ok();
         $mech->get_ok('/reports');
@@ -174,6 +175,36 @@ FixMyStreet::override_config {
             { with_fields => { username => $test_email, password_sign_in => 'password' } },
             "sign in using form" );
         $mech->content_contains('requires two-factor');
+    };
+};
+
+FixMyStreet::override_config {
+    COBRAND_FEATURES => { borough_email_addresses => { fixmystreet => {
+        'graffiti@northamptonshire' => [
+            { areas => [2397], email => 'graffiti@northampton' },
+        ],
+    } } },
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'Ex-district reports are sent to correct emails' => sub {
+        my $body = $mech->create_body_ok( 2397, 'Northampton' );
+        my $contact = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Graffiti',
+            email => 'graffiti@northamptonshire',
+        );
+
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            latitude => 52.236251,
+            longitude => -0.892052,
+            cobrand => 'fixmystreet',
+            category => 'Graffiti',
+        });
+        FixMyStreet::Script::Reports::send();
+        $mech->email_count_is(1);
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), 'Northampton <graffiti@northampton>';
     };
 };
 
