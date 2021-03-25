@@ -141,7 +141,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
       layerid: highway_layer
   },
   non_interactive: false,
-  body: "Northamptonshire County Council",
+  body: "Northamptonshire Highways",
   attributes: {
     asset_resource_id: function() {
       return this.fid;
@@ -231,7 +231,7 @@ var northants_road_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
         base: url_with_style,
         layerid: highway_layer
     },
-    body: "Northamptonshire County Council",
+    body: "Northamptonshire Highways",
     road: true,
     always_visible: false,
     non_interactive: true,

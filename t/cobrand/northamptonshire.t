@@ -9,7 +9,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 use open ':std', ':encoding(UTF-8)'; 
 
-my $ncc = $mech->create_body_ok(2234, 'Northamptonshire County Council', {
+my $ncc = $mech->create_body_ok(2234, 'Northamptonshire Highways', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1 });
 my $nbc = $mech->create_body_ok(2397, 'Northampton Borough Council');
 
@@ -161,7 +161,7 @@ subtest 'check further investigation state' => sub {
                     }
                 },
                 fixmystreet => {
-                    'Northamptonshire County Council' => {
+                    'Northamptonshire Highways' => {
                         fixed => {
                             further => 'Under further investigation'
                         }
@@ -197,7 +197,7 @@ subtest 'check further investigation state' => sub {
                     }
                 },
                 fixmystreet => {
-                    'Northamptonshire County Council' => {
+                    'Northamptonshire Highways' => {
                         investigating => {
                             further => 'Under further investigation'
                         }
@@ -222,7 +222,7 @@ subtest 'check further investigation state' => sub {
                     }
                 },
                 fixmystreet => {
-                    'Northamptonshire County Council' => {
+                    'Northamptonshire Highways' => {
                         fixed => {
                             further => 'Under further investigation'
                         }

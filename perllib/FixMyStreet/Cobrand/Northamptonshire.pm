@@ -9,7 +9,7 @@ with 'FixMyStreet::Roles::ConfirmValidation';
 
 sub council_area_id { 2234 }
 sub council_area { 'Northamptonshire' }
-sub council_name { 'Northamptonshire County Council' }
+sub council_name { 'Northamptonshire Highways' }
 sub council_url { 'northamptonshire' }
 
 sub enter_postcode_text { 'Enter a Northamptonshire postcode, street name and area, or check an existing report number' }
@@ -27,7 +27,7 @@ sub disambiguate_location {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    return $rs->search( { 'body.name' => [ 'Northamptonshire County Council', 'Highways England' ] } );
+    return $rs->search( { 'body.name' => [ $self->council_name, 'Highways England' ] } );
 }
 
 sub send_questionnaires { 0 }
@@ -38,13 +38,6 @@ sub report_sent_confirmation_email { 'id' }
 
 sub admin_user_domain { 'northamptonshire.gov.uk' }
 
-has body_obj => (
-    is => 'lazy',
-    default => sub {
-        FixMyStreet::DB->resultset('Body')->find({ name => 'Northamptonshire County Council' });
-    },
-);
-
 sub updates_disallowed {
     my $self = shift;
     my ($problem) = @_;
@@ -52,14 +45,14 @@ sub updates_disallowed {
     # Only open reports
     return 1 if $problem->is_fixed || $problem->is_closed;
     # Not on reports made by the body user
-    return 1 if $problem->user_id == $self->body_obj->comment_user_id;
+    return 1 if $problem->user_id == $self->body->comment_user_id;
 
     return $self->next::method(@_);
 }
 
 sub is_defect {
     my ($self, $p) = @_;
-    return $p->user_id == $self->body_obj->comment_user_id;
+    return $p->user_id == $self->body->comment_user_id;
 }
 
 sub pin_colour {

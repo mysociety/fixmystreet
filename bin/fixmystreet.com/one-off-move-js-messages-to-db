@@ -38,7 +38,7 @@ my @messages = (
         message => 'If you wish to report an issue on a Public Right of Way, please use <a href="https://www.buckscc.gov.uk/services/environment/public-rights-of-way/report-a-rights-of-way-issue/">this service</a>.'
     },
     {
-        body => 'Northamptonshire County Council',
+        body => 'Northamptonshire Highways',
         category => 'Street lighting',
         message => 'Street lighting in Northamptonshire is maintained by Balfour Beatty on behalf of the County Council under a Street Lighting Private Finance Initiative (PFI) contract. Please view our <b><a href="https://www3.northamptonshire.gov.uk/councilservices/northamptonshire-highways/roads-and-streets/Pages/street-lighting.aspx">Street Lighting</a></b> page to report any issues.'
     },
@@ -96,7 +96,7 @@ MESSAGE: foreach my $msg (@messages) {
     }
 }
 
-my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire County Council' });
+my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire Highways' });
 if ($northants) {
     my @northants_contacts = $northants->contacts->all;
     my $found_total = 0;

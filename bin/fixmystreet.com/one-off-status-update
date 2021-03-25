@@ -106,7 +106,7 @@ my @cols = @{$csv->getline($fh)};
 $csv->column_names (@cols);
 
 my ($checked, $updated) = (0,0);
-my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire County Council' });
+my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire Highways' });
 if ($northants) {
     my $comment_user = $northants->comment_user;
     while (my $report = $csv->getline_hr( $fh ) ) {

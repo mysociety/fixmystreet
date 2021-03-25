@@ -39,7 +39,7 @@ open my $fh, "<:encoding(utf-8)", $file or die "Failed to open $file: $!\n";
 $csv->header($fh);
 
 my $count = 0;
-my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire County Council' });
+my $northants = FixMyStreet::DB->resultset("Body")->find({ name => 'Northamptonshire Highways' });
 if ($northants) {
     while (my $report = $csv->getline_hr( $fh ) ) {
         next unless $report->{$OLD_ID};
