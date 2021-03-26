@@ -235,7 +235,7 @@ sub output_requests : Private {
         unless $limit && $limit <= $default_limit;
 
     my $attr = {
-        order_by => { -desc => $c->cobrand->moniker == 'zurich' ? 'created' : 'confirmed' },
+        order_by => { -desc => $c->cobrand->moniker eq 'zurich' ? 'created' : 'confirmed' },
         rows => $limit
     };
 
@@ -401,7 +401,7 @@ sub rss_query : Private {
 
     my $attr = {
         result_class => 'DBIx::Class::ResultClass::HashRefInflator',
-        order_by => { -desc => $c->cobrand->moniker == 'zurich' ? 'created' : 'confirmed' },
+        order_by => { -desc => $c->cobrand->moniker eq 'zurich' ? 'created' : 'confirmed' },
         rows => $limit
     };
 
