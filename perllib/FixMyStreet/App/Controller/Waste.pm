@@ -134,14 +134,14 @@ sub pay : Path('pay') : Args(0) {
         # invokeResult/redirectURL - what is says
         # invokeResult/errorDetails - what it says
         #
-        if ( $result->{transactionState} eq 'COMPLETE' &&
+        if ( $result->{transactionState} eq 'IN_PROGRESS' &&
              $result->{invokeResult}->{status} eq 'SUCCESS' ) {
 
              $p->set_extra_metadata('scpReference', $result->{scpReference});
              $p->update;
 
              # need to save scpReference against request here
-             my $redirect = $result->{invokeResult}->{redirectURL};
+             my $redirect = $result->{invokeResult}->{redirectUrl};
              $c->res->redirect( $redirect );
              $c->detach;
          } else {
@@ -183,6 +183,7 @@ sub pay_complete : Path('pay_complete') : Args(2) {
             $c->stash->{message} = 'Payment succesful';
             $c->stash->{reference} = $ref;
             $c->forward( 'confirm_subscription', [ $ref ] );
+        # It is not clear to me that it's possible to get to this with a redirect
         } else {
             # cancelled, not attempted, logged out - try again option
             # card rejected - try again with different card/cancel

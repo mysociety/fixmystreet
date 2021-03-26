@@ -4,6 +4,7 @@ use Moo;
 with 'FixMyStreet::Roles::SOAPIntegration';
 
 use DateTime;
+use Tie::IxHash;
 use MIME::Base64;
 use Digest::HMAC;
 use Crypt::Digest::SHA256;
@@ -31,7 +32,11 @@ sub call {
     my ($self, $method, @params) = @_;
 
     my $res = $self->endpoint->call(
-        SOAP::Data->name($method)->attr({ xmlns => 'http://www.capita-software-services.com/scp/simple' }),
+        SOAP::Data->name($method)->attr({
+            'xmlns:scpbase' => 'http://www.capita-software-services.com/scp/base',
+            'xmlns:common' => 'https://support.capita-software.co.uk/selfservice/?commonFoundation',
+            xmlns => 'http://www.capita-software-services.com/scp/simple'
+        }),
         make_soap_structure_with_attr(@params),
     );
 
@@ -45,27 +50,29 @@ sub call {
 sub credentials {
     my ($self, $args) = @_;
 
+    # this is UTC
     my $ts = DateTime->now->format_cldr('yyyyMMddHHmmss');
 
+    my $ref = $args->{ref} . ':' . time;
     my $hmac = Digest::HMAC->new(MIME::Base64::decode($self->config->{hmac}), "Crypt::Digest::SHA256");
-    $hmac->add(join('!', 'CapitaPortal', $self->config->{scpID}, $args->{ref}, $ts, 'Original', $self->config->{hmac_id}));
+    $hmac->add(join('!', 'CapitaPortal', $self->config->{scpID}, $ref, $ts, 'Original', $self->config->{hmac_id}));
 
-    return {
-        'subject' => {
-            'subjectType' => 'CapitaPortal',
-            'identifier' => $self->config->{scpID},
-            'systemCode' => 'SCP',
-        },
-        'requestIdentification' => {
-            'uniqueReference' => $args->{ref},
-            'timeStamp' => $ts,
-        },
-        'signature' => {
-            'algorithm' => 'Original',
-            'hmacKeyID' => $self->config->{hmac_id},
-            'digest' => $hmac->b64digest,
-        }
-    }
+    return ixhash(
+        'common:subject' => ixhash(
+            'common:subjectType' => 'CapitaPortal',
+            'common:identifier' => $self->config->{scpID},
+            'common:systemCode' => 'SCP',
+        ),
+        'common:requestIdentification' => ixhash(
+            'common:uniqueReference' => $ref,
+            'common:timeStamp' => $ts,
+        ),
+        'common:signature' => ixhash(
+            'common:algorithm' => 'Original',
+            'common:hmacKeyID' => $self->config->{hmac_id},
+            'common:digest' => $hmac->b64digest,
+        )
+    );
 }
 
 sub pay {
@@ -73,24 +80,24 @@ sub pay {
 
     my $credentials = $self->credentials($args);
     my $obj = [
-        'credentials' => { attr => { xmlns => 'https://support.capita-software.co.uk/selfservice/?commonFoundation' }, %$credentials },
-        'requestType' => { attr => { xmlns => 'http://www.capita-software-services.com/scp/base' }, value => 'payOnly' },
-        'requestId' => { attr => { xmlns => 'http://www.capita-software-services.com/scp/base' }, value => $args->{request_id} },
-        'routing' => {
-            attr => { xmlns => 'http://www.capita-software-services.com/scp/base' },
-            'returnUrl' => $args->{returnUrl},
-            'backUrl' => $args->{backUrl},
-            'siteID' => $self->config->{siteID},
-            'scpId' => $self->config->{scpID},
+        'common:credentials' => $credentials,
+        'scpbase:requestType' => 'payOnly' ,
+        'scpbase:requestId' => $args->{request_id},
+        'scpbase:routing' => ixhash(
+            'scpbase:returnUrl' => $args->{returnUrl},
+            'scpbase:backUrl' => $args->{backUrl},
+            'scpbase:siteId' => $self->config->{siteID},
+            'scpbase:scpId' => $self->config->{scpID},
+        ),
+        'scpbase:panEntryMethod' => 'ECOM',
+        'scpbase:additionalInstructions' => {
+            'scpbase:systemCode' => 'SCP'
         },
-        'panEntryMethod' => { attr => { xmlns => 'http://www.capita-software-services.com/scp/base' }, value => 'ECOM' },
         'sale' => {
-            attr => { xmlns => 'http://www.capita-software-services.com/scp/simple' },
-            'saleSummary' => {
-                attr => { xmlns => 'http://www.capita-software-services.com/scp/base' },
-                'description' => $args->{description},
-                'amountInMinorUnits' => $args->{amount},
-            }
+            'scpbase:saleSummary' => ixhash(
+                'scpbase:description' => $args->{description},
+                'scpbase:amountInMinorUnits' => $args->{amount},
+            )
         },
     ];
 
@@ -108,9 +115,9 @@ sub query {
     my $credentials = $self->credentials($args);
 
     my $obj = [
-        'credentials' => { attr => { xmlns => 'https://support.capita-software.co.uk/selfservice/?commonFoundation' }, %$credentials },
-        siteID => { attr => { xmlns => 'http://www.capita-software-services.com/scp/base' }, value => $self->config->{siteID}},
-        scpReference => { atrr => { xmlns => 'http://www.capita-software-services.com/scp/base' }, value => $args->{scpReference} },
+        'common:credentials' => $credentials,
+        'scpbase:siteId' => $self->config->{siteID},
+        'scpbase:scpReference' => $args->{scpReference},
     ];
 
     my $res = $self->call('scpSimpleQueryRequest', @$obj);
@@ -139,4 +146,8 @@ sub version {
     return $res;
 }
 
+sub ixhash {
+    tie (my %data, 'Tie::IxHash', @_);
+    return \%data;
+}
 1;
