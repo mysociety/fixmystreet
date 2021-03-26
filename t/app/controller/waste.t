@@ -360,11 +360,11 @@ FixMyStreet::override_config {
         my $self = shift;
         $sent_params = shift;
         return {
-            transactionState => 'COMPLETE',
+            transactionState => 'IN_PROGRESS',
             scpReference => '12345',
             invokeResult => {
                 status => 'SUCCESS',
-                redirectURL => 'http://example.org/faq'
+                redirectUrl => 'http://example.org/faq'
             }
         };
     });
