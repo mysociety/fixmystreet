@@ -613,6 +613,20 @@ sub bin_payment_types {
     };
 }
 
+sub waste_subscription_types {
+    return {
+        New => 1,
+        Renew => 2,
+        Amend => 3,
+    };
+}
+
+sub waste_container_actions {
+    return {
+        deliver => 1,
+        remove => 2
+    };
+}
 
 sub bin_services_for_address {
     my $self = shift;
@@ -629,10 +643,7 @@ sub bin_services_for_address {
         46 => 'Wheeled Bin (Food)',
     };
 
-    $self->{c}->stash->{container_actions} = {
-        deliver => 1,
-        remove => 2
-    };
+    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
         535 => [ 1 ],
@@ -656,11 +667,7 @@ sub bin_services_for_address {
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
 
-    $self->{c}->stash->{garden_subs} = {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
+    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
 
     my $result = $self->{api_serviceunits};
     return [] unless @$result;
@@ -1250,6 +1257,274 @@ sub garden_waste_cost {
     $bin_count ||= 1;
 
     return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
+}
+
+sub waste_payment_type {
+    my ($self, $type, $ref) = @_;
+
+    my ($sub_type, $category);
+    if ( $type eq 'Payment: 01' ) {
+        $category = 'Garden Subscription';
+        $sub_type = $self->waste_subscription_types->{New};
+    } elsif ( $type eq 'Payment: 17' ) {
+        $category = 'Garden Subscription';
+        if ( $ref ) {
+            $sub_type = $self->waste_subscription_types->{Amend};
+        } else {
+            $sub_type = $self->waste_subscription_types->{Renew};
+        }
+    } elsif ( $type eq 'AUDDIS: 0C' ) {
+        $sub_type = 0;
+        $category = 'Cancel';
+    }
+
+    return ($category, $sub_type);
+}
+
+sub waste_reconcile_direct_debits {
+    my $self = shift;
+
+    my $today = DateTime->now;
+    my $start = $today->clone->add( days => -4 );
+
+    my $config = $self->feature('payment_gateway');
+    my $i = Integrations::Pay360->new({
+        config => $config
+    });
+
+    my $recent = $i->get_recent_payments(
+        start => $start,
+        end => $today
+    );
+
+
+    RECORD: for my $payment ( @$recent ) {
+
+        my $date = $payment->{CollectionDate};
+        my ($category, $type) = $self->waste_payment_type ( $payment->{Type}, $payment->{YourRef} );
+
+        next unless $category && $date;
+
+        my $payer = $payment->{PayerReference};
+
+        (my $uprn = $payer) =~ s/^GGW//;
+
+        my $len = length($uprn);
+        my $rs = FixMyStreet::DB->resultset('Problem')->search({
+            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+        },
+        {
+                order_by => { -desc => 'created' }
+        })->to_body( $self->body );
+
+        my $handled;
+
+        # Work out what to do with the payment.
+        # Processed payments are indicated by a matching record with a dd_date the
+        # same as the CollectionDate of the payment
+        #
+        # Renewal is an automatic event so there is never a record in the database
+        # and we have to generate one.
+        #
+        # Cancellations may have an event in the database if the user has cancelled
+        # through the front end but they can also cancel the Direct Debit itself in
+        # which case we need to create a report.
+        #
+        #
+        # If we're a renew payment then find the initial subscription payment, also
+        # checking if we've already processed this payment. If we've not processed it
+        # create a renewal record using the original subscription as a basis.
+        if ( $type && $type eq $self->waste_subscription_types->{Renew} ) {
+            next unless $payment->{Status} eq 'Paid';
+            $rs = $rs->search({ category => 'Garden Subscription' });
+            my $p;
+            while ( my $cur = $rs->next ) {
+                my $sub_type = $cur->get_extra_field_value('Subscription_Type');
+                if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+                    $p = $cur;
+                } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
+                    # already processed
+                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
+                }
+            }
+            if ( $p ) {
+                my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
+                unless ($service) {
+                    warn "no matching service to renew for $payer\n";
+                    next;
+                }
+                my $renew = _duplicate_waste_report($p, 'Garden Subscription', {
+                    Subscription_Type => $self->waste_subscription_types->{Renew},
+                    service_id => 545,
+                    uprn => $uprn,
+                    Subscription_Details_Container_Type => 44,
+                    Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
+                } );
+                $renew->set_extra_metadata('dd_date', $date);
+                $renew->insert;
+                $handled = 1;
+            }
+        # There's two options with a cancel payment. If the user has cancelled it outside of
+        # WasteWorks then we need to find the original sub and generate a new cancel subscription
+        # report.
+        #
+        # If it's been cancelled inside WasteWorks then we'll have an unconfirmed cancel report
+        # which we need to confirm.
+        } elsif ( $category eq 'Cancel' ) {
+            next unless $payment->{Status} eq 'Processed';
+            $rs = $rs->search({ category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] } });
+            my ($p, $r);
+            while ( my $cur = $rs->next ) {
+                my $sub_type = $cur->get_extra_field_value('Subscription_Type') || '';
+                if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+                    $p = $cur;
+                } elsif ( $cur->category eq 'Cancel Garden Subscription' ) {
+                    if ( $cur->state eq 'unconfirmed' ) {
+                        $r = $cur;
+                    # already processed
+                    } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+                        next RECORD;
+                    }
+                }
+            }
+            if ( $r ) {
+                my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
+                # if there's not a service then it's fine as it's already been cancelled
+                if ( $service ) {
+                    $r->set_extra_metadata('dd_date', $date);
+                    $r->state('confirmed');
+                    $r->update;
+                # there's no service but we don't want to be processing the report all the time.
+                } else {
+                    $r->state('hidden');
+                    $r->update;
+                }
+                # regardless this has been handled so no need to alert on it.
+                $handled = 1;
+            } elsif ( $p ) {
+                my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
+                unless ($service) {
+                    warn "no matching service to cancel for $payer\n";
+                    next;
+                }
+                my $cancel = _duplicate_waste_report($p, 'Cancel Garden Subscription', {
+                    service_id => 545,
+                    uprn => $uprn,
+                    Container_Instruction_Action => $self->waste_container_actions->{remove},
+                    Container_Instruction_Container_Type => 44,
+                    Container_Instruction_Quantity => $self->waste_get_sub_quantity($service),
+                } );
+                $cancel->set_extra_metadata('dd_date', $date);
+                $cancel->insert;
+                $handled = 1;
+            }
+        # this covers new subscriptions and ad-hoc payments, both of which already have
+        # a record in the database as they are the result of user action
+        } else {
+            next unless $payment->{Status} eq 'Paid';
+            # we fetch the confirmed ones as well as we explicitly want to check for
+            # processed reports so we can warn on those we are missing.
+            $rs = $rs->search({ category => 'Garden Subscription' });
+            while ( my $cur = $rs->next ) {
+
+                if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
+                    if ( $cur->state eq 'unconfirmed' ) {
+                        if ( $type eq 'New' ) {
+                            if ( !$cur->get_extra_metadata('payerReference') ) {
+                                $cur->set_extra_metadata('payerReference', $payer);
+                            }
+                        }
+                        $cur->set_extra_metadata('dd_date', $date);
+                        $cur->confirm;
+                        $cur->update;
+                        $handled = 1;
+                    } elsif ( $cur->get_extra_metadata('dd_date') eq $date)  {
+                        next RECORD;
+                    }
+                }
+            }
+        }
+
+        unless ( $handled ) {
+            warn "no matching record found for $category payment with id $payer\n";
+        }
+    }
+}
+
+sub _report_matches_payment {
+    my ($self, $r, $p) = @_;
+
+    my $match = 0;
+    if ( $p->{YourRef} && $r->id eq $p->{YourRef} ) {
+        $match = 'Ad-Hoc';
+    } elsif ( !$p->{YourRef}
+            && $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{New}
+    ) {
+        $match = 'New';
+    }
+
+    return $match;
+}
+
+sub _duplicate_waste_report {
+    my ( $report, $category, $extra ) = @_;
+    my $new = FixMyStreet::DB->resultset('Problem')->new({
+        category => $category,
+        user => $report->user,
+        latitude => $report->latitude,
+        longitude => $report->longitude,
+        cobrand => $report->cobrand,
+        bodies_str => $report->bodies_str,
+        title => $report->title,
+        detail => $report->detail,
+        postcode => $report->postcode,
+        used_map => $report->used_map,
+        name => $report->user->name,
+        areas => $report->areas,
+        anonymous => $report->anonymous,
+        state => 'confirmed',
+    });
+
+    my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
+    $new->set_extra_fields(@extra);
+
+    return $new;
+}
+
+sub waste_get_current_garden_sub {
+    my ( $self, $id ) = @_;
+
+    my $echo = $self->feature('echo');
+    $echo = Integrations::Echo->new(%$echo);
+    my $services = $echo->GetServiceUnitsForObject( $id );
+    return undef unless $services;
+
+    my $garden;
+    for my $service ( @$services ) {
+        if ( $service->{ServiceId} == $self->garden_waste_service_id ) {
+            $garden = _get_current_service_task($service);
+            last;
+        }
+    }
+
+    return $garden;
+}
+
+sub waste_get_sub_quantity {
+    my ($self, $service) = @_;
+
+    my $quantity;
+    for my $data ( @{ $service->{Data}->{ExtensibleDatum} } ) {
+        next unless $data->{DatatypeName} eq 'LBB - GW Container';
+        my $kids = $data->{ChildData}->{ExtensibleDatum};
+        $kids = [ $kids ] if ref $kids eq 'HASH';
+        for my $child ( @$kids ) {
+            next unless $child->{DatatypeName} eq 'Quantity';
+            $quantity = $child->{Value}
+        }
+    }
+
+    return $quantity;
 }
 
 sub admin_templates_external_status_code_hook {
