@@ -112,6 +112,65 @@ sub amend_plan {
     }
 }
 
+sub get_payers {
+    my ($self, $args) = @_;
+
+    my $obj = [
+        clientSUN => $self->config->{dd_sun},
+        clientID => $self->config->{dd_client_id},
+    ];
+
+    my $res = $self->call('GetPayers', @$obj);
+
+    if ( $res ) {
+        $res = $res->{GetPayersResponse}->{GetPayersResult};
+
+        if ($res->{StatusCode} eq 'SA') {
+            if ($res->{Payers}) {
+                return force_arrayref( $res, 'Payers' );
+            } else {
+                return [];
+            }
+        } else {
+            return {
+                error => $res->{StatusMessage}
+            }
+        }
+    }
+
+    return { error => "unknown error" };
+}
+
+sub get_all_history {
+    my ($self, $args) = @_;
+
+    my $obj = [
+        clientSUN => $self->config->{dd_sun},
+        clientID => $self->config->{dd_client_id},
+    ];
+
+    my $res = $self->call('GetPaymentHistoryAllPayers', @$obj);
+
+    if ( $res ) {
+        return $res;
+        $res = $res->{GetPaymentHistoryAllPayersResponse}->{GetPaymentHistoryAllPayersResult};
+
+        if ($res->{StatusCode} eq 'SA') {
+            if ($res->{Payments}) {
+                return force_arrayref( $res, 'Payments' );
+            } else {
+                return [];
+            }
+        } else {
+            return {
+                error => $res->{StatusMessage}
+            }
+        }
+    }
+
+    return { error => "unknown error" };
+}
+
 sub get_recent_payments {
     my ($self, $args) = @_;
 
@@ -129,7 +188,7 @@ sub get_recent_payments {
 
         if ($res->{StatusCode} eq 'SA') {
             if ($res->{Payments}) {
-                return force_arrayref( $res, 'Payements' );
+                return force_arrayref( $res, 'Payments' );
             } else {
                 return [];
             }

@@ -329,7 +329,8 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
         my $dt = $c->cobrand->waste_get_next_dd_day;
 
         my $one_off_ref = $i->one_off_payment( {
-                payer_reference => 1, # XXX
+                # this will be set when the initial payment is confirmed
+                payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
                 amount => sprintf('%.2f', $ad_hoc / 100),
                 reference => $p->id,
                 comments => '',
@@ -337,7 +338,7 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
     }
 
     my $update_ref = $i->amend_plan( {
-        payer_reference => 1, # XXX
+        payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
         amount => sprintf('%.2f', $total / 100),
     } );
 }
@@ -350,7 +351,7 @@ sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
     my $i = Integrations::Pay360->new( { config => $c->cobrand->feature('payment_gateway') } );
 
     my $update_ref = $i->cancel_plan( {
-        payer_reference => 1, # XXX
+        payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
     } );
 }
 
