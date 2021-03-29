@@ -927,7 +927,13 @@ subtest 'check staff updates can include sanitized HTML' => sub {
     $mech->delete_user( $user3 );
 };
 
-subtest 'test notification preferences' => sub {
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    SMS_AUTHENTICATION => 1,
+    TWILIO_ACCOUNT_SID => 'AC123',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+  subtest 'test notification preferences' => sub {
     # Create a user with both email and phone verified
     my $user1 = $mech->create_user_ok('alerts@example.com',
         name => 'Alert User',
@@ -944,6 +950,12 @@ subtest 'test notification preferences' => sub {
     my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
         user => $user2,
     });
+
+    my $user0 = $mech->log_in_ok('01234567890');
+    $mech->get_ok('/alert/subscribe?id=' . $report->id);
+    $mech->content_contains('Receive a text when updates are left');
+    $mech->submit_form_ok({ button => 'alert' });
+    $mech->content_contains('Text alert created');
 
     my $update = $mech->create_comment_for_problem($report, $user3, 'Anonymous User', 'This is some more update text', 't', 'confirmed', undef, { confirmed  => $r_dt });
 
@@ -969,32 +981,27 @@ subtest 'test notification preferences' => sub {
     $mech->email_count_is(0);
     is @{$twilio->texts}, 0;
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'fixmystreet',
-        SMS_AUTHENTICATION => 1,
-        TWILIO_ACCOUNT_SID => 'AC123',
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        foreach (
-            { extra => { update_notify => 'phone' } },
-            { email_verified => 0 },
-            { extra => { update_notify => undef } },
-        ) {
-            FixMyStreet::DB->resultset('AlertSent')->delete;
-            $user1->update($_);
-            FixMyStreet::Script::Alerts::send();
-            $mech->email_count_is(0);
-            is @{$twilio->texts}, 1, 'got a text';
-            my $text = $twilio->texts->[0]->{Body};
-            my $id = $report->id;
-            like $text, qr{Your report \($id\) has had an update; to view: http://www.example.org/report/$id\n\nTo stop: http://www.example.org/A/[A-Za-z0-9]+}, 'text looks okay';
-            @{$twilio->texts} = ();
-        }
-    };
+    foreach (
+        { extra => { update_notify => 'phone' } },
+        { email_verified => 0 },
+        { extra => { update_notify => undef } },
+    ) {
+        FixMyStreet::DB->resultset('AlertSent')->delete;
+        $user1->update($_);
+        FixMyStreet::Script::Alerts::send();
+        $mech->email_count_is(0);
+        is @{$twilio->texts}, 1, 'got a text';
+        my $text = $twilio->texts->[0]->{Body};
+        my $id = $report->id;
+        like $text, qr{Your report \($id\) has had an update; to view: http://www.example.org/report/$id\n\nTo stop: http://www.example.org/A/[A-Za-z0-9]+}, 'text looks okay';
+        @{$twilio->texts} = ();
+    }
 
     $mech->delete_user( $user1 );
     $mech->delete_user( $user2 );
     $mech->delete_user( $user3 );
+  };
 };
+
 
 done_testing();

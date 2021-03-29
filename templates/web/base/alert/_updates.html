@@ -3,7 +3,12 @@
     <p><a href="[% c.uri_for( '/rss', problem.id ) %]">
         <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float:right">
     </a>
-    [% loc('Receive email when updates are left on this problem.') %]
+
+    [% IF NOT c.user_exists OR c.user.alert_updates_by(c.cobrand) != 'phone' %]
+        [% loc('Receive email when updates are left on this problem.') %]
+    [% ELSE %]
+        [% loc('Receive a text when updates are left on this problem.') %]
+    [% END %]
     </p>
 
     [% PROCESS 'auth/form_extra.html' %]
