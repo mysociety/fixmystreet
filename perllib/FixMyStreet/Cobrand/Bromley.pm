@@ -438,11 +438,10 @@ sub bin_addresses_for_postcode {
 }
 
 sub look_up_property {
-    my $self = shift;
-    my $id = shift;
+    my ($self, $id, $staff) = @_;
 
     my $cfg = $self->feature('echo');
-    if ($cfg->{max_per_day}) {
+    if ($cfg->{max_per_day} && !$staff) {
         my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
         my $ip = $self->{c}->req->address;
         my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";

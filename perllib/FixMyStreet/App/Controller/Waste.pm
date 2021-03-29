@@ -78,7 +78,8 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
+    my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
+    my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id, $staff);
     $c->detach( '/page_error_404_not_found', [] ) unless $property;
 
     $c->stash->{latitude} = $property->{latitude};
