@@ -66,10 +66,10 @@
 
   <div class="alerts__cta-box">
     <h3>[% loc('Subscribe by email') %]</h3>
-    [% UNLESS c.user_exists %]
+    [% UNLESS c.user_exists AND c.user.email_verified %]
       <label for="rznvy">[% loc('Email address') %]</label>
       <div class="form-txt-submit-box">
-        <input class="form-control" type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]">
+        <input class="form-control" type="text" id="rznvy" name="rznvy" value="[% rznvy %]">
         <input id="alert_email_button" class="btn-primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
       </div>
     [% ELSE %]

@@ -55,13 +55,30 @@ foreach my $test (
         type       => 'new_updates',
         uri    => '/alert/subscribe?type=updates&rznvy=' . $user->email . '&id=' . $report->id,
         param1 => $report->id,
-    }
+    },
+    {
+        phone => 1,
+        email => $user->email,
+        type => 'local_problems',
+        uri => '/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=local:10.2:20.1',
+        param1 => 20.1,
+        param2 => 10.2,
+    },
   )
 {
     subtest "$test->{type} alert correctly created" => sub {
         $mech->clear_emails_ok;
 
         my $type = $test->{type};
+
+        my $phone_user;
+        if ($test->{phone}) {
+            FixMyStreet::override_config {
+                SMS_AUTHENTICATION => 1,
+            }, sub {
+                $phone_user = $mech->log_in_ok( '01234567890' );
+            };
+        }
 
         $mech->get_ok('/alert/subscribe?id=' . $report->id);
         my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
@@ -133,6 +150,16 @@ foreach my $test (
           FixMyStreet::DB->resultset('Alert')->find( { id => $existing_id, } );
 
         ok $alert->confirmed, 'alert set to confirmed';
+
+        if ($phone_user) {
+            $phone_user->discard_changes;
+            is $phone_user->email, $test->{email}, 'Phone user now has email';
+            is $phone_user->email_verified, 1, 'Phone user now has email';
+            my $deleted_user = FixMyStreet::DB->resultset("User")->find({id => $user->id });
+            is $deleted_user, undef, 'Email user deleted';
+            $mech->delete_user($phone_user);
+        }
+
         $mech->delete_user($user);
     };
 }

@@ -19,6 +19,7 @@
         - Fix Open311 JSON services output. #3279
         - Send email reports in staff-only categories.
         - Fix Gaze sometimes being called twice on /around. #3324
+        - Improved alert signup for phone-only user. #3367
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
