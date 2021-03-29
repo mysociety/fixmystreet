@@ -461,6 +461,7 @@ $(fixmystreet).on('display:report', function() {
         fixmystreet.staff_set_up.report_page_inspect();
         fixmystreet.staff_set_up.action_scheduled_raise_defect();
     }
+    $('.js-contribute-as').change();
 });
 
 $(fixmystreet).on('report_new:category_change', function() {
