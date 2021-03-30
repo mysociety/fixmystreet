@@ -75,6 +75,27 @@ sub redirect_to_id : Private {
     $c->detach;
 }
 
+sub check_payment_redirect_id : Private {
+    my ( $self, $c, $id, $token ) = @_;
+
+    $c->detach( '/page_error_404_not_found' ) unless $id =~ /^\d+$/;
+
+    my $p = $c->model('DB::Problem')->find({
+        id => $id,
+    });
+
+    $c->detach( '/page_error_404_not_found' )
+        unless $p && $p->get_extra_metadata('redirect_id') eq $token;
+
+    if ( $p->state ne 'unconfirmed' ) {
+        $c->stash->{error} = 'Already confirmed';
+        $c->stash->{template} = 'waste/pay.html';
+        $c->detach;
+    }
+
+    $c->stash->{report} = $p;
+}
+
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $id) = @_;
 
@@ -89,12 +110,12 @@ sub pay : Path('pay') : Args(0) {
         $amount = $p->get_extra_field( name => 'payment' );
     }
 
-    my $redirect_id = md5_hex( $p->id . time );
-    $p->set_extra_metadata('scp_redirect_id', $redirect_id);
+    my $redirect_id = mySociety::AuthToken::random_token();
+    $p->set_extra_metadata('redirect_id', $redirect_id);
     $p->update;
 
     my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay_complete', $redirect_id ) . '',
+        returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
         backUrl => $c->uri_for('pay') . '',
         ref => $p->id,
         request_id => $p->id,
@@ -137,21 +158,13 @@ sub pay : Path('pay') : Args(0) {
 }
 
 # redirect from cc processing
-sub pay_complete : Path('pay_complete') : Args(1) {
-    my ($self, $c, $id) = @_;
+sub pay_complete : Path('pay_complete') : Args(2) {
+    my ($self, $c, $id, $token) = @_;
 
-    # load report
-    my $p = $c->model('DB::Problem')->search({
-        extra => { like => '%scp_redirect_id,T32:'. $id . '%' }
-    });
-    if ( $p->count == 1 ) {
-        $p = $p->first;
-    } else {
-        $c->detach( '/page_error_404_not_found' );
-    }
+    $c->forward('check_payment_redirect_id', [ $id, $token ]);
+    my $p = $c->stash->{report};
 
     # need to get some ID Things which I guess we stored in pay
-    $c->stash->{report} = $p;
     my $scpReference = $p->get_extra_metadata('scpReference');
     $c->detach( '/page_error_404_not_found' ) unless $scpReference;
 
@@ -207,6 +220,11 @@ sub cancel_subscription : Private {
 sub direct_debit : Path('dd') : Args(0) {
     my ($self, $c) = @_;
 
+    my $p = $c->stash->{report};
+    my $reference = mySociety::AuthToken::random_token();
+    $p->set_extra_metadata('redirect_id', $reference);
+    $p->update;
+
     my $address = $c->stash->{property}{address};
 
     my @parts = split ',', $address;
@@ -228,7 +246,7 @@ sub direct_debit : Path('dd') : Args(0) {
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
     $c->stash->{amount} = sprintf( '%.2f', $c->stash->{report}->get_extra_field(name => 'payment')->{value} / 100 ),
-    $c->stash->{reference} = $c->stash->{report}->id;
+    $c->stash->{reference} = $reference;
     $c->stash->{day} = $dt->day;
     $c->stash->{month} = $dt->month;
     $c->stash->{year} = $dt->year;
@@ -237,17 +255,15 @@ sub direct_debit : Path('dd') : Args(0) {
 }
 
 # we process direct debit payments when they happen so this page
-# is only for setting expectations
+# is only for setting expectations.
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
     my ($self, $c) = @_;
 
-    my $ref = $c->get_param('reference');
-
-    my $p = $c->model('DB::Problem')->find( { id => $ref } );
+    my $token = $c->get_param('reference');
+    my $id = $c->get_param('report_id');
+    $c->forward('check_payment_redirect_id', [ $id, $token]);
 
     $c->stash->{message} = "Direct Debit set up";
-    $c->stash->{report} = $p;
-
     $c->stash->{template} = 'waste/dd_complete.html';
 }
 

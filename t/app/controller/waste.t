@@ -392,7 +392,7 @@ FixMyStreet::override_config {
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
         is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'New Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -406,7 +406,13 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get('/waste/pay/xx/yyyyyyyyyyy');
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -436,7 +442,7 @@ FixMyStreet::override_config {
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
         is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'New Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -450,7 +456,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -474,15 +480,24 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_like( qr/txtRegularAmount[^>]*"20.00"/, 'payment amount correct');
 
-        my ($report_id) = ( $mech->content =~ m#reference\*\|\*([^"]*)# );
-        my $new_report = FixMyStreet::DB->resultset('Problem')->find( { id => $report_id } );
+        my ($token, $report_id) = ( $mech->content =~ m#reference\*\|\*([^*]*)\*\|\*report_id\*\|\*(\d+)"# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
+                id => $report_id,
+                extra => { like => '%redirect_id,T18:'. $token . '%' }
+        } )->first;
 
         is $new_report->category, 'New Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
-        $mech->get_ok("/waste/dd_complete?reference=$report_id");
-        $mech->content_contains('Direct Debit set up');
+        $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/dd_complete?reference=NOTATOKEN&report_id=$report_id");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
+        $mech->content_contains('confirmation details for your direct debit');
 
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
@@ -502,7 +517,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 550, 'correct amount used';
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -514,7 +529,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -740,7 +755,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 2000, 'correct amount used';
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'Renew Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -752,7 +767,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -779,7 +794,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 4000, 'correct amount used';
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'Renew Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -791,7 +806,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -852,7 +867,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 2000, 'correct amount used';
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'Renew Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -864,7 +879,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -889,7 +904,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 2000, 'correct amount used';
 
-        my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $new_report->category, 'New Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -901,7 +916,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
-        $mech->get_ok('/waste/pay_complete/' . $report_id);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -973,7 +988,7 @@ FixMyStreet::override_config {
             is $mech2->res->previous->code, 302, 'payments issues a redirect';
             is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
 
-            my ( $report_id, $new_report ) = get_report_from_redirect( $sent_params->{returnUrl} );
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
             is $new_report->category, 'New Garden Subscription', 'correct category on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -987,7 +1002,7 @@ FixMyStreet::override_config {
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('scpReference'), '12345', 'scp reference on report';
 
-            $mech->get_ok('/waste/pay_complete/' . $report_id);
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
             is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
             $new_report->discard_changes;
@@ -1034,12 +1049,13 @@ FixMyStreet::override_config {
 sub get_report_from_redirect {
     my $url = shift;
 
-    my ($report_id) = ( $url =~ m#/([^/]+)$# );
-    my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
-            extra => { like => '%scp_redirect_id,T32:'. $report_id . '%' }
-    } )->first;
+    my ($report_id, $token) = ( $url =~ m#/(\d+)/([^/]+)$# );
+    my $new_report = FixMyStreet::DB->resultset('Problem')->find( {
+            id => $report_id,
+    });
 
-    return ($report_id, $new_report);
+    return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
+    return ($token, $new_report, $report_id);
 }
 
 done_testing;
