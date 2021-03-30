@@ -1135,7 +1135,7 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control, {
         this.element.href = href;
 
         if ('replaceState' in history) {
-            if (fixmystreet.page.match(/around|reports/)) {
+            if (fixmystreet.page.match(/around|reports|my/)) {
                 history.replaceState(
                     history.state,
                     null,
