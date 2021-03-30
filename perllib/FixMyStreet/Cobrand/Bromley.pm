@@ -620,7 +620,7 @@ sub bin_services_for_address {
             garden_waste => $garden,
             garden_bins => $garden_bins,
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
-            request_allowed => $request_allowed{$_->{ServiceId}},
+            request_allowed => $request_allowed{$_->{ServiceId}} && $request_max,
             request_open => $open_request,
             request_containers => $containers,
             request_max => $request_max,
@@ -988,10 +988,17 @@ sub waste_munge_request_data {
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $quantity = $data->{"quantity-$id"};
+    my $reason = $data->{replacement_reason} || '';
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $c->set_param('Container_Type', $id);
     $c->set_param('Quantity', $quantity);
+    if ($reason eq 'damaged') {
+        $c->set_param('Action', '2::1'); # Remove/Deliver
+        $c->set_param('Reason', 3); # Damaged
+    } elsif ($reason eq 'stolen' || $reason eq 'taken') {
+        $c->set_param('Reason', 1); # Missing / Stolen
+    }
 }
 
 sub admin_templates_external_status_code_hook {

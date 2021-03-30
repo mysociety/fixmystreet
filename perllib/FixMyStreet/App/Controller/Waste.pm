@@ -200,7 +200,11 @@ sub request : Chained('property') : Args(0) {
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Which containers do you need?',
-            next => 'about_you',
+            next => sub {
+                my $data = shift;
+                return 'replacement' if $data->{"container-44"}; # XXX
+                return 'about_you';
+            }
         },
     ];
     $c->stash->{field_list} = $field_list;
