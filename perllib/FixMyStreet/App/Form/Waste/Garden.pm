@@ -45,8 +45,7 @@ has_page summary => (
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
-        my $cost = $form->{c}->cobrand->feature('payment_gateway')->{ggw_cost};
-        my $total = ( $data->{new_bins} + $data->{current_bins} ) * $cost;
+        my $total = $form->{c}->cobrand->garden_waste_cost( $data->{new_bins} + $data->{current_bins} );
         $data->{display_total} = $total / 100;
         return {};
     },
