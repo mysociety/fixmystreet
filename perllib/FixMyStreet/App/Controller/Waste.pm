@@ -17,6 +17,7 @@ use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
+use Digest::MD5 qw(md5_hex);
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -88,8 +89,12 @@ sub pay : Path('pay') : Args(0) {
         $amount = $p->get_extra_field( name => 'payment' );
     }
 
+    my $redirect_id = md5_hex( $p->id . time );
+    $p->set_extra_metadata('scp_redirect_id', $redirect_id);
+    $p->update;
+
     my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay_complete', $p->id ) . '',
+        returnUrl => $c->uri_for('pay_complete', $redirect_id ) . '',
         backUrl => $c->uri_for('pay') . '',
         ref => $p->id,
         request_id => $p->id,
@@ -136,16 +141,26 @@ sub pay_complete : Path('pay_complete') : Args(1) {
     my ($self, $c, $id) = @_;
 
     # load report
-    my $p = $c->model('DB::Problem')->find({ id => $id });
+    my $p = $c->model('DB::Problem')->search({
+        extra => { like => '%scp_redirect_id,T32:'. $id . '%' }
+    });
+    if ( $p->count == 1 ) {
+        $p = $p->first;
+    } else {
+        $c->detach( '/page_error_404_not_found' );
+    }
+
     # need to get some ID Things which I guess we stored in pay
     $c->stash->{report} = $p;
+    my $scpReference = $p->get_extra_metadata('scpReference');
+    $c->detach( '/page_error_404_not_found' ) unless $scpReference;
 
     my $payment = Integrations::SCP->new(
         config => $c->cobrand->feature('payment_gateway')
     );
 
     my $resp = $payment->query({
-        scpReference => $p->get_extra_metadata('scpReference'),
+        scpReference => $scpReference,
     });
 
     if ($resp->{transactionState} eq 'COMPLETE') {
