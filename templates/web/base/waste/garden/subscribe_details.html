@@ -6,25 +6,107 @@
 [% PROCESS title title=form.title %]
 [% PROCESS errors %]
 
-<div style="background-color: #eee; padding: 1em; width: 50%;" class="clearfix">
-    <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt=""
-        style="float:left;margin: 0 1em 0 0;height:5em">
-  
-    <p style="margin: 0.25em 0 0">
+<div class="waste-service-hint-banner">
+  <div class="waste-service-hint-banner__image">
+      <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt="">
+  </div>
+  <div class="waste-service-hint__content">
+      <p>
         Each wheelie bin holds the equivalent of 5 or 6 bags of green garden waste,
         and will be collected fortnightly during gardening season (March–November)
         and monthly outside of gardening season (December–February).
-    </p>
+      </p>
+  </div>
 </div>
 
 <form method="post">
-    <h2>How many bins do you need us to collect?</h2>
+  <fieldset class="govuk-fieldset" style="margin-top: 1.5em;">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h2 class="govuk-fieldset__heading">How many bins do you need us to collect?</h2>
+    </legend>
+  
+  <!-- [% PROCESS form override_fields=['current_bins'] %] -->
+    <hr class="fieldset-hr">
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label class="govuk-label" for="[% field.id %]">
+            [% field.label %]
+        </label>
+      [% IF field.get_tag('hint') %]
+        <span id="[% field.id %]-hint" class="govuk-hint">
+            [% field.get_tag('hint') %]
+        </span>
+      [% END %]
+      [% IF error %]
+        <span id="[% field.id %]-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> [% error %]
+        </span>
+      [% END %]
+      </div>
+      <div class="fieldset-item">
+        <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="current_bins" name="current_bins" type="number"
+        value="[% field.fif %]"
+        [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
+        [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+        [%~ IF field.disabled %] disabled[% END ~%]
+        [%~ IF field.get_tag('hint') OR error %]
+          aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
+        [%~ END %]>
+      </div>
+      <div class="fieldset-item">
+        <span class="cost-pa">£60 per bin per year</span>
+      </div>
+    </div>
 
-  [% PROCESS form override_fields=['current_bins', 'new_bins', 'payment_method'] %]
+        <!-- [% PROCESS form override_fields=['new_bins'] %] -->
+
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label class="govuk-label" for="[% field.id %]">
+            [% field.label %]
+        </label>
+      [% IF field.get_tag('hint') %]
+        <span id="[% field.id %]-hint" class="govuk-hint">
+            [% field.get_tag('hint') %]
+        </span>
+      [% END %]
+      [% IF error %]
+        <span id="[% field.id %]-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> [% error %]
+        </span>
+      [% END %]
+      </div>
+      <div class="fieldset-item">
+        <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="new_bins" name="new_bins" type="number"
+        value="[% field.fif %]"
+        [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
+        [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+        [%~ IF field.disabled %] disabled[% END ~%]
+        [%~ IF field.get_tag('hint') OR error %]
+          aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
+        [%~ END %]>
+      </div>
+      <div class="fieldset-item">
+        <span class="cost-pa">£?? per bin per year</span>
+      </div>
+    </div>
+    <hr class="fieldset-hr">
+
+    <div class="cost-pa__total">
+      <span class="cost-pa__total-costs">
+        Total per year: £??
+      </span>
+      <span class="cost-pa__total-costs">
+        Total to pay now: £??
+      </span>
+    </div>
+  </fieldset>
+
+  [% PROCESS form override_fields=['payment_method'] %]
 
   [% IF property %]
   <dl class="waste__address">
-    <dt class="waste__address__title">Collection address</dt>
+    <dt class="waste__address__title"><h2 class="govuk-fieldset__heading">Collection address</h2></dt>
     <dd class="waste__address__property">[% property.address %]</dd>
   </dl>
   [% END %]
