@@ -809,7 +809,6 @@ sub process_garden_modification : Private {
     $data->{category} = 'Amend Garden Subscription'; # XXX
     $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Amend});
 
-    my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
     my $new_bins = $data->{bin_number} - $c->stash->{garden_form_data}->{bins};
 
     $data->{new_bins} = $new_bins;
@@ -820,7 +819,7 @@ sub process_garden_modification : Private {
         $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
         $c->set_param('pro_rata', $pro_rata);
     }
-    my $payment = $data->{bin_number} * $cost;
+    my $payment = $c->cobrand->garden_waste_cost($data->{bin_number});
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
@@ -850,9 +849,8 @@ sub process_garden_renew : Private {
     my $data = $form->saved_data;
     my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
 
-    my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
     my $total_bins = $data->{current_bins} + $data->{new_bins};
-    my $payment = $total_bins * $cost;
+    my $payment = $c->cobrand->garden_waste_cost($total_bins);
     $data->{bin_count} = $total_bins;
 
 
@@ -903,8 +901,7 @@ sub process_garden_data : Private {
     my $bin_count = $data->{new_bins} + $data->{current_bins};
     $data->{bin_count} = $bin_count;
 
-    my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
-    my $total = $bin_count * $cost;
+    my $total = $c->cobrand->garden_waste_cost($bin_count);
     $c->set_param('payment', $total);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
