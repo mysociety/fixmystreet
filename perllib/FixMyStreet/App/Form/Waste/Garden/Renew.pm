@@ -11,7 +11,7 @@ has_page intro => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
-        $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
+        $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins} },
             name => { default => $c->user->name },
@@ -33,8 +33,7 @@ has_page summary => (
         my $current_bins = $data->{current_bins};
         my $new_bins = $data->{new_bins};
 
-        my $cost = $c->cobrand->feature('payment_gateway')->{ggw_cost};
-        my $total = ( $new_bins + $current_bins) * $cost;
+        my $total = $c->cobrand->garden_waste_cost( $new_bins + $current_bins);
 
         my $orig_sub = $c->stash->{orig_sub};
         if ( $orig_sub ) {
