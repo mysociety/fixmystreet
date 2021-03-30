@@ -1,3 +1,11 @@
+/* COLOURS */
+
+$base_bg: #eeeeee;
+
+/* BREAKPOINTS */
+
+$medium-screen: 30em !default;
+
 body.waste {
     label, legend {
       margin-top: 0; font-weight: normal !important;
@@ -19,6 +27,13 @@ body.waste {
       @media (min-width: 40.0625em) {
         font-size: 19px; font-size: 1.1875rem; line-height: 1.31579;
       }
+    }
+    textarea.govuk-textarea {
+      font-family: $body-font;
+    }
+
+    input#phone, input#password, input#bin_number {
+      max-width: 28ex;
     }
 
     .govuk-form-group.loading {
@@ -166,4 +181,86 @@ input[type="submit"].waste-service-link {
 
 .text-centered {
   text-align: center;
+}
+
+.waste-service-hint-banner {
+  display: flex;
+  max-width: 48em;
+  background-color: $base_bg;
+  padding: 1em;
+  justify-items: center;
+  align-items: center;
+  border-radius: 3px;
+
+  &__image {
+    align-items: center;
+    margin-right: 1em;
+    flex: 0 0 80px;
+  }
+
+  &__content {
+    align-self: center;
+    p {
+      margin: 0;
+    }
+  }
+}
+
+#current_bins, #new_bins {
+  max-width: 4em; //input widths for subscribe_details page
+}
+
+.fieldset-hr {
+  max-width: 50em;
+}
+
+.fieldset-container {
+  max-width: 50em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 2em 0;
+  .fieldset-item {
+    &:nth-child(1) {
+      flex: 1 1 50%;
+      min-width: 22ch;
+    }
+    &:nth-child(2) {
+      flex: 1 1 10%;
+    }
+    &:nth-child(3) {
+      flex: 1 1 40%;
+      text-align: left;
+    }
+
+    label {
+      font-weight: 700 !important;
+      padding-right: 10px;
+    }
+  }
+
+  @media (min-width: $medium-screen) {
+    .fieldset-item {
+      &:nth-child(3) {
+        text-align: right;
+      }
+    }
+  }
+}
+
+.cost-pa__total {
+  max-width: 50em;
+  text-align: right;
+  margin-top: 1em;
+  &-costs {
+    display: block;
+    &:nth-child(2) {
+      margin: 1em 0 3em 0;
+      font-weight: 700;
+    }
+  }
+}
+
+#payment_method-item-hint, #password-hint {
+  max-width: 36em;
 }
