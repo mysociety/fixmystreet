@@ -144,7 +144,7 @@ FixMyStreet::override_config {
     };
     subtest 'Request a new container' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/<span id="quantity-44-hint" class="govuk-hint">\s*You can request a maximum of one container\s*<\/span>/);
+        $mech->content_like(qr/<input type="hidden" name="quantity-44" id="quantity-44" value="1">/);
         $mech->submit_form_ok({ form_number => 2 });
         $mech->content_contains('Please specify what you need');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
