@@ -96,7 +96,7 @@ FixMyStreet::override_config {
         is $user->alerts->count, 1;
         my $report = $user->problems->first;
         is $report->title, "Noise report";
-        is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
+        is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
         is $report->latitude, 53;
         $mech->clear_emails_ok;
     };
@@ -110,8 +110,8 @@ FixMyStreet::override_config {
         $mech->content_contains('12 Saint Street, Dalston');
         $mech->content_lacks('1 Road Road');
         $mech->submit_form_ok({ with_fields => { address => '100000111' } });
-        $mech->submit_form_ok({ with_fields => { kind => 'road' } });
-        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'SW1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { kind => 'other', kind_other => 'Other kind' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', estates => 'no', source_location => 'SW1 1AA' } });
         $mech->content_contains('24 High Street');
         $mech->submit_form_ok({ with_fields => { source_address => '100000333' } });
         $mech->submit_form_ok({ with_fields => {
@@ -137,7 +137,7 @@ FixMyStreet::override_config {
         my @reports = $user->problems->search(undef, { order_by => 'id' })->all;
         my $report = $reports[-1];
         is $report->title, "Noise report";
-        is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Noise on the road\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
+        is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Other (Other kind)\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nIs the residence a Hackney Estates property? No\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
         is $report->latitude, 53;
         $mech->clear_emails_ok;
     };

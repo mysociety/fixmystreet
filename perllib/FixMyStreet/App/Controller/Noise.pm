@@ -102,6 +102,7 @@ sub get_page : Private {
 
 sub label_for_field {
     my ($form, $field, $key) = @_;
+    $key ||= '';
     foreach ($form->field($field)->options) {
         return $_->{label} if $_->{value} eq $key;
     }
@@ -133,6 +134,7 @@ sub process_noise_report : Private {
     );
     my $object;
     my $kind = label_for_field($form, 'kind', $data->{kind});
+    $kind .= " ($data->{kind_other})" if $data->{kind} eq 'other';
     my $now = $data->{happening_now} ? 'Yes' : 'No';
     my $days = join(', ', map { ucfirst } @{$data->{happening_days}||[]});
     my $times = join(', ', map { ucfirst } @{$data->{happening_time}||[]});
@@ -179,6 +181,8 @@ EOF
         }
         my $user_available = ucfirst(join(' or ', @{$data->{best_time}}) . ', by ' . $data->{best_method});
         my $where = label_for_field($form, 'where', $data->{where});
+        my $estates = label_for_field($form, 'estates', $data->{estates}) || '';
+        $estates = "Is the residence a Hackney Estates property? $estates" if $estates;
 
         my $addr;
         if ($data->{source_address}) {
@@ -196,6 +200,7 @@ Kind of noise: $kind
 Noise details: $data->{more_details}
 
 Where is the noise coming from? $where
+$estates
 Noise source: $addr
 
 Is the noise happening now? $now
