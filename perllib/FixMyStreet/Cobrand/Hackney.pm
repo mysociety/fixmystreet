@@ -263,6 +263,7 @@ sub munge_sendreport_params {
         if (my $recipient = $self->noise_destination_email($row, $name)) {
             $params->{To} = $recipient;
         }
+        $params->{Subject} = "Noise report: " . $row->title;
         return;
     }
 

@@ -173,7 +173,6 @@ EOF
         });
     } else {
         # New report
-        my $title = 'Noise report';
         my $user_address = $data->{address_manual};
         if (!$user_address) {
             $user_address = $c->cobrand->address_for_uprn($data->{address});
@@ -184,13 +183,15 @@ EOF
         my $estates = label_for_field($form, 'estates', $data->{estates}) || '';
         $estates = "Is the residence a Hackney Estates property? $estates" if $estates;
 
-        my $addr;
+        my ($addr, $title);
         if ($data->{source_address}) {
             $addr = $c->cobrand->address_for_uprn($data->{source_address});
+            $title = $addr;
             $addr .= " ($data->{source_address})";
         } else {
             my $radius = label_for_field($form, 'radius', $data->{radius});
-            $addr = "$data->{latitude}, $data->{longitude}, $radius";
+            $addr = "($data->{latitude}, $data->{longitude}), $radius";
+            $title = $addr;
         }
         my $detail = <<EOF;
 Reporter address: $user_address

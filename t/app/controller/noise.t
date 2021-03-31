@@ -90,12 +90,13 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Hackney Council" <noise_residential@example.org>, "Hackney Council" <other@example.org>';
+        is $emails[0]->header('Subject'), 'Noise report: 24 High Street, SW1A 1AA';
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Hackney Council has been logged/;
         is $user->alerts->count, 1;
         my $report = $user->problems->first;
-        is $report->title, "Noise report";
+        is $report->title, "24 High Street, SW1A 1AA";
         is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
         is $report->latitude, 53;
         $mech->clear_emails_ok;
@@ -136,7 +137,7 @@ FixMyStreet::override_config {
         is $user->alerts->count, 2;
         my @reports = $user->problems->search(undef, { order_by => 'id' })->all;
         my $report = $reports[-1];
-        is $report->title, "Noise report";
+        is $report->title, "24 High Street, SW1A 1AA";
         is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Other (Other kind)\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nIs the residence a Hackney Estates property? No\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
         is $report->latitude, 53;
         $mech->clear_emails_ok;

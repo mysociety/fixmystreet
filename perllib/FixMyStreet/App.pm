@@ -325,7 +325,7 @@ Send an email by filling in the given template with values in the stash.
 You can specify extra values to those already in the stash by passing a hashref
 as the second argument.
 
-The stash (or extra_stash_values) keys 'to', 'from' and 'subject' are used to
+The stash (or extra_stash_values) keys 'to' and 'from' are used to
 set those fields in the email if they are present.
 
 If a 'from' is not specified then the default from the config is used.
@@ -390,7 +390,6 @@ sub construct_email {
         To => $vars->{to},
         'Message-ID' => FixMyStreet::Email::message_id(),
     };
-    $data->{Subject} = $vars->{subject} if $vars->{subject};
     $data->{'Reply-To'} = $vars->{'Reply-To'} if $vars->{'Reply-To'};
     $data->{_html_} = $html_compiled if $html_compiled;
     $data->{_html_images_} = \@inline_images if @inline_images;

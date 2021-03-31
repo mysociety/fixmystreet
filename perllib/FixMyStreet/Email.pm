@@ -274,7 +274,7 @@ sub construct_email ($) {
     $body =~ s#(?<!\n)(?<!  )\n(?!\n)# #gs;
     $body =~ s# +$##mg;
 
-    $p->{Subject} = $subject if defined($subject);
+    $p->{Subject} = $subject if !$p->{Subject} && defined($subject);
 
     if (!exists($p->{Subject})) {
         # XXX Try to find out what's causing this very occasionally
