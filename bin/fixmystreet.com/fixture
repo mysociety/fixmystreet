@@ -104,7 +104,7 @@ if ($opt->test_fixtures) {
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
 
     foreach (
-        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards'], name => 'Westminster City Council' },
+        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Street Entertainment'], name => 'Westminster City Council' },
         { area_id => 2482, categories => ['Street Lighting and Road Signs'], name => 'Bromley Council' },
         { area_id => 2234, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways' },
         { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
@@ -318,6 +318,24 @@ if ($opt->test_fixtures) {
     }, {
         code => 'USRN',
         automated => 'hidden_field',
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2504},
+        category => 'Street Entertainment',
+    });
+    $child_cat->set_extra_fields({
+        code => 'type',
+        datatype => 'singlevaluelist',
+        order => 1,
+        variable => 'true',
+        required => 'true',
+        values => [
+            { key => '1', name => 'Obstruction' },
+            { key => '2', name => 'Indecent or offensive behaviour' },
+            { key => '3', name => 'Animal safety concerns' },
+        ],
     });
     $child_cat->update;
 

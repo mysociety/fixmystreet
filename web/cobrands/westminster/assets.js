@@ -49,7 +49,8 @@ OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN = OpenLayers.Class(OpenLayers.
     CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN'
 });
 
-var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.assets/';
+var proxy_url = fixmystreet.staging ? 'https://westminster.staging/' : 'https://westminster.assets/';
+var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?' + proxy_url;
 
 var defaults = {
     http_options: {
@@ -219,18 +220,54 @@ layer_data = [
     { category: 'Signs and bollards', subcategories: [ '1' ], subcategory_id: '#form_featuretypecode', item: 'bollard', layers: [ 42, 52 ] },
     { category: 'Signs and bollards', subcategories: [ 'PLFP' ], subcategory_id: '#form_featuretypecode', item: 'feeder pillar', layers: [ 56 ] },
     { category: 'Signs and bollards', subcategories: [ '3' ], subcategory_id: '#form_featuretypecode', item: 'sign', layers: [ 48, 58, 54 ] },
-    { category: 'Signs and bollards', subcategories: [ '2' ], subcategory_id: '#form_featuretypecode', item: 'street nameplate', layers: [ 46 ] }
+    { category: 'Signs and bollards', subcategories: [ '2' ], subcategory_id: '#form_featuretypecode', item: 'street nameplate', layers: [ 46 ] },
+
+    {
+        category: 'Street Entertainment',
+        outFields: 'Site,Category,Terms_Conditions',
+        item: 'street entertainment pitch',
+        layers: [ 66 ],
+        actions: {
+            asset_found: function(asset) {
+                // Remove any existing street entertainment messages using function below.
+                this.fixmystreet.actions.asset_not_found.call(this);
+
+                var attr = asset.attributes;
+                var site = attr.Site;
+                var category = attr.Category;
+                var terms = attr.Terms_Conditions;
+
+                var $msg = $('<div class="js-street-entertainment-message box-warning"></div>');
+                var $dl = $("<dl></dl>").appendTo($msg);
+
+                $dl.append("<dt>Site</dt>");
+                $dl.append($("<dd></dd>").text(site));
+
+                $dl.append("<dt>Category</dt>");
+                $dl.append($("<dd></dd>").text(category));
+
+                $dl.append("<dt>Terms & conditions</dt>");
+                $dl.append($("<dd></dd>").html(terms));
+
+                $msg.prependTo('#js-post-category-messages');
+            },
+            asset_not_found: function() {
+                $('.js-street-entertainment-message').remove();
+            }
+        }
+    }
 ];
 
 $.each(layer_data, function(i, o) {
     var layers_added = [];
     var attr = 'central_asset_id';
+    var outFields = o.outFields || attr;
     var params = $.extend(true, {}, defaults, {
         asset_category: o.category,
         asset_item: o.item,
         http_options: {
             params: {
-                outFields: attr
+                outFields: outFields
             }
         },
         attributes: {}
@@ -254,6 +291,11 @@ $.each(layer_data, function(i, o) {
         };
     } else {
         params.attributes[attr] = attr;
+    }
+
+    if (o.actions) {
+        params.select_action = true;
+        params.actions = o.actions;
     }
 
     $.each(o.layers, function(i, l) {
