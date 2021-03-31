@@ -1,4 +1,4 @@
-Subject: New [% site_name %] updates on [% report.category %] report
+Subject: New updates on [% report.category %] report[% IF report.external_id %] [% report.external_id %][% END %]: [% report.title | truncate(75, '...') %]
 
 You asked us to send you an email every time an update was made to the
 [% site_name %] report: [% report.title %].
