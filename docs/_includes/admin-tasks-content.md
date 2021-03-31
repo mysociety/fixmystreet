@@ -926,3 +926,27 @@ particular date range:
 
 
 </div>
+
+
+<div class="admin-task" markdown="1" id="emergency-message">
+
+### Displaying an emergency message
+
+<span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Add/edit emergency message’ must be ticked.</span>
+
+This features allows you to set an emergency message which will be displayed on the homepage.
+
+Certain HTML tags can be used for formatting purposes. These are limited to the same set as described
+in ["HTML content in notices"](#html-content-in-notices). You should not use block-level HTML elements
+(e.g. `div`,`p`, etc) in the input field, as linebreaks are automatically converted to HTML tags. If
+you want multiple paragraphs they should be separated with blank lines as in the below example.
+
+To clear the message simply delete any contents in the box.
+
+<img alt="The HTML text entered in to the box will be rendered on the homepage."
+    src="/assets/img/pro-user-guide/emergency-message-editing.png" class="admin-screenshot" />
+
+<img alt="An emergency message can be shown to users on the FixMyStreet homepage."
+    src="/assets/img/pro-user-guide/emergency-message-example.png" class="admin-screenshot" />
+
+</div>
