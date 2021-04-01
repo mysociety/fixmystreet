@@ -213,6 +213,38 @@ sub phone_display {
     return $parsed->{phone} ? $parsed->{phone}->format_for_country($country) : $self->phone;
 }
 
+sub alert_by {
+    my ($self, $is_update, $cobrand) = @_;
+    return $is_update
+        ? $self->alert_updates_by($cobrand)
+        : $self->alert_local_by;
+}
+
+# How does this user want to receive local alerts?
+# email or none, so will be none for a phone-only user
+sub alert_local_by {
+    my $self = shift;
+    my $pref = $self->get_extra_metadata('alert_notify') || '';
+    return 'none' if $pref eq 'none';
+    return 'none' unless $self->email_verified;
+    return 'email';
+}
+
+# How does this user want to receive update alerts?
+# If the cobrand allows text, this could include phone
+sub alert_updates_by {
+    my ($self, $cobrand) = @_;
+    my $pref = $self->get_extra_metadata('update_notify') || '';
+    return 'none' if $pref eq 'none';
+
+    # Only send text alerts for new report updates at present
+    my $allow_phone_update = ($self->phone_verified && $cobrand->sms_authentication);
+
+    return 'none' unless $self->email_verified || $allow_phone_update;
+    return 'phone' if $allow_phone_update && (!$self->email_verified || $pref eq 'phone');
+    return 'email';
+}
+
 sub latest_anonymity {
     my $self = shift;
     my $p = $self->problems->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
