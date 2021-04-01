@@ -42,5 +42,11 @@
     [% ELSIF body.name.match('Bedfordshire') %]
     Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a> or
     <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% ELSIF body.name.match('Aylesbury Vale|Chiltern|South Buckinghamshire|Wycombe') %]
+    Its area is now covered by <a href="/reports/Buckinghamshire">Buckinghamshire Council</a>.
+    [% ELSIF body.name.match('Corby|Kettering|East Northamptonshire|Wellingborough') %]
+    Its area is now covered by <a href="/reports/North+Northamptonshire">North Northamptonshire Council</a>.
+    [% ELSIF body.name.match('Daventry|Northampton|South Northamptonshire') %]
+    Its area is now covered by <a href="/reports/West+Northamptonshire">West Northamptonshire Council</a>.
     [% END %]
 </p>
