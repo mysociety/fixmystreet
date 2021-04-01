@@ -622,6 +622,7 @@ $.extend(fixmystreet.utils, {
 
         var show_old_reports = replace_query_parameter(qs, 'show_old_reports', 'show_old_reports');
         var page = $('.pagination:first').data('page');
+        console.log("page_changed_history", page);
         if (page > 1) {
             qs.p = page;
         } else {
@@ -878,6 +879,7 @@ $.extend(fixmystreet.utils, {
                 } else {
                     $('.pagination:first').data('page', page - 1);
                 }
+                console.log("setting use_page", page);
                 fixmystreet.markers.protocol.use_page = true;
                 $(this).trigger('change');
             });
@@ -1149,6 +1151,7 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control, {
         center = this.map.getCenter();
 
         var params = OpenLayers.Util.getParameters(href);
+        console.log("createParams", params);
 
         // If there's still no center, map is not initialized yet.
         // Break out of this function, and simply return the params from the
@@ -1268,14 +1271,19 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         }
         var page;
         if (this.use_page) {
+            console.log("use_page");
             page = $('.pagination:first').data('page');
             this.use_page = false;
         } else if (this.initial_page) {
+            console.log("initial_page");
             page = 1;
         } else {
+            console.log("neither");
             var qs = fixmystreet.utils.parse_query_string();
+            console.log("qs.p", qs.p);
             this.initial_page = page = qs.p || 1;
         }
+        console.log(page);
         options.params.p = page;
         return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
     },
