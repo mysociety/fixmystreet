@@ -19,6 +19,13 @@ has_page alter => (
         my $form = shift;
         my $c = $form->c;
         my $data = $c->stash->{garden_form_data};
+        $c->stash->{cost_per_year} = $c->cobrand->garden_waste_cost($data->{bins}) / 100;
+        $c->stash->{new_bin_count} = 0;
+        $c->stash->{pro_rata} = 0;
+        if ( $form->saved_data->{bin_number} && $form->saved_data->{bin_number} > $data->{bins} ) {
+            $c->stash->{new_bin_count} = $form->saved_data->{bin_number} - $data->{bins};
+            $c->stash->{pro_rata} = $c->cobrand->waste_get_pro_rata_cost( $c->stash->{new_bin_count}, $c->stash->{garden_form_data}->{end_date}) / 100;
+        }
         return {
             bin_number => { default => $data->{bins} },
         };
@@ -41,7 +48,7 @@ has_page summary => (
 
         $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
         $data->{billing_address} = $c->stash->{garden_form_data}->{billing_address} || $c->stash->{property}{address};
-        $data->{display_pro_rata} = $pro_rata / 100;
+        $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
         $data->{display_total} = $total / 100;
 
         $data->{name} = $c->user->name;
