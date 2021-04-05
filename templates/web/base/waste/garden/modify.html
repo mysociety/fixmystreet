@@ -1,6 +1,7 @@
-[% SET bodyclass = 'waste' %]
-
-[% INCLUDE header.html %]
+[% extra_js = [
+    version('/js/waste.js')
+] ~%]
+[% INCLUDE 'waste/header.html' %]
 
 [% PROCESS 'govuk/fields.html' %]
 [% PROCESS title title=form.title %]
@@ -48,23 +49,27 @@
     </div>
 
     <div class="fieldset-item">
-      <span class="cost-pa">£?? per bin per year</span>
+      <span class="cost-pa">£[% tprintf('%.2f', garden_form_data.per_bin_cost / 100 ) %] per bin per year</span>
     </div>
     
   </div>
   <hr class="fieldset-hr">
   <div class="cost-pa__total">
     <span class="cost-pa__total-costs">
-      Total per year, from ??th January 2022: £??
+    Total per year, from [% display_end_date.strftime('%e %B %Y') %]: £<span id="cost_per_year">[% tprintf('%.2f', cost_per_year) %]</span>
     </span>
     <span class="cost-pa__total-costs">
-      Total to pay now (1 new bin): £??
+        Total to pay now (<span id="new_bin_count">[% new_bin_count %]</span> new <span id="new_bin_text">[% nget( 'bin', 'bins', new_bin_count) %]</span>): £<span id="pro_rata_cost">[% tprintf('%.2f', pro_rata) %]</span>
     </span>
   </div>
   </fieldset>
   
     [% PROCESS form override_fields=['saved_data', 'token', 'process'] %]
     [% PROCESS form override_fields=['continue_review'] %]
+
+  <input type="hidden" name="per_bin_cost" id="per_bin_cost" value="[% garden_form_data.per_bin_cost %]">
+  <input type="hidden" name="pro_rata_bin_cost" id="pro_rata_bin_cost" value="[% garden_form_data.pro_rata_bin_cost %]">
+  <input type="hidden" name="existing_bins" id="existing_bins" value="[% garden_form_data.bins %]">
 
 </form>
 
