@@ -28,8 +28,11 @@ has_page details => (
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
+
         my $existing = $data->{existing_number} || 0;
         $existing = 0 if $data->{existing} eq 'no';
+        my $cost = $form->{c}->cobrand->garden_waste_cost($data->{existing_number});
+        $form->{c}->stash->{payment} = $cost / 100;
         return {
             current_bins => { default => $existing },
         };
