@@ -631,6 +631,7 @@ sub garden : Chained('property') : Args(0) {
     };
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
+    $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
     $c->forward('form');
 }
 
@@ -670,7 +671,10 @@ sub garden_modify : Chained('property') : Args(0) {
         $billing_address = $orig_sub->get_extra_field_value('billing_address');
     }
 
+    $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
     $c->stash->{garden_form_data} = {
+        per_bin_cost => $c->cobrand->garden_waste_cost,
+        pro_rata_bin_cost =>  $c->cobrand->waste_get_pro_rata_cost(1, $service->{end_date}),
         max_bins => $max_bins,
         bins => $service->{garden_bins},
         end_date => $service->{end_date},

@@ -765,7 +765,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
-        $mech->content_contains('20.00');
+        $mech->content_like(qr#Total to pay today</dt>\s*<dd[^>]*>£0.00#);
+        $mech->content_like(qr#Total</dt>\s*<dd[^>]*>£20.00#);
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
