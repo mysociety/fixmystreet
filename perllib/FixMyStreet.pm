@@ -204,7 +204,7 @@ sub staging_flag {
         # Assume all flags 0 if missing
         return !$value;
     }
-    return $flags->{$flag} == $value;
+    return defined($flags->{$flag}) && ( $flags->{$flag} == $value );
 }
 
 1;
