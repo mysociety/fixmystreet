@@ -1126,7 +1126,24 @@ FixMyStreet::override_config {
         $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
 
         is $mech2->uri->path, '/waste/12345/garden', 'no redirect occured';
-        $mech2->content_contains('Unknown error');
+        $mech2->content_contains('Payment failed: ERROR');
+
+        $pay->mock(pay => sub {
+            my $self = shift;
+            $sent_params = shift;
+            return {
+                transactionState => 'IN_PROGRESS',
+                scpReference => '12345',
+                invokeResult => {
+                    status => 'SUCCESS',
+                    redirectUrl => 'http://example.org/faq'
+                }
+            };
+        });
+
+        $mech2->submit_form_ok({ form_number => 2 });
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
     };
 };
 
