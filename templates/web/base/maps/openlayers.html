@@ -56,7 +56,7 @@
   [% IF map_type_toggle %]
     [% IF c.config.BING_MAPS_API_KEY OR c.cobrand.moniker == 'zurich' %]
       [% aerial = c.req.params.aerial %]
-      [% aerial = 1 IF c.cobrand.moniker == 'zurich' AND NOT c.req.params.aerial.defined %]
+      [% SET aerial = 1 IF c.cobrand.moniker == 'zurich' AND NOT c.req.params.aerial.defined %]
       [% IF aerial %]
         <a class="map-layer-toggle roads" rel="nofollow" href="[% c.uri_with( { aerial => 0 } ) %]">[% loc('Road map') %]</a>
       [% ELSE %]
