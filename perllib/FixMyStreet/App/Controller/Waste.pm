@@ -228,7 +228,7 @@ sub cancel_subscription : Private {
     $c->detach;
 }
 
-sub direct_debit : Path('dd') : Args(0) {
+sub populate_dd_details : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
@@ -257,10 +257,18 @@ sub direct_debit : Path('dd') : Args(0) {
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
     $c->stash->{amount} = sprintf( '%.2f', $c->stash->{report}->get_extra_field(name => 'payment')->{value} / 100 ),
-    $c->stash->{reference} = $reference;
+    $c->stash->{reference} = 'GGW' . $c->stash->{property}{uprn};
+    $c->stash->{lookup} = $reference;
+    $c->stash->{payment_date} = $dt;
     $c->stash->{day} = $dt->day;
     $c->stash->{month} = $dt->month;
     $c->stash->{year} = $dt->year;
+}
+
+sub direct_debit : Path('dd') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_dd_details');
     $c->stash->{template} = 'waste/dd.html';
     $c->detach;
 }
@@ -274,14 +282,22 @@ sub direct_debit_complete : Path('dd_complete') : Args(0) {
     my $id = $c->get_param('report_id');
     $c->forward('check_payment_redirect_id', [ $id, $token]);
 
-    $c->stash->{message} = "Direct Debit set up";
+    $c->stash->{title} = "Direct Debit mandate";
+
     $c->stash->{template} = 'waste/dd_complete.html';
 }
 
 sub direct_debit_cancelled : Path('dd_cancelled') : Args(0) {
     my ($self, $c) = @_;
 
-    $c->res->body('NOT IMPLEMENTED');
+    my $token = $c->get_param('reference');
+    my $id = $c->get_param('report_id');
+    if ( $id && $token ) {
+        $c->forward('check_payment_redirect_id', [ $id, $token ]);
+        $c->forward('populate_dd_details');
+    }
+
+    $c->stash->{template} = 'waste/dd_cancelled.html';
 }
 
 sub direct_debit_modify : Path('dd_amend') : Args(0) {
