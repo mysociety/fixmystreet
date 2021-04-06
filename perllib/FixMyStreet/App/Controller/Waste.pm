@@ -96,6 +96,16 @@ sub check_payment_redirect_id : Private {
     $c->stash->{report} = $p;
 }
 
+sub pay_retry : Path('pay_retry') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $id = $c->get_param('id');
+    my $token = $c->get_param('token');
+    $c->forward('check_payment_redirect_id', [ $id, $token ]);
+
+    $c->forward('pay');
+}
+
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $id) = @_;
 
@@ -187,17 +197,14 @@ sub pay_complete : Path('pay_complete') : Args(2) {
             $c->forward( 'confirm_subscription', [ $ref ] );
         # It is not clear to me that it's possible to get to this with a redirect
         } else {
-            # cancelled, not attempted, logged out - try again option
-            # card rejected - try again with different card/cancel
-            # otherwise error page?
             $c->stash->{template} = 'waste/pay.html';
-            $c->stash->{error} = 'Payment failed: ' . $resp->{paymentResult}->{status};
+            $c->stash->{error} = $resp->{paymentResult}->{status};
             $c->detach;
         }
     } else {
-        # retry if in progress, error if invalid ref.
+        # again, I am not sure it's possible for this to ever happen
         $c->stash->{template} = 'waste/pay.html';
-        $c->stash->{error} = 'Payment failed: ' . $resp->{transactionState};
+        $c->stash->{error} = $resp->{transactionState};
         $c->detach;
     }
 }
