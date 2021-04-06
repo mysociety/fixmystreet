@@ -1,75 +1,41 @@
-[% INCLUDE header.html %]
+[% INCLUDE 'waste/header.html' %]
 
-<h1 class="govuk-heading-xl">DD</h1>
+<h1 class="govuk-heading-xl">Direct Debit Details</h1>
 
-<form name="post" method="post" action="[% payment_details.dd_push_url %]/pages/registration.aspx?.Client=[% payment_details.dd_client_id %]&.PaymentPlans=[% payment_details.dd_payment_plan %]">
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtTitle">Title</label>
-    <input class="govuk-input" type="text" name="txtTitle" id="txtTitle"  value="[% title %]" />
+<div class="waste__summary">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            First Payment Date
+        </dt>
+        <dd class="govuk-summary-list__value">
+            [% payment_date.strftime('%e %B %Y') %], and annually thereafter
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Amount
+        </dt>
+        <dd class="govuk-summary-list__value">
+            £[% amount %]
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Billing Address
+        </dt>
+        <dd class="govuk-summary-list__value">
+            [% address1 %]<br>
+            [% address2 %][% '<br>' IF address2 %]
+            [% address3 %][% '<br>' IF address3 %]
+            [% postcode %]<br>
+            [% town %]
+        </dd>
+      </div>
+    </dl>
 </div>
 
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtFirstName">First Name</label>
-    <input class="govuk-input" type="text" name="txtFirstName" id="txtFirstName"  value="[% first_name %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtSurname">Last Name</label>
-    <input class="govuk-input" type="text" name="txtSurname" id="txtSurname"  value="[% last_name %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="addr1">Address 1</label>
-    <input class="govuk-input" type="text" name="addr1" id="addr1"  value="[% address1 %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="addr2">Address 2</label>
-    <input class="govuk-input" type="text" name="addr2" id="addr2"  value="[% address2 %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="add3">Address 3</label>
-    <input class="govuk-input" type="text" name="addr3" id="addr3" value="[% address3 %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="searchPostCode">PostCode</label>
-    <input class="govuk-input" type="text" name="searchPostCode" id="searchPostCode"  value="[% postcode %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtAddressTown">Town</label>
-    <input class="govuk-input" type="text" name="txtAddressTown" id="txtAddressTown"  value="[% town %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtPhone">Phone</label>
-    <input class="govuk-input" type="text" name="txtPhone" id="txtPhone"  value="[% phone %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtEmail">Email</label>
-    <input class="govuk-input" type="text" name="txtEmail" id="txtEmail"  value="[% email %]" />
-</div>
-
-<div class="govuk-form-group">
-    <label class="govuk-label" for="txtAccountHolders">Account Holder</label>
-    <input class="govuk-input" type="text" name="txtAccountHolders" id="txtAccountHolders"  value="[% account_holder %]" />
-</div>
-
-
-<input type="hidden" name="txtReference" id="txtReference" value="[% reference %]" />
-<input type="hidden" name="txtRegularAmount" id="txtRegularAmount"  value="[% amount %]" />
-<input type="hidden" name="lstPaymentDay" value="[% day %]" />
-<input type="hidden" name="PaymentMonth" value="[% month %]" />
-<input type="hidden" name="PaymentYear" value="[% year %]" />
-<input type="hidden" name="end" value="until_notice" />
-<input type="hidden" name="arrayvars" value="productcode*|*WASTE*|*reference*|*[% reference %]*|*report_id*|*[% report.id %]">
-
-<div class="govuk-form-group">
-    <input class="govuk-input" type="submit">
-</div>
-</form>
+[% BLOCK form_extra %][% END %]
+[% INCLUDE 'waste/dd_form.html' button_text="Continue to Bank Details" %]
 
 [% INCLUDE footer.html %]
