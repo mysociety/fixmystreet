@@ -1,17 +1,30 @@
 [% INCLUDE header.html %]
 
-<h1 class="govuk-heading-xl">Pay</h1>
 
 [% IF error %]
 <div class="govuk-error-summary">
     <h1 class="govuk-error-summary__title">
-        [% title %]
+        There was a problem with your payment
     </h1>
     <div class="govuk-error-summary__body">
         <p>
-        There was a problem: [% error %]
+        Payment failed: [% error %]
         </p>
     </div>
+</div>
+
+[% IF report && report.get_extra_field_value('payment') > 0 %]
+    <form method="POST" action="[% c.uri_for('pay_retry') %]">
+        <input type="hidden" name="id" value="[% report.id %]">
+        <input type="hidden" name="token" value="[% report.get_extra_metadata('redirect_id') %]">
+        <div class="govuk-form-group">
+        Retry to pay £[% tprintf( '%.2f', report.get_extra_field_value('payment') / 100 )%] for [% report.title %] by Credit/Debit Card
+        </div>
+        <div class="govuk-form-group">
+        <input class="govuk-button" type="submit" value="Retry">
+        </div>
+    </form>
+[% END %]
 [% ELSE %]
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">
@@ -22,7 +35,7 @@
         [% message %]
         </p>
     </div>
-[% END %]
 </div>
+[% END %]
 
 [% INCLUDE footer.html %]v
