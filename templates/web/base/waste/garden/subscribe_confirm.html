@@ -2,17 +2,49 @@
 
 <h1 class="govuk-heading-xl">Subscription completed</h1>
 
+<div class="govuk-panel govuk-panel--confirmation">
 [% IF error %]
-    There was a problem: [% error %]
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+        There was a problem: [% error %]
+        </p>
+    </div>
+[% ELSE %]
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>[% message %]
+          [% IF report.user.email %]
+            a copy has been sent to your email address, [% report.user.email %].
+          [% END %]
+        </p>
+        <p>
+        [% IF action == 'new_subscription' %]
+        Your Garden Waste subscription won't show up on your bin calendar until your
+        containers have been delivered. Containers typically arrive within two weeks,
+        but this may vary due to demand.
+        [% ELSIF action == 'add_containers' %]
+        Containers typically arrive within two weeks, but this may vary due to demand.
+        [% ELSE %]
+        Changes to your subscription will show up on your bin calender shortly.
+        [% END %]
+        </p>
+
+        [% IF reference %]
+        <p>
+          Your payment reference is [% reference %].
+        </p>
+        [% END %]
+        <p>
+          Your reference number is <strong>[% report.id %]</strong>.
+        </p>
+    </div>
 [% END %]
-
-<p>
-[% message %]
-</p>
-
-<p>
-Payment reference: [% reference %]
-</p>
+</div>
 
 [% FOR unit IN service_data %]
   [% NEXT UNLESS unit.service_id == 545 AND unit.next %]
