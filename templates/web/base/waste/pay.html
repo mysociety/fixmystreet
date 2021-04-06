@@ -3,11 +3,26 @@
 <h1 class="govuk-heading-xl">Pay</h1>
 
 [% IF error %]
-    There was a problem: [% error %]
+<div class="govuk-error-summary">
+    <h1 class="govuk-error-summary__title">
+        [% title %]
+    </h1>
+    <div class="govuk-error-summary__body">
+        <p>
+        There was a problem: [% error %]
+        </p>
+    </div>
+[% ELSE %]
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+        [% message %]
+        </p>
+    </div>
 [% END %]
-
-<pre>
-[% xml %]
-</pre>
+</div>
 
 [% INCLUDE footer.html %]v

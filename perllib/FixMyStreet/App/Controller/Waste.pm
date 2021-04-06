@@ -146,7 +146,8 @@ sub pay : Path('pay') : Args(0) {
              $c->detach;
          } else {
              # XXX - should this do more?
-            $c->stash->{error} = 'Unknown error';
+            (my $error = $result->{invokeResult}->{status}) =~ s/_/ /g;
+            $c->stash->{error} = $error;
             $c->stash->{template} = 'waste/pay.html';
             $c->detach;
          }
@@ -180,8 +181,9 @@ sub pay_complete : Path('pay_complete') : Args(2) {
         if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
             # create sub in echo
             my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
-            $c->stash->{message} = 'Payment succesful';
+            $c->stash->{title} = 'Payment successful';
             $c->stash->{reference} = $ref;
+            $c->stash->{action} = 'new_subscription';
             $c->forward( 'confirm_subscription', [ $ref ] );
         # It is not clear to me that it's possible to get to this with a redirect
         } else {
@@ -852,6 +854,7 @@ sub process_garden_modification : Private {
         if ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit_modify');
         } elsif ( $pro_rata ) {
+            $c->stash->{action} = 'add_containers';
             $c->forward('pay');
         } else {
             $c->forward('confirm_subscription', [ undef ]);
