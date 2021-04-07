@@ -298,16 +298,20 @@ sub send_confirmation_email : Private {
     # People using 2FA can not log in by code
     $c->detach( '/page_error_403_access_denied', [] ) if $user->has_2fa;
 
-    my $token = $c->model("DB::Token")->create(
-        {
-            scope => 'alert',
-            data  => {
-                id    => $c->stash->{alert}->id,
-                type  => 'subscribe',
-                email => $user->email
-            }
-        }
-    );
+    my $data = {
+        id => $c->stash->{alert}->id,
+        type => 'subscribe',
+    };
+
+    # Logged in as a phone user, need to verify email and update user account
+    if ($c->user_exists && !$c->user->email_verified) {
+        $data->{old_user_id} = $c->user->id;
+    }
+
+    my $token = $c->model("DB::Token")->create({
+        scope => 'alert',
+        data  => $data,
+    });
 
     $c->stash->{token_url} = $c->uri_for_email( '/A', $token->token );
 
@@ -375,10 +379,14 @@ Fetch/check email address
 sub process_user : Private {
     my ( $self, $c ) = @_;
 
+    # If we are logged in (and not creating for someone else) we'll want to use
+    # the logged in user (but note, if they don't have a verified email and it
+    # is a local alert, we still want to email them confirmation)
+    my $type = $c->get_param('type') || "";
     if ( $c->user_exists ) {
         $c->stash->{can_create_for_another} = $c->stash->{problem}
             && $c->user->has_permission_to(contribute_as_another_user => $c->stash->{problem}->bodies_str_ids);
-        if (!$c->stash->{can_create_for_another}) {
+        if (!$c->stash->{can_create_for_another} && ($type eq 'updates' || $c->user->email_verified)) {
             $c->stash->{alert_user} = $c->user->obj;
             return;
         }
