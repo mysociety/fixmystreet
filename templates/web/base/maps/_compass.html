@@ -1,3 +1,4 @@
+[% RETURN IF map.no_compass %]
 [%
     north    = c.uri_with( { lat = map.compass.north.0, lon = map.compass.north.1, zoom = map.zoom } )
     south    = c.uri_with( { lat = map.compass.south.0, lon = map.compass.south.1, zoom = map.zoom } )
