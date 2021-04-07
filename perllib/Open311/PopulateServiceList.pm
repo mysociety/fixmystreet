@@ -251,7 +251,8 @@ sub _add_meta_to_contact {
         @{ $meta_data->{attributes} };
 
     # and then add back in any protected fields that we don't fetch
-    push @meta, values %$protected;
+    # sort by code for consistent sort order later on
+    push @meta, sort { $a->{code} cmp $b->{code} } values %$protected;
 
     # turn the data into something a bit more friendly to use
     @meta =
