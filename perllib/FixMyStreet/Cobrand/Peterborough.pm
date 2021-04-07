@@ -100,9 +100,19 @@ around 'open311_config' => sub {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
+    my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
+    my %extra_columns;
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            next unless $_->{code} =~ /^PCC-/i;
+            $extra_columns{"extra.$_->{code}"} = $_->{description};
+        }
+    }
+    my @extra_columns = map { $_ => $extra_columns{$_} } sort keys %extra_columns;
     $csv->add_csv_columns(
         usrn => 'USRN',
         nearest_address => 'Nearest address',
+        @extra_columns,
     );
 
     $csv->csv_extra_data(sub {
@@ -112,10 +122,16 @@ sub dashboard_export_problems_add_columns {
         $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name}
             if $report->geocode;
 
-        return {
-            usrn => $report->get_extra_field_value('site_code'),
+        my $extra = {
             nearest_address => $address,
         };
+
+        foreach (@{$report->get_extra_fields}) {
+            $extra->{usrn} = $_->{value} if $_->{name} eq 'site_code';
+            $extra->{"extra.$_->{name}"} = $_->{value} if $_->{name} =~ /^PCC-/i;
+        }
+
+        return $extra;
     });
 }
 
