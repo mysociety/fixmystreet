@@ -950,7 +950,9 @@ sub admin_templates_external_status_code_hook {
     my $task_type = $c->get_param('task_type') || '';
     my $task_state = $c->get_param('task_state') || '';
 
-    return "$res_code,$task_type,$task_state";
+    my $code = "$res_code,$task_type,$task_state";
+    $code = '' if $code eq ',,';
+    return $code;
 }
 
 sub call_api {
