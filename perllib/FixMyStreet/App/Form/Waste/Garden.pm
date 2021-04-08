@@ -4,7 +4,6 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
-has_field category => ( type => 'Hidden', default => 'New Garden Subscription' );
 has_field service_id => ( type => 'Hidden' );
 
 has_page intro => (
