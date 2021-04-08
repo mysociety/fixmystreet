@@ -40,7 +40,7 @@ create_contact({ category => 'Request new container', email => 'request@example.
 );
 create_contact({ category => 'General enquiry', email => 'general@example.org' },
     { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' });
-create_contact({ category => 'New Garden Subscription', email => 'garden@example.com'},
+create_contact({ category => 'Garden Subscription', email => 'garden@example.com'},
         { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
@@ -50,31 +50,7 @@ create_contact({ category => 'New Garden Subscription', email => 'garden@example
         { code => 'current_containers', required => 1, automated => 'hidden_field' },
         { code => 'new_containers', required => 1, automated => 'hidden_field' },
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
-        { code => 'payment', required => 1, automated => 'hidden_field' },
-);
-create_contact({ category => 'Amend Garden Subscription', email => 'garden_amend@example.com'},
-        { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
-        { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'current_containers', required => 1, automated => 'hidden_field' },
-        { code => 'new_containers', required => 1, automated => 'hidden_field' },
-        { code => 'payment_method', required => 1, automated => 'hidden_field' },
-        { code => 'payment', required => 1, automated => 'hidden_field' },
-        { code => 'pro_rata', required => 1, automated => 'hidden_field' },
-);
-create_contact({ category => 'Renew Garden Subscription', email => 'garden_renew@example.com'},
-        { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
-        { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'current_containers', required => 1, automated => 'hidden_field' },
-        { code => 'new_containers', required => 1, automated => 'hidden_field' },
-        { code => 'payment_method', required => 1, automated => 'hidden_field' },
+        { code => 'pro_rata', required => 0, automated => 'hidden_field' },
         { code => 'payment', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_renew@example.com'},
@@ -343,10 +319,11 @@ FixMyStreet::override_config {
         } },
     },
 }, sub {
-    my ($p) = $mech->create_problems_for_body(1, $body->id, 'New Garden Subscription', {
+    my ($p) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - New', {
         user_id => $user->id,
-        category => 'Request new container',
+        category => 'Garden Subscription',
     });
+    $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'property_id', value => 12345});
     $p->update;
 
@@ -475,7 +452,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
@@ -525,7 +503,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
@@ -567,7 +546,8 @@ FixMyStreet::override_config {
                 extra => { like => '%redirect_id,T18:'. $token . '%' }
         } )->first;
 
-        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
@@ -600,7 +580,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
@@ -671,7 +652,8 @@ FixMyStreet::override_config {
             { order_by => { -desc => 'id' } },
         )->first;
 
-        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
@@ -681,7 +663,8 @@ FixMyStreet::override_config {
         is $sent_params, undef, "no one off payment if reducing bin count";
     };
 
-    $p->category('New Garden Subscription');
+    $p->category('Garden Subscription');
+    $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
     $p->update;
 
@@ -702,7 +685,8 @@ FixMyStreet::override_config {
             { order_by => { -desc => 'id' } },
         )->first;
 
-        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
@@ -771,7 +755,8 @@ FixMyStreet::override_config {
             { order_by => { -desc => 'id' } },
         )->first;
 
-        is $new_report->category, 'Amend Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
@@ -839,7 +824,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'Renew Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
@@ -878,7 +864,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'Renew Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
@@ -951,7 +938,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'Renew Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), 2, 'correct container request action';
@@ -988,7 +976,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $new_report->category, 'New Garden Subscription', 'correct category on report';
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
@@ -1072,7 +1061,8 @@ FixMyStreet::override_config {
 
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-            is $new_report->category, 'New Garden Subscription', 'correct category on report';
+            is $new_report->category, 'Garden Subscription', 'correct category on report';
+            is $new_report->title, 'Garden Subscription - New', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
             is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
