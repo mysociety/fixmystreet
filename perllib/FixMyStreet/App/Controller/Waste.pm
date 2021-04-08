@@ -115,9 +115,9 @@ sub pay : Path('pay') : Args(0) {
 
     my $p = $c->stash->{report};
 
-    my $amount = $p->get_extra_field( name => 'pro_rata' );
+    my $amount = $p->get_extra_field_value( 'pro_rata' );
     unless ($amount) {
-        $amount = $p->get_extra_field( name => 'payment' );
+        $amount = $p->get_extra_field_value( 'payment' );
     }
 
     my $redirect_id = mySociety::AuthToken::random_token();
@@ -130,7 +130,7 @@ sub pay : Path('pay') : Args(0) {
         ref => $p->id,
         request_id => $p->id,
         description => $p->title,
-        amount => $amount->{value},
+        amount => $amount,
     });
 
     if ( $result ) {
@@ -741,6 +741,7 @@ sub process_garden_cancellation : Private {
     $data->{email} = $c->user->email;
     $data->{phone} = $c->user->phone;
     $data->{category} = 'Cancel Garden Subscription';
+    $data->{title} = 'Garden Subscription - Cancel';
 
     my $bin_count = $c->cobrand->get_current_garden_bins;
 
@@ -789,7 +790,8 @@ sub get_original_sub : Private {
 
     my $p = $c->model('DB::Problem')->search({
         user_id => $c->user->id,
-        category => 'New Garden Subscription',
+        category => 'Garden Subscription',
+        title => 'Garden Subscription - New',
         extra => { like => '%property_id,T5:value,I_:'. $c->stash->{property}{id} . '%' }
     },
     {
@@ -812,7 +814,6 @@ sub setup_garden_sub_params : Private {
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
 
-    $data->{title} = $data->{category};
     $data->{detail} = "$data->{category}\n\n$address";
 
     $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
@@ -836,7 +837,8 @@ sub process_garden_modification : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
 
-    $data->{category} = 'Amend Garden Subscription'; # XXX
+    $data->{category} = 'Garden Subscription';
+    $data->{title} = 'Garden Subscription - Amend';
     $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Amend});
 
     my $new_bins = $data->{bin_number} - $c->stash->{garden_form_data}->{bins};
@@ -886,10 +888,12 @@ sub process_garden_renew : Private {
 
 
     if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
-        $data->{category} = 'New Garden Subscription';
+        $data->{category} = 'Garden Subscription';
+        $data->{title} = 'Garden Subscription - New';
         $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
     } else {
-        $data->{category} = 'Renew Garden Subscription';
+        $data->{category} = 'Garden Subscription';
+        $data->{title} = 'Garden Subscription - Renew';
         $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Renew});
 
         # only override the new bin count if we know the current bin number
@@ -927,6 +931,8 @@ sub process_garden_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
 
+    $data->{category} = 'Garden Subscription';
+    $data->{title} = 'Garden Subscription - New';
     $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
 
     my $bin_count = $data->{new_bins} + $data->{current_bins};
