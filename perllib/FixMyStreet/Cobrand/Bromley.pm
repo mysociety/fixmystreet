@@ -664,7 +664,7 @@ sub bin_services_for_address {
     my %schedules;
     my @task_refs;
     foreach (@$result) {
-        my $servicetask = _parse_servicetasks($_) or next;
+        my $servicetask = _get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
 
         next unless $schedules->{next} or $schedules->{last};
@@ -681,7 +681,7 @@ sub bin_services_for_address {
     foreach (@$result) {
         next unless $schedules{$_->{Id}};
         my $schedules = $schedules{$_->{Id}};
-        my $servicetask = _parse_servicetasks($_);
+        my $servicetask = _get_current_service_task($_);
 
         my $events = $calls->{"GetEventsForObject ServiceUnit $_->{Id}"};
         my $open_unit = $self->_parse_open_events($events);
@@ -799,6 +799,24 @@ sub bin_services_for_address {
     return \@out;
 }
 
+sub _get_current_service_task {
+    my $service = shift;
+
+    my $servicetasks = Integrations::Echo::force_arrayref($service->{ServiceTasks}, 'ServiceTask');
+    @$servicetasks = grep { $_->{ServiceTaskSchedules} } @$servicetasks;
+    return unless @$servicetasks;
+
+    my ($current, $last_date);
+    foreach ( @$servicetasks ) {
+        my $end = construct_bin_date($_->{EndDate});
+
+        next if $last_date && $end && $end < $last_date;
+        $last_date = $end;
+        $current = $_;
+    }
+    return $current;
+}
+
 sub _parse_open_events {
     my $self = shift;
     my $events = shift;
@@ -885,15 +903,6 @@ sub _parse_schedules {
         description => $description,
         end_date => $end_date,
     };
-}
-
-sub _parse_servicetasks {
-    my $unit = shift;
-    my $servicetasks = Integrations::Echo::force_arrayref($unit->{ServiceTasks}, 'ServiceTask');
-    @$servicetasks = grep { $_->{ServiceTaskSchedules} } @$servicetasks;
-    return unless @$servicetasks;
-    # If there is more than one, take first one
-    return $servicetasks->[0];
 }
 
 sub bin_future_collections {
