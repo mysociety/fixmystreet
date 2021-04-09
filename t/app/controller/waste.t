@@ -729,13 +729,11 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 0,
-            new_bins => 0,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('Value must be between 1 and 3');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
-            new_bins => 0,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
@@ -768,14 +766,12 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 1,
-            new_bins => 3,
+            current_bins => 4,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('The total number of bins cannot exceed 3');
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 1,
-            new_bins => 1,
+            current_bins => 2,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('40.00');
@@ -844,12 +840,11 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
-        my $form = $mech->form_with_fields( qw( current_bins new_bins payment_method ) );
+        my $form = $mech->form_with_fields( qw( current_bins payment_method ) );
         ok $form, 'found form';
         is $mech->value('current_bins'), 2, "correct current bin count";
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
-            new_bins => 0,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
@@ -887,7 +882,6 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
-            new_bins => 0,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
