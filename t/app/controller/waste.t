@@ -379,6 +379,80 @@ FixMyStreet::override_config {
         $dd_sent_params->{'cancel_plan'} = shift;
     });
 
+    subtest 'check bin calendar with multiple service tasks' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $sent_params = undef;
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => [ {
+                    Id => 405,
+                    ScheduleDescription => 'every other Monday',
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => {
+                            DatatypeName => 'Quantity',
+                            Value => 2,
+                        } },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                        },
+                    }, {
+                        EndDate => { DateTime => '2020-03-30T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            Ref => { Value => { anyType => [ 567, 890 ] } },
+                        },
+                    } ] },
+                },
+                {
+                    Id => 405,
+                    ScheduleDescription => 'every other Monday',
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => {
+                            DatatypeName => 'Quantity',
+                            Value => 2,
+                        } },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                        },
+                    }, {
+                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                            Ref => { Value => { anyType => [ 567, 890 ] } },
+                        },
+                    } ] },
+                } ] },
+            } ];
+        });
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>2021-03-30#m);
+    };
+
     subtest 'check new sub bin limits' => sub {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
