@@ -56,9 +56,6 @@ sub open311_extra_data_include {
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
-    # Greenwich returns groups we do not want to use
-    $service->{group} = [];
-
     my %server_set = (easting => 1, northing => 1, closest_address => 1);
     foreach (@$meta) {
         $_->{automated} = 'server_set' if $server_set{$_->{code}};
