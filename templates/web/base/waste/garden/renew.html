@@ -1,7 +1,95 @@
-[% BLOCK 'content' %]
+[% extra_js = [
+    version('/js/waste.js')
+] ~%]
+[% INCLUDE 'waste/header.html' %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
+
+<div class="waste-service-hint-banner">
+    <div class="waste-service-hint-banner__image">
+        <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt="">
+    </div>
+    <div class="waste-service-hint__content">
+        <p>
+            Our 240 litre wheelie bins have grey sides and a brown top, and hold the
+            equivalent of 5 or 6 bags of green garden waste.
+        </p>
+    </div>
+</div>
+
   <p>
   This is the text to explain how renewals work.
   </p>
-[% END %]
 
-[% INCLUDE 'waste/garden/property_page.html' %]
+<form method="post">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h2 class="govuk-fieldset__heading">How many bins do you need us to collect?</h2>
+    </legend>
+
+  <!-- [% PROCESS form override_fields=['current_bins'] %] -->
+    <hr class="fieldset-hr">
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label class="govuk-label" for="[% field.id %]">
+            [% field.label %]
+        </label>
+      [% IF field.get_tag('hint') %]
+        <span id="[% field.id %]-hint" class="govuk-hint">
+            [% field.get_tag('hint') %]
+        </span>
+      [% END %]
+      [% IF error %]
+        <span id="[% field.id %]-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> [% error %]
+        </span>
+      [% END %]
+      </div>
+
+    <div class="fieldset-item">
+      <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="current_bins" name="current_bins" type="number"
+      value="[% field.fif %]"
+      [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
+      [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+      [%~ IF field.disabled %] disabled[% END ~%]
+      [%~ IF field.get_tag('hint') OR error %]
+        aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
+      [%~ END %]>
+    </div>
+
+    <div class="fieldset-item">
+      <span class="cost-pa">£[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin per year</span>
+    </div>
+  </div>
+
+  <hr class="fieldset-hr">
+    <div class="cost-pa__total">
+      <span class="cost-pa__total-costs">
+          Total per year: £<span id="cost_pa">[% tprintf( '%.2f', payment ) %]</span>
+      </span>
+      <span class="cost-pa__total-costs">
+          Total to pay now: £<span id="cost_now">[% tprintf( '%.2f', payment ) %]</span>
+      </span>
+    </div>
+  </fieldset>
+
+  <hr class="fieldset-hr">
+  [% PROCESS form override_fields=['payment_method'] %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title"><h2 class="govuk-fieldset__heading">Collection address</h2></dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+  [% PROCESS form override_fields=['billing_differ', 'billing_address'] %]
+
+  [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
+  [% PROCESS form override_fields=['saved_data', 'token', 'process'] %]
+
+  <input type="hidden" name="per_bin_cost" id="per_bin_cost" value="[% per_bin_cost %]">
+</form>
+[% INCLUDE footer.html %]
