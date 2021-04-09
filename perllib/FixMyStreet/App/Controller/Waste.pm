@@ -885,7 +885,7 @@ sub process_garden_renew : Private {
     my $data = $form->saved_data;
     my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
 
-    my $total_bins = $data->{current_bins} + $data->{new_bins};
+    my $total_bins = $data->{current_bins};
     my $payment = $c->cobrand->garden_waste_cost($total_bins);
     $data->{bin_count} = $total_bins;
 

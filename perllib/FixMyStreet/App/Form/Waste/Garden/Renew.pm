@@ -7,11 +7,13 @@ extends 'FixMyStreet::App::Form::Waste';
 has_page intro => (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/renew.html',
-    fields => ['current_bins', 'new_bins', 'payment_method', 'billing_differ', 'billing_address', 'name', 'phone', 'email', 'continue_review'],
+    fields => ['current_bins', 'payment_method', 'billing_differ', 'billing_address', 'name', 'phone', 'email', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
         $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
+        my $current_bins = $c->get_param('current_bins') || $c->stash->{garden_form_data}->{bins};
+        $c->stash->{payment} = $c->cobrand->garden_waste_cost( $current_bins ) / 100;
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins} },
             name => { default => $c->user->name },
@@ -31,15 +33,14 @@ has_page summary => (
         my $c = $form->{c};
         my $data = $form->saved_data;
         my $current_bins = $data->{current_bins};
-        my $new_bins = $data->{new_bins};
 
-        my $total = $c->cobrand->garden_waste_cost( $new_bins + $current_bins);
+        my $total = $c->cobrand->garden_waste_cost( $current_bins);
 
         my $orig_sub = $c->stash->{orig_sub};
         if ( $orig_sub ) {
             $data->{billing_address} = $orig_sub->get_extra_field_value('billing_address');
         }
-        $data->{bin_number} = $current_bins + $new_bins;
+        $data->{bin_number} = $current_bins;
         $data->{billing_address} ||= $c->stash->{property}{address};
         $data->{display_total} = $total / 100;
 
@@ -61,21 +62,12 @@ has_page done => (
 
 has_field current_bins => (
     type => 'Integer',
-    label => 'Bins already on property',
+    label => 'Number of bins required',
     tags => { number => 1 },
     required => 1,
     range_start => 1,
     range_end => 3,
 );
-
-has_field new_bins => (
-    type => 'Integer',
-    label => 'Additional bins required',
-    tags => { number => 1 },
-    range_start => 0,
-    range_end => 3,
-);
-
 
 with 'FixMyStreet::App::Form::Waste::Billing';
 
@@ -105,7 +97,7 @@ sub validate {
     my $self = shift;
     my $max_bins = $self->{c}->stash->{garden_form_data}->{max_bins};
     unless ( $self->field('current_bins')->is_inactive ) {
-        my $total = $self->field('current_bins')->value + $self->field('new_bins')->value;
+        my $total = $self->field('current_bins')->value;
         $self->add_form_error('The total number of bins cannot exceed ' . $max_bins)
             if $total > $max_bins;
 
