@@ -627,7 +627,7 @@ sub bin_services_for_address {
     foreach (@$result) {
         next unless $_->{ServiceTasks};
 
-        my $servicetask = $_->{ServiceTasks}{ServiceTask};
+        my $servicetask = _get_current_service_task($_);
         my $schedules = _parse_schedules($servicetask);
 
         next unless $schedules->{next} or $schedules->{last};
@@ -650,7 +650,7 @@ sub bin_services_for_address {
     foreach (@$result) {
         next unless $schedules{$_->{Id}};
         my $schedules = $schedules{$_->{Id}};
-        my $servicetask = $_->{ServiceTasks}{ServiceTask};
+        my $servicetask = _get_current_service_task($_);
 
         my $events = $calls->{"GetEventsForObject ServiceUnit $_->{Id}"};
         my $open_unit = $self->_parse_open_events($events);
@@ -766,6 +766,28 @@ sub bin_services_for_address {
     }
 
     return \@out;
+}
+
+sub _get_current_service_task {
+    my $service = shift;
+
+    my $task = $service->{ServiceTasks}{ServiceTask};
+    my $type = ref $task;
+    return $task if $type eq 'HASH';
+
+    my ($current, $last_date);
+    if ( $type eq 'ARRAY' ) {
+        foreach ( @$task ) {
+            my $end = construct_bin_date($_->{EndDate});
+
+            next if $last_date && $end && $end < $last_date;
+            $last_date = $end;
+            $current = $_;
+        }
+        return $current;
+    }
+
+    return {};
 }
 
 sub _parse_open_events {
