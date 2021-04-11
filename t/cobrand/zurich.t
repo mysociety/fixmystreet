@@ -939,11 +939,18 @@ subtest "test stats" => sub {
     # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
     # diag Dumper(\@data); use Data::Dumper;
 
+    $report->update({ non_public => 1 });
+
     my $export_count = get_export_rows_count($mech);
     if (defined $export_count) {
         is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
         $mech->content_contains('fixed - council');
     }
+
+    $mech->content_contains('Hydranten-Nr.,"Interne meldung"');
+    $mech->content_contains('"This is the public response to your report. Freundliche Gruesse.",,,,,1', "Internal report is marked as such");
+    $report->update({ non_public => 0 });
+
     $export_count =  get_export_rows_count($mech, '&ym=' . DateTime->now->strftime("%m.%Y"));
     is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports when filtering by month';
 };

@@ -1274,7 +1274,7 @@ sub export_as_csv {
                     'title', 'detail',
                     'photo',
                     'whensent', 'lastupdate',
-                    'service',
+                    'service', 'non_public',
                     'extra',
                     { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
                     'name', 'user.id', 'user.email', 'user.phone', 'user.name',
@@ -1288,6 +1288,7 @@ sub export_as_csv {
             'External Body', 'Time Spent', 'Title', 'Detail',
             'Media URL', 'Interface Used', 'Council Response',
             'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
+            'Interne meldung',
         ],
         csv_columns => [
             'id', 'created', 'whensent',' lastupdate', 'local_coords_x',
@@ -1296,6 +1297,7 @@ sub export_as_csv {
             'body_name', 'sum_time_spent', 'title', 'detail',
             'media_url', 'service', 'public_response',
             'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
+            'interne_meldung',
         ],
         csv_extra_data => sub {
             my $report = shift;
@@ -1340,7 +1342,8 @@ sub export_as_csv {
                 strasse => $extras{'strasse'} || '',
                 mast_nr => $extras{'mast_nr'} || '',
                 haus_nr => $extras{'haus_nr'} || '',
-                hydranten_nr => $extras{'hydranten_nr'} || ''
+                hydranten_nr => $extras{'hydranten_nr'} || '',
+                interne_meldung => $report->non_public,
             };
         },
         filename => 'stats',
