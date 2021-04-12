@@ -300,7 +300,7 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
-        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(in progress\)/s);
+        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(In progress\)/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_lacks('Waste spillage');
 
