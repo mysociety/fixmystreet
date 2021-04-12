@@ -48,6 +48,7 @@ has_page summary => (
         my $form = shift;
         my $data = $form->saved_data;
         my $total = $form->{c}->cobrand->garden_waste_cost( $data->{new_bins} + $data->{current_bins} );
+        $data->{total_bins} = $data->{new_bins} + $data->{current_bins};
         $data->{display_total} = $total / 100;
         return {};
     },
