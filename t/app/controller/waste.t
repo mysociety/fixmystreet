@@ -522,6 +522,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
+        $mech->content_contains('1 bin');
         # external redirects make Test::WWW::Mechanize unhappy so clone
         # the mech for the redirect
         my $mech2 = $mech->clone;
