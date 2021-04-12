@@ -731,12 +731,18 @@ sub stash_category_groups : Private {
     }
 
     # New reporting, top level mixes groups and categories not in a group
+    # (or where the category is the only entry in the group)
     if ($opts->{mix_in}) {
         my $no_group = delete $category_groups{""};
         my @list = map { [ $_->category_display, $_ ]  } @$no_group;
         foreach (keys %category_groups) {
             (my $id = $_) =~ s/[^a-zA-Z]+//g;
-            push @list, [ $_, { id => $id, name => $_, categories => $category_groups{$_} } ];
+            if (@{$category_groups{$_}} == 1) {
+                my $contact = $category_groups{$_}[0];
+                push @list, [ $contact->category_display, $contact ];
+            } else {
+                push @list, [ $_, { id => $id, name => $_, categories => $category_groups{$_} } ];
+            }
         }
         @list = sort {
             return 1 if $a->[0] eq _('Other');
