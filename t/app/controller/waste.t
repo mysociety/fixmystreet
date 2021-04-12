@@ -54,12 +54,14 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
         { code => 'pro_rata', required => 0, automated => 'hidden_field' },
         { code => 'payment', required => 1, automated => 'hidden_field' },
+        { code => 'client_reference', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_renew@example.com'},
         { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
         { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
         { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
         { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'client_reference', required => 1, automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -532,6 +534,7 @@ FixMyStreet::override_config {
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('client_reference'), 'GGW1000000002', 'correct client reference on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
