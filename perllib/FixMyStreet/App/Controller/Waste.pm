@@ -743,6 +743,9 @@ sub process_garden_cancellation : Private {
     $data->{category} = 'Cancel Garden Subscription';
     $data->{title} = 'Garden Subscription - Cancel';
 
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $c->set_param('Subscription_End_Date', $now->ymd);
+
     my $bin_count = $c->cobrand->get_current_garden_bins;
 
     $data->{new_bins} = $bin_count * -1;
