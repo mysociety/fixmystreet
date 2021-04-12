@@ -78,14 +78,24 @@ sub open311_extra_data_include {
         }
     }
 
-    my $cfg = $self->feature('area_code_mapping') || return;
-    my @areas = split ',', $row->areas;
-    my @matches = grep { $_ } map { $cfg->{$_} } @areas;
-    if (@matches) {
-        return [
-            { name => 'area_code', value => $matches[0] },
-        ];
+    my $open311_only = [
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'report_url',
+          value => $h->{url} },
+    ];
+
+    if (my $cfg = $self->feature('area_code_mapping')) {;
+        my @areas = split ',', $row->areas;
+        my @matches = grep { $_ } map { $cfg->{$_} } @areas;
+        if (@matches) {
+            push @$open311_only, { name => 'area_code', value => $matches[0] };
+        }
     }
+
+    return $open311_only;
 }
 
 # Currently, Central Beds does not handle the Unit ID being passed through for
