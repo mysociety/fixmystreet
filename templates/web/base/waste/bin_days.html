@@ -17,6 +17,7 @@
 [% FOR unit IN service_data %]
 
 <h3 class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+[% TRY %][% INCLUDE 'waste/overdue.html' %][% CATCH file %][% END %]
 <div class="govuk-grid-row">
  [% SET image = c.cobrand.image_for_service(unit.service_id) ~%]
  [% IF image %]

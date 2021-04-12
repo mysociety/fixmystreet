@@ -264,3 +264,19 @@ input[type="submit"].waste-service-link {
 #payment_method-item-hint, #password-hint {
   max-width: 36em;
 }
+
+.govuk-grid-row .overdue {
+    margin-left: 0px;
+    margin-right: 0px;
+    background-color: #f7e9e9;
+
+    .waste-services-launch-panel {
+      p {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+    }
+  .waste-service-overdue-button {
+    background-color: #393939 !important;
+  }
+}
