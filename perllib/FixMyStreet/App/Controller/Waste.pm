@@ -821,6 +821,7 @@ sub setup_garden_sub_params : Private {
     $data->{detail} = "$data->{category}\n\n$address";
 
     $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
+    $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
     $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste'});
     $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
     if ( $data->{new_bins} ) {
