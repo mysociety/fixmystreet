@@ -26,6 +26,7 @@
         - Add link to user edit admin from report/update edit admin.
         - Improve layout of some admin pages.
         - Include email in inspector form information.
+        - Improve wording of new report Private checkbox.
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323

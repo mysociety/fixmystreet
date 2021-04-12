@@ -71,7 +71,7 @@
             [%~ SET category_safe = mark_safe(category) %]
             [%~ ' checked' IF report.non_public OR non_public_categories.$category_safe %]
             [%~ ' disabled' IF non_public_categories.$category_safe %]>
-        <label class="inline" for="form_non_public">[% loc('Private') %] </label>
+        <label class="inline" for="form_non_public">[% loc('Private – this will mean the report cannot be viewed publicly') %]</label>
     </div>
 [% END %]
 [% IF can_contribute_as_body %]
