@@ -397,4 +397,25 @@ sub extra_around_pins {
     return $res;
 }
 
+sub extra_reports_pins {
+    my $self = shift;
+
+    my $bbox = $self->{c}->get_param('bbox');
+    my $zoom = $self->{c}->get_param('zoom');
+
+    if (!$bbox) {
+        return [];
+    }
+
+    # Only show pins at certain zoom levels
+    if (!defined($zoom) || int($zoom) < 15) {
+        return [];
+    }
+
+    my @box = split /,/, $bbox;
+    @box = (@box, 'EPSG:4326');
+
+    return $self->pins_from_wfs(\@box);
+}
+
 1;

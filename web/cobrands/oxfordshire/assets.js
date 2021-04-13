@@ -383,4 +383,11 @@ $(fixmystreet).on('maps:render_duplicates', setup_defect_popup);
 $(fixmystreet).on('maps:marker_click', handle_marker_click);
 $(fixmystreet).on('maps:click', close_defect_popup);
 
+$(function() {
+    if (fixmystreet.page == 'reports') {
+        // Refresh markers on page load so that defects are loaded in over AJAX.
+        fixmystreet.markers.events.triggerEvent('refresh');
+    }
+});
+
 })();
