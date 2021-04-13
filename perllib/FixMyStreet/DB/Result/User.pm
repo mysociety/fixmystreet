@@ -203,6 +203,7 @@ sub username {
     my $self = shift;
     return $self->email if $self->email_verified;
     return $self->phone_display if $self->phone_verified;
+    return undef;
 }
 
 sub phone_display {
