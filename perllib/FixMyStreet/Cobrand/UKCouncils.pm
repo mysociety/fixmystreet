@@ -542,4 +542,25 @@ sub _distanceToLine {
     return sqrt( (($x - $fx) ** 2) + (($y - $fy) ** 2) );
 }
 
+# Do a manual prefetch of all staff users for contributed_by lookup
+sub csv_staff_users {
+    my $self = shift;
+
+    my @user_ids = FixMyStreet::DB->resultset('User')->search(
+        { from_body => $self->body->id },
+        { columns => [ 'id', 'email' ] })->all;
+
+    my %user_lookup = map { $_->id => $_->email } @user_ids;
+    return \%user_lookup;
+}
+
+sub csv_staff_user_lookup {
+    my ($self, $contributed_by, $user_lookup) = @_;
+    return '' unless $contributed_by;
+    return $user_lookup->{$contributed_by} //= do {
+        my $user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
+        $user ? $user->email : '';
+    };
+}
+
 1;

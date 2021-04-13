@@ -128,18 +128,11 @@ sub _dashboard_export_add_columns {
 
     $csv->add_csv_columns( staff_user => 'Staff User' );
 
-    # All staff users, for contributed_by lookup
-    my @user_ids = FixMyStreet::DB->resultset('User')->search(
-        { from_body => $self->body->id },
-        { columns => [ 'id', 'email', ] })->all;
-    my %user_lookup = map { $_->id => $_->email } @user_ids;
+    my $user_lookup = $self->csv_staff_users;
 
     $csv->csv_extra_data(sub {
         my $report = shift;
-        my $staff_user = '';
-        if (my $contributed_by = $report->get_extra_metadata('contributed_by')) {
-            $staff_user = $user_lookup{$contributed_by};
-        }
+        my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
         return {
             staff_user => $staff_user,
         };
