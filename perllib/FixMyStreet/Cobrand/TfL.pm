@@ -522,6 +522,7 @@ sub _cleaning_categories { [
     'Fly-tipping',
     'Fly-Tipping',
     'Fly tipping - Enforcement Request',
+    'Graffiti and Flyposting', # Bromley
 ] }
 
 sub _cleaning_groups { [ 'Street cleaning', 'Fly-tipping' ] }
