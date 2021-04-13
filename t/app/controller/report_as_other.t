@@ -38,6 +38,7 @@ subtest "Body user, has permission to add report as council" => sub {
     is $report->user->name, 'Body User', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 0, 'report not anonymous';
+    is $report->send_questionnaire, 0, 'no questionnaire';
 };
 
 subtest "Body user, has permission to add report as another user with email" => sub {
@@ -55,6 +56,7 @@ subtest "Body user, has permission to add report as another user with email" => 
     is $report->user->email, 'another@example.net', 'user email correct';
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
+    is $report->send_questionnaire, 1, 'send questionnaire';
 };
 
 subtest "Body user, has permission to add report as another user with mobile phone number" => sub {
@@ -178,6 +180,7 @@ subtest "Superuser, can add report as anonymous user" => sub {
     is $report->user->name, 'Super', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 1, 'report anonymous';
+    is $report->send_questionnaire, 0, 'no questionnaire';
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
     is $report->get_extra_metadata('contributed_by'), undef;
 
@@ -211,6 +214,7 @@ subtest "Body user, can add report as anonymous user" => sub {
     is $report->user->name, 'Body User', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 1, 'report anonymous';
+    is $report->send_questionnaire, 0, 'no questionnaire';
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
     is $report->get_extra_metadata('contributed_by'), $user->id;
 

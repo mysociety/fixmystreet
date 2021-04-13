@@ -1055,7 +1055,6 @@ sub process_report : Private {
     $report->postcode( $params{pc} );
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
-    $report->send_questionnaire( $c->cobrand->send_questionnaires() );
 
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
@@ -1073,10 +1072,13 @@ sub process_report : Private {
 
     # set some simple bool values (note they get inverted)
     if ($c->stash->{contributing_as_body}) {
+        $report->send_questionnaire(0);
         $report->anonymous(0);
     } elsif ($c->stash->{contributing_as_anonymous_user}) {
+        $report->send_questionnaire(0);
         $report->anonymous(1);
     } else {
+        $report->send_questionnaire( $c->cobrand->send_questionnaires() );
         $report->anonymous( $params{may_show_name} ? 0 : 1 );
     }
 
