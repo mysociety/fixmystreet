@@ -131,6 +131,7 @@ sub pay : Path('pay') : Args(0) {
         request_id => $p->id,
         description => $p->title,
         amount => $amount,
+        email => $p->user->email,
     });
 
     if ( $result ) {
