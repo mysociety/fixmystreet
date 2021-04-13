@@ -185,21 +185,21 @@ FixMyStreet::override_config {
 
         my @rows = $mech->content_as_csv;
         is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
-        is scalar @{$rows[0]}, 21, '21 columns present';
+        is scalar @{$rows[0]}, 22, '22 columns present';
 
         is_deeply $rows[0],
             [
                 'Report ID', 'Title', 'Detail', 'User Name', 'Category',
                 'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
                 'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
-                'Easting', 'Northing', 'Report URL', 'Site Used',
+                'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
                 'Reported As', 'HIAMS/Exor Ref',
             ],
             'Column headers look correct';
 
-        is $rows[1]->[20], 'ENQ12456', 'HIAMS reference included in row';
-        is $rows[2]->[20], '', 'Report without HIAMS ref has empty ref field';
-        is $rows[3]->[20], '123098123', 'Older Exor report has correct ref';
+        is $rows[1]->[21], 'ENQ12456', 'HIAMS reference included in row';
+        is $rows[2]->[21], '', 'Report without HIAMS ref has empty ref field';
+        is $rows[3]->[21], '123098123', 'Older Exor report has correct ref';
     };
 
     $oxon->update({

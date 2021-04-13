@@ -208,6 +208,7 @@ sub _csv_parameters_problems {
         'Easting',
         'Northing',
         'Report URL',
+        'Device Type',
         'Site Used',
         'Reported As',
     ]);
@@ -230,6 +231,7 @@ sub _csv_parameters_problems {
         'local_coords_x',
         'local_coords_y',
         'url',
+        'device_type',
         'site_used',
         'reported_as',
     ]);
@@ -302,7 +304,10 @@ sub generate_csv {
         my $base = $self->cobrand->base_url_for_report($obj->can('problem') ? $obj->problem : $obj);
         $hashref->{url} = join '', $base, $obj->url;
 
-        $hashref->{site_used} = $obj->can('service') ? ($obj->service || $obj->cobrand) : $obj->cobrand;
+        if ($asked_for{device_type}) {
+            $hashref->{device_type} = $obj->service || 'website';
+        }
+        $hashref->{site_used} = $obj->cobrand;
 
         $hashref->{reported_as} = $obj->get_extra_metadata('contributed_as') || '';
 

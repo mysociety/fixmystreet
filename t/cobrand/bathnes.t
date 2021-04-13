@@ -84,7 +84,7 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
     my @rows = $mech->content_as_csv;
     is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
 
-    is scalar @{$rows[0]}, 20, '20 columns present';
+    is scalar @{$rows[0]}, 21, '21 columns present';
 
     is_deeply $rows[0],
         [
@@ -106,6 +106,7 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
             'Easting',
             'Northing',
             'Report URL',
+            'Device Type',
             'Site Used',
             'Reported As',
         ],
@@ -140,7 +141,7 @@ subtest 'extra CSV columns are present if permission granted' => sub {
     my @rows = $mech->content_as_csv;
     is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
 
-    is scalar @{$rows[0]}, 24, '24 columns present';
+    is scalar @{$rows[0]}, 25, '25 columns present';
 
     is_deeply $rows[0],
         [
@@ -162,6 +163,7 @@ subtest 'extra CSV columns are present if permission granted' => sub {
             'Easting',
             'Northing',
             'Report URL',
+            'Device Type',
             'Site Used',
             'Reported As',
             'User Email',
@@ -171,33 +173,37 @@ subtest 'extra CSV columns are present if permission granted' => sub {
         ],
         'Column headers look correct';
 
-    is $rows[1]->[18], 'iOS', 'Site Used shows whether report made via app';
-    is $rows[1]->[19], '', 'Reported As is empty if not made on behalf of another user/body';
-    is $rows[1]->[20], $normaluser->email, 'User email is correct';
-    is $rows[1]->[21], '+447123456789', 'User phone number is correct';
-    is $rows[1]->[22], '', 'Staff User is empty if not made on behalf of another user';
-    is $rows[1]->[23], 'width = 10cm; depth = 25cm', 'Attribute Data is correct';
+    is $rows[1]->[18], 'iOS', 'Device Type shows whether report made via app';
+    is $rows[1]->[19], 'fixmystreet', 'Site Used shows cobrand';
+    is $rows[1]->[20], '', 'Reported As is empty if not made on behalf of another user/body';
+    is $rows[1]->[21], $normaluser->email, 'User email is correct';
+    is $rows[1]->[22], '+447123456789', 'User phone number is correct';
+    is $rows[1]->[23], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[1]->[24], 'width = 10cm; depth = 25cm', 'Attribute Data is correct';
 
-    is $rows[2]->[18], 'bathnes', 'Site Used shows correct cobrand';
-    is $rows[2]->[19], 'body', 'Reported As is correct if made on behalf of body';
-    is $rows[2]->[20], $counciluser->email, 'User email is correct';
-    is $rows[2]->[21], '', 'User phone number is correct';
-    is $rows[2]->[22], '', 'Staff User is empty if not made on behalf of another user';
-    is $rows[2]->[23], '', 'Attribute Data is correct';
+    is $rows[2]->[18], 'website', 'No device type';
+    is $rows[2]->[19], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[2]->[20], 'body', 'Reported As is correct if made on behalf of body';
+    is $rows[2]->[21], $counciluser->email, 'User email is correct';
+    is $rows[2]->[22], '', 'User phone number is correct';
+    is $rows[2]->[23], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[2]->[24], '', 'Attribute Data is correct';
 
-    is $rows[3]->[18], 'bathnes', 'Site Used shows correct cobrand';
-    is $rows[3]->[19], 'another_user', 'Reported As is set if reported on behalf of another user';
-    is $rows[3]->[20], $normaluser->email, 'User email is correct';
-    is $rows[3]->[21], '+447123456789', 'User phone number is correct';
-    is $rows[3]->[22], $counciluser->email, 'Staff User is correct if made on behalf of another user';
-    is $rows[3]->[23], '', 'Attribute Data is correct';
+    is $rows[3]->[18], 'website', 'No device type';
+    is $rows[3]->[19], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[3]->[20], 'another_user', 'Reported As is set if reported on behalf of another user';
+    is $rows[3]->[21], $normaluser->email, 'User email is correct';
+    is $rows[3]->[22], '+447123456789', 'User phone number is correct';
+    is $rows[3]->[23], $counciluser->email, 'Staff User is correct if made on behalf of another user';
+    is $rows[3]->[24], '', 'Attribute Data is correct';
 
-    is $rows[4]->[18], 'bathnes', 'Site Used shows correct cobrand';
-    is $rows[4]->[19], 'anonymous_user', 'Reported As is set if reported on behalf of another user';
-    is $rows[4]->[20], $counciluser->email, 'User email is correct';
-    is $rows[4]->[21], '', 'User phone number is correct';
-    is $rows[4]->[22], '', 'Staff User is empty if not made on behalf of another user';
-    is $rows[4]->[23], '', 'Attribute Data is correct';
+    is $rows[4]->[18], 'website', 'No device type';
+    is $rows[4]->[19], 'bathnes', 'Site Used shows correct cobrand';
+    is $rows[4]->[20], 'anonymous_user', 'Reported As is set if reported on behalf of another user';
+    is $rows[4]->[21], $counciluser->email, 'User email is correct';
+    is $rows[4]->[22], '', 'User phone number is correct';
+    is $rows[4]->[23], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[4]->[24], '', 'Attribute Data is correct';
 
     $mech->get_ok('/dashboard?export=1&updates=1');
 

@@ -132,9 +132,9 @@ subtest 'Dashboard CSV extra columns' => sub {
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('URL","Device Type","Reported As","Area name","How you found us","Site Used"');
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem1->id .',desktop,,"South West","Social media",highwaysengland');
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,,"Area 7","Search engine",fixmystreet');
+    $mech->content_contains('URL","Device Type","Site Used","Reported As","Area name","How you found us"');
+    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem1->id .',desktop,highwaysengland,,"South West","Social media"');
+    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,"Area 7","Search engine"');
 };
 
 done_testing();

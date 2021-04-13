@@ -181,12 +181,9 @@ sub report_new_is_on_he_road {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    $csv->modify_csv_header( "Site Used" => 'Device Type' );
-
     $csv->add_csv_columns(
         area_name => 'Area name',
         where_hear => 'How you found us',
-        cobrand => 'Site Used',
     );
 
     $csv->csv_extra_data(sub {
@@ -195,7 +192,6 @@ sub dashboard_export_problems_add_columns {
         return {
             area_name => $report->get_extra_field_value('area_name'),
             where_hear => $report->get_extra_metadata('where_hear'),
-            cobrand => $report->cobrand,
         };
     });
 }

@@ -28,6 +28,7 @@
         - Include email in inspector form information.
         - Improve wording of new report Private checkbox.
         - No questionnaires on reports as body/anonymous.
+        - CSV export, improve Site Used and add Device Type.
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
