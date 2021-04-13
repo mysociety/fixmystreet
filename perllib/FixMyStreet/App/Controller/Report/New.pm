@@ -1562,6 +1562,12 @@ sub save_user_and_report : Private {
         $c->forward('/auth/social/handle_sign_in') if $c->get_param('social_sign_in');
     }
 
+    if ($c->user_exists) {
+        if ($c->user->is_superuser || $c->user->from_body) {
+            $report->set_extra_metadata( contributed_by => $c->user->id );
+        }
+    }
+
     # Save or update the user if appropriate
     if ( $c->cobrand->never_confirm_reports ) {
         $report->user->update_or_insert;
@@ -1570,20 +1576,12 @@ sub save_user_and_report : Private {
     # but we don't want to update the user account
     } elsif ($c->stash->{contributing_as_another_user}) {
         $report->set_extra_metadata( contributed_as => 'another_user');
-        $report->set_extra_metadata( contributed_by => $c->user->id );
         $report->confirm();
     } elsif ($c->stash->{contributing_as_body}) {
         $report->set_extra_metadata( contributed_as => 'body' );
         $report->confirm();
     } elsif ($c->stash->{contributing_as_anonymous_user}) {
         $report->set_extra_metadata( contributed_as => 'anonymous_user' );
-        if ( $c->user_exists && $c->user->from_body ) {
-            # If a staff user has clicked the 'report anonymously' button then
-            # there would be no record of who that staff member was as we've
-            # used the cobrand's anonymous_account for the report. In this case
-            # record the staff user ID in the report metadata.
-            $report->set_extra_metadata( contributed_by => $c->user->id );
-        }
         $report->confirm();
     } elsif ( !$report->user->in_storage ) {
         # User does not exist.
