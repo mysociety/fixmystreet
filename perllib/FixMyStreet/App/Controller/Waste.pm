@@ -216,6 +216,7 @@ sub confirm_subscription : Private {
     my $p = $c->stash->{report};
     $p->set_extra_metadata('payment_reference', $reference) if $reference;
     $p->confirm;
+    $c->stash->{property_id} = $p->get_extra_field_value('property_id');
     $p->update;
     $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
     $c->detach;
