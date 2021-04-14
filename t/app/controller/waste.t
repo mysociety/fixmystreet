@@ -557,6 +557,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
     subtest 'check new sub credit card payment with no bins required' => sub {
@@ -676,6 +677,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
     subtest 'check modify sub credit card payment reducing bin count' => sub {
@@ -725,6 +727,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
@@ -918,6 +921,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
     subtest 'renew credit card sub with an extra bin' => sub {
