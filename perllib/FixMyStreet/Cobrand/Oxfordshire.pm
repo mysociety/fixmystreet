@@ -241,6 +241,16 @@ sub should_skip_sending_update {
     return 0;
 }
 
+sub open311_skip_report_fetch {
+    my ($self, $problem) = @_;
+
+    # Abuse this hook a little bit to tidy up the report
+    $problem->title($problem->category);
+    $problem->detail($problem->category);
+    $problem->name($self->council_name);
+
+    return 0;
+}
 
 sub report_inspect_update_extra {
     my ( $self, $problem ) = @_;
