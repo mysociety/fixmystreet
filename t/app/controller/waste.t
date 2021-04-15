@@ -312,6 +312,56 @@ FixMyStreet::override_config {
     };
 };
 
+sub garden_waste_one_bin {
+    return _garden_waste_service_units(1);
+}
+
+sub garden_waste_two_bins {
+    return _garden_waste_service_units(2);
+}
+
+sub _garden_waste_service_units {
+    my $bin_count = shift;
+
+    return [ {
+        Id => 1005,
+        ServiceId => 545,
+        ServiceName => 'Garden waste collection',
+        ServiceTasks => { ServiceTask => {
+            Id => 405,
+            Data => { ExtensibleDatum => [ {
+                DatatypeName => 'LBB - GW Container',
+                ChildData => { ExtensibleDatum => [ {
+                    DatatypeName => 'Quantity',
+                    Value => $bin_count,
+                }, {
+                    DatatypeName => 'Container',
+                    Value => 44,
+                } ] },
+            } ] },
+            ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                },
+            }, {
+                ScheduleDescription => 'every other Monday',
+                EndDate => { DateTime => '2021-03-30T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 567, 890 ] } },
+                },
+            } ] },
+        } } } ];
+}
+
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
     COBRAND_FEATURES => {
@@ -332,6 +382,7 @@ FixMyStreet::override_config {
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'property_id', value => 12345});
     $p->update;
+    $user->update({ phone => "" });
 
     my $sent_params;
     my $pay = Test::MockModule->new('Integrations::SCP');
@@ -454,6 +505,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>2021-03-30#m);
     };
+
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check new sub bin limits' => sub {
         $mech->get_ok('/waste/12345/garden');
@@ -687,42 +741,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $sent_params = undef;
         my $echo = Test::MockModule->new('Integrations::Echo');
-        $echo->mock('GetServiceUnitsForObject', sub {
-            return [ {
-                Id => 1005,
-                ServiceId => 545,
-                ServiceName => 'Garden waste collection',
-                ServiceTasks => { ServiceTask => {
-                    Id => 405,
-                    ScheduleDescription => 'every other Monday',
-                    Data => { ExtensibleDatum => [ {
-                        DatatypeName => 'LBB - GW Container',
-                        ChildData => { ExtensibleDatum => {
-                            DatatypeName => 'Quantity',
-                            Value => 2,
-                        } },
-                    } ] },
-                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                        },
-                    }, {
-                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
-                        NextInstance => {
-                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                        },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            Ref => { Value => { anyType => [ 567, 890 ] } },
-                        },
-                    } ] },
-                } },
-            } ];
-        });
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
 
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
@@ -754,6 +773,8 @@ FixMyStreet::override_config {
     $p->update;
 
     subtest 'check modify sub direct debit payment' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
@@ -789,44 +810,6 @@ FixMyStreet::override_config {
 
     $dd_sent_params = {};
     subtest 'check modify sub direct debit payment reducing bin count' => sub {
-        my $echo = Test::MockModule->new('Integrations::Echo');
-        $echo->mock('GetServiceUnitsForObject', sub {
-            return [ {
-                Id => 1005,
-                ServiceId => 545,
-                ServiceName => 'Garden waste collection',
-                ServiceTasks => { ServiceTask => {
-                    Id => 405,
-                    ScheduleDescription => 'every other Monday',
-                    Data => { ExtensibleDatum => [ {
-                        DatatypeName => 'LBB - GW Container',
-                        ChildData => { ExtensibleDatum => {
-                            DatatypeName => 'Quantity',
-                            Value => 2,
-                        } },
-                    } ] },
-                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                        },
-                    }, {
-                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
-                        NextInstance => {
-                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                        },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            Ref => { Value => { anyType => [ 567, 890 ] } },
-                        },
-                    } ] },
-                } },
-            } ];
-        });
-
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
@@ -886,6 +869,8 @@ FixMyStreet::override_config {
     $p->update;
 
     subtest 'renew credit card sub' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         $mech->log_out_ok();
         $mech->get_ok('/waste/12345/garden_renew');
         is $mech->uri->path, '/auth', 'have to be logged in to renew subscription';
@@ -928,6 +913,8 @@ FixMyStreet::override_config {
     };
 
     subtest 'renew credit card sub with an extra bin' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
@@ -967,42 +954,8 @@ FixMyStreet::override_config {
 
     subtest 'renew credit card sub with one less bin' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
-        $echo->mock('GetServiceUnitsForObject', sub {
-            return [ {
-                Id => 1005,
-                ServiceId => 545,
-                ServiceName => 'Garden waste collection',
-                ServiceTasks => { ServiceTask => {
-                    Id => 405,
-                    ScheduleDescription => 'every other Monday',
-                    Data => { ExtensibleDatum => [ {
-                        DatatypeName => 'LBB - GW Container',
-                        ChildData => { ExtensibleDatum => {
-                            DatatypeName => 'Quantity',
-                            Value => 2,
-                        } },
-                    } ] },
-                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                        },
-                    }, {
-                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
-                        NextInstance => {
-                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                        },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            Ref => { Value => { anyType => [ 567, 890 ] } },
-                        },
-                    } ] },
-                } },
-            } ];
-        });
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
+
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
@@ -1076,6 +1029,8 @@ FixMyStreet::override_config {
     };
 
     subtest 'cancel credit card sub' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
