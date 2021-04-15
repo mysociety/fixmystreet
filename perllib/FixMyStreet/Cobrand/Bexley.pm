@@ -10,7 +10,7 @@ sub council_area { 'Bexley' }
 sub council_name { 'London Borough of Bexley' }
 sub council_url { 'bexley' }
 sub get_geocoder { 'Bexley' }
-sub map_type { 'MasterMap' }
+sub default_map_zoom { 4 }
 
 sub disambiguate_location {
     my $self    = shift;
