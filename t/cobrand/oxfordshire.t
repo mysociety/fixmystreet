@@ -158,6 +158,39 @@ subtest 'check /around?ajax defaults to open reports only' => sub {
 my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3, order_by => 'id' })->all;
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+    my $problem1 = $problems[0];
+    $problem1->external_id("132987");
+    $problem1->set_extra_metadata(customer_reference => "ENQ12098123");
+    $problem1->whensent($problem1->confirmed);
+    $problem1->update;
+    my $problem2 = $problems[1];
+    $problem2->update({ external_id => "AlloyV2-687000682500b7000a1f3006", whensent => $problem2->confirmed });
+
+    # reports should display the same info on both cobrands
+    for my $host ( 'oxfordshire.fixmystreet.com', 'www.fixmystreet.com' ) {
+
+        subtest "$host handles external IDs/refs correctly" => sub {
+            ok $mech->host($host);
+
+            $mech->get_ok('/report/' . $problem1->id);
+            $mech->content_lacks($problem1->external_id, "WDM external ID not shown");
+            $mech->content_contains('Council ref:</strong> ENQ12098123', "WDM customer reference is shown");
+
+            $mech->get_ok('/report/' . $problem2->id);
+            $mech->content_lacks($problem2->external_id, "Alloy external ID not shown");
+            $mech->content_contains('Council ref:</strong> ' . $problem2->id, "FMS id is shown");
+        };
+    }
+
+    # Reset for the rest of the tests
+    ok $mech->host('oxfordshire.fixmystreet.com');
+};
+
+FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1, skip_checks => 1 },
     ALLOWED_COBRANDS => 'oxfordshire',
     MAPIT_URL => 'http://mapit.uk/',
