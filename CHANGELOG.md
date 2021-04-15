@@ -27,6 +27,7 @@
         - Improve layout of some admin pages.
         - Include email in inspector form information.
         - Improve wording of new report Private checkbox.
+        - No questionnaires on reports as body/anonymous.
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323

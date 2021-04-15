@@ -54,6 +54,7 @@ subtest "Body user, has permission to add report as another user with email" => 
     is $report->name, 'Another User', 'report name is given name';
     is $report->user->name, 'Another User', 'user name matches';
     is $report->user->email, 'another@example.net', 'user email correct';
+    is $report->send_questionnaire, 1, 'questionnaire';
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
     is $report->send_questionnaire, 1, 'send questionnaire';
@@ -114,6 +115,7 @@ subtest "Body user, has permission to add report as another user with only name"
     is $report->user->name, 'Body User', 'user name unchanged';
     is $report->user->id, $user->id, 'user matches';
     is $report->anonymous, 1, 'report anonymous';
+    is $report->send_questionnaire, 0, 'no questionnaire';
 };
 
 subtest "Body user, has permission to add report as another (existing) user with email" => sub {
@@ -133,6 +135,7 @@ subtest "Body user, has permission to add report as another (existing) user with
     is $report->name, 'Existing Yooser', 'report name is given name';
     is $report->user->name, 'Existing User', 'user name remains same';
     is $report->user->email, $existing->email, 'user email correct';
+    is $report->send_questionnaire, 1, 'questionnaire';
     isnt $report->user->id, $user->id, 'user does not match';
     like $mech->get_text_body_from_email, qr/Your report to Oxfordshire County Council has been logged/;
 

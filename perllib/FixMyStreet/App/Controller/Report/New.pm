@@ -941,7 +941,9 @@ sub process_user : Private {
             $user->name($name) unless $user->name;
             $c->stash->{no_reporter_alert} = 1;
         } elsif ($c->stash->{contributing_as_another_user}) {
+            # If we are here, the user picked report as another user but gave neither email or phone
             $c->stash->{no_reporter_alert} = 1;
+            $report->send_questionnaire(0);
         }
 
         return 1;
