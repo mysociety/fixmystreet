@@ -81,6 +81,21 @@ FixMyStreet::override_config {
     };
 
     subtest 'testing special Open311 behaviour', sub {
+        my $data = {
+            resourceSets => [ {
+                resources => [ {
+                    name => 'Constitution Hill',
+                    address => {
+                        addressLine => 'Constitution Hill',
+                        locality => 'London',
+                        'formattedAddress' => 'Constitution Hill, London',
+                    }
+                } ],
+            } ],
+        };
+        $report->geocode($data);
+        $report->update;
+
         my $test_data = FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         ok $report->whensent, 'Report marked as sent';
@@ -102,6 +117,7 @@ FixMyStreet::override_config {
             'http://www.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',
         ], 'Request had multiple photos';
 
+        is $c->param('attribute[closest_address]'), 'Constitution Hill, London', 'closest address correctly set';
     };
 
     subtest 'testing reference numbers shown' => sub {
