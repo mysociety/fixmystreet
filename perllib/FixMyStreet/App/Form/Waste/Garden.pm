@@ -30,7 +30,7 @@ has_page details => (
 
         my $existing = $data->{existing_number} || 0;
         $existing = 0 if $data->{existing} eq 'no';
-        my $cost = $form->{c}->cobrand->garden_waste_cost($data->{existing_number});
+        my $cost = $existing == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($data->{existing_number});
         $form->{c}->stash->{payment} = $cost / 100;
         return {
             current_bins => { default => $existing },
