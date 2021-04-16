@@ -1785,6 +1785,13 @@ sub redirect_or_confirm_creation : Private {
     # People using 2FA can not log in by code
     $c->detach( '/page_error_403_access_denied', [] ) if $report->user->has_2fa;
 
+    # We only want to send one confirmation message per request (e.g. if Waste
+    # creates two reports, only send confirmation email for the first)
+    if ($c->stash->{sent_confirmation_message}) {
+        $c->log->info($report->user->id . ' created ' . $report->id);
+        return;
+    }
+
     # otherwise email or text a confirm token to them.
     my $thing = 'email';
     if ($report->user->email_verified) {
@@ -1798,6 +1805,7 @@ sub redirect_or_confirm_creation : Private {
     } else {
         warn "Reached problem confirmation with no username verification";
     }
+    $c->stash->{sent_confirmation_message} = 1;
     $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
 }
 
