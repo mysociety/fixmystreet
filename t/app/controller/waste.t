@@ -560,6 +560,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
         $form = $mech->form_with_fields( qw(current_bins new_bins payment_method) );
         ok $form, "form found";
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>40.00#, "initial cost set correctly");
         is $mech->value('current_bins'), 2, "current bins is set to 2";
     };
 
@@ -567,6 +568,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 new_bins => 1,
