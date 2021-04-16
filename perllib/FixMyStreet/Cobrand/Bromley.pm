@@ -711,7 +711,8 @@ sub _parse_schedules {
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
         if ($d && (!$min_next || $d < $min_next->{date})) {
-            $next_changed = $next->{CurrentScheduledDate}{DateTime} ne $next->{OriginalScheduledDate}{DateTime};
+            my $next_original = construct_bin_date($next->{OriginalScheduledDate});
+            $next_changed = $d->strftime("%F") ne $next_original->strftime("%F");
             $min_next = {
                 date => $d,
                 ordinal => ordinal($d->day),
@@ -724,14 +725,16 @@ sub _parse_schedules {
         # It is possible the last instance for this schedule has been rescheduled to
         # be in the future. If so, we should treat it like it is a next instance.
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
-            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            my $last_original = construct_bin_date($last->{OriginalScheduledDate});
+            my $last_changed = $d->strftime("%F") ne $last_original->strftime("%F");
             $min_next = {
                 date => $d,
                 ordinal => ordinal($d->day),
                 changed => $last_changed,
             };
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
-            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            my $last_original = construct_bin_date($last->{OriginalScheduledDate});
+            my $last_changed = $d->strftime("%F") ne $last_original->strftime("%F");
             $max_last = {
                 date => $d,
                 ordinal => ordinal($d->day),
