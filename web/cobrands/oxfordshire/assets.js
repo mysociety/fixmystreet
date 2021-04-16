@@ -47,8 +47,10 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
+var asset_fillColor = fixmystreet.cobrand === "oxfordshire" ? "#007258" : "#FFFF00";
+
 var occ_default = $.extend({}, fixmystreet.assets.style_default.defaultStyle, {
-    fillColor: "#007258"
+    fillColor: asset_fillColor
 });
 
 var occ_hover = new OpenLayers.Style({
@@ -93,7 +95,7 @@ var rule_owned = new OpenLayers.Rule({
         evaluate: occ_owns_feature
     }),
     symbolizer: {
-        fillColor: "#007258",
+        fillColor: asset_fillColor,
         pointRadius: 6,
         title: ''
     }
@@ -234,7 +236,7 @@ var rule_bridge_owned = new OpenLayers.Rule({
         evaluate: occ_owns_bridge
     }),
     symbolizer: {
-        fillColor: "#007258",
+        fillColor: asset_fillColor,
         pointRadius: 6,
         title: ''
     }
