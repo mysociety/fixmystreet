@@ -1466,16 +1466,21 @@ sub process_confirmation : Private {
         return;
     }
 
-    # We have an unconfirmed problem
-    $problem->confirm;
-    $problem->update(
-        {
-            lastupdate => \'current_timestamp',
+    # We have an unconfirmed problem(s)
+    my @problems = ($problem);
+    if (my $grouped_ids = $problem->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
+            push @problems, $problem;
         }
-    );
+    }
+    foreach my $problem (@problems) {
+        $problem->confirm;
+        $problem->update({ lastupdate => \'current_timestamp' });
 
-    # Subscribe problem reporter to email updates
-    $c->forward( '/report/new/create_related_things', [ $problem ] );
+        # Subscribe problem reporter to email updates
+        $c->forward( '/report/new/create_related_things', [ $problem ] );
+    }
 
     # log the problem creation user in to the site
     if ( $data->{name} || $data->{password} ) {
