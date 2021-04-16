@@ -1363,6 +1363,9 @@ sub tokenize_user : Private {
         password => $report->user->password,
         title => $report->user->title,
     };
+    if (my $template = $c->stash->{override_confirmation_template}) {
+        $c->stash->{token_data}->{template} = $template;
+    }
     $c->forward('/auth/set_oauth_token_data', [ $c->stash->{token_data} ])
         if $c->get_param('oauth_need_email');
 }
@@ -1415,8 +1418,8 @@ sub confirm_by_text : Path('text') {
 sub process_confirmation : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{template} = 'tokens/confirm_problem.html';
     my $data = $c->stash->{token_data};
+    $c->stash->{template} = $data->{template} || 'tokens/confirm_problem.html';
 
     unless ($c->stash->{report}) {
         # Look at all problems, not just cobrand, in case am approving something we don't actually show
