@@ -159,7 +159,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     my $report = $c->stash->{report};
     if ( $report->confirmed ) {
-        $c->forward( 'create_related_things' );
+        $c->forward( 'create_related_things', [ $report ] );
         $c->stash->{ json_response } = { success => 1, report => $report->id };
     } else {
         $c->forward( 'send_problem_confirm_email' );
@@ -1472,7 +1472,7 @@ sub process_confirmation : Private {
     );
 
     # Subscribe problem reporter to email updates
-    $c->forward( '/report/new/create_related_things' );
+    $c->forward( '/report/new/create_related_things', [ $problem ] );
 
     # log the problem creation user in to the site
     if ( $data->{name} || $data->{password} ) {
@@ -1751,7 +1751,7 @@ sub redirect_or_confirm_creation : Private {
     # If confirmed send the user straight there.
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
-        $c->forward( 'create_related_things' );
+        $c->forward( 'create_related_things', [ $report ] );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
             && !$c->cobrand->report_sent_confirmation_email($report)) {
@@ -1794,9 +1794,7 @@ sub redirect_or_confirm_creation : Private {
 }
 
 sub create_related_things : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{report};
+    my ( $self, $c, $problem ) = @_;
 
     # If there is a special template, create a comment using that
     foreach my $body (values %{$problem->bodies}) {
