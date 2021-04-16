@@ -83,7 +83,18 @@ fixmystreet.assets.add(labeled_defaults, {
         'Street light dim',
         'Street light intermittent',
         'Street light not working' ],
-    asset_item: 'street light'
+    asset_item: 'street light',
+    asset_item_message: 'You can pick a <b class="asset-ITEM">ITEM</b> from the map &raquo;<br>If there is no yellow dot showing then this ITEM is not maintained by Transport for Buckinghamshire',
+    construct_selected_asset_message: function(asset) {
+        var id = asset.attributes[this.fixmystreet.feature_code] || '';
+        if (id === '') {
+            return;
+        }
+        var data = this.fixmystreet.construct_asset_name(id);
+        var extra = '. Only ITEMs maintained by Transport for Buckinghamshire are displayed.';
+        extra = extra.replace(/ITEM/g, data.name);
+        return 'You have selected ' + data.name + ' <b>' + data.id + '</b>' + extra;
+    }
 });
 
 fixmystreet.assets.add(labeled_defaults, {
