@@ -31,6 +31,7 @@
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
+        - Add config option for disabling FLOC
     - Security:
         - Increase minimum password length to eight.
 

@@ -89,6 +89,10 @@ sub add_response_headers {
         my $csp_nonce = $self->{c}->stash->{csp_nonce} = unpack('h*', mySociety::Random::random_bytes(16, 1));
         $self->{c}->res->header('Content-Security-Policy', "script-src 'self' 'unsafe-inline' 'nonce-$csp_nonce' $csp_domains; object-src 'none'; base-uri 'none'")
     }
+
+    if ($self->feature('disable_floc')) {
+        $self->{c}->res->header('Permissions-Policy', 'interest-cohort=()');
+    }
 }
 
 =item password_minimum_length

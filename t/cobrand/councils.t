@@ -115,4 +115,22 @@ subtest "CSP header from feature" => sub {
     }
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
+    COBRAND_FEATURES => {
+        disable_floc => {
+            fixmystreet => 1
+        }
+    }
+}, sub {
+    subtest 'check floc tracking turned off' => sub {
+        ok $mech->host("www.fixmystreet.com"), "set host to fixmystreet";
+        $mech->get_ok('/');
+        is $mech->res->header('Permissions-Policy'), 'interest-cohort=()', 'FLOC header present for fixmystreet';
+        ok $mech->host("oxfordshire.fixmystreet.com"), "set host to oxfordshire";
+        $mech->get_ok('/');
+        is $mech->res->header('Permissions-Policy'), undef, 'FLOC header missing for oxfordshire';
+    };
+};
+
 done_testing();
