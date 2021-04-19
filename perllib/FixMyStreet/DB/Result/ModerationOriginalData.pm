@@ -83,6 +83,9 @@ with 'FixMyStreet::Roles::Extra';
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
+# Comments use 'text' rather than 'detail'
+sub text { shift->detail }
+
 sub admin_log {
     my $self = shift;
     my $rs = $self->result_source->schema->resultset("AdminLog");
