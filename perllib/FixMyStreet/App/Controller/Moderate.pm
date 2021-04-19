@@ -100,7 +100,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
             : ()),
         $c->forward('moderate_text', [ 'detail' ]),
         $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
-        $c->forward('moderate_boolean', [ 'photo' ]),
+        $c->forward('moderate_photo'),
         $c->forward('moderate_location'),
         $c->forward('moderate_category'),
         $c->forward('moderate_extra');
@@ -108,7 +108,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     # Deal with possible photo changes. If a moderate form uses a standard
     # photo upload field (with upload_fileid, label and file upload handlers),
     # this will allow photos to be changed, not just switched on/off. You will
-    # probably want a hidden field with problem_photo=1 to skip that check.
+    # probably want a hidden field with problem_photo_0=1 to skip that check.
     my $photo_edit_form = defined $c->get_param('photo1');
     if ($photo_edit_form) {
         $c->forward('/photo/process_photo');
@@ -117,7 +117,7 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
             push @{ $c->stash->{moderate_errors} }, $photo_error;
         } else {
             my $fileid = $c->stash->{upload_fileid};
-            if ($fileid ne $problem->photo) {
+            if ($fileid ne ($problem->photo || '')) {
                 $problem->get_photoset->delete_cached;
                 $problem->photo($fileid || undef);
                 push @types, 'photo';
@@ -244,14 +244,41 @@ sub moderate_text : Private {
     }
 }
 
+sub moderate_photo : Private {
+    my ( $self, $c ) = @_;
+
+    my $object = $c->stash->{comment} || $c->stash->{problem};
+    my $param = $c->stash->{comment} ? 'update_' : 'problem_';
+    my $original = $c->stash->{original};
+
+    return unless $original->photo;
+
+    my $photoset = $object->get_photoset;
+    my @keys = map { /(\d+)$/ } grep { /^${param}photo_/ } keys %{ $c->req->params };
+    $photoset = $photoset->keep_images(\@keys);
+
+    @keys = map { /(\d+)$/ } grep { /^${param}restore_/ } keys %{ $c->req->params };
+    if (@keys) {
+        my $original_photoset = $original->get_photoset;
+        my @restore_ids = map { $original_photoset->get_id($_) } @keys;
+        $photoset = (ref $photoset)->new({
+            object => $photoset->object,
+            data_items => [ @{$photoset->ids}, @restore_ids ],
+        });
+    }
+
+    if ($photoset->data ne ($object->photo || '')) {
+        $photoset->delete_cached;
+        $object->photo($photoset->data or undef);
+        return 'photo';
+    }
+}
+
 sub moderate_boolean : Private {
     my ( $self, $c, $thing, $reverse ) = @_;
 
     my $object = $c->stash->{comment} || $c->stash->{problem};
     my $param = $c->stash->{comment} ? 'update_' : 'problem_';
-    my $original = $c->stash->{original}->photo;
-
-    return if $thing eq 'photo' && !$original;
 
     my $new;
     if ($reverse) {
@@ -262,12 +289,7 @@ sub moderate_boolean : Private {
     my $old = $object->$thing ? 1 : 0;
 
     if ($new != $old) {
-        if ($thing eq 'photo') {
-            $object->get_photoset->delete_cached;
-            $object->$thing($new ? $original : undef);
-        } else {
-            $object->$thing($new);
-        }
+        $object->$thing($new);
         return $thing;
     }
 }
@@ -374,7 +396,7 @@ sub moderate_update : Chained('update') : PathPart('') : Args(0) {
         $c->forward('moderate_text', [ 'text' ]),
         $c->forward('moderate_boolean', [ 'anonymous', 'show_name' ]),
         $c->forward('moderate_extra'),
-        $c->forward('moderate_boolean', [ 'photo' ]);
+        $c->forward('moderate_photo');
 
     if (@types) {
         $c->stash->{history}->insert;

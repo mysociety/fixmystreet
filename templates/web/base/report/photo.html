@@ -8,10 +8,38 @@
           <a href="[% photo.url_full %]" rel="fancy">
               <img alt="Photo of this report" src="[% photo.url %]">
           <span>zoom</span></a>
+          <p class="moderate-edit">
+            <label>
+              <input type="checkbox" name="[% object.text ? 'update' : 'problem' %]_photo_[% loop.index %]" checked>
+              [% loc('Show photo') %]
+            </label>
+          </p>
       </div>
     [% END %]
   [% END %]
   [% IF object.photos.size > 1 %]
     </div>
   [% END %]
+[% END %]
+
+[% IF original.photos.size %]
+<div class="moderate-edit">
+  <div class="update-img-set">
+    [% FOR photo IN original.photos %]
+      [% NEXT IF object.photo.search(photo.id) %]
+      [% NEXT UNLESS c.cobrand.allow_photo_display(object, photo.idx) %]
+      <div class="update-img">
+        <a href="[% photo.url_temp_full %]" rel="fancy">
+          <img alt="Photo of this report (moderated)" src="[% photo.url_temp %]">
+        <span>zoom</span></a>
+        <p>
+          <label>
+            <input type="checkbox" name="[% object.text ? 'update' : 'problem' %]_restore_[% loop.index %]">
+            [% loc('Restore photo') %]
+          </label>
+        </p>
+      </div>
+    [% END %]
+  </div>
+</div>
 [% END %]

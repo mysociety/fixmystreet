@@ -256,6 +256,22 @@ sub delete_cached {
     }
 }
 
+sub keep_images {
+    my ($self, $ids) = @_;
+
+    my @images = $self->all_ids;
+    @images = @images[grep { $_ >= 0 && $_ < @images } sort @$ids];
+
+    $self->delete_cached();
+
+    my $new_set = (ref $self)->new({
+        data_items => \@images,
+        object => $self->object,
+    });
+
+    return $new_set;
+}
+
 sub remove_images {
     my ($self, $ids) = @_;
 

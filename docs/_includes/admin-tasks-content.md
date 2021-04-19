@@ -212,9 +212,9 @@ When logged in, staff with the required level of permissions can moderate report
 report webpage. You will see a ‘moderate’ button below the report’s main body, and above each
 update. Clicking this button gives you the ability to:
 
-- Edit the title or body of the report or update
-- Remove a user’s name from the report or update
-- Remove a photograph from a report
+- Edit the title or body text
+- Remove a user’s name
+- Remove or restore photographs
 
 <img alt="The ‘moderate’ button below the report’s main body" src="/assets/img/pro-user-guide/deal-undesirable-content.png" class="admin-screenshot" />
 

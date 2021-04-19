@@ -18,10 +18,6 @@
                     [% loc('Hide update completely?') %]</label>
                     <label><input type="checkbox" name="update_show_name" [% update.anonymous ? '' : 'checked' %]>
                     [% loc('Show name publicly?') %]</label>
-                    [% IF update.photo or original.photo %]
-                        <label><input type="checkbox" name="update_photo" [% update.photo ? 'checked' : '' %]>
-                        [% loc('Show Photo?') %]</label>
-                    [% END %]
                 </div>
           [% END %]
             <div class="item-list__update-wrap">

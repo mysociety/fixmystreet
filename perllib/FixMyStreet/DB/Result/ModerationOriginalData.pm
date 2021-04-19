@@ -78,7 +78,9 @@ use FixMyStreet::Template::SafeString;
 use Text::Diff;
 use Data::Dumper;
 
-with 'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::Extra',
+     'FixMyStreet::Roles::PhotoSet';
+
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
