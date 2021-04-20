@@ -107,7 +107,7 @@ subtest "Test ajax decimal points" => sub {
     };
 };
 
-subtest "check user details always shown" => sub {
+subtest "check user details shown when staff user comments as themselves" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
@@ -116,6 +116,22 @@ subtest "check user details always shown" => sub {
         my $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/Body \(Commenter\) /;
         $user2->update({ from_body => undef });
+    };
+};
+
+subtest "check user details aren't shown when staff user comments as body" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixamingata' ],
+    }, sub {
+        $user2->update({ from_body => $body });
+        $comment->set_extra_metadata( contributed_as => 'body' );
+        $comment->update;
+        $mech->get_ok('/report/' . $report->id);
+        my $update_meta = $mech->extract_update_metas;
+        unlike $update_meta->[0], qr/Commenter/;
+        $user2->update({ from_body => undef });
+        $comment->unset_extra_metadata('contributed_as');
+        $comment->update;
     };
 };
 
