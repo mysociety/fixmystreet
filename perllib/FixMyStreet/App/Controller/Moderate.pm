@@ -3,6 +3,8 @@ package FixMyStreet::App::Controller::Moderate;
 use Moose;
 use namespace::autoclean;
 use Algorithm::Diff;
+use JSON::MaybeXS;
+
 BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
@@ -254,7 +256,15 @@ sub moderate_photo : Private {
     return unless $original->photo;
 
     my $photoset = $object->get_photoset;
-    my @keys = map { /(\d+)$/ } grep { /^${param}photo_/ } keys %{ $c->req->params };
+
+    my @keys = map { /(\d+)$/ } grep { /^redact_/ } keys %{ $c->req->params };
+    foreach (@keys) {
+        my $rects = decode_json($c->get_param("redact_$_") || '[]');
+        my $size = decode_json($c->get_param("size_$_") || '{}');
+        $photoset = $photoset->redact_image($_, $rects, $size) if @$rects;
+    }
+
+    @keys = map { /(\d+)$/ } grep { /^${param}photo_/ } keys %{ $c->req->params };
     $photoset = $photoset->keep_images(\@keys);
 
     @keys = map { /(\d+)$/ } grep { /^${param}restore_/ } keys %{ $c->req->params };

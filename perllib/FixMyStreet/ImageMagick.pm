@@ -59,6 +59,22 @@ sub rotate {
     return $self;
 }
 
+sub redact {
+    my ($self, $rects, $size) = @_;
+    return $self unless $self->image;
+    my ($width, $height) = $self->image->Get('width', 'height');
+    my $ratio = $width / $size->{width};
+    foreach (@$rects) {
+        my $l = int($_->{x} * $ratio + 0.5);
+        my $t = int($_->{y} * $ratio + 0.5);
+        my $r = int(($_->{x} + $_->{w}) * $ratio + 0.5);
+        my $b = int(($_->{y} + $_->{h}) * $ratio + 0.5);
+        my $points = "$l,$t $r,$b";
+        $self->image->Draw( fill => 'black', primitive => 'rectangle', points => $points );
+    }
+    return $self;
+}
+
 # Shrinks a picture to the specified size, but keeping in proportion.
 sub shrink {
     my ($self, $size) = @_;

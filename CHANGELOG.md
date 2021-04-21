@@ -33,6 +33,7 @@
         - CSV export, improve Site Used and add Device Type.
         - Always record contributed_by for staff users.
         - Add per-photo moderation. #3055
+        - Redaction support for photos.
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323

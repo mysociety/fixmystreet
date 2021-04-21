@@ -14,6 +14,12 @@
               [% loc('Show photo') %]
             </label>
           </p>
+        [% SET unique_id = 'canvas_' _ (object.text ? 'update' : 'problem') _ '_' _ object.id _ '_' _ loop.index ~%]
+          <input type="hidden" name="redact_[% loop.index %]" id="[% unique_id %]_redact">
+          <input type="hidden" name="size_[% loop.index %]" id="[% unique_id %]_size">
+          <p class="moderate-edit">
+            <a rel="fancy_moderation" href="[% photo.url_temp_full %]" id="[% unique_id %]">[% loc('Redact') %]</a>
+          </p>
       </div>
     [% END %]
   [% END %]

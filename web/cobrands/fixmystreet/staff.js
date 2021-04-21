@@ -391,6 +391,23 @@ fixmystreet.staff_set_up = {
     });
   },
 
+  fancybox_moderation: function() {
+    if (!$.fancybox) {
+        return;
+    }
+    $('a[rel=fancy_moderation]').fancybox({
+        'overlayColor': '#000000',
+        showNavArrows: false,
+        enableKeyboardNav: false,
+        onComplete: fixmystreet.redact.setup,
+        onClosed: fixmystreet.redact.teardown,
+        titlePosition: 'outside',
+        titleFormat: fixmystreet.redact.titleText
+    });
+    $('body').on('click', '.js-redact-done', $.fancybox.close);
+    $('body').on('click', '.js-redact-undo', fixmystreet.redact.undo);
+  },
+
   open311_category_edit: function() {
     var protect_input = document.getElementById('open311_protect');
     if (!protect_input) {
@@ -547,3 +564,94 @@ $.extend(fixmystreet.utils, {
         btn.attr('name', 'shortlist-' + sw);
     }
 });
+
+(function() {
+    var unique_id, img, w, h, rects, rect, drag, canvas, context;
+
+    function createCanvas() {
+        canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        img.after(canvas);
+        canvas.addEventListener('mousedown', mouseDown, false);
+        canvas.addEventListener('mouseup', mouseUp, false);
+        canvas.addEventListener('mousemove', mouseMove, false);
+        context = canvas.getContext('2d');
+        context.fillStyle = 'black';
+    }
+
+    function mouse_pos(elt, e) {
+        var r = elt.getBoundingClientRect();
+        return { 'x': e.pageX - r.x, 'y': e.pageY - r.y };
+    }
+
+    function mouseDown(e) {
+        var m = mouse_pos(this, e);
+        rect = { x: m.x, y: m.y, w: 0, h: 0 };
+        drag = true;
+    }
+
+    function mouseUp(e) {
+        drag = false;
+        if (!rect.w || !rect.h) {
+            return;
+        }
+        createCanvas();
+        rects.push(rect);
+        set_value('redact', rects);
+    }
+
+    function draw(rect) {
+        context.fillRect(rect.x, rect.y, rect.w, rect.h);
+    }
+
+    function mouseMove(e) {
+        if (drag) {
+            context.clearRect(rect.x, rect.y, rect.w, rect.h);
+            var m = mouse_pos(this, e);
+            rect.w = m.x - rect.x;
+            rect.h = m.y - rect.y;
+            draw(rect);
+        }
+    }
+
+    function set_value(key, obj) {
+        document.getElementById(unique_id + '_' + key).value = JSON.stringify(obj);
+    }
+
+    fixmystreet.redact = {
+        setup: function(arr, idx, opts) {
+            unique_id = opts.orig[0].id;
+            img = $('#fancybox-img');
+            h = img.height();
+            w = img.width();
+
+            try {
+                rects = JSON.parse(document.getElementById(unique_id + '_redact').value);
+            } catch (e) {
+                rects = [];
+            }
+            rects.forEach(function(rect) {
+                createCanvas();
+                draw(rect);
+            });
+            set_value('size', { width: w, height: h });
+            createCanvas();
+        },
+        teardown: function(arr, idx, opts) {
+            if (rects.length) {
+                opts.orig.text(translation_strings.redaction_link + ' (' + rects.length + ')');
+            } else {
+                opts.orig.text(translation_strings.redaction_link);
+            }
+        },
+        undo: function(e) {
+            $('#fancybox-content canvas:nth-of-type(2)').remove();
+            rects.pop();
+            set_value('redact', rects);
+        },
+        titleText: function() {
+            return '<p>' + translation_strings.redaction_help + ' <button class="js-redact-done">' + translation_strings.redaction_done + '</button> <button class="js-redact-undo">' + translation_strings.redaction_undo + '</button></p>';
+        }
+    };
+})();

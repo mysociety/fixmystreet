@@ -313,4 +313,23 @@ sub rotate_image {
     return $new_set->data; # e.g. new comma-separated fileid
 }
 
+sub redact_image {
+    my ($self, $index, $rects, $size) = @_;
+
+    my @images = $self->all_ids;
+    return if $index > $#images;
+
+    my $image = $self->get_raw_image($index);
+    $images[$index] = FixMyStreet::ImageMagick->new(blob => $image->{data})->redact($rects, $size)->as_blob;
+
+    my $new_set = (ref $self)->new({
+        data_items => \@images,
+        object => $self->object,
+    });
+
+    $self->delete_cached();
+
+    return $new_set;
+}
+
 1;
