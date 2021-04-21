@@ -1,0 +1,41 @@
+[% SET bodyclass = 'waste' %]
+[%
+IF first_page == 'request';
+    title = 'Request sent';
+ELSIF first_page == 'report';
+  IF report.get_extra_metadata('grouped_ids');
+    title = 'Missed collections reported';
+  ELSE;
+    title = 'Missed collection reported';
+  END;
+ELSE;
+    title = 'Enquiry submitted';
+END ~%]
+[% PROCESS 'waste/header.html' %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+      <p>
+        [% IF report.get_extra_metadata('grouped_ids') %]
+          Your reference numbers are: <strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>.
+          If you need to contact us about this request please quote these references.
+        [% ELSE %]
+          Your reference number is <strong>[% report.id %]</strong>.
+          If you need to contact us about this request please quote this reference.
+        [% END %]
+      </p>
+      [% IF first_page == 'request' %]
+        <p>
+          Containers arrive typically within two weeks, but this may vary due to demand.
+        </p>
+      [% END %]
+      [% IF report.user.email %]
+        <p>A copy has been sent to your email address, [% report.user.email %].</p>
+      [% END %]
+    </div>
+</div>
+
+[% INCLUDE footer.html %]
