@@ -591,7 +591,8 @@ sub bin_services_for_address {
         request_only => 1,
         report_only => 1,
     };
-    push @out, {
+    # We want this one to always appear first
+    unshift @out, {
         id => "_ALL_BINS",
         service_name => "All bins",
         service_id => "_ALL_BINS",
