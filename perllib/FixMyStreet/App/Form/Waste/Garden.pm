@@ -34,6 +34,7 @@ has_page details => (
         $form->{c}->stash->{payment} = $cost / 100;
         return {
             current_bins => { default => $existing },
+            new_bins => { default => 0 },
         };
     },
     next => 'summary',
