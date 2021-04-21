@@ -935,6 +935,7 @@ sub waste_get_event_type {
             Closed => 'fixed - council',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
+            'Partially Completed' => 'closed',
             Rejected => 'closed',
         },
     };
