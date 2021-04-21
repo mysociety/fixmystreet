@@ -1,0 +1,67 @@
+[% SET bodyclass = 'waste' %]
+[%
+IF first_page == 'request';
+    title = 'Request sent';
+ELSIF first_page == 'report';
+  IF report.get_extra_metadata('grouped_ids');
+    title = 'Missed collections reported';
+  ELSE;
+    title = 'Missed collection reported';
+  END;
+ELSE;
+    title = 'Enquiry submitted';
+END ~%]
+[% PROCESS 'waste/header.html' %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+      <p>
+        [% IF report.get_extra_metadata('grouped_ids') %]
+          Your reference numbers are: <strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>.
+        [% ELSE %]
+          Your reference number is <strong>[% report.id %]</strong>.
+        [% END %]
+      </p>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+[% IF report.get_extra_metadata('grouped_ids') %]
+    <p>If you need to contact us about this request please quote these references.
+[% ELSE %]
+    <p>If you need to contact us about this request please quote this reference.
+[% END %]
+
+[% IF report.user.email %]
+    <p>A copy has been sent to your email address, [% report.user.email %].</p>
+[% END %]
+
+[% IF first_page == 'request' %]
+    <p>Containers arrive typically within two weeks, but this may vary due to demand.</p>
+[% ELSIF first_page == 'report' %]
+    <p>Please leave your bin at the collection point. We normally collect
+    missed bins within 3 working days. However, due to ongoing staff issues
+    caused by Covid-19, staff sickness and the current national driver and
+    worker shortage, there will be unavoidable service disruption so we are
+    currently unable to confirm your recollection date. We would like to
+    apologise for any inconvenience caused. For further details
+    <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bins">visit our page on bin collections</a>.
+[% END %]
+
+[% IF report.category == 'Wheels' OR report.category == 'Lid' %]
+    <p>Please leave your bin accessible on your property for us to repair.
+    Due to ongoing staff issues caused by Covid-19, staff sickness and the current national driver and worker shortage, there will be unavoidable service disruption so we are currently unable to provide a repair date.
+    We would like to apologise for any inconvenience caused.
+    For further details
+    <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bins">visit our page on bin collections</a>.
+[% END %]
+
+    </div>
+</div>
+
+[% INCLUDE footer.html %]
