@@ -44,7 +44,7 @@ $contact->set_extra_fields( ( {
 $contact->update;
 
 my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
-my $phone_user = $mech->create_user_ok('+441632960461');
+my $phone_user = $mech->create_user_ok('+447700900002');
 my $hackney_user = $mech->create_user_ok('hackney_user@example.org', name => 'Hackney User', from_body => $hackney);
 $hackney_user->user_body_permissions->create({
     body => $hackney,
