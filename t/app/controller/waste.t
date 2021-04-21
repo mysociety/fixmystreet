@@ -46,9 +46,9 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
         { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Instruction_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Instruction_Action', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
         { code => 'current_containers', required => 1, automated => 'hidden_field' },
         { code => 'new_containers', required => 1, automated => 'hidden_field' },
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -58,9 +58,9 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_renew@example.com'},
         { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Quantity', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Action', required => 1, automated => 'hidden_field' },
-        { code => 'Container_Request_Details_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Instruction_Quantity', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Instruction_Action', required => 1, automated => 'hidden_field' },
+        { code => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
         { code => 'client_reference', required => 1, automated => 'hidden_field' },
 );
 
@@ -594,8 +594,8 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('client_reference'), 'GGW1000000002', 'correct client reference on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         is $sent_params->{amount}, 2000, 'correct amount used';
@@ -646,8 +646,8 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), '', 'no container request';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         is $sent_params->{amount}, 2000, 'correct amount used';
@@ -727,8 +727,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -763,8 +763,8 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
 
         is $sent_params, undef, "no one off payment if reducing bin count";
     };
@@ -898,8 +898,8 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), '', 'no container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $new_report->discard_changes;
@@ -939,8 +939,8 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $new_report->discard_changes;
@@ -978,8 +978,8 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $new_report->discard_changes;
@@ -1015,8 +1015,8 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), '', 'no container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), '', 'no container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $new_report->discard_changes;
@@ -1045,8 +1045,8 @@ FixMyStreet::override_config {
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
-        is $new_report->get_extra_field_value('Container_Request_Details_Action'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
@@ -1103,8 +1103,8 @@ FixMyStreet::override_config {
             is $new_report->title, 'Garden Subscription - New', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-            is $new_report->get_extra_field_value('Container_Request_Details_Action'), 1, 'correct container request action';
-            is $new_report->get_extra_field_value('Container_Request_Details_Quantity'), 1, 'correct container request count';
+            is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+            is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
             is $new_report->state, 'unconfirmed', 'report not confirmed';
 
             is $sent_params->{amount}, 2000, 'correct amount used';

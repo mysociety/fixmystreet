@@ -843,12 +843,12 @@ sub setup_garden_sub_params : Private {
     $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
     if ( $data->{new_bins} ) {
         if ( $data->{new_bins} > 0 ) {
-            $c->set_param('Container_Request_Details_Action', $c->stash->{container_actions}->{deliver} );
+            $c->set_param('Container_Instruction_Action', $c->stash->{container_actions}->{deliver} );
         } elsif ( $data->{new_bins} < 0 ) {
-            $c->set_param('Container_Request_Details_Action',  $c->stash->{container_actions}->{remove} );
+            $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
         }
-        $c->set_param('Container_Request_Details_Container_Type', $container_types{'Garden Waste'});
-        $c->set_param('Container_Request_Details_Quantity', abs($data->{new_bins}));
+        $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste'});
+        $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
     }
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
