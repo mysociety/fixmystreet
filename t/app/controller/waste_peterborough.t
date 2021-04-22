@@ -28,6 +28,7 @@ sub create_contact {
 
 create_contact({ category => 'Recycling (green)', email => 'Bartec-254' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
+create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
 create_contact({ category => 'Lid', email => 'Bartec-236' }, 'Bin repairs');
 
 FixMyStreet::override_config {
@@ -83,6 +84,17 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Reason";
         is $report->title, 'Request new All bins';
+    };
+    subtest 'Request food containers' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Request sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->title, 'Request new Both food bins';
     };
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
