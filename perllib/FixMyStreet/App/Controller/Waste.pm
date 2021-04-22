@@ -628,6 +628,7 @@ sub request : Chained('property') : Args(0) {
 sub process_request_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
+    $c->cobrand->call_hook("waste_munge_request_form_data", $data);
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
     foreach (@services) {

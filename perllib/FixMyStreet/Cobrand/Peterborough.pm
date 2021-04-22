@@ -585,7 +585,7 @@ sub bin_services_for_address {
         id => "_FOOD_BINS",
         service_name => "Food bins",
         service_id => "_FOOD_BINS",
-        request_containers => [ 493, 424, 423, 428 ],
+        request_containers => [ 424, 423, 428 ],
         request_allowed => 1,
         request_max => 1,
         request_only => 1,
@@ -631,6 +631,20 @@ sub bin_future_collections {
         push @$events, { date => $dt, desc => '', summary => $_->{JobName} };
     }
     return $events;
+}
+
+sub waste_munge_request_form_data {
+    my ($self, $data) = @_;
+
+    # In the UI we show individual checkboxes for large and small food caddies.
+    # If the user requests both containers then we want to raise a single
+    # request for both, rather than one request for each.
+    if ($data->{"container-424"} && $data->{"container-423"}) {
+        $data->{"container-424"} = 0;
+        $data->{"container-423"} = 0;
+        $data->{"container-493"} = 1;
+        $data->{"quantity-493"} = 1;
+    }
 }
 
 sub waste_munge_request_data {
