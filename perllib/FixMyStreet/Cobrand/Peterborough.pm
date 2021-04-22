@@ -493,6 +493,8 @@ sub bin_services_for_address {
         423 => "Small food caddy",
         428 => "Food bags",
 
+        "FOOD_BINS" => "Food bins",
+
         # For missed collections
         6533 => "240L Black",
         6534 => "240L Green",
@@ -582,9 +584,9 @@ sub bin_services_for_address {
     # Some need to be added manually as they don't appear in Bartec responses
     # as they're not "real" collection types (e.g. requesting all bins)
     push @out, {
-        id => "_FOOD_BINS",
+        id => "FOOD_BINS",
         service_name => "Food bins",
-        service_id => "_FOOD_BINS",
+        service_id => "FOOD_BINS",
         request_containers => [ 424, 423, 428 ],
         request_allowed => 1,
         request_max => 1,
@@ -667,6 +669,7 @@ sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
 
     my %container_service_ids = (
+        "FOOD_BINS" => 252, # Food bins (pseudocontainer hardcoded in bin_services_for_address)
         6533 => 255, # 240L Black
         6534 => 254, # 240L Green
         6579 => 253, # 240L Brown
