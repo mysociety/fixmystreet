@@ -26,6 +26,7 @@ sub create_contact {
     $contact->update;
 }
 
+create_contact({ category => 'Food', email => 'Bartec-252' }, 'Missed Collection');
 create_contact({ category => 'Recycling (green)', email => 'Bartec-254' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
@@ -106,6 +107,16 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Report missed 240L Green\n\n1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 240L Green';
+    };
+    subtest 'Report missed food bin' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480/report');
+        $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Missed collection reported');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Report missed Food bins\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->title, 'Report missed Food bins';
     };
     subtest 'Report broken bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
