@@ -750,6 +750,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
         $mech->content_contains('20.00');
+        $mech->content_lacks('Continue to payment');
+        $mech->content_contains('Confirm changes');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
@@ -786,6 +788,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
         $mech->content_contains('40.00');
         $mech->content_contains('5.50');
+        $mech->content_contains('Amend Direct Debit');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -818,6 +821,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
         $mech->content_like(qr#Total to pay today</dt>\s*<dd[^>]*>£0.00#);
         $mech->content_like(qr#Total</dt>\s*<dd[^>]*>£20.00#);
+        $mech->content_contains('Amend Direct Debit');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
