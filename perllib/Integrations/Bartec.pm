@@ -22,7 +22,7 @@ has endpoint => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs';
+        $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs' unless $ENV{DEV_USE_SYSTEM_CA_PATH};
         SOAP::Lite->soapversion(1.2);
         my $soap = SOAP::Lite->on_action( sub { $self->action . $_[1]; } )->proxy($self->url);
         return $soap;
@@ -33,7 +33,7 @@ has auth_endpoint => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs';
+        $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs' unless $ENV{DEV_USE_SYSTEM_CA_PATH};
         SOAP::Lite->soapversion(1.2);
         my $soap = SOAP::Lite->on_action( sub { $self->action . $_[1]; } )->proxy($self->auth_url);
         return $soap;
