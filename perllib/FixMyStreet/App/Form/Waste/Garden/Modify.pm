@@ -54,7 +54,17 @@ has_page summary => (
         $data->{name} = $c->user->name;
         $data->{email} = $c->user->email;
         $data->{phone} = $c->user->phone;
-        return {};
+        my $button_text = 'Continue to payment';
+        if ( $data->{payment_method} eq 'credit_card' ) {
+            if ( $new_bins <= 0 ) {
+                $button_text = 'Confirm changes';
+            }
+        } elsif ( $data->{payment_method} eq 'direct_debit' ) {
+            $button_text = 'Amend Direct Debit';
+        }
+        return {
+            submit => { default => $button_text },
+        };
     },
     finished => sub {
         return $_[0]->wizard_finished('process_garden_modification');
