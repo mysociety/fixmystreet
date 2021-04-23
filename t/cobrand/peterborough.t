@@ -14,6 +14,8 @@ my $params = {
 };
 my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
 
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $peterborough);
+
 subtest 'open311 request handling', sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
@@ -134,6 +136,7 @@ subtest "extra bartec params are sent to open311" => sub {
                 } ]
             },
             extra => {
+                contributed_by => $staffuser->id,
                 _fields => [
                     { name => 'site_code', value => '12345', },
                     { name => 'PCC-light', value => 'light-ref', },
@@ -155,8 +158,6 @@ subtest "extra bartec params are sent to open311" => sub {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
-    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-        from_body => $peterborough, password => 'password');
     $mech->log_in_ok( $staffuser->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
@@ -164,8 +165,8 @@ subtest 'Dashboard CSV extra columns' => sub {
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('"Reported As",USRN,"Nearest address",Light,"CSC Ref"');
-    $mech->content_contains('peterborough,,12345,"12 A Street, XX1 1SZ",light-ref,');
+    $mech->content_contains('"Reported As","Staff User",USRN,"Nearest address",Light,"CSC Ref"');
+    $mech->content_like(qr/peterborough,,[^,]*counciluser\@example.com,12345,"12 A Street, XX1 1SZ",light-ref,/);
 };
 
 

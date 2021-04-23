@@ -109,11 +109,15 @@ sub dashboard_export_problems_add_columns {
         }
     }
     my @extra_columns = map { $_ => $extra_columns{$_} } sort keys %extra_columns;
+
     $csv->add_csv_columns(
+        staff_user => 'Staff User',
         usrn => 'USRN',
         nearest_address => 'Nearest address',
         @extra_columns,
     );
+
+    my $user_lookup = $self->csv_staff_users;
 
     $csv->csv_extra_data(sub {
         my $report = shift;
@@ -122,8 +126,10 @@ sub dashboard_export_problems_add_columns {
         $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name}
             if $report->geocode;
 
+        my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
         my $extra = {
             nearest_address => $address,
+            staff_user => $staff_user,
         };
 
         foreach (@{$report->get_extra_fields}) {
