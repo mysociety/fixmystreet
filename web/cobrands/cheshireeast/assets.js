@@ -56,8 +56,7 @@ var cleaning_cats = [
   'Needles, Syringes or Glass',
   'Play Area Safety Issue',
   'Street Sweeping',
-  'Abandoned Vehicles - Not Taxed',
-  'Abandoned Vehicles - Taxed'
+  'Abandoned Vehicle',
 ];
 
 fixmystreet.assets.add(defaults, {
