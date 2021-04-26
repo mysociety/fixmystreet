@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.12690110595622592,
+          51.507530517722408
+        ]
+      },
+      "properties": {
+        "Site": "Northumberland Avenue",
+        "Category": "Non-Amplified",
+        "Terms_Conditions": "•   Pitch 24 is 1.5 metres.\u003cbr\u003e•   All the busking and street entertainments, the performance itself and anything used in connection with the performance must be contained within the designated and marked pitch.\u003cbr\u003e•   This pitch is suitable to attract audiences providing they do not cause an obstruction\u003cbr\u003e•   Amplification, brass, wind percussion and percussive instruments are not permitted here."
+      }
+    }
+  ]
+}
