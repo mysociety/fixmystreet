@@ -59,17 +59,23 @@ sub fetch {
     while ( my $body = $bodies->next ) {
         $pm->start and next;
 
-        $self->current_body( $body );
+        $self->initialise_body( $body );
         $self->_set_current_open311( $open311 || $self->_build_current_open311 );
-        $self->suppress_alerts( $body->suppress_alerts );
-        $self->blank_updates_permitted( $body->blank_updates_permitted );
-        $self->system_user( $body->comment_user );
         $self->process_body();
 
         $pm->finish;
     }
 
     $pm->wait_all_children;
+}
+
+sub initialise_body {
+    my ($self, $body) = @_;
+
+    $self->current_body( $body );
+    $self->suppress_alerts( $body->suppress_alerts );
+    $self->blank_updates_permitted( $body->blank_updates_permitted );
+    $self->system_user( $body->comment_user );
 }
 
 sub _build_current_open311 {
