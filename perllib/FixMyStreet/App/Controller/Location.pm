@@ -68,6 +68,7 @@ sub determine_location_from_pc : Private {
 
     # check for something to search
     $pc ||= $c->get_param('pc') || return;
+    $pc =~ s/^\s+|\s+$//g;
     $c->stash->{pc} = $pc;    # for template
 
     if ( $pc =~ /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/ ) {
@@ -83,7 +84,7 @@ sub determine_location_from_pc : Private {
         return $c->forward( 'check_location' );
     }
 
-    if ($pc =~ /^\s*([2-9CFGHJMPQRVWX]{4,6}\+[2-9CFGHJMPQRVWX]{2,3})\s+(.*)$/i) {
+    if ($pc =~ /^([2-9CFGHJMPQRVWX]{4,6}\+[2-9CFGHJMPQRVWX]{2,3})\s+(.*)$/i) {
         my ($code, $rest) = ($1, $2);
         my ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($rest, $c);
         if (ref($error) eq 'ARRAY') { # Just take the first result
