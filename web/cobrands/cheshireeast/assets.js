@@ -56,8 +56,7 @@ var cleaning_cats = [
   'Needles, Syringes or Glass',
   'Play Area Safety Issue',
   'Street Sweeping',
-  'Abandoned Vehicles - Not Taxed',
-  'Abandoned Vehicles - Taxed'
+  'Abandoned Vehicle',
 ];
 
 fixmystreet.assets.add(defaults, {
@@ -77,7 +76,8 @@ fixmystreet.assets.add(defaults, {
     actions: {
         found: fixmystreet.message_controller.road_found,
         not_found: function(layer) {
-            var cat = $('select#form_category').val();
+            var selected = fixmystreet.reporting.selectedCategory();
+            var cat = selected.category !== '' ? selected.category : selected.group;
             if (OpenLayers.Util.indexOf(cleaning_cats, cat) != -1) {
               fixmystreet.message_controller.road_found(layer);
             } else {
