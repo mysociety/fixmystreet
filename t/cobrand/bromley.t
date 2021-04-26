@@ -14,6 +14,10 @@ $uk->mock('_fetch_url', sub { '{}' });
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $body = $mech->create_body_ok( 2482, 'Bromley Council',
     { can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user });
+my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit'] });
+$staffuser->add_to_roles($role);
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -49,6 +53,9 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'bromley',
     areas => '2482,8141',
     user => $user,
+    extra => {
+        contributed_by => $staffuser->id,
+    },
 });
 my $report = $reports[0];
 
@@ -246,6 +253,9 @@ subtest 'check special subcategories in admin' => sub {
     $user->discard_changes;
     is_deeply $user->get_extra_metadata('categories'), [ $contact->id ];
     is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
+    $user->unset_extra_metadata('categories');
+    $user->unset_extra_metadata('subcategories');
+    $user->update;
 };
 
 subtest 'check title field on report page for staff' => sub {
@@ -268,6 +278,7 @@ subtest 'check heatmap page' => sub {
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
+    $user->update({ area_ids => undef });
 };
 
 FixMyStreet::override_config {
@@ -562,6 +573,18 @@ EOF
 
         FixMyStreet::App->log->enable('info');
     };
+};
+
+subtest 'Dashboard CSV extra columns' => sub {
+    $mech->log_in_ok($staffuser->email);
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('"Reported As","Staff User","Staff Role"');
+    $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
 };
 
 done_testing();
