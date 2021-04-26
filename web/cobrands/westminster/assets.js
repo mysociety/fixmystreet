@@ -224,7 +224,8 @@ layer_data = [
 
     {
         category: 'Street Entertainment',
-        outFields: 'Site,Category,Terms_Conditions',
+        outFields: 'Site,Category,Terms_Conditions,UPRN',
+        attr: 'UPRN',
         item: 'street entertainment pitch',
         layers: [ 66 ],
         actions: {
@@ -260,7 +261,7 @@ layer_data = [
 
 $.each(layer_data, function(i, o) {
     var layers_added = [];
-    var attr = 'central_asset_id';
+    var attr = o.attr || 'central_asset_id';
     var outFields = o.outFields || attr;
     var params = $.extend(true, {}, defaults, {
         asset_category: o.category,

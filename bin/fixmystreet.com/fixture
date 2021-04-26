@@ -336,6 +336,9 @@ if ($opt->test_fixtures) {
             { key => '2', name => 'Indecent or offensive behaviour' },
             { key => '3', name => 'Animal safety concerns' },
         ],
+    }, {
+        code => 'UPRN',
+        automated => 'hidden_field',
     });
     $child_cat->update;
 

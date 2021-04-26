@@ -52,6 +52,7 @@ describe('Westminster cobrand', function() {
     cy.get('.js-street-entertainment-message').contains('Northumberland Avenue');
     cy.get('.js-street-entertainment-message').contains('Non-Amplified');
     cy.get('.js-street-entertainment-message').contains('Pitch 24 is 1.5 metres.');
+    cy.get('#form_UPRN').should('have.value', '23456');
   });
 
 });
