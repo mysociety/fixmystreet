@@ -100,6 +100,11 @@ sub determine_location_from_pc : Private {
         }
     }
 
+    if ($pc =~ /^([A-R][A-R]\d\d[A-X][A-X](\d\d|\d\d[A-X][A-X]))$/i) {
+        ($c->stash->{latitude}, $c->stash->{longitude}) = maidenhead_locate($pc);
+        return $c->forward( 'check_location' );
+    }
+
     if ( $c->cobrand->country eq 'GB' && $pc =~ /^([A-Z])([A-Z])([\d\s]{4,})$/i) {
         if (my $convert = gridref_to_latlon( $1, $2, $3 )) {
             ($c->stash->{latitude}, $c->stash->{longitude}) =
@@ -223,6 +228,26 @@ sub gridref_to_latlon {
         longitude => $lon,
     };
 }
+
+sub maidenhead_locate {
+	my ($loc) = @_;
+
+    my $l = length $loc;
+    $loc .= "55LL55LL" if $l < 4;
+    $loc .= "LL55LL" if $l < 6;
+    $loc .= "55LL" if $l < 8;
+    $loc .= "LL" if $l < 10;
+
+    my @l = split //, lc $loc;
+    foreach (@l) {
+        $_ = ord($_) - 97 if /[a-z]/;
+    }
+
+    my $lng = 2 * ($l[0] * 10 + $l[2] + $l[4] / 24 + $l[6] / 240 + $l[8] / 5760 - 90);
+    my $lat =     ($l[1] * 10 + $l[3] + $l[5] / 24 + $l[7] / 240 + $l[9] / 5760 - 90);
+
+    return ($lat, $lng);
+};
 
 =head1 AUTHOR
 

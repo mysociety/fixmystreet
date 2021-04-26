@@ -115,6 +115,18 @@ subtest "check lat/lng for short plus code" => sub {
       "got expected location for short plus code";
 };
 
+subtest 'check lat/lng for Maidenhead code' => sub {
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => "IO92NB83" } } );
+    is_deeply $mech->page_errors, [], "no errors for code";
+    is_deeply $mech->extract_location, {
+        pc => "IO92NB83",
+        latitude  => 52.0560763888889,
+        longitude => -0.846180555555549,
+    },
+      "got expected location for Maidenhead code";
+};
+
 my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
 my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
 
