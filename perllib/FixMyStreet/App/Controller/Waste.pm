@@ -152,7 +152,7 @@ sub construct_bin_request_form {
                 type => 'Checkbox',
                 apply => [
                     {
-                        when => { "quantity-$id" => sub { $_[0] > 0 } },
+                        when => { "quantity-$id" => sub { $max > 1 && $_[0] > 0 } },
                         check => qr/^1$/,
                         message => 'Please tick the box',
                     },
@@ -162,19 +162,27 @@ sub construct_bin_request_form {
                 tags => { toggle => "form-quantity-$id-row" },
             };
             $name = ''; # Only on first container
-            push @$field_list, "quantity-$id" => {
-                type => 'Select',
-                label => 'Quantity',
-                tags => {
-                    hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
-                    initial_hidden => 1,
-                },
-                options => [
-                    { value => "", label => '-' },
-                    map { { value => $_, label => $_ } } (1..$max),
-                ],
-                required_when => { "container-$id" => 1 },
-            };
+            if ($max == 1) {
+                push @$field_list, "quantity-$id" => {
+                    type => 'Hidden',
+                    default => '1',
+                    apply => [ { check => qr/^1$/ } ],
+                };
+            } else {
+                push @$field_list, "quantity-$id" => {
+                    type => 'Select',
+                    label => 'Quantity',
+                    tags => {
+                        hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
+                        initial_hidden => 1,
+                    },
+                    options => [
+                        { value => "", label => '-' },
+                        map { { value => $_, label => $_ } } (1..$max),
+                    ],
+                    required_when => { "container-$id" => 1 },
+                };
+            }
         }
     }
 
@@ -192,7 +200,11 @@ sub request : Chained('property') : Args(0) {
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Which containers do you need?',
-            next => 'about_you',
+            next => sub {
+                my $data = shift;
+                return 'replacement' if $data->{"container-44"}; # XXX
+                return 'about_you';
+            }
         },
     ];
     $c->stash->{field_list} = $field_list;
@@ -202,17 +214,11 @@ sub request : Chained('property') : Args(0) {
 sub process_request_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
-    my $address = $c->stash->{property}->{address};
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
     foreach (@services) {
         my ($id) = /container-(.*)/;
-        my $container = $c->stash->{containers}{$id};
-        my $quantity = $data->{"quantity-$id"};
-        $data->{title} = "Request new $container";
-        $data->{detail} = "Quantity: $quantity\n\n$address";
-        $c->set_param('Container_Type', $id);
-        $c->set_param('Quantity', $quantity);
+        $c->cobrand->call_hook("waste_munge_request_data", $id, $data);
         $c->forward('add_report', [ $data ]) or return;
         push @reports, $c->stash->{report};
     }

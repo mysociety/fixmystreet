@@ -535,6 +535,7 @@ sub bin_services_for_address {
         14 => 'Wheeled Bin (Paper)',
         9 => 'Kitchen Caddy',
         10 => 'Outside Food Waste Container',
+        44 => 'Garden Waste Container',
         46 => 'Wheeled Bin (Food)',
     };
     my %service_to_containers = (
@@ -544,6 +545,7 @@ sub bin_services_for_address {
         541 => [ 14 ],
         542 => [ 9, 10 ],
         544 => [ 46 ],
+        545 => [ 44 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -591,15 +593,37 @@ sub bin_services_for_address {
 
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
+        my $service_name = $service_name_override{$_->{ServiceId}} || $_->{ServiceName};
+
+        my $request_max = $quantity_max{$_->{ServiceId}};
+
+        my $garden = 0;
+        my $garden_bins;
+        if ($service_name eq 'Garden Waste') {
+            $garden = 1;
+            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+            foreach (@$data) {
+                next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
+                    $garden_bins = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+                }
+            }
+            $request_max = $garden_bins;
+        }
+
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
-            service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
+            service_name => $service_name,
+            garden_waste => $garden,
+            garden_bins => $garden_bins,
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
-            request_allowed => $request_allowed{$_->{ServiceId}},
+            request_allowed => $request_allowed{$_->{ServiceId}} && $request_max,
             request_open => $open_request,
             request_containers => $containers,
-            request_max => $quantity_max{$_->{ServiceId}},
+            request_max => $request_max,
             enquiry_open_events => $open->{enquiry},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
@@ -911,6 +935,7 @@ sub waste_get_event_type {
             Closed => 'fixed - council',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
+            'Partially Completed' => 'closed',
             Rejected => 'closed',
         },
     };
@@ -954,6 +979,27 @@ sub waste_check_last_update {
         }
     }
     return 1;
+}
+
+sub waste_munge_request_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $container = $c->stash->{containers}{$id};
+    my $quantity = $data->{"quantity-$id"};
+    my $reason = $data->{replacement_reason} || '';
+    $data->{title} = "Request new $container";
+    $data->{detail} = "Quantity: $quantity\n\n$address";
+    $c->set_param('Container_Type', $id);
+    $c->set_param('Quantity', $quantity);
+    if ($reason eq 'damaged') {
+        $c->set_param('Action', '2::1'); # Remove/Deliver
+        $c->set_param('Reason', 3); # Damaged
+    } elsif ($reason eq 'stolen' || $reason eq 'taken') {
+        $c->set_param('Reason', 1); # Missing / Stolen
+    }
 }
 
 sub admin_templates_external_status_code_hook {
