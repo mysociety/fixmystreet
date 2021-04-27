@@ -641,7 +641,7 @@ sub bin_services_for_address {
             }
 
             my $row = $task_ref_to_row{$ref};
-            $row->{last}{state} = $state;
+            $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
             $row->{last}{completed} = $completed;
             $row->{last}{resolution} = $resolution;
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
@@ -721,7 +721,8 @@ sub _parse_schedules {
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
         if ($d && (!$min_next || $d < $min_next->{date})) {
-            $next_changed = $next->{CurrentScheduledDate}{DateTime} ne $next->{OriginalScheduledDate}{DateTime};
+            my $next_original = construct_bin_date($next->{OriginalScheduledDate});
+            $next_changed = $d->strftime("%F") ne $next_original->strftime("%F");
             $min_next = {
                 date => $d,
                 ordinal => ordinal($d->day),
@@ -734,14 +735,16 @@ sub _parse_schedules {
         # It is possible the last instance for this schedule has been rescheduled to
         # be in the future. If so, we should treat it like it is a next instance.
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
-            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            my $last_original = construct_bin_date($last->{OriginalScheduledDate});
+            my $last_changed = $d->strftime("%F") ne $last_original->strftime("%F");
             $min_next = {
                 date => $d,
                 ordinal => ordinal($d->day),
                 changed => $last_changed,
             };
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
-            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            my $last_original = construct_bin_date($last->{OriginalScheduledDate});
+            my $last_changed = $d->strftime("%F") ne $last_original->strftime("%F");
             $max_last = {
                 date => $d,
                 ordinal => ordinal($d->day),
@@ -889,6 +892,7 @@ sub construct_waste_open311_update {
         status => $status,
         update_id => 'waste',
         external_status_code => "$resolution_id,,",
+        prefer_template => 1,
     };
 }
 
@@ -960,7 +964,9 @@ sub admin_templates_external_status_code_hook {
     my $task_type = $c->get_param('task_type') || '';
     my $task_state = $c->get_param('task_state') || '';
 
-    return "$res_code,$task_type,$task_state";
+    my $code = "$res_code,$task_type,$task_state";
+    $code = '' if $code eq ',,';
+    return $code;
 }
 
 sub call_api {

@@ -300,7 +300,7 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
-        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(in progress\)/s);
+        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(In progress\)/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_lacks('Waste spillage');
 
@@ -422,6 +422,11 @@ subtest 'updating of waste reports' => sub {
             waste => { bromley => 1 }
         },
     }, sub {
+        $body->response_templates->create({
+            title => 'Allocated title', text => 'This has been allocated',
+            'auto_response' => 1, state => 'action scheduled',
+        });
+
         @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
             category => 'Report missed collection',
             cobrand_data => 'waste',
@@ -444,6 +449,8 @@ subtest 'updating of waste reports' => sub {
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
         is $report->comments->count, 1, 'A new update';
+        my $update = $report->comments->first;
+        is $update->text, 'This has been allocated';
         is $report->state, 'action scheduled', 'A state change';
 
         $report->update({ external_id => 'waste-15003-' });
