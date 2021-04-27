@@ -1360,10 +1360,13 @@ Emergency message, if one has been set in the admin.
 
 sub emergency_message {
     my $self = shift;
+    my $type = shift;
     return unless $self->can('body');
     my $body = $self->body;
     return unless $body;
-    FixMyStreet::Template::SafeString->new($body->get_extra_metadata('emergency_message'));
+    my $field = 'emergency_message';
+    $field .= "_$type" if $type;
+    FixMyStreet::Template::SafeString->new($body->get_extra_metadata($field));
 }
 
 1;

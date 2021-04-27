@@ -11,12 +11,23 @@
     <tbody>
         [% FOR body IN bodies %]
         [% emergency_message = body.get_extra_metadata('emergency_message') %]
+        [% emergency_message_waste = body.get_extra_metadata('emergency_message_waste') %]
         <tr>
             <td>[% body.name %]</td>
-            <td>[% IF emergency_message %][% emergency_message.substr(0, 60) %]&hellip;[% END %]</td>
+            <td>
+              [% IF emergency_message %]
+                <p>[% emergency_message.substr(0, 60) %]&hellip;</p>
+              [% END %]
+              [% IF emergency_message_waste %]
+                <p>
+                    <strong>Waste message:</strong>
+                    [% emergency_message_waste.substr(0, 60) %]&hellip;
+                </p>
+              [% END %]
+            </td>
             <td>
                 <a href="[% c.uri_for('edit', body.id) %]">
-                    [% IF emergency_message %]
+                    [% IF emergency_message OR emergency_message_waste %]
                         [% loc('Edit') %]
                     [% ELSE %]
                         [% loc('Create') %]

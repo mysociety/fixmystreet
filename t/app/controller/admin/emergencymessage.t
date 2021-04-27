@@ -18,6 +18,7 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/admin/emergencymessage');
+        $mech->content_lacks('Waste message');
         $mech->submit_form_ok({ with_fields => { emergency_message => 'Testing emergency message' } });
         $mech->content_contains('Testing emergency message');
         $mech->get_ok('/');
@@ -41,6 +42,34 @@ FixMyStreet::override_config {
         $mech->get('/admin/emergencymessage');
         ok !$mech->res->is_success, "want a bad response";
         is $mech->res->code, 404, "got 404";
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    COBRAND_FEATURES => { waste => { oxfordshire => 1 } },
+}, sub {
+    subtest 'setting emergency waste message' => sub {
+        $user->user_body_permissions->create({
+            body => $body,
+            permission_type => 'emergency_message_edit',
+        });
+
+        $mech->get_ok('/admin/emergencymessage');
+        $mech->content_contains('Waste message');
+        $mech->submit_form_ok({ with_fields => { emergency_message_waste => 'Testing emergency waste message' } });
+        $mech->content_contains('Testing emergency waste message');
+        $mech->get_ok('/');
+        $mech->content_lacks('Testing emergency waste message');
+        $mech->get_ok('/waste');
+        $mech->content_contains('Testing emergency waste message');
+
+        # Check removing message
+        $mech->get_ok('/admin/emergencymessage');
+        $mech->submit_form_ok({ with_fields => { emergency_message_waste => '' } });
+        $mech->content_lacks('Testing emergency waste message');
+        $mech->get_ok('/waste');
+        $mech->content_lacks('Testing emergency waste message');
     };
 };
 
