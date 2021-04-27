@@ -159,7 +159,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     my $report = $c->stash->{report};
     if ( $report->confirmed ) {
-        $c->forward( 'create_related_things' );
+        $c->forward( 'create_related_things', [ $report ] );
         $c->stash->{ json_response } = { success => 1, report => $report->id };
     } else {
         $c->forward( 'send_problem_confirm_email' );
@@ -1363,6 +1363,9 @@ sub tokenize_user : Private {
         password => $report->user->password,
         title => $report->user->title,
     };
+    if (my $template = $c->stash->{override_confirmation_template}) {
+        $c->stash->{token_data}->{template} = $template;
+    }
     $c->forward('/auth/set_oauth_token_data', [ $c->stash->{token_data} ])
         if $c->get_param('oauth_need_email');
 }
@@ -1415,8 +1418,8 @@ sub confirm_by_text : Path('text') {
 sub process_confirmation : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{template} = 'tokens/confirm_problem.html';
     my $data = $c->stash->{token_data};
+    $c->stash->{template} = $data->{template} || 'tokens/confirm_problem.html';
 
     unless ($c->stash->{report}) {
         # Look at all problems, not just cobrand, in case am approving something we don't actually show
@@ -1463,16 +1466,21 @@ sub process_confirmation : Private {
         return;
     }
 
-    # We have an unconfirmed problem
-    $problem->confirm;
-    $problem->update(
-        {
-            lastupdate => \'current_timestamp',
+    # We have an unconfirmed problem(s)
+    my @problems = ($problem);
+    if (my $grouped_ids = $problem->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
+            push @problems, $problem;
         }
-    );
+    }
+    foreach my $problem (@problems) {
+        $problem->confirm;
+        $problem->update({ lastupdate => \'current_timestamp' });
 
-    # Subscribe problem reporter to email updates
-    $c->forward( '/report/new/create_related_things' );
+        # Subscribe problem reporter to email updates
+        $c->forward( '/report/new/create_related_things', [ $problem ] );
+    }
 
     # log the problem creation user in to the site
     if ( $data->{name} || $data->{password} ) {
@@ -1751,7 +1759,7 @@ sub redirect_or_confirm_creation : Private {
     # If confirmed send the user straight there.
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
-        $c->forward( 'create_related_things' );
+        $c->forward( 'create_related_things', [ $report ] );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
             && !$c->cobrand->report_sent_confirmation_email($report)) {
@@ -1777,6 +1785,13 @@ sub redirect_or_confirm_creation : Private {
     # People using 2FA can not log in by code
     $c->detach( '/page_error_403_access_denied', [] ) if $report->user->has_2fa;
 
+    # We only want to send one confirmation message per request (e.g. if Waste
+    # creates two reports, only send confirmation email for the first)
+    if ($c->stash->{sent_confirmation_message}) {
+        $c->log->info($report->user->id . ' created ' . $report->id);
+        return;
+    }
+
     # otherwise email or text a confirm token to them.
     my $thing = 'email';
     if ($report->user->email_verified) {
@@ -1790,13 +1805,12 @@ sub redirect_or_confirm_creation : Private {
     } else {
         warn "Reached problem confirmation with no username verification";
     }
+    $c->stash->{sent_confirmation_message} = 1;
     $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
 }
 
 sub create_related_things : Private {
-    my ( $self, $c ) = @_;
-
-    my $problem = $c->stash->{report};
+    my ( $self, $c, $problem ) = @_;
 
     # If there is a special template, create a comment using that
     foreach my $body (values %{$problem->bodies}) {

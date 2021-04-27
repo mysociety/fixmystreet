@@ -1,10 +1,10 @@
 [%
-IF first_page == 'request';
-    title = 'Container request sent';
-ELSIF first_page == 'report';
-    title = 'Missed collection reported';
+IF report.category == 'Request new container';
+    title = 'Container request has been sent';
+ELSIF report.category == 'Report missed collection';
+    title = 'Missed collection has been reported';
 ELSE;
-    title = 'Enquiry submitted';
+    title = 'Enquiry has been submitted';
 END ~%]
 [% PROCESS 'waste/header.html' %]
 
@@ -13,19 +13,19 @@ END ~%]
         [% title %]
     </h1>
     <div class="govuk-panel__body">
-        <p>Your [% first_page %] has been sent;
-          [% IF data.email %]
-            a copy has been sent to your email address, [% data.email %].
+        <p>Your [% title | lower %];
+          [% IF report.user.email %]
+            a copy has been sent to your email address, [% report.user.email %].
           [% END %]
         </p>
         <p>
-          [% IF first_page == 'request' %]
+          [% IF report.category == 'Request new container' %]
             Containers arrive typically within two weeks, but this may vary due to demand.
           [% END %]
-          [% IF report_ids.size > 1 %]
-            Your reference numbers are: <strong>[% report_ids.join(', ') %]</strong>.
+          [% IF report.get_extra_metadata('grouped_ids') %]
+            Your reference numbers are: <strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>.
           [% ELSE %]
-            Your reference number is <strong>[% report_ids.join(', ') %]</strong>.
+            Your reference number is <strong>[% report.id %]</strong>.
           [% END %]
         </p>
     </div>

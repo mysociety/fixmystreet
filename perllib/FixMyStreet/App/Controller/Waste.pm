@@ -203,7 +203,8 @@ sub process_request_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
     my $address = $c->stash->{property}->{address};
-    my @services = grep { /^container-/ && $data->{$_} } keys %$data;
+    my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
+    my @reports;
     foreach (@services) {
         my ($id) = /container-(.*)/;
         my $container = $c->stash->{containers}{$id};
@@ -213,9 +214,20 @@ sub process_request_data : Private {
         $c->set_param('Container_Type', $id);
         $c->set_param('Quantity', $quantity);
         $c->forward('add_report', [ $data ]) or return;
-        push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
+        push @reports, $c->stash->{report};
     }
+    group_reports($c, @reports);
     return 1;
+}
+
+sub group_reports {
+    my ($c, @reports) = @_;
+    my $report = shift @reports;
+    if (@reports) {
+        $report->set_extra_metadata(grouped_ids => [ map { $_->id } @reports ]);
+        $report->update;
+    }
+    $c->stash->{report} = $report;
 }
 
 sub construct_bin_report_form {
@@ -259,7 +271,8 @@ sub process_report_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
     my $address = $c->stash->{property}->{address};
-    my @services = grep { /^service-/ && $data->{$_} } keys %$data;
+    my @services = grep { /^service-/ && $data->{$_} } sort keys %$data;
+    my @reports;
     foreach (@services) {
         my ($id) = /service-(.*)/;
         my $service = $c->stash->{services}{$id}{service_name};
@@ -267,8 +280,9 @@ sub process_report_data : Private {
         $data->{detail} = "$data->{title}\n\n$address";
         $c->set_param('service_id', $id);
         $c->forward('add_report', [ $data ]) or return;
-        push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
+        push @reports, $c->stash->{report};
     }
+    group_reports($c, @reports);
     return 1;
 }
 
@@ -339,7 +353,6 @@ sub process_enquiry_data : Private {
     }
     $c->set_param('service_id', $data->{service_id});
     $c->forward('add_report', [ $data ]) or return;
-    push @{$c->stash->{report_ids}}, $c->stash->{report}->id;
     return 1;
 }
 
@@ -385,7 +398,10 @@ sub form : Private {
 
     $form->process unless $form->processed;
 
-    $c->stash->{template} = $form->template || 'waste/index.html';
+    # If we have sent a confirmation email, that function will have
+    # set a template that we need to show
+    $c->stash->{template} = $form->template || 'waste/index.html'
+        unless $c->stash->{sent_confirmation_message};
     $c->stash->{form} = $form;
 }
 
@@ -406,6 +422,7 @@ sub add_report : Private {
     my ( $self, $c, $data ) = @_;
 
     $c->stash->{cobrand_data} = 'waste';
+    $c->stash->{override_confirmation_template} = 'waste/confirmation.html';
 
     # XXX Is this best way to do this?
     if ($c->user_exists && $c->user->from_body && $c->user->email ne $data->{email}) {
@@ -432,17 +449,7 @@ sub add_report : Private {
 
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
-    my $report = $c->stash->{report};
-    $report->confirm;
-    $report->update;
-
-    $c->model('DB::Alert')->find_or_create({
-        user => $report->user,
-        alert_type => 'new_updates',
-        parameter => $report->id,
-        cobrand => $report->cobrand,
-        lang => $report->lang,
-    })->confirm;
+    $c->forward('/report/new/redirect_or_confirm_creation');
 
     $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
 

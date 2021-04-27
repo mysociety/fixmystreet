@@ -31,7 +31,7 @@ has_field phone => (
 has_field email => (
     type => 'Email',
     tags => {
-        hint => 'If you provide an email address, we can send you order status updates'
+        hint => 'Provide an email address so we can send you order status updates'
     },
 );
 

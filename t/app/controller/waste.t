@@ -94,6 +94,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Test" } });
         $mech->content_contains('Please enter your full name');
         $mech->content_contains('Please specify at least one of phone or email');
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", phone => '+441234567890' } });
+        $mech->content_contains('Please specify an email address');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org' } });
         $mech->content_contains('Refuse collection');
         $mech->content_contains('Test McTest');
@@ -102,7 +104,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your report has been sent');
+        $mech->content_contains('Now check your email');
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+        $mech->content_contains('Your missed collection has been reported');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Bromley Council" <missed@example.org>';
@@ -111,6 +116,7 @@ FixMyStreet::override_config {
         like $body, qr/Your report to Bromley Council has been logged/;
 
         is $user->alerts->count, 1;
+        $mech->clear_emails_ok;
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
@@ -148,11 +154,39 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your request has been sent');
+        $mech->content_contains('Your container request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
         is $report->get_extra_field_value('Container_Type'), 1;
+    };
+    subtest 'Request multiple bins' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-9' => 1, 'quantity-9' => 2, 'container-10' => 1, 'quantity-10' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
+        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>1</dd>});
+        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>2</dd>});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Now check your email');
+        my $link = $mech->get_link_from_email; # Only one email sent, this also checks
+        $mech->get_ok($link);
+        $mech->content_contains('Your container request has been sent');
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        is $emails[0]->header('To'), '"Bromley Council" <request@example.org>';
+        is $emails[1]->header('To'), $user->email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Your report to Bromley Council has been logged/;
+        my @reports = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' }, rows => 2 });
+        is $reports[0]->state, 'confirmed';
+        is $reports[0]->get_extra_field_value('uprn'), 1000000002;
+        is $reports[0]->get_extra_field_value('Quantity'), 2;
+        is $reports[0]->get_extra_field_value('Container_Type'), 9;
+        is $reports[1]->state, 'confirmed';
+        is $reports[1]->get_extra_field_value('uprn'), 1000000002;
+        is $reports[1]->get_extra_field_value('Quantity'), 1;
+        is $reports[1]->get_extra_field_value('Container_Type'), 10;
     };
     subtest 'Thing already requested' => sub {
         $mech->get_ok('/waste/12345');
@@ -187,7 +221,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your enquiry has been sent');
+        $mech->content_contains('Your enquiry has been submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->user->email, $user->email;
