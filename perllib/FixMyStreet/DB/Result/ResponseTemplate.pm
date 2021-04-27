@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -31,9 +32,8 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "auto_response",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
@@ -58,8 +58,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MzTa7p2rryKkxbRi7zN+Uw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JM5rBDiv/CFEl76tA/1aMw
 
 __PACKAGE__->many_to_many( contacts => 'contact_response_templates', 'contact' );
 

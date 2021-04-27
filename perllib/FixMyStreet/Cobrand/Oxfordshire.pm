@@ -76,9 +76,7 @@ sub lookup_by_ref {
     my ($self, $ref) = @_;
 
     if ( $ref =~ /^ENQ/ ) {
-        my $len = length($ref);
-        my $filter = "%T18:customer_reference,T$len:$ref,%";
-        return { 'extra' => { -like => $filter } };
+        return { extra => { '@>' => '{"customer_reference":"' . $ref . '"}' } };
     }
 
     return 0;

@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -20,20 +21,19 @@ __PACKAGE__->add_columns(
   "token",
   { data_type => "text", is_nullable => 0 },
   "data",
-  { data_type => "bytea", is_nullable => 0 },
+  { data_type => "jsonb", is_nullable => 0 },
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
 );
 __PACKAGE__->set_primary_key("scope", "token");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:km/1K3PurX8bbgnYPWgLIA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-15 15:56:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GkNGJrdW184iwKIlmQssUQ
 
 use mySociety::AuthToken;
 
@@ -50,10 +50,6 @@ AuthToken would do it. 'token' is set to a new random value by default and the
 'created' timestamp is achieved using the database function current_timestamp.
 
 =cut
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('data');
-
 
 sub new {
     my ( $class, $attrs ) = @_;

@@ -94,7 +94,10 @@ sub construct_query {
         'me.external_id' => undef,
         'me.state' => 'confirmed',
         'me.confirmed' => { '!=' => undef },
-        'me.extra' => [ undef, { -not_like => '%cobrand_skipped_sending%' } ],
+        -or => [
+            'me.extra' => undef,
+            -not => { 'me.extra' => { '\?' => 'cobrand_skipped_sending' } }
+        ],
         'problem.whensent' => { '!=' => undef },
         'problem.external_id' => { '!=' => undef },
         'problem.send_method_used' => { -like => '%Open311%' },

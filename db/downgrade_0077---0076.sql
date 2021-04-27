@@ -1,0 +1,3 @@
+ALTER TABLE token ALTER COLUMN data_json DROP NOT NULL;
+
+ALTER TABLE token ADD CONSTRAINT token_data_not_null CHECK (data_json IS NOT NULL) NOT VALID;

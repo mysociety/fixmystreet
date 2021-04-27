@@ -1,0 +1,136 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use Getopt::Long::Descriptive;
+use IO::String;
+use JSON::MaybeXS;
+use RABX;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit', 'actually change the database'],
+    ['reverse', 'update RABX with data from JSON'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my $DB = FixMyStreet::DB->schema->storage->dbh;
+my $JSON = JSON->new->allow_nonref->canonical;
+
+my @tables = qw(body contacts problem comment users moderation_original_data defect_types report_extra_fields token);
+my %column_name = (
+    token => 'data',
+    default => 'extra',
+);
+
+foreach (@tables) {
+    my $rabx_column = $column_name{$_} || $column_name{default};
+    my $json_column = $rabx_column . '_json';
+    my $where;
+    if ($opts->reverse) {
+        $where = "($json_column IS NOT NULL AND $rabx_column IS NULL)";
+    } else {
+        $where = "($json_column IS NULL AND $rabx_column IS NOT NULL)";
+    }
+    if ($_ eq 'problem') {
+        if ($opts->reverse) {
+            $where .= " OR (geocode_json IS NOT NULL AND geocode IS NULL)";
+        } else {
+            $where .= " OR (geocode_json IS NULL AND geocode IS NOT NULL)";
+        }
+    }
+
+    my $total = $DB->selectrow_array("SELECT COUNT(*) FROM $_ WHERE $where");
+
+    print "Migrating data for table $_ - $total rows to migrate\n";
+
+    my @cols = ($rabx_column, $json_column);
+    if ($_ eq 'problem') {
+        push @cols, 'id', 'geocode', 'geocode_json';
+    } elsif ($_ eq 'token') {
+        push @cols, 'scope', 'token';
+    } else {
+        push @cols, 'id';
+    }
+    my $cols = join(',', @cols);
+
+    my $query = $DB->prepare("SELECT $cols FROM $_ WHERE $where");
+    $query->execute();
+
+    my $count = 0;
+    while (my $r = $query->fetchrow_hashref) {
+        if ($opts->reverse) {
+            my $rabx = to_rabx(from_json($r->{$json_column}));
+            if ($_ eq 'problem') {
+                my $rabx_geocode = to_rabx(from_json($r->{geocode_json}));
+                update("UPDATE $_ SET $rabx_column = ?, geocode = ? WHERE id=?", $rabx, $rabx_geocode, $r->{id});
+            } elsif ($_ eq 'token') {
+                update("UPDATE $_ SET $rabx_column = ? WHERE token=? AND scope=?", $rabx, $r->{token}, $r->{scope});
+            } else {
+                update("UPDATE $_ SET $rabx_column = ? WHERE id=?", $rabx, $r->{id});
+            }
+        } else {
+            my $json = to_json(from_rabx($r->{$rabx_column}, $_));
+            if ($_ eq 'problem') {
+                my $json_geocode = to_json(from_rabx($r->{geocode}, 'geocode'));
+                update("UPDATE $_ SET $json_column = ?, geocode_json = ? WHERE id=?", $json, $json_geocode, $r->{id});
+            } elsif ($_ eq 'token') {
+                update("UPDATE $_ SET $json_column = ? WHERE token=? AND scope=?", $json, $r->{token}, $r->{scope});
+            } else {
+                update("UPDATE $_ SET $json_column = ? WHERE id=?", $json, $r->{id});
+            }
+        }
+        $count++;
+        print "\r$count/$total";
+    }
+    print "\n";
+}
+
+sub update {
+    my $sql = shift;
+    return unless $opts->commit;
+    $DB->do($sql, undef, @_);
+}
+
+sub from_json {
+    my $ser = shift;
+    return $JSON->decode($ser);
+}
+
+sub to_json {
+    my $data = shift;
+    my $ser = $JSON->encode($data);
+    return $ser;
+}
+
+sub from_rabx {
+    my $ser = shift;
+    my $table = shift;
+    return undef unless defined $ser;
+    # Some RABX columns are text, when they should be bytea. For
+    # these we must re-encode the string returned from the
+    # database, so that it is decoded again by RABX.
+    utf8::encode($ser) if $table ne 'token' && $table ne 'geocode';
+    my $h = new IO::String($ser);
+    return RABX::wire_rd($h);
+}
+
+sub to_rabx {
+    my $data = shift;
+    my $ser = '';
+    my $h = new IO::String($ser);
+    RABX::wire_wr( $data, $h );
+    # Decode from UTF-8 as the saving to the db will re-encode it
+    utf8::decode($ser);
+    return $ser;
+}

@@ -262,6 +262,9 @@ sub _add_meta_to_contact {
                 $_->{description} =~ s/:\s*$//;
                 $_->{description} = FixMyStreet::Template::sanitize($_->{description});
             }
+            if (defined $_->{order}) {
+                $_->{order} += 0;
+            }
             $_
         }
         # there is a display order and we only want to sort once

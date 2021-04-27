@@ -67,7 +67,10 @@ sub munge_around_category_where {
     }
     my $bromley = grep { $_->name eq 'Bromley Council' } @{ $self->{c}->stash->{around_bodies} };
     if ($bromley) {
-        $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
+        $where->{'-or'} = [
+            extra => undef,
+            -not => { extra => { '@>' => '{"group":["Waste"]}' } }
+        ];
     }
 }
 

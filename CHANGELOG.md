@@ -33,6 +33,7 @@
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
+        - Extra data columns now stored as JSON, not RABX.
     - Open311 improvements:
         - Consistent protected field ordering.
     - Security:

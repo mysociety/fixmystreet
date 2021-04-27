@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strcoll);
 use mySociety::EmailUtil qw(is_valid_email);
+use JSON::MaybeXS;
 use Text::CSV;
 
 use FixMyStreet::MapIt;
@@ -424,7 +425,7 @@ sub log : Chained('user') : PathPart('log') : Args(0) {
     foreach ($user->admin_logs->all) {
         push @{$time{$_->whenedited->epoch}}, { type => 'log', date => $_->whenedited, log => $_ };
     }
-    foreach ($c->cobrand->problems->search({ extra => { like => '%contributed_by%' . $user->id . '%' } })->all) {
+    foreach ($c->cobrand->problems->search({ extra => { '@>' => encode_json({ "contributed_by" => $user->id }) } })->all) {
         next unless $_->get_extra_metadata('contributed_by') == $user->id;
         push @{$time{$_->created->epoch}}, { type => 'problemContributedBy', date => $_->created, obj => $_ };
     }

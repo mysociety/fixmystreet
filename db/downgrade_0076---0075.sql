@@ -1,0 +1,10 @@
+ALTER TABLE users DROP COLUMN extra_json;
+ALTER TABLE body DROP COLUMN extra_json;
+ALTER TABLE contacts DROP COLUMN extra_json;
+ALTER TABLE problem DROP COLUMN extra_json;
+ALTER TABLE problem DROP COLUMN geocode_json;
+ALTER TABLE comment DROP COLUMN extra_json;
+ALTER TABLE moderation_original_data DROP COLUMN extra_json;
+ALTER TABLE defect_types DROP COLUMN extra_json;
+ALTER TABLE report_extra_fields DROP COLUMN extra_json;
+ALTER TABLE token DROP COLUMN data_json;

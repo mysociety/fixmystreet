@@ -37,7 +37,7 @@ create table users (
     facebook_id     bigint  unique,
     oidc_ids        text    ARRAY,
     area_ids        integer ARRAY,
-    extra           text
+    extra           jsonb
 );
 CREATE UNIQUE INDEX users_email_verified_unique ON users (email) WHERE email_verified;
 CREATE UNIQUE INDEX users_phone_verified_unique ON users (phone) WHERE phone_verified;
@@ -67,7 +67,7 @@ create table body (
     blank_updates_permitted boolean not null default 'f',
     convert_latlong boolean not null default 'f',
     deleted boolean not null default 'f',
-    extra           text
+    extra jsonb
 );
 
 create table body_areas (
@@ -118,7 +118,7 @@ create table contacts (
     note text not null,
 
     -- extra fields required for open311
-    extra text,
+    extra jsonb,
 
     -- for things like missed bin collections
     non_public boolean default 'f',
@@ -221,9 +221,9 @@ create table problem (
     lastupdate timestamp not null default current_timestamp,
     whensent timestamp,
     send_questionnaire boolean not null default 't',
-    extra text, -- extra fields required for open311
+    extra jsonb,
     flagged boolean not null default 'f',
-    geocode bytea,
+    geocode jsonb,
     response_priority_id int REFERENCES response_priorities(id),
 
     -- logging sending failures (used by webservices)
@@ -356,7 +356,7 @@ create table comment (
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
     external_id text,
-    extra text,
+    extra jsonb,
     send_fail_count integer not null default 0,
     send_fail_reason text,
     send_fail_timestamp timestamp,
@@ -377,7 +377,7 @@ create index comment_fulltext_idx on comment USING GIN(
 create table token (
     scope text not null,
     token text not null,
-    data bytea not null,
+    data jsonb not null,
     created timestamp not null default current_timestamp,
     primary key (scope, token)
 );
@@ -495,7 +495,7 @@ create table moderation_original_data (
     -- Metadata
     created timestamp not null default current_timestamp,
 
-    extra text,
+    extra jsonb,
     category text,
     latitude double precision,
     longitude double precision
@@ -547,7 +547,7 @@ CREATE TABLE defect_types (
     body_id int references body(id) not null,
     name text not null,
     description text not null,
-    extra text,
+    extra jsonb,
     unique(body_id, name)
 );
 
@@ -575,7 +575,7 @@ CREATE TABLE report_extra_fields (
     name text not null,
     cobrand text,
     language text,
-    extra text
+    extra jsonb
 );
 
 CREATE TABLE state (

@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -37,12 +38,11 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "extra",
-  { data_type => "text", is_nullable => 1 },
+  { data_type => "jsonb", is_nullable => 1 },
   "category",
   { data_type => "text", is_nullable => 1 },
   "latitude",
@@ -70,8 +70,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FLKiZELcfBcc9VwHU2MZYQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-15 15:56:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6XV/tBey31rfGYzCX1+j5g
 
 use Moo;
 use FixMyStreet::Template::SafeString;
@@ -79,9 +79,6 @@ use Text::Diff;
 use Data::Dumper;
 
 with 'FixMyStreet::Roles::Extra';
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('extra');
 
 sub admin_log {
     my $self = shift;

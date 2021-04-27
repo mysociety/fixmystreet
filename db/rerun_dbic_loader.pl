@@ -41,7 +41,7 @@ make_schema_at(
         resultset_namespace => '+FixMyStreet::DB::ResultSet',
 
         # add in some extra components
-        components => [ 'FilterColumn', 'FixMyStreet::InflateColumn::DateTime', 'FixMyStreet::EncodedColumn' ],
+        components => [ 'FilterColumn', '+FixMyStreet::DB::JSONBColumn', 'FixMyStreet::InflateColumn::DateTime', 'FixMyStreet::EncodedColumn' ],
 
     },
     [ FixMyStreet->dbic_connect_info ],

@@ -71,7 +71,10 @@ sub close_updates {
     my $problems = FixMyStreet::DB->resultset("Problem")->search({
         lastupdate => { '<', interval($self->close) },
         state => [ FixMyStreet::DB::Result::Problem->closed_states(), FixMyStreet::DB::Result::Problem->fixed_states() ],
-        extra => [ undef, { -not_like => '%closed_updates%' } ],
+        -or => [
+            extra => undef,
+            -not => { extra => { '\?' => 'closed_updates' } }
+        ],
     });
     $problems = $problems->search({ cobrand => $self->cobrand->moniker }) if $self->cobrand;
 

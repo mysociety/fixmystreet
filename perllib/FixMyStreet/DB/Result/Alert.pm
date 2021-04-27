@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -70,8 +71,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2021-03-19 17:41:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zgS7etsaoE3DeFST6VjcOQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2021-04-27 16:16:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aVTm9j1G+kDwgLkds602og
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 

@@ -27,6 +27,19 @@ And
 
 =head1 METHODS
 
+=cut
+
+# Data out of the database is sorted by key length first. So in case we are
+# comparing data straight out of there, decode/encode first so we know it will
+# be the same layout
+around _eq_column_values => sub {
+    my ($orig, $self, $col, $old, $new) = @_;
+    if ($col eq 'extra') {
+        $old = $self->_column_to_storage($col, $self->_column_from_storage($col, $old));
+    }
+    return $self->$orig($col, $old, $new);
+};
+
 =head2 set_extra_metadata
 
     $problem->set_extra_metadata(overdue => 1);

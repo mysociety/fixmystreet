@@ -3,7 +3,7 @@ use base 'FixMyStreet::Cobrand::Default';
 
 use DateTime;
 use POSIX qw(strcoll);
-use RABX;
+use JSON::MaybeXS;
 use List::Util qw(min);
 use Scalar::Util 'blessed';
 use DateTime::Format::Pg;
@@ -201,9 +201,7 @@ sub allow_photo_display {
     } else {
         # additional munging in case $r isn't an object, TODO see if we can remove this
         my $extra = $r->{extra};
-        utf8::encode($extra) if utf8::is_utf8($extra);
-        my $h = new IO::String($extra);
-        $extra = RABX::wire_rd($h);
+        $extra = JSON->new->decode($extra);
         return unless ref $extra eq 'HASH';
         $publish_photo = $extra->{publish_photo};
     }
@@ -1208,11 +1206,11 @@ sub admin_stats {
     # Reports assigned to third party
     my $external = $c->model('DB::Problem')->search( { state => 'external', %optional_params } )->count;
     # Reports moderated within 1 day
-    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %optional_params } )->count;
+    my $moderated = $c->model('DB::Problem')->search( { extra => { '@>' => '{"moderated_overdue":0}' }, %optional_params } )->count;
     # Reports solved within 5 days (sent back from subdiv)
-    my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
+    my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { '@>' => '{"subdiv_overdue":0}' }, %params } )->count;
     # Reports solved within 5 days (marked as 'fixed - council', 'external', or 'hidden'
-    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %optional_params } )->count;
+    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { '@>' => '{"closed_overdue":0}' }, %optional_params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'category', { count => 'id' } ],
@@ -1220,16 +1218,16 @@ sub admin_stats {
         group_by => [ 'category' ],
     });
     # How many reports have had their category changed by a DM (wrong category chosen by user)
-    my $changed = $c->model('DB::Problem')->search( { extra => { like => '%changed_category,I1:1%' }, %params } )->count;
+    my $changed = $c->model('DB::Problem')->search( { extra => { '@>' => '{"changed_category":1}' }, %params } )->count;
     # pictures taken
     my $pictures_taken = $c->model('DB::Problem')->search( { photo => { '!=', undef }, %params } )->count;
     # pictures published
-    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => '%publish_photo%' }, %params } )->count;
+    my $pictures_published = $c->model('DB::Problem')->search( { extra => { '\?' => 'publish_photo' }, %params } )->count;
     # how many times was a telephone number provided
     # XXX => How many users have a telephone number stored
     # my $phone = $c->model('DB::User')->search( { phone => { '!=', undef } } )->count;
     # how many times was the email address confirmed
-    my $email_confirmed = $c->model('DB::Problem')->search( { extra => { like => '%email_confirmed%' }, %params } )->count;
+    my $email_confirmed = $c->model('DB::Problem')->search( { extra => { '\?' => 'email_confirmed' }, %params } )->count;
     # how many times was the name provided
     my $name = $c->model('DB::Problem')->search( { name => { '!=', '' }, %params } )->count;
     # how many times was the geolocation used vs. addresssearch
@@ -1354,7 +1352,7 @@ sub export_as_csv {
 sub problem_confirm_email_extras {
     my ($self, $report) = @_;
     my $confirmed_reports = $report->user->problems->search({
-        extra => { like => '%email_confirmed%' },
+        extra => { '\?' => 'email_confirmed' },
     })->count;
 
     $self->{c}->stash->{email_confirmed} = $confirmed_reports;

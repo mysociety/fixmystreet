@@ -191,7 +191,7 @@ sub open311_filter_contacts_for_deletion {
 
     # Don't delete open311 protected contacts when importing
     return $contacts->search({
-        extra => { -not_like => '%T15:open311_protect,I1:1%' },
+        -not => { extra => { '@>' => '{"open311_protect":1}' } }
     });
 }
 

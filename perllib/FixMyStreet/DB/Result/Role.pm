@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
   "FilterColumn",
+  "+FixMyStreet::DB::JSONBColumn",
   "FixMyStreet::InflateColumn::DateTime",
   "FixMyStreet::EncodedColumn",
 );
@@ -45,8 +46,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-05-23 18:03:28
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KkzVQZuzExH8PhZLJsnZgg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:TJK+tCbKvYVpggdpnKNfGw
 
 __PACKAGE__->many_to_many( users => 'user_roles', 'user' );
 

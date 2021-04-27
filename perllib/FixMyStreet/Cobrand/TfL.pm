@@ -173,9 +173,9 @@ sub problems_sql_restriction {
 sub inactive_reports_filter {
     my ($self, $time, $rs) = @_;
     if ($time < 7*12) {
-        $rs = $rs->search({ extra => { like => '%safety_critical,T5:value,T2:no%' } });
+        $rs = $rs->search({ extra => { '@>' => '{"_fields":[{"name":"safety_critical","value":"no"}]}' } });
     } else {
-        $rs = $rs->search({ extra => { like => '%safety_critical,T5:value,T3:yes%' } });
+        $rs = $rs->search({ extra => { '@>' => '{"_fields":[{"name":"safety_critical","value":"yes"}]}' } });
     }
     return $rs;
 }
