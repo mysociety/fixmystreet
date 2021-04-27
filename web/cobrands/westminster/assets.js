@@ -223,7 +223,7 @@ layer_data = [
     { category: 'Signs and bollards', subcategories: [ '2' ], subcategory_id: '#form_featuretypecode', item: 'street nameplate', layers: [ 46 ] },
 
     {
-        category: 'Street Entertainment',
+        category: 'Busking and Street performance',
         outFields: 'Site,Category,Terms_Conditions,UPRN',
         attr: 'UPRN',
         item: 'street entertainment pitch',

@@ -104,7 +104,7 @@ if ($opt->test_fixtures) {
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
 
     foreach (
-        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Street Entertainment'], name => 'Westminster City Council' },
+        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council' },
         { area_id => 2482, categories => ['Street Lighting and Road Signs'], name => 'Bromley Council' },
         { area_id => 2234, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways' },
         { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
@@ -323,7 +323,7 @@ if ($opt->test_fixtures) {
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2504},
-        category => 'Street Entertainment',
+        category => 'Busking and Street performance',
     });
     $child_cat->set_extra_fields({
         code => 'type',

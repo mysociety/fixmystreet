@@ -5,7 +5,7 @@ fixmystreet.roadworks.filter = function(_feature) {
     return false;
   }
   var disabledGroups = [
-      'Street Entertainment'
+      'Busking and Street performance'
   ];
   return OpenLayers.Util.indexOf(disabledGroups, group) === -1;
 };

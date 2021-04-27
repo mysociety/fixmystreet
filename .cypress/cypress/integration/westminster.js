@@ -44,7 +44,7 @@ describe('Westminster cobrand', function() {
     cy.visit('http://westminster.localhost:3001/report/new?longitude=-0.126890&latitude=51.507461');
     cy.wait('@report-ajax');
     cy.get('#mob_ok').click();
-    cy.pickCategory('Street Entertainment');
+    cy.pickCategory('Busking and Street performance');
     cy.wait('@street-entertainment');
     cy.nextPageReporting();
     cy.get('#mob_ok').click();
