@@ -637,7 +637,19 @@ $.extend(fixmystreet.utils, {
             return;
         }
         var qs = fixmystreet.utils.parse_query_string();
-        var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
+
+        // Special checking for all categories being selected
+        var category_val = $('#filter_categories').val();
+        var category_options = $('#filter_categories option').length;
+        var filter_categories;
+        if (category_val && category_val.length == category_options) {
+            // All options selected, so nothing in URL
+            delete qs.filter_category;
+            filter_categories = null;
+        } else {
+            filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
+        }
+
         var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
         var sort_key = replace_query_parameter(qs, 'sort', 'sort');
         var show_old_reports = replace_query_parameter(qs, 'show_old_reports', 'show_old_reports');
@@ -1254,6 +1266,15 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         options.params = options.params || {};
         $.each(fixmystreet.protocol_params, function(key, id) {
             var val = $('#' + id).val();
+
+            // Special checking for all categories being selected
+            if (key === 'filter_category') {
+                var category_options = $('#filter_categories option').length;
+                if (val && val.length == category_options) {
+                    val = null;
+                }
+            }
+
             if (val && val.length) {
                 options.params[key] = val.join ? fixmystreet.utils.array_to_csv_line(val) : val;
             }
