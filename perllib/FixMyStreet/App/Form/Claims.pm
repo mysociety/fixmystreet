@@ -377,13 +377,13 @@ has_field in_vehicle => (
         hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-speed-row,#form-actions-row' },
+        { label => 'No', value => 'No', data_hide => '#form-speed-row,#form-actions-row' },
     ],
 );
 
 has_field speed => (
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
+    required_when => { 'in_vehicle' => 'Yes' },
     type => 'Text',
     tags => {
         hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
@@ -392,7 +392,7 @@ has_field speed => (
 );
 
 has_field actions => (
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
+    required_when => { 'in_vehicle' => 'Yes' },
     type => 'Text',
     widget => 'Textarea',
     tags => {
@@ -413,8 +413,8 @@ has_field witnesses => (
     required => 1,
     label => 'Were there any witnesses?',
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-witness_details-row' },
+        { label => 'No', value => 'No', data_hide => '#form-witness_details-row'  },
     ],
 );
 
@@ -433,8 +433,8 @@ has_field report_police => (
     required => 1,
     label => 'Did you report the incident to the police?',
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-incident_number-row' },
+        { label => 'No', value => 'No', data_hide => '#form-incident_number-row' },
     ],
 );
 
@@ -683,8 +683,8 @@ has_field tyre_damage => (
     required => 1,
     label => 'Are you claiming for tyre damage?',
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-tyre_mileage-row,#form-tyre_receipts-row' },
+        { label => 'No', value => 'No', data_hide => '#form-tyre_mileage-row,#form-tyre_receipts-row' },
     ],
 );
 
@@ -884,8 +884,8 @@ has_field medical_attention => (
     required => 1,
     label => 'Did you seek medical attention?',
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-attention_date-row,#form-gp_contact-row' },
+        { label => 'No', value => 'No', data_hide => '#form-attention_date-row,#form-gp_contact-row' },
     ],
 );
 
@@ -940,8 +940,8 @@ has_field absent_work => (
     required => 1,
     label => 'Were you absent from work due to the incident?',
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-absence_dates-row' },
+        { label => 'No', value => 'No', data_hide => '#form-absence_dates-row' },
     ],
 );
 
@@ -962,8 +962,8 @@ has_field ongoing_treatment => (
     required => 1,
     label => 'Are you having any ongoing treatment?',
     options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-treatment_details-row' },
+        { label => 'No', value => 'No', data_hide => '#form-treatment_details-row' },
     ],
 );
 
