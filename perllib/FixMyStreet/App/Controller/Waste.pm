@@ -127,11 +127,12 @@ sub pay : Path('pay') : Args(0) {
     my $result = $payment->pay({
         returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
         backUrl => $c->uri_for('pay') . '',
-        ref => $p->id,
+        ref => 'GGW' . $p->get_extra_field_value('uprn'),
         request_id => $p->id,
         description => $p->title,
         amount => $amount,
         email => $p->user->email,
+        uprn => $p->get_extra_field_value('uprn'),
     });
 
     if ( $result ) {
