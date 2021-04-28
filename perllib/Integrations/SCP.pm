@@ -94,11 +94,17 @@ sub pay {
             'scpbase:systemCode' => 'SCP'
         },
         'scpbase:billing' => {
-            'scpbase:cardHolderDetails' => {
+            'scpbase:cardHolderDetails' => ixhash(
+                'scpbase:address' => ixhash(
+                    'scpbase:address1' => $args->{address1},
+                    'scpbase:address2' => $args->{address2},
+                    'scpbase:country' => $args->{country},
+                    'scpbase:postcode' => $args->{postcode},
+                ),
                 'scpbase:contact' => {
                     'scpbase:email' => $args->{email},
                 }
-            },
+            ),
         },
         'sale' => ixhash(
             'scpbase:saleSummary' => ixhash(

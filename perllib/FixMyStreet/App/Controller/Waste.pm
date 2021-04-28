@@ -155,6 +155,9 @@ sub pay : Path('pay') : Args(0) {
     $p->set_extra_metadata('redirect_id', $redirect_id);
     $p->update;
 
+    my $address = $c->stash->{property}{address};
+    my @parts = split ',', $address;
+
     my $result = $payment->pay({
         returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
         backUrl => $c->uri_for('pay') . '',
@@ -164,6 +167,10 @@ sub pay : Path('pay') : Args(0) {
         amount => $amount,
         email => $p->user->email,
         uprn => $p->get_extra_field_value('uprn'),
+        address1 => shift @parts,
+        address2 => shift @parts,
+        country => 'UK',
+        postcode => pop @parts,
     });
 
     if ( $result ) {
