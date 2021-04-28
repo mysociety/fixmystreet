@@ -12,6 +12,7 @@
         - Improve `#geolocate_link` display, especially for smaller screens. #2048
         - Allow email alert radius to be specified. #68
         - Update URL on /my when map moves. #3358
+        - Make anonymous updates clearer in email alerts. #3417
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.

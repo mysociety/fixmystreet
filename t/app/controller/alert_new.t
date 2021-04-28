@@ -497,7 +497,8 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
 
     my $email = $emails[0];
     is +(my $c = () = $email->as_string =~ /Other User/g), 2, 'Update name given, twice';
-    unlike $email->as_string, qr/Anonymous User/, 'Update name not given';
+    unlike $email->as_string, qr/Anonymous User/, 'Update name not given for anonymous update';
+    like $email->as_string, qr/Posted anonymously/, '"Posted anonymously" text shown for anonymous update';
 
     $report->discard_changes;
     ok $report->get_extra_metadata('closure_alert_sent_at'), 'Closure time set';
