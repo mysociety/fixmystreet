@@ -100,12 +100,36 @@ sub pay {
                 }
             },
         },
-        'sale' => {
+        'sale' => ixhash(
             'scpbase:saleSummary' => ixhash(
                 'scpbase:description' => $args->{description},
                 'scpbase:amountInMinorUnits' => $args->{amount},
-            )
-        },
+                'scpbase:reference' => $args->{ref},
+            ),
+            items => {
+                item => [
+                    ixhash(
+                        'scpbase:itemSummary' => ixhash(
+                            'scpbase:description' => $args->{description},
+                            'scpbase:amountInMinorUnits' => $args->{amount},
+                            'scpbase:reference' => $args->{ref},
+                        ),
+                        'scpbase:tax' => {
+                            'scpbase:vat' =>ixhash(
+                                'scpbase:vatCode' => $self->config->{scp_vat_code},
+                                'scpbase:vatRate' => $self->config->{scp_vat_rate} || 0,
+                                'scpbase:vatAmountInMinorUnits' => $args->{vat} || 0,
+                            ),
+                        },
+                        'scpbase:lgItemDetails' => ixhash(
+                            'scpbase:fundCode' => $self->config->{scp_fund_code},
+                            'scpbase:narrative' => $args->{uprn},
+                        ),
+                        'scpbase:lineId' => $args->{ref},
+                    ),
+                ],
+            },
+        ),
     ];
 
     my $res = $self->call('scpSimpleInvokeRequest', @$obj);
