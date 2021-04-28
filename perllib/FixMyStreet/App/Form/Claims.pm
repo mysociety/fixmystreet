@@ -448,7 +448,7 @@ has_field incident_number => (
 
 
 has_page cause => (
-    fields => ['what_cause', 'aware', 'where_cause', 'describe_cause', 'photos_fileid', 'photos', 'continue'],
+    fields => ['what_cause', 'what_cause_other', 'aware', 'where_cause', 'describe_cause', 'photos_fileid', 'photos', 'continue'],
     title => 'What caused the incident?',
     next => sub {
             $_[0]->{what} eq 'vehicle' ? 'about_vehicle' :
@@ -478,10 +478,20 @@ has_field what_cause => (
     required => 1,
     label => 'What was the cause of the incident?',
     options => [
-        { label => 'Bollard', value => 'bollard' },
-        { label => 'Cats Eyes', value => 'catseyes' },
-        { label => 'Debris', value => 'debris' },
+        { label => 'Bollard', value => 'bollard', data_hide => '#form-what_cause_other-row' },
+        { label => 'Cats Eyes', value => 'catseyes', data_hide => '#form-what_cause_other-row' },
+        { label => 'Debris', value => 'debris', data_hide => '#form-what_cause_other-row' },
+        { label => 'Other', value => 'other', data_show => '#form-what_cause_other-row' },
     ],
+);
+
+has_field what_cause_other => (
+    type => 'Text',
+    label => 'Other cause',
+    required_when => { 'what_cause' => 'other' },
+    tags => {
+        hide => sub { $_[0]->form->value_nequals('what_cause', 'other') },
+    },
 );
 
 has_field aware => (
