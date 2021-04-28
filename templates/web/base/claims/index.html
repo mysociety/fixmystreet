@@ -19,9 +19,23 @@
 
 <script nonce="[% csp_nonce %]">
 (function(){
-    var id;
-    id = document.getElementById('form-what_cause_other-row');
-    if (id) { id.className += ' hidden-js'; }
+    var qns = [
+        'form-what_cause_other-row',
+        'form-witness_details-row',
+        'form-incident_number-row',
+        'form-tyre_mileage-row',
+        'form-tyre_receipts-row',
+        'form-speed-row',
+        'form-actions-row',
+        'form-attention_date-row',
+        'form-gp_contact-row',
+        'form-absence_dates-row',
+        'form-treatment_details-row',
+    ];
+    qns.forEach(function(q) {
+        var id = document.getElementById(q);
+        if (id) { id.className += ' hidden-js'; }
+    });
 })();
 </script>
 
