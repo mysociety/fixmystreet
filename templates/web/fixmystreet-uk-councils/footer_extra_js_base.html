@@ -1,5 +1,5 @@
 [%
-IF bodyclass.match('mappage') AND NOT ( bodyclass.match('noise') OR bodyclass.match('claims') );
+IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow');
     scripts.push(
         version('/cobrands/fixmystreet-uk-councils/js.js'),
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
@@ -31,7 +31,7 @@ IF bodyclass.match('mappage') AND NOT ( bodyclass.match('noise') OR bodyclass.ma
         );
     END;
 END;
-IF bodyclass.match('mappage') AND bodyclass.match('claims');
+IF bodyclass.match('mappage') AND bodyclass.match('formflow');
     scripts.push(
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     );
