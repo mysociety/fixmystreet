@@ -35,6 +35,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'Yes' } }, "claim type screen");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, "about you screen");
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } }, "fault fixed");
+        $mech->submit_form_ok({ with_fields => { fault_reported => 'No' } }, "fault not reported");
+        $mech->submit_form_ok({ with_fields => { continue => 'Continue' } }, "go back");
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
         $mech->submit_form_ok({ with_fields => { report_id => 1 } }, "report id");
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
