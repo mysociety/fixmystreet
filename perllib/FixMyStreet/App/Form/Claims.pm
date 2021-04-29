@@ -89,7 +89,6 @@ has_field address => (
 
 has_page fault_fixed => (
     fields => ['fault_fixed', 'continue'],
-    intro => 'fault_fixed.html',
     title => 'About the fault',
     next => sub {
         $_[0]->{fault_fixed} eq 'Yes' ? 'where' :
@@ -115,7 +114,7 @@ has_page fault_reported => (
     intro => 'fault_reported.html',
     next => sub {
         $_[0]->{fault_reported} eq 'Yes' ? 'about_fault' :
-        'where'
+        'submit_first'
     },
     tags => {
         hide => sub { $_[0]->form->value_equals('fault_fixed', 'Yes'); }
@@ -133,6 +132,15 @@ has_field fault_reported => (
     ],
 );
 
+has_page submit_first => (
+    fields => ['continue'],
+    intro => 'submit_first.html',
+    title => 'Please make a fault report',
+    tags => {
+        hide => sub { $_[0]->form->value_equals('fault_fixed', 'Yes'); }
+    },
+    next => 'fault_reported',
+);
 
 has_page about_fault => (
     fields => ['report_id', 'continue'],
@@ -148,6 +156,7 @@ has_field report_id => (
     required => 1,
     type => 'Text',
     label => 'Fault ID',
+    tags => { hint => 'This will have been sent to you in an email when you reported the fault' },
 );
 
 has_page where => (
@@ -171,7 +180,7 @@ has_field location => (
     },
     type => 'Text',
     label => 'Postcode, or street name and area of the source',
-    tag => { hint => 'If you know the postcode please use that' },
+    tags => { hint => 'If you know the postcode please use that' },
     validate_method => sub {
         my $self = shift;
         my $c = $self->form->c;
