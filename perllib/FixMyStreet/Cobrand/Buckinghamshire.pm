@@ -47,11 +47,26 @@ sub send_questionnaires {
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    if ($row->category eq 'Claim') {
+        if ($row->get_extra_metadata('fault_fixed') eq 'Yes') {
+            # We want to send to Confirm, but with slightly altered information
+            $row->update_extra_field({ name => 'title', value => $row->get_extra_metadata('direction') }); # XXX See doc note
+            $row->update_extra_field({ name => 'description', value => $row->get_extra_metadata('describe_cause') });
+        } else {
+            # We do not want to send to Confirm, only email
+            return 'SKIP';
+        }
+    }
+}
+
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
-    # Check Open311 was successful
-    return unless $row->external_id;
+    # Check Open311 was successful (or Claim, we always send an email)
+    return unless $row->external_id || $row->category eq 'Claim';
+    return if $row->get_extra_metadata('extra_email_sent');
 
     # For certain categories, send an email also
     my $emails = $self->feature('open311_email');
@@ -60,12 +75,15 @@ sub open311_post_send {
         'Blocked drain' => [ $emails->{flood}, "Flood Management" ],
         'Ditch issue' => [ $emails->{flood}, "Flood Management" ],
         'Flooded subway' => [ $emails->{flood}, "Flood Management" ],
+        'Claim' => [ $emails->{claim}, 'TfB' ],
     };
     my $dest = $addresses->{$row->category};
     return unless $dest;
 
     my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
-    $sender->send($row, $h);
+    if (!$sender->send($row, $h)) {
+        $row->set_extra_metadata(extra_email_sent => 1);
+    }
 }
 
 sub open311_config_updates {
