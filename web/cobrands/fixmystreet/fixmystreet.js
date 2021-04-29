@@ -657,7 +657,7 @@ $.extend(fixmystreet.set_up, {
     // If we haven't got any reporting data (e.g. came straight to
     // /report/new), fetch it first. That will then automatically call this
     // function again, due to it calling change() on the category if set.
-    if (!fixmystreet.reporting_data && fixmystreet.page === 'new') {
+    if (!fixmystreet.reporting_data && fixmystreet.page === 'new' && !$('body').hasClass('formflow')) {
         fixmystreet.fetch_reporting_data();
     }
   },
