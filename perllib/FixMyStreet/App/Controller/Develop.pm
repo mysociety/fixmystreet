@@ -103,7 +103,12 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
         $vars->{data} = [ $c->model('DB::Problem')->search({}, { rows => 5 })->all ];
     } elsif ($template eq 'alert-update') {
         $vars->{data} = [];
-        my $q = $c->model('DB::Comment')->search({}, { rows => 5 });
+        my $q;
+        if ($vars->{problem}->comment_count > 0) {
+            $q = $vars->{problem}->comments;
+        } else {
+            $q = $c->model('DB::Comment')->search({}, { rows => 5 });
+        }
         while (my $u = $q->next) {
             my $fn = sub {
                 return FixMyStreet::App::Model::PhotoSet->new({
