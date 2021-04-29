@@ -605,6 +605,14 @@ sub service_name_override {
     return \%service_name_override;
 }
 
+sub bin_payment_types {
+    return {
+        'csc' => 1,
+        'credit_card' => 2,
+        'direct_debit' => 3,
+    };
+}
+
 
 sub bin_services_for_address {
     my $self = shift;
