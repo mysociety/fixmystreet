@@ -38,10 +38,15 @@ sub process_claim : Private {
 
     my $data = $form->saved_data;
 
-    my $report_id = $data->{report_id};
+    my $contributing_as_another_user = $c->user_exists && $c->user->from_body && $data->{email} && $c->user->email ne $data->{email};
+
+    my $user = $c->user_exists
+        ? $c->user->obj
+        : $c->model('DB::User')->find_or_new( { email => $data->{email} } );
+    $user->name($data->{name}) if $data->{name};
+    $user->phone($data->{phone}) if $data->{phone};
 
     my $detail = "";
-
     for my $stage ( @{ $form->fields_for_display } ) {
         next if $stage->{hide};
         for my $field ( @{ $stage->{fields} } ) {
@@ -50,41 +55,49 @@ sub process_claim : Private {
         }
     }
 
-    my $user = $c->user_exists
-        ? $c->user->obj
-        : $c->model('DB::User')->find_or_new( { email => $data->{email} } );
-    $user->name($data->{name}) if $data->{name};
-    $user->phone($data->{phone}) if $data->{phone};
+    my %shared = (
+        state => 'unconfirmed',
+        cobrand => $c->cobrand->moniker,
+        cobrand_data => 'claim',
+        lang => $c->stash->{lang_code},
+        user => $user,
+        name => $user->name,
+        anonymous => 0,
+        extra => $data,
+    );
 
-    my $report;
-    if ( $report_id ) {
-        $report = FixMyStreet::DB->resultset('Problem')->find($report_id);
-    } else {
-        $report = $c->model('DB::Problem')->new({
-            non_public => 1,
-            state => 'unconfirmed',
-            cobrand => $c->cobrand->moniker,
-            cobrand_data => 'noise',
-            lang => $c->stash->{lang_code},
-            user => $user, # XXX
-            name => $data->{name},
-            anonymous => 0,
-            extra => $data,
-            category => 'Claim',
-            used_map => 1,
-            title => 'Claim',
-            detail => $detail,
-            postcode => '',
-            latitude => $data->{latitude},
-            longitude => $data->{longitude},
-            areas => '',
-            send_questionnaire => 0,
-            bodies_str => $c->cobrand->body->id,
-        });
-    }
+    my $object = $c->model('DB::Problem')->new({
+        non_public => 1,
+        category => 'Claim',
+        used_map => 1,
+        title => 'Claim',
+        detail => $detail,
+        postcode => '',
+        latitude => $data->{latitude},
+        longitude => $data->{longitude},
+        areas => '',
+        send_questionnaire => 0,
+        bodies_str => $c->cobrand->body->id,
+        %shared,
+    });
 
     $c->stash->{detail} = $detail;
 
+    if ($contributing_as_another_user) {
+        $object->set_extra_metadata( contributed_as => 'another_user');
+        $object->set_extra_metadata( contributed_by => $c->user->id );
+    } elsif ( !$object->user->in_storage ) {
+        $object->user->insert();
+    } elsif ( $c->user && $object->user->id == $c->user->id ) {
+        $object->user->update();
+    } else {
+        $object->user->discard_changes();
+    }
+
+    $object->confirm;
+    $object->insert;
+    $c->forward('/report/new/create_related_things', [ $object ]);
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

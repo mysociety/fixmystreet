@@ -1,6 +1,7 @@
 use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use CGI::Simple;
 use Path::Tiny;
 use Test::MockModule;
 
@@ -9,7 +10,9 @@ ok $sample_file->exists, "sample file $sample_file exists";
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council');
+my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', {
+    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 });
+my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Claim', email => 'CLAIM');
 
 my $geo = Test::MockModule->new('FixMyStreet::Geocode');
 $geo->mock('string', sub {
@@ -21,10 +24,30 @@ $geo->mock('string', sub {
     return $ret;
 });
 
+my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+$ukc->mock('_fetch_features', sub {
+    my ($self, $cfg, $x, $y) = @_;
+    is $y, 213450, 'Correct latitude';
+    return [
+        {
+            properties => {
+                feature_ty => '4A',
+                site_code => 'Road ID'
+            },
+            geometry => {
+                type => 'LineString',
+                coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+            }
+        },
+    ];
+});
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'buckinghamshire',
+    STAGING_FLAGS => { send_reports => 1 },
     COBRAND_FEATURES => {
         claims => { buckinghamshire => 1 },
+        open311_email => { buckinghamshire => { claim => 'claims@example.net' } },
     },
     PHONE_COUNTRY => 'GB',
     MAPIT_URL => 'http://mapit.uk/',
@@ -51,10 +74,63 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Claim submitted');
 
-        #my $report = $user->problems->first;
-        #is $report->title, "Noise report";
-        #is $report->detail, "Kind of noise: music\nNoise details: Details\n\nWhere is the noise coming from? residence\nNoise source: 100000333\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? monday, thursday\nWhat time does the noise happen? morning, evening\n";
-        #is $report->latitude, 53;
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, "Claim";
+        is $report->bodies_str, $body->id;
+        my $expected_detail = <<EOF;
+What are you claiming for?: Vehicle damage
+Have you ever filed a Claim for damages with Buckinghamshire Council?: Yes
+Full name: Test McTest
+Telephone number: 01234 567890
+Email address: test\@example.org
+Full address: 12 A Street
+A Town
+Has the fault been fixed?: No
+Have you reported the fault to the Council?: Yes
+Fault ID: 1
+Postcode, or street name and area of the source: A street
+Latitude: 51.81386
+Longitude: -0.82973
+What day did the incident happen?: 10/10/2020
+What time did the incident happen?: morning
+Describe the weather conditions at the time: sunny
+What direction were you travelling in at the time?: east
+Describe the details of the incident: some details
+Were you in a vehicle when the incident happened?: Yes
+What speed was the vehicle travelling?: 20mph
+If you were not driving, what were you doing when the incident happened?: an action
+Were there any witnesses?: Yes
+Please give the witness’ details: some witnesses
+Did you report the incident to the police?: Yes
+What was the incident reference number?: 23
+What was the cause of the incident?: Bollard
+Were you aware of it before?: Yes
+Where was the cause of the incident?: Bridge
+Describe the incident cause: a cause
+Please provide two dated photos of the incident: 74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg
+Make and model: a car
+Registration number: rego!
+Vehicle mileage: 20
+Copy of the vehicle’s V5 Registration Document: sample.jpg
+Is the V5 document in your name?: Yes
+Name and address of the Vehicle's Insurer: insurer address
+Are you making a claim via the insurance company?: No
+Are you registered for VAT?: No
+Describe the damage to the vehicle: the car was broken
+Please provide two photos of the damage to the vehicle: 74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg
+Please provide receipted invoices for repairs: sample.jpg
+Are you claiming for tyre damage?: Yes
+Age and Mileage of the tyre(s) at the time of the incident: 20
+Please provide copy of tyre purchase receipts: sample.jpg
+EOF
+        is $report->detail, $expected_detail;
+        is $report->latitude, 51.81386;
+        my $test_data = FixMyStreet::Script::Reports::send();
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), 'TfB <claims@example.net>';
+        my $req = $test_data->{test_req_used};
+        is $req, undef, 'Nothing sent by Open311';
+        $mech->clear_emails_ok;
     };
 
     subtest 'Report new vehicle claim, report fixed' => sub {
@@ -78,6 +154,15 @@ FixMyStreet::override_config {
         $mech->content_contains('Review', "Review screen displayed");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
         $mech->content_contains('Claim submitted');
+        my $test_data = FixMyStreet::Script::Reports::send();
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), 'TfB <claims@example.net>';
+        my $req = $test_data->{test_req_used};
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), 'CLAIM';
+        is $c->param('attribute[title]'), 'east';
+        is $c->param('attribute[description]'), 'a cause';
+        is $c->param('attribute[site_code]'), 'Road ID';
     };
 
     subtest 'Report new property claim, report id known' => sub {
