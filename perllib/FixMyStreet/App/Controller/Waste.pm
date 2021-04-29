@@ -215,6 +215,18 @@ sub confirm_subscription : Private {
     my ($self, $c, $reference) = @_;
 
     my $p = $c->stash->{report};
+    $p->update_extra_field( {
+            name => 'LastPayMethod',
+            description => 'LastPayMethod',
+            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+        },
+    );
+    $p->update_extra_field( {
+            name => 'PaymentCode',
+            description => 'PaymentCode',
+            value => $reference
+        }
+    );
     $p->set_extra_metadata('payment_reference', $reference) if $reference;
     $p->confirm;
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
