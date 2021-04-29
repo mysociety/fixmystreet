@@ -22,7 +22,6 @@ body.claims {
     }
 }
 
-.claims__collections,
 .claims__summary {
   .govuk-summary-list {
     font-size: 1em;
@@ -42,9 +41,7 @@ body.claims {
     padding-top: 10px; 
     font-weight: normal !important; /* Ugh */ 
   }
-}
 
-.claims__summary {
   .govuk-button--secondary {
     font-size: 1em;
   }
@@ -58,123 +55,9 @@ body.claims {
   min-width: 5em;
 }
 
-.claims__address {
-  font-size: 1.125em;
-  margin-bottom: 2em;
-}
-
-.claims__address__title {
-  font-weight: normal;
-}
-
-.claims__address__property {
-  font-weight: bold;
-}
-
-.aside-services {
-  ul ul {
-    margin-top: 0.4em;
-  }
-}
 .claims {
   .govuk-fieldset__heading {
     font-size: 1.4375rem;
     font-weight: bold;
-  }
-}
-
-.claims-panel-toggle {
-  position: relative;
-  top: -1em;
-  margin-bottom: 0;
-  z-index: 1;
-}
-
-.claims-services-launch-panel {
-  margin-bottom: 3em;
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 200ms ease-out;
-  z-index: inherit;
-  position: relative;
-  max-width: 100%;
-  .js &.hidden-js {
-    display: block;
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: all 200ms ease-in;
-    position: absolute;
-  }
-}
-
-.claims-service-name.govuk-heading-m {
-  margin-top: 1.5em;
-}
-
-.claims-service-descriptor {
-  font-family: $body-font;
-  display: block;
-  margin-bottom: 0.5em;
-  padding: 0 0 0.25em 0;
-  border: 0;
-  border-bottom: 1px solid #e9e9e9;
-  -webkit-appearance: none;
-  background: transparent;
-  font-size: inherit;
-  text-align: left; 
-  white-space: normal;
-  line-height: 1.5;
-}
-
-.claims-service-launch-form {
-  border-bottom: 1px solid #e9e9e9;
-  font-size: 1em;
-  .claims-service-descriptor {
-    border-bottom: 0;
-  }
-  .claims-service-launch-arrow {
-    padding-right: 0;
-  }
-}
-
-.claims-service-link,
-input[type="submit"].claims-service-link {
-  color: $link-color;
-  &:hover,
-  &:focus {
-    text-decoration: underline;
-  }
-  &:visited {
-    color: $link-color;
-  }
-}
-
-.claims-service-name-link {
-  .claims & {
-    cursor: pointer;
-    margin-top: 0.5em;
-    margin-bottom: 0;
-    font-size: 1rem;
-  }
-}
-
-.claims-service-launch-arrow {
-  position: relative;
-  padding-right: 1.5em;
-  &:after {
-    color: $link-color;
-    display: block;
-    content:"\203A";
-    position: absolute;
-    right: 1em;
-    top: 0;
-    font-weight: bold;
-  }
-
-  &:hover,
-  &:focus {
-    &:after {
-      color: $link-hover-color;
-    }
   }
 }
