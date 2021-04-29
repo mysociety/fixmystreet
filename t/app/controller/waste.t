@@ -49,6 +49,8 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
         { code => 'Container_Instruction_Quantity', required => 1, automated => 'hidden_field' },
         { code => 'Container_Instruction_Action', required => 1, automated => 'hidden_field' },
         { code => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
+        { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
+        { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
         { code => 'current_containers', required => 1, automated => 'hidden_field' },
         { code => 'new_containers', required => 1, automated => 'hidden_field' },
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -614,6 +616,8 @@ FixMyStreet::override_config {
 
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
