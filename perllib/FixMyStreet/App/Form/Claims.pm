@@ -52,9 +52,9 @@ has_field what => (
     widget => 'RadioGroup',
     label => 'What are you claiming for?',
     options => [
-        { value => '0', label => 'Vehicle damage' },
-        { value => '1', label => 'Personal injury' },
-        { value => '2', label => 'Property' },
+        { value => 'vehicle', label => 'Vehicle damage' },
+        { value => 'personal', label => 'Personal injury' },
+        { value => 'property', label => 'Property' },
     ]
 );
 
@@ -287,7 +287,7 @@ has_page when => (
     fields => ['incident_date', 'incident_time', 'continue'],
     title => 'When did the incident happen',
     next => sub {
-            $_[0]->{what} == 0 ? 'details_vehicle' : 'details_no_vehicle'
+            $_[0]->{what} eq 'vehicle' ? 'details_vehicle' : 'details_no_vehicle'
         },
 );
 
@@ -331,12 +331,18 @@ has_page details_vehicle => (
     fields => ['weather', 'direction', 'details', 'in_vehicle', 'speed', 'actions', 'continue'],
     title => 'What are the details of the incident',
     next => 'witnesses',
+    tags => {
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
+    },
 );
 
 has_page details_no_vehicle => (
     fields => ['weather', 'direction', 'details', 'continue'],
     title => 'What are the details of the incident',
     next => 'witnesses',
+    tags => {
+        hide => sub { $_[0]->form->value_equals('what', 'vehicle'); }
+    },
 );
 
 has_field weather => (
@@ -346,10 +352,10 @@ has_field weather => (
 );
 
 has_field direction => (
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} == 0; } },
+    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
     type => 'Text',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 0); }
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     label => 'What direction were you travelling in at the time?',
 );
@@ -364,10 +370,10 @@ has_field details => (
 has_field in_vehicle => (
     type => 'Select',
     widget => 'RadioGroup',
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} == 0; } },
+    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
     label => 'Were you in a vehicle when the incident happened?',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 0); }
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -376,20 +382,20 @@ has_field in_vehicle => (
 );
 
 has_field speed => (
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} == 0; } },
+    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
     type => 'Text',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 0); }
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     label => 'What speed was the vehicle travelling?',
 );
 
 has_field actions => (
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} == 0; } },
+    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
     type => 'Text',
     widget => 'Textarea',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 0); }
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     label => 'If you were not driving, what were you doing when the incident happened?',
 );
@@ -444,8 +450,8 @@ has_page cause => (
     fields => ['what_cause', 'aware', 'where_cause', 'describe_cause', 'photos_fileid', 'photos', 'continue'],
     title => 'What caused the incident?',
     next => sub {
-            $_[0]->{what} == 0 ? 'about_vehicle' :
-            $_[0]->{what} == 1 ? 'about_you_personal' :
+            $_[0]->{what} eq 'vehicle' ? 'about_vehicle' :
+            $_[0]->{what} eq 'personal' ? 'about_you_personal' :
             'about_property',
         },
     update_field_list => sub {
@@ -516,7 +522,7 @@ has_page about_vehicle => (
     fields => ['make', 'registration', 'mileage', 'v5', 'v5_in_name', 'insurer_address', 'damage_claim', 'vat_reg', 'continue'],
     title => 'About the vehicle',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 0); }
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     next => 'damage_vehicle',
     update_field_list => sub {
@@ -603,7 +609,7 @@ has_page damage_vehicle => (
     fields => ['vehicle_damage', 'vehicle_photos_fileid', 'vehicle_photos', 'vehicle_receipts', 'tyre_damage', 'tyre_mileage', 'tyre_receipts', 'continue'],
     title => 'What was the damage to the vehicle',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 0); }
+        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
     },
     next => 'summary',
     update_field_list => sub {
@@ -702,7 +708,7 @@ has_page about_property => (
     fields => ['property_insurance', 'continue'],
     title => 'About the property',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 2); }
+        hide => sub { $_[0]->form->value_nequals('what', 'property'); }
     },
     next => 'damage_property',
     update_field_list => sub {
@@ -731,7 +737,7 @@ has_page damage_property => (
     fields => ['property_damage_description', 'property_photos_fileid', 'property_photos', 'property_invoices', 'continue'],
     title => 'What was the damage to the property?',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 2); }
+        hide => sub { $_[0]->form->value_nequals('what', 'property'); }
     },
     next => 'summary',
     update_field_list => sub {
@@ -790,7 +796,7 @@ has_page about_you_personal => (
     fields => ['dob', 'ni_number', 'occupation', 'employer_contact', 'continue'],
     title => 'About you',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 1); }
+        hide => sub { $_[0]->form->value_nequals('what', 'personal'); }
     },
     next => 'injuries',
 );
@@ -849,7 +855,7 @@ has_page injuries => (
     fields => ['describe_injuries', 'medical_attention', 'attention_date', 'gp_contact', 'absent_work', 'absence_dates', 'ongoing_treatment', 'treatment_details', 'continue'],
     title => 'About your injuries',
     tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 1); }
+        hide => sub { $_[0]->form->value_nequals('what', 'personal'); }
     },
     next => 'summary',
 );

@@ -32,7 +32,7 @@ FixMyStreet::override_config {
     subtest 'Report new vehicle claim, report id known' => sub {
         $mech->get_ok('/claims');
         $mech->submit_form_ok({ button => 'start' });
-        $mech->submit_form_ok({ with_fields => { what => 0, claimed_before => 'Yes' } }, "claim type screen");
+        $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'Yes' } }, "claim type screen");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, "about you screen");
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } }, "fault fixed");
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
@@ -56,7 +56,7 @@ FixMyStreet::override_config {
     subtest 'Report new vehicle claim, report fixed' => sub {
         $mech->get_ok('/claims');
         $mech->submit_form_ok({ button => 'start' });
-        $mech->submit_form_ok({ with_fields => { what => 0, claimed_before => 'No' } }, 'claim type');
+        $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'No' } }, 'claim type');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, 'about you details');
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'Yes' } }, 'fault fixed');
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
@@ -75,7 +75,7 @@ FixMyStreet::override_config {
     subtest 'Report new property claim, report id known' => sub {
         $mech->get_ok('/claims');
         $mech->submit_form_ok({ button => 'start' });
-        $mech->submit_form_ok({ with_fields => { what => 2, claimed_before => 'No' } });
+        $mech->submit_form_ok({ with_fields => { what => 'property', claimed_before => 'No' } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } });
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } });
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } });
@@ -94,7 +94,7 @@ FixMyStreet::override_config {
     subtest 'Report new injury claim, report id known' => sub {
         $mech->get_ok('/claims');
         $mech->submit_form_ok({ button => 'start' });
-        $mech->submit_form_ok({ with_fields => { what => 1, claimed_before => 'No' } });
+        $mech->submit_form_ok({ with_fields => { what => 'personal', claimed_before => 'No' } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } });
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } });
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } });
