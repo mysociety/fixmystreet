@@ -506,6 +506,37 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>2021-03-30#m);
+        $mech->content_lacks('Subscribe to Green Garden Waste');
+    };
+
+    subtest 'check subscription link present' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1001,
+                ServiceId => 101,
+                ServiceName => 'Refuse collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 401,
+                    ScheduleDescription => 'every Wednesday',
+                    ServiceTaskSchedules => { ServiceTaskSchedule => {
+                        EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2021-03-08T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2021-03-08T00:00:00Z' },
+                            Ref => { Value => { anyType => [ 123, 456 ] } },
+                        },
+                    } },
+                } },
+            } ];
+        } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Subscribe to Green Garden Waste');
     };
 
     my $echo = Test::MockModule->new('Integrations::Echo');
@@ -693,6 +724,10 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste');
 
         $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
         ok !$mech->res->is_success(), "want a bad response";
