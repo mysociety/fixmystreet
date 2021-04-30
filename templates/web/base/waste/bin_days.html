@@ -14,6 +14,9 @@
 
 [% SET any_report_allowed = 0 ~%]
 [% SET any_request_allowed = 0 ~%]
+[% IF pending_subscription %]
+    <p>You have a pending [% pending_subscription.title %]</p>
+[% END %]
 [% FOR unit IN service_data %]
 
 <h3 class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
@@ -91,7 +94,7 @@
             [% IF any_request_allowed %]
               <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
             [% END %]
-            [% IF !services_available.Garden_Waste.is_active %]
+            [% IF !pending_subscription OR !services_available.Garden_Waste.is_active %]
               <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
           [% END %]
           </ul>
