@@ -96,6 +96,26 @@ sub check_payment_redirect_id : Private {
     $c->stash->{report} = $p;
 }
 
+sub get_pending_subscription : Private {
+    my ($self, $c) = @_;
+
+    my $uprn = $c->stash->{property}{uprn};
+    my $len = length $uprn;
+    my $subs = $c->model('DB::Problem')->search({
+        state => 'unconfirmed',
+        created => { '>=' => \"current_timestamp-'20 days'::interval" },
+        category => 'Garden Subscription',
+        title => 'Garden Subscription - New',
+        extra => { like => '%uprn,T5:value,I' . $len . ':'. $c->stash->{property}{uprn} . '%' }
+    });
+
+    my $match;
+    while (my $sub = $subs->next) {
+        $match = $sub if $sub->get_extra_field_value('payment_method') eq 'direct_debit';
+    }
+    $c->stash->{pending_subscription} = $match;
+}
+
 sub pay_retry : Path('pay_retry') : Args(0) {
     my ($self, $c) = @_;
 
@@ -385,6 +405,8 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
     $c->stash->{services_available} = $c->cobrand->call_hook(available_bin_services_for_address => $property) || {};
+
+    $c->forward('get_pending_subscription');
 }
 
 sub bin_days : Chained('property') : PathPart('') : Args(0) {
