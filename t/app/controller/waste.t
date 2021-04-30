@@ -702,6 +702,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'check new sub direct debit payment' => sub {
+        $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
@@ -740,6 +741,10 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
         $mech->content_contains('confirmation details for your direct debit');
 
+        $mech->email_count_is( 1, "email sent for direct debit sub");
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
     };
