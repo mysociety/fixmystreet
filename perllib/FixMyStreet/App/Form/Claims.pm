@@ -149,7 +149,7 @@ has_page about_fault => (
     tags => {
         hide => sub { $_[0]->form->value_equals('fault_fixed', 'Yes'); }
     },
-    next => 'when',
+    next => 'where',
 );
 
 has_field report_id => (
@@ -162,7 +162,6 @@ has_field report_id => (
 has_page where => (
     fields => ['location', 'continue'],
     title => 'Where did the incident happen',
-    next => 'when',
     next => sub { $_[0]->{possible_location_matches} ? 'choose_location' : $_[0]->{latitude} ? 'map' : 'choose_location' },
 );
 
