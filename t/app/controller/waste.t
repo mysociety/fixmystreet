@@ -606,6 +606,10 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste');
+
         $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
