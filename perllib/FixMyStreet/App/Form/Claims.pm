@@ -152,7 +152,7 @@ has_page about_fault => (
     tags => {
         hide => sub { $_[0]->form->value_equals('fault_fixed', 'Yes'); }
     },
-    next => 'when',
+    next => 'where',
 );
 
 has_field report_id => (

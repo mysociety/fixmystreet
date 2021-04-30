@@ -39,6 +39,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { continue => 'Continue' } }, "go back");
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
         $mech->submit_form_ok({ with_fields => { report_id => 1 } }, "report id");
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', direction => 'east', details => 'some details', in_vehicle => 'Yes', speed => '20mph', actions => 'an action' } }, "incident details");
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } }, "witnesses etc");
@@ -86,6 +88,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } });
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { report_id => 1 } });
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 3020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
         $mech->content_contains('You cannot enter a date in the future');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
@@ -107,6 +111,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } });
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { report_id => 1 } });
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', direction => 'east', details => 'some details' } });
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } });
