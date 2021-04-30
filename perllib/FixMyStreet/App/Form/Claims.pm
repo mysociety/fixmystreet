@@ -221,6 +221,7 @@ has_field 'location_matches' => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Select a location',
+    tags => { hide => 1 },
     validate_method => sub {
         my $self = shift;
         my $value = $self->value;
