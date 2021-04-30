@@ -338,6 +338,10 @@ sub direct_debit_complete : Path('dd_complete') : Args(0) {
 
     $c->stash->{title} = "Direct Debit mandate";
 
+    $c->send_email('waste/direct_debit_in_progress.txt', {
+        to => [ [ $c->stash->{report}->user->email, $c->stash->{report}->name ] ],
+    } );
+
     $c->stash->{template} = 'waste/dd_complete.html';
 }
 
