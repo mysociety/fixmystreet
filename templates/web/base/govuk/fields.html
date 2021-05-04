@@ -315,7 +315,6 @@
   [% END %]
 
   <input type="hidden" name="[% field.id %]_fileid" value="[% field.get_tag('files') %]">
-  <input type="hidden" name="[% field.id %]_filenames" value="[% field.get_tag('filenames').join(',') %]">
   [% IF field.get_tag('files') %]
     Already files added: [% field.get_tag('filenames').join(', ') %]
   [% END %]

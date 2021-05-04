@@ -1210,10 +1210,10 @@ sub process_upload {
 
     my $saved_data = $form->saved_data;
     my $c = $form->{c};
+
     if ( !$saved_data->{$field} && $c->req->params->{$field . '_fileid'} ) {
-        my $files = $c->req->params->{$field . '_fileid'};
-        my @names = split ',', $c->req->params->{$field . '_filenames'};
-        $saved_data->{$field} = { files => $files, filenames => \@names };
+        # The data was already passed in from when it was saved before (also in tags, from above)
+        $saved_data->{$field} = $form->field($field)->init_value;
     }
 }
 
