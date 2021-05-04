@@ -7,6 +7,8 @@ use Test::MockModule;
 
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
+my $sample_pdf = path(__FILE__)->parent->child("sample.pdf");
+ok $sample_pdf->exists, "sample file $sample_pdf exists";
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -71,12 +73,15 @@ FixMyStreet::override_config {
             photos => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
             photos2 => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
         } }, "cause screen");
-        $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20', v5 => [ $sample_file, undef, Content_Type => 'application/octet-stream', filename => 'v5.jpg' ], v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No' } }, "car details");
+        $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20',
+            v5 => [ $sample_pdf, undef, Content_Type => 'application/octet-stream', filename => 'v5.pdf' ],
+            v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No',
+        } }, "car details");
         $mech->submit_form_ok({ with_fields => {
             vehicle_damage => 'the car was broken',
             vehicle_photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             vehicle_photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
-            vehicle_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream', 'repairs.jpg' ],
+            vehicle_receipts => [ $sample_pdf, undef, Content_Type => 'application/octet-stream', 'repairs.pdf' ],
             tyre_damage => 'Yes', tyre_mileage => 20,
             tyre_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream' ]
         } }, "damage details");
@@ -121,14 +126,14 @@ Please provide two dated photos of the incident: 74e3362283b6ef0c48686fb0e161da4
 Make and model: a car
 Registration number: rego!
 Vehicle mileage: 20
-Copy of the vehicle’s V5 Registration Document: sample.jpg
+Copy of the vehicle’s V5 Registration Document: sample.pdf
 Is the V5 document in your name?: Yes
 Name and address of the Vehicle's Insurer: insurer address
 Are you making a claim via the insurance company?: No
 Are you registered for VAT?: No
 Describe the damage to the vehicle: the car was broken
 Please provide two photos of the damage to the vehicle: 74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg
-Please provide receipted invoices for repairs: sample.jpg
+Please provide receipted invoices for repairs: sample.pdf
 Are you claiming for tyre damage?: Yes
 Age and Mileage of the tyre(s) at the time of the incident: 20
 Please provide copy of tyre purchase receipts: sample.jpg
@@ -162,13 +167,16 @@ EOF
             photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
         } }, 'cause details');
-        $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20', v5 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ], v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No' } }, 'vehicle details');
+        $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20',
+            v5 => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ],
+            v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No',
+        } }, 'vehicle details');
         $mech->submit_form_ok({ with_fields => { vehicle_damage => 'the car was broken',
             vehicle_photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             vehicle_photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             vehicle_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             tyre_damage => 'Yes', tyre_mileage => 20,
-            tyre_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream' ]
+            tyre_receipts => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ]
         } }, 'damage details');
         $mech->content_contains('Review', "Review screen displayed");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
@@ -203,11 +211,11 @@ EOF
             photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
         } });
-        $mech->submit_form_ok({ with_fields => { property_insurance => [ $sample_file, undef, Content_Type => 'application/octet-stream' ] } });
+        $mech->submit_form_ok({ with_fields => { property_insurance => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ] } });
         $mech->submit_form_ok({ with_fields => { property_damage_description => 'damage_description',
             property_photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             property_photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
-            property_invoices => [ $sample_file, undef, Content_Type => 'application/octet-stream' ]
+            property_invoices => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ]
         } });
         $mech->content_contains('Review');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
