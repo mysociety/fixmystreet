@@ -199,7 +199,7 @@ var flytipping_defaults = $.extend(true, {}, arcgis_defaults, {
     },
     // this prevents issues when public and non public land
     // are right next to each other
-    nearest_radius: 0.1,
+    nearest_radius: 0.01,
     stylemap: fixmystreet.assets.stylemap_invisible,
     asset_category: ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti'  ],
     non_interactive: true,
@@ -215,18 +215,16 @@ fixmystreet.assets.add(flytipping_defaults, {
     },
     actions: {
         found: function(layer) {
-            $("#js-roads-responsibility").addClass("hidden");
+            $("#js-environment-message").addClass("hidden");
         },
         not_found: function() {
             for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
                 var layer = fixmystreet.assets.layers[i];
                 if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-                    $("#js-roads-responsibility").addClass("hidden");
+                    $('#js-environment-message').addClass('hidden');
                     return;
                 }
             }
-            $("#js-roads-responsibility").removeClass("hidden");
-            $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
             $('#js-environment-message').removeClass('hidden');
         },
     }
@@ -239,10 +237,8 @@ fixmystreet.assets.add(flytipping_defaults, {
     },
     actions: {
         found: function() {
-            $("#js-roads-responsibility").removeClass("hidden");
-            $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
             $('#js-environment-message').removeClass('hidden');
-        },
+        }
     }
 });
 

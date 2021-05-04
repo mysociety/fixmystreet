@@ -3,6 +3,8 @@ describe('new report form', function() {
   beforeEach(function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route("**/peterborough.assets/2/*", 'fixture:peterborough_pcc.json').as('pcc');
+    cy.route("**/peterborough.assets/3/*", 'fixture:peterborough_non_pcc.json').as('non_pcc');
     cy.visit('http://peterborough.localhost:3001/');
     cy.contains('Peterborough');
     cy.get('[name=pc]').type('PE1 1HF');
@@ -33,6 +35,27 @@ describe('new report form', function() {
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
 
+  it('flytipping category handles land types correctly', function() {
+    cy.pickCategory('General fly tipping');
+    cy.nextPageReporting();
+    cy.get('#js-environment-message:visible');
+    cy.get('#form_hazardous').select('yes');
+    cy.get('.js-post-category-messages:visible').should('contain', 'Please phone customer services to report this problem');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+    cy.get('#form_hazardous').select('no');
+    cy.get('.js-post-category-messages:visible').should('not.contain', 'Please phone customer services to report this problem');
+    cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
+    cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
+    cy.wait('@report-ajax');
+    cy.pickCategory('General fly tipping');
+    cy.get('#js-environment-message:hidden');
+    cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
+    cy.wait('@report-ajax');
+    cy.pickCategory('General fly tipping');
+    cy.get('#js-environment-message:visible');
+  });
+
   it('correctly changes the asset select message', function() {
     cy.pickCategory('Street lighting');
     cy.get('.category_meta_message').should('contain', 'You can pick a light from the map');
@@ -52,6 +75,38 @@ describe('new report form', function() {
     cy.pickCategory('Fallen branch');
     cy.nextPageReporting();
     cy.should('not.contain', 'Roadworks are scheduled near this location');
+  });
+});
+
+describe('National site tests', function() {
+  it('flytipping category handles land types correctly on .com', function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route("**/peterborough.assets/2/*", 'fixture:peterborough_pcc.json').as('pcc');
+    cy.route("**/peterborough.assets/3/*", 'fixture:peterborough_non_pcc.json').as('non_pcc');
+    cy.visit('http://fixmystreet.localhost:3001/');
+    cy.get('[name=pc]').type('PE1 1HF');
+    cy.get('[name=pc]').parents('form').submit();
+    cy.get('#map_box').click();
+    cy.wait('@report-ajax');
+    cy.pickCategory('General fly tipping');
+    cy.nextPageReporting();
+    cy.get('#js-environment-message:visible');
+    cy.get('#form_hazardous').select('yes');
+    cy.get('.js-post-category-messages:visible').should('contain', 'Please phone customer services to report this problem');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+    cy.get('#form_hazardous').select('no');
+    cy.get('.js-post-category-messages:hidden').should('not.contain', 'Please phone customer services to report this problem');
+    cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
+    cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
+    cy.wait('@report-ajax');
+    cy.pickCategory('General fly tipping');
+    cy.get('#js-environment-message:hidden');
+    cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
+    cy.wait('@report-ajax');
+    cy.pickCategory('General fly tipping');
+    cy.get('#js-environment-message:visible');
   });
 
 });
