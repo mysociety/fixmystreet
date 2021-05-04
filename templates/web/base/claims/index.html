@@ -5,9 +5,7 @@
 
 [% INCLUDE header.html %]
 
-
   [% PROCESS 'govuk/fields.html' %]
-  [% PROCESS back %]
   [% PROCESS errors %]
   [% PROCESS title %]
 
@@ -17,8 +15,16 @@
   [% PROCESS form %]
 </form>
 
+[% IF form.current_page.name != 'intro' %]
+<button id='form-back' class="hidden-nojs govuk-button govuk-button--secondary">Back</button>
+[% END %]
+
 <script nonce="[% csp_nonce %]">
 (function(){
+    var back = document.getElementById('form-back');
+    back.addEventListener('click', function(e) {
+        history.back();
+    });
     var qns = [
         'form-what_cause_other-row',
         'form-witness_details-row',
