@@ -178,7 +178,7 @@ EOF
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 3020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
         $mech->content_contains('You cannot enter a date in the future');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
-        $mech->submit_form_ok({ with_fields => { weather => 'sunny', direction => 'east', details => 'some details' } });
+        $mech->submit_form_ok({ with_fields => { weather => 'sunny', details => 'some details' } });
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } });
         $mech->submit_form_ok({ with_fields => { what_cause => 'bollard', aware => 'Yes', where_cause => 'bridge', describe_cause => 'a cause', photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ] } });
         $mech->submit_form_ok({ with_fields => { property_insurance => [ $sample_file, undef, Content_Type => 'application/octet-stream' ] } });

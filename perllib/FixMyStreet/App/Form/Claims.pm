@@ -291,7 +291,7 @@ has_page when => (
     fields => ['incident_date', 'incident_time', 'continue'],
     title => 'When did the incident happen',
     next => sub {
-            $_[0]->{what} eq 'vehicle' ? 'details_vehicle' : 'details_no_vehicle'
+            $_[0]->{what} eq 'vehicle' ? 'details_vehicle' : $_[0]->{what} eq 'personal' ? 'details_personal' : 'details_property'
         },
 );
 
@@ -340,12 +340,21 @@ has_page details_vehicle => (
     },
 );
 
-has_page details_no_vehicle => (
+has_page details_personal => (
     fields => ['weather', 'direction', 'details', 'continue'],
     title => 'What are the details of the incident',
     next => 'witnesses',
     tags => {
-        hide => sub { $_[0]->form->value_equals('what', 'vehicle'); }
+        hide => sub { $_[0]->form->value_nequals('what', 'personal'); }
+    },
+);
+
+has_page details_property => (
+    fields => ['weather', 'details', 'continue'],
+    title => 'What are the details of the incident',
+    next => 'witnesses',
+    tags => {
+        hide => sub { $_[0]->form->value_nequals('what', 'property'); }
     },
 );
 
@@ -356,11 +365,8 @@ has_field weather => (
 );
 
 has_field direction => (
-    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} eq 'vehicle'; } },
+    required_when => { 'what' => sub { $_[1]->form->saved_data->{what} ne 'property'; } },
     type => 'Text',
-    tags => {
-        hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
-    },
     label => 'What direction were you travelling in at the time?',
 );
 
