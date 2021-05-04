@@ -2010,6 +2010,29 @@ html.js #map .noscript {
   background: #000;
 }
 
+// Make mobile buttons look better
+#problems_nearby {
+  @extend .btn;
+  border-left: 0;
+}
+
+#mob_ok {
+  @extend .btn-primary;
+}
+
+#problems_nearby,
+#mob_ok {
+  letter-spacing: 0.5px;
+  color: #000 !important;
+  border-radius: 0;
+  border-right: 0;
+  &:hover,
+  &:active,
+  &:focus {
+    color: #000 !important;
+  }
+}
+
 .big-green-banner {
   position: relative;
   top: -1.75em;

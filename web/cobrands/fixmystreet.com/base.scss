@@ -163,11 +163,11 @@ svg|g.site-logo__svg {
         mix($primary, #fff, 50%),
         $primary,
         mix($primary, #ccc, 30%),
-        inherit,
+        #000,
         darken($primary, 3%),
         darken(mix($primary, #fff, 50%), 3%),
         mix($primary, #ccc, 30%),
-        inherit
+        #000
     );
 }
 
