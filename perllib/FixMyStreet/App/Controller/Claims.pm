@@ -78,6 +78,7 @@ sub process_claim : Private {
         areas => '',
         send_questionnaire => 0,
         bodies_str => $c->cobrand->body->id,
+        photo => $data->{photos},
         %shared,
     });
 

@@ -471,15 +471,6 @@ has_page cause => (
         $form->update_photo('photos', $fields);
         return $fields;
     },
-    post_process => sub {
-            my ($form) = @_;
-            $form->process_photo('photos');
-        },
-);
-
-has_field photos_fileid => (
-    type => 'Hidden',
-    tags => { hide => 1 },
 );
 
 has_field what_cause => (
@@ -562,6 +553,11 @@ has_field describe_cause => (
     widget => 'Textarea',
     tags => { hint => 'Include measurements (width, length and depth) where possible' },
     label => 'Describe the incident cause',
+);
+
+has_field photos_fileid => (
+    type => 'FileIdPhoto',
+    linked_field => 'photos',
 );
 
 has_field photos => (
@@ -684,7 +680,6 @@ has_page damage_vehicle => (
     post_process => sub {
         my ($form) = @_;
 
-        $form->process_photo('vehicle_photos');
         $form->process_upload('vehicle_receipts');
         $form->process_upload('tyre_receipts');
     },
@@ -698,14 +693,8 @@ has_field vehicle_damage => (
 );
 
 has_field vehicle_photos_fileid => (
-    type => 'Hidden',
-    tags => { hide => 1 },
-    validate_method => sub {
-        my $self = shift;
-        my $value = $self->value;
-        my @parts = split(/,/, $value);
-        return scalar @parts == 2;
-    }
+    type => 'FileIdPhoto',
+    linked_field => 'vehicle_photos',
 );
 
 has_field vehicle_photos => (
@@ -752,11 +741,6 @@ has_field tyre_receipts => (
         hide => sub { $_[0]->form->value_equals('tyre_damage', 'No') },
         required => sub { $_[0]->form->field('tyre_damage')->value eq 'Yes' },
     },
-    balidate_method => sub {
-        my $self = shift;
-        my $c = $self->form->{c};
-        return 1 if $self->form->saved_data->{tyre_damage} == 'Yes' && $c->req->upload('tyre_receipts');
-    },
     messages => {
         upload_file_not_found => 'Please provide a copy of the tyre purchase receipts',
     },
@@ -775,17 +759,16 @@ has_page about_property => (
         $form->handle_upload( 'property_insurance', $fields );
         return $fields;
     },
+    post_process => sub {
+        my ($form) = @_;
+        $form->process_upload('property_insurance');
+    },
 );
 
 has_field property_insurance => (
     type => 'FileIdUpload',
     validate_when_empty => 1,
     label => 'Please provide a copy of the home/contents insurance certificate',
-    validate_method => sub {
-        my $self = shift;
-        my $c = $self->form->{c};
-        return 1 if $c->req->upload('property_insurance');
-    },
     messages => {
         upload_file_not_found => 'Please provide a copy of the insurance certificate',
     },
@@ -807,7 +790,7 @@ has_page damage_property => (
     },
     post_process => sub {
         my ($form) = @_;
-        $form->process_photo('property_photos');
+        $form->process_upload( 'property_invoices');
     },
 );
 
@@ -819,14 +802,8 @@ has_field property_damage_description => (
 );
 
 has_field property_photos_fileid => (
-    tags => { hide => 1 },
-    type => 'Hidden',
-    validate_method => sub {
-        my $self = shift;
-        my $value = $self->value;
-        my @parts = split(/,/, $value);
-        return scalar @parts == 2;
-    }
+    type => 'FileIdPhoto',
+    linked_field => 'property_photos',
 );
 
 has_field property_photos => (
@@ -840,11 +817,6 @@ has_field property_invoices => (
     validate_when_empty => 1,
     tags => { hint => 'Or estimates where the damage has not yet been repaired. These must be on headed paper, addressed to you and dated' },
     label => 'Please provide receipted invoices for repairs',
-    validate_method => sub {
-        my $self = shift;
-        my $c = $self->form->{c};
-        return 1 if $c->req->upload('property_invoices');
-    },
     messages => {
         upload_file_not_found => 'Please provide a copy of the repair invoices',
     },
@@ -1144,6 +1116,7 @@ sub get_params {
 
     if ( $c->req->uploads ) {
         for my $field ( keys %{ $c->req->uploads } ) {
+            next unless $self->field($field);
             if ($self->field($field)->{type} eq 'FileIdUpload') {
                 $self->file_upload($field);
                 $params[0]->{$field} = $self->saved_data->{$field};
