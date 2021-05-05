@@ -60,6 +60,10 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     $mech->host('bromley.fixmystreet.com');
+    subtest 'UPRN redirect' => sub {
+        $mech->get_ok('/property/1000000002');
+        is $mech->uri->path, '/waste/12345';
+    };
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });

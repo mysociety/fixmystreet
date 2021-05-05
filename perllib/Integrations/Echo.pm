@@ -131,9 +131,10 @@ sub GetTasks {
 
 sub _id_ref {
     require SOAP::Lite;
-    my ($id, $type) = @_;
+    my ($id, $type, $key) = @_;
+    $key ||= 'Id';
     return ixhash(
-        Key => 'Id',
+        Key => $key,
         Type => $type,
         Value => [
             { 'msArray:anyType' => SOAP::Data->value($id) },
@@ -144,7 +145,8 @@ sub _id_ref {
 sub GetPointAddress {
     my $self = shift;
     my $id = shift;
-    my $obj = _id_ref($id, 'PointAddress');
+    my $type = shift || 'Id';
+    my $obj = _id_ref($id, 'PointAddress', $type);
     return {
         Id => '12345',
         SharedRef => { Value => { anyType => '1000000002' } },

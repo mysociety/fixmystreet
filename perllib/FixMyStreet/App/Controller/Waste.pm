@@ -586,6 +586,16 @@ sub check_existing_update : Private {
             $cfg, $p, $request->{status}, $request->{external_status_code});
 }
 
+sub uprn_redirect : Path('/property') : Args(1) {
+    my ($self, $c, $uprn) = @_;
+
+    my $cfg = $c->cobrand->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $result = $echo->GetPointAddress($uprn, 'Uprn');
+    $c->detach( '/page_error_404_not_found', [] ) unless $result;
+    $c->res->redirect('/waste/' . $result->{Id});
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
