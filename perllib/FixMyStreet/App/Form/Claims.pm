@@ -175,11 +175,10 @@ has_page where => (
 has_field location => (
     required => 1,
     tags => {
-        hide => sub { $_[0]->form->value_equals('fault_fixed', 'No'); }
+        hint => 'If you know the postcode please use that',
     },
     type => 'Text',
     label => 'Postcode, or street name and area of the source',
-    tags => { hint => 'If you know the postcode please use that' },
     validate_method => sub {
         my $self = shift;
         my $c = $self->form->c;
@@ -303,7 +302,7 @@ has_page when => (
 has_field incident_date => (
     required => 1,
     type => 'DateTime',
-    hint => 'For example 27 09 2020',
+    tags => { hint => 'For example 27 09 2020' },
     label => 'What day did the incident happen?',
     messages => {
         datetime_invalid => 'Please enter a valid date',
@@ -379,6 +378,7 @@ has_field details => (
     required => 1,
     type => 'Text',
     widget => 'Textarea',
+    tags => { hint => 'Please provide as much information as possible, eg. direction of travel, reason for journey.' },
     label => 'Describe the details of the incident',
 );
 
@@ -436,6 +436,7 @@ has_field witness_details => (
     type => 'Text',
     widget => 'Textarea',
     tags => {
+        hint => 'Please give their name, contact number, address and if they are related to you',
         hide => sub { $_[0]->form->value_equals('witnesses', 'No'); }
     },
     label => 'Please give the witness’ details',
@@ -525,6 +526,7 @@ has_field describe_cause => (
     required => 1,
     type => 'Text',
     widget => 'Textarea',
+    tags => { hint => 'Include measurements (width, length and depth) where possible' },
     label => 'Describe the incident cause',
 );
 
@@ -535,7 +537,10 @@ has_field photos_fileid => (
 
 has_field photos => (
     type => 'Photo',
-    tags => { max_photos => 2 },
+    tags => {
+        max_photos => 2,
+        hint => '(if safe to do so) including views that would help identify the location. We recommend a close up photo and a long shot showing the defect and the location.',
+    },
     label => 'Please provide two dated photos of the incident',
 );
 
@@ -670,11 +675,11 @@ has_field vehicle_photos => (
     label => 'Please provide two photos of the damage to the vehicle',
 );
 
-has_field vehicle_receipts=> (
+has_field vehicle_receipts => (
     validate_when_empty => 1,
     type => 'FileIdUpload',
     label => 'Please provide receipted invoices for repairs',
-    hint => 'Or estimates where the damage has not yet been repaired',
+    tags => { hint => 'Or estimates where the damage has not yet been repaired' },
     messages => {
         upload_file_not_found => 'Please provide invoices for repairs',
     },
@@ -782,7 +787,7 @@ has_field property_photos => (
 has_field property_invoices => (
     type => 'FileIdUpload',
     validate_when_empty => 1,
-    hint => 'Or estimates where the damage has not yet been repaired. These must be on headed paper, addressed to you and dated',
+    tags => { hint => 'Or estimates where the damage has not yet been repaired. These must be on headed paper, addressed to you and dated' },
     label => 'Please provide receipted invoices for repairs',
     messages => {
         upload_file_not_found => 'Please provide a copy of the repair invoices',
@@ -801,7 +806,7 @@ has_page about_you_personal => (
 has_field dob => (
     required => 1,
     type => 'DateTime',
-    hint => 'For example 23 05 1983',
+    tags => { hint => 'For example 23 05 1983' },
     label => 'Your date of birth',
     messages => {
         datetime_invalid => 'Please enter a valid date',
@@ -831,7 +836,7 @@ has_field 'dob.day' => (
 has_field ni_number => (
     required => 1,
     type => 'Text',
-    hint => "It's on your National Insurance card, benefit letter, payslip or P60. For example 'QQ 12 34 56 C'.",
+    tags => { hint => "It's on your National Insurance card, benefit letter, payslip or P60. For example 'QQ 12 34 56 C'." },
     label => 'Your national insurance number',
 );
 
@@ -878,10 +883,10 @@ has_field medical_attention => (
 has_field attention_date => (
     required => 0,
     type => 'DateTime',
-    hint => 'For example 11 08 2020',
     label => 'Date you received medical attention',
     required_when => { 'medical_attention' => 'Yes' },
     tags => {
+        hint => 'For example 11 08 2020',
         hide => sub { $_[0]->form->value_equals('medical_attention', 'No'); }
     },
     messages => {
