@@ -93,10 +93,6 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
-sub map_type {
-    'Bromley';
-}
-
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
