@@ -351,12 +351,15 @@ sub process_enquiry_data : Private {
     my $data = $form->saved_data;
     my $address = $c->stash->{property}->{address};
     $data->{title} = $data->{category};
-    $data->{detail} = "$data->{category}\n\n$address";
     # Read extra details in loop
+    my $detail;
     foreach (grep { /^extra_/ } keys %$data) {
         my ($id) = /^extra_(.*)/;
         $c->set_param($id, $data->{$_});
+        $detail .= "$data->{$_}\n\n";
     }
+    $detail .= $address;
+    $data->{detail} = $detail;
     $c->set_param('service_id', $data->{service_id});
     $c->forward('add_report', [ $data ]) or return;
     return 1;

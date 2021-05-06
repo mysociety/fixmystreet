@@ -252,6 +252,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
+        is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $user->email;
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
     };
