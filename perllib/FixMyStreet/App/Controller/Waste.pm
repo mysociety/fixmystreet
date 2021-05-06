@@ -477,7 +477,9 @@ sub remove_name_errors : Private {
 sub setup_categories_and_bodies : Private {
     my ($self, $c) = @_;
 
-    $c->stash->{all_areas} = $c->stash->{all_areas_mapit} = { $c->cobrand->council_area_id => { id => $c->cobrand->council_area_id } };
+    $c->stash->{fetch_all_areas} = 1;
+    $c->stash->{area_check_action} = 'submit_problem';
+    $c->forward('/council/load_and_check_areas', []);
     $c->forward('/report/new/setup_categories_and_bodies');
     my $contacts = $c->stash->{contacts};
     @$contacts = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$contacts;
