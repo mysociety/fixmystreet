@@ -495,7 +495,7 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     # Make sure we log entire request for debugging
     $c->detach('soap_error', [ 'Missing body' ]) unless $c->req->body;
     my $soap = join('', $c->req->body->getlines);
-    $c->log->debug($soap);
+    $c->log->info($soap);
 
     my $body = $c->cobrand->body;
     $c->detach('soap_error', [ 'Bad jurisdiction' ]) unless $body;
@@ -516,6 +516,8 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
 
     my $cfg = { echo => Integrations::Echo->new(%$echo) };
     my $request = $c->cobrand->construct_waste_open311_update($cfg, $event);
+    $c->detach('soap_ok') if !$request->{status} || $request->{status} eq 'confirmed'; # Ignore new events
+
     $request->{updated_datetime} = DateTime::Format::W3CDTF->format_datetime(DateTime->now);
     $request->{service_request_id} = $event->{Guid};
 

@@ -911,7 +911,7 @@ sub construct_waste_open311_update {
         description => $description,
         status => $status,
         update_id => 'waste',
-        external_status_code => "$resolution_id,,",
+        external_status_code => $resolution_id ? "$resolution_id,," : "",
         prefer_template => 1,
     };
 }
@@ -926,6 +926,7 @@ sub waste_get_event_type {
         Pending => {
             Unallocated => 'investigating',
             'Allocated to Crew' => 'action scheduled',
+            Accepted => 'action scheduled',
         },
         Closed => {
             Closed => 'fixed - council',
