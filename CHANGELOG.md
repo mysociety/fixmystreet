@@ -21,6 +21,8 @@
         - Send email reports in staff-only categories.
         - Fix Gaze sometimes being called twice on /around. #3324
         - Improved alert signup for phone-only user. #3367
+        - The permission default_to_body now also affects updates. #3317
+        - Decouple the permission to manage shortlist from default_to_body. #3317
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.

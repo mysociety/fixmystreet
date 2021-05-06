@@ -324,23 +324,21 @@ subtest "Body user, has permission to add update as anonymous user" => sub {
     is $update->anonymous, 1, 'update anonymous';
 };
 
-for my $test_permission ( qw/planned_reports default_to_body/ ) {
-    subtest "$test_permission user defaults to reporting as body" => sub {
-        $_->delete for $user->user_body_permissions;
-        for my $permission ( 'contribute_as_another_user', 'contribute_as_anonymous_user', 'contribute_as_body', $test_permission ) {
-            $user->user_body_permissions->create({ body => $body, permission_type => $permission })
-        }
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ 'fixmystreet' ],
-            MAPIT_URL => 'http://mapit.uk/',
-            PHONE_COUNTRY => 'GB',
-        }, sub {
-            $mech->get_ok('/report/new?latitude=51.7549262252&longitude=-1.25617899435');
-        };
-
-        is $mech->visible_form_values()->{form_as}, 'body', 'report as body is default';
+subtest "default_to_body user defaults to reporting as body" => sub {
+    $_->delete for $user->user_body_permissions;
+    for my $permission ( 'contribute_as_another_user', 'contribute_as_anonymous_user', 'contribute_as_body', 'default_to_body' ) {
+	$user->user_body_permissions->create({ body => $body, permission_type => $permission })
+    }
+    FixMyStreet::override_config {
+	ALLOWED_COBRANDS => [ 'fixmystreet' ],
+	MAPIT_URL => 'http://mapit.uk/',
+	PHONE_COUNTRY => 'GB',
+    }, sub {
+	$mech->get_ok('/report/new?latitude=51.7549262252&longitude=-1.25617899435');
     };
-}
+
+    is $mech->visible_form_values()->{form_as}, 'body', 'report as body is default';
+};
 
 done_testing();
 
