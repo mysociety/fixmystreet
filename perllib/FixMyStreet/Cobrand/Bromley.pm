@@ -1024,6 +1024,7 @@ sub call_api {
         '--out', $tmp,
         '--calls', encode_json(\@_),
     );
+    my $start = time();
 
     # We cannot fork directly under mod_fcgid, so
     # call an external script that calls back in.
@@ -1038,6 +1039,8 @@ sub call_api {
         $data = Storable::fd_retrieve($tmp);
     }
     $self->{c}->session->{$key} = $data;
+    my $time = time() - $start;
+    $self->{c}->log->info("[Bromley] call_api $key took $time seconds");
     return $data;
 }
 

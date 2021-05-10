@@ -6,6 +6,10 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 # Mock fetching bank holidays
 my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
 $uk->mock('_fetch_url', sub { '{}' });
