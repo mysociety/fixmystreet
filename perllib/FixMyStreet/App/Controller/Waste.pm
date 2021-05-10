@@ -104,16 +104,27 @@ sub get_pending_subscription : Private {
     my $subs = $c->model('DB::Problem')->search({
         state => 'unconfirmed',
         created => { '>=' => \"current_timestamp-'20 days'::interval" },
-        category => 'Garden Subscription',
-        title => 'Garden Subscription - New',
+        category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
+        -or => [
+                title => 'Garden Subscription - New',
+                title => 'Garden Subscription - Cancel',
+        ],
         extra => { like => '%uprn,T5:value,I' . $len . ':'. $c->stash->{property}{uprn} . '%' }
-    });
+    })->to_body($c->cobrand->body);
 
-    my $match;
+    my ($new, $cancel);
     while (my $sub = $subs->next) {
-        $match = $sub if $sub->get_extra_field_value('payment_method') eq 'direct_debit';
+        if ( $sub->get_extra_field_value('payment_method') eq 'direct_debit' ) {
+            if ( $sub->title eq 'Garden Subscription - New' ) {
+                $new = $sub;
+            } elsif ( $sub->title eq 'Garden Subscription - Cancel' ) {
+                $cancel = $sub;
+            }
+        }
+
     }
-    $c->stash->{pending_subscription} = $match;
+    $c->stash->{pending_subscription} = $new;
+    $c->stash->{pending_cancellation} = $cancel;
 }
 
 sub pay_retry : Path('pay_retry') : Args(0) {
@@ -370,6 +381,7 @@ sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
 
     my $i = Integrations::Pay360->new( { config => $c->cobrand->feature('payment_gateway') } );
 
+    $c->stash->{payment_method} = 'direct_debit';
     my $update_ref = $i->cancel_plan( {
         payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
     } );
@@ -789,6 +801,7 @@ sub garden_renew : Chained('property') : Args(0) {
 sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
 
+    my $payment_method = $c->forward('get_current_payment_method');
     my $data = $form->saved_data;
 
     $data->{name} = $c->user->name;
@@ -796,6 +809,7 @@ sub process_garden_cancellation : Private {
     $data->{phone} = $c->user->phone;
     $data->{category} = 'Cancel Garden Subscription';
     $data->{title} = 'Garden Subscription - Cancel';
+    $data->{payment_method} = $payment_method;
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     $c->set_param('Subscription_End_Date', $now->ymd);
@@ -807,7 +821,6 @@ sub process_garden_cancellation : Private {
 
     $c->forward('add_report', [ $data, 1 ]) or return;
 
-    my $payment_method = $c->forward('get_current_payment_method');
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{report}->confirm;
