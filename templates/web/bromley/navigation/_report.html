@@ -1,6 +1,6 @@
 [%~ INCLUDE navitem uri='https://www.bromley.gov.uk/info/200154/coronavirus_covid-19' label='Coronavirus update' ~%]
 
-[%~ RETURN IF problem AND problem.cobrand_data == 'waste' ~%]
+[%~ RETURN IF bodyclass == 'waste' OR (problem AND problem.cobrand_data == 'waste') ~%]
 
 [%~ IF problem AND NOT problem.non_public ~%]
     [%~ INCLUDE navitem uri='/report/new?longitude=' _ problem.longitude _ '&latitude=' _ problem.latitude label=loc('Report another problem here') attrs='class="report-a-problem-btn"' ~%]
