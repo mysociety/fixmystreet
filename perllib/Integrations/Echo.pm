@@ -133,11 +133,13 @@ sub _id_ref {
     require SOAP::Lite;
     my ($id, $type, $key) = @_;
     $key ||= 'Id';
+    my $value = SOAP::Data->value($id);
+    $value = $value->type('string') if $key eq 'Uprn';
     return ixhash(
         Key => $key,
         Type => $type,
         Value => [
-            { 'msArray:anyType' => SOAP::Data->value($id) },
+            { 'msArray:anyType' => $value },
         ],
     );
 }
