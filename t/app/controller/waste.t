@@ -64,6 +64,7 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_rene
         { code => 'Container_Instruction_Action', required => 1, automated => 'hidden_field' },
         { code => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
         { code => 'client_reference', required => 1, automated => 'hidden_field' },
+        { code => 'payment_method', required => 1, automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -909,6 +910,9 @@ FixMyStreet::override_config {
         is_deeply $dd_sent_params->{cancel_plan}, {
             payer_reference => 'GGW1000000002',
         }, "correct direct debit cancellation params sent";
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Cancellation in progress');
     };
 
     $p->update_extra_field({ name => 'payment_method', value => 'credit_card' });
