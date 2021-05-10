@@ -47,7 +47,7 @@
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>
-        <dd class="govuk-summary-list__value">[% unit.end_date %][% ' Due for renewal!' IF unit.garden_due && !unit.garden_overdue %][% ' overdue!' IF unit.garden_overdue %]</dd>
+        <dd class="govuk-summary-list__value">[% unit.end_date %][% ' Cancellation in progress' IF pending_cancellation %][% ' Due for renewal!' IF unit.garden_due && !unit.garden_overdue %][% ' overdue!' IF unit.garden_overdue %]</dd>
       </div>
     </dl>
 
@@ -57,6 +57,7 @@
     <input type="submit" value="Renew your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>
   [% END %]
+  [% IF NOT pending_cancellation %]
   <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Modify your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
@@ -65,6 +66,7 @@
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>
+  [% END %]
 [% END %]
 
   <form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">

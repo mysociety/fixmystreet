@@ -94,7 +94,7 @@
             [% IF any_request_allowed %]
               <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
             [% END %]
-            [% IF !pending_subscription OR !services_available.Garden_Waste.is_active %]
+            [% IF !pending_subscription AND !services_available.Garden_Waste.is_active %]
               <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
           [% END %]
           </ul>
