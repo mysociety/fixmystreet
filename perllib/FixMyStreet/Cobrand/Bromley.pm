@@ -9,6 +9,7 @@ use DateTime::Format::Flexible;
 use File::Temp;
 use Integrations::Echo;
 use JSON::MaybeXS;
+use List::Util qw(any);
 use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use Storable;
@@ -443,16 +444,7 @@ sub bin_addresses_for_postcode {
 }
 
 sub look_up_property {
-    my ($self, $id, $staff) = @_;
-
-    my $cfg = $self->feature('echo');
-    if ($cfg->{max_per_day} && !$staff) {
-        my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-        my $ip = $self->{c}->req->address;
-        my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";
-        my $count = Memcached::increment($key, 86400) || 0;
-        $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
-    }
+    my ($self, $id) = @_;
 
     my $calls = $self->call_api(
         "look_up_property:$id",
@@ -471,6 +463,29 @@ sub look_up_property {
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
     };
+}
+
+sub waste_bin_days_check {
+    my ($self, $staff) = @_;
+
+    my $cfg = $self->feature('echo');
+    my $c = $self->{c};
+
+    return if $staff || !$cfg->{max_per_day};
+
+    # Allow lookups of max_per_day different properties per day
+    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    my $ip = $c->req->address;
+    my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";
+
+    my $list = Memcached::get($key) || [];
+    my $id = $c->stash->{property}->{id};
+    return if any { $_ == $id } @$list; # Already visited today
+
+    $c->detach('/page_error_403_access_denied', []) if @$list >= $cfg->{max_per_day};
+
+    push @$list, $id;
+    Memcached::set($key, $list, 86400);
 }
 
 my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');

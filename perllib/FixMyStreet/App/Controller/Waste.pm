@@ -84,8 +84,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
         $c->cobrand->call_hook( clear_cached_lookups => $id );
     }
 
-    my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
-    my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id, $staff);
+    my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property;
 
     $c->stash->{latitude} = $property->{latitude};
@@ -97,6 +96,9 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
 sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
+
+    my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
+    $c->cobrand->call_hook(waste_bin_days_check => $staff);
 }
 
 sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {

@@ -368,10 +368,11 @@ subtest 'test waste max-per-day' => sub {
         },
     }, sub {
         SKIP: {
-            skip( "No memcached", 7 ) unless Memcached::increment('bromley-test');
+            skip( "No memcached", 7 ) unless Memcached::set('bromley-test', 1);
             Memcached::delete("bromley-test");
             $mech->get_ok('/waste/12345');
-            $mech->get('/waste/12345');
+            $mech->get_ok('/waste/12345');
+            $mech->get('/waste/12346');
             is $mech->res->code, 403, 'Now forbidden';
             $mech->log_in_ok('superuser@example.com');
             $mech->get_ok('/waste/12345');

@@ -150,8 +150,8 @@ sub GetPointAddress {
     my $type = shift || 'Id';
     my $obj = _id_ref($id, 'PointAddress', $type);
     return {
-        Id => '12345',
-        SharedRef => { Value => { anyType => '1000000002' } },
+        Id => $type eq 'Id' ? $id : 12345,
+        SharedRef => { Value => { anyType => $type eq 'Uprn' ? $id : '1000000002' } },
         PointType => 'PointAddress',
         PointAddressType => { Name => 'House' },
         Coordinates => { GeoPoint => { Latitude => 51.401546, Longitude => 0.015415 } },
