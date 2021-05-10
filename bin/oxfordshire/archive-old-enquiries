@@ -40,7 +40,7 @@ my ($opts, $usage) = describe_options(
     ], required => 1 } ],
     ['closure-cutoff=s',  "Anything before this will be closed with no email/alert", { required => 1 } ],
     ['closure_file=s',    "path to text file with the message to add to reports" ],
-    ['closure_message=s', "text of the message to add to reports" ],
+    ['closure_text=s', "text of the message to add to reports" ],
     ['closed_state=s', "state to set reports to" ],
     ['limit|l=s',      "limit to a certain number of reports/users to be closed"],
     ['help|h',         "print usage message and exit" ],
