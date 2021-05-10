@@ -111,7 +111,10 @@ FixMyStreet::override_config {
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Now check your email');
-        my $link = $mech->get_link_from_email;
+        my $email = $mech->get_email;
+        is $email->header('Subject'), 'Confirm your report on Bromley Recycling Services';
+        my $link = $mech->get_link_from_email($email);
+        $mech->clear_emails_ok;
         $mech->get_ok($link);
         $mech->content_contains('Your missed collection has been reported');
         FixMyStreet::Script::Reports::send();
