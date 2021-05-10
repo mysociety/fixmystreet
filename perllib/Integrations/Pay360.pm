@@ -203,7 +203,26 @@ sub get_recent_payments {
 }
 
 sub cancel_plan {
-    return 1;
+    my ($self, $args) = @_;
+
+    my $obj = [
+        reference => $args->{payer_reference},
+        send0CString => 'TRUE',
+        clientSUN => $self->config->{dd_sun},
+    ];
+
+    my $res = $self->call('CancelPayer', @$obj);
+    if ( $res ) {
+        $res = $res->{CancelPayerResponse}->{CancelPayerResult};
+
+        if ( $res->{OverallStatus} eq 'True' ) {
+            return 1;
+        } else {
+            return { error => $res->{StatusMessage} }
+        }
+    }
+
+    return { error => "unknown error" };
 }
 
 1;
