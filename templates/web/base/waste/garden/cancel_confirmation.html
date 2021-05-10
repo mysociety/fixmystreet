@@ -4,6 +4,13 @@
 
 <p>Any needed text here</p>
 
+[% IF payment_method == 'direct_debit' %]
+<p>
+It will take a few days to confirm the cancellation of your direct debit so you will
+see a Garden Waste Collection on your bin calendar until that happens.
+</p>
+[% END %]
+
 <p><a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a></p>
 
 [% INCLUDE footer.html %]
