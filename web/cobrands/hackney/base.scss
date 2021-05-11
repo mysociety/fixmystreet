@@ -205,4 +205,22 @@ select.form-error {
   margin: 1em 0;
 }
 
+.hackney-announcement {
+  padding: 24px 0;
+  margin: 20px 0 36px 0;
+  color: #0b0c0c;
+  background-color: rgba(164,214,94,.5);
+  border-top: 1px solid #84bd00;
+  border-bottom: 1px solid #84bd00;
+
+  h2 {
+    margin-top: 0;
+    font-weight: 600;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
 @import "../sass/noise";

@@ -1,4 +1,8 @@
 body.noise {
+    .content {
+      padding: 1em 0;
+    }
+
     label, legend {
       margin-top: 0; font-weight: normal !important;
     } /* from base/h5bp */
