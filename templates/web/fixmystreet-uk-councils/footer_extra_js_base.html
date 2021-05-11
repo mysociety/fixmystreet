@@ -5,6 +5,11 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('noise');
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
         version('/cobrands/fixmystreet/assets.js'),
     );
+    IF alloy;
+        scripts.push(
+            version('/cobrands/fixmystreet-uk-councils/alloy.js'),
+        );
+    END;
     IF validation;
         scripts.push(
             version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),

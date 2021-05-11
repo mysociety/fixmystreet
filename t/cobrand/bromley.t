@@ -6,6 +6,10 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 # Mock fetching bank holidays
 my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
 $uk->mock('_fetch_url', sub { '{}' });
@@ -14,6 +18,10 @@ $uk->mock('_fetch_url', sub { '{}' });
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $body = $mech->create_body_ok( 2482, 'Bromley Council',
     { can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user });
+my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit'] });
+$staffuser->add_to_roles($role);
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -49,6 +57,9 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'bromley',
     areas => '2482,8141',
     user => $user,
+    extra => {
+        contributed_by => $staffuser->id,
+    },
 });
 my $report = $reports[0];
 
@@ -246,6 +257,9 @@ subtest 'check special subcategories in admin' => sub {
     $user->discard_changes;
     is_deeply $user->get_extra_metadata('categories'), [ $contact->id ];
     is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
+    $user->unset_extra_metadata('categories');
+    $user->unset_extra_metadata('subcategories');
+    $user->update;
 };
 
 subtest 'check title field on report page for staff' => sub {
@@ -268,6 +282,7 @@ subtest 'check heatmap page' => sub {
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
+    $user->update({ area_ids => undef });
 };
 
 FixMyStreet::override_config {
@@ -290,7 +305,7 @@ FixMyStreet::override_config {
     subtest 'test crew reported issue' => sub {
         set_fixed_time('2020-05-21T12:00:00Z'); # After sample container mix
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr/Mixed Recycling.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection has been adjusted/s);
+        $mech->content_like(qr/Mixed Recycling.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection was adjusted/s);
         $mech->content_contains('A missed collection cannot be reported, please see the last collection status above.');
         $mech->content_lacks('Report a mixed recycling ');
         restore_time();
@@ -299,14 +314,14 @@ FixMyStreet::override_config {
     subtest 'test reporting before/after completion' => sub {
         set_fixed_time('2020-05-27T11:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
-        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(in progress\)/s);
+        $mech->content_like(qr/Non-Recyclable Refuse.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May, at 10:00am\s*<p>\s*Wrong Bin Out/s);
+        $mech->content_like(qr/Paper &amp; Cardboard.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(In progress\)/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_lacks('Waste spillage');
 
         set_fixed_time('2020-05-27T19:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr/Refuse collection.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s+\(completed at 10:00am\)\s*<p>\s*Wrong Bin Out/s);
+        $mech->content_like(qr/Non-Recyclable Refuse.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May, at 10:00am\s*<p>\s*Wrong Bin Out/s);
         $mech->content_like(qr/Paper &amp; Cardboard.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 27th May\s*<\/dd>/s);
         $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
         $mech->content_contains('Waste spillage');
@@ -327,19 +342,19 @@ FixMyStreet::override_config {
 
     subtest 'test reporting before/after completion' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('(completed at 10:00am)');
+        $mech->content_contains('May, at 10:00am');
         $mech->content_contains('We could not collect your waste as it was not correctly presented.');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
-        $mech->content_contains('Report a refuse collection');
+        $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a refuse collection');
+        $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-29T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a refuse collection');
+        $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-30T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Report a refuse collection');
+        $mech->content_lacks('Report a non-recyclable refuse collection');
         restore_time();
     };
 };
@@ -353,10 +368,11 @@ subtest 'test waste max-per-day' => sub {
         },
     }, sub {
         SKIP: {
-            skip( "No memcached", 7 ) unless Memcached::increment('bromley-test');
+            skip( "No memcached", 7 ) unless Memcached::set('bromley-test', 1);
             Memcached::delete("bromley-test");
             $mech->get_ok('/waste/12345');
-            $mech->get('/waste/12345');
+            $mech->get_ok('/waste/12345');
+            $mech->get('/waste/12346');
             is $mech->res->code, 403, 'Now forbidden';
             $mech->log_in_ok('superuser@example.com');
             $mech->get_ok('/waste/12345');
@@ -422,6 +438,11 @@ subtest 'updating of waste reports' => sub {
             waste => { bromley => 1 }
         },
     }, sub {
+        $body->response_templates->create({
+            title => 'Allocated title', text => 'This has been allocated',
+            'auto_response' => 1, state => 'action scheduled',
+        });
+
         @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
             category => 'Report missed collection',
             cobrand_data => 'waste',
@@ -444,6 +465,8 @@ subtest 'updating of waste reports' => sub {
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
         is $report->comments->count, 1, 'A new update';
+        my $update = $report->comments->first;
+        is $update->text, 'This has been allocated';
         is $report->state, 'action scheduled', 'A state change';
 
         $report->update({ external_id => 'waste-15003-' });
@@ -555,6 +578,18 @@ EOF
 
         FixMyStreet::App->log->enable('info');
     };
+};
+
+subtest 'Dashboard CSV extra columns' => sub {
+    $mech->log_in_ok($staffuser->email);
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('"Reported As","Staff User","Staff Role"');
+    $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
 };
 
 done_testing();

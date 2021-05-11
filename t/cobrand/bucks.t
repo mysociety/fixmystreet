@@ -281,7 +281,7 @@ subtest 'extra CSV columns are present' => sub {
     is $rows[3]->[21], '', 'Staff User is empty if not made on behalf of another user';
 
     $mech->create_comment_for_problem($report, $counciluser, 'Staff User', 'Some update text', 'f', 'confirmed', undef, {
-        extra => { contributed_as => 'body' }});
+        extra => { contributed_as => 'body', contributed_by => $counciluser->id }});
     $mech->create_comment_for_problem($report, $counciluser, 'Other User', 'Some update text', 'f', 'confirmed', undef, {
         extra => { contributed_as => 'another_user', contributed_by => $counciluser->id }});
 
@@ -297,7 +297,7 @@ subtest 'extra CSV columns are present' => sub {
         ],
         'Column headers look correct';
 
-    is $rows[1]->[8], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[1]->[8], $counciluser->email, 'Staff User is correct if made on behalf of body';
     is $rows[2]->[8], $counciluser->email, 'Staff User is correct if made on behalf of another user';
 };
 

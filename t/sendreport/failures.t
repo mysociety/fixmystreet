@@ -22,8 +22,6 @@ my $contact = $mech->create_contact_ok(
 
 my $user = $mech->create_user_ok( 'test@example.com' );
 
-my $dt = DateTime->now->add( minutes => -5 );
-
 my ($p1, $p2) = $mech->create_problems_for_body(2, $body->id, 'Test', {
     user => $user,
     bodies_str => '1000',
@@ -34,7 +32,7 @@ my ($p1, $p2) = $mech->create_problems_for_body(2, $body->id, 'Test', {
 } );
 
 $p1->update({
-    confirmed => $dt,
+    confirmed => $p1->confirmed->add( minutes => -5 ),
 });
 
 subtest "check sendreport failure messages" => sub {

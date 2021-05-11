@@ -239,7 +239,8 @@ sub alert_updates_by {
     return 'none' if $pref eq 'none';
 
     # Only send text alerts for new report updates at present
-    my $allow_phone_update = ($self->phone_verified && $cobrand->sms_authentication);
+    my $parsed = FixMyStreet::SMS->parse_username($self->phone);
+    my $allow_phone_update = ($self->phone_verified && $cobrand->sms_authentication && $parsed->{may_be_mobile});
 
     return 'none' unless $self->email_verified || $allow_phone_update;
     return 'phone' if $allow_phone_update && (!$self->email_verified || $pref eq 'phone');

@@ -195,7 +195,7 @@ fixmystreet.mobile_reporting = {
   remove_ui: function() {
     // Removes the "app-like" mobile reporting UI, reverting all the
     // changes made by fixmystreet.mobile_reporting.apply_ui().
-    $('html').removeClass('map-fullscreen only-map map-reporting');
+    $('html').removeClass('map-fullscreen only-map map-reporting map-page');
     $('#mob_sub_map_links').remove();
 
     // Turn off the mobile map filters.
@@ -301,6 +301,9 @@ fixmystreet.pageController = {
         $(fixmystreet).trigger('report_new:page_change', [ $curr, $page ]);
     },
     mapStepButtons: function() {
+        // We are now in the reporting flow, so set the page flag used for error display
+        $('html').addClass('map-page');
+
         var $map_box = $('#map_box');
         var links = '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>';
         if (fixmystreet.page !== 'new') {
@@ -1777,6 +1780,7 @@ fixmystreet.display = {
         fixmystreet.page = fixmystreet.original.page;
         if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
             $('#mob_sub_map_links').remove();
+            $('html').removeClass('map-page');
             fixmystreet.mobile_reporting.apply_ui();
         }
 

@@ -57,8 +57,7 @@ sub validate {
     $self->add_form_error('Please specify what was missed')
         unless $any;
 
-    $self->add_form_error('Please specify at least one of phone or email')
-        unless $self->field('phone')->is_inactive || $self->field('phone')->value || $self->field('email')->value;
+    $self->next::method();
 }
 
 1;

@@ -265,7 +265,7 @@ sub comment_text_for_request {
     }
 
     my $desc = $request->{description} || '';
-    if ($desc && (!$template || $template !~ /\{\{description}}/)) {
+    if ($desc && (!$template || ($template !~ /\{\{description}}/ && !$request->{prefer_template}))) {
         return $desc;
     }
 

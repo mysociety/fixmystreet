@@ -485,7 +485,7 @@ function get_asset_pick_message() {
     var message;
     if (typeof this.fixmystreet.asset_item_message !== 'undefined') {
         message = this.fixmystreet.asset_item_message;
-        message = message.replace('ITEM', this.fixmystreet.asset_item);
+        message = message.replace(/ITEM/g, this.fixmystreet.asset_item);
     } else {
         message = 'You can pick a <b class="asset-' + this.fixmystreet.asset_type + '">' + this.fixmystreet.asset_item + '</b> from the map &raquo;';
     }

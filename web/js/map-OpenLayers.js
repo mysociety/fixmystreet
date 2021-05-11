@@ -1277,6 +1277,7 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
             this.initial_page = page = qs.p || 1;
         }
         options.params.p = page;
+        options.params.zoom = fixmystreet.map.getZoom();
         return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
     },
     CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"

@@ -29,7 +29,7 @@
   <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
-    <input type="submit" value="Request a new [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="Request a [% unit.garden_waste ? 'replacement' : 'new' %] [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
   <form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">

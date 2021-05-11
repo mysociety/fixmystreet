@@ -25,11 +25,13 @@ use FixMyStreet::Email;
 
 my ($verbose, $nomail) = CronFns::options();
 
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new();
+
 # Only run on working days
 my $now = DateTime->now();
-exit if FixMyStreet::Cobrand::Zurich::is_public_holiday($now) or FixMyStreet::Cobrand::Zurich::is_weekend($now);
+my $wd = $cobrand->working_days;
+exit if $wd->is_public_holiday($now) or $wd->is_weekend($now);
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new();
 my %bodies = map { $_->id => $_ } FixMyStreet::DB->resultset("Body")->all;
 
 loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'submitted' ] );
@@ -39,7 +41,7 @@ loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'feedback pending'] );
 sub loop_through {
     my ( $template, $include_parent, $days, $states ) = @_;
     my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
-    my $date_threshold = $dtf->format_datetime(FixMyStreet::Cobrand::Zurich::sub_days( $now, $days ));
+    my $date_threshold = $dtf->format_datetime($wd->sub_days( $now, $days ));
 
     my $reports = FixMyStreet::DB->resultset("Problem")->search( {
         state => $states,

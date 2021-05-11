@@ -240,7 +240,7 @@ EOF
     $object->insert;
 
     if ($c->stash->{report}) {
-        $c->forward('/report/new/create_related_things');
+        $c->forward('/report/new/create_related_things', [ $c->stash->{report} ]);
     } else {
         # Send alert email, like would be sent for report
         my $recipient = $c->cobrand->noise_destination_email($object->problem, $c->cobrand->council_name);

@@ -3,8 +3,3 @@
     version('/cobrands/bromley/a-z-nav.js'),
 ) %]
 [% PROCESS 'footer_extra_js_base.html' cobrand_js=1 validation=1 tfl=1 roadworks=1 %]
-[% IF bodyclass.match('mappage');
-    scripts.push(
-        version('/cobrands/bromley/map.js'),
-    );
-END %]

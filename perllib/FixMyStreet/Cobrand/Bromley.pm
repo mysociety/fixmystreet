@@ -9,6 +9,7 @@ use DateTime::Format::Flexible;
 use File::Temp;
 use Integrations::Echo;
 use JSON::MaybeXS;
+use List::Util qw(any);
 use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use Storable;
@@ -91,10 +92,6 @@ sub disambiguate_location {
 
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
-}
-
-sub map_type {
-    'Bromley';
 }
 
 # Bromley pins always yellow
@@ -422,6 +419,15 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+sub clear_cached_lookups {
+    my ($self, $id) = @_;
+
+    my $key = "bromley:echo:look_up_property:$id";
+    delete $self->{c}->session->{$key};
+    $key = "bromley:echo:bin_services_for_address:$id";
+    delete $self->{c}->session->{$key};
+}
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
@@ -438,18 +444,10 @@ sub bin_addresses_for_postcode {
 }
 
 sub look_up_property {
-    my ($self, $id, $staff) = @_;
-
-    my $cfg = $self->feature('echo');
-    if ($cfg->{max_per_day} && !$staff) {
-        my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-        my $ip = $self->{c}->req->address;
-        my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";
-        my $count = Memcached::increment($key, 86400) || 0;
-        $self->{c}->detach('/page_error_403_access_denied', []) if $count > $cfg->{max_per_day};
-    }
+    my ($self, $id) = @_;
 
     my $calls = $self->call_api(
+        "look_up_property:$id",
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
@@ -465,6 +463,29 @@ sub look_up_property {
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
     };
+}
+
+sub waste_bin_days_check {
+    my ($self, $staff) = @_;
+
+    my $cfg = $self->feature('echo');
+    my $c = $self->{c};
+
+    return if $staff || !$cfg->{max_per_day};
+
+    # Allow lookups of max_per_day different properties per day
+    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    my $ip = $c->req->address;
+    my $key = FixMyStreet->test_mode ? "bromley-test" : "bromley-$ip-$today";
+
+    my $list = Memcached::get($key) || [];
+    my $id = $c->stash->{property}->{id};
+    return if any { $_ == $id } @$list; # Already visited today
+
+    $c->detach('/page_error_403_access_denied', []) if @$list >= $cfg->{max_per_day};
+
+    push @$list, $id;
+    Memcached::set($key, $list, 86400);
 }
 
 my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
@@ -525,6 +546,7 @@ sub bin_services_for_address {
         14 => 'Wheeled Bin (Paper)',
         9 => 'Kitchen Caddy',
         10 => 'Outside Food Waste Container',
+        44 => 'Garden Waste Container',
         46 => 'Wheeled Bin (Food)',
     };
     my %service_to_containers = (
@@ -534,6 +556,7 @@ sub bin_services_for_address {
         541 => [ 14 ],
         542 => [ 9, 10 ],
         544 => [ 46 ],
+        545 => [ 44 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -567,7 +590,7 @@ sub bin_services_for_address {
     }
     push @to_fetch, GetTasks => \@task_refs if @task_refs;
 
-    my $calls = $self->call_api(@to_fetch);
+    my $calls = $self->call_api('bin_services_for_address:' . $property->{id}, @to_fetch);
 
     my @out;
     my %task_ref_to_row;
@@ -581,15 +604,37 @@ sub bin_services_for_address {
 
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
+        my $service_name = $service_name_override{$_->{ServiceId}} || $_->{ServiceName};
+
+        my $request_max = $quantity_max{$_->{ServiceId}};
+
+        my $garden = 0;
+        my $garden_bins;
+        if ($service_name eq 'Garden Waste') {
+            $garden = 1;
+            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+            foreach (@$data) {
+                next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
+                    $garden_bins = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+                }
+            }
+            $request_max = $garden_bins;
+        }
+
         my $row = {
             id => $_->{Id},
             service_id => $_->{ServiceId},
-            service_name => $service_name_override{$_->{ServiceId}} || $_->{ServiceName},
+            service_name => $service_name,
+            garden_waste => $garden,
+            garden_bins => $garden_bins,
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
-            request_allowed => $request_allowed{$_->{ServiceId}},
+            request_allowed => $request_allowed{$_->{ServiceId}} && $request_max,
             request_open => $open_request,
             request_containers => $containers,
-            request_max => $quantity_max{$_->{ServiceId}},
+            request_max => $request_max,
             enquiry_open_events => $open->{enquiry},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
@@ -631,7 +676,7 @@ sub bin_services_for_address {
             }
 
             my $row = $task_ref_to_row{$ref};
-            $row->{last}{state} = $state;
+            $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
             $row->{last}{completed} = $completed;
             $row->{last}{resolution} = $resolution;
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
@@ -711,7 +756,8 @@ sub _parse_schedules {
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
         if ($d && (!$min_next || $d < $min_next->{date})) {
-            $next_changed = $next->{CurrentScheduledDate}{DateTime} ne $next->{OriginalScheduledDate}{DateTime};
+            my $next_original = construct_bin_date($next->{OriginalScheduledDate});
+            $next_changed = $d->strftime("%F") ne $next_original->strftime("%F");
             $min_next = {
                 date => $d,
                 ordinal => ordinal($d->day),
@@ -724,14 +770,16 @@ sub _parse_schedules {
         # It is possible the last instance for this schedule has been rescheduled to
         # be in the future. If so, we should treat it like it is a next instance.
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
-            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            my $last_original = construct_bin_date($last->{OriginalScheduledDate});
+            my $last_changed = $d->strftime("%F") ne $last_original->strftime("%F");
             $min_next = {
                 date => $d,
                 ordinal => ordinal($d->day),
                 changed => $last_changed,
             };
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
-            my $last_changed = $last->{CurrentScheduledDate}{DateTime} ne $last->{OriginalScheduledDate}{DateTime};
+            my $last_original = construct_bin_date($last->{OriginalScheduledDate});
+            my $last_changed = $d->strftime("%F") ne $last_original->strftime("%F");
             $max_last = {
                 date => $d,
                 ordinal => ordinal($d->day),
@@ -878,7 +926,8 @@ sub construct_waste_open311_update {
         description => $description,
         status => $status,
         update_id => 'waste',
-        external_status_code => "$resolution_id,,",
+        external_status_code => $resolution_id ? "$resolution_id,," : "",
+        prefer_template => 1,
     };
 }
 
@@ -892,11 +941,13 @@ sub waste_get_event_type {
         Pending => {
             Unallocated => 'investigating',
             'Allocated to Crew' => 'action scheduled',
+            Accepted => 'action scheduled',
         },
         Closed => {
             Closed => 'fixed - council',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
+            'Partially Completed' => 'closed',
             Rejected => 'closed',
         },
     };
@@ -942,6 +993,27 @@ sub waste_check_last_update {
     return 1;
 }
 
+sub waste_munge_request_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $container = $c->stash->{containers}{$id};
+    my $quantity = $data->{"quantity-$id"};
+    my $reason = $data->{replacement_reason} || '';
+    $data->{title} = "Request new $container";
+    $data->{detail} = "Quantity: $quantity\n\n$address";
+    $c->set_param('Container_Type', $id);
+    $c->set_param('Quantity', $quantity);
+    if ($reason eq 'damaged') {
+        $c->set_param('Action', '2::1'); # Remove/Deliver
+        $c->set_param('Reason', 3); # Damaged
+    } elsif ($reason eq 'stolen' || $reason eq 'taken') {
+        $c->set_param('Reason', 1); # Missing / Stolen
+    }
+}
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};
@@ -950,11 +1022,16 @@ sub admin_templates_external_status_code_hook {
     my $task_type = $c->get_param('task_type') || '';
     my $task_state = $c->get_param('task_state') || '';
 
-    return "$res_code,$task_type,$task_state";
+    my $code = "$res_code,$task_type,$task_state";
+    $code = '' if $code eq ',,';
+    return $code;
 }
 
 sub call_api {
-    my $self = shift;
+    my ($self, $key) = (shift, shift);
+
+    $key = "bromley:echo:$key";
+    return $self->{c}->session->{$key} if !FixMyStreet->test_mode && $self->{c}->session->{$key};
 
     my $tmp = File::Temp->new;
     my @cmd = (
@@ -962,6 +1039,7 @@ sub call_api {
         '--out', $tmp,
         '--calls', encode_json(\@_),
     );
+    my $start = time();
 
     # We cannot fork directly under mod_fcgid, so
     # call an external script that calls back in.
@@ -975,6 +1053,9 @@ sub call_api {
         system(@cmd);
         $data = Storable::fd_retrieve($tmp);
     }
+    $self->{c}->session->{$key} = $data;
+    my $time = time() - $start;
+    $self->{c}->log->info("[Bromley] call_api $key took $time seconds");
     return $data;
 }
 
@@ -1003,6 +1084,45 @@ sub _parallel_api_calls {
     $pm->wait_all_children;
 
     return \%calls;
+}
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_user => 'Staff User',
+        staff_role => 'Staff Role',
+    );
+
+    my $user_lookup = $self->csv_staff_users;
+
+    my $userroles = FixMyStreet::DB->resultset("UserRole")->search({
+        user_id => [ keys %$user_lookup ],
+    }, {
+        prefetch => 'role'
+    });
+    my %userroles;
+    while (my $userrole = $userroles->next) {
+        my $user_id = $userrole->user_id;
+        my $role = $userrole->role->name;
+        push @{$userroles{$user_id}}, $role;
+    }
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $report->get_extra_metadata('contributed_by');
+        my $staff_user = '';
+        my $staff_role = '';
+        if ($by) {
+            $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
+            $staff_role = join(',', @{$userroles{$by} || []});
+        }
+        return {
+            staff_user => $staff_user,
+            staff_role => $staff_role,
+        };
+    });
 }
 
 1;

@@ -111,6 +111,14 @@ sub update : Private {
     my $current_category = $problem->category;
     my $new_category = $c->get_param('category');
 
+    if (!$new_category) {
+        my $errors = $c->stash->{errors} || [];
+        push @$errors, _"Please choose a category";
+        $c->stash->{errors} = $errors;
+
+        $c->detach;
+    }
+
     my $changed = $c->forward('/admin/reports/edit_category', [ $problem, 1 ] );
 
     if ( $changed ) {

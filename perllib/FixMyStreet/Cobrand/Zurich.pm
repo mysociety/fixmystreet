@@ -255,13 +255,17 @@ my @public_holidays = (
     '2022-05-27', '2022-12-27', '2022-12-28', '2022-12-29', '2022-12-30',
 );
 
+sub working_days {
+    return FixMyStreet::WorkingDays->new( public_holidays => \@public_holidays );
+}
+
 sub overdue {
     my ( $self, $problem ) = @_;
 
     my $w = $problem->created;
     return 0 unless $w;
 
-    my $wd = FixMyStreet::WorkingDays->new( public_holidays => \@public_holidays );
+    my $wd = $self->working_days;
 
     # call with previous state
     if ( $problem->state eq 'submitted' ) {

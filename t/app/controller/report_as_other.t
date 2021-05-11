@@ -185,7 +185,7 @@ subtest "Superuser, can add report as anonymous user" => sub {
     is $report->anonymous, 1, 'report anonymous';
     is $report->send_questionnaire, 0, 'no questionnaire';
     is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
-    is $report->get_extra_metadata('contributed_by'), undef;
+    is $report->get_extra_metadata('contributed_by'), $user->id;
 
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",

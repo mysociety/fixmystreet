@@ -1,1 +1,1 @@
-Bromley FixMyStreet
+[% IF report.cobrand_data == 'waste' %]Bromley Recycling Services[% ELSE %]Bromley FixMyStreet[% END %]

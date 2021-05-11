@@ -1,0 +1,44 @@
+#!/usr/bin/env perl
+#
+# This updates existing reports by current staff users lacking a contributed_by
+# to include a contributed_by of their user ID. This is so this information is
+# retained if a user stops being a staff user, and is already stored for report
+# as another/anonymous user.
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c',
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+my $rs = FixMyStreet::DB->resultset("Problem")->search({
+    -or => [
+        'user.from_body' => { '!=', undef },
+        'user.is_superuser' => 1,
+    ],
+    'me.extra' => [ undef, { -not_like => '%contributed_by%' } ],
+}, {
+    join => 'user',
+});
+say sprintf "Found %d rows", $rs->count;
+say "DRY RUN" unless $opt->commit;
+while (my $row = $rs->next) {
+    $row->set_extra_metadata( contributed_by => $row->user->id );
+    if ($opt->commit) {
+        $row->update;
+    }
+}

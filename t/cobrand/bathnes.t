@@ -36,6 +36,7 @@ $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2651,", category => 'Traffic lights', cobrand => 'bathnes',
     user => $counciluser, extra => {
         contributed_as => 'body',
+        contributed_by => $counciluser->id,
     }
 });
 $mech->create_problems_for_body(1, $body->id, 'Title', {
@@ -186,7 +187,7 @@ subtest 'extra CSV columns are present if permission granted' => sub {
     is $rows[2]->[20], 'body', 'Reported As is correct if made on behalf of body';
     is $rows[2]->[21], $counciluser->email, 'User email is correct';
     is $rows[2]->[22], '', 'User phone number is correct';
-    is $rows[2]->[23], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[2]->[23], $counciluser->email, 'Staff User is correct is made on behalf of body';
     is $rows[2]->[24], '', 'Attribute Data is correct';
 
     is $rows[3]->[18], 'website', 'No device type';

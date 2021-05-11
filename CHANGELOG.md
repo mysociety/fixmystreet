@@ -12,6 +12,7 @@
         - Improve `#geolocate_link` display, especially for smaller screens. #2048
         - Allow email alert radius to be specified. #68
         - Update URL on /my when map moves. #3358
+        - Make anonymous updates clearer in email alerts. #3417
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.
@@ -29,9 +30,13 @@
         - Improve wording of new report Private checkbox.
         - No questionnaires on reports as body/anonymous.
         - CSV export, improve Site Used and add Device Type.
+        - Always record contributed_by for staff users.
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
+        - Show relevant updates in alert-update email preview. #3417
+    - Open311 improvements:
+        - Consistent protected field ordering.
     - Security:
         - Increase minimum password length to eight.
 

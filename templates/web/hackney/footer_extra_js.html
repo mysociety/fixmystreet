@@ -1,7 +1,1 @@
-[%
-IF bodyclass.match('mappage');
-  scripts.push(
-    version('/cobrands/fixmystreet-uk-councils/alloy.js'),
-  );
-END %]
-[% PROCESS 'footer_extra_js_base.html' highways=1 tfl=1 cobrand_js=1 validation=1 %]
+[% PROCESS 'footer_extra_js_base.html' highways=1 tfl=1 cobrand_js=1 validation=1 alloy=1 %]

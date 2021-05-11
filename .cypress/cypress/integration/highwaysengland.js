@@ -27,3 +27,22 @@ describe('Highways England cobrand tests', function() {
         cy.nextPageReporting();
     });
 });
+
+describe('Highways England cobrand mobile tests', function() {
+    it('does not allow reporting on DBFO roads on mobile either', function() {
+        cy.server();
+        cy.route('POST', '**/mapserver/highways', 'fixture:highways.xml').as('highways-tilma');
+        cy.route('**/report/new/ajax*').as('report-ajax');
+
+        cy.viewport(320, 568);
+        cy.visit('http://highwaysengland.localhost:3001/');
+        cy.contains('Go');
+        cy.get('[name=pc]').type(Cypress.env('postcode'));
+        cy.get('[name=pc]').parents('form').submit();
+        cy.url().should('include', '/around');
+        cy.wait('@highways-tilma');
+        cy.get('#map_box').click(80, 249);
+        cy.wait('@report-ajax');
+        cy.contains('report on roads directly maintained').should('be.visible');
+    });
+});

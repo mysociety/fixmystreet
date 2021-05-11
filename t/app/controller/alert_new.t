@@ -76,7 +76,7 @@ foreach my $test (
             FixMyStreet::override_config {
                 SMS_AUTHENTICATION => 1,
             }, sub {
-                $phone_user = $mech->log_in_ok( '01234567890' );
+                $phone_user = $mech->log_in_ok( '07700900002' );
             };
         }
 
@@ -497,7 +497,8 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
 
     my $email = $emails[0];
     is +(my $c = () = $email->as_string =~ /Other User/g), 2, 'Update name given, twice';
-    unlike $email->as_string, qr/Anonymous User/, 'Update name not given';
+    unlike $email->as_string, qr/Anonymous User/, 'Update name not given for anonymous update';
+    like $email->as_string, qr/Posted anonymously/, '"Posted anonymously" text shown for anonymous update';
 
     $report->discard_changes;
     ok $report->get_extra_metadata('closure_alert_sent_at'), 'Closure time set';
@@ -964,7 +965,7 @@ FixMyStreet::override_config {
     # Create a user with both email and phone verified
     my $user1 = $mech->create_user_ok('alerts@example.com',
         name => 'Alert User',
-        phone => '01234',
+        phone => '07700900003',
         email_verified => 1,
         phone_verified => 1,
     );
@@ -978,7 +979,7 @@ FixMyStreet::override_config {
         user => $user2,
     });
 
-    my $user0 = $mech->log_in_ok('01234567890');
+    my $user0 = $mech->log_in_ok('07700900002');
     $mech->get_ok('/alert/subscribe?id=' . $report->id);
     $mech->content_contains('Receive a text when updates are left');
     $mech->submit_form_ok({ button => 'alert' });

@@ -588,6 +588,9 @@ sub load_and_group_problems : Private {
         }
     }
 
+    my $extra_pins = $c->cobrand->call_hook('extra_reports_pins');
+    @pins = (@pins, @$extra_pins) if $extra_pins;
+
     $c->stash(
         problems      => \%problems,
         pins          => \@pins,

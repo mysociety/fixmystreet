@@ -49,4 +49,16 @@ before after_build => sub {
     map { $saved_data->{$_} = 1 } grep { /^(service|container)-/ && $c->req->params->{$_} } keys %{$c->req->params};
 };
 
+sub validate {
+    my $self = shift;
+
+    my $c = $self->c;
+    my $is_staff_user = ($c->user_exists && ($c->user->from_body || $c->user->is_superuser));
+    $self->add_form_error('Please specify an email address')
+        unless $self->field('email')->is_inactive || $self->field('email')->value || $is_staff_user;
+
+    $self->add_form_error('Please specify at least one of phone or email')
+        unless $self->field('phone')->is_inactive || $self->field('phone')->value || $self->field('email')->value;
+}
+
 1;
