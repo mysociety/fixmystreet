@@ -1207,7 +1207,7 @@ sub state_groups_inspect {
     [
         [ $rs->display('confirmed'), [ grep { $_ ne 'planned' } FixMyStreet::DB::Result::Problem->open_states ] ],
         @fixed ? [ $rs->display('fixed'), [ 'fixed - council' ] ] : (),
-        [ $rs->display('closed'), [ grep { $_ ne 'closed' } FixMyStreet::DB::Result::Problem->closed_states ] ],
+        [ $rs->display('closed'), [ FixMyStreet::DB::Result::Problem->closed_states ] ],
     ]
 }
 
