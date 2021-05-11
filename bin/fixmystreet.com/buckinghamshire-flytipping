@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# If a district flytipping report within Buckinghamshire has not been closed
+# If an off-road flytipping report within Buckinghamshire has not been closed
 # after three weeks, close it with a message. If it's older than six weeks,
 # use a different message and suppress any alerts.
 
@@ -15,7 +15,6 @@ BEGIN {
 }
 
 use constant BUCKS_NAME => 'Buckinghamshire Council';
-use constant EX_DISTRICTS => ['Aylesbury Vale District Council', 'Chiltern District Council', 'South Bucks District Council', 'Wycombe District Council'];
 use constant TIME_OPEN => '3 weeks';
 use constant TIME_OPEN_ALERT => '6 weeks';
 
@@ -32,10 +31,6 @@ print($usage->text), exit if $opts->help;
 
 my $body = FixMyStreet::DB->resultset("Body")->search({ name => BUCKS_NAME })->first;
 die "Could not find Bucks body" unless $body;
-
-my @districts = FixMyStreet::DB->resultset("Body")->search({ name => EX_DISTRICTS })->all;
-my @district_ids = map { $_->id } @districts;
-die "Did not find all districts" unless @district_ids == 4;
 
 find_problems(TIME_OPEN_ALERT, TIME_OPEN, 'Auto-closure', 1);
 find_problems(undef, TIME_OPEN_ALERT, 'Auto-closure (old)', 0);
@@ -58,20 +53,10 @@ sub find_problems {
     }
 
     # Fetch all Flytipping problems made off-road (i.e. those that previously
-    # would been sent only to districts) any any older ones which actually were
-    # sent to districts, between $from and $to
-    my $q = FixMyStreet::DB->resultset("Problem")->search([
-        # Reports sent to district, made before the unitary switchover
-        -and => [
-            \[ "? @> regexp_split_to_array(bodies_str, ',')", [ {} => \@district_ids ] ],
-            category => 'Flytipping'
-        ],
-        # Reports sent to Bucks Council after unitary switchover
-        {
-            bodies_str => $body->id,
-            category => 'Flytipping (off-road)'
-        }
-    ])->search({
+    # would been sent only to districts), between $from and $to
+    my $q = FixMyStreet::DB->resultset("Problem")->search({
+        bodies_str => $body->id,
+        category => 'Flytipping (off-road)',
         state => [ FixMyStreet::DB::Result::Problem->open_states() ],
         confirmed => $time_param,
     });
