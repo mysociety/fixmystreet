@@ -66,10 +66,22 @@ has template => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        my $template = FixMyStreet::DB->resultset("ResponseTemplate")->search({
-            'me.body_id' => $self->body->id,
-            'me.title' => $self->template_title,
-        })->first;
+        my $template;
+        if ($self->template_title) {
+            $template = FixMyStreet::DB->resultset("ResponseTemplate")->search({
+                'me.body_id' => $self->body->id,
+                'me.title' => $self->template_title,
+            })->first;
+        } else {
+            $template = FixMyStreet::DB->resultset("ResponseTemplate")->search({
+                'me.state' => 'closed',
+                'me.auto_response' => 1,
+                'me.body_id' => $self->body->id,
+                'contact.category' => $self->category,
+            }, {
+                join => { contact_response_templates => 'contact' },
+            })->first;
+        }
         die "Could not find template" unless $template;
         return $template;
     },
