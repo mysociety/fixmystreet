@@ -40,6 +40,20 @@ sub open311_extra_data_include {
     ];
 }
 
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    my ($hint) = grep { $_->{code} eq 'hint' } @$meta;
+    my ($group_hint) = grep { $_->{code} eq 'group_hint' } @$meta;
+    @$meta = grep { $_->{code} ne 'hint' && $_->{code} ne 'group_hint' } @$meta;
+
+    # Rutland provide HTML that we want to store for display on the frontend.
+    $contact->set_extra_metadata(
+        category_hint => $hint->{description},
+        group_hint => $group_hint->{description},
+    );
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
