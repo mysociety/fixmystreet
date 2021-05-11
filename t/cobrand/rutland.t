@@ -11,6 +11,11 @@ my $contact = $mech->create_contact_ok(
     category => 'Other',
     email => 'LIGHT',
 );
+$contact->set_extra_metadata(
+    group => 'Street Furniture',
+    group_hint => '<span>This is for things like lights and bins</span>',
+    category_hint => '<span>For problems with street lighting</span>',
+);
 $contact->update;
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
@@ -56,6 +61,22 @@ subtest 'testing special Open311 behaviour', sub {
     is $c->param('attribute[description]'), $report->detail, 'Request had description';
     is $c->param('attribute[external_id]'), $report->id, 'Request had correct ID';
     is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
+};
+
+subtest "shows category and group hints when creating a new report", sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'rutland' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'LE15 0GJ', } },
+            "submit location" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+        $mech->content_contains('This is for things like lights and bins') or diag $mech->content;
+        $mech->content_contains('For problems with street lighting') or diag $mech->content;
+    };
 };
 
 done_testing();
