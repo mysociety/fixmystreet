@@ -18,15 +18,15 @@ sub output {
 }
 
 my $addresses = {
-    100000111 => {
+    10008312004 => {
         locality => 'HACKNEY',
-        line1 => '12 SAINT STREET',
-        line2 => 'DALSTON',
+        line1 => 'FLAT 1',
+        line2 => '176-179 SHOREDITCH HIGH STREET',
         line3 => 'HACKNEY',
-        postcode => 'SW1A 1AA',
-        UPRN => '100000111',
-        latitude => '51',
-        longitude => '1',
+        postcode => 'E1 6AX',
+        UPRN => '10008312004',
+        latitude => '51.524449',
+        longitude => '-0.077625',
     },
     100000222 => {
         locality => 'ELSEWHERE',
@@ -38,15 +38,15 @@ my $addresses = {
         latitude => '52',
         longitude => '2',
     },
-    100000333 => {
+    100022950072 => {
         locality => 'HACKNEY',
-        line1 => '24 HIGH STREET',
+        line1 => '1000000 SHOREDITCH HIGH STREET',
         line2 => 'HACKNEY',
         line3 => '',
-        postcode => 'SW1A 1AA',
-        UPRN => '100000333',
-        latitude => '53',
-        longitude => '3',
+        postcode => 'E1 6AX',
+        UPRN => '100022950072',
+        latitude => '51.524448',
+        longitude => '-0.077625',
     },
 };
 

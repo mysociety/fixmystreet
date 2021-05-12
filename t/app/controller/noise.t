@@ -65,14 +65,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Sorry, we did not find any results');
         $mech->submit_form_ok({ with_fields => { postcode => 'L11JD' } });
         $mech->content_contains('Sorry, that postcode appears to lie outside Hackney');
-        $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
-        $mech->content_contains('12 Saint Street, Dalston');
+        $mech->submit_form_ok({ with_fields => { postcode => 'E1 6AX' } });
+        $mech->content_contains('Flat 1, 176-179 Shoreditch High Street');
         $mech->content_lacks('1 Road Road');
-        $mech->submit_form_ok({ with_fields => { address => '100000111' } });
+        $mech->submit_form_ok({ with_fields => { address => '10008312004' } });
         $mech->submit_form_ok({ with_fields => { kind => 'music' } });
-        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'SW1A 1AA'  } });
-        $mech->content_contains('24 High Street');
-        $mech->submit_form_ok({ with_fields => { source_address => '100000333' } });
+        $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'E1 6AX'  } });
+        $mech->content_contains('1000000 Shoreditch High Street');
+        $mech->submit_form_ok({ with_fields => { source_address => '100022950072' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 1,
             happening_pattern => 1,
@@ -90,15 +90,16 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Hackney Council" <noise_residential@example.org>, "Hackney Council" <other@example.org>';
-        is $emails[0]->header('Subject'), 'Noise report: 24 High Street, SW1A 1AA';
+        is $emails[0]->header('Subject'), 'Noise report: 1000000 Shoreditch High Street, E1 6AX';
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Hackney Council has been logged/;
         is $user->alerts->count, 1;
         my $report = $user->problems->first;
-        is $report->title, "24 High Street, SW1A 1AA";
-        is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
-        is $report->latitude, 53;
+        is $report->title, "1000000 Shoreditch High Street, E1 6AX";
+        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
+        is $report->latitude, 51.524448;
+        is $report->areas, ',144379,2508,';
         $mech->clear_emails_ok;
     };
     subtest 'Report new noise, no pattern to times' => sub {
@@ -107,14 +108,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email, phone => '01234 567890' } });
         $mech->submit_form_ok({ with_fields => { best_time => [['weekday', 'evening'], 1], best_method => 'email' } });
-        $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
-        $mech->content_contains('12 Saint Street, Dalston');
+        $mech->submit_form_ok({ with_fields => { postcode => 'E1 6AX' } });
+        $mech->content_contains('Flat 1, 176-179 Shoreditch High Street');
         $mech->content_lacks('1 Road Road');
-        $mech->submit_form_ok({ with_fields => { address => '100000111' } });
+        $mech->submit_form_ok({ with_fields => { address => '10008312004' } });
         $mech->submit_form_ok({ with_fields => { kind => 'other', kind_other => 'Other kind' } });
         $mech->submit_form_ok({ with_fields => { where => 'residence', estates => 'no', source_location => 'SW1 1AA' } });
-        $mech->content_contains('24 High Street');
-        $mech->submit_form_ok({ with_fields => { source_address => '100000333' } });
+        $mech->content_contains('1000000 Shoreditch High Street');
+        $mech->submit_form_ok({ with_fields => { source_address => '100022950072' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 0,
             happening_pattern => 0,
@@ -137,9 +138,9 @@ FixMyStreet::override_config {
         is $user->alerts->count, 2;
         my @reports = $user->problems->search(undef, { order_by => 'id' })->all;
         my $report = $reports[-1];
-        is $report->title, "24 High Street, SW1A 1AA";
-        is $report->detail, "Reporter address: 12 Saint Street, Dalston, SW1A 1AA (100000111)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Other (Other kind)\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nIs the residence a Hackney Estates property? No\nNoise source: 24 High Street, SW1A 1AA (100000333)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
-        is $report->latitude, 53;
+        is $report->title, "1000000 Shoreditch High Street, E1 6AX";
+        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Other (Other kind)\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nIs the residence a Hackney Estates property? No\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
+        is $report->latitude, 51.524448;
         $mech->clear_emails_ok;
     };
     subtest 'Report new noise, your address missing, source address not a postcode' => sub {
@@ -148,7 +149,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email, phone => '01234 567890' } });
         $mech->submit_form_ok({ with_fields => { best_time => [['weekday', 'evening'], 1], best_method => 'email' } });
-        $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
+        $mech->submit_form_ok({ with_fields => { postcode => 'E1 6AX' } });
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
         $mech->submit_form_ok({ with_fields => { address_manual => 'My Address' } });
         $mech->submit_form_ok({ with_fields => { kind => 'diy' } });
@@ -189,7 +190,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email, phone => '01234 567890' } });
         $mech->submit_form_ok({ with_fields => { best_time => [['weekday', 'evening'], 1], best_method => 'email' } });
-        $mech->submit_form_ok({ with_fields => { postcode => 'SW1A 1AA' } });
+        $mech->submit_form_ok({ with_fields => { postcode => 'E1 6AX' } });
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
         $mech->submit_form_ok({ with_fields => { address_manual => 'My Address' } });
         $mech->submit_form_ok({ with_fields => { kind => 'diy' } });

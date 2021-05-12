@@ -207,6 +207,15 @@ Noise source: $addr
 Is the noise happening now? $now
 $time_detail
 EOF
+
+        $c->stash->{latitude} = $data->{latitude};
+        $c->stash->{longitude} = $data->{longitude};
+        $c->stash->{fetch_all_areas} = 1;
+        $c->stash->{area_check_action} = 'submit_problem';
+        $c->forward('/council/load_and_check_areas', []);
+        my $areas = $c->stash->{all_areas_mapit} || {};
+        $areas = ',' . join( ',', sort keys %$areas ) . ',';
+
         $object = $c->model('DB::Problem')->new({
             non_public => 1,
             category => 'Noise report',
@@ -216,7 +225,7 @@ EOF
             postcode => '',
             latitude => $data->{latitude},
             longitude => $data->{longitude},
-            areas => '',
+            areas => $areas,
             send_questionnaire => 0,
             bodies_str => $c->cobrand->body->id,
             %shared,

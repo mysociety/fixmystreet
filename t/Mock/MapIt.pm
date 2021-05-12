@@ -51,6 +51,7 @@ my @PLACES = (
     [ '?', 52.23025, -1.015826, 2234, 'Northamptonshire County Council', 'CTY', 2397, 'Northampton Borough Council', 'DIS' ],
     [ 'E8 1DY', 51.552267, -0.063316, 2508, 'Hackney Borough Council', 'LBO' ],
     [ 'E8 2DY', 51.552287, -0.063326, 2508, 'Hackney Council', 'LBO' ],
+    [' E6 1AX', 51.524448, -0.077625, 2508, 'Hackney Council', 'LBO', 144379, 'Hoxton East & Shoreditch', 'LBW' ],
     [ 'TW7 5JN', 51.482286, -0.328163, 2483, 'Hounslow Borough Council', 'LBO' ],
     [ '?', 51.48111, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
     [ '?', 51.482045, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
