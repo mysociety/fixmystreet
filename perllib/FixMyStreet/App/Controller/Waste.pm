@@ -260,6 +260,7 @@ sub confirm_subscription : Private {
     );
     $p->set_extra_metadata('payment_reference', $reference) if $reference;
     $p->confirm;
+    $c->forward( '/report/new/create_related_things', [ $p ] );
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
     $p->update;
     $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
@@ -1123,7 +1124,16 @@ sub add_report : Private {
 
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
-    $c->forward('/report/new/redirect_or_confirm_creation');
+    # we don't want to confirm reports that are for things that require a payment because
+    # we need to get the payment to confirm them.
+    if ( $no_confirm ) {
+        my $report = $c->stash->{report};
+        $report->state('unconfirmed');
+        $report->confirmed(undef);
+        $report->update;
+    } else {
+        $c->forward('/report/new/redirect_or_confirm_creation');
+    }
 
     $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
 
