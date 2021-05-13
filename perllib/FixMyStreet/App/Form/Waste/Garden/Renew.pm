@@ -4,7 +4,7 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
-has_page intro => (
+my %intro_fields = (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/renew.html',
     fields => ['current_bins', 'payment_method', 'billing_differ', 'billing_address', 'name', 'phone', 'email', 'continue_review'],
@@ -23,6 +23,15 @@ has_page intro => (
     },
     next => 'summary',
 );
+
+my %intro_fields_staff = (
+    %intro_fields,
+    ( fields => ['current_bins', 'name', 'phone', 'email', 'continue_review'] )
+);
+
+has_page intro => ( %intro_fields );
+
+has_page intro_staff => ( %intro_fields_staff );
 
 has_page summary => (
     fields => ['tandc', 'submit'],

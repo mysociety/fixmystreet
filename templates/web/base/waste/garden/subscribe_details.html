@@ -103,7 +103,9 @@
     </div>
   </fieldset>
 
+  [% IF NOT is_staff %]
   [% PROCESS form override_fields=['payment_method'] %]
+  [% END %]
 
   [% IF property %]
   <dl class="waste__address">
@@ -112,7 +114,9 @@
   </dl>
   [% END %]
 
+  [% IF NOT is_staff %]
   [% PROCESS form override_fields=['billing_differ', 'billing_address'] %]
+  [% END %]
 
   [% PROCESS form override_fields=['name', 'email', 'phone', 'password', 'continue_review' ] %]
 
