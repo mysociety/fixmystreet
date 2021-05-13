@@ -1220,6 +1220,141 @@ FixMyStreet::override_config {
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
         is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
     };
+
+    my $report = FixMyStreet::DB->resultset("Problem")->search({
+        category => 'Garden Subscription',
+        title => 'Garden Subscription - New',
+        extra => { like => '%property_id,T5:value,I5:12345%' }
+    },
+    {
+        order_by => { -desc => 'id' }
+    })->first;
+    $report->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
+    $report->update;
+
+
+    subtest 'check staff cannot update direct debit subs' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
+
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_contains('This property has a direct debit subscription which will renew');
+
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->content_contains('can only be updated by the original user');
+
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->content_contains('can only be updated by the original user');
+    };
+
+    $report->update_extra_field({ name => 'payment_method', value => 'credit_card' });
+    $report->update;
+
+    subtest 'check staff renewal' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_lacks('Direct Debit', "no payment method on page");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+        }});
+
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payenet_code => 54321
+        }});
+        $mech->content_contains('Subscription completed');
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+        is $report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
+        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
+        is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $report->state, 'confirmed', 'report confirmed';
+    };
+
+    subtest 'check modify sub staff' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->content_contains('40.00');
+        $mech->content_contains('5.50');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payenet_code => 64321
+        }});
+        $mech->content_contains('Subscription completed');
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+
+        is $report->category, 'Garden Subscription', 'correct category on report';
+        is $report->title, 'Garden Subscription - Amend', 'correct title on report';
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->state, 'confirmed', 'report confirmed';
+        is $report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
+        is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
+
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+    };
+
+    subtest 'check modify sub staff reducing bin count' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
+
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
+        $mech->content_contains('20.00');
+        $mech->content_lacks('Continue to payment');
+        $mech->content_contains('Confirm changes');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my $new_report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+    };
+
+    subtest 'cancel staff sub' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $new_report->state, 'confirmed', 'report confirmed';
+    };
 };
 
 sub get_report_from_redirect {
