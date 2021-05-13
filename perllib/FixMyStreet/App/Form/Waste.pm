@@ -50,6 +50,7 @@ before after_build => sub {
 sub validate {
     my $self = shift;
 
+    return 1 unless $self->field('email') && $self->field('phone');
     my $c = $self->c;
     my $is_staff_user = ($c->user_exists && ($c->user->from_body || $c->user->is_superuser));
     $self->add_form_error('Please specify an email address')
