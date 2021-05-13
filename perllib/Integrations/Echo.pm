@@ -202,6 +202,7 @@ sub GetServiceUnitsForObject {
             Id => 401,
             ServiceTaskSchedules => { ServiceTaskSchedule => {
                 ScheduleDescription => 'every Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
@@ -222,6 +223,7 @@ sub GetServiceUnitsForObject {
             Id => 402,
             ServiceTaskSchedules => { ServiceTaskSchedule => {
                 ScheduleDescription => 'every other Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
@@ -242,6 +244,7 @@ sub GetServiceUnitsForObject {
             Id => 403,
             ServiceTaskSchedules => { ServiceTaskSchedule => {
                 ScheduleDescription => 'every other Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
@@ -262,6 +265,7 @@ sub GetServiceUnitsForObject {
             Id => 404,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
+                StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
@@ -269,11 +273,22 @@ sub GetServiceUnitsForObject {
                 },
             }, {
                 ScheduleDescription => 'every other Monday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-02T00:00:00Z' },
                     OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
                 },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 456, 789 ] } },
+                },
+            }, {
+                # Some bad data, future schedule, with past last instance
+                ScheduleDescription => 'every other Tuesday',
+                StartDate => { DateTime => '2050-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2051-01-01T00:00:00Z' },
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
@@ -298,6 +313,7 @@ sub GetServiceUnitsForObject {
                 } ] },
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
@@ -305,6 +321,7 @@ sub GetServiceUnitsForObject {
                 },
             }, {
                 ScheduleDescription => 'every other Monday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },

@@ -748,8 +748,9 @@ sub _parse_schedules {
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
     my ($min_next, $max_last, $next_changed, $description);
     foreach my $schedule (@$schedules) {
+        my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
         my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
-        next if $end_date lt $today;
+        next if $end_date lt $today || $start_date gt $today;
 
         $description = $schedule->{ScheduleDescription};
 

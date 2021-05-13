@@ -295,6 +295,7 @@ FixMyStreet::override_config {
     subtest 'test open enquiries' => sub {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/12345');
+        $mech->content_lacks('every other Tuesday');
         $mech->content_like(qr/Mixed Recycling.*?Next collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection has been adjusted/s);
         $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
         $mech->content_contains('Waste spillage');
