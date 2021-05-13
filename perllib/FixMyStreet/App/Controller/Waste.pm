@@ -23,6 +23,7 @@ sub auto : Private {
     my ( $self, $c ) = @_;
     my $cobrand_check = $c->cobrand->feature('waste');
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
+    $c->stash->{is_staff} = $c->user && $c->cobrand->admin_allow_user($c->user);
     return 1;
 }
 
@@ -401,6 +402,36 @@ sub direct_debit_renew : Path('dd_renew') : Args(0) {
     $c->res->body('ERROR - DD renewal is automatic');
 }
 
+sub csc_code : Private {
+    my ($self, $c) = @_;
+
+    unless ( $c->stash->{is_staff} ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    $c->forward('/auth/get_csrf_token');
+    $c->stash->{template} = 'waste/garden/csc_code.html';
+    $c->detach;
+}
+
+sub csc_payment : Path('csc_payment') : Args(0) {
+    my ($self, $c) = @_;
+
+    unless ( $c->stash->{is_staff} ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    $c->forward('/auth/check_csrf_token');
+    my $code = $c->get_param('payenet_code');
+    my $id = $c->get_param('report_id');
+
+    my $report = $c->model('DB::Problem')->find({ id => $id});
+    $report->update_extra_field({ name => 'payment_method', value => 'csc' });
+    $report->update;
+    $c->stash->{report} = $report;
+    $c->forward('confirm_subscription', [ $code ]);
+}
+
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
 
@@ -696,6 +727,20 @@ sub process_enquiry_data : Private {
     return 1;
 }
 
+# staff should not be able to make payments for direct debit payments
+sub check_if_staff_can_pay : Private {
+    my ($self, $c, $payment_type) = @_;
+
+    if ( $c->stash->{is_staff} ) {
+        if ( $payment_type && $payment_type eq 'direct_debit' ) {
+            $c->stash->{template} = 'waste/garden/staff_no_dd.html';
+            $c->detach;
+        }
+    }
+
+    return 1;
+}
+
 sub garden : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
@@ -745,6 +790,8 @@ sub garden_modify : Chained('property') : Args(0) {
         $billing_address = $orig_sub->get_extra_field_value('billing_address');
     }
 
+    $c->forward('check_if_staff_can_pay', [ $payment_method ]);
+
     $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
     $c->stash->{garden_form_data} = {
         per_bin_cost => $c->cobrand->garden_waste_cost,
@@ -769,6 +816,9 @@ sub garden_cancel : Chained('property') : Args(0) {
     }
 
     $c->forward('get_original_sub');
+
+    my $payment_method = $c->forward('get_current_payment_method');
+    $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Cancel';
@@ -801,7 +851,7 @@ sub garden_renew : Chained('property') : Args(0) {
     };
 
 
-    $c->stash->{first_page} = 'intro';
+    $c->stash->{first_page} = $c->stash->{is_staff} ? 'intro_staff' : 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
     $c->forward('form');
 }
@@ -867,14 +917,19 @@ sub get_original_sub : Private {
     my ($self, $c) = @_;
 
     my $p = $c->model('DB::Problem')->search({
-        user_id => $c->user->id,
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
         extra => { like => '%property_id,T5:value,I_:'. $c->stash->{property}{id} . '%' }
     },
     {
         order_by => { -desc => 'id' }
-    });
+    })->to_body($c->cobrand->body);
+
+    unless ( $c->stash->{is_staff} ) {
+        $p = $p->search({
+            user_id => $c->user->id,
+        });
+    }
 
     if ( $p->count == 1) {
         $c->stash->{orig_sub} = $p->first;
@@ -943,12 +998,20 @@ sub process_garden_modification : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $payment_method eq 'direct_debit' ) {
+        if ( $pro_rata && $c->stash->{is_staff} ) {
+            $c->stash->{action} = 'add_containers';
+            $c->forward('csc_code');
+        } elsif ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit_modify');
         } elsif ( $pro_rata ) {
             $c->stash->{action} = 'add_containers';
             $c->forward('pay');
         } else {
+            if ( $c->stash->{is_staff} ) {
+                my $report = $c->stash->{report};
+                $report->update_extra_field({ name => 'payment_method', value => 'csc' });
+                $report->update;
+            }
             $c->forward('confirm_subscription', [ undef ]);
         }
     }
@@ -980,7 +1043,6 @@ sub process_garden_renew : Private {
         $data->{new_bins} = $total_bins - $current_bins;
     }
 
-
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
@@ -996,7 +1058,9 @@ sub process_garden_renew : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $payment_method eq 'direct_debit' ) {
+        if ( $c->stash->{is_staff} ) {
+            $c->forward('csc_code');
+        } elsif ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit_renew');
         } else {
             $c->forward('pay');
@@ -1028,7 +1092,9 @@ sub process_garden_data : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $data->{payment_method} eq 'direct_debit' ) {
+        if ( $c->stash->{is_staff} ) {
+            $c->forward('csc_code');
+        } elsif ( $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
         } else {
             $c->forward('pay');
