@@ -1143,8 +1143,6 @@ sub add_report : Private {
 
     $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
 
-    $c->cobrand->call_hook( 'clear_cached_lookups' => $c->stash->{property}{id} );
-
     return 1;
 }
 
