@@ -367,6 +367,7 @@ sub _garden_waste_service_units {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
+    MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         echo => { bromley => { url => 'http://example.org', sample_data => 1 } },
         waste => { bromley => 1 },
