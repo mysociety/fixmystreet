@@ -5,11 +5,32 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_field service_id => ( type => 'Hidden' );
+has_field is_staff => ( type => 'Hidden' );
+
+sub details_update_fields {
+    my $form = shift;
+    my $data = $form->saved_data;
+
+    my $existing = $data->{existing_number} || 0;
+    $existing = 0 if $data->{existing} eq 'no';
+    my $cost = $existing == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($data->{existing_number});
+    $form->{c}->stash->{payment} = $cost / 100;
+    return {
+        current_bins => { default => $existing },
+        new_bins => { default => 0 },
+    };
+}
 
 has_page intro => (
     title => 'Subscribe to the Green Garden Waste collection service',
     template => 'waste/garden/subscribe_intro.html',
     fields => ['continue'],
+    update_field_list => sub {
+        my $form = shift;
+        return {
+            is_staff => { default => $form->{c}->stash->{is_staff} }
+        };
+    },
     next => 'existing',
 );
 
@@ -17,26 +38,22 @@ has_page existing => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/subscribe_existing.html',
     fields => ['existing', 'existing_number', 'continue'],
-    next => 'details',
+    next => sub { return $_[0]->{is_staff} ? 'details_staff' : 'details'; },
 );
 
 has_page details => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/subscribe_details.html',
     fields => ['current_bins', 'new_bins', 'payment_method', 'billing_differ', 'billing_address', 'name', 'email', 'phone', 'password', 'continue_review'],
-    update_field_list => sub {
-        my $form = shift;
-        my $data = $form->saved_data;
+    update_field_list => \&details_update_fields,
+    next => 'summary',
+);
 
-        my $existing = $data->{existing_number} || 0;
-        $existing = 0 if $data->{existing} eq 'no';
-        my $cost = $existing == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($data->{existing_number});
-        $form->{c}->stash->{payment} = $cost / 100;
-        return {
-            current_bins => { default => $existing },
-            new_bins => { default => 0 },
-        };
-    },
+has_page details_staff => (
+    title => 'Subscribe to Green Garden Waste collections',
+    template => 'waste/garden/subscribe_details.html',
+    fields => ['current_bins', 'new_bins', 'name', 'email', 'phone', 'password', 'continue_review'],
+    update_field_list => \&details_update_fields,
     next => 'summary',
 );
 
