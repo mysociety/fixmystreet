@@ -5,7 +5,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 # Create test data
 my $user = $mech->create_user_ok( 'rutland@example.com' );
-my $body = $mech->create_body_ok( 2482, 'Rutland County Council');
+my $body = $mech->create_body_ok( 2600, 'Rutland County Council');
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -17,6 +17,18 @@ $contact->set_extra_metadata(
     category_hint => '<span>For problems with street lighting</span>',
 );
 $contact->update;
+
+my $contact2 = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Bins',
+    email => 'BINS',
+);
+$contact2->set_extra_metadata(
+    group => 'Street Furniture',
+    group_hint => '<span>This is for things like lights and bins</span>',
+    category_hint => '<span>For problems with overflowing bins etc</span>',
+);
+$contact2->update;
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'rutland',
@@ -75,6 +87,7 @@ subtest "shows category and group hints when creating a new report", sub {
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link" );
         $mech->content_contains('This is for things like lights and bins') or diag $mech->content;
+        $mech->content_contains('For problems with overflowing bins etc') or diag $mech->content;
         $mech->content_contains('For problems with street lighting') or diag $mech->content;
     };
 };
