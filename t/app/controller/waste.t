@@ -507,7 +507,7 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>2021-03-30#m);
+        $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>30-03-2021#m);
         $mech->content_lacks('Subscribe to Green Garden Waste');
     };
 
