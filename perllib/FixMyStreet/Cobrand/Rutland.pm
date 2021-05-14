@@ -45,6 +45,7 @@ sub open311_contact_meta_override {
 
     my ($hint) = grep { $_->{code} eq 'hint' } @$meta;
     my ($group_hint) = grep { $_->{code} eq 'group_hint' } @$meta;
+    @$meta = grep { $_->{code} ne 'hint' && $_->{code} ne 'group_hint' } @$meta;
 
     # Rutland provide HTML that we want to store for display on the frontend.
     $contact->set_extra_metadata(

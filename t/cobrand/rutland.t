@@ -156,6 +156,7 @@ subtest 'check open311_contact_meta_override' => sub {
     my $expected_hint = '<span>Text for Traffic Lights will go here</span>';
     my $expected_group_hint = '<span>Text for Lights, Signals and Sign will go here</span>';
 
+    is scalar(@{ $contact->get_extra_fields }), 0, "hints aren't included in extra fields";
     is $contact->get_extra_metadata('category_hint'), $expected_hint, 'hint set correctly on contact';
     is $contact->get_extra_metadata('group_hint'), $expected_group_hint, 'group_hint set correctly on contact';
 };
