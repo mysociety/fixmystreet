@@ -47,7 +47,7 @@
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>
-        <dd class="govuk-summary-list__value">[% unit.end_date %][% ' Cancellation in progress' IF pending_cancellation %][% ' Due for renewal!' IF unit.garden_due && !unit.garden_overdue %][% ' overdue!' IF unit.garden_overdue %]</dd>
+        <dd class="govuk-summary-list__value">[% date.format(unit.end_date _ ' 00:00:00', '%d-%m-%Y') %][% ' Cancellation in progress' IF pending_cancellation %][% ' Due for renewal!' IF unit.garden_due && !unit.garden_overdue %][% ' overdue!' IF unit.garden_overdue %]</dd>
       </div>
     </dl>
 
