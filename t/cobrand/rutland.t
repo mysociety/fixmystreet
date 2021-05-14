@@ -3,6 +3,8 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
+use Open311::PopulateServiceList;
+
 # Create test data
 my $user = $mech->create_user_ok( 'rutland@example.com' );
 my $body = $mech->create_body_ok( 2600, 'Rutland County Council');
@@ -90,6 +92,72 @@ subtest "shows category and group hints when creating a new report", sub {
         $mech->content_contains('For problems with overflowing bins etc') or diag $mech->content;
         $mech->content_contains('For problems with street lighting') or diag $mech->content;
     };
+};
+
+subtest 'check open311_contact_meta_override' => sub {
+    my $processor = Open311::PopulateServiceList->new();
+
+    my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>100</service_code>
+    <attributes>
+        <attribute>
+            <automated>server_set</automated>
+            <code>hint</code>
+            <datatype>string</datatype>
+            <datatype_description></datatype_description>
+            <description>&lt;span&gt;Text for Traffic Lights will go here&lt;/span&gt;</description>
+            <order>1</order>
+            <required>false</required>
+            <variable>false</variable>
+        </attribute>
+        <attribute>
+            <automated>server_set</automated>
+            <code>group_hint</code>
+            <datatype>string</datatype>
+            <datatype_description></datatype_description>
+            <description>&lt;span&gt;Text for Lights, Signals and Sign will go here&lt;/span&gt;</description>
+            <order>2</order>
+            <required>false</required>
+            <variable>false</variable>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->create({
+        body_id => $body->id,
+        email => '100',
+        category => 'Traffic Lights',
+        state => 'confirmed',
+        editor => $0,
+        whenedited => \'current_timestamp',
+        note => 'test contact',
+    });
+
+    my $o = Open311->new(
+        jurisdiction => 'mysociety',
+        endpoint => 'http://example.com',
+        test_mode => 1,
+        test_get_returns => { 'services/100.xml' => $meta_xml }
+    );
+
+    $processor->_current_open311( $o );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'rutland' ],
+    }, sub {
+        $processor->_current_body( $body );
+    };
+    $processor->_current_service( { service_code => 100, service_name => 'Traffic Lights' } );
+    $processor->_add_meta_to_contact( $contact );
+
+    $contact->discard_changes;
+
+    my $expected_hint = '<span>Text for Traffic Lights will go here</span>';
+    my $expected_group_hint = '<span>Text for Lights, Signals and Sign will go here</span>';
+
+    is $contact->get_extra_metadata('category_hint'), $expected_hint, 'hint set correctly on contact';
+    is $contact->get_extra_metadata('group_hint'), $expected_group_hint, 'group_hint set correctly on contact';
 };
 
 done_testing();
