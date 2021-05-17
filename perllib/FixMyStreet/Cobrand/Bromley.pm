@@ -997,6 +997,17 @@ sub waste_check_last_update {
     return 1;
 }
 
+sub _set_user_source {
+    my $self = shift;
+    my $c = $self->{c};
+    return if !$c->user_exists || !$c->user->from_body;
+
+    my %roles = map { $_->name => 1 } $c->user->obj->roles->all;
+    my $source = 9; # Client Officer
+    $source = 3 if $roles{'Contact Centre Agent'}; # Council Contact Centre
+    $c->set_param('Source', $source);
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 
@@ -1016,6 +1027,7 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'stolen' || $reason eq 'taken') {
         $c->set_param('Reason', 1); # Missing / Stolen
     }
+    $self->_set_user_source;
 }
 
 sub waste_munge_report_data {
@@ -1028,6 +1040,7 @@ sub waste_munge_report_data {
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
+    $self->_set_user_source;
 }
 
 sub waste_munge_enquiry_data {
@@ -1042,6 +1055,7 @@ sub waste_munge_enquiry_data {
     }
     $detail .= $address;
     $data->{detail} = $detail;
+    $self->_set_user_source;
 }
 
 sub admin_templates_external_status_code_hook {
