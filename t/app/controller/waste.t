@@ -39,7 +39,9 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'Reason', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'General enquiry', email => 'general@example.org' },
-    { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' });
+    { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' },
+    { code => 'Source', required => 0, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
@@ -258,6 +260,7 @@ FixMyStreet::override_config {
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $user->email;
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
+        is $report->get_extra_field_value('Source'), 9, 'Correct source'
     };
 };
 

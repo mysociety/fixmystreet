@@ -750,12 +750,11 @@ sub _parse_schedules {
     foreach my $schedule (@$schedules) {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
         my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
-        next if $end_date lt $today || $start_date gt $today;
-
-        $description = $schedule->{ScheduleDescription};
+        next if $end_date lt $today;
 
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
+        $d = undef if $d && $d->strftime('%F') lt $start_date; # Shouldn't happen
         if ($d && (!$min_next || $d < $min_next->{date})) {
             my $next_original = construct_bin_date($next->{OriginalScheduledDate});
             $next_changed = $d->strftime("%F") ne $next_original->strftime("%F");
@@ -765,6 +764,10 @@ sub _parse_schedules {
                 changed => $next_changed,
             };
         }
+
+        next if $start_date gt $today; # Shouldn't have a LastInstance in this case, but some bad data
+
+        $description = $schedule->{ScheduleDescription};
 
         my $last = $schedule->{LastInstance};
         $d = construct_bin_date($last->{CurrentScheduledDate});
@@ -994,6 +997,17 @@ sub waste_check_last_update {
     return 1;
 }
 
+sub _set_user_source {
+    my $self = shift;
+    my $c = $self->{c};
+    return if !$c->user_exists || !$c->user->from_body;
+
+    my %roles = map { $_->name => 1 } $c->user->obj->roles->all;
+    my $source = 9; # Client Officer
+    $source = 3 if $roles{'Contact Centre Agent'}; # Council Contact Centre
+    $c->set_param('Source', $source);
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 
@@ -1013,6 +1027,35 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'stolen' || $reason eq 'taken') {
         $c->set_param('Reason', 1); # Missing / Stolen
     }
+    $self->_set_user_source;
+}
+
+sub waste_munge_report_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $service = $c->stash->{services}{$id}{service_name};
+    $data->{title} = "Report missed $service";
+    $data->{detail} = "$data->{title}\n\n$address";
+    $c->set_param('service_id', $id);
+    $self->_set_user_source;
+}
+
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    foreach (grep { /^extra_/ } keys %$data) {
+        $detail .= "$data->{$_}\n\n";
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+    $self->_set_user_source;
 }
 
 sub admin_templates_external_status_code_hook {

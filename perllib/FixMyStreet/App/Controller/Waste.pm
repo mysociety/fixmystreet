@@ -278,15 +278,11 @@ sub report : Chained('property') : Args(0) {
 sub process_report_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
-    my $address = $c->stash->{property}->{address};
     my @services = grep { /^service-/ && $data->{$_} } sort keys %$data;
     my @reports;
     foreach (@services) {
         my ($id) = /service-(.*)/;
-        my $service = $c->stash->{services}{$id}{service_name};
-        $data->{title} = "Report missed $service";
-        $data->{detail} = "$data->{title}\n\n$address";
-        $c->set_param('service_id', $id);
+        $c->cobrand->call_hook("waste_munge_report_data", $id, $data);
         $c->forward('add_report', [ $data ]) or return;
         push @reports, $c->stash->{report};
     }
@@ -319,6 +315,7 @@ sub enquiry : Chained('property') : Args(0) {
     my $field_list = [];
     foreach (@{$contact->get_metadata_for_input}) {
         next if $_->{code} eq 'service_id' || $_->{code} eq 'uprn' || $_->{code} eq 'property_id';
+        next if ($_->{automated} || '') eq 'hidden_field';
         my $type = 'Text';
         $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
         my $required = $_->{required} eq 'true' ? 1 : 0;
@@ -351,17 +348,14 @@ sub enquiry : Chained('property') : Args(0) {
 sub process_enquiry_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
-    my $address = $c->stash->{property}->{address};
-    $data->{title} = $data->{category};
+
+    $c->cobrand->call_hook("waste_munge_enquiry_data", $data);
+
     # Read extra details in loop
-    my $detail;
     foreach (grep { /^extra_/ } keys %$data) {
         my ($id) = /^extra_(.*)/;
         $c->set_param($id, $data->{$_});
-        $detail .= "$data->{$_}\n\n";
     }
-    $detail .= $address;
-    $data->{detail} = $detail;
     $c->set_param('service_id', $data->{service_id});
     $c->forward('add_report', [ $data ]) or return;
     return 1;
