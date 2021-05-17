@@ -748,6 +748,12 @@ sub check_if_staff_can_pay : Private {
 sub garden : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    if ( $c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
+        warn "already a sub\n";
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+
     my $service = $c->cobrand->garden_waste_service_id;
     $c->stash->{garden_form_data} = {
         max_bins => $c->stash->{quantity_max}->{$service}
@@ -814,6 +820,11 @@ sub garden_modify : Chained('property') : Args(0) {
 
 sub garden_cancel : Chained('property') : Args(0) {
     my ($self, $c) = @_;
+
+    if ( !$c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
 
     unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
