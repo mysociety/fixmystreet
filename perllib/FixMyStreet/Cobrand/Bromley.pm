@@ -750,12 +750,11 @@ sub _parse_schedules {
     foreach my $schedule (@$schedules) {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
         my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
-        next if $end_date lt $today || $start_date gt $today;
-
-        $description = $schedule->{ScheduleDescription};
+        next if $end_date lt $today;
 
         my $next = $schedule->{NextInstance};
         my $d = construct_bin_date($next->{CurrentScheduledDate});
+        $d = undef if $d && $d->strftime('%F') lt $start_date; # Shouldn't happen
         if ($d && (!$min_next || $d < $min_next->{date})) {
             my $next_original = construct_bin_date($next->{OriginalScheduledDate});
             $next_changed = $d->strftime("%F") ne $next_original->strftime("%F");
@@ -765,6 +764,10 @@ sub _parse_schedules {
                 changed => $next_changed,
             };
         }
+
+        next if $start_date gt $today; # Shouldn't have a LastInstance in this case, but some bad data
+
+        $description = $schedule->{ScheduleDescription};
 
         my $last = $schedule->{LastInstance};
         $d = construct_bin_date($last->{CurrentScheduledDate});
