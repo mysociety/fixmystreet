@@ -312,6 +312,37 @@ FixMyStreet::override_config {
     };
 };
 
+sub garden_waste_no_bins {
+    return [ {
+        Id => 1004,
+        ServiceId => 542,
+        ServiceName => 'Food waste collection',
+        ServiceTasks => { ServiceTask => {
+            Id => 404,
+            ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                ScheduleDescription => 'every other Monday',
+                EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                },
+            }, {
+                ScheduleDescription => 'every other Monday',
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-02T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 456, 789 ] } },
+                },
+            } ] },
+        } },
+    } ];
+}
+
 sub garden_waste_one_bin {
     return _garden_waste_service_units(1);
 }
@@ -539,7 +570,12 @@ FixMyStreet::override_config {
     };
 
     my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
+
+    subtest 'check cannot cancel sub that does not exist' => sub {
+        $mech->get_ok('/waste/12345/garden_cancel');
+        is $mech->uri->path, '/waste/12345', 'cancel link redirect to bin list if no sub';
+    };
 
     subtest 'check new sub bin limits' => sub {
         $mech->get_ok('/waste/12345/garden');
@@ -751,6 +787,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
     };
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check modify sub credit card payment' => sub {
         $mech->log_out_ok();
@@ -1127,6 +1165,8 @@ FixMyStreet::override_config {
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
+
     for my $test ( 
         {
             return => {
@@ -1262,6 +1302,8 @@ FixMyStreet::override_config {
     $report->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
     $report->update;
 
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check staff cannot update direct debit subs' => sub {
         $mech->log_out_ok;
