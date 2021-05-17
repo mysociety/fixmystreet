@@ -41,7 +41,6 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
 [% END %]
 
   [% IF can_moderate %]
-    [% original = problem_original %]
     <form method="post" action="/moderate/report/[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
         <input type="hidden" name="form_started" value="[% date.now %]">
@@ -87,18 +86,8 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
 
     [% INCLUDE 'report/_support.html' %]
 
-  [% IF can_moderate %]
-    [% IF problem.photo or original.photo %]
-        <p class="moderate-edit">
-            <label>
-                <input type="checkbox" name="problem_photo" [% 'checked' IF problem.photo OR c.req.params.problem_photo %]>
-                [% loc('Show photo') %]
-            </label>
-        </p>
-    [% END %]
-  [% END %]
-
     [% INCLUDE 'report/photo.html' object=problem %]
+
     <div class="moderate-display">
         [% problem.detail | add_links | html_para %]
     </div>

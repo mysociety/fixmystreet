@@ -8,7 +8,7 @@
             [%~ ' show-moderation' IF update.id AND show_moderation == update.id ~%]
             ">
             <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
-          [% IF can_moderate; original_update = update.moderation_original_data %]
+          [% IF can_moderate; original = update.moderation_original_data OR update %]
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
                 <input type="hidden" name="token" value="[% csrf_token %]">
                 <a role="menuitem" href="/report/[% problem.id %]/moderate/[% update.id %]#update_[% update.id %]"
@@ -18,10 +18,6 @@
                     [% loc('Hide update completely?') %]</label>
                     <label><input type="checkbox" name="update_show_name" [% update.anonymous ? '' : 'checked' %]>
                     [% loc('Show name publicly?') %]</label>
-                    [% IF update.photo or original_update.photo %]
-                        <label><input type="checkbox" name="update_photo" [% update.photo ? 'checked' : '' %]>
-                        [% loc('Show Photo?') %]</label>
-                    [% END %]
                 </div>
           [% END %]
             <div class="item-list__update-wrap">
@@ -39,11 +35,11 @@
                     </div>
                     [% IF can_moderate %]
                     <div class="moderate-edit">
-                        [% IF update.text != original.detail %]
+                        [% IF update.text != original.text %]
                         <label><input type="checkbox" name="update_revert_text" class="revert-textarea">
                         [% loc('Revert to original') %]</label>
                         [% END %]
-                        <textarea class="form-control" name="update_text">[% update.text %]</textarea>
+                        <textarea class="form-control" name="update_text" data-original-value="[% original.text %]">[% update.text %]</textarea>
                     </div>
                     [% END %]
 

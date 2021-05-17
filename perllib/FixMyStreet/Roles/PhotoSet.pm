@@ -41,6 +41,25 @@ sub photos {
     my $photoset = $self->get_photoset;
     my $i = 0;
     my $id = $self->id;
+
+    if ($self->result_source->name eq 'moderation_original_data') {
+        my $non_public = $self->problem->non_public;
+        my @photos = map {
+            my $extra = '';
+            if (FixMyStreet->config('LOGIN_REQUIRED') || $non_public) {
+                $extra = '?cookie_passthrough=1';
+            }
+            my ($hash, $format) = split /\./, $_;
+            {
+                id => $hash,
+                url_temp => "/photo/temp.$hash.$format$extra",
+                url_temp_full => "/photo/fulltemp.$hash.$format$extra",
+                idx => $i++,
+            }
+        } $photoset->all_ids;
+        return \@photos;
+    }
+
     my $typ = $self->result_source->name eq 'comment' ? 'c/' : '';
 
     my $non_public = $self->result_source->name eq 'comment'

@@ -212,9 +212,9 @@ When logged in, staff with the required level of permissions can moderate report
 report webpage. You will see a ‘moderate’ button below the report’s main body, and above each
 update. Clicking this button gives you the ability to:
 
-- Edit the title or body of the report or update
-- Remove a user’s name from the report or update
-- Remove a photograph from a report
+- Edit the title or body text
+- Remove a user’s name
+- Remove, redact or restore photographs
 
 <img alt="The ‘moderate’ button below the report’s main body" src="/assets/img/pro-user-guide/deal-undesirable-content.png" class="admin-screenshot" />
 
@@ -222,6 +222,14 @@ You can also add a note to indicate the reason for the change to the report.
 
 Moderation history will be shown within the report updates, and is only visible to people with
 the moderate permission.
+
+#### Redacting photographs
+
+When moderating, each photo has an associated “Redact” option. Selecting this
+opens up the full size photo, on which you can draw black rectangles if you
+need to hide a section of a photo without removing the entire photo.
+
+<img alt="" src="/assets/img/pro-user-guide/photo-redaction.jpeg" class="admin-screenshot">
 
 #### Hiding reports
 

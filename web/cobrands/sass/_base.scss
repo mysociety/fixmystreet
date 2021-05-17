@@ -1622,6 +1622,12 @@ input.final-submit {
   }
 }
 
+#fancybox-wrap canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
 .problem-back {
   display: block;
   font-size: 1em;

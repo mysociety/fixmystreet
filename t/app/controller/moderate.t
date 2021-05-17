@@ -96,7 +96,7 @@ subtest 'Auth' => sub {
 
 my %problem_prepopulated = (
     problem_show_name => 1,
-    problem_photo => 1,
+    problem_photo_0 => 1,
     problem_title => 'Good bad good',
     problem_detail => 'Good bad bad bad good bad',
 );
@@ -193,7 +193,7 @@ subtest 'Problem moderation' => sub {
 
             $mech->submit_form_ok({ with_fields => {
                 %problem_prepopulated,
-                problem_photo => 0,
+                problem_photo_0 => undef,
             }});
             $mech->base_like( qr{\Q$REPORT_URL\E} );
 
@@ -201,15 +201,18 @@ subtest 'Problem moderation' => sub {
             is $res->code, 404, 'got 404';
 
             $mech->get_ok($REPORT_URL);
-            $mech->content_lacks('Photo of this report');
+            $mech->content_lacks('"Photo of this report"');
+            $mech->content_contains('Photo of this report (moderated)');
 
             $mech->submit_form_ok({ with_fields => {
-                %problem_prepopulated,
-                problem_photo => 1,
+                problem_show_name => 1,
+                problem_title => 'Good bad good',
+                problem_detail => 'Good bad bad bad good bad',
+                problem_restore_0 => 1,
             }});
             $mech->base_like( qr{\Q$REPORT_URL\E} );
 
-            $mech->content_contains('Photo of this report');
+            $mech->content_contains('Photo of this report"');
         };
     };
 
@@ -268,7 +271,7 @@ subtest 'Problem moderation' => sub {
             $mech->get_ok($REPORT_URL);
             $mech->submit_form_ok({ with_fields => {
                 problem_show_name => 1,
-                problem_photo => 1,
+                problem_photo_0 => 1,
                 problem_detail => 'Changed detail',
             }});
             $mech->base_like( qr{\Q$REPORT_URL\E} );
@@ -394,7 +397,7 @@ sub create_update {
 }
 my %update_prepopulated = (
     update_show_name => 1,
-    update_photo => 1,
+    update_photo_0 => 1,
     update_text => 'update good good bad good',
 );
 
@@ -473,15 +476,17 @@ subtest 'updates' => sub {
 
         $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
-            update_photo => 0,
+            update_photo_0 => undef,
         }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
-        $mech->content_lacks('Photo of this report');
+        $mech->content_lacks('Photo of this report"');
+        $mech->content_contains('Photo of this report (moderated)');
 
         $mech->submit_form_ok({ with_fields => {
-            %update_prepopulated,
-            update_photo => 1,
+            update_show_name => 1,
+            update_text => 'update good good bad good',
+            update_restore_0 => 1,
         }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
@@ -525,7 +530,7 @@ subtest 'And do it as a superuser' => sub {
     $user->update({ is_superuser => 1 });
     $mech->get_ok($REPORT_URL);
     $mech->submit_form_ok({ with_fields => {
-        %problem_prepopulated,
+        problem_show_name => 1,
         problem_title  => 'Good good',
         problem_detail => 'Good good improved',
     }});

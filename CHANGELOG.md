@@ -21,6 +21,7 @@
         - Send email reports in staff-only categories.
         - Fix Gaze sometimes being called twice on /around. #3324
         - Improved alert signup for phone-only user. #3367
+        - Fix moderation of update text.
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
@@ -31,6 +32,8 @@
         - No questionnaires on reports as body/anonymous.
         - CSV export, improve Site Used and add Device Type.
         - Always record contributed_by for staff users.
+        - Add per-photo moderation. #3055
+        - Redaction support for photos.
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
