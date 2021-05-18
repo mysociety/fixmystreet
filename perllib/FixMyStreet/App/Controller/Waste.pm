@@ -955,7 +955,7 @@ sub setup_garden_sub_params : Private {
 
     $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
-    $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste'});
+    $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
     $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
     if ( $data->{new_bins} ) {
         if ( $data->{new_bins} > 0 ) {
@@ -963,7 +963,7 @@ sub setup_garden_sub_params : Private {
         } elsif ( $data->{new_bins} < 0 ) {
             $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
         }
-        $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste'});
+        $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste Container'});
         $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
     }
     $c->set_param('current_containers', $data->{current_bins});
