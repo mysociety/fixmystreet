@@ -54,6 +54,9 @@ FixMyStreet::override_config {
         { JobName => 'Empty Bin 240L Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
         { JobName => 'Empty Bin Recycling 240l', Feature => { FeatureType => { ID => 6534 } } },
     ] });
+    $b->mock('ServiceRequests_Get', sub { [
+        # No open requests at present
+    ] });
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
@@ -73,6 +76,24 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
+    };
+    subtest 'No reporting/requesting if open request' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_contains('Report a recycling collection as missed');
+        $mech->content_contains('Request a new recycling container');
+        $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 420 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_contains('A new recycling container request has been made');
+        $mech->content_contains('Report a recycling collection as missed');
+        $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 488 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_contains('A recycling collection has been reported as missed');
+        $mech->content_contains('Request a new recycling container');
+        $b->mock('ServiceRequests_Get', sub { [ ] }); # reset
     };
     subtest 'Request a new container' => sub {
         $mech->log_in_ok($user->email);

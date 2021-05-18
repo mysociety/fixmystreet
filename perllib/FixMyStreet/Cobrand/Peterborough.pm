@@ -551,6 +551,7 @@ sub bin_services_for_address {
     my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
+    my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
 
     my @out;
 
@@ -559,6 +560,11 @@ sub bin_services_for_address {
         my $next = construct_bin_date($_->{NextDate});
         my $name = $_->{JobName};
         my $container_id = $schedules{$name}->{Feature}->{FeatureType}->{ID};
+
+        my $report_service_ids = $container_removal_ids{$container_id};
+        my @report_service_ids_open = grep { $open_requests->{$_} } @$report_service_ids;
+        my $request_service_ids = $container_request_ids{$container_id};
+        my @request_service_ids_open = grep { $open_requests->{$_} } @$request_service_ids;
 
         my $row = {
             id => $_->{JobID},
@@ -573,10 +579,12 @@ sub bin_services_for_address {
             request_allowed => $container_request_ids{$container_id} ? 1 : 0,
             # what's the maximum number of this container that can be request?
             request_max => $container_request_max{$container_id} || 0,
+            # is there already an open bin request for this container?
+            request_open => @request_service_ids_open ? 1 : 0,
             # can this collection be reported as having been missed?
             report_allowed => $self->_waste_report_allowed($last),
             # is there already a missed collection report open for this container?
-            report_open => 0,
+            report_open => @report_service_ids_open ? 1 : 0,
         };
         push @out, $row;
     }
@@ -633,6 +641,22 @@ sub bin_future_collections {
         push @$events, { date => $dt, desc => '', summary => $_->{JobName} };
     }
     return $events;
+}
+
+sub open_service_requests_for_uprn {
+    my ($self, $uprn, $bartec) = @_;
+
+    my $requests = $bartec->ServiceRequests_Get($uprn);
+
+    my %open_requests;
+    foreach (@$requests) {
+        my $service_id = $_->{ServiceType}->{ID};
+        my $status = $_->{ServiceStatus}->{Status};
+        # XXX need to confirm that this list is complete and won't change in the future...
+        next unless $status =~ /PENDING|INTERVENTION|OPEN|ASSIGNED|IN PROGRESS/;
+        $open_requests{$service_id} = 1;
+    }
+    return \%open_requests;
 }
 
 sub waste_munge_request_form_data {
