@@ -207,4 +207,11 @@ sub Features_Schedules_Get {
     return $self->call('Features_Schedules_Get', token => $self->token, UPRN => $uprn, Types => [undef])->{FeatureSchedule} || [];
 }
 
+sub ServiceRequests_Get {
+    my ($self, $uprn) = @_;
+
+    my $requests = $self->call('ServiceRequests_Get', token => $self->token, UPRNs => { decimal => $uprn });
+    return force_arrayref($requests, 'ServiceRequest');
+}
+
 1;
