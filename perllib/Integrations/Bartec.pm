@@ -205,6 +205,16 @@ sub Features_Schedules_Get {
     return $self->call('Features_Schedules_Get', token => $self->token, UPRN => $uprn, Types => [undef])->{FeatureSchedule} || [];
 }
 
+sub ServiceRequests_Get {
+    my ($self, $uprn) = @_;
+
+    my $requests = $self->call('ServiceRequests_Get', token => $self->token, UPRNs => { decimal => $uprn })->{ServiceRequest} || [];
+    # make sure an array is alway returned (e.g. if there's only one service request)
+    $requests = [ $requests ] unless ref $requests eq 'ARRAY';
+
+    return $requests;
+}
+
 sub make_soap_structure {
     my @out;
     for (my $i=0; $i<@_; $i+=2) {
