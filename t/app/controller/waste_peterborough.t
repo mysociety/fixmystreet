@@ -28,6 +28,7 @@ sub create_contact {
 
 create_contact({ category => 'Food', email => 'Bartec-252' }, 'Missed Collection');
 create_contact({ category => 'Recycling (green)', email => 'Bartec-254' }, 'Missed Collection');
+create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
 create_contact({ category => 'Lid', email => 'Bartec-236' }, 'Bin repairs');
@@ -57,6 +58,7 @@ FixMyStreet::override_config {
     $b->mock('ServiceRequests_Get', sub { [
         # No open requests at present
     ] });
+    $b->mock('Premises_Attributes_Get', sub { [] });
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
@@ -126,7 +128,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Missed collection reported');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Report missed 240L Green\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 240L Green';
     };
     subtest 'Report missed food bin' => sub {
@@ -136,8 +138,22 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->detail, "Report missed Food bins\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed Food bins';
+    };
+    subtest 'Report assisted collection' => sub {
+        $b->mock('Premises_Attributes_Get', sub { [
+            { AttributeDefinition => { Name => 'ASSISTED COLLECTION' } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480/report');
+        $mech->submit_form_ok({ with_fields => { 'service-6534' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Missed collection reported');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Green bin\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->title, 'Report missed assisted collection';
+        $b->mock('Premises_Attributes_Get', sub { [] });
     };
     subtest 'Report broken bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');

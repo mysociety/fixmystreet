@@ -214,4 +214,11 @@ sub ServiceRequests_Get {
     return force_arrayref($requests, 'ServiceRequest');
 }
 
+sub Premises_Attributes_Get {
+    my ($self, $uprn) = @_;
+
+    my $attributes = $self->call('Premises_Attributes_Get', token => $self->token, UPRN => $uprn );
+    return force_arrayref($attributes, 'Attribute');
+}
+
 1;
