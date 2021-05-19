@@ -702,6 +702,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
 
     };
 
@@ -975,6 +977,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
@@ -1018,6 +1022,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     };
 
     subtest 'renew credit card sub with one less bin' => sub {
@@ -1059,6 +1065,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     };
 
     subtest 'renew credit card sub after end of sub' => sub {
@@ -1098,6 +1106,8 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct last pay method';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct payment code';
     };
 
     subtest 'cancel credit card sub' => sub {
