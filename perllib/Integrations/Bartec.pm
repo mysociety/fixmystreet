@@ -215,6 +215,16 @@ sub ServiceRequests_Get {
     return $requests;
 }
 
+sub Premises_Attributes_Get {
+    my ($self, $uprn) = @_;
+
+    my $attributes = $self->call('Premises_Attributes_Get', token => $self->token, UPRN => $uprn )->{Attribute} || [];
+    # make sure an array is alway returned (e.g. if there's only one attribute)
+    $attributes = [ $attributes ] unless ref $attributes eq 'ARRAY';
+
+    return $attributes;
+}
+
 sub make_soap_structure {
     my @out;
     for (my $i=0; $i<@_; $i+=2) {
