@@ -770,10 +770,6 @@ sub garden_modify : Chained('property') : Args(0) {
     my $service = $c->cobrand->garden_waste_service_id;
 
     my $pick = $c->get_param('task') || '';
-    if ($pick eq 'problem') {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/enquiry?template=problem&service_id=' . $service);
-        $c->detach;
-    }
     if ($pick eq 'cancel') {
         $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/garden_cancel');
         $c->detach;
