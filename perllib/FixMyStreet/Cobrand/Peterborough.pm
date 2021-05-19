@@ -485,6 +485,7 @@ sub bin_services_for_address {
     );
 
     $self->{c}->stash->{containers} = {
+        # For new containers
         419 => "240L Black",
         420 => "240L Green",
         425 => "All bins",
@@ -494,6 +495,7 @@ sub bin_services_for_address {
         428 => "Food bags",
 
         "FOOD_BINS" => "Food bins",
+        "ASSISTED_COLLECTION" => "Assisted collection",
 
         # For missed collections
         6533 => "240L Black",
@@ -659,6 +661,20 @@ sub open_service_requests_for_uprn {
     return \%open_requests;
 }
 
+sub property_attributes {
+    my ($self, $uprn, $bartec) = @_;
+
+    unless ($bartec) {
+        $bartec = $self->feature('bartec');
+        $bartec = Integrations::Bartec->new(%$bartec);
+    }
+
+    my $attributes = $bartec->Premises_Attributes_Get($uprn);
+    my %attribs = map { $_->{AttributeDefinition}->{Name} => 1 } @$attributes;
+
+    return \%attribs;
+}
+
 sub waste_munge_request_form_data {
     my ($self, $data) = @_;
 
@@ -670,6 +686,31 @@ sub waste_munge_request_form_data {
         $data->{"container-423"} = 0;
         $data->{"container-493"} = 1;
         $data->{"quantity-493"} = 1;
+    }
+}
+
+sub waste_munge_report_form_data {
+    my ($self, $data) = @_;
+
+    my $uprn = $self->{c}->stash->{property}->{uprn};
+    my $attributes = $self->property_attributes($uprn);
+
+    if ( $attributes->{"ASSISTED COLLECTION"} ) {
+        # For assisted collections we just raise a single "missed assisted collection"
+        # report, instead of the usual thing of one per container.
+        # The details of the bins that were missed are stored in the problem body.
+
+        $data->{assisted_detail} = "";
+        $data->{assisted_detail} .= "Food bins\n\n" if $data->{"service-FOOD_BINS"};
+        $data->{assisted_detail} .= "Black bin\n\n" if $data->{"service-6533"};
+        $data->{assisted_detail} .= "Green bin\n\n" if $data->{"service-6534"};
+        $data->{assisted_detail} .= "Brown bin\n\n" if $data->{"service-6579"};
+
+        $data->{"service-FOOD_BINS"} = 0;
+        $data->{"service-6533"} = 0;
+        $data->{"service-6534"} = 0;
+        $data->{"service-6579"} = 0;
+        $data->{"service-ASSISTED_COLLECTION"} = 1;
     }
 }
 
@@ -694,6 +735,7 @@ sub waste_munge_report_data {
 
     my %container_service_ids = (
         "FOOD_BINS" => 252, # Food bins (pseudocontainer hardcoded in bin_services_for_address)
+        "ASSISTED_COLLECTION" => 492, # Will only be set by waste_munge_report_form_data (if property has assisted attribute)
         6533 => 255, # 240L Black
         6534 => 254, # 240L Green
         6579 => 253, # 240L Brown
@@ -709,11 +751,16 @@ sub waste_munge_report_data {
 
     my $c = $self->{c};
 
-    my $address = $c->stash->{property}->{address};
     my $service_id = $container_service_ids{$id};
     my $container = $c->stash->{containers}{$id};
-    $data->{title} = "Report missed $container";
-    $data->{detail} = "$data->{title}\n\n$address";
+    if ( $data->{assisted_detail} ) {
+        $data->{title} = "Report missed assisted collection";
+        $data->{detail} = $data->{assisted_detail};
+        $data->{detail} .= "\n\n" . $c->stash->{property}->{address};
+    } else {
+        $data->{title} = "Report missed $container";
+        $data->{detail} = $c->stash->{property}->{address};
+    }
 
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
