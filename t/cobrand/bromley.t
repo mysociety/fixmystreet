@@ -1009,6 +1009,21 @@ subtest 'check direct debit reconcilliation' => sub {
                 Status => "Paid",
                 Type => "Payment: 17",
             },
+            {   # renewal from cc payment
+                AlternateKey => "",
+                Amount => 10.00,
+                ClientName => "London Borough of Bromley",
+                CollectionDate => "27/02/2021",
+                DueDate => "27/02/2021",
+                PayerAccountHoldersName => "A Payer",
+                PayerAccountNumber => 123,
+                PayerName => "A Payer",
+                PayerReference => "GGW1654321",
+                PayerSortCode => "12345",
+                ProductName => "Garden Waste",
+                Status => "Paid",
+                Type => "Payment: 01",
+            },
             {   # ad hoc
                 AlternateKey => "",
                 YourRef => $ad_hoc->id,
@@ -1134,6 +1149,16 @@ subtest 'check direct debit reconcilliation' => sub {
     $new_sub->state('unconfirmed');
     $new_sub->update;
 
+    my $renewal_from_cc_sub = setup_dd_test_report({
+        'Subscription_Type' => 2,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '154323',
+        'uprn' => '1654321',
+    });
+    $renewal_from_cc_sub->state('unconfirmed');
+    $renewal_from_cc_sub->update;
+
     my $sub_for_unprocessed_cancel = setup_dd_test_report({
         'Subscription_Type' => 1,
         'Subscription_Details_Quantity' => 1,
@@ -1208,6 +1233,12 @@ subtest 'check direct debit reconcilliation' => sub {
     is $new_sub->get_extra_metadata('payerReference'), "GGW654321", "payer reference set";
     is $new_sub->get_extra_field_value('PaymentCode'), "GGW654321", 'correct echo payment code field';
     is $new_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+
+    $renewal_from_cc_sub->discard_changes;
+    is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
+    is $renewal_from_cc_sub->get_extra_metadata('payerReference'), "GGW1654321", "payer reference set";
+    is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
+    is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     $ad_hoc_orig->discard_changes;
     is $ad_hoc_orig->get_extra_metadata('dd_date'), "01/01/2021", "dd date unchanged ad hoc orig";
