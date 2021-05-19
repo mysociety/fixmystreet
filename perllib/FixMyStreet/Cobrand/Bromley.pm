@@ -1359,6 +1359,8 @@ sub waste_reconcile_direct_debits {
                     uprn => $uprn,
                     Subscription_Details_Container_Type => 44,
                     Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
+                    LastPayMethod => $self->bin_payment_types->{direct_debit},
+                    PaymentCode => $payer,
                 } );
                 $renew->set_extra_metadata('dd_date', $date);
                 $renew->insert;
@@ -1413,6 +1415,8 @@ sub waste_reconcile_direct_debits {
                     Container_Instruction_Action => $self->waste_container_actions->{remove},
                     Container_Instruction_Container_Type => 44,
                     Container_Instruction_Quantity => $self->waste_get_sub_quantity($service),
+                    LastPayMethod => $self->bin_payment_types->{direct_debit},
+                    PaymentCode => $payer,
                 } );
                 $cancel->set_extra_metadata('dd_date', $date);
                 $cancel->insert;
@@ -1435,6 +1439,16 @@ sub waste_reconcile_direct_debits {
                             }
                         }
                         $cur->set_extra_metadata('dd_date', $date);
+                        $cur->update_extra_field( {
+                            name => 'PaymentCode',
+                            description => 'PaymentCode',
+                            value => $payer,
+                        } );
+                        $cur->update_extra_field( {
+                            name => 'LastPayMethod',
+                            description => 'LastPayMethod',
+                            value => $self->bin_payment_types->{direct_debit},
+                        } );
                         $cur->confirm;
                         $cur->update;
                         $handled = 1;

@@ -1206,6 +1206,8 @@ subtest 'check direct debit reconcilliation' => sub {
     $new_sub->discard_changes;
     is $new_sub->state, 'confirmed', "New report confirmed";
     is $new_sub->get_extra_metadata('payerReference'), "GGW654321", "payer reference set";
+    is $new_sub->get_extra_field_value('PaymentCode'), "GGW654321", 'correct echo payment code field';
+    is $new_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     $ad_hoc_orig->discard_changes;
     is $ad_hoc_orig->get_extra_metadata('dd_date'), "01/01/2021", "dd date unchanged ad hoc orig";
@@ -1213,6 +1215,8 @@ subtest 'check direct debit reconcilliation' => sub {
     $ad_hoc->discard_changes;
     is $ad_hoc->state, 'confirmed', "ad hoc report confirmed";
     is $ad_hoc->get_extra_metadata('dd_date'), "26/03/2021", "dd date set for ad hoc";
+    is $ad_hoc->get_extra_field_value('PaymentCode'), "GGW654325", 'correct echo payment code field';
+    is $ad_hoc->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed";
@@ -1234,6 +1238,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('Subscription_Details_Quantity'), 2, "renewal has correct number of bins";
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
+    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->state, 'confirmed';
 
     my $cancel = FixMyStreet::DB->resultset('Problem')->search({
@@ -1251,6 +1256,8 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Container_Instruction_Quantity'), 1, "cancel has correct number of bins";
     is $p->category, 'Cancel Garden Subscription', 'cancel has correct category';
     is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for cancelled";
+    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $p->get_extra_field_value('PaymentCode'), "GGW654323", 'correct echo payment code field';
     is $p->state, 'confirmed';
 
     my $processed = FixMyStreet::DB->resultset('Problem')->search({
