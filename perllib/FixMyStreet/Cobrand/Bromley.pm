@@ -1472,7 +1472,9 @@ sub _report_matches_payment {
     if ( $p->{YourRef} && $r->id eq $p->{YourRef} ) {
         $match = 'Ad-Hoc';
     } elsif ( !$p->{YourRef}
-            && $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{New}
+            && ( $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{New} ||
+                 # if we're renewing a previously non DD sub
+                 $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{Renew} )
     ) {
         $match = 'New';
     }

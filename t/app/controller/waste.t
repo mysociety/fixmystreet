@@ -1020,6 +1020,55 @@ FixMyStreet::override_config {
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
+    subtest 'renew credit card sub with direct debit' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            payment_method => 'direct_debit',
+        } });
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        $mech->content_like( qr/txtRegularAmount[^>]*"20.00"/, 'payment amount correct');
+
+        my ($token, $report_id) = ( $mech->content =~ m#reference\*\|\*([^*]*)\*\|\*report_id\*\|\*(\d+)"# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
+                id => $report_id,
+                extra => { like => '%redirect_id,T18:'. $token . '%' }
+        } )->first;
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Type'), 2, 'correct subscription type';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), '', 'no container request bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste');
+
+        $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/dd_complete?reference=NOTATOKEN&report_id=$report_id");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
+        $mech->content_contains('confirmation details for your direct debit');
+
+        $new_report->discard_changes;
+        is $new_report->state, 'unconfirmed', 'report still not confirmed';
+    };
+
     subtest 'renew credit card sub with an extra bin' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
