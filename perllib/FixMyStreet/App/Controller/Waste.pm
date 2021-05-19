@@ -400,12 +400,6 @@ sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
     } );
 }
 
-sub direct_debit_renew : Path('dd_renew') : Args(0) {
-    my ($self, $c) = @_;
-
-    $c->res->body('ERROR - DD renewal is automatic');
-}
-
 sub csc_code : Private {
     my ($self, $c) = @_;
 
@@ -1066,7 +1060,8 @@ sub process_garden_renew : Private {
     # it should not be possible to get to here if it's direct debit but
     # grab this so we can check and redirect to an information page if
     # they manage to get here
-    my $payment_method = $c->forward('get_current_payment_method');
+    my $payment_method = $data->{payment_method}
+        || $c->forward('get_current_payment_method');
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{message} = 'Payment skipped on staging';
@@ -1076,7 +1071,7 @@ sub process_garden_renew : Private {
         if ( $c->stash->{is_staff} ) {
             $c->forward('csc_code');
         } elsif ( $payment_method eq 'direct_debit' ) {
-            $c->forward('direct_debit_renew');
+            $c->forward('direct_debit');
         } else {
             $c->forward('pay');
         }
