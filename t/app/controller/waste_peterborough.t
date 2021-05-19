@@ -165,7 +165,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Enquiry submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '240L Black Lid';
-        is $report->detail, "240L Black Lid\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
     };
 };
 

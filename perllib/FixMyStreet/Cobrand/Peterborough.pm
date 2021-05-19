@@ -775,10 +775,9 @@ sub waste_munge_enquiry_data {
     );
 
 
-    my $address = $self->{c}->stash->{property}->{address};
     my $bin = $container_ids{$data->{service_id}};
     $data->{title} = "$bin $data->{category}";
-    $data->{detail} = "$data->{title}\n\n$address";
+    $data->{detail} = $self->{c}->stash->{property}->{address};
 }
 
 
