@@ -84,7 +84,6 @@ has_field task => (
     widget => 'RadioGroup',
     options => [
         { value => 'modify', label => 'Increase or reduce the number of bins in your subscription' },
-        { value => 'problem', label => 'Request a replacement for a broken or stolen bin' },
         { value => 'cancel', label => 'Cancel your green garden waste subscription' },
     ],
 );
