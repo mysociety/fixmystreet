@@ -37,13 +37,6 @@ $(function() {
 
     var form_fields_changed = false;
 
-    $('#form_time_spent').spinner({
-        spin: function (e, ui) {
-            if (ui.value < 0) { return false; }
-            form_fields_changed = true;
-        }
-    });
-
     setTimeout(function(){
         $('.message-updated').fadeOut(250, function(){
             $(this).remove();

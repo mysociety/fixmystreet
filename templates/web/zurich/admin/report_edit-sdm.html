@@ -110,7 +110,7 @@
 
 <p class="screen-only">
     <label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
-    <input [% sdm_disabled %] type="text" class="form-control" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+    <input [% sdm_disabled %] type="number" class="form-control" name="time_spent" id="form_time_spent" style="width: 4em" value="0" min="0">
 </p>
 
 <p class="clearfix screen-only">
