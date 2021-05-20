@@ -30,6 +30,7 @@
  [% ELSE %]
   <div class="govuk-grid-column-full">
  [% END %]
+    [% IF !unit.garden_overdue %]
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Frequency</dt>
@@ -60,6 +61,7 @@
       </div>
      [% END %]
     </dl>
+    [% END %]
 
     <div class="waste-services-launch-panel" id="panel-[% unit.service_id %]">
         [% PROCESS waste/services.html %]
