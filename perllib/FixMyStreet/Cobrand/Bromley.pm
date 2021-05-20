@@ -678,9 +678,11 @@ sub bin_services_for_address {
     my @to_fetch;
     my %schedules;
     my @task_refs;
+    my %expired;
     foreach (@$result) {
         my $servicetask = _get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
+        $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
         $schedules{$_->{Id}} = $schedules;
@@ -694,8 +696,10 @@ sub bin_services_for_address {
     my @out;
     my %task_ref_to_row;
     foreach (@$result) {
-        next unless $schedules{$_->{Id}};
-        my $schedules = $schedules{$_->{Id}};
+        my $service_name = $self->service_name_override->{$_->{ServiceId}} || $_->{ServiceName};
+        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden Waste' && $expired{$_->{Id}} );
+
+        my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
         my $servicetask = _get_current_service_task($_);
 
         my $events = $calls->{"GetEventsForObject ServiceUnit $_->{Id}"};
@@ -703,7 +707,6 @@ sub bin_services_for_address {
 
         my $containers = $service_to_containers{$_->{ServiceId}};
         my ($open_request) = grep { $_ } map { $open->{request}->{$_} } @$containers;
-        my $service_name = $self->service_name_override->{$_->{ServiceId}} || $_->{ServiceName};
 
         my $request_max = $quantity_max{$_->{ServiceId}};
 
@@ -711,7 +714,7 @@ sub bin_services_for_address {
         my $garden_bins;
         my $garden_cost = 0;
         my $garden_due = $self->waste_sub_due($schedules->{end_date});
-        my $garden_overdue = $self->waste_sub_overdue($schedules->{end_date});
+        my $garden_overdue = $expired{$_->{Id}};
         if ($service_name eq 'Garden Waste') {
             $garden = 1;
             my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
@@ -1232,12 +1235,20 @@ sub waste_sub_due {
 }
 
 sub waste_sub_overdue {
-    my ($self, $date) = @_;
+    my ($self, $date, $interval, $count) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date)->truncate( to => 'day' );
 
-    return $now > $sub_end;
+    if ( $now > $sub_end ) {
+        my $diff = 1;
+        if ( $interval ) {
+            $diff = $now->delta_days($sub_end)->in_units($interval) < $count;
+        }
+        return $diff;
+    };
+
+    return 0;
 }
 
 sub waste_display_payment_method {

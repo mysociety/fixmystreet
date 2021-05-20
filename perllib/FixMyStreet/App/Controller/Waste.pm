@@ -1032,7 +1032,8 @@ sub process_garden_renew : Private {
     my $payment = $c->cobrand->garden_waste_cost($total_bins);
     $data->{bin_count} = $total_bins;
 
-
+    my $current_bins = $c->cobrand->get_current_garden_bins;
+    $data->{new_bins} = $total_bins - $current_bins;
     if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
         $data->{category} = 'Garden Subscription';
         $data->{title} = 'Garden Subscription - New';
@@ -1041,10 +1042,6 @@ sub process_garden_renew : Private {
         $data->{category} = 'Garden Subscription';
         $data->{title} = 'Garden Subscription - Renew';
         $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Renew});
-
-        # only override the new bin count if we know the current bin number
-        my $current_bins = $c->cobrand->get_current_garden_bins;
-        $data->{new_bins} = $total_bins - $current_bins;
     }
 
     $c->set_param('payment', $payment);
