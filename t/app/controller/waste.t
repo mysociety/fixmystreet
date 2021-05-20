@@ -1166,11 +1166,16 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     };
 
+    remove_test_subs( $p->id );
+
     subtest 'renew credit card sub after end of sub' => sub {
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Garden Waste', "no mention of Garden Waste");
-        $mech->content_lacks('/waste/12345/garden_renew', "no Garden Waste renewal link");
+        $mech->content_contains('overdue!');
+        $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
+        $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
+        $mech->content_lacks('garden_modify', 'modify link not on expired subs');
 
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
@@ -1205,6 +1210,40 @@ FixMyStreet::override_config {
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
         is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct last pay method';
         is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct payment code';
+    };
+
+    remove_test_subs( $p->id );
+
+    subtest 'renew credit card sub after end of sub increasing bins' => sub {
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('overdue!');
+        $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
+        $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
+        $mech->content_lacks('garden_modify', 'modify link not on expired subs');
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 2,
+            payment_method => 'credit_card',
+        } });
+        $mech->content_contains('40.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 4000, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), '44', 'correct container request bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '1', 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '1', 'correct container request count';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
     };
 
     subtest 'cancel credit card sub' => sub {
@@ -1582,7 +1621,205 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+    };
 
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
+
+    # remove all reports
+    remove_test_subs( 0 );
+
+    subtest 'renew credit card sub after end of sub with no existing sub' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 405,
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => {
+                            DatatypeName => 'Quantity',
+                            Value => 1,
+                        } },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        StartDate => { DateTime => '2019-04-01T23:00:00Z' },
+                        EndDate => { DateTime => '2020-05-14T23:00:00Z' },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    }, {
+                        StartDate => { DateTime => '2020-05-14T23:00:00Z' },
+                        EndDate => { DateTime => '2020-10-31T00:00:00Z' },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    }, {
+                        StartDate => { DateTime => '2020-10-31T00:00:00Z' },
+                        EndDate => { DateTime => '2020-11-01T00:00:00Z' },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    }, {
+                        StartDate => { DateTime => '2020-11-01T00:00:00Z' },
+                        EndDate => { DateTime => '2021-05-19T22:59:59Z', OffsetMinutes => 60 },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    } ] },
+                } },
+            } ]
+        } );
+        $mech->log_out_ok;
+        set_fixed_time('2021-05-20T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('overdue!');
+        $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
+        $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
+        $mech->content_lacks('garden_modify', 'modify link not on expired subs');
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            payment_method => 'credit_card',
+        } });
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 2000, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Type'), 1, 'correct subscription type';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        #warn $mech->content;
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo last pay method';
+        is $new_report->get_extra_field_value('PaymentCode'), 54321, 'correct echo payment code';
+    };
+
+    # remove all reports
+    remove_test_subs( 0 );
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+
+    subtest 'modify sub with no existing waste sub - credit card payment' => sub {
+        $mech->log_out_ok();
+        $mech->get_ok('/waste/12345/garden_modify');
+        is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->content_contains('40.00');
+        $mech->content_contains('5.50');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 550, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+    };
+
+    remove_test_subs( 0 );
+
+    subtest 'cancel credit card sub with no record in waste' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $new_report->state, 'confirmed', 'report confirmed';
+    };
+
+    remove_test_subs( 0 );
+
+    subtest 'check staff renewal with no existing sub' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_lacks('Direct Debit', "no payment method on page");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+        }});
+
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payenet_code => 54321
+        }});
+        $mech->content_contains('Subscription completed');
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+        is $report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
+        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
+        is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $report->state, 'confirmed', 'report confirmed';
     };
 };
 
