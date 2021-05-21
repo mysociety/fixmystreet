@@ -16,6 +16,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $body = $mech->create_body_ok(2482, 'Bromley Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 
@@ -1488,6 +1489,101 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
+
+    subtest 'staff create new subscription' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->content_lacks('password', 'no password field');
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 1,
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        $mech->content_contains('1 bin');
+        # external redirects make Test::WWW::Mechanize unhappy so clone
+        # the mech for the redirect
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payenet_code => 64321
+        }});
+        $mech->content_contains('Subscription completed');
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+
+        is $report->category, 'Garden Subscription', 'correct category on report';
+        is $report->title, 'Garden Subscription - New', 'correct title on report';
+        is $report->get_extra_field_value('client_reference'), 'GGW1000000002', 'correct client reference on report';
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
+        is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $report->state, 'confirmed', 'report confirmed';
+        is $report->state, 'confirmed', 'report confirmed';
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
+        is $report->get_extra_field_value('PaymentCode'), '64321', 'correct echo payment reference field';
+        is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
+        is $report->user->email, 'test@example.net';
+        is $report->get_extra_metadata('contributed_by'), $staff_user->id;
+
+    };
+
+    subtest 'staff create new subscription no email' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 1,
+                name => 'Test McTest',
+                email => '',
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        $mech->content_contains('1 bin');
+        # external redirects make Test::WWW::Mechanize unhappy so clone
+        # the mech for the redirect
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payenet_code => 64321
+        }});
+        $mech->content_contains('Subscription completed');
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+
+        is $report->category, 'Garden Subscription', 'correct category on report';
+        is $report->title, 'Garden Subscription - New', 'correct title on report';
+        is $report->get_extra_field_value('client_reference'), 'GGW1000000002', 'correct client reference on report';
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
+        is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $report->state, 'confirmed', 'report confirmed';
+        is $report->state, 'confirmed', 'report confirmed';
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
+        is $report->get_extra_field_value('PaymentCode'), '64321', 'correct echo payment reference field';
+        is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
+        is $report->get_extra_metadata('contributed_by'), $staff_user->id;
+        is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+
+    };
 };
 
 sub get_report_from_redirect {
@@ -1500,6 +1596,15 @@ sub get_report_from_redirect {
 
     return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
     return ($token, $new_report, $report_id);
+}
+
+sub remove_test_subs {
+    my $base_id = shift;
+
+    FixMyStreet::DB->resultset('Problem')->search({
+                id => { '<>' => $base_id },
+                category => [ 'Garden Subscription', 'Cancel Garden Subscription' ],
+    })->delete;
 }
 
 done_testing;
