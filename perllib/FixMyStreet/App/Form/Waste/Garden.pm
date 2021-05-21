@@ -52,7 +52,7 @@ has_page details => (
 has_page details_staff => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'new_bins', 'name', 'email', 'phone', 'password', 'continue_review'],
+    fields => ['current_bins', 'new_bins', 'name', 'email', 'phone', 'continue_review'],
     update_field_list => \&details_update_fields,
     next => 'summary',
 );

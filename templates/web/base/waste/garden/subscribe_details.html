@@ -118,7 +118,11 @@
   [% PROCESS form override_fields=['billing_differ', 'billing_address'] %]
   [% END %]
 
+  [% IF is_staff %]
+  [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
+  [% ELSE %]
   [% PROCESS form override_fields=['name', 'email', 'phone', 'password', 'continue_review' ] %]
+  [% END %]
 
   [% PROCESS form override_fields=['saved_data', 'token', 'process', 'service_id'] %]
 
