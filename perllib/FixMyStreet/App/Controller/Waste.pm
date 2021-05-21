@@ -738,7 +738,12 @@ sub enquiry : Chained('property') : Args(0) {
         };
     }
 
-    $c->stash->{first_page} = 'enquiry';
+    # If the contact has no extra fields (e.g. Peterborough) then skip to the
+    # "about you" page instead of showing an empty first page.
+    # NB this will mean you need to set $data->{category} in the cobrand's
+    # waste_munge_enquiry_data.
+    $c->stash->{first_page} = @$field_list ? 'enquiry' : 'about_you';
+
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry';
     $c->stash->{page_list} = [
         enquiry => {

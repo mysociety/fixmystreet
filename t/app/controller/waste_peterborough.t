@@ -159,7 +159,6 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
         $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
-        $mech->submit_form_ok({ with_fields => { continue => 'Continue' } }); # TODO
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
