@@ -743,7 +743,6 @@ sub garden : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
     if ( $c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
-        warn "already a sub\n";
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
@@ -1179,7 +1178,9 @@ sub add_report : Private {
     $c->stash->{override_confirmation_template} = 'waste/confirmation.html';
 
     # XXX Is this best way to do this?
-    if ($c->user_exists && $c->user->from_body && $c->user->email ne $data->{email}) {
+    if ($c->user_exists && $c->user->from_body && !$data->{email} && !$data->{phone}) {
+        $c->set_param('form_as', 'anonymous_user');
+    } elsif ($c->user_exists && $c->user->from_body && $c->user->email ne $data->{email}) {
         $c->set_param('form_as', 'another_user');
         $c->set_param('username', $data->{email} || $data->{phone});
     } else {
