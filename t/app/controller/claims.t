@@ -66,7 +66,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { report_id => 1 } }, "report id");
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
         $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
-        $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
+        $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => '09', 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', direction => 'east', details => 'some details', in_vehicle => 'Yes', speed => '20mph', actions => 'an action' } }, "incident details");
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } }, "witnesses etc");
         $mech->submit_form_ok({ with_fields => { what_cause => 'bollard', aware => 'Yes', where_cause => 'bridge', describe_cause => 'a cause',
@@ -106,7 +106,7 @@ Fault ID: 1
 Postcode, or street name and area of the source: A street
 Latitude: 51.81386
 Longitude: -0.82973
-What day did the incident happen?: 10/10/2020
+What day did the incident happen?: 10/9/2020
 What time did the incident happen?: morning
 Describe the weather conditions at the time: sunny
 What direction were you travelling in at the time?: east
