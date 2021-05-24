@@ -324,6 +324,7 @@ sub garden_waste_no_bins {
             Id => 404,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
+                StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
@@ -331,6 +332,7 @@ sub garden_waste_no_bins {
                 },
             }, {
                 ScheduleDescription => 'every other Monday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-02T00:00:00Z' },
@@ -374,6 +376,7 @@ sub _garden_waste_service_units {
                 } ] },
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
@@ -381,6 +384,7 @@ sub _garden_waste_service_units {
                 },
             }, {
                 ScheduleDescription => 'every other Monday',
+                StartDate => { DateTime => '2020-03-30T00:00:00Z' },
                 EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {
                     CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
@@ -487,12 +491,14 @@ FixMyStreet::override_config {
                         } },
                     } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                         EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                         LastInstance => {
                             OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                             CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                         },
                     }, {
+                        StartDate => { DateTime => '2020-01-30T00:00:00Z' },
                         EndDate => { DateTime => '2020-03-30T00:00:00Z' },
                         NextInstance => {
                             CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
@@ -516,12 +522,14 @@ FixMyStreet::override_config {
                         } },
                     } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                         EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                         LastInstance => {
                             OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                             CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                         },
                     }, {
+                        StartDate => { DateTime => '2020-03-30T00:00:00Z' },
                         EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                         NextInstance => {
                             CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
@@ -554,6 +562,7 @@ FixMyStreet::override_config {
                     Id => 401,
                     ScheduleDescription => 'every Wednesday',
                     ServiceTaskSchedules => { ServiceTaskSchedule => {
+                        StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                         EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                         NextInstance => {
                             CurrentScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
