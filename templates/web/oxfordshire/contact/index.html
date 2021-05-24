@@ -1,0 +1,33 @@
+[% extra_js = [
+    version('/js/contact.js')
+] -%]
+[% INCLUDE 'header.html',
+    title = loc('Contact Us')
+    robots = 'noindex,nofollow'
+    bodyclass = 'twothirdswidthpage'
+%]
+
+[% INCLUDE 'about/_sidebar.html' %]
+
+<h1>[% loc('Contact the team') %]</h1>
+
+[% IF problem || update %]
+[% INCLUDE 'contact/form.html' %]
+[% ELSE %]
+<p>
+    [% tprintf( loc("It's often quickest to <a href=\"%s\">check our FAQs</a> and see if the answer is there."), c.uri_for('/faq') ) %]
+</p>
+
+<p>
+    To report a problem, please <a href="/">go to the front page</a> and follow the instructions.
+</p>
+
+<p>
+    If you'd still like to get in touch with us please use our
+    <a href="https://www.oxfordshire.gov.uk/contactus/contact-highways-team">Contact the Highways Team</a>
+    form.
+</p>
+
+[% END %]
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
