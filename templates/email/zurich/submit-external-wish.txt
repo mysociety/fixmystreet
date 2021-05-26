@@ -13,7 +13,7 @@ Telefonnummer des Meldenden: [% report.user.phone %]
 
 Meldung: [% report.detail %]
 
-Standort in AV-Online anzeigen:
+Standort in Liegenschafteninventar anzeigen:
 https://gdi.intra.stzh.ch/geoserver_viewer/?t=Liegenschafteninventar_OGD&c=[% east %]%2C[% nord %]&s=1000&bl=Basiskarte%20Zuerich
 
 
