@@ -364,17 +364,25 @@ subtest 'test waste max-per-day' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
         COBRAND_FEATURES => {
-            echo => { bromley => { max_per_day => 1, sample_data => 1 } },
+            echo => { bromley => {
+                max_requests_per_day => 3,
+                max_properties_per_day => 1,
+                sample_data => 1
+            } },
             waste => { bromley => 1 }
         },
     }, sub {
         SKIP: {
-            skip( "No memcached", 7 ) unless Memcached::set('bromley-test', 1);
-            Memcached::delete("bromley-test");
+            skip( "No memcached", 7 ) unless Memcached::set('bromley-waste-prop-test', 1);
+            Memcached::delete("bromley-waste-prop-test");
+            Memcached::delete("bromley-waste-req-test");
             $mech->get_ok('/waste/12345');
             $mech->get_ok('/waste/12345');
             $mech->get('/waste/12346');
-            is $mech->res->code, 403, 'Now forbidden';
+            is $mech->res->code, 403, 'Now forbidden, another property';
+            $mech->content_contains('limited the number');
+            $mech->get('/waste/12345');
+            is $mech->res->code, 403, 'Now forbidden, too many views';
             $mech->log_in_ok('superuser@example.com');
             $mech->get_ok('/waste/12345');
         }
