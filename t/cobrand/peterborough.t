@@ -113,13 +113,14 @@ subtest "bartec report with no gecode handled correctly" => sub {
     };
 };
 
+my $report;
 subtest "extra bartec params are sent to open311" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+        ($report) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
             category => 'Bins',
             latitude => 52.5608,
             longitude => 0.2405,
@@ -137,6 +138,7 @@ subtest "extra bartec params are sent to open311" => sub {
             },
             extra => {
                 contributed_by => $staffuser->id,
+                external_status_code => 'EXT',
                 _fields => [
                     { name => 'site_code', value => '12345', },
                     { name => 'PCC-light', value => 'light-ref', },
@@ -146,8 +148,8 @@ subtest "extra bartec params are sent to open311" => sub {
 
         my $test_data = FixMyStreet::Script::Reports::send();
 
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
+        $report->discard_changes;
+        ok $report->whensent, 'Report marked as sent';
 
         my $req = $test_data->{test_req_used};
         my $cgi = CGI::Simple->new($req->content);
@@ -158,6 +160,9 @@ subtest "extra bartec params are sent to open311" => sub {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
+    $report->update({
+        state => 'unable to fix',
+    });
     $mech->log_in_ok( $staffuser->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
@@ -165,8 +170,8 @@ subtest 'Dashboard CSV extra columns' => sub {
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('"Reported As","Staff User",USRN,"Nearest address",Light,"CSC Ref"');
-    $mech->content_like(qr/peterborough,,[^,]*counciluser\@example.com,12345,"12 A Street, XX1 1SZ",light-ref,/);
+    $mech->content_contains('"Reported As","Staff User",USRN,"Nearest address","External status code",Light,"CSC Ref"');
+    $mech->content_like(qr/"No further action",.*?,peterborough,,[^,]*counciluser\@example.com,12345,"12 A Street, XX1 1SZ",EXT,light-ref,/);
 };
 
 

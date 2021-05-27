@@ -114,6 +114,7 @@ sub dashboard_export_problems_add_columns {
         staff_user => 'Staff User',
         usrn => 'USRN',
         nearest_address => 'Nearest address',
+        external_status_code => 'External status code',
         @extra_columns,
     );
 
@@ -127,9 +128,13 @@ sub dashboard_export_problems_add_columns {
             if $report->geocode;
 
         my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
+        my $ext_code = $report->get_extra_metadata('external_status_code');
+        my $state = FixMyStreet::DB->resultset("State")->display($report->state);
         my $extra = {
             nearest_address => $address,
             staff_user => $staff_user,
+            external_status_code => $ext_code,
+            state => $state,
         };
 
         foreach (@{$report->get_extra_fields}) {
