@@ -17,6 +17,8 @@ has current_page => ( is => 'ro', lazy => 1,
     predicate => 'has_current_page',
 );
 
+has c => ( is => 'ro' );
+
 has saved_data_encoded => ( is => 'ro', isa => 'Maybe[Str]' );
 has saved_data => ( is => 'rw', lazy => 1, isa => 'HashRef', default => sub {
     $_[0]->field('saved_data')->inflate_json($_[0]->saved_data_encoded) || {};
@@ -27,6 +29,10 @@ has csrf_token => ( is => 'ro', isa => 'Str' );
 has_field saved_data => ( type => 'JSON' );
 has_field token => ( type => 'Hidden', required => 1 );
 has_field process => ( type => 'Hidden', required => 1 );
+
+has unique_id_session => ( is => 'ro', isa => 'Maybe[Str]' );
+has unique_id_form => ( is => 'ro', isa => 'Maybe[Str]' );
+has_field unique_id => ( type => 'Hidden', required => 0 );
 
 sub next {
     my $self = shift;
@@ -68,6 +74,7 @@ sub after_build {
     $self->update_field(saved_data => { default => $saved_data });
     $self->update_field(token => { default => $self->csrf_token });
     $self->update_field(process => { default => $page->name });
+    $self->update_field(unique_id => { default => $self->unique_id_session });
 
     # Update field list with any dynamic things (eg user-based, address lookup, geocoding)
     if ($page->has_update_field_list) {
@@ -89,11 +96,18 @@ after 'validate_form' => sub {
     my $self = shift;
 
     if ($self->validated) {
+        # Mismatch of unique ID, resubmission?
+        if ($self->unique_id_session && $self->unique_id_session ne ($self->unique_id_form || '')) {
+            $self->add_form_error('You have already submitted this form.');
+            return;
+        }
+
         # Update saved_data for the next page
         my $saved_data = { %{$self->saved_data}, %{$self->value} };
         delete $saved_data->{process};
         delete $saved_data->{token};
         delete $saved_data->{saved_data};
+        delete $saved_data->{unique_id};
         $self->saved_data($saved_data);
         $self->field('saved_data')->_set_value($saved_data);
 
@@ -104,7 +118,8 @@ after 'validate_form' => sub {
             if (!$success) {
                 $self->add_form_error('Something went wrong, please try again')
                     unless $self->has_form_errors;
-                $self->validated(0);
+            } else {
+                delete $self->c->session->{form_unique_id};
             }
         }
     }

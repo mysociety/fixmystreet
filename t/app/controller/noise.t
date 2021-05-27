@@ -56,6 +56,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     subtest 'Report new noise, source address known' => sub {
+        $mech->host('localhost');
         $mech->get_ok('/noise');
         $mech->submit_form_ok({ button => 'start' });
         $mech->submit_form_ok({ with_fields => { existing => 0 } });
@@ -101,6 +102,9 @@ FixMyStreet::override_config {
         is $report->latitude, 51.524448;
         is $report->areas, ',144379,2508,';
         $mech->clear_emails_ok;
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('You have already submitted this form.');
     };
     subtest 'Report new noise, no pattern to times' => sub {
         $mech->get_ok('/noise');

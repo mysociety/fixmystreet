@@ -3,8 +3,6 @@ package FixMyStreet::App::Form::Waste;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Wizard';
 
-has c => ( is => 'ro' );
-
 has default_page_type => ( is => 'ro', isa => 'Str', default => 'Waste' );
 
 has finished_action => ( is => 'ro' );

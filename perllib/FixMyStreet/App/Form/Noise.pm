@@ -4,7 +4,6 @@ extends 'FixMyStreet::App::Form::Wizard';
 
 use utf8;
 
-has c => ( is => 'ro' );
 has addresses => ( is => 'rw');
 
 has default_page_type => ( is => 'ro', isa => 'Str', default => 'Noise' );
