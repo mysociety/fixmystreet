@@ -114,6 +114,7 @@ sub dashboard_export_problems_add_columns {
         staff_user => 'Staff User',
         usrn => 'USRN',
         nearest_address => 'Nearest address',
+        external_id => 'External ID',
         external_status_code => 'External status code',
         @extra_columns,
     );
@@ -134,6 +135,7 @@ sub dashboard_export_problems_add_columns {
             nearest_address => $address,
             staff_user => $staff_user,
             external_status_code => $ext_code,
+            external_id => $report->external_id,
             state => $state,
         };
 
