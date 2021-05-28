@@ -48,12 +48,15 @@ var arcgis_defaults = $.extend(true, {}, defaults, {
     geometryName: 'SHAPE'
 });
 
+var waste_categories = ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti' ];
+
 fixmystreet.assets.add(tilma_defaults, {
     http_options: {
         params: {
             TYPENAME: "highways"
         }
     },
+    nearest_radius: 2,
     stylemap: fixmystreet.assets.stylemap_invisible,
     non_interactive: true,
     always_visible: true,
@@ -201,7 +204,7 @@ var flytipping_defaults = $.extend(true, {}, arcgis_defaults, {
     // are right next to each other
     nearest_radius: 0.01,
     stylemap: fixmystreet.assets.stylemap_invisible,
-    asset_category: ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti'  ],
+    asset_category: waste_categories,
     non_interactive: true,
     road: true,
     asset_item: 'road',
