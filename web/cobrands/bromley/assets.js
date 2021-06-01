@@ -4,9 +4,10 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var domain = fixmystreet.staging ? "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
 var defaults = {
     http_options: {
-        url: "https://tilma.mysociety.org/mapserver/bromley_wfs",
+        url: domain + "/mapserver/bromley_wfs",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -78,6 +79,28 @@ $(function(){
     $("#problem_form").on("change.category", "#form_service_sub_code", function() {
         $(fixmystreet).trigger('report_new:category_change');
     });
+});
+
+var parks_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillColor: "#C3D9A2",
+        fillOpacity: 0.6,
+        strokeWidth: 2,
+        strokeColor: '#90A66F'
+    })
+});
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        params: {
+            TYPENAME: 'Parks_Open_Spaces'
+        }
+    },
+    stylemap: parks_stylemap,
+    asset_type: 'area',
+    asset_category: ["Parks and Greenspace"],
+    asset_item: 'park',
+    non_interactive: true
 });
 
 var prow_stylemap = new OpenLayers.StyleMap({
