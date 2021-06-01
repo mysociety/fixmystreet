@@ -370,6 +370,7 @@ sub send_questionnaire {
 sub update_email_shortlisted_user {
     my ($self, $update) = @_;
     FixMyStreet::Cobrand::TfL::update_email_shortlisted_user($self, $update);
+    FixMyStreet::Cobrand::Hackney::update_email_shortlisted_user($self, $update);
 }
 
 sub manifest {
