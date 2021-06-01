@@ -963,11 +963,15 @@ after the date.
 =cut
 
 sub within_working_days {
-    my ($dt, $days) = @_;
+    my ($dt, $days, $future) = @_;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
     $dt = $wd->add_days($dt, $days)->ymd;
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    return $today le $dt;
+    if ( $future ) {
+        return $today ge $dt;
+    } else {
+        return $today le $dt;
+    }
 }
 
 =item waste_fetch_events
@@ -1292,11 +1296,19 @@ sub waste_payment_type {
     return ($category, $sub_type);
 }
 
+sub waste_dd_paid {
+    my ($self, $date) = @_;
+
+    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
+    my $dt = DateTime->new(day => $day, month => $month, year => $year);
+    return within_working_days($dt, 3, 1);
+}
+
 sub waste_reconcile_direct_debits {
     my $self = shift;
 
     my $today = DateTime->now;
-    my $start = $today->clone->add( days => -4 );
+    my $start = $today->clone->add( days => -7 );
 
     my $config = $self->feature('payment_gateway');
     my $i = Integrations::Pay360->new({
@@ -1312,6 +1324,8 @@ sub waste_reconcile_direct_debits {
     RECORD: for my $payment ( @$recent ) {
 
         my $date = $payment->{DueDate};
+        next unless $self->waste_dd_paid($date);
+
         my ($category, $type) = $self->waste_payment_type ( $payment->{Type}, $payment->{YourRef} );
 
         next unless $category && $date;

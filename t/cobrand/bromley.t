@@ -688,6 +688,75 @@ subtest 'parks lookup' => sub {
     };
 };
 
+subtest 'check_within_days' => sub {
+    for my $test (
+        {
+            today => '2021-03-19',
+            check => '2021-03-18',
+            days => 1,
+            is_true => 1,
+            name => 'tomorrow',
+        },
+        {
+            today => '2021-03-19',
+            check => '2021-03-17',
+            days => 1,
+            is_true => 0,
+            name => 'day after tomorrow',
+        },
+        {
+            today => '2021-03-22',
+            check => '2021-03-19',
+            days => 1,
+            is_true => 1,
+            name => 'over weekend',
+        },
+        {
+            today => '2021-03-23',
+            check => '2021-03-19',
+            days => 1,
+            is_true => 0,
+            name => 'tuesday',
+        },
+        {
+            today => '2021-03-23',
+            check => '2021-03-19',
+            days => 1,
+            is_true => 1,
+            name => 'tuesday future',
+            future => 1,
+        },
+        {
+            today => '2021-03-18',
+            check => '2021-03-17',
+            days => 2,
+            is_true => 0,
+            name => 'day after tomorrow future',
+            future => 1,
+        },
+        {
+            today => '2021-03-20',
+            check => '2021-03-19',
+            days => 1,
+            is_true => 0,
+            name => 'saturday not ahead of friday',
+            future => 1,
+        },
+    ) {
+        subtest $test->{name} => sub {
+            set_fixed_time($test->{today} . 'T12:00:00Z');
+            my $date = DateTime::Format::W3CDTF->parse_datetime($test->{check});
+
+            if ( $test->{is_true} ) {
+                ok FixMyStreet::Cobrand::Bromley::within_working_days($date, $test->{days}, $test->{future});
+            } else {
+                ok !FixMyStreet::Cobrand::Bromley::within_working_days($date, $test->{days}, $test->{future});
+            }
+
+        };
+    }
+};
+
 subtest 'check pro-rata calculation' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
@@ -959,6 +1028,21 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
                 PayerReference => "GGW654324",
+                PayerSortCode => "12345",
+                ProductName => "Garden Waste",
+                Status => "Paid",
+                Type => "Regular",
+            },
+            {   # renewal but payment too new
+                AlternateKey => "",
+                Amount => 10.00,
+                ClientName => "London Borough of Bromley",
+                CollectionDate => "18/03/2021",
+                DueDate => "19/03/2021",
+                PayerAccountHoldersName => "A Payer",
+                PayerAccountNumber => 123,
+                PayerName => "A Payer",
+                PayerReference => "GGW654329",
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
@@ -1275,6 +1359,15 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->state, 'confirmed';
+
+    my $renewal_too_recent = FixMyStreet::DB->resultset('Problem')->search({
+            extra => { like => '%uprn,T5:value,I6:654329%' }
+        },
+        {
+            order_by => { -desc => 'id' }
+        }
+    );
+    is $renewal_too_recent->count, 0, "ignore payments less that three days old";
 
     my $cancel = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I6:654323%' }
