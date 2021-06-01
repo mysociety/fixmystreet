@@ -901,7 +901,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 01",
+                Type => "First Time",
             },
             {   # unhandled new sub
                 AlternateKey => "",
@@ -916,7 +916,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 01",
+                Type => "First Time",
             },
             {   # ad hoc already processed
                 AlternateKey => "",
@@ -932,7 +932,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 17",
+                Type => "Regular",
             },
             {   # renewal
                 AlternateKey => "",
@@ -947,7 +947,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 17",
+                Type => "Regular",
             },
             {   # renewal already handled
                 AlternateKey => "",
@@ -962,7 +962,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 17",
+                Type => "Regular",
             },
             {   # renewal but nothing in echo
                 AlternateKey => "",
@@ -992,7 +992,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 17",
+                Type => "Regular",
             },
             {   # renewal from cc payment
                 AlternateKey => "",
@@ -1023,7 +1023,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 17",
+                Type => "Regular",
             },
             {   # unhandled new sub, ad hoc with same uprn
                 AlternateKey => "",
@@ -1038,7 +1038,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Payment: 01",
+                Type => "First Time",
             },
         ];
     });
