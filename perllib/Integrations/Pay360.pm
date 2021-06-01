@@ -202,6 +202,37 @@ sub get_recent_payments {
     return { error => "unknown error" };
 }
 
+sub get_cancelled_payers {
+    my ($self, $args) = @_;
+
+    my $obj = [
+        clientSUN => $self->config->{dd_sun},
+        clientID => $self->config->{dd_client_id},
+        fromDate => $args->{start}->strftime('%d/%m/%Y'),
+        toDate => $args->{end}->strftime('%d/%m/%Y'),
+    ];
+
+    my $res = $self->call('GetCancelledPayerReport', @$obj);
+
+    if ( $res ) {
+        $res = $res->{GetCancelledPayerReportResponse}->{GetCancelledPayerReportResult};
+
+        if ($res->{StatusCode} eq 'SA') {
+            if ($res->{CancelledPayerRecords}) {
+                return force_arrayref( $res, 'CancelledPayerRecords' );
+            } else {
+                return [];
+            }
+        } else {
+            return {
+                error => $res->{StatusMessage}
+            };
+        }
+    }
+
+    return { error => "unknown error" };
+}
+
 sub cancel_plan {
     my ($self, $args) = @_;
 

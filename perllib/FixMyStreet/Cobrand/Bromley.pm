@@ -1474,6 +1474,85 @@ sub waste_reconcile_direct_debits {
             warn "no matching record found for $category payment with id $payer\n";
         }
     }
+
+    my $cancelled = $i->get_cancelled_payers({
+        start => $start,
+        end => $today
+    });
+
+    CANCELLED: for my $payment ( @$cancelled ) {
+
+        my $date = $payment->{CancelledDate};
+
+        next unless $date;
+
+        my $payer = $payment->{Reference};
+
+        (my $uprn = $payer) =~ s/^GGW//;
+
+        my $handled;
+
+        my $len = length($uprn);
+        my $rs = FixMyStreet::DB->resultset('Problem')->search({
+            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+        },
+        {
+                order_by => { -desc => 'created' }
+        })->to_body( $self->body );
+
+        $rs = $rs->search({ category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] } });
+        my ($p, $r);
+        while ( my $cur = $rs->next ) {
+            my $sub_type = $cur->get_extra_field_value('Subscription_Type') || '';
+            if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+                $p = $cur;
+            } elsif ( $cur->category eq 'Cancel Garden Subscription' ) {
+                if ( $cur->state eq 'unconfirmed' ) {
+                    $r = $cur;
+                # already processed
+                } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+                    next CANCELLED;
+                }
+            }
+        }
+        if ( $r ) {
+            my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
+            # if there's not a service then it's fine as it's already been cancelled
+            if ( $service ) {
+                $r->set_extra_metadata('dd_date', $date);
+                $r->state('confirmed');
+                $r->update;
+            # there's no service but we don't want to be processing the report all the time.
+            } else {
+                $r->state('hidden');
+                $r->update;
+            }
+            # regardless this has been handled so no need to alert on it.
+            $handled = 1;
+        } elsif ( $p ) {
+            my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
+            unless ($service) {
+                warn "no matching service to cancel for $payer\n";
+                next;
+            }
+            my $cancel = _duplicate_waste_report($p, 'Cancel Garden Subscription', {
+                service_id => 545,
+                uprn => $uprn,
+                Container_Instruction_Action => $self->waste_container_actions->{remove},
+                Container_Instruction_Container_Type => 44,
+                Container_Instruction_Quantity => $self->waste_get_sub_quantity($service),
+                LastPayMethod => $self->bin_payment_types->{direct_debit},
+                PaymentCode => $payer,
+            } );
+            $cancel->set_extra_metadata('dd_date', $date);
+            $cancel->insert;
+            $handled = 1;
+        }
+
+        unless ( $handled ) {
+            warn "no matching record found for Cancel payment with id $payer\n";
+        }
+    }
 }
 
 sub _report_matches_payment {
