@@ -722,4 +722,6 @@ sub _format_address {
     return Utils::trim_text(FixMyStreet::Template::title(join(", ", $prefix, $a->{Town}, $a->{PostCode})));
 }
 
+sub bin_day_format { '%A, %-d~~~ %B %Y' }
+
 1;
