@@ -210,6 +210,20 @@ subtest 'can configure comment message' => sub {
   is $p->comments->first->text, "This report is now closed", "closure text set";
 };
 
+subtest 'comments for Open311 reports marked as sent' => sub {
+  my ($p) = $mech->create_problems_for_body(4, $oxfordshire->id, 'Report sent via Open311', {
+      areas            => ',2237,',
+      lastupdate       => '2014-12-01 07:00:00',
+      user             => $user,
+      send_method_used => 'Open311',
+  });
+
+  $opts->{closure_text} = "This report is now closed";
+  FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
+
+  is $p->comments->first->whensent, $p->comments->first->confirmed, "comment marked as sent";
+};
+
 
 subtest 'can provide close message as file' => sub {
     $opts->{closure_text} = '';
