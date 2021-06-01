@@ -332,4 +332,39 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+
+=head2 update_email_shortlisted_user
+
+When an update is left on a Hackney report, this hook will send an alert email
+to the email address(es) that originally received the report.
+
+=cut
+
+sub update_email_shortlisted_user {
+    my ($self, $update) = @_;
+    my $c = $self->{c};
+    my $cobrand = FixMyStreet::Cobrand::Hackney->new; # $self may be FMS
+    return if $update->problem->cobrand_data eq 'noise' || !$update->problem->to_body_named('Hackney');
+    my $sent_to = $update->problem->get_extra_metadata('sent_to');
+    if (@$sent_to) {
+        my @to = map { [ $_, $cobrand->council_name ] } @$sent_to;
+        $c->send_email('alert-update.txt', {
+            additional_template_paths => [
+                FixMyStreet->path_to( 'templates', 'email', 'hackney' ),
+                FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
+            ],
+            to => \@to,
+            report => $update->problem,
+            cobrand => $cobrand,
+            problem_url => $cobrand->base_url . $update->problem->url,
+            data => [ {
+                item_photo => $update->photo,
+                item_text => $update->text,
+                item_name => $update->name,
+                item_anonymous => $update->anonymous,
+            } ],
+        });
+    }
+}
+
 1;

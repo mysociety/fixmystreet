@@ -166,8 +166,59 @@ subtest "sends branded alert emails" => sub {
     like $mech->get_text_body_from_email($email), qr/Hackney Council/, "emails are branded";
 };
 
-$p->comments->delete;
-$p->delete;
+
+subtest "All updates left on reports get emailed to Hackney" => sub {
+    $p->set_extra_metadata(sent_to => ['hackneyservice@example.org']);
+    $p->update;
+
+    for my $cobrand ( 'hackney', 'fixmystreet' ) {
+        subtest "Correct behaviour when update made on $cobrand cobrand" => sub {
+            FixMyStreet::override_config {
+                MAPIT_URL => 'http://mapit.uk/',
+                ALLOWED_COBRANDS => $cobrand,
+                COBRAND_FEATURES => {
+                    do_not_reply_email => {
+                        hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com',
+                    },
+                    verp_email_domain => {
+                        hackney => 'hackney-example.com',
+                    },
+                },
+            }, sub {
+                $mech->log_in_ok('testuser@example.org');
+                $mech->clear_emails_ok();
+                $p->comments->delete;
+
+                my $id = $p->id;
+                $mech->get_ok("/report/$id");
+
+                my $values = $mech->visible_form_values('updateForm');
+
+                $mech->submit_form_ok(
+                    {
+                        with_fields => {
+                            submit_update => 1,
+                            name => "Test User",
+                            update => "this update was left on the $cobrand cobrand",
+                            add_alert => undef,
+                        }
+                    },
+                    'submit update'
+                );
+
+                is $p->comments->count, 1, "comment was added";
+
+                my $email = $mech->get_email;
+                my $body = $mech->get_text_body_from_email($email);
+                like $body, qr/this update was left on the $cobrand cobrand/i, "Correct email text";
+                my $title = $p->title;
+                like $email->header('Subject'), qr/New Report A Problem updates on report: '$title'/, 'correct cobrand name in subject';
+            };
+        };
+    }
+    $p->comments->delete;
+    $p->delete;
+};
 
 subtest "sends branded confirmation emails" => sub {
     $mech->log_out_ok;
