@@ -872,7 +872,7 @@ subtest 'check direct debit reconcilliation' => sub {
         'property_id' => '54426',
         'uprn' => '654326',
     });
-    $ad_hoc_processed->set_extra_metadata('dd_date' => '26/02/2021');
+    $ad_hoc_processed->set_extra_metadata('dd_date' => '16/03/2021');
     $ad_hoc_processed->update;
 
     my $ad_hoc_skipped = setup_dd_test_report({
@@ -892,8 +892,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -907,8 +907,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -923,8 +923,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 YourRef => $ad_hoc_processed->id,
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -938,8 +938,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -953,8 +953,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -968,8 +968,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -983,8 +983,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -999,7 +999,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
                 CollectionDate => "27/02/2021",
-                DueDate => "27/02/2021",
+                DueDate => "15/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -1014,8 +1014,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 YourRef => $ad_hoc->id,
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/03/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "14/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -1029,8 +1029,8 @@ subtest 'check direct debit reconcilliation' => sub {
                 AlternateKey => "",
                 Amount => 10.00,
                 ClientName => "London Borough of Bromley",
-                CollectionDate => "26/02/2021",
-                DueDate => "26/02/2021",
+                CollectionDate => "16/03/2021",
+                DueDate => "16/03/2021",
                 PayerAccountHoldersName => "A Payer",
                 PayerAccountNumber => 123,
                 PayerName => "A Payer",
@@ -1193,7 +1193,7 @@ subtest 'check direct debit reconcilliation' => sub {
         'property_id' => '54324',
         'uprn' => '654324',
     });
-    $processed_renewal->set_extra_metadata('dd_date' => '26/02/2021');
+    $processed_renewal->set_extra_metadata('dd_date' => '16/03/2021');
     $processed_renewal->update;
 
     my $renewal_nothing_in_echo = setup_dd_test_report({
@@ -1249,7 +1249,7 @@ subtest 'check direct debit reconcilliation' => sub {
 
     $ad_hoc->discard_changes;
     is $ad_hoc->state, 'confirmed', "ad hoc report confirmed";
-    is $ad_hoc->get_extra_metadata('dd_date'), "26/03/2021", "dd date set for ad hoc";
+    is $ad_hoc->get_extra_metadata('dd_date'), "16/03/2021", "dd date set for ad hoc";
     is $ad_hoc->get_extra_field_value('PaymentCode'), "GGW654325", 'correct echo payment code field';
     is $ad_hoc->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
