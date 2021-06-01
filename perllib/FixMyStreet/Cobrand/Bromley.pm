@@ -1311,7 +1311,7 @@ sub waste_reconcile_direct_debits {
 
     RECORD: for my $payment ( @$recent ) {
 
-        my $date = $payment->{CollectionDate};
+        my $date = $payment->{DueDate};
         my ($category, $type) = $self->waste_payment_type ( $payment->{Type}, $payment->{YourRef} );
 
         next unless $category && $date;
