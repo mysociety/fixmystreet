@@ -119,6 +119,7 @@
             [% IF show_garden_subscribe %]
               <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
             [% END %]
+            [% TRY %][% PROCESS waste/_more_services_extra.html %][% CATCH file %][% END %]
           </ul>
         </div>
        [% END %]
