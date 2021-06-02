@@ -148,4 +148,11 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete inactive contacts
+    return $contacts->search({ state => { '!=' => 'inactive' } });
+}
+
 1;
