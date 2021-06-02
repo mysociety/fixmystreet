@@ -117,7 +117,8 @@
             [% END %]
             [% IF NOT waste_features.garden_disabled AND NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
               <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
-          [% END %]
+            [% END %]
+            [% TRY %][% PROCESS waste/_more_services_extra.html %][% CATCH file %][% END %]
           </ul>
         </div>
        [% END %]
