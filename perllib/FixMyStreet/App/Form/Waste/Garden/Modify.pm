@@ -4,14 +4,22 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
+has_field is_staff => ( type => 'Hidden' );
+
 has_page intro => (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify_pick.html',
     fields => ['task', 'continue'],
-    next => 'alter',
+    update_field_list => sub {
+        my $form = shift;
+        return {
+            is_staff => { default => $form->{c}->stash->{is_staff} }
+        };
+    },
+    next => sub { return $_[0]->{is_staff} ? 'alter_staff' : 'alter'; },
 );
 
-has_page alter => (
+my %alter_fields = (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify.html',
     fields => ['bin_number', 'continue_review'],
@@ -33,6 +41,17 @@ has_page alter => (
     next => 'summary',
 );
 
+my %alter_fields_staff = (
+    %alter_fields,
+    ( fields => ['bin_number', 'name', 'phone', 'email', 'continue_review'] ),
+);
+
+has_page alter => ( %alter_fields );
+
+has_page alter_staff => ( %alter_fields_staff );
+
+with 'FixMyStreet::App::Form::Waste::AboutYou';
+
 has_page summary => (
     fields => ['tandc', 'submit'],
     title => 'Modify your green garden waste subscription',
@@ -51,9 +70,11 @@ has_page summary => (
         $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
         $data->{display_total} = $total / 100;
 
-        $data->{name} = $c->user->name;
-        $data->{email} = $c->user->email;
-        $data->{phone} = $c->user->phone;
+        unless ( $c->stash->{is_staff} ) {
+            $data->{name} = $c->user->name;
+            $data->{email} = $c->user->email;
+            $data->{phone} = $c->user->phone;
+        }
         my $button_text = 'Continue to payment';
         if ( $data->{payment_method} eq 'credit_card' ) {
             if ( $new_bins <= 0 ) {

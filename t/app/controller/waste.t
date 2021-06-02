@@ -1457,7 +1457,11 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->submit_form_ok({ with_fields => {
+            bin_number => 2,
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
         $mech->content_contains('40.00');
         $mech->content_contains('5.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1478,6 +1482,8 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
         is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
+        is $report->name, 'Test McTest', 'non staff user name';
+        is $report->user->email, 'test@example.net', 'non staff email';
 
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
@@ -1489,7 +1495,11 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
+        $mech->submit_form_ok({ with_fields => {
+            bin_number => 1,
+            name => 'A user',
+            email => '',
+        } });
         $mech->content_contains('20.00');
         $mech->content_lacks('Continue to payment');
         $mech->content_contains('Confirm changes');
@@ -1507,6 +1517,8 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
+        is $new_report->get_extra_metadata('contributed_as'), 'anonymous_user';
     };
 
     subtest 'cancel staff sub' => sub {
