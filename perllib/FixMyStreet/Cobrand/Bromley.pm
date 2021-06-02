@@ -215,6 +215,12 @@ sub open311_extra_data_include {
           value => $row->user->email }
     ];
 
+    if ( $row->category eq 'Garden Subscription' ) {
+        if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
+            push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
+        }
+    }
+
     # make sure we have last_name attribute present in row's extra, so
     # it is passed correctly to Bromley as attribute[]
     if (!$row->get_extra_field_value('last_name')) {
