@@ -89,6 +89,7 @@
             [% IF any_request_allowed %]
               <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
             [% END %]
+            [% TRY %][% PROCESS waste/_more_services_extra.html %][% CATCH file %][% END %]
           </ul>
         </div>
        [% END %]
