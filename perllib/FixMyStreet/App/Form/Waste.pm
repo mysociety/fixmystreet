@@ -57,7 +57,7 @@ sub validate {
         unless $self->field('email')->is_inactive || $self->field('email')->value || $is_staff_user;
 
     $self->add_form_error('Please specify at least one of phone or email')
-        unless $self->field('phone')->is_inactive || $self->field('phone')->value || $self->field('email')->value;
+        unless $self->field('phone')->is_inactive || $self->field('phone')->value || $self->field('email')->value || $is_staff_user;
 }
 
 1;
