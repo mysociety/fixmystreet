@@ -53,9 +53,11 @@ has_page summary => (
         $data->{billing_address} ||= $c->stash->{property}{address};
         $data->{display_total} = $total / 100;
 
-        $data->{name} = $c->user->name;
-        $data->{email} = $c->user->email;
-        $data->{phone} = $c->user->phone;
+        unless ( $c->stash->{is_staff} ) {
+            $data->{name} = $c->user->name || $data->{name};
+            $data->{email} = $c->user->email;
+            $data->{phone} = $c->user->phone;
+        }
         return {};
     },
     finished => sub {
