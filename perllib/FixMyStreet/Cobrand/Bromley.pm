@@ -730,7 +730,7 @@ sub _parse_open_events {
         my $event_type = $_->{EventTypeId};
         my $service_id = $_->{ServiceId};
         if ($event_type == 2104) { # Request
-            my $data = $_->{Data}{ExtensibleDatum};
+            my $data = $_->{Data} ? $_->{Data}{ExtensibleDatum} : [];
             my $container;
             DATA: foreach (@$data) {
                 if ($_->{ChildData}) {
