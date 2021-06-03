@@ -18,6 +18,7 @@ use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
 use Memcached;
+use BromleyParks;
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -92,6 +93,16 @@ sub disambiguate_location {
 
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
+}
+
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    if (my $parks_lookup = BromleyParks::lookup($s)) {
+        return $parks_lookup;
+    }
+
+    return $self->next::method($s);
 }
 
 # Bromley pins always yellow

@@ -1,0 +1,67 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+make-parks-database
+
+=head1 USAGE
+
+make-parks-database
+
+=head1 DESCRIPTION
+
+Creates a SQLite database for park name lookups in Bromley.
+
+=cut
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use DBI;
+use Text::CSV;
+use FixMyStreet;
+use BromleyParks;
+use Cwd qw(abs_path);
+use feature qw(say);
+
+my $parks_csv = FixMyStreet->path_to('../fixmystreet.com/data/bromley_parks.csv');
+my $db = DBI->connect('dbi:SQLite:dbname='. BromleyParks::database_file);
+
+say "Creating parks database...";
+
+$db->do(<<EOF) or die;
+CREATE VIRTUAL TABLE parks USING fts4 (
+    name TEXT NOT NULL,
+    easting INTEGER NOT NULL,
+    northing INTEGER NOT NULL,
+    tokenize=porter
+);
+EOF
+
+my $q_parks = $db->prepare(
+    'INSERT OR IGNORE INTO parks (name, easting, northing) ' .
+    'VALUES (?, ?, ?)'
+);
+
+my $csv = Text::CSV->new ({ binary => 1, auto_diag => 1 });
+open my $fh, "<:encoding(utf8)", $parks_csv;
+$csv->header($fh);
+
+while (my $row = $csv->getline_hr($fh)) {
+    my $name = $row->{"name"};
+    $name =~ s/^\s+|\s+$//g;
+
+    my $e = int $row->{"easting"};
+    my $n = int $row->{"northing"};
+
+    $q_parks->execute($name, $e, $n);
+}
+
+say "Done. Parks database created: " . abs_path(BromleyParks::database_file);
