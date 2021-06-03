@@ -1738,6 +1738,91 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('PaymentCode'), 54321, 'correct echo payment code';
     };
 
+    remove_test_subs( 0 );
+
+    subtest 'renew credit card sub for user with no name' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 405,
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => {
+                            DatatypeName => 'Quantity',
+                            Value => 1,
+                        } },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        StartDate => { DateTime => '2019-04-01T23:00:00Z' },
+                        EndDate => { DateTime => '2020-05-14T23:00:00Z' },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    }, {
+                        StartDate => { DateTime => '2020-05-14T23:00:00Z' },
+                        EndDate => { DateTime => '2020-10-31T00:00:00Z' },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    }, {
+                        StartDate => { DateTime => '2020-10-31T00:00:00Z' },
+                        EndDate => { DateTime => '2020-11-01T00:00:00Z' },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    }, {
+                        StartDate => { DateTime => '2020-11-01T00:00:00Z' },
+                        EndDate => { DateTime => '2021-05-19T22:59:59Z', OffsetMinutes => 60 },
+                        LastInstance => undef,
+                        NextInstance => undef,
+                    } ] },
+                } },
+            } ]
+        } );
+        $mech->log_out_ok;
+        set_fixed_time('2021-05-20T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($nameless_user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            payment_method => 'credit_card',
+            name => 'A user',
+        } });
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 2000, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Type'), 1, 'correct subscription type';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+        is $new_report->name, 'A user', 'report has correct name';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        #warn $mech->content;
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo last pay method';
+        is $new_report->get_extra_field_value('PaymentCode'), 54321, 'correct echo payment code';
+
+        # need to do this to get changes so update marks as dirty
+        $nameless_user->discard_changes;
+        $nameless_user->update({ name => '' });
+    };
+
     # remove all reports
     remove_test_subs( 0 );
 
