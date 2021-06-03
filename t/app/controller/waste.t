@@ -15,6 +15,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'Bromley Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $nameless_user = $mech->create_user_ok('nameless@example.net', name => '');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
@@ -1770,6 +1771,51 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+    };
+
+    remove_test_subs( 0 );
+
+    subtest 'modify sub user with no name' => sub {
+        $mech->log_out_ok();
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($nameless_user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->content_contains('Your name field is required');
+        $mech->submit_form_ok({ with_fields => {
+            bin_number => 2,
+            name => 'A Name',
+        } });
+        $mech->content_contains('A Name');
+        $mech->content_contains('40.00');
+        $mech->content_contains('5.50');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 550, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $new_report->name, 'A Name', 'correct name on report';
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
