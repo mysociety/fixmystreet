@@ -66,6 +66,8 @@
   
     [% IF is_staff %]
     [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+    [% ELSE %]
+    [% PROCESS form override_fields=['name'] %]
     [% END %]
     [% PROCESS form override_fields=['saved_data', 'token', 'process'] %]
     [% PROCESS form override_fields=['continue_review'] %]

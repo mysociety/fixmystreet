@@ -22,7 +22,7 @@ has_page intro => (
 my %alter_fields = (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify.html',
-    fields => ['bin_number', 'continue_review'],
+    fields => ['bin_number', 'name', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
@@ -35,6 +35,7 @@ my %alter_fields = (
             $c->stash->{pro_rata} = $c->cobrand->waste_get_pro_rata_cost( $c->stash->{new_bin_count}, $c->stash->{garden_form_data}->{end_date}) / 100;
         }
         return {
+            name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
             bin_number => { default => $data->{bins} },
         };
     },
@@ -71,7 +72,7 @@ has_page summary => (
         $data->{display_total} = $total / 100;
 
         unless ( $c->stash->{is_staff} ) {
-            $data->{name} = $c->user->name;
+            $data->{name} = $data->{name} || $c->user->name;
             $data->{email} = $c->user->email;
             $data->{phone} = $c->user->phone;
         }
