@@ -1471,7 +1471,7 @@ sub waste_reconcile_direct_debits {
         end => $today
     });
 
-    CANCELED: for my $payment ( @$cancelled ) {
+    CANCELLED: for my $payment ( @$cancelled ) {
 
         my $date = $payment->{CancelledDate};
 
@@ -1502,7 +1502,7 @@ sub waste_reconcile_direct_debits {
                     $r = $cur;
                 # already processed
                 } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
-                    next CANCELED;
+                    next CANCELLED;
                 }
             }
         }

@@ -226,7 +226,7 @@ sub get_cancelled_payers {
         } else {
             return {
                 error => $res->{StatusMessage}
-            }
+            };
         }
     }
 
