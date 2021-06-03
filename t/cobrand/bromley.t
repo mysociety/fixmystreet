@@ -978,7 +978,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "Regular",
+                Type => "Payment: 17",
             },
             {   # renewal but nothing in fms
                 AlternateKey => "",
@@ -1008,7 +1008,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 PayerSortCode => "12345",
                 ProductName => "Garden Waste",
                 Status => "Paid",
-                Type => "First Time",
+                Type => "Payment: 01",
             },
             {   # ad hoc
                 AlternateKey => "",
