@@ -1,0 +1,9 @@
+Subject: There was a problem with your payment: [% report.title %]
+
+Hello [% report.name %],
+
+There was a problem collecting payment for your [% report.title %]. Please
+contact the Customer Service Centre to try again.
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

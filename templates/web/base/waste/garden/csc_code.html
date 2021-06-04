@@ -14,4 +14,15 @@
 </div>
 </form>
 
+<form name="post" method="post" action="[% c.uri_for('csc_payment_failed') %]">
+<input type="hidden" name="report_id" id="report_id"  value="[% report.id %]" />
+<input type="hidden" name="token" id="token"  value="[% csrf_token %]" />
+
+<div class="govuk-form-group">
+    <p>
+    <input class="govuk-button" type="submit" name="payment_failed" value="Payment Failed">
+    </p>
+</div>
+</form>
+
 [% INCLUDE footer.html %]

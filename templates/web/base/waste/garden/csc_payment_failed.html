@@ -1,0 +1,24 @@
+[% INCLUDE header.html %]
+
+<h1 class="govuk-heading-xl">Payment Failed</h1>
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>[% message %]
+          [% IF sent_email %]
+            A payment failed notification has been sent to the user at [% report.user.email %].
+          [% END %]
+        </p>
+
+        <p>
+        No subscription will be created.
+        </p>
+    </div>
+</div>
+
+<p><a class="govuk-button" href="/waste/[% property_id %]">Show upcoming bin days</a></p>
+
+[% INCLUDE footer.html %]
