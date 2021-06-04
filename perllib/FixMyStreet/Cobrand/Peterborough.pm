@@ -497,7 +497,7 @@ sub bin_services_for_address {
         "FOOD_BINS" => "Food bins",
         "ASSISTED_COLLECTION" => "Assisted collection",
 
-        # For missed collections
+        # For missed collections or repairs
         6533 => "240L Black",
         6534 => "240L Green",
         6579 => "240L Brown",
@@ -777,8 +777,8 @@ sub waste_munge_enquiry_data {
 
     my $bin = $container_ids{$self->{c}->get_param('service_id')};
     $data->{category} = $self->{c}->get_param('category');
-    $data->{title} = "$bin $data->{category}";
-    $data->{detail} = $self->{c}->stash->{property}->{address};
+    $data->{title} = $bin;
+    $data->{detail} = $data->{category} . "\n\n" . $self->{c}->stash->{property}->{address};
 }
 
 
