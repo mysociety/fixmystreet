@@ -72,9 +72,9 @@ has_page summary => (
         $data->{display_total} = $total / 100;
 
         unless ( $c->stash->{is_staff} ) {
-            $data->{name} = $data->{name} || $c->user->name;
+            $data->{name} ||= $c->user->name;
             $data->{email} = $c->user->email;
-            $data->{phone} = $c->user->phone;
+            $data->{phone} ||= $c->user->phone;
         }
         my $button_text = 'Continue to payment';
         if ( $data->{payment_method} eq 'credit_card' ) {
