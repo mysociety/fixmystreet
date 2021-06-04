@@ -54,7 +54,7 @@ has_page summary => (
         $data->{display_total} = $total / 100;
 
         unless ( $c->stash->{is_staff} ) {
-            $data->{name} = $c->user->name || $data->{name};
+            $data->{name} ||= $c->user->name;
             $data->{email} = $c->user->email;
             $data->{phone} = $c->user->phone;
         }
