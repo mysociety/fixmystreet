@@ -430,6 +430,36 @@ sub csc_payment : Path('csc_payment') : Args(0) {
     $c->forward('confirm_subscription', [ $code ]);
 }
 
+sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
+    my ($self, $c) = @_;
+
+    unless ( $c->stash->{is_staff} ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    $c->forward('/auth/check_csrf_token');
+    my $code = $c->get_param('payenet_code');
+    my $id = $c->get_param('report_id');
+
+    my $report = $c->model('DB::Problem')->find({ id => $id});
+    $c->stash->{report} = $report;
+    $c->stash->{property_id} = $report->get_extra_field_value('property_id');
+
+    if ( $report->get_extra_metadata('contributed_as') ne 'anonymous_user' ) {
+        $c->stash->{sent_email} = 1;
+        $c->send_email('waste/csc_payment_failed.txt', {
+            to => [ [ $report->user->email, $report->name ] ],
+        } );
+    }
+
+    $report->update_extra_field({ name => 'payment_method', value => 'csc' });
+    $report->update_extra_field({ name => 'payment_reference', value => 'FAILED' });
+    $report->update;
+
+    $c->stash->{template} = 'waste/garden/csc_payment_failed.html';
+    $c->detach;
+}
+
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
 

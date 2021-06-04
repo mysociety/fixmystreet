@@ -1591,6 +1591,46 @@ FixMyStreet::override_config {
 
     };
 
+    subtest 'staff create new subscription - payment failed' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->content_lacks('password', 'no password field');
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 1,
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        $mech->content_contains('1 bin');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#report_id"\s+value="(\d+)"#);
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+
+        $mech->submit_form_ok({ with_fields => {
+            payment_failed => 'Payment Failed'
+        }});
+        $mech->content_contains('A payment failed notification has been sent');
+        $mech->content_contains('test@example.net');
+        $mech->content_contains('No subscription will be created');
+        $mech->email_count_is( 1, "email sent for failed CSC payment");
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/problem collecting payment/s, 'csc payment failure email content correct';
+
+        $report->discard_changes;
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->state, 'unconfirmed', 'report not confirmed';
+        is $report->get_extra_field_value('payment_reference'), 'FAILED', 'payment reference marked as failed';
+    };
+
     subtest 'staff create new subscription no email' => sub {
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
@@ -1634,6 +1674,31 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+    };
+
+    subtest 'staff create new subscription no email - payment failed' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                new_bins => 1,
+                name => 'Test McTest',
+                email => '',
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        $mech->content_contains('1 bin');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payment_failed => 'Payment Failed'
+        }});
+        $mech->content_lacks('A payment failed notification has been sent');
+        $mech->content_contains('No subscription will be created');
+        $mech->email_count_is( 0, "No email sent for failed CSC payment");
     };
 
     $pay->mock(query => sub {

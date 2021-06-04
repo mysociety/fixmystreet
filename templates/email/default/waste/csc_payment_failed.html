@@ -1,0 +1,25 @@
+[%
+
+email_summary = "There was a problem with your payment";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">There was a problem with your payment</h1>
+  <p style="[% p_style %]">There was a problem taking payment for your [% report.title %]</p>
+
+  <p style="[% p_style %]">Please contact the Customer Service Centre to try again.</p>
+
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]
