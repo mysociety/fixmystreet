@@ -17,6 +17,13 @@ has_field name => (
     },
 );
 
+sub default_name {
+    my $self = shift;
+    if (my $user = $self->{c}->user) {
+        return $user->name;
+    }
+}
+
 has_field phone => (
     type => 'Text',
     label => 'Telephone number',
@@ -28,11 +35,25 @@ has_field phone => (
     }
 );
 
+sub default_phone {
+    my $self = shift;
+    if (my $user = $self->{c}->user) {
+        return $user->phone;
+    }
+}
+
 has_field email => (
     type => 'Email',
     tags => {
         hint => 'Provide an email address so we can send you order status updates'
     },
 );
+
+sub default_email {
+    my $self = shift;
+    if (my $user = $self->{c}->user) {
+        return $user->email;
+    }
+}
 
 1;

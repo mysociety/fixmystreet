@@ -122,3 +122,12 @@ h1, h2 {
         color: white;
     }
 }
+
+@import "../sass/waste";
+
+// Waste style overrides
+.waste {
+    .govuk-panel__title {
+        color: $pale_green;
+    }
+}

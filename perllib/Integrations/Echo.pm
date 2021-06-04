@@ -19,7 +19,7 @@ has endpoint => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs';
+        # $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs';
         SOAP::Lite->soapversion(1.2);
         my $soap = SOAP::Lite->on_action( sub { $self->action . $_[1]; } )->proxy($self->url);
         $soap->serializer->register_ns("http://schemas.microsoft.com/2003/10/Serialization/Arrays", 'msArray'),

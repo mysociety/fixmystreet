@@ -1,0 +1,16 @@
+[%
+
+f = [];
+service_id = c.req.params.service_id;
+service = services.$service_id;
+f.push(
+    { value = 'Not returned to collection point', label = 'The bin wasn’t returned to the collection point' },
+    { value = 'Lid', label = 'The bin’s lid is damaged' },
+    { value = 'Wheels', label = 'The bin’s wheels are damaged' },
+);
+
+PROCESS waste/enquiry.html
+    title = 'Report a problem'
+    field_options = f;
+
+%]
