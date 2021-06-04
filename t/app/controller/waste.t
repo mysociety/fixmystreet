@@ -1430,6 +1430,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->content_lacks('Direct Debit', "no payment method on page");
         $mech->submit_form_ok({ with_fields => {
+            name => 'a user',
+            email => 'a_user@example.net',
             current_bins => 1,
         }});
 
@@ -2050,6 +2052,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->content_lacks('Direct Debit', "no payment method on page");
         $mech->submit_form_ok({ with_fields => {
+            name => 'a user',
+            email => 'a_user@example.net',
             current_bins => 1,
         }});
 

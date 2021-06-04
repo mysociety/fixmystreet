@@ -16,9 +16,9 @@ my %intro_fields = (
         $c->stash->{payment} = $c->cobrand->garden_waste_cost( $current_bins ) / 100;
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins} },
-            name => { default => $c->user->name },
-            email => { default => $c->user->email },
-            phone => { default => $c->user->phone },
+            name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
+            email => { default => $c->stash->{is_staff} ? '' : $c->user->email },
+            phone => { default => $c->stash->{is_staff} ? '' : $c->user->phone },
         };
     },
     next => 'summary',
@@ -56,7 +56,7 @@ has_page summary => (
         unless ( $c->stash->{is_staff} ) {
             $data->{name} ||= $c->user->name;
             $data->{email} = $c->user->email;
-            $data->{phone} = $c->user->phone;
+            $data->{phone} ||= $c->user->phone;
         }
         return {};
     },
