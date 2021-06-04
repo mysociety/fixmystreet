@@ -165,11 +165,12 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
         $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_contains('The bin’s lid is damaged');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->title, '240L Black Lid';
-        is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
+        is $report->title, '240L Black';
+        is $report->detail, "Lid\n\n1 Pope Way, Peterborough, PE1 3NA";
     };
 };
 
