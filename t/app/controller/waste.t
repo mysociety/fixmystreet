@@ -1717,6 +1717,50 @@ FixMyStreet::override_config {
         };
     });
 
+    subtest 'renew credit card sub change name' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        $mech->log_out_ok();
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            payment_method => 'credit_card',
+            name => 'A New Name'
+        } });
+        $mech->content_contains('A New Name');
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{amount}, 2000, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), '', 'no container request bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $new_report->name, 'A New Name', 'changes name';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+    };
+
     # remove all reports
     remove_test_subs( 0 );
 
