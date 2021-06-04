@@ -499,10 +499,10 @@ sub waste_munge_report_form_data {
         # The details of the bins that were missed are stored in the problem body.
 
         $data->{assisted_detail} = "";
-        $data->{assisted_detail} .= "Missed collection: food bins\n\n" if $data->{"service-FOOD_BINS"};
-        $data->{assisted_detail} .= "Missed collection: black bin\n\n" if $data->{"service-6533"};
-        $data->{assisted_detail} .= "Missed collection: brown bin\n\n" if $data->{"service-6534"};
-        $data->{assisted_detail} .= "Missed collection: green bin\n\n" if $data->{"service-6579"};
+        $data->{assisted_detail} .= "Food bins\n\n" if $data->{"service-FOOD_BINS"};
+        $data->{assisted_detail} .= "Black bin\n\n" if $data->{"service-6533"};
+        $data->{assisted_detail} .= "Green bin\n\n" if $data->{"service-6534"};
+        $data->{assisted_detail} .= "Brown bin\n\n" if $data->{"service-6579"};
 
         $data->{"service-FOOD_BINS"} = 0;
         $data->{"service-6533"} = 0;
@@ -551,11 +551,12 @@ sub waste_munge_report_data {
 
     my $service_id = $container_service_ids{$id};
     my $container = $c->stash->{containers}{$id};
-    $data->{title} = "Report missed $container";
     if ( $data->{assisted_detail} ) {
+        $data->{title} = "Report missed assisted collection";
         $data->{detail} = $data->{assisted_detail};
         $data->{detail} .= "\n\n" . $c->stash->{property}->{address};
     } else {
+        $data->{title} = "Report missed $container";
         $data->{detail} = $c->stash->{property}->{address};
     }
 
