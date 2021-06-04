@@ -1,4 +1,4 @@
-Subject: Problem Report: [% report.title %]
+Subject: Defect Tool Problem Report: [% report.title %]
 
 Dear [% bodies_name %],
 
