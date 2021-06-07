@@ -554,6 +554,7 @@ sub bin_services_for_address {
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
+    $self->{c}->stash->{open_service_requests} = $open_requests;
 
     my @out;
 
