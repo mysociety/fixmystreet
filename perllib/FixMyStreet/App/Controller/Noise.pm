@@ -5,7 +5,6 @@ use namespace::autoclean;
 BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use FixMyStreet::App::Form::Noise;
-use mySociety::AuthToken;
 
 has feature => (
     is => 'ro',

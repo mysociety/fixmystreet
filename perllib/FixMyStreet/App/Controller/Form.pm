@@ -4,10 +4,13 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
+use mySociety::AuthToken;
+
 sub auto : Private {
     my ( $self, $c ) = @_;
     my $cobrand_check = $c->cobrand->feature( $self->feature );
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
+    $c->session->{form_unique_id} ||= mySociety::AuthToken::random_token();
     return 1;
 }
 
@@ -35,6 +38,8 @@ sub load_form {
         previous_form => $previous_form,
         saved_data_encoded => $c->get_param('saved_data'),
         no_preload => 1,
+        unique_id_session => $c->session->{form_unique_id},
+        unique_id_form => $c->get_param('unique_id'),
     );
 
     if (!$form->has_current_page) {
