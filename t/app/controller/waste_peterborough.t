@@ -160,6 +160,15 @@ FixMyStreet::override_config {
         is $report->title, 'Report missed assisted collection';
         $b->mock('Premises_Attributes_Get', sub { [] });
     };
+    subtest 'Report broken bin, already reported' => sub {
+        $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 236 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+        $mech->content_like(qr/name="category" value="Lid"\s+disabled/);
+        $b->mock('ServiceRequests_Get', sub { [] }); # reset
+    };
     subtest 'Report broken bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
