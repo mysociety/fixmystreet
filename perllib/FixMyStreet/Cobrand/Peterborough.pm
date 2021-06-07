@@ -556,6 +556,8 @@ sub bin_services_for_address {
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
     $self->{c}->stash->{open_service_requests} = $open_requests;
 
+    $self->{c}->stash->{waste_features} = $self->feature('waste_features');
+
     my @out;
 
     foreach (@$jobs) {
