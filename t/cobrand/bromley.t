@@ -601,4 +601,33 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
 };
 
+
+my $bromley_parks = Test::MockModule->new('BromleyParks');
+$bromley_parks->mock('_db_results', sub {
+    my ($search) = @_;
+
+    if ($search eq 'Alexandra Rec') {
+        return [{ northing => 170901, easting => 535688 }];
+    } elsif ($search eq 'The Green') {
+        return [{ northing => 162175, easting => 547189 }];
+    }
+});
+
+subtest 'parks lookup' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk',
+    }, sub {
+        $mech->log_out_ok;
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok({ with_fields => { pc => 'Alexandra Rec' } });
+        $mech->content_contains('51.4208');
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok({ with_fields => { pc => 'The Green' } });
+        $mech->content_contains('51.3396');
+    };
+};
+
 done_testing();
