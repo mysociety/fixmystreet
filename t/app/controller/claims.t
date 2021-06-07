@@ -83,7 +83,6 @@ FixMyStreet::override_config {
             vehicle_photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             vehicle_receipts => [ $sample_pdf, undef, Content_Type => 'application/octet-stream', 'repairs.pdf' ],
             tyre_damage => 'Yes', tyre_mileage => 20,
-            tyre_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream' ]
         } }, "damage details");
         $mech->content_contains('Review');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -136,13 +135,13 @@ Please provide two photos of the damage to the vehicle: 74e3362283b6ef0c48686fb0
 Please provide receipted invoices for repairs: sample.pdf
 Are you claiming for tyre damage?: Yes
 Age and Mileage of the tyre(s) at the time of the incident: 20
-Please provide copy of tyre purchase receipts: sample.jpg
 EOF
         is $report->detail, $expected_detail;
         is $report->latitude, 51.81386;
         my $test_data = FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
+        is $email[1]->header('To'), 'test@example.org';
         my $req = $test_data->{test_req_used};
         is $req, undef, 'Nothing sent by Open311';
         $mech->clear_emails_ok;
@@ -165,7 +164,6 @@ EOF
         $mech->content_contains('Other cause field is required');
         $mech->submit_form_ok({ with_fields => { what_cause => 'other', what_cause_other => 'Duck', aware => 'Yes', where_cause => 'bridge', describe_cause => 'a cause',
             photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
-            photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
         } }, 'cause details');
         $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20',
             v5 => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ],
@@ -173,10 +171,15 @@ EOF
         } }, 'vehicle details');
         $mech->submit_form_ok({ with_fields => { vehicle_damage => 'the car was broken',
             vehicle_photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
+            # Missing second photo
+            vehicle_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
+            tyre_damage => 'Yes', tyre_mileage => 20,
+        } }, 'damage details');
+        $mech->submit_form_ok({ with_fields => { vehicle_damage => 'the car was broken',
+            vehicle_photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             vehicle_photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             vehicle_receipts => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
             tyre_damage => 'Yes', tyre_mileage => 20,
-            tyre_receipts => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ]
         } }, 'damage details');
         $mech->content_contains('Review', "Review screen displayed");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
@@ -208,8 +211,6 @@ EOF
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', details => 'some details' } });
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } });
         $mech->submit_form_ok({ with_fields => { what_cause => 'bollard', aware => 'Yes', where_cause => 'bridge', describe_cause => 'a cause',
-            photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
-            photos2 => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
         } });
         $mech->submit_form_ok({ with_fields => { property_insurance => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ] } });
         $mech->submit_form_ok({ with_fields => { property_damage_description => 'damage_description',

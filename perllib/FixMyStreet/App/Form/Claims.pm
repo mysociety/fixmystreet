@@ -557,6 +557,7 @@ has_field describe_cause => (
 
 has_field photos_fileid => (
     type => 'FileIdPhoto',
+    num_photos_required => 0,
     linked_field => 'photos',
 );
 
@@ -660,7 +661,7 @@ has_field vat_reg => (
 );
 
 has_page damage_vehicle => (
-    fields => ['vehicle_damage', 'vehicle_photos_fileid', 'vehicle_photos', 'vehicle_receipts', 'tyre_damage', 'tyre_mileage', 'tyre_receipts', 'continue'],
+    fields => ['vehicle_damage', 'vehicle_photos_fileid', 'vehicle_photos', 'vehicle_receipts', 'tyre_damage', 'tyre_mileage', 'continue'],
     title => 'What was the damage to the vehicle',
     tags => {
         hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
@@ -673,7 +674,6 @@ has_page damage_vehicle => (
 
         $form->update_photo('vehicle_photos', $fields);
         $form->handle_upload( 'vehicle_receipts', $fields );
-        $form->handle_upload( 'tyre_receipts', $fields );
 
         return $fields;
     },
@@ -681,7 +681,6 @@ has_page damage_vehicle => (
         my ($form) = @_;
 
         $form->process_upload('vehicle_receipts');
-        $form->process_upload('tyre_receipts');
     },
 );
 
@@ -694,6 +693,7 @@ has_field vehicle_damage => (
 
 has_field vehicle_photos_fileid => (
     type => 'FileIdPhoto',
+    num_photos_required => 2,
     linked_field => 'vehicle_photos',
 );
 
@@ -719,8 +719,8 @@ has_field tyre_damage => (
     required => 1,
     label => 'Are you claiming for tyre damage?',
     options => [
-        { label => 'Yes', value => 'Yes', data_show => '#form-tyre_mileage-row,#form-tyre_receipts-row' },
-        { label => 'No', value => 'No', data_hide => '#form-tyre_mileage-row,#form-tyre_receipts-row' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-tyre_mileage-row' },
+        { label => 'No', value => 'No', data_hide => '#form-tyre_mileage-row' },
     ],
 );
 
@@ -731,19 +731,6 @@ has_field tyre_mileage => (
         hide => sub { $_[0]->form->value_equals('tyre_damage', 'No') }
     },
     required_when => { 'tyre_damage' => 'Yes' },
-);
-
-has_field tyre_receipts => (
-    validate_when_empty => 1,
-    type => 'FileIdUpload',
-    label => 'Please provide copy of tyre purchase receipts',
-    tags => {
-        hide => sub { $_[0]->form->value_equals('tyre_damage', 'No') },
-        required => sub { $_[0]->form->field('tyre_damage')->value eq 'Yes' },
-    },
-    messages => {
-        upload_file_not_found => 'Please provide a copy of the tyre purchase receipts',
-    },
 );
 
 has_page about_property => (
@@ -767,8 +754,10 @@ has_page about_property => (
 
 has_field property_insurance => (
     type => 'FileIdUpload',
-    validate_when_empty => 1,
     label => 'Please provide a copy of the home/contents insurance certificate',
+    tags => {
+        hint => 'Optional'
+    },
     messages => {
         upload_file_not_found => 'Please provide a copy of the insurance certificate',
     },
@@ -803,6 +792,7 @@ has_field property_damage_description => (
 
 has_field property_photos_fileid => (
     type => 'FileIdPhoto',
+    num_photos_required => 2,
     linked_field => 'property_photos',
 );
 
