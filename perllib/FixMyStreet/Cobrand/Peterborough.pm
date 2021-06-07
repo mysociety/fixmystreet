@@ -545,13 +545,14 @@ sub bin_services_for_address {
             request_allowed => $container_request_ids{$container_id} ? 1 : 0,
             # what's the maximum number of this container that can be request?
             request_max => $container_request_max{$container_id} || 0,
-            # is there already an open bin requset for this container?
+            # is there already an open bin request for this container?
             request_open => @request_service_ids_open ? 1 : 0,
             # can this collection be reported as having been missed?
             # allowed if we're within 24 hours of the last collection
             report_allowed => DateTime->now < $last->add(hours => 24),
-            # is there already a missed collection report open for this container?
-            report_open => @report_service_ids_open ? 1 : 0,
+            # is there already a missed collection report open for this container
+            # (or a missed assisted collection for any container)?
+            report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         push @out, $row;
     }
