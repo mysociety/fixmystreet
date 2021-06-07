@@ -8,7 +8,7 @@
 [% SET data = form.saved_data ~%]
 
 <h1 class="govuk-heading-xl">[% form.title %]</h1>
-<p>Please review all information provided and make sure all is correct and all documents attached before submitting your claim</p>
+<p>Please review all information provided and make sure all is correct and all documents attached before submitting your claim.</p>
 
 <div class="claims__summary">
 <dl class="govuk-summary-list">
@@ -57,6 +57,8 @@
   [% END %]
 
 </dl>
+
+<p>A copy of the above will be emailed to you, but you may also wish to save or print a copy of this page for your records.</p>
 
 <form method="post">
     [% PROCESS form %]
