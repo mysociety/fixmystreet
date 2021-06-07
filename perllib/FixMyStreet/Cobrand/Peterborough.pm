@@ -586,8 +586,9 @@ sub bin_services_for_address {
             request_open => @request_service_ids_open ? 1 : 0,
             # can this collection be reported as having been missed?
             report_allowed => $self->_waste_report_allowed($last),
-            # is there already a missed collection report open for this container?
-            report_open => @report_service_ids_open ? 1 : 0,
+            # is there already a missed collection report open for this container
+            # (or a missed assisted collection for any container)?
+            report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         push @out, $row;
     }
