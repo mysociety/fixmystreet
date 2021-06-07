@@ -62,7 +62,11 @@
         <!-- Breadcrumb --><!-- googleoff:all -->
         <ul>
             <li class="first-child"><a href="https://www.bromley.gov.uk">Home</a></li>
+          [%~ IF bodyclass == 'waste' OR (problem AND problem.cobrand_data == 'waste') ~%]
+            <li class="current"><span>Recycling Services</span></li>
+          [% ELSE %]
             <li class="current"><span>FixMyStreet</span></li>
+          [% END %]
         </ul>
         <!-- END Breadcrumb --><!-- googleon:all -->
     </div>
