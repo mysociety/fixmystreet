@@ -43,6 +43,8 @@
         - Consistent protected field ordering.
     - Security:
         - Increase minimum password length to eight.
+    - Changes
+        - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
 
 * v3.1 (16th November 2020)
     - Security:
