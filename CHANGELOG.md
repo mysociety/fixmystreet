@@ -17,6 +17,7 @@
         - Do not email inactive body comment users. #3587
         - Look up organizational domain in DMARC checking. #3603
         - Stop slash in category name breaking csv download #3642
+        - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
     - Development improvements:
         - Upgrade Mozilla::CA to handle new root certificates.
     - Security:

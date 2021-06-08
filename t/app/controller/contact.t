@@ -19,6 +19,7 @@ sub setup_general_enquiries_stash { 1 }
 package main;
 
 use FixMyStreet::TestMech;
+use Test::MockModule;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -335,6 +336,22 @@ for my $test (
 
     };
 }
+
+subtest 'use do-not-reply address when recepient uses DMARC' => sub {
+    my $fms_email = Test::MockModule->new('FixMyStreet::Email');
+    $fms_email->mock('test_dmarc', sub { 1 });
+
+    $mech->clear_emails_ok;
+    $mech->get_ok('/contact');
+
+    $mech->submit_form_ok( { with_fields => \%common } );
+    $mech->content_contains('Thank you for your enquiry');
+
+    my $email = $mech->get_email;
+
+    my $from_email = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    is $email->header('From'), "\"$common{name}\" <$from_email>", 'from name and email correct';
+};
 
 for my $test (
     { fields => \%common }

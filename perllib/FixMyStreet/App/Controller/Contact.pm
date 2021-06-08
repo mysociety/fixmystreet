@@ -302,7 +302,7 @@ sub send_email : Private {
     };
     if (FixMyStreet::Email::test_dmarc($c->stash->{em})) {
         $params->{'Reply-To'} = [ $from ];
-        $params->{from} = [ $recipient, $c->stash->{form_name} ];
+        $params->{from} = [ FixMyStreet->config('DO_NOT_REPLY_EMAIL'), $c->stash->{form_name} ];
     } else {
         $params->{from} = $from;
     }
