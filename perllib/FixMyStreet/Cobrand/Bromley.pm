@@ -408,6 +408,7 @@ sub munge_around_category_where {
 
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
+    return if $self->{c}->action eq 'dashboard/heatmap';
     @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
 }
 

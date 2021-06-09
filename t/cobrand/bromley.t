@@ -280,6 +280,7 @@ subtest 'check heatmap page' => sub {
     }, sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
+        $mech->content_contains('Report missed collection');
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
     $user->update({ area_ids => undef });
