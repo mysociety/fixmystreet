@@ -13,6 +13,21 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 
+my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+$ukc->mock('_fetch_features', sub {
+    my ($self, $cfg, $x, $y) = @_;
+    is $y, 259573, 'Correct latitude';
+    return [
+        {
+            properties => { area_name => 'Area 1', ROA_NUMBER => 'M1', sect_label => 'M1/111' },
+            geometry => {
+                type => 'LineString',
+                coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+            }
+        },
+    ];
+});
+
 my $he_mock_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::HighwaysEngland');
 $he_mock_cobrand->mock('anonymous_account', sub { { email => 'anoncategory@example.org', name => 'Anonymous Category' } });
 
@@ -64,7 +79,9 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
-        like $mech->get_text_body_from_email($email), qr/Heard from: Facebook/, 'where hear included in email'
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Heard from: Facebook/, 'where hear included in email';
+        like $body, qr/Road: M1/, 'road data included in email';
 
     };
 
