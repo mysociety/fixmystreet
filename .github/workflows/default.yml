@@ -47,4 +47,4 @@ jobs:
         commonlib/bin/gettext-makemo FixMyStreet
 
     - name: Run tests
-      run: ~/perl5/perlbrew/bin/perlbrew exec script/test --jobs 3 t
+      run: ~/perl5/perlbrew/bin/perlbrew exec script/test --jobs 2 t

@@ -45,15 +45,15 @@ jobs:
 
     - name: Run tests (with coverage, part 1)
       if: matrix.part == 1
-      run: script/test --jobs 3 $(find t/app/controller -name "[a-q]*.t")
+      run: script/test --jobs 2 $(find t/app/controller -name "[a-q]*.t")
 
     - name: Run tests (with coverage, part 2)
       if: matrix.part == 2
-      run: script/test --jobs 3 $(find t/app/controller -name "[r-z]*.t")
+      run: script/test --jobs 2 $(find t/app/controller -name "[r-z]*.t")
 
     - name: Run tests (with coverage, part 3)
       if: matrix.part == 3
-      run: script/test --jobs 3 $(find t -name "*.t" ! -path "t/app/controller*")
+      run: script/test --jobs 2 $(find t -name "*.t" ! -path "t/app/controller*")
 
     - name: Generate coverage report
       if: success()
