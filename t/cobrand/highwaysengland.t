@@ -3,6 +3,7 @@ use FixMyStreet::App;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Cobrand::HighwaysEngland;
 use HighwaysEngland;
+use DateTime;
 use Test::MockModule;
 
 my $he_mock = Test::MockModule->new('HighwaysEngland');
@@ -143,14 +144,27 @@ subtest 'Dashboard CSV extra columns' => sub {
     my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
         from_body => $highways, password => 'password');
     $mech->log_in_ok( $staffuser->email );
+
+    my $now = DateTime->now;
+    my $comment1 = $mech->create_comment_for_problem($problem1, $staffuser, 'Name Name', 'This is an update', 't', 'confirmed', 'confirmed', { confirmed => $now });
+    $comment1->set_extra_metadata(is_body_user => $highways->id);
+    $comment1->update;
+    my $comment2 = $mech->create_comment_for_problem($problem1, $problem1->user, 'Jo Public', 'Second update', 't', 'confirmed', 'confirmed', { confirmed => $now });
+
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'highwaysengland',
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('URL","Device Type","Site Used","Reported As","Area name","How you found us"');
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem1->id .',desktop,highwaysengland,,"South West","Social media"');
+    $mech->content_contains('URL","Device Type","Site Used","Reported As","Area name","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
+    my @row1 = (
+        'http://highwaysengland.example.org/report/' . $problem1->id,
+        'desktop', 'highwaysengland', '', '"South West"', '"Social media"',
+        '"This is an update"', $comment1->confirmed->datetime, '"Name Name"',
+        '"Second update"', $comment2->confirmed->datetime, 'public',
+    );
+    $mech->content_contains(join ',', @row1);
     $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,"Area 7","Search engine"');
 };
 

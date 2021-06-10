@@ -181,18 +181,44 @@ sub report_new_is_on_he_road {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
+    $csv->modify_csv_header( Ward => 'Council' );
+
+    $csv->objects_attrs({
+        '+columns' => ['comments.text', 'comments.extra'],
+    });
+
     $csv->add_csv_columns(
         area_name => 'Area name',
         where_hear => 'How you found us',
     );
+    for (my $i=1; $i<=5; $i++) {
+        $csv->add_csv_columns(
+            "update_text_$i" => "Update $i",
+            "update_date_$i" => "Update $i date",
+            "update_name_$i" => "Update $i name",
+        );
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        return {
+        my $fields = {
             area_name => $report->get_extra_field_value('area_name'),
             where_hear => $report->get_extra_metadata('where_hear'),
         };
+
+        my $i = 1;
+        for my $update ($report->comments->search(undef, { order_by => ['confirmed', 'id'] })) {
+            next unless $update->state eq 'confirmed';
+            last if $i > 5;
+            $fields->{"update_text_$i"} = $update->text;
+            $fields->{"update_date_$i"} = $update->confirmed;
+            my $staff = $update->get_extra_metadata('contributed_by') || $update->get_extra_metadata('is_body_user') || $update->get_extra_metadata('is_superuser');
+            $fields->{"update_name_$i"} = $staff ? $update->name : 'public';
+            $i++;
+        }
+
+        return $fields;
     });
 }
 
