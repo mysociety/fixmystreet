@@ -82,7 +82,7 @@ var labeled_defaults = $.extend(true, {}, defaults, {
     feature_code: 'lighting_c',
     asset_id_field: 'asset',
     attributes: {
-        asset: 'asset'
+        UnitID: 'asset'
     },
     actions: {
         asset_found: fixmystreet.assets.named_select_action_found,
