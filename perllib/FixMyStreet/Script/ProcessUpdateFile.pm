@@ -15,6 +15,8 @@ use Open311::GetServiceRequestUpdates;
 
 has verbose => ( is => 'ro', default => 0 );
 
+has commit => ( is => 'ro', default => 0 );
+
 has body_name => ( is => 'ro' );
 
 has file => ( is => 'ro' );
@@ -61,6 +63,7 @@ sub process {
 
     my $updates = Open311::GetServiceRequestUpdates->new(
         verbose => $self->verbose,
+        commit => $self->commit,
     );
     $updates->initialise_body($self->body);
 

@@ -21,12 +21,14 @@ my ($opts, $usage) = describe_options(
     '%c %o',
     ['file|f=s', 'file containing updates' , { required => 1 }],
     ['body|b=s', 'body name to add updates to', { required => 1 } ],
+    ['commit|c', 'actually commit changes to the database'],
     ['verbose|v', 'more verbose output'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
 
 my %params = (
+    commit => $opts->commit,
     verbose => $opts->verbose,
     body_name => $opts->body,
     file => $opts->file,

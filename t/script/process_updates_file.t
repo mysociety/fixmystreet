@@ -61,6 +61,7 @@ my $data = [
 my $p = FixMyStreet::Script::ProcessUpdateFile->new(
     body_name => 'City of Edinburgh Council',
     data => $data,
+    commit => 1,
 );
 
 $p->process;
