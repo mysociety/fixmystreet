@@ -68,6 +68,7 @@ sub determine_location_from_pc : Private {
 
     # check for something to search
     $pc ||= $c->get_param('pc') || return;
+    $pc =~ s/^\s+|\s+$//g;
     $c->stash->{pc} = $pc;    # for template
 
     if ( $pc =~ /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/ ) {
@@ -83,7 +84,7 @@ sub determine_location_from_pc : Private {
         return $c->forward( 'check_location' );
     }
 
-    if ($pc =~ /^\s*([2-9CFGHJMPQRVWX]{4,6}\+[2-9CFGHJMPQRVWX]{2,3})\s+(.*)$/i) {
+    if ($pc =~ /^([2-9CFGHJMPQRVWX]{4,6}\+[2-9CFGHJMPQRVWX]{2,3})\s+(.*)$/i) {
         my ($code, $rest) = ($1, $2);
         my ($lat, $lon, $error) = FixMyStreet::Geocode::lookup($rest, $c);
         if (ref($error) eq 'ARRAY') { # Just take the first result
@@ -97,6 +98,11 @@ sub determine_location_from_pc : Private {
                 map { Utils::truncate_coordinate($_) } @{$ref->{center}};
             return $c->forward( 'check_location' );
         }
+    }
+
+    if ($pc =~ /^([A-R][A-R]\d\d[A-X][A-X](\d\d|\d\d[A-X][A-X]))$/i) {
+        ($c->stash->{latitude}, $c->stash->{longitude}) = maidenhead_locate($pc);
+        return $c->forward( 'check_location' );
     }
 
     if ( $c->cobrand->country eq 'GB' && $pc =~ /^([A-Z])([A-Z])([\d\s]{4,})$/i) {
@@ -222,6 +228,26 @@ sub gridref_to_latlon {
         longitude => $lon,
     };
 }
+
+sub maidenhead_locate {
+	my ($loc) = @_;
+
+    my $l = length $loc;
+    $loc .= "55LL55LL" if $l < 4;
+    $loc .= "LL55LL" if $l < 6;
+    $loc .= "55LL" if $l < 8;
+    $loc .= "LL" if $l < 10;
+
+    my @l = split //, lc $loc;
+    foreach (@l) {
+        $_ = ord($_) - 97 if /[a-z]/;
+    }
+
+    my $lng = 2 * ($l[0] * 10 + $l[2] + $l[4] / 24 + $l[6] / 240 + $l[8] / 5760 - 90);
+    my $lat =     ($l[1] * 10 + $l[3] + $l[5] / 24 + $l[7] / 240 + $l[9] / 5760 - 90);
+
+    return ($lat, $lng);
+};
 
 =head1 AUTHOR
 
