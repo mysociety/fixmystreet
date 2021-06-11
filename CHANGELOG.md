@@ -23,6 +23,7 @@
         - Fix Gaze sometimes being called twice on /around. #3324
         - Improved alert signup for phone-only user. #3367
         - Fix moderation of update text.
+        - Only trigger one refresh going Back to list view. #3476
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.

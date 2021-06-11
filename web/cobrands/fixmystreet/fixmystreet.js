@@ -1865,6 +1865,7 @@ $(function() {
                     return;
                 }
 
+                var reports_list_trigger;
                 if ('initial' in e.state) {
                     if (fixmystreet.original.page === 'new') {
                         // Started at /report/new, so go back to first 'page' there
@@ -1888,10 +1889,10 @@ $(function() {
                         var qs = fixmystreet.utils.parse_query_string();
                         page = qs.p || 1;
                         $('#show_old_reports').prop('checked', qs.show_old_reports || '');
-                        $('.pagination:first').data('page', page)
-                            .trigger('change.filters');
+                        fixmystreet.markers.protocol.use_page = true;
+                        $('.pagination:first').data('page', page);
                     }
-                    fixmystreet.display.reports_list(location.href);
+                    reports_list_trigger = $('.pagination:first');
                 } else if ('reportId' in e.state) {
                     fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
                 } else if ('newReportAtLonlat' in e.state) {
@@ -1906,19 +1907,15 @@ $(function() {
                 } else if ('page_change' in e.state) {
                     fixmystreet.markers.protocol.use_page = true;
                     $('#show_old_reports').prop('checked', e.state.page_change.show_old_reports);
-                    $('.pagination:first').data('page', e.state.page_change.page) //;
-                        .trigger('change.filters');
-                    if ( fixmystreet.page != 'reports' ) {
-                        fixmystreet.display.reports_list(location.href);
-                    }
+                    $('.pagination:first').data('page', e.state.page_change.page);
+                    reports_list_trigger = $('.pagination:first');
                 } else if ('filter_change' in e.state) {
                     $('#filter_categories').val(e.state.filter_change.filter_categories);
                     $('#statuses').val(e.state.filter_change.statuses);
                     $('#sort').val(e.state.filter_change.sort);
                     $('#show_old_reports').prop('checked', e.state.filter_change.show_old_reports);
-                    $('#filter_categories').add('#statuses')
-                        .trigger('change.filters').trigger('change.multiselect');
-                    fixmystreet.display.reports_list(location.href);
+                    $('#filter_categories').add('#statuses').trigger('change.multiselect');
+                    reports_list_trigger = $('#filter_categories');
                 // } else if ('hashchange' in e.state) {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.
@@ -1928,6 +1925,15 @@ $(function() {
                         popstate: true
                     });
                 }
+
+                if (reports_list_trigger) {
+                    if (fixmystreet.page.match(/reports|around|my/)) {
+                        reports_list_trigger.trigger('change.filters');
+                    } else {
+                        fixmystreet.display.reports_list(location.href);
+                    }
+                }
+
                 if ('mapState' in e.state) {
                     fixmystreet.maps.set_map_state(e.state.mapState);
                 }
