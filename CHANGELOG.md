@@ -9,6 +9,7 @@
         - Send email reports in staff-only categories.
         - Fix Gaze sometimes being called twice on /around. #3324
         - Fix moderation of update text.
+        - Only trigger one refresh going Back to list view. #3476
 
 * v3.1 (16th November 2020)
     - Security:
