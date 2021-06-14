@@ -1509,6 +1509,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
+        $mech->content_lacks($staff_user->email);
+        $mech->content_lacks('sent to your email address');
+
         my $content = $mech->content;
         my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
         my $new_report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
@@ -1656,6 +1659,8 @@ FixMyStreet::override_config {
             payenet_code => 64321
         }});
         $mech->content_contains('Subscription completed');
+        $mech->content_lacks($staff_user->email);
+        $mech->content_lacks('sent to your email address');
         my $content = $mech->content;
         my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
