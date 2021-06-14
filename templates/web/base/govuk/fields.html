@@ -103,7 +103,7 @@
 [% BLOCK date %]
   <fieldset class="govuk-fieldset" role="group"
     [%~ IF field.get_tag('hint') OR error %]
-      aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% id %]-error[% END %]"
+      aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
     [%~ END %]>
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
       <h2 class="govuk-fieldset__heading">
