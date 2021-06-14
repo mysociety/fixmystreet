@@ -211,7 +211,7 @@
         <span class="govuk-visually-hidden">Error:</span> [% error %]
     </span>
   [% END %]
-    <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="[% field.id %]" name="[% field.html_name %]" type="text"
+    <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="[% field.id %]" name="[% field.html_name %]" type="[% field.input_type %]"
          value="[% field.fif %]"
     [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
     [%~ IF field.disabled %] disabled[% END ~%]

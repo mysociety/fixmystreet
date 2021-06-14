@@ -15,6 +15,8 @@ has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 
 has finished_action => ( is => 'ro' );
 
+has '+is_html5' => ( default => 1 );
+
 before _process_page_array => sub {
     my ($self, $pages) = @_;
     foreach my $page (@$pages) {
@@ -157,6 +159,18 @@ has_field report_id => (
     type => 'Text',
     label => 'Fault ID',
     tags => { hint => 'This will have been sent to you in an email when you reported the fault' },
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->c;
+        return if $self->has_errors; # Called even if already failed
+        my $report = $c->cobrand->problems->search([
+            id => $self->value,
+            external_id => $self->value,
+        ])->count;
+        if (!$report) {
+            $self->add_error('Please provide a valid report ID');
+        }
+    },
 );
 
 has_page where => (
@@ -164,13 +178,6 @@ has_page where => (
     title => 'Where did the incident happen',
     next => sub { $_[0]->{possible_location_matches} ? 'choose_location' : $_[0]->{latitude} ? 'map' : 'choose_location' },
 );
-
-#has_field XXXX_location => (
-    #required => 1,
-    #type => 'Text',
-    #widget => 'Textarea',
-    #label => 'Place a pin on the map (TBD)',
-#);
 
 has_field location => (
     required => 1,
@@ -332,6 +339,7 @@ has_field 'incident_date.day' => (
 has_field incident_time => (
     required => 1,
     type => 'Text',
+    html5_type_attr => 'time',
     label => 'What time did the incident happen?',
 );
 
