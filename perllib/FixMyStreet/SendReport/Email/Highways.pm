@@ -6,12 +6,14 @@ extends 'FixMyStreet::SendReport::Email';
 sub build_recipient_list {
     my ( $self, $row, $h ) = @_;
 
+    # Try and make sure we have road details if they're missing
+    my $area_name = $row->get_extra_field_value('area_name') || _lookup_site_code($row) || '';
+
     return unless @{$self->bodies} == 1;
     my $body = $self->bodies->[0];
 
     my $contact = $self->fetch_category($body, $row) or return;
     my $email = $contact->email;
-    my $area_name = $row->get_extra_field_value('area_name') || '';
 
     # config is read-only, so must step through one-by-one to prevent
     # vivification
@@ -23,6 +25,30 @@ sub build_recipient_list {
 
     @{$self->to} = map { [ $_, $body->name ] } split /,/, $email;
     return 1;
+}
+
+sub _lookup_site_code_config { {
+    buffer => 15, # metres
+    url => "https://tilma.mysociety.org/mapserver/highways",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => "Highways",
+    accept_feature => sub { 1 }
+} }
+
+sub _lookup_site_code {
+    my $row = shift;
+    my $cfg = _lookup_site_code_config();
+    my ($x, $y) = $row->local_coords;
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features($cfg, $x, $y);
+    my $nearest = $ukc->_nearest_feature($cfg, $x, $y, $features);
+    return unless $nearest;
+
+    my $attr = $nearest->{properties};
+    $row->update_extra_field({ name => 'road_name', value => $attr->{ROA_NUMBER}, description => 'Road name' });
+    $row->update_extra_field({ name => 'area_name', value => $attr->{area_name}, description => 'Area name' });
+    $row->update_extra_field({ name => 'sect_label', value => $attr->{sect_label}, description => 'Road sector' });
+    return $attr->{area_name};
 }
 
 1;

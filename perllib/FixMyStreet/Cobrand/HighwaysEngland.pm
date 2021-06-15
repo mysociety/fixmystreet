@@ -158,32 +158,6 @@ sub munge_report_new_contacts {
     }
 }
 
-sub munge_sendreport_params {
-    my ($self, $row, $h, $params) = @_;
-
-    if (!$row->get_extra_field_value('area_name')) {
-        my $cfg = $self->lookup_site_code_config;
-        my ($x, $y) = $row->local_coords;
-        my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
-        my $features = $ukc->_fetch_features($cfg, $x, $y);
-        my $nearest = $ukc->_nearest_feature($cfg, $x, $y, $features);
-        if ($nearest) {
-            my $attr = $nearest->{properties};
-            $row->update_extra_field({ name => 'road_name', value => $attr->{ROA_NUMBER}, description => 'Road name' });
-            $row->update_extra_field({ name => 'area_name', value => $attr->{area_name}, description => 'Area name' });
-            $row->update_extra_field({ name => 'sect_label', value => $attr->{sect_label}, description => 'Road sector' });
-        }
-    }
-}
-
-sub lookup_site_code_config { {
-    buffer => 15, # metres
-    url => "https://tilma.mysociety.org/mapserver/highways",
-    srsname => "urn:ogc:def:crs:EPSG::27700",
-    typename => "Highways",
-    accept_feature => sub { 1 }
-} }
-
 sub report_new_is_on_he_road {
     my ( $self ) = @_;
 

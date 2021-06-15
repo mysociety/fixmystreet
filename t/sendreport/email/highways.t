@@ -15,6 +15,7 @@ my $row = FixMyStreet::DB->resultset('Problem')->new( {
     bodies_str => '1000',
     category => 'Pothole',
     cobrand => '',
+    extra => { _fields => [ { name => 'area_name', value => 'Area 8' } ] },
 } );
 
 my $e = FixMyStreet::SendReport::Email::Highways->new;
