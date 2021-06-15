@@ -124,7 +124,7 @@ has_field tandc => (
     required => 1,
     label => 'Terms and conditions',
     option_label => FixMyStreet::Template::SafeString->new(
-        'I agree to the <a href="" target="_blank">terms and conditions</a>',
+        'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a>',
     ),
 );
 
