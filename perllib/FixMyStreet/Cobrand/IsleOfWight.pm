@@ -28,7 +28,7 @@ sub send_questionnaires { 0 }
 
 sub report_sent_confirmation_email { 'external_id' }
 
-sub map_type { 'IsleOfWight' }
+sub default_map_zoom { 4 }
 
 sub disambiguate_location {
     my $self    = shift;
