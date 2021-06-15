@@ -285,6 +285,7 @@ $(fixmystreet).on('report_new:highways_change', function() {
 fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
+            propertyName: 'msGeometry,site_code,feature_ty',
             TYPENAME: "Whole_Street"
         }
     },
