@@ -12,7 +12,6 @@ my $requires = {
     'GoogleOL' => 'map-google-ol.js',
     'HighwaysEngland' => 'map-fms.js',
     'Hounslow' => 'map-wmts-hounslow.js',
-    'IsleOfWight' => 'map-wmts-isleofwight.js',
     'Lincolnshire' => 'lincolnshire/assets.js',
     'MasterMap' => 'map-mastermap.js',
     'Northamptonshire' => 'map-wms-northamptonshire.js',
