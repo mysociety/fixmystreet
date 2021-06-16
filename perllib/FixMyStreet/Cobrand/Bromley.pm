@@ -570,7 +570,7 @@ sub available_bin_services_for_address {
 
     my $services = {};
     for my $service ( @$result ) {
-        my $name = $self->service_name_override->{$service->{ServiceId}} || $service->{ServiceName};
+        my $name = service_name_override($service);
         $name =~ s/ /_/g;
         $services->{$name} = {
             service_id => $service->{ServiceId},
@@ -595,6 +595,8 @@ sub get_current_garden_bins {
 }
 
 sub service_name_override {
+    my $service = shift;
+
     my %service_name_override = (
         531 => 'Non-Recyclable Refuse',
         532 => 'Non-Recyclable Refuse',
@@ -608,7 +610,7 @@ sub service_name_override {
         545 => 'Garden Waste',
     );
 
-    return \%service_name_override;
+    return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
 }
 
 sub bin_payment_types {
@@ -702,7 +704,7 @@ sub bin_services_for_address {
     my @out;
     my %task_ref_to_row;
     foreach (@$result) {
-        my $service_name = $self->service_name_override->{$_->{ServiceId}} || $_->{ServiceName};
+        my $service_name = service_name_override($_);
         next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden Waste' && $expired{$_->{Id}} );
 
         my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
@@ -830,13 +832,19 @@ sub _get_current_service_task {
     @$servicetasks = grep { $_->{ServiceTaskSchedules} } @$servicetasks;
     return unless @$servicetasks;
 
+    my $service_name = service_name_override($service);
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my ($current, $last_date);
-    foreach ( @$servicetasks ) {
-        my $end = construct_bin_date($_->{EndDate});
+    foreach my $task ( @$servicetasks ) {
+        my $schedules = Integrations::Echo::force_arrayref($task->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
+        foreach my $schedule ( @$schedules ) {
+            my $end = construct_bin_date($schedule->{EndDate});
 
-        next if $last_date && $end && $end < $last_date;
-        $last_date = $end;
-        $current = $_;
+            next if $last_date && $end && $end < $last_date;
+            next if $end && $end < $today && $service_name ne 'Garden Waste';
+            $last_date = $end;
+            $current = $task;
+        }
     }
     return $current;
 }
