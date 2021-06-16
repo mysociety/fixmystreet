@@ -663,7 +663,7 @@ sub bin_services_for_address {
             garden_waste => $garden,
             garden_bins => $garden_bins,
             report_open => $open->{missed}->{$_->{ServiceId}} || $open_unit->{missed}->{$_->{ServiceId}},
-            request_allowed => $request_allowed{$_->{ServiceId}} && $request_max,
+            request_allowed => $request_allowed{$_->{ServiceId}} && $request_max && $schedules->{next},
             request_open => $open_request,
             request_containers => $containers,
             request_max => $request_max,

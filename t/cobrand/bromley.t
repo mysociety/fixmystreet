@@ -388,6 +388,30 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report a non-recyclable refuse collection');
         restore_time();
     };
+
+    subtest 'test requesting garden waste' => sub {
+		my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 405,
+                    Data => { ExtensibleDatum => [ { DatatypeName => 'LBB - GW Container', ChildData => { ExtensibleDatum => { DatatypeName => 'Quantity', Value => 1, } }, } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        StartDate => { DateTime => '2019-04-01T23:00:00Z' },
+                        EndDate => { DateTime => '2050-05-14T23:00:00Z' },
+                        LastInstance => { OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' }, CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' }, Ref => { Value => { anyType => [ 567, 890 ] } }, },
+                        NextInstance => undef,
+                    } ] },
+                } },
+            } ]
+        } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Request a replacement garden waste container');
+    };
+
 };
 
 subtest 'test waste max-per-day' => sub {
