@@ -307,6 +307,11 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+    return $update->user->from_body && !$update->text;
+}
+
 # If any subcategories ticked in user edit admin, make sure they're saved.
 sub admin_user_edit_extra_data {
     my $self = shift;

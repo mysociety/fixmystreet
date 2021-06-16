@@ -4,6 +4,7 @@ use Test::MockTime qw(:all);
 use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use Open311::PostServiceRequestUpdates;
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -16,8 +17,10 @@ $uk->mock('_fetch_url', sub { '{}' });
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
-my $body = $mech->create_body_ok( 2482, 'Bromley Council',
-    { can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user });
+my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
+    can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
+    send_method => 'Open311', endpoint => 'e', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
+});
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit'] });
@@ -57,6 +60,9 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'bromley',
     areas => '2482,8141',
     user => $user,
+    send_method_used => 'Open311',
+    whensent => 'now()',
+    external_id => '456',
     extra => {
         contributed_by => $staffuser->id,
     },
@@ -83,6 +89,30 @@ $mech->content_contains( 'marks it as in progress' );
 $mech->content_contains( 'State changed to: In progress' );
 $mech->content_contains( 'marks it as unable to fix' );
 $mech->content_contains( 'State changed to: No further action' );
+
+subtest 'Check updates not sent for staff with no text' => sub {
+    my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
+        problem_state => 'unable to fix',
+        problem_id => $report->id,
+        user_id    => $staffuser->id,
+        name       => 'User',
+        mark_fixed => 'f',
+        text       => "",
+        state      => 'confirmed',
+        confirmed  => 'now()',
+        anonymous  => 'f',
+    } );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+    };
+
+    $comment->discard_changes;
+    is $comment->send_fail_count, 0, "comment sending not attempted";
+    is $comment->get_extra_metadata('cobrand_skipped_sending'), 1, "skipped sending comment";
+};
 
 for my $test (
     {
@@ -126,7 +156,6 @@ for my $test (
         $report->set_extra_fields({ name => 'feature_id', value => $test->{feature_id} })
             if $test->{feature_id};
         $report->update;
-        $body->update( { send_method => 'Open311', endpoint => 'http://bromley.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
         my $test_data;
         FixMyStreet::override_config {
             STAGING_FLAGS => { send_reports => 1 },
