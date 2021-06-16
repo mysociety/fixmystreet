@@ -1053,11 +1053,17 @@ sub waste_munge_request_data {
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $c->set_param('Container_Type', $id);
     $c->set_param('Quantity', $quantity);
-    if ($reason eq 'damaged') {
-        $c->set_param('Action', '2::1'); # Remove/Deliver
-        $c->set_param('Reason', 3); # Damaged
-    } elsif ($reason eq 'stolen' || $reason eq 'taken') {
-        $c->set_param('Reason', 1); # Missing / Stolen
+    if ($id == 44) {
+        if ($reason eq 'damaged') {
+            $c->set_param('Action', '2::1'); # Remove/Deliver
+            $c->set_param('Reason', 3); # Damaged
+        } elsif ($reason eq 'stolen' || $reason eq 'taken') {
+            $c->set_param('Reason', 1); # Missing / Stolen
+        }
+    } else {
+        # Don't want to be remembered from previous loop
+        $c->set_param('Action', '');
+        $c->set_param('Reason', '');
     }
     $self->_set_user_source;
 }
