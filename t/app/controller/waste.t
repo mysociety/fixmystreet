@@ -897,7 +897,7 @@ FixMyStreet::override_config {
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
         $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
-        $mech->content_contains('confirmation details for your direct debit');
+        $mech->content_contains('confirmation details once your Direct Debit');
 
         $mech->email_count_is( 1, "email sent for direct debit sub");
         my $email = $mech->get_email;
@@ -1179,7 +1179,7 @@ FixMyStreet::override_config {
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
         $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
-        $mech->content_contains('confirmation details for your direct debit');
+        $mech->content_contains('confirmation details once your Direct Debit');
 
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
