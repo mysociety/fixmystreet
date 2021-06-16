@@ -15,9 +15,9 @@ associated with the report.
 [% TRY %][% INCLUDE '_council_reference.txt' problem=report %][% CATCH file %][% END %]
 [% END %]
 
-Due to the current COVID 19 crisis and associated restrictions regrettably we
-must prioritise more urgent work, therefore we hope you will understand that
-there may be a delay in fixing the defect.
+Due to COVID 19 restrictions we have reduced capacity and must prioritise work
+based on urgency. We apologise that it might therefore take longer than normal
+to respond to your report.
 
 It is available to view at:
 
