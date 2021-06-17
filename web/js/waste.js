@@ -8,12 +8,12 @@ $(function() {
 
     var cost = $('#per_bin_cost').val();
     function bin_cost() {
-      var total_bins = parseInt($('#current_bins').val() || 0) + parseInt($('#new_bins').val() || 0);
+      var total_bins = parseInt($('#bins_wanted').val() || 0);
       var total_cost = ( total_bins * cost ) / 100;
       $('#cost_pa').text(total_cost.toFixed(2));
       $('#cost_now').text(total_cost.toFixed(2));
     }
-    $('#new_bins').on('change', bin_cost);
+    $('#bins_wanted').on('change', bin_cost);
     $('#current_bins').on('change', bin_cost);
 
     function modify_cost() {
