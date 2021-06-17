@@ -653,7 +653,7 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>30-03-2021#m);
+        $mech->content_like(qr#Renewal</dt>\s*<dd[^>]*>30 March 2021#m);
         $mech->content_lacks('Subscribe to Green Garden Waste');
     };
 
@@ -1327,7 +1327,7 @@ FixMyStreet::override_config {
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('overdue!');
+        $mech->content_contains('subscription is now overdue');
         $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
         $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
         $mech->content_lacks('garden_modify', 'modify link not on expired subs');
@@ -1373,7 +1373,7 @@ FixMyStreet::override_config {
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('overdue!');
+        $mech->content_contains('subscription is now overdue');
         $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
         $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
         $mech->content_lacks('garden_modify', 'modify link not on expired subs');
@@ -1974,7 +1974,7 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
         set_fixed_time('2021-05-20T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('overdue!');
+        $mech->content_contains('subscription is now overdue');
         $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
         $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
         $mech->content_lacks('garden_modify', 'modify link not on expired subs');
