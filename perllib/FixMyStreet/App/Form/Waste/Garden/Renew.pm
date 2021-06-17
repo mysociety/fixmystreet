@@ -73,11 +73,14 @@ has_page done => (
 
 has_field current_bins => (
     type => 'Integer',
-    label => 'Number of bins required',
+    label => 'Number of bins to collect (including bins already on site)',
     tags => { number => 1 },
     required => 1,
     range_start => 1,
     range_end => 3,
+    tags => {
+        hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
+    }
 );
 
 with 'FixMyStreet::App::Form::Waste::Billing';
