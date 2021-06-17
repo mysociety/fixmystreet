@@ -24,6 +24,14 @@ sub auto : Private {
     my $cobrand_check = $c->cobrand->feature('waste');
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
     $c->stash->{is_staff} = $c->user && $c->cobrand->admin_allow_user($c->user);
+
+    my $features = $c->cobrand->feature('waste_features') || {};
+    # Copy so cobrands can switch things off depending on situation
+    $c->stash->{waste_features} = $features = { %$features };
+    if ($features->{garden_waste_staff_only} && !$c->stash->{is_staff}) {
+        $features->{garden_disabled} = 1;
+    }
+
     return 1;
 }
 

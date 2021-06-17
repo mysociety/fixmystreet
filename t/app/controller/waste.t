@@ -2189,6 +2189,42 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        echo => { bromley => { url => 'http://example.org', sample_data => 1 } },
+        waste => { bromley => 1 },
+        waste_features => { bromley => { garden_waste_staff_only => 1 } },
+        payment_gateway => { bromley => { cc_url => 'http://example.com', ggw_cost => 2000, pro_rata_minimum => 500, pro_rata_weekly => 25, } },
+    },
+}, sub {
+    $mech->log_in_ok($staff_user->email);
+    $mech->get_ok('/waste/12345');
+    $mech->content_contains('Modify your garden waste subscription');
+    $mech->log_out_ok;
+    $mech->get_ok('/waste/12345');
+    $mech->content_lacks('Modify your garden waste subscription');
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        echo => { bromley => { url => 'http://example.org', sample_data => 1 } },
+        waste => { bromley => 1 },
+        waste_features => { bromley => { garden_disabled => 1 } },
+        payment_gateway => { bromley => { cc_url => 'http://example.com', ggw_cost => 2000, pro_rata_minimum => 500, pro_rata_weekly => 25, } },
+    },
+}, sub {
+    $mech->log_in_ok($staff_user->email);
+    $mech->get_ok('/waste/12345');
+    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->log_out_ok;
+    $mech->get_ok('/waste/12345');
+    $mech->content_lacks('Modify your garden waste subscription');
+};
+
 sub get_report_from_redirect {
     my $url = shift;
 
