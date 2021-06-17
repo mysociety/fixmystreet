@@ -1118,8 +1118,9 @@ sub process_garden_data : Private {
     $data->{title} = 'Garden Subscription - New';
     $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
 
-    my $bin_count = $data->{new_bins} + $data->{current_bins};
+    my $bin_count = $data->{bins_wanted};
     $data->{bin_count} = $bin_count;
+    $data->{new_bins} = $data->{bins_wanted} - $data->{current_bins};
 
     my $total = $c->cobrand->garden_waste_cost($bin_count);
     $c->set_param('payment', $total);

@@ -706,12 +706,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 4 } });
         $mech->content_contains('Existing bin count must be between 1 and 3');
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
-        my $form = $mech->form_with_fields( qw(current_bins new_bins payment_method) );
+        my $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
         ok $form, "form found";
         is $mech->value('current_bins'), 0, "current bins is set to 0";
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 0,
+                bins_wanted => 0,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -719,7 +719,7 @@ FixMyStreet::override_config {
         $mech->content_contains('The total number of bins must be at least 1');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
-                new_bins => 2,
+                bins_wanted => 4,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -727,7 +727,7 @@ FixMyStreet::override_config {
         $mech->content_contains('The total number of bins cannot exceed 3');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 4,
-                new_bins => 0,
+                bins_wanted => 0,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -735,7 +735,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Value must be between 0 and 3');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 4,
+                bins_wanted => 4,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -745,7 +745,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
-        $form = $mech->form_with_fields( qw(current_bins new_bins payment_method) );
+        $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
         ok $form, "form found";
         $mech->content_like(qr#Total to pay now: £<span[^>]*>40.00#, "initial cost set correctly");
         is $mech->value('current_bins'), 2, "current bins is set to 2";
@@ -758,7 +758,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -816,7 +816,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 1,
-                new_bins => 0,
+                bins_wanted => 1,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -859,6 +859,55 @@ FixMyStreet::override_config {
 
     };
 
+    subtest 'check new sub credit card payment with one less bin required' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 2,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        # external redirects make Test::WWW::Mechanize unhappy so clone
+        # the mech for the redirect
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), '44', 'correct container request bin type';
+        is $new_report->get_extra_field_value('Container_Instruction_Action'), '2', 'correct container request action';
+        is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '1', 'correct container request';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        is $sent_params->{amount}, 2000, 'correct amount used';
+
+        $new_report->discard_changes;
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+
+    };
+
     subtest 'check new sub direct debit payment' => sub {
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
@@ -866,7 +915,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 payment_method => 'direct_debit',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -1406,7 +1455,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { existing => 'no' } });
             $mech->submit_form_ok({ with_fields => {
                     current_bins => 0,
-                    new_bins => 1,
+                    bins_wanted => 1,
                     payment_method => 'credit_card',
                     name => 'Test McTest',
                     email => 'test@example.net'
@@ -1465,7 +1514,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
@@ -1663,7 +1712,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('password', 'no password field');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -1710,7 +1759,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('password', 'no password field');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -1749,7 +1798,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 name => 'Test McTest',
                 email => '',
         } });
@@ -1796,7 +1845,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                new_bins => 1,
+                bins_wanted => 1,
                 name => 'Test McTest',
                 email => '',
         } });
