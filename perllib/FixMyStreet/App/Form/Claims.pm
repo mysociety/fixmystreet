@@ -414,7 +414,6 @@ has_field speed => (
 );
 
 has_field actions => (
-    required_when => { 'in_vehicle' => 'Yes' },
     type => 'Text',
     widget => 'Textarea',
     tags => {
@@ -508,7 +507,6 @@ has_field what_cause => (
         { label => 'Noise', value => 'noise', data_hide => '#form-what_cause_other-row' },
         { label => 'Pothole', value => 'pothole', data_hide => '#form-what_cause_other-row' },
         { label => 'Signage', value => 'signage', data_hide => '#form-what_cause_other-row' },
-        { label => 'Slip/Trip', value => 'slip_trip', data_hide => '#form-what_cause_other-row' },
         { label => 'Street furniture', value => 'street_furniture', data_hide => '#form-what_cause_other-row' },
         { label => 'Strimmer/Ride on Mower', value => 'strimmer_mower', data_hide => '#form-what_cause_other-row' },
         { label => 'Tar Splashes', value => 'tar_splashes', data_hide => '#form-what_cause_other-row' },
