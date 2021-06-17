@@ -55,11 +55,10 @@
         [%~ END %]>
       </div>
       <div class="fieldset-item">
-        <span class="cost-pa">£[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin per year</span>
       </div>
     </div>
 
-        <!-- [% PROCESS form override_fields=['new_bins'] %] -->
+        <!-- [% PROCESS form override_fields=['bins_wanted'] %] -->
 
     <div class="fieldset-container">
       <div class="fieldset-item">
@@ -78,7 +77,7 @@
       [% END %]
       </div>
       <div class="fieldset-item">
-        <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="new_bins" name="new_bins" type="number"
+        <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="bins_wanted" name="bins_wanted" type="number"
         value="[% field.fif %]"
         [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
         [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
