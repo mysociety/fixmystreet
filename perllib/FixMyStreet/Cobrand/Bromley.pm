@@ -720,9 +720,6 @@ sub bin_services_for_address {
             }
             $request_max = $garden_bins;
 
-            if ($self->{c}->stash->{waste_features}->{garden_waste_staff_only} && !$self->{c}->stash->{is_staff}) {
-                $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
-            }
             if ($self->{c}->stash->{waste_features}->{garden_disabled}) {
                 $garden = 0;
             }
