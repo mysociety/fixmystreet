@@ -30,7 +30,7 @@ has_page intro => (
     update_field_list => sub {
         my $form = shift;
         return {
-            is_staff => { default => $form->{c}->stash->{is_staff} }
+            is_staff => { default => $form->{c}->stash->{staff_payments_allowed} || 0 }
         };
     },
     next => 'existing',

@@ -102,7 +102,7 @@
     </div>
   </fieldset>
 
-  [% IF NOT is_staff %]
+  [% IF NOT staff_payments_allowed %]
   [% PROCESS form override_fields=['payment_method'] %]
   [% END %]
 
@@ -113,11 +113,11 @@
   </dl>
   [% END %]
 
-  [% IF NOT is_staff %]
+  [% IF NOT staff_payments_allowed %]
   [% PROCESS form override_fields=['billing_differ', 'billing_address'] %]
   [% END %]
 
-  [% IF is_staff %]
+  [% IF staff_payments_allowed %]
   [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
   [% ELSE %]
   [% PROCESS form override_fields=['name', 'email', 'phone', 'password', 'continue_review' ] %]
