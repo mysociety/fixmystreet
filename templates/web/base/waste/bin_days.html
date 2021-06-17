@@ -31,6 +31,27 @@
   <div class="govuk-grid-column-full">
  [% END %]
     [% IF !unit.garden_overdue %]
+
+    [% IF unit.garden_due %]
+
+    <div class="govuk-warning-text due">
+      <div class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      </div>
+      <div class="govuk-warning-text__content">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is soon due for renewal.</h3>    
+          Avoid distruption to your service.
+          [% IF ( unit.garden_due || unit.garden_overdue ) && unit.garden_payment != 'direct_debit' %]
+          <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
+            <input type="hidden" name="token" value="[% csrf_token %]">
+            <input type="submit" value="Renew subscription today" class="govuk-button">
+          </form>
+          [% END %]
+      </div>
+    </div>
+
+    [% END %]
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Frequency</dt>
