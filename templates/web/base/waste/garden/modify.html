@@ -64,7 +64,7 @@
   </div>
   </fieldset>
   
-    [% IF is_staff %]
+    [% IF staff_payments_allowed %]
     [% PROCESS form override_fields=['name', 'email', 'phone'] %]
     [% ELSE %]
     [% PROCESS form override_fields=['name'] %]
