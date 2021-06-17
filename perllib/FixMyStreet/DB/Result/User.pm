@@ -661,9 +661,17 @@ has categories => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        return [] unless $self->get_extra_metadata('categories');
+        my $roles = $self->roles->all;
+
+        my @category_ids;
+        push @category_ids, $self->get_extra_metadata('categories');
+        foreach my $role ($roles) {
+            push @category_ids, $role->get_extra_metadata('categories');
+        }
+        return [] unless @category_ids;
+
         my @categories = $self->result_source->schema->resultset("Contact")->search({
-            id => $self->get_extra_metadata('categories'),
+            id => @category_ids,
         }, {
             order_by => 'category',
         })->get_column('category')->all;

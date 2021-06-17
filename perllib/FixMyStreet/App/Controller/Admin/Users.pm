@@ -388,21 +388,10 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
     }
 
     if ( $user->from_body ) {
-        unless ( $c->stash->{live_contacts} ) {
-            $c->stash->{body} = $user->from_body;
-            $c->forward('/admin/fetch_contacts');
-        }
-        my @contacts = @{$user->get_extra_metadata('categories') || []};
-        my %active_contacts = map { $_ => 1 } @contacts;
-        my @live_contacts = $c->stash->{live_contacts}->all;
-        my @all_contacts = map { {
-            id => $_->id,
-            category => $_->category,
-            active => $active_contacts{$_->id},
-            group => $_->groups,
-        } } @live_contacts;
-        $c->stash->{contacts} = \@all_contacts;
-        $c->forward('/report/stash_category_groups', [ \@all_contacts, { combine_multiple => 1 } ]);
+        $c->forward('/admin/fetch_categories_for_user_or_role', [
+            $user->from_body,
+            \@{$user->get_extra_metadata('categories') || []}
+        ]);
     }
 
     # this goes after in case we've delete any alerts
