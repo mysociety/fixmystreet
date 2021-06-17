@@ -20,6 +20,12 @@ my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, 
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'can_pay_with_csc' });
+
+my $staff_non_payuser = $mech->create_user_ok('staff_no_pay@example.org', from_body => $body, name => 'Staff No Pay User');
+$staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
+$staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
+$staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 
 sub create_contact {
     my ($params, @extra) = @_;
@@ -1578,7 +1584,18 @@ FixMyStreet::override_config {
     $report->update_extra_field({ name => 'payment_method', value => 'credit_card' });
     $report->update;
 
+    subtest 'check staff non pay no CSC access ' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_non_payuser->email);
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_contains('Direct Debit', "payment method on page");
+    };
+
     subtest 'check staff renewal' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         $mech->get_ok('/waste/12345/garden_renew');
