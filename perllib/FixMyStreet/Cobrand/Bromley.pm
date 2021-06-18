@@ -658,6 +658,11 @@ sub waste_container_actions {
     };
 }
 
+sub waste_staff_source {
+    my $self = shift;
+    $self->_set_user_source;
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;

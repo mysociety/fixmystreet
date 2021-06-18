@@ -1015,6 +1015,11 @@ sub setup_garden_sub_params : Private {
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
     $c->set_param('payment_method', $data->{payment_method});
+
+    if ( $c->cobrand->call_hook('waste_staff_source') ) {
+        $c->cobrand->call_hook('waste_staff_source');
+    }
+
 }
 
 sub process_garden_modification : Private {
