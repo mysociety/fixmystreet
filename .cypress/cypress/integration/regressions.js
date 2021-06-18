@@ -48,7 +48,7 @@ describe('Regression tests', function() {
         cy.route('/report/*').as('show-report');
         cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
         // force to hopefully work around apparent Cypress SVG issue
-        cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
+        cy.get('image[title="Lights out in tunnel"]').last().click({force: true});
         cy.wait('@show-report');
         // TODO as report-a-problem-btn not printed on around at the mo
         cy.get('.big-green-banner').click({ force: true });

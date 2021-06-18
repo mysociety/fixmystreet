@@ -1,4 +1,4 @@
-$('[name=dest]').change(function() {
+$('[name=dest]').on('change', function() {
     var err = $('.form-error--' + this.value),
         inputs = $(this).closest('form').find('input[type=text], input[type=submit]');
     $('.form-error__box').addClass('hidden');

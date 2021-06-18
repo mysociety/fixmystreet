@@ -77,7 +77,7 @@ fixmystreet.staff_set_up = {
           fixmystreet.utils.toggle_shortlist($submitButton, 'add', report_id);
         }
         fixmystreet.update_list_item_buttons($list);
-      }).complete(function() {
+      }).always(function() {
         if ($hiddenInput) {
           $hiddenInput.remove();
         }
@@ -133,7 +133,7 @@ fixmystreet.staff_set_up = {
             $addAlertCheckbox.prop('checked', false).prop('disabled', true);
         }
     });
-    $('.js-contribute-as').change();
+    $('.js-contribute-as').trigger('change');
   },
 
   report_page_inspect: function() {
@@ -171,7 +171,7 @@ fixmystreet.staff_set_up = {
     }
 
     function populateSelect($select, data, label_formatter) {
-      $select.find('option:gt(0)').remove();
+      $select.find('option').slice(1).remove();
       if (data.constructor !== Array) {
         return;
       }
@@ -187,7 +187,7 @@ fixmystreet.staff_set_up = {
 
     // On the manage/inspect report form, we already have all the extra inputs
     // in the DOM, we just need to hide/show them as appropriate.
-    $inspect_form.find('[name=category]').change(function() {
+    $inspect_form.find('[name=category]').on('change', function() {
         var category = $(this).val(),
             selector = "[data-category='" + category + "']",
             entry = $inspect_form.find(selector),
@@ -214,14 +214,14 @@ fixmystreet.staff_set_up = {
     }
     var $state_dropdown = $inspect_form.find("[name=state]");
     state_change($state_dropdown.val());
-    $state_dropdown.change(function(){
+    $state_dropdown.on('change', function(){
         var state = $(this).val();
         state_change(state);
         // We might also have a response template to preselect for the new state
         var $select = $inspect_form.find("select.js-template-name");
         var $option = $select.find("option[data-problem-state='"+state+"']").first();
         if ($option.length) {
-            $select.val($option.val()).change();
+            $select.val($option.val()).trigger('change');
         }
     });
 
@@ -339,29 +339,29 @@ fixmystreet.staff_set_up = {
                   $('#map_sidebar').scrollTop(word === 'problem' ? 0 : $elem[0].offsetTop);
               });
 
-              $elem.find('.revert-title').change( function () {
+              $elem.find('.revert-title').on('change', function () {
                   toggle_original($elem.find('input[name=problem_title]'), $(this).prop('checked'));
               });
 
-              $elem.find('.revert-textarea').change( function () {
+              $elem.find('.revert-textarea').on('change', function () {
                   toggle_original($elem.find('textarea'), $(this).prop('checked'));
               });
 
               var hide_document = $elem.find('.hide-document');
-              hide_document.change( function () {
+              hide_document.on('change', function () {
                   $elem.find('input[name=problem_title]').prop('disabled', $(this).prop('checked'));
                   $elem.find('textarea').prop('disabled', $(this).prop('checked'));
                   $elem.find('input[type=checkbox]').prop('disabled', $(this).prop('checked'));
                   $(this).prop('disabled', false); // in case disabled above
               });
 
-              $elem.find('.cancel').click( function () {
+              $elem.find('.cancel').on('click', function() {
                   $elem.toggleClass('show-moderation');
                   $('.js-moderation-error').hide();
                   $('#map_sidebar').scrollTop(word === 'problem' ? 0 : $elem[0].offsetTop);
               });
 
-              $elem.find('form').submit( function () {
+              $elem.find('form').on('submit', function () {
                   if (hide_document.prop('checked')) {
                       return confirm('This will hide the ' + word + ' completely!  (You will not be able to undo this without contacting support.)');
                   }
@@ -379,10 +379,10 @@ fixmystreet.staff_set_up = {
     // response template. If the field is empty, it's not considered dirty.
     $('.js-template-name').each(function() {
         var $input = $('#' + $(this).data('for'));
-        $input.change(function() { $(this).data('dirty', !/^\s*$/.test($(this).val())); });
+        $input.on('change', function() { $(this).data('dirty', !/^\s*$/.test($(this).val())); });
     });
 
-    $('.js-template-name').change(function() {
+    $('.js-template-name').on('change', function() {
         var $this = $(this);
         var $input = $('#' + $this.data('for'));
         if (!$input.data('dirty')) {

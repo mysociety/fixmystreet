@@ -50,7 +50,7 @@ describe('Adding a photo', function() {
       .trigger('mousemove', { which: 1, pageX: 400, pageY: 300 })
       .trigger('mouseup');
     cy.get('canvas').should('have.length', 2);
-    cy.get('canvas:last')
+    cy.get('canvas').last()
       .trigger('mousedown', { which: 1, pageX: 500, pageY: 200 })
       .trigger('mousemove', { which: 1, pageX: 600, pageY: 300 })
       .trigger('mouseup');

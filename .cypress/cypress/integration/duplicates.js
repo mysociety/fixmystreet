@@ -66,7 +66,7 @@ describe('Duplicate tests', function() {
       cy.get('[name=sign_in_by_password]').last().click();
       cy.url().should('include', '/my');
       cy.visit('http://borsetshire.localhost:3001/reports');
-      cy.get('[href$="/report/1"]:last').click();
+      cy.get('[href$="/report/1"]').last().click();
       cy.get('#report_inspect_form #state').select('Duplicate');
       cy.get('#js-duplicate-reports li h3 a').should('have.attr', 'href', '/report/1');
     });
@@ -80,7 +80,7 @@ describe('Duplicate tests', function() {
       });
       cy.visit('http://borsetshire.localhost:3001/report/1');
       cy.contains('Back to all').click();
-      cy.get('[href$="/report/1"]:last').click();
+      cy.get('[href$="/report/1"]').last().click();
       cy.get('#report_inspect_form #state').select('Duplicate');
       cy.get('#js-duplicate-reports li h3 a').should('have.attr', 'href', '/report/1');
     });

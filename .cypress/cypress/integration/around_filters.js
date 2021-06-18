@@ -8,7 +8,7 @@ describe('Around page filtering and push state', function() {
         cy.server();
         cy.route('/reports/Borsetshire\?ajax*').as('update-results');
         cy.contains('1 to 15 of 15');
-        cy.get('.multi-select-button:first').click();
+        cy.get('.multi-select-button').first().click();
         cy.get('#status_0').click();
         cy.get('#status_1').click();
         cy.wait('@update-results');
@@ -40,7 +40,7 @@ describe('Around page filtering and push state', function() {
         cy.route('/reports/Borsetshire\?ajax*').as('update-results');
         cy.visit('/reports/Borsetshire');
         cy.contains('1 to 15 of 15');
-        cy.get('.multi-select-button:eq(1)').click();
+        cy.get('.multi-select-button').eq(1).click();
         cy.get('input[value=Potholes]').click();
         cy.wait('@update-results');
         cy.url().should('include', 'filter_category=Potholes');
@@ -69,16 +69,16 @@ describe('Around page filtering and push state', function() {
         cy.get('#sort').select('created-desc');
         cy.url().should('include', 'sort=created-desc');
         cy.wait('@update-results');
-        cy.get('.item-list__heading:first').contains('Flytipping on country lane');
+        cy.get('.item-list__heading').first().contains('Flytipping on country lane');
         cy.get('#sort').select('created-asc');
         cy.wait('@update-results');
-        cy.get('.item-list__heading:first').contains('Offensive graffiti');
+        cy.get('.item-list__heading').first().contains('Offensive graffiti');
         cy.get('#sort').select('updated-asc');
         cy.wait('@update-results');
-        cy.get('.item-list__heading:first').contains('Faulty light');
+        cy.get('.item-list__heading').first().contains('Faulty light');
         cy.get('#sort').select('updated-desc');
         cy.wait('@update-results');
-        cy.get('.item-list__heading:first').contains('Pothole in cycle lane');
+        cy.get('.item-list__heading').first().contains('Pothole in cycle lane');
         cy.get('#sort').select('comments-desc');
         cy.wait('@update-results');
         cy.get('.item-list__heading').contains('Offensive graffiti');
@@ -91,7 +91,7 @@ describe('Around page filtering and push state', function() {
         cy.visit('/reports/Borsetshire');
         cy.get('image[id*="OpenLayers_Geometry_Point"]').should('have.length', 15);
         cy.get('image[title="Pothole in cycle lane"]').invoke('attr', 'xlink:href').should('not.contain', 'small');
-        cy.get('.item-list--reports__item:first a').click();
+        cy.get('.item-list--reports__item').first().find('a').click();
         cy.wait('@show-report');
         cy.contains('Back to all reports');
         // mini pins fo not have shadows but small pins do so we get an extra image
@@ -114,12 +114,12 @@ describe('Around page filtering and push state', function() {
         cy.route('/mapit/area/*').as('get-geometry');
         cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
         // get the second image which is the pin, first is the shadow
-        cy.get('image[title="Lights out in tunnel"]:last').invoke('attr', 'xlink:href').should('contain', 'small');
+        cy.get('image[title="Lights out in tunnel"]').last().invoke('attr', 'xlink:href').should('contain', 'small');
         // force to hopefully work around apparent Cypress SVG issue
-        cy.get('image[title="Lights out in tunnel"]:last').click({force: true});
+        cy.get('image[title="Lights out in tunnel"]').last().click({force: true});
         cy.wait('@show-report');
         cy.contains('Back to all reports');
-        cy.get('image[title="Lights out in tunnel"]:last').invoke('attr', 'xlink:href').should('not.contain', 'small');
+        cy.get('image[title="Lights out in tunnel"]').last().invoke('attr', 'xlink:href').should('not.contain', 'small');
         cy.contains('pitch black');
         cy.url().should('include', 'report');
         cy.go('back');

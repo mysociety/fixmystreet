@@ -12,11 +12,11 @@ $(function() {
 
     // Row highlighting/clicking
 
-    $('.row-link').hover(function(){
+    $('.row-link').on('mouseenter mouseleave', function(){
         $(this).toggleClass("active");
-    }).click(function(){
+    }).on('click', function(){
         window.location = this.getElementsByTagName('a')[0];
-    }).find('td:last').hide();
+    }).find('td').last().hide();
 
     $('th.edit').hide();
 
@@ -28,7 +28,7 @@ $(function() {
 
     // Response templates
 
-    $('.js-template-name').change(function() {
+    $('.js-template-name').on('change', function() {
         var $this = $(this);
         $('#' + $this.data('for')).val($this.val());
     });
@@ -45,7 +45,7 @@ $(function() {
 
     // When the user changes a select box, this bit of code
     // makes the labels for the other two select boxes grey.
-    $('.assignation__select, .assignation select').change(function(){
+    $('.assignation__select, .assignation select').on('change', function(){
         if (this.value === "") {
             $('.assignation').css('color', '#000');
         } else {
@@ -55,7 +55,7 @@ $(function() {
         }
     });
 
-    $('form#report_edit #state').change(function(){
+    $('form#report_edit #state').on('change', function(){
         // Show or hide the automatic reply field
         var state = $(this).val();
 
@@ -92,13 +92,13 @@ $(function() {
             $('#third_personal, label[for=third_personal]').hide();
         }
 
-    }).change();
+    }).trigger('change');
 
-    $("form#report_edit input[type=submit]").click(function() {
+    $("form#report_edit input[type=submit]").on('click', function() {
         $("form#report_edit").data("clicked_button", $(this).attr("name"));
     });
 
-    $("form#report_edit").submit(function() {
+    $("form#report_edit").on('submit', function() {
         // Make sure the external body field has a value if it's visible
         // and the form is submitted as a 'save' action (i.e. not a rotate
         // photo).
@@ -108,7 +108,7 @@ $(function() {
             var val = parseInt($("select#body_external").val(), 10);
             if (visible && isNaN(val)) {
                 $("#assignation__external .error").removeClass("hidden");
-                $("select#body_external").focus().get(0).scrollIntoView();
+                $("select#body_external").trigger('focus').get(0).scrollIntoView();
                 return false;
             }
         }
@@ -122,7 +122,7 @@ $(function() {
         }
     });
 
-    $("form#report_edit").find("input, select, textarea").change(function() {
+    $("form#report_edit").find("input, select, textarea").on('change', function() {
         form_fields_changed = true;
     });
 });

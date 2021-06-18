@@ -117,7 +117,7 @@
                     $div.find('input[name="id"]').val(id);
                     $div.find('input[disabled]').prop('disabled', false);
                     $div.hide().appendTo($li).slideDown(250, function(){
-                        $div.find('input[type="email"]').focus();
+                        $div.find('input[type="email"]').trigger('focus');
                     });
                     $li.find('.item-list__item--expandable__actions').slideUp(250);
                     $li.removeClass('js-expandable');
