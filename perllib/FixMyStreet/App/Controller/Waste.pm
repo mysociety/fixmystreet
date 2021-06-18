@@ -274,6 +274,10 @@ sub confirm_subscription : Private {
             value => $reference
         }
     );
+    $c->stash->{no_reporter_alert} = 1 if
+        $p->get_extra_metadata('contributed_as') &&
+        $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
+
     $p->set_extra_metadata('payment_reference', $reference) if $reference;
     $p->confirm;
     $c->forward( '/report/new/create_related_things', [ $p ] );
