@@ -441,6 +441,29 @@ around 'munge_sendreport_params' => sub {
         my $subject = "New claim - $type - $name - $external_id - $site_name, $area_name";
         $params->{Subject} = $subject;
 
+        # Attach auto-response template if present
+        my $update = $row->comments->search(undef, { order_by => 'id' })->first;
+        if ($update) {
+            $h->{update} = {
+                item_text => $update->text,
+                item_extra => $update->get_column('extra'),
+            };
+
+            # Stop any alerts being sent out about this update as included here.
+            my @alerts = FixMyStreet::DB->resultset('Alert')->search({
+                alert_type => 'new_updates',
+                parameter => $row->id,
+                confirmed => 1,
+            });
+            for my $alert (@alerts) {
+                my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create({
+                    alert_id  => $alert->id,
+                    parameter => $update->id,
+                });
+            }
+        }
+
+        # Attach photos and documents
         my @photos = grep { $_ } (
             $row->photo,
             $row->get_extra_metadata('vehicle_photos'),

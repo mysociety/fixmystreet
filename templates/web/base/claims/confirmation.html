@@ -2,14 +2,11 @@
 
 [% INCLUDE header.html %]
 
-<h1 class="govuk-heading-xl">[% title %]</h1>
-<p>Claim submitted!</p>
+<h1 class="govuk-heading-xl">Claim submitted</h1>
 
-<p><strong>Debug info below; text for this page to be confirmed</strong></p>
-
-<pre>
-[% detail %]
-</pre>
+[% IF auto_response %]
+    [% auto_response.text | staff_html_markup(auto_response.extra) %]
+[% END %]
 
 <a href="https://www.buckinghamshire.gov.uk/your-council/privacy/">Privacy notice</a>
 

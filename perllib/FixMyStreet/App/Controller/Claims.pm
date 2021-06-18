@@ -98,6 +98,7 @@ sub process_claim : Private {
     $object->confirm;
     $object->insert;
     $c->forward('/report/new/create_related_things', [ $object ]);
+    $c->stash->{auto_response} = $object->comments->first;
     return 1;
 }
 

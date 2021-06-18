@@ -1,1 +1,5 @@
+[% IF report.category == 'Claim' ~%]
+[% INCLUDE 'other-reported-claim.txt' %]
+[% ELSE ~%]
 [% INCLUDE 'other-reported.txt' %]
+[% END %]

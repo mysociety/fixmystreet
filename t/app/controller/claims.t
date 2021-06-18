@@ -14,7 +14,17 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 });
+my $system_user = $mech->create_user_ok('system@bucks', from_body => $body);
+$body->update({ comment_user => $system_user });
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Claim', email => 'CLAIM');
+
+my $template = $contact->response_templates->create({
+    body => $body,
+    title => 'Claim response',
+    text => 'Please be advised that the investigation of claims is a lengthy process as all claims are checked',
+    state => 'confirmed',
+    auto_response => 1,
+});
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     external_id => '4123',
@@ -152,8 +162,11 @@ EOF
         is $email[0]->header('To'), 'TfB <claims@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $report_id - Rain Road, Aylesbury";
         is $email[1]->header('To'), 'test@example.org';
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
         my $req = $test_data->{test_req_used};
         is $req, undef, 'Nothing sent by Open311';
+        is $report->user->alerts->count, 1, 'User has an alert for this report';
+        is $report->user->alerts->first->alerts_sent->count, 1, 'But has been sent in the logged email';
         $mech->clear_emails_ok;
     };
 
@@ -194,10 +207,14 @@ EOF
         $mech->content_contains('Review', "Review screen displayed");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
         $mech->content_contains('Claim submitted');
+        $mech->content_contains('is a lengthy process');
         my $test_data = FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
-        like $mech->get_text_body_from_email($email[1]), qr/reference number is 248/;
+        my $text = $mech->get_text_body_from_email($email[1]);
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref 248";
+        like $text, qr/reference number is 248/;
+        like $text, qr/is a lengthy process/;
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'CLAIM';
