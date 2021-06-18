@@ -128,7 +128,7 @@ What was the cause of the incident?: Bollard
 Were you aware of it before?: Yes
 Where was the cause of the incident?: Bridge
 Describe the incident cause: a cause
-Please provide two dated photos of the incident: 74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg
+Please provide two dated photos of the incident: 2 photos
 Make and model: a car
 Registration number: rego!
 Vehicle mileage: 20
@@ -138,7 +138,7 @@ Name and address of the Vehicle's Insurer: insurer address
 Are you making a claim via the insurance company?: No
 Are you registered for VAT?: No
 Describe the damage to the vehicle: the car was broken
-Please provide two photos of the damage to the vehicle: 74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg
+Please provide two photos of the damage to the vehicle: 2 photos
 Please provide receipted invoices for repairs: sample.pdf
 Are you claiming for tyre damage?: Yes
 Age and Mileage of the tyre(s) at the time of the incident: 20
