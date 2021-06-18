@@ -27,6 +27,15 @@ $staff_non_payuser->user_body_permissions->create({ body => $body, permission_ty
 $staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 
+my $csc_user = $mech->create_user_ok('csc_staff@example.org', from_body => $body, name => 'CSC User');
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body,
+    name => 'Contact Centre Agent',
+    permissions => ['contribute_as_another_user', 'contribute_as_anonymous_user', 'report_mark_private', 'can_pay_with_csc']
+});
+$csc_user->add_to_roles($role);
+
+
 sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste']);
@@ -65,6 +74,7 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
         { code => 'pro_rata', required => 0, automated => 'hidden_field' },
         { code => 'payment', required => 1, automated => 'hidden_field' },
         { code => 'client_reference', required => 1, automated => 'hidden_field' },
+        { code => 'Source', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_renew@example.com'},
         { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
@@ -73,6 +83,7 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_rene
         { code => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
         { code => 'client_reference', required => 1, automated => 'hidden_field' },
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
+        { code => 'Source', required => 0, automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -1766,6 +1777,8 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
     subtest 'staff create new subscription' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($csc_user->email);
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
@@ -1806,13 +1819,16 @@ FixMyStreet::override_config {
         is $report->state, 'confirmed', 'report confirmed';
         is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
         is $report->get_extra_field_value('PaymentCode'), '64321', 'correct echo payment reference field';
+        is $report->get_extra_field_value('Source'), '3', 'correct echo source for staff';
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
         is $report->user->email, 'test@example.net';
-        is $report->get_extra_metadata('contributed_by'), $staff_user->id;
+        is $report->get_extra_metadata('contributed_by'), $csc_user->id;
 
     };
 
     subtest 'staff create new subscription - payment failed' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
