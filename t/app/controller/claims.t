@@ -194,6 +194,7 @@ EOF
         my $test_data = FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
+        like $mech->get_text_body_from_email($email[1]), qr/reference number is 248/;
         my $req = $test_data->{test_req_used};
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'CLAIM';

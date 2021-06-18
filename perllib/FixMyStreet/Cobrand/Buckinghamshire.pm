@@ -65,8 +65,9 @@ sub open311_pre_send {
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
-    # Check Open311 was successful (or Claim, we always send an email)
-    return unless $row->external_id || $row->category eq 'Claim';
+    # Check Open311 was successful (or a non-Open311 Claim)
+    my $non_open311_claim = $row->category eq 'Claim' && $row->get_extra_metadata('fault_fixed') ne 'Yes';
+    return unless $row->external_id || $non_open311_claim;
     return if $row->get_extra_metadata('extra_email_sent');
 
     # For certain categories, send an email also
