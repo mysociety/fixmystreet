@@ -1835,6 +1835,12 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+
+        my $alerts = FixMyStreet::App->model('DB::Alert')->search( {
+            alert_type => 'new_updates',
+            parameter => $report->id,
+        } );
+        is $alerts->count, 0, "no alerts created";
     };
 
     subtest 'staff create new subscription no email - payment failed' => sub {
