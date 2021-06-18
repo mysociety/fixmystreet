@@ -38,6 +38,8 @@ $ukc->mock('_fetch_features', sub {
     return [
         {
             properties => {
+                site_name => 'RAIN ROAD',
+                area_name => 'AYLESBURY',
                 feature_ty => '4A',
                 site_code => 'Road ID'
             },
@@ -148,6 +150,7 @@ EOF
         my $test_data = FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
+        is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $report_id - Rain Road, Aylesbury";
         is $email[1]->header('To'), 'test@example.org';
         my $req = $test_data->{test_req_used};
         is $req, undef, 'Nothing sent by Open311';

@@ -409,10 +409,38 @@ sub lookup_site_code_config { {
     }
 } }
 
+sub _lookup_site_name {
+    my $self = shift;
+    my $row = shift;
+
+    my $cfg = {
+        buffer => 200,
+        url => "https://tilma.mysociety.org/mapserver/bucks",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "Whole_Street",
+        accept_feature => sub { 1 }
+    };
+    my ($x, $y) = $row->local_coords;
+    my $features = $self->_fetch_features($cfg, $x, $y);
+    return $self->_nearest_feature($cfg, $x, $y, $features);
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
     if ($row->category eq 'Claim') {
+        # Update subject
+        my $type = $row->get_extra_metadata('what');
+        my $name = $row->name;
+        my $road = $self->_lookup_site_name($row);
+        my $site_name = $road->{properties}->{site_name};
+        $site_name =~ s/([\w']+)/\u\L$1/g;
+        my $area_name = $road->{properties}->{area_name};
+        $area_name =~ s/([\w']+)/\u\L$1/g;
+        my $external_id = $row->external_id || $row->get_extra_metadata('report_id') || '(no ID)';
+        my $subject = "New claim - $type - $name - $external_id - $site_name, $area_name";
+        $params->{Subject} = $subject;
+
         my @photos = grep { $_ } (
             $row->photo,
             $row->get_extra_metadata('vehicle_photos'),
