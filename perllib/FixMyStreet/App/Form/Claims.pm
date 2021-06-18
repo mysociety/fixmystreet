@@ -1098,9 +1098,12 @@ sub format_for_display {
         }
     } elsif ( $field->{type} eq 'FileIdUpload' ) {
         if ( ref $value eq 'HASH' ) {
-           return join( ',', @{ $value->{filenames} } );
+           return join( ', ', @{ $value->{filenames} } );
         }
         return "";
+    } elsif ( $field->{type} eq 'FileIdPhoto' ) {
+        my $num = split /,/, $value;
+        return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);
     }
 
     return $value;
