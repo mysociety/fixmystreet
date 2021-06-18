@@ -1,0 +1,22 @@
+Subject: Your claim has been submitted[% ', ref ' _ report.external_id IF report.external_id %]
+
+Thank you for your submitted claim form.
+[% IF report.external_id %] The reference number is [% report.external_id %].[% END %]
+
+[% IF update ~%]
+[% email_sanitize_text(update) %]
+
+[% END %]
+
+It is available to view at:
+
+[% cobrand.base_url_for_report(report) %][% report.view_url %]
+
+Your report had the following details:
+
+[% report.detail %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
