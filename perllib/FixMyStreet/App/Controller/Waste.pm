@@ -910,9 +910,11 @@ sub process_garden_cancellation : Private {
     my $payment_method = $c->forward('get_current_payment_method');
     my $data = $form->saved_data;
 
-    $data->{name} = $c->user->name;
-    $data->{email} = $c->user->email;
-    $data->{phone} = $c->user->phone;
+    unless ( $c->stash->{is_staff} ) {
+        $data->{name} = $c->user->name;
+        $data->{email} = $c->user->email;
+        $data->{phone} = $c->user->phone;
+    }
     $data->{category} = 'Cancel Garden Subscription';
     $data->{title} = 'Garden Subscription - Cancel';
     $data->{payment_method} = $payment_method;

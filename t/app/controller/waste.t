@@ -1636,6 +1636,40 @@ FixMyStreet::override_config {
         is $report->state, 'confirmed', 'report confirmed';
     };
 
+    subtest 'check staff renewal - no email' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_lacks('Direct Debit', "no payment method on page");
+        $mech->submit_form_ok({ with_fields => {
+            name => 'a user',
+            email => '',
+            current_bins => 1,
+        }});
+
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Enter paye.net code');
+        $mech->submit_form_ok({ with_fields => {
+            payenet_code => 54321
+        }});
+        $mech->content_contains('Subscription completed');
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+        is $report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
+        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
+        is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
+        is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
+        is $report->state, 'confirmed', 'report confirmed';
+        is $report->get_extra_metadata('contributed_by'), $staff_user->id;
+        is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+    };
+
     subtest 'check modify sub staff' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_modify');
@@ -1725,6 +1759,8 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
+        is $new_report->get_extra_metadata('contributed_as'), 'anonymous_user';
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
