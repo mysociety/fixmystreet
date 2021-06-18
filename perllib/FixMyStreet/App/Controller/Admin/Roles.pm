@@ -55,7 +55,19 @@ sub item :PathPart('admin/roles') :Chained :CaptureArgs(1) {
 
 sub edit :PathPart('') :Chained('item') :Args(0) {
     my ($self, $c) = @_;
-    return $self->form($c, $c->stash->{obj});
+
+    my $role = $c->stash->{obj};
+
+    unless ( $c->stash->{live_contacts} ) {
+        $c->forward('/admin/fetch_categories_for_user_or_role', [
+            $role->body,
+            \@{$role->get_extra_metadata('categories') || []}
+        ]);
+    }
+
+    $c->stash->{editing_roles} = 1;
+
+    return $self->form($c, $role);
 }
 
 sub form {

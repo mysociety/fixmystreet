@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE roles
+    ADD COLUMN extra TEXT;
+
+COMMIT;

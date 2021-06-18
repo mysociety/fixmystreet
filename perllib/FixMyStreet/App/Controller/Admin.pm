@@ -160,6 +160,25 @@ sub fetch_contacts : Private {
     return 1;
 }
 
+sub fetch_categories_for_user_or_role : Private {
+    my ( $self, $c, $body, $contacts ) = @_;
+
+    unless ( $c->stash->{live_contacts} ) {
+        $c->stash->{body} = $body;
+        $c->forward('/admin/fetch_contacts');
+    }
+    my %active_contacts = map { $_ => 1 } @$contacts;
+    my @live_contacts = $c->stash->{live_contacts}->all;
+    my @all_contacts = map { {
+        id => $_->id,
+        category => $_->category,
+        active => $active_contacts{$_->id},
+        group => $_->groups,
+    } } @live_contacts;
+    $c->stash->{contacts} = \@all_contacts;
+    $c->forward('/report/stash_category_groups', [ \@all_contacts, { combine_multiple => 1 } ]);
+}
+
 sub fetch_languages : Private {
     my ( $self, $c ) = @_;
 
