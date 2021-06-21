@@ -247,23 +247,21 @@ subtest "check get payment list" => sub {
     );
 
     is_deeply $res, [ {
-        PaymentAPI => {
-            AlternateKey => "",
-            Amount => '10.00',
-            ClientName => "London Borough of Bromley",
-            CollectionDate => "26/02/2021",
-            Comments => "Test payment",
-            DueDate => "26/02/2021",
-            PayerAccountHoldersName => "Anthony Other",
-            PayerAccountNumber => 11111111,
-            PayerName => "Anthony Other",
-            PayerReference => "REF123456",
-            PayerSortCode => "010101",
-            ProductName => "Non Frequency",
-            Status => "Paid",
-            Type => "First Time",
-            YourRef => 65432
-        }
+        AlternateKey => "",
+        Amount => '10.00',
+        ClientName => "London Borough of Bromley",
+        CollectionDate => "26/02/2021",
+        Comments => "Test payment",
+        DueDate => "26/02/2021",
+        PayerAccountHoldersName => "Anthony Other",
+        PayerAccountNumber => 11111111,
+        PayerName => "Anthony Other",
+        PayerReference => "REF123456",
+        PayerSortCode => "010101",
+        ProductName => "Non Frequency",
+        Status => "Paid",
+        Type => "First Time",
+        YourRef => 65432
     } ],
     "correct return from get payment list";
 };

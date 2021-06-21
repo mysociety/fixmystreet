@@ -188,7 +188,7 @@ sub get_recent_payments {
 
         if ($res->{StatusCode} eq 'SA') {
             if ($res->{Payments}) {
-                return force_arrayref( $res, 'Payments' );
+                return force_arrayref( $res->{Payments}, 'PaymentAPI' );
             } else {
                 return [];
             }
@@ -219,7 +219,7 @@ sub get_cancelled_payers {
 
         if ($res->{StatusCode} eq 'SA') {
             if ($res->{CancelledPayerRecords}) {
-                return force_arrayref( $res, 'CancelledPayerRecords' );
+                return force_arrayref( $res->{CancelledPayerRecords}, 'CancelledPayerRecordAPI' );
             } else {
                 return [];
             }

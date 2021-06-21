@@ -8,6 +8,7 @@ use DateTime::Format::W3CDTF;
 use DateTime::Format::Flexible;
 use File::Temp;
 use Integrations::Echo;
+use Integrations::Pay360;
 use JSON::MaybeXS;
 use List::Util qw(any);
 use Parallel::ForkManager;
@@ -1354,11 +1355,10 @@ sub waste_reconcile_direct_debits {
         config => $config
     });
 
-    my $recent = $i->get_recent_payments(
+    my $recent = $i->get_recent_payments({
         start => $start,
         end => $today
-    );
-
+    });
 
     RECORD: for my $payment ( @$recent ) {
 
@@ -1532,6 +1532,13 @@ sub waste_reconcile_direct_debits {
         start => $start,
         end => $today
     });
+
+    if ( ref $cancelled eq 'HASH' && $cancelled->{error} ) {
+        if ( $cancelled->{error} ne 'No cancelled payers found.' ) {
+            warn $cancelled->{error} . "\n";
+        }
+        return;
+    }
 
     CANCELLED: for my $payment ( @$cancelled ) {
 
