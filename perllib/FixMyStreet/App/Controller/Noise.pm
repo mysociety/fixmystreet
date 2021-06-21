@@ -184,6 +184,8 @@ EOF
             $user_address .= " ($data->{address})";
         }
         my $user_available = ucfirst(join(' or ', @{$data->{best_time}}) . ', by ' . $data->{best_method});
+        my $user_email = $data->{email} || 'No email';
+        my $user_phone = $data->{phone} || 'No phone';
         my $where = label_for_field($form, 'where', $data->{where});
         my $estates = label_for_field($form, 'estates', $data->{estates}) || '';
         $estates = "Is the residence a Hackney Estates property? $estates" if $estates;
@@ -201,6 +203,8 @@ EOF
         my $detail = <<EOF;
 Reporter address: $user_address
 Reporter availability: $user_available
+Reporter email: $user_email
+Reporter phone: $user_phone
 
 Kind of noise: $kind
 Noise details: $data->{more_details}

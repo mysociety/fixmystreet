@@ -98,7 +98,7 @@ FixMyStreet::override_config {
         is $user->alerts->count, 1;
         my $report = $user->problems->first;
         is $report->title, "1000000 Shoreditch High Street, E1 6AX";
-        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
+        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\nReporter email: pkg-tappcontrollernoiset-test\@example.net\nReporter phone: 01234 567890\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
         is $report->latitude, 51.524448;
         is $report->areas, ',144379,2508,';
         $mech->clear_emails_ok;
@@ -143,7 +143,7 @@ FixMyStreet::override_config {
         my @reports = $user->problems->search(undef, { order_by => 'id' })->all;
         my $report = $reports[-1];
         is $report->title, "1000000 Shoreditch High Street, E1 6AX";
-        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\n\nKind of noise: Other (Other kind)\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nIs the residence a Hackney Estates property? No\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
+        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\nReporter email: pkg-tappcontrollernoiset-test\@example.net\nReporter phone: 01234 567890\n\nKind of noise: Other (Other kind)\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\nIs the residence a Hackney Estates property? No\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? No\nDoes the time of the noise follow a pattern? No\nWhen has the noise occurred? late at night\n";
         is $report->latitude, 51.524448;
         $mech->clear_emails_ok;
     };
