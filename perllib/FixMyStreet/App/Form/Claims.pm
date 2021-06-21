@@ -1101,7 +1101,7 @@ sub format_for_display {
            return join( ', ', @{ $value->{filenames} } );
         }
         return "";
-    } elsif ( $field->{type} eq 'FileIdPhoto' ) {
+    } elsif ( $field->{type} eq 'Photo' ) {
         my $num = split /,/, $value;
         return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);
     }
