@@ -118,7 +118,7 @@ sub pay {
                         'scpbase:itemSummary' => ixhash(
                             'scpbase:description' => $args->{description},
                             'scpbase:amountInMinorUnits' => $args->{amount},
-                            'scpbase:reference' => $args->{ref},
+                            'scpbase:reference' => $self->config->{customer_ref},
                         ),
                         'scpbase:tax' => {
                             'scpbase:vat' =>ixhash(
@@ -129,6 +129,7 @@ sub pay {
                         },
                         'scpbase:lgItemDetails' => ixhash(
                             'scpbase:fundCode' => $self->config->{scp_fund_code},
+                            'scpbase:additionalReference' => $args->{ref},
                             'scpbase:narrative' => $args->{uprn},
                         ),
                         'scpbase:lineId' => $args->{ref},
