@@ -13,13 +13,16 @@ $mappage-header-height: 7em;
 
 // Different header and logo
 #site-header {
-    background-color: #fff;
     border-top: none;
     margin-bottom: 2em;
 
     .container {
-        background: #fff url(logo_portal.x.jpg) top left repeat-x;
         padding: 0;
+    }
+
+    .header__logobar {
+        padding: 1.25em 0 1.25em calc((100vw - 60em) / 2);
+        margin-left: 0;
     }
 }
 
@@ -29,9 +32,15 @@ body.mappage {
         @include box-shadow(0 0 6px 1px #000);
         z-index: 2; // One more than #zurich-main-nav so it's on top
         .container {
-            margin: 0 1em; // White padding left/right
+            margin: 0;
+        }
+        .header__logobar {
+            // Aligns logo to left hand content on map pages
+            padding-left: 5px;
+            padding-right: 0;
         }
     }
+
     // Except on admin pages where there's an admin nav directly underneath it
     &.admin #site-header {
         @include box-shadow(none);
@@ -53,10 +62,11 @@ body.mappage #site-logo-text {
 }
 
 #site-logo {
-    width: 415px;
-    height: 83px;
-    background-position: top left;
+    width: 460px;
+    height: 72px;
+    background-position: 10% 0;
     margin-left: 0;
+    background-size: inherit;
 }
 
 body.mappage #site-logo {
@@ -90,7 +100,7 @@ body.frontpage {
     }
 
     .table-cell {
-        background-position: 50% 117px;
+        background-position: 50% 112px;
         background-repeat: no-repeat;
         background-image: url(mapbg-1024.jpg);
         @media all and (min-width: 1025px) {
@@ -99,11 +109,6 @@ body.frontpage {
         .content {
             margin: 2em auto; // Spacing around front content on top of static map
         }
-    }
-
-    #site-header {
-        @include box-shadow(0 0 6px 1px #000);
-        height: 117px;
     }
 
     #zurich-footer-wrapper {
@@ -144,6 +149,12 @@ body.frontpage {
       max-width: none;
     }
   }
+}
+
+#front-main #postcodeForm {
+    .form-hint {
+        color: inherit;
+    }
 }
 
 #zurich-main-nav {
