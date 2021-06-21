@@ -13,13 +13,16 @@ $mappage-header-height: 7em;
 
 // Different header and logo
 #site-header {
-    background-color: #fff;
     border-top: none;
     margin-bottom: 2em;
 
     .container {
-        background: #fff url(logo_portal.x.jpg) top left repeat-x;
         padding: 0;
+    }
+
+    .header__logobar {
+        padding-left: calc((100vw - 60em) / 2);
+        margin-left: 0;
     }
 }
 
@@ -53,10 +56,11 @@ body.mappage #site-logo-text {
 }
 
 #site-logo {
-    width: 415px;
-    height: 83px;
-    background-position: top left;
+    width: 460px;
+    height: 120px;
+    background-position: center left;
     margin-left: 0;
+    background-size: inherit;
 }
 
 body.mappage #site-logo {
@@ -101,11 +105,6 @@ body.frontpage {
         }
     }
 
-    #site-header {
-        @include box-shadow(0 0 6px 1px #000);
-        height: 117px;
-    }
-
     #zurich-footer-wrapper {
         padding: 1px 0;
         @include box-shadow(0 -6px 6px -5px #000);
@@ -144,6 +143,12 @@ body.frontpage {
       max-width: none;
     }
   }
+}
+
+#front-main #postcodeForm {
+    .form-hint {
+        color: inherit;
+    }
 }
 
 #zurich-main-nav {
