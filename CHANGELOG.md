@@ -24,6 +24,7 @@
         - Improved alert signup for phone-only user. #3367
         - Fix moderation of update text.
         - Only trigger one refresh going Back to list view. #3476
+        - Fix checked order of updates in dashboard export.
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
