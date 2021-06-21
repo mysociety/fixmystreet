@@ -664,8 +664,17 @@ FixMyStreet::override_config {
     };
 
     subtest 'check subscription link present' => sub {
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        set_fixed_time('2021-03-09T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Subscribe to Green Garden Waste', 'Subscribe link not present for active sub');
+        set_fixed_time('2021-04-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Subscribe to Green Garden Waste', 'Subscribe link not present if in renew window');
+        set_fixed_time('2021-05-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if expired');
         my $echo = Test::MockModule->new('Integrations::Echo');
+        set_fixed_time('2021-03-09T17:00:00Z');
         $echo->mock('GetServiceUnitsForObject', sub {
             return [ {
                 Id => 1001,
@@ -691,7 +700,7 @@ FixMyStreet::override_config {
             } ];
         } );
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Subscribe to Green Garden Waste');
+        $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if never had a sub');
     };
 
     my $echo = Test::MockModule->new('Integrations::Echo');

@@ -586,20 +586,20 @@ sub image_for_service {
 sub available_bin_services_for_address {
     my ($self, $property) = @_;
 
-    my $result = $self->{api_serviceunits};
-    return {} unless @$result;
+    my $services = $self->{c}->stash->{services};
+    return {} unless keys %$services;
 
-    my $services = {};
-    for my $service ( @$result ) {
-        my $name = service_name_override($service);
+    my $available_services = {};
+    for my $service ( values %$services ) {
+        my $name = $service->{service_name};
         $name =~ s/ /_/g;
-        $services->{$name} = {
-            service_id => $service->{ServiceId},
-            is_active => defined $service->{ServiceTasks} && $service->{ServiceTasks} ne '',
+        $available_services->{$name} = {
+            service_id => $service->{service_id},
+            is_active => 1,
         };
     }
 
-    return $services;
+    return $available_services;
 }
 
 sub garden_waste_service_id {
