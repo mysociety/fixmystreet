@@ -2,8 +2,7 @@
 
 [% INCLUDE header.html %]
 
-<h1 class="govuk-heading-xl">[% title %]</h1>
-<p>Claim submitted</p>
+<h1 class="govuk-heading-xl">Claim submitted</h1>
 
 [% IF auto_response %]
     [% auto_response.text | staff_html_markup(auto_response.extra) %]
