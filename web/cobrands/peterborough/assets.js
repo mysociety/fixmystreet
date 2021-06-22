@@ -50,32 +50,13 @@ var arcgis_defaults = $.extend(true, {}, defaults, {
 
 var waste_categories = ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti' ];
 
-OpenLayers.Layer.PeterboroughVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNearest, {
-    getNearest: function(lonlat) {
-        var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
-        var feature = this.getFeatureAtPoint(point);
-        var radius = this.fixmystreet.nearest_radius || 10;
-        if ( OpenLayers.Util.indexOf(waste_categories, fixmystreet.reporting.selectedCategory().category) != -1) {
-            radius = 2;
-        }
-        if (feature == null) {
-            // The click wasn't directly over a road, try and find one nearby
-            var nearest = this.getFeaturesWithinDistance(point, radius);
-            feature = nearest.length ? nearest[0] : null;
-        }
-        this.selected_feature = feature;
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.PeterboroughVectorNearest'
-});
-
 fixmystreet.assets.add(tilma_defaults, {
-    class: OpenLayers.Layer.PeterboroughVectorNearest,
     http_options: {
         params: {
             TYPENAME: "highways"
         }
     },
+    nearest_radius: 2,
     stylemap: fixmystreet.assets.stylemap_invisible,
     non_interactive: true,
     always_visible: true,
