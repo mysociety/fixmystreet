@@ -224,13 +224,11 @@ fixmystreet.assets.add(flytipping_defaults, {
             for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
                 var layer = fixmystreet.assets.layers[i];
                 if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-                    $("#js-roads-responsibility").addClass("hidden");
+                    $('#js-environment-message').addClass('hidden');
                     return;
                 }
             }
-            $("#js-roads-responsibility").addClass("hidden");
             $('#js-environment-message').removeClass('hidden');
-            fixmystreet.message_controller.check_for_stopper();
         },
     }
 });
@@ -242,17 +240,7 @@ fixmystreet.assets.add(flytipping_defaults, {
     },
     actions: {
         found: function() {
-            $("#js-roads-responsibility").addClass("hidden");
             $('#js-environment-message').removeClass('hidden');
-        },
-        not_found: function() {
-            for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
-                var layer = fixmystreet.assets.layers[i];
-                if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-                    $("#js-environment-message").addClass("hidden");
-                    return;
-                }
-            }
         }
     }
 });
