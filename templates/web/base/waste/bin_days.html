@@ -32,7 +32,7 @@
  [% END %]
     [% IF !unit.garden_overdue %]
 
-    [% IF unit.garden_due %]
+    [% IF unit.garden_due AND NOT waste_features.garden_disabled %]
 
     <div class="govuk-warning-text due">
       <div class="govuk-warning-text__img">
