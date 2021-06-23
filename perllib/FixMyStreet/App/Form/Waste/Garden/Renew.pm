@@ -7,7 +7,7 @@ extends 'FixMyStreet::App::Form::Waste';
 my %intro_fields = (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/renew.html',
-    fields => ['current_bins', 'payment_method', 'billing_differ', 'billing_address', 'name', 'phone', 'email', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'billing_differ', 'billing_address', 'name', 'phone', 'email', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
@@ -16,6 +16,7 @@ my %intro_fields = (
         $c->stash->{payment} = $c->cobrand->garden_waste_cost( $current_bins ) / 100;
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins} },
+            bins_wanted => { default => $c->stash->{garden_form_data}->{bins} },
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
             email => { default => $c->stash->{is_staff} ? '' : $c->user->email },
             phone => { default => $c->stash->{is_staff} ? '' : $c->user->phone },
@@ -26,7 +27,7 @@ my %intro_fields = (
 
 my %intro_fields_staff = (
     %intro_fields,
-    ( fields => ['current_bins', 'name', 'phone', 'email', 'continue_review'] )
+    ( fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'] )
 );
 
 has_page intro => ( %intro_fields );
@@ -41,15 +42,15 @@ has_page summary => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        my $current_bins = $data->{current_bins};
+        my $bins_wanted = $data->{bins_wanted};
 
-        my $total = $c->cobrand->garden_waste_cost( $current_bins);
+        my $total = $c->cobrand->garden_waste_cost( $bins_wanted);
 
         my $orig_sub = $c->stash->{orig_sub};
         if ( $orig_sub ) {
             $data->{billing_address} = $orig_sub->get_extra_field_value('billing_address');
         }
-        $data->{bin_number} = $current_bins;
+        $data->{bin_number} = $bins_wanted;
         $data->{billing_address} ||= $c->stash->{property}{address};
         $data->{display_total} = $total / 100;
 
@@ -72,6 +73,15 @@ has_page done => (
 );
 
 has_field current_bins => (
+    type => 'Integer',
+    label => 'Number of bins currently on site',
+    tags => { number => 1 },
+    required => 1,
+    range_start => 1,
+    range_end => 3,
+);
+
+has_field bins_wanted => (
     type => 'Integer',
     label => 'Number of bins to collect (including bins already on site)',
     tags => { number => 1 },
@@ -110,8 +120,8 @@ has_field submit => (
 sub validate {
     my $self = shift;
     my $max_bins = $self->{c}->stash->{garden_form_data}->{max_bins};
-    unless ( $self->field('current_bins')->is_inactive ) {
-        my $total = $self->field('current_bins')->value;
+    unless ( $self->field('bins_wanted')->is_inactive ) {
+        my $total = $self->field('bins_wanted')->value;
         $self->add_form_error('The total number of bins cannot exceed ' . $max_bins)
             if $total > $max_bins;
 

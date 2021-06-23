@@ -56,6 +56,40 @@
     </div>
 
     <div class="fieldset-item">
+    </div>
+  </div>
+
+  <!-- [% PROCESS form override_fields=['bins_wanted'] %] -->
+    <hr class="fieldset-hr">
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label class="govuk-label" for="[% field.id %]">
+            [% field.label %]
+        </label>
+      [% IF field.get_tag('hint') %]
+        <span id="[% field.id %]-hint" class="govuk-hint">
+            [% field.get_tag('hint') %]
+        </span>
+      [% END %]
+      [% IF error %]
+        <span id="[% field.id %]-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> [% error %]
+        </span>
+      [% END %]
+      </div>
+
+    <div class="fieldset-item">
+      <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="bins_wanted" name="bins_wanted" type="number"
+      value="[% field.fif %]"
+      [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
+      [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+      [%~ IF field.disabled %] disabled[% END ~%]
+      [%~ IF field.get_tag('hint') OR error %]
+        aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
+      [%~ END %]>
+    </div>
+
+    <div class="fieldset-item">
       <span class="cost-pa">£[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin per year</span>
     </div>
   </div>

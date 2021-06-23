@@ -1174,11 +1174,13 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 0,
+            bins_wanted => 0,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('Value must be between 1 and 3');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
+            bins_wanted => 1,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
@@ -1219,6 +1221,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
+            bins_wanted => 1,
             payment_method => 'direct_debit',
         } });
         $mech->content_contains('20.00');
@@ -1267,12 +1270,14 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 4,
+            current_bins => 1,
+            bins_wanted => 4,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('The total number of bins cannot exceed 3');
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 2,
+            current_bins => 1,
+            bins_wanted => 2,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('40.00');
@@ -1315,7 +1320,8 @@ FixMyStreet::override_config {
         ok $form, 'found form';
         is $mech->value('current_bins'), 2, "correct current bin count";
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 1,
+            current_bins => 2,
+            bins_wanted => 1,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
@@ -1362,6 +1368,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
+            bins_wanted => 1,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
@@ -1407,7 +1414,8 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 2,
+            current_bins => 1,
+            bins_wanted => 2,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('40.00');
@@ -1624,6 +1632,7 @@ FixMyStreet::override_config {
             name => 'a user',
             email => 'a_user@example.net',
             current_bins => 1,
+            bins_wanted => 1,
         }});
 
         $mech->content_contains('20.00');
@@ -1656,6 +1665,7 @@ FixMyStreet::override_config {
             name => 'a user',
             email => '',
             current_bins => 1,
+            bins_wanted => 1,
         }});
 
         $mech->content_contains('20.00');
@@ -1971,6 +1981,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
+            bins_wanted => 1,
             payment_method => 'credit_card',
             name => 'A New Name'
         } });
@@ -2061,6 +2072,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
+            bins_wanted => 1,
             payment_method => 'credit_card',
         } });
         $mech->content_contains('20.00');
@@ -2140,6 +2152,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
+            bins_wanted => 1,
             payment_method => 'credit_card',
             name => 'A user',
         } });
@@ -2298,6 +2311,7 @@ FixMyStreet::override_config {
             name => 'a user',
             email => 'a_user@example.net',
             current_bins => 1,
+            bins_wanted => 1,
         }});
 
         $mech->content_contains('20.00');
