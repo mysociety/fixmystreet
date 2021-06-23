@@ -17,7 +17,7 @@
   <span class="waste-service-descriptor">A missed collection cannot be reported, please see the last collection status above.</span>
 [% ELSE %]
 
-  [% IF unit.garden_overdue %]
+  [% IF unit.garden_overdue AND unit.garden_waste %]
 
   <div class="govuk-warning-text overdue">
     <div class="govuk-warning-text__img">

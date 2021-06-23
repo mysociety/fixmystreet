@@ -786,6 +786,11 @@ sub check_if_staff_can_pay : Private {
 sub garden : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    if ($c->stash->{waste_features}->{garden_disabled}) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+
     if ( $c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
@@ -803,6 +808,11 @@ sub garden : Chained('property') : Args(0) {
 
 sub garden_modify : Chained('property') : Args(0) {
     my ($self, $c) = @_;
+
+    if ($c->stash->{waste_features}->{garden_disabled}) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
 
     unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
@@ -854,6 +864,11 @@ sub garden_modify : Chained('property') : Args(0) {
 sub garden_cancel : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    if ($c->stash->{waste_features}->{garden_disabled}) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+
     if ( !$c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
@@ -875,6 +890,11 @@ sub garden_cancel : Chained('property') : Args(0) {
 
 sub garden_renew : Chained('property') : Args(0) {
     my ($self, $c) = @_;
+
+    if ($c->stash->{waste_features}->{garden_disabled}) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
 
     unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
