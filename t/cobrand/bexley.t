@@ -282,6 +282,14 @@ $geo->mock('cache', sub {
     } if $typ eq 'bexley';
 });
 
+subtest 'split postcode overridden' => sub {
+    my $data = FixMyStreet::Cobrand::Bexley->geocode_postcode('DA5 2BD');
+    is_deeply $data, {
+            latitude => 51.431244,
+            longitude => 0.166464,
+        }, 'override postcode';
+};
+
 subtest 'geocoder' => sub {
     my $c = ctx_request('/');
     my $results = FixMyStreet::Geocode::Bexley->string("Brampton Road", $c);

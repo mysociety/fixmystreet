@@ -23,6 +23,20 @@ sub disambiguate_location {
     };
 }
 
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    # split postcode with a centroid in neighbouring Dartford
+    if ($s =~ /^DA5\s*2BD$/i) {
+        return {
+            latitude => 51.431244,
+            longitude => 0.166464,
+        };
+    }
+
+    return $self->next::method($s);
+}
+
 sub disable_resend_button { 1 }
 
 # We can resend reports upon category change, unless it will be going to the
