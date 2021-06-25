@@ -211,6 +211,8 @@ EOF
         my $test_data = FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
+        my $bucks_text = $mech->get_html_body_from_email($email[0]);
+        like $bucks_text, qr/Confirm reference: 248/, 'confirm reference included in bucks email';
         my $text = $mech->get_text_body_from_email($email[1]);
         is $email[1]->header('Subject'), "Your claim has been submitted, ref 248";
         like $text, qr/reference number is 248/;
