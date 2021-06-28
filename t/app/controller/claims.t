@@ -23,7 +23,7 @@ my $template = $contact->response_templates->create({
     title => 'Claim response',
     text => 'Please be advised that the investigation of claims is a lengthy process as all claims are checked',
     state => 'confirmed',
-    auto_response => 1,
+    auto_response => 0,
 });
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
@@ -208,7 +208,11 @@ EOF
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
         $mech->content_contains('Claim submitted');
         $mech->content_contains('is a lengthy process');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->comments->count, 0, 'No updates added to report';
         my $test_data = FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        is $report->comments->count, 1, 'updates added to report post send';
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
         my $bucks_text = $mech->get_html_body_from_email($email[0]);

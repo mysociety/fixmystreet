@@ -5,7 +5,7 @@
 <h1 class="govuk-heading-xl">Claim submitted</h1>
 
 [% IF auto_response %]
-    [% auto_response.text | staff_html_markup(auto_response.extra) %]
+    [% auto_response | staff_html_markup({ is_body_user => 1 }) %]
 [% END %]
 
 <a href="https://www.buckinghamshire.gov.uk/your-council/privacy/">Privacy notice</a>
