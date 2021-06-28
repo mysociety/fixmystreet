@@ -1177,7 +1177,7 @@ sub _set_user_source {
 
     my %roles = map { $_->name => 1 } $c->user->obj->roles->all;
     my $source = 9; # Client Officer
-    $source = 3 if $roles{'Contact Centre Agent'}; # Council Contact Centre
+    $source = 3 if $roles{'Contact Centre Agent'} || $roles{'CSC'}; # Council Contact Centre
     $c->set_param('Source', $source);
 }
 
