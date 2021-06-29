@@ -1,0 +1,50 @@
+[% SET bodyclass = 'formflow govuk';
+   SET title = form.title;
+   SET extra_js = [
+       'https://cdn.jsdelivr.net/npm/time-input-polyfill',
+   ];
+%]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+
+  [% IF form.intro_template %][% PROCESS "claims/${form.intro_template}" %][% END %]
+
+<form method="post" enctype="multipart/form-data">
+  [% PROCESS form %]
+</form>
+
+[% IF form.current_page.name != 'intro' %]
+<button id='form-back' class="hidden-nojs govuk-button govuk-button--secondary">Back</button>
+[% END %]
+
+<script nonce="[% csp_nonce %]">
+(function(){
+    var back = document.getElementById('form-back');
+    back.addEventListener('click', function(e) {
+        history.back();
+    });
+    var qns = [
+        'form-what_cause_other-row',
+        'form-witness_details-row',
+        'form-incident_number-row',
+        'form-tyre_mileage-row',
+        'form-tyre_receipts-row',
+        'form-speed-row',
+        'form-actions-row',
+        'form-attention_date-row',
+        'form-gp_contact-row',
+        'form-absence_dates-row',
+        'form-treatment_details-row',
+    ];
+    qns.forEach(function(q) {
+        var id = document.getElementById(q);
+        if (id) { id.className += ' hidden-js'; }
+    });
+})();
+</script>
+
+[% INCLUDE footer.html %]

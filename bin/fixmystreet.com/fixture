@@ -113,7 +113,7 @@ if ($opt->test_fixtures) {
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
         { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council' },
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
-        { area_id => 2566, categories => [ 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council' },
+        { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council' },
         { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks' ], name => 'TfL' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Oxfordshire County Council' },
         { area_id => 2551, categories => [ 'Dog fouling' ], name => 'Bath and North East Somerset Council' }
@@ -257,6 +257,26 @@ if ($opt->test_fixtures) {
                 { key => 'no', name => 'No' },
             ]
         }
+    );
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2566},
+        category => 'General fly tipping',
+    });
+    $child_cat->set_extra_fields(
+        {
+            code => 'hazardous',
+            datatype => 'singlevaluelist',
+            description => 'Is the waste hazardous?',
+            order => 0,
+            variable => 'true',
+            required => 'true',
+            values => [
+                { key => 'yes', name => 'Yes', disable => 1, disable_message => 'Please phone customer services to report this problem.' },
+                { key => 'no', name => 'No' },
+            ]
+        },
     );
     $child_cat->update;
 

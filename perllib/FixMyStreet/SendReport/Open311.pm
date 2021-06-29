@@ -82,17 +82,21 @@ sub send {
 
         my $open311 = Open311->new( %open311_params );
 
-        $cobrand->call_hook(open311_pre_send => $row, $open311);
+        my $skip = $cobrand->call_hook(open311_pre_send => $row, $open311);
+        $skip = $skip && $skip eq 'SKIP';
 
-        my $resp = $open311->send_service_request( $row, $h, $contact->email );
-        if (FixMyStreet->test_mode) {
-            $self->open311_test_req_used($open311->test_req_used);
+        my $resp;
+        if (!$skip) {
+            $resp = $open311->send_service_request( $row, $h, $contact->email );
+            if (FixMyStreet->test_mode) {
+                $self->open311_test_req_used($open311->test_req_used);
+            }
         }
 
         # make sure we don't save extra changes from above
         $row->set_extra_fields( @$original_extra );
 
-        if ( $resp ) {
+        if ( $skip || $resp ) {
             $row->external_id( $resp );
             $result *= 0;
             $self->success( 1 );

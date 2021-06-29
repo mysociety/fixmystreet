@@ -1,0 +1,11 @@
+[% SET bodyclass = 'formflow' %]
+
+[% INCLUDE header.html %]
+
+<h1 class="govuk-heading-xl">Claim submitted</h1>
+
+[% IF auto_response %]
+    [% auto_response.text | staff_html_markup(auto_response.extra) %]
+[% END %]
+
+[% INCLUDE footer.html %]

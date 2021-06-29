@@ -185,6 +185,42 @@ OpenLayers.Strategy.AlloyV2 = OpenLayers.Class(OpenLayers.Strategy.Alloy, {
     }
 });
 
+// This is required so that the found/not found actions are fired on category
+// select and pin move rather than just on asset select/not select.
+OpenLayers.Layer.AlloyVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.AlloyVectorAsset'
+});
+
+OpenLayers.Layer.AlloyVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNearest, {
+    feature_table: {},
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorNearest.prototype.initialize.apply(this, arguments);
+        this.events.register('beforefeatureadded', this, this.checkCanAddFeature);
+    },
+
+    destroyFeatures: function(features, options) {
+        OpenLayers.Layer.VectorNearest.prototype.destroyFeatures.apply(this, arguments);
+        this.feature_table = {};
+    },
+
+    checkCanAddFeature: function(obj) {
+      if (this.feature_table[obj.feature.fid]) {
+        return false;
+      }
+
+      this.feature_table[obj.feature.fid] = 1;
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.AlloyVectorNearest'
+});
+
+
 fixmystreet.alloyv2_defaults = {
     format_class: OpenLayers.Format.AlloyV2,
     srsName: "EPSG:3857",

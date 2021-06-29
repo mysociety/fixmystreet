@@ -128,14 +128,27 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
-    return [
-        { name => 'external_id', value => $row->id },
-        { name => 'northing', value => $h->{northing} },
-        { name => 'easting', value => $h->{easting} },
-        $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
-    ];
+    if ($contact->email =~ /^Alloy/) {
+        return [
+            { name => 'report_url',
+            value => $h->{url} },
+            { name => 'title',
+            value => $row->title },
+            { name => 'description',
+            value => $row->detail },
+            { name => 'category',
+            value => $row->category },
+        ];
+    } else { # WDM
+        return [
+            { name => 'external_id', value => $row->id },
+            { name => 'northing', value => $h->{northing} },
+            { name => 'easting', value => $h->{easting} },
+            $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
+        ];
+    }
 }
 
 sub open311_config_updates {
@@ -202,6 +215,19 @@ sub open311_munge_update_params {
     }
 }
 
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete open311 protected contacts when importing.
+    # WDM contacts are managed manually in the admin instead of via
+    # open311-populate-service-list, and this flag is used to stop them
+    # being deleted when that script runs.
+    return $contacts->search({
+        extra => { -not_like => '%T15:open311_protect,I1:1%' },
+    });
+}
+
+
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 
@@ -215,6 +241,16 @@ sub should_skip_sending_update {
     return 0;
 }
 
+sub open311_skip_report_fetch {
+    my ($self, $problem) = @_;
+
+    # Abuse this hook a little bit to tidy up the report
+    $problem->title($problem->category);
+    $problem->detail($problem->category);
+    $problem->name($self->council_name);
+
+    return 0;
+}
 
 sub report_inspect_update_extra {
     my ( $self, $problem ) = @_;
