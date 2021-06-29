@@ -29,6 +29,10 @@ has layer => ( is => 'lazy', default => sub {
     $_[0]->cobrand->feature('os_maps_layer') || 'Road_3857'
 } );
 
+has licence => ( is => 'lazy', default => sub {
+    $_[0]->cobrand->feature('os_maps_licence') || ''
+} );
+
 around generate_map_data => sub {
     my ($orig, $self) = (shift, shift);
     my $data = $self->$orig(@_);
@@ -36,6 +40,7 @@ around generate_map_data => sub {
         key => $self->key,
         layer => $self->layer,
         url => $self->base_tile_url,
+        licence => $self->licence,
     };
     return $data;
 };
