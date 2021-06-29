@@ -161,7 +161,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     my @row1 = (
         'http://highwaysengland.example.org/report/' . $problem1->id,
         'desktop', 'highwaysengland', '', '"South West"', '"Social media"',
-        '"This is an update"', $comment1->confirmed->datetime, '"Name Name"',
+        '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
         '"Second update"', $comment2->confirmed->datetime, 'public',
     );
     $mech->content_contains(join ',', @row1);
