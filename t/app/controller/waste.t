@@ -410,6 +410,116 @@ FixMyStreet::override_config {
         $mech->content_contains('Garden Waste');
         $mech->content_lacks('Food Waste');
     };
+
+    subtest 'service task order is irrelevant' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [
+                {
+                    Id => 1003,
+                    ServiceId => 535,
+                    ServiceName => 'Domestic Container Mix Collection',
+                    ServiceTasks => { ServiceTask => {
+                        Id => 403,
+                        ServiceTaskSchedules => { ServiceTaskSchedule => {
+                            ScheduleDescription => 'every other Wednesday',
+                            StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                            EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                            NextInstance => {
+                                CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                                OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                            },
+                            LastInstance => {
+                                OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                                CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
+                                Ref => { Value => { anyType => [ 345, 678 ] } },
+                            },
+                        } },
+                    } },
+                }, {
+                    Id => 1004,
+                    ServiceId => 542,
+                    ServiceName => 'Food waste collection',
+                    ServiceTasks => { ServiceTask => {
+                        Id => 404,
+                        ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                            ScheduleDescription => 'every other Monday',
+                            StartDate => { DateTime => '2019-01-01T00:00:00Z' },
+                            EndDate => { DateTime => '2020-01-01T00:00:00Z' },
+                            LastInstance => {
+                                OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                                CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
+                            },
+                        }, {
+                            ScheduleDescription => 'every other Monday',
+                            StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                            EndDate => { DateTime => '2020-05-01T00:00:00Z' },
+                            NextInstance => {
+                                CurrentScheduledDate => { DateTime => '2020-05-02T00:00:00Z' },
+                                OriginalScheduledDate => { DateTime => '2020-05-01T00:00:00Z' },
+                            },
+                            LastInstance => {
+                                OriginalScheduledDate => { DateTime => '2020-04-20T00:00:00Z' },
+                                CurrentScheduledDate => { DateTime => '2020-04-20T00:00:00Z' },
+                                Ref => { Value => { anyType => [ 456, 789 ] } },
+                            },
+                        } ] },
+                    } },
+                }, {
+                    Id => 1005,
+                    ServiceId => 545,
+                    ServiceName => 'Garden waste collection',
+                    ServiceTasks => { ServiceTask => {
+                        Id => 405,
+                        Data => { ExtensibleDatum => [ {
+                            DatatypeName => 'LBB - GW Container',
+                            ChildData => { ExtensibleDatum => [ {
+                                DatatypeName => 'Quantity',
+                                Value => 1,
+                            }, {
+                                DatatypeName => 'Container',
+                                Value => 44,
+                            } ] },
+                        } ] },
+                        ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                            ScheduleDescription => 'every other Monday',
+                            StartDate => { DateTime => '2021-06-14T23:00:00Z' },
+                            EndDate => { DateTime => '2021-07-14T23:00:00Z' },
+                            NextInstance => {
+                                CurrentScheduledDate => { DateTime => '2021-07-05T06:00:00Z' },
+                                OriginalScheduledDate => { DateTime => '2021-07-04T23:00:00' },
+                            },
+                            LastInstance => {
+                                OriginalScheduledDate => { DateTime => '2021-06-20T23:00:00Z' },
+                                CurrentScheduledDate => { DateTime => '2021-06-21T06:00:00Z' },
+                                Ref => { Value => { anyType => [ 567, 890 ] } },
+                            }
+                        }, {
+                            StartDate => { DateTime => '2020-11-01T00:00:00Z' },
+                            EndDate => { DateTime => '2021-06-15T22:59:59Z' },
+                            LastInstance => {
+                                OriginalScheduledDate => { DateTime => '2021-06-20T23:00:00Z' },
+                                CurrentScheduledDate => { DateTime => '2021-06-21T06:00:00Z' },
+                                Ref => { Value => { anyType => [ 567, 890 ] } },
+                            },
+                            NextInstance => {
+                                CurrentScheduledDate => { DateTime => '2021-07-05T06:00:00Z' },
+                                OriginalScheduledDate => { DateTime => '2021-07-04T23:00:00' },
+                            },
+                        } ] },
+                    } },
+                }
+            ];
+        });
+        set_fixed_time('2021-06-29T12:00:00Z');
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
+        $mech->content_contains('2 Example Street');
+        $mech->content_contains('Garden Waste');
+        $mech->content_lacks('Your subscription is now overdue');
+        $mech->content_contains('Your subscription is soon due for renewal');
+    };
 };
 
 package SOAP::Result;

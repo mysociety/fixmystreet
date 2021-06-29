@@ -931,10 +931,11 @@ sub _parse_schedules {
     my $schedules = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($min_next, $max_last, $description, $end_date);
+    my ($min_next, $max_last, $description, $max_end_date);
     foreach my $schedule (@$schedules) {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
-        $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
+        my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
+        $max_end_date = $end_date if !defined($max_end_date) || $max_end_date lt $end_date;
 
         next if $end_date lt $today;
 
@@ -964,7 +965,7 @@ sub _parse_schedules {
         next => $min_next,
         last => $max_last,
         description => $description,
-        end_date => $end_date,
+        end_date => $max_end_date,
     };
 }
 
