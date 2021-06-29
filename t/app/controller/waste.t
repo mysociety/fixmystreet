@@ -15,6 +15,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'Bromley Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+$user->update({ phone => "07123 456789" });
 my $nameless_user = $mech->create_user_ok('nameless@example.net', name => '');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
@@ -171,6 +172,19 @@ FixMyStreet::override_config {
 
         is $user->alerts->count, 1;
         $mech->clear_emails_ok;
+    };
+    subtest 'About You form is pre-filled when logged in' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
+        $mech->follow_link_ok({ text => 'Report a missed collection' });
+        $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
+        $user->discard_changes;
+        $mech->content_contains($user->name);
+        $mech->content_contains($user->email);
+        $mech->content_contains($user->phone);
+        $mech->log_out_ok;
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
@@ -412,6 +426,28 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => { bartec => { peterborough => { url => 'http://example.org/', auth_url => 'http://auth.example.org/', sample_data => 1 } }, waste => { peterborough => 1 } },
+}, sub {
+    $mech->host('peterborough.fixmystreet.com');
+    subtest 'Missing address lookup' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->submit_form_ok({ with_fields => { address => 'missing' } });
+        $mech->content_contains('can’t find your address');
+    };
+    subtest 'Address lookup' => sub {
+        set_fixed_time('2020-05-28T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->content_contains('1 Pope Way, Peterborough, PE1 3NA');
+        # $mech->submit_form_ok({ with_fields => { address => 'PE1 3NA:100090215480' } });
+        # $mech->content_contains('1 Pope Way Peterborough');
+    };
+};
+
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
@@ -422,6 +458,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
     COBRAND_FEATURES => { echo => { bromley => { url => 'http://example.org' } }, waste => { bromley => 1 }, payment_gateway => { bromley => { ggw_cost => 1000 } } },
 }, sub {
+    $mech->host('bromley.fixmystreet.com');
     subtest 'Address lookup, mocking SOAP call' => sub {
         my $integ = Test::MockModule->new('SOAP::Lite');
         $integ->mock(call => sub {
