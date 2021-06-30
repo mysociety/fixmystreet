@@ -184,7 +184,8 @@ sub dashboard_export_problems_add_columns {
     $csv->modify_csv_header( Ward => 'Council' );
 
     $csv->objects_attrs({
-        '+columns' => ['comments.text', 'comments.extra'],
+        '+columns' => ['comments.text', 'comments.extra', 'user.name'],
+        join => { comments => 'user' },
     });
 
     $csv->add_csv_columns(
@@ -214,7 +215,7 @@ sub dashboard_export_problems_add_columns {
             $fields->{"update_text_$i"} = $update->text;
             $fields->{"update_date_$i"} = $update->confirmed;
             my $staff = $update->get_extra_metadata('contributed_by') || $update->get_extra_metadata('is_body_user') || $update->get_extra_metadata('is_superuser');
-            $fields->{"update_name_$i"} = $staff ? $update->name : 'public';
+            $fields->{"update_name_$i"} = $staff ? $update->user->name : 'public';
             $i++;
         }
 
