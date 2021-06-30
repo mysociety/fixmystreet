@@ -437,7 +437,8 @@ around 'munge_sendreport_params' => sub {
         $site_name =~ s/([\w']+)/\u\L$1/g;
         my $area_name = $road->{properties}->{area_name};
         $area_name =~ s/([\w']+)/\u\L$1/g;
-        my $subject = "New claim - $type - $name - $site_name, $area_name";
+        my $external_id = $row->external_id || $row->get_extra_metadata('report_id') || '(no ID)';
+        my $subject = "New claim - $type - $name - $external_id - $site_name, $area_name";
         $params->{Subject} = $subject;
 
         my $user = $self->body->comment_user;
