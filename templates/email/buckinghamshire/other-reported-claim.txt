@@ -1,7 +1,9 @@
-Subject: Your claim has been submitted[% ', ref ' _ report.external_id IF report.external_id %]
+Subject: Your claim has been submitted[%
+    external_id = report.external_id OR report.get_extra_metadata('report_id');
+    ', ref ' _ external_id IF external_id %]
 
 Thank you for your submitted claim form.
-[% IF report.external_id %] The reference number is [% report.external_id %].[% END %]
+[% IF external_id %] The reference number is [% external_id %].[% END %]
 
 [% IF update ~%]
 [% email_sanitize_text(update) %]
