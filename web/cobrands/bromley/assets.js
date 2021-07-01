@@ -65,16 +65,6 @@ fixmystreet.assets.add(defaults, {
     asset_item_message: 'For our parks, pick a <b class="asset-spot">bin</b> from the map &raquo;'
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Street_Trees"
-        }
-    },
-    asset_category: ["Public Trees"],
-    asset_item: 'tree'
-});
-
 $(function(){
     $("#problem_form").on("change.category", "#form_service_sub_code", function() {
         $(fixmystreet).trigger('report_new:category_change');
