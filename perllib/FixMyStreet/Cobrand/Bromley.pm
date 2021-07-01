@@ -1281,7 +1281,7 @@ sub waste_sub_due {
     my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
 
     my $diff = $now->delta_days($sub_end)->in_units('weeks');
-    return $diff < 6;
+    return $diff < 7;
 }
 
 sub waste_sub_overdue {

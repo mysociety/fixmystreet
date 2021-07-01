@@ -824,6 +824,22 @@ FixMyStreet::override_config {
         $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if never had a sub');
     };
 
+    subtest 'check overdue and soon due messages' => sub {
+        set_fixed_time('2021-04-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Garden Waste');
+        $mech->content_contains('Your subscription is now overdue', "overdue link if after expired");
+        set_fixed_time('2021-03-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
+        set_fixed_time('2021-02-10T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if 7 weeks before expiry");
+        set_fixed_time('2021-02-08T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 7 weeks before expiry");
+    };
+
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
