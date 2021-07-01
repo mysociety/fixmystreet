@@ -21,7 +21,7 @@ $mappage-header-height: 7em;
     }
 
     .header__logobar {
-        padding-left: calc((100vw - 60em) / 2);
+        padding: 1.25em 0 1.25em calc((100vw - 60em) / 2);
         margin-left: 0;
     }
 }
@@ -32,9 +32,15 @@ body.mappage {
         @include box-shadow(0 0 6px 1px #000);
         z-index: 2; // One more than #zurich-main-nav so it's on top
         .container {
-            margin: 0 1em; // White padding left/right
+            margin: 0;
+        }
+        .header__logobar {
+            // Aligns logo to left hand content on map pages
+            padding-left: 5px;
+            padding-right: 0;
         }
     }
+
     // Except on admin pages where there's an admin nav directly underneath it
     &.admin #site-header {
         @include box-shadow(none);
@@ -57,8 +63,8 @@ body.mappage #site-logo-text {
 
 #site-logo {
     width: 460px;
-    height: 120px;
-    background-position: center left;
+    height: 72px;
+    background-position: 10% 0;
     margin-left: 0;
     background-size: inherit;
 }
@@ -94,7 +100,7 @@ body.frontpage {
     }
 
     .table-cell {
-        background-position: 50% 117px;
+        background-position: 50% 112px;
         background-repeat: no-repeat;
         background-image: url(mapbg-1024.jpg);
         @media all and (min-width: 1025px) {
