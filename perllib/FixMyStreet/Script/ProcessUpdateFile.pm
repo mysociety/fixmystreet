@@ -61,13 +61,17 @@ sub process {
 
     die "Problem loading body\n" unless $self->body;
 
+    print "Dry run, not adding comments. Use --commit to add\n";
+
     my $updates = Open311::GetServiceRequestUpdates->new(
         verbose => $self->verbose,
         commit => $self->commit,
     );
     $updates->initialise_body($self->body);
 
-    $updates->process_requests( $self->data, [$self->start_date, $self->end_date] )
+    $updates->process_requests( $self->data, [$self->start_date, $self->end_date] );
+
+    printf("added %d comments\n", $updates->comments_created);
 }
 
 1;
