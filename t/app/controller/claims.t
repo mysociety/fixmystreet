@@ -162,6 +162,7 @@ EOF
         is $email[0]->header('To'), 'TfB <claims@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $report_id - Rain Road, Aylesbury";
         is $email[1]->header('To'), 'test@example.org';
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
         my $req = $test_data->{test_req_used};
         is $req, undef, 'Nothing sent by Open311';
         is $report->user->alerts->count, 1, 'User has an alert for this report';
@@ -215,6 +216,7 @@ EOF
         my $bucks_text = $mech->get_html_body_from_email($email[0]);
         like $bucks_text, qr/Confirm reference: 248/, 'confirm reference included in bucks email';
         my $text = $mech->get_text_body_from_email($email[1]);
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref 248";
         like $text, qr/reference number is 248/;
         like $text, qr/is a lengthy process/;
         my $req = $test_data->{test_req_used};
