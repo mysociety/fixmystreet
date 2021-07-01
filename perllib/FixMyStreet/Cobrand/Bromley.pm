@@ -697,7 +697,7 @@ sub bin_services_for_address {
         541 => 4,
         542 => 6,
         544 => 4,
-        545 => 3,
+        545 => 6,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;

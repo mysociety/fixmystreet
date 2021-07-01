@@ -116,7 +116,7 @@ has_field bin_number => (
     tags => { number => 1 },
     required => 1,
     range_start => 1,
-    range_end => 3,
+    range_end => 6,
 );
 
 has_field tandc => (

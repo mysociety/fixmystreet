@@ -99,7 +99,7 @@ has_field existing => (
 
 has_field existing_number => (
     type => 'Integer',
-    label => 'How many? (1-3)',
+    label => 'How many? (1-6)',
     validate_method => sub {
         my $self = shift;
         my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
@@ -116,18 +116,18 @@ has_field existing_number => (
 
 has_field current_bins => (
     type => 'Integer',
-    label => 'Bins already on property (0-3)',
+    label => 'Bins already on property (0-6)',
     required => 1,
     range_start => 0,
-    range_end => 3,
+    range_end => 6,
 );
 
 has_field bins_wanted => (
     type => 'Integer',
-    label => 'Total number of bins required (0-3)',
+    label => 'Total number of bins required (0-6)',
     required => 1,
     range_start => 0,
-    range_end => 3,
+    range_end => 6,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     },
