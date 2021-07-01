@@ -8,7 +8,7 @@
     <tr>
       <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
-        [%~ IF email_footer %]
+        [%~ IF email_footer.defined %]
           [% email_footer | safe %]
         [%~ ELSE %]
           This email was sent automatically, from an unmonitored email account. Please do not reply to it.
