@@ -33,6 +33,16 @@ my $c = $mech->create_comment_for_problem($problem1, $problem1->user, 'comment',
 $c->external_id('654321');
 $c->update;
 
+my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
+    {
+        user => $problem2->user,
+        parameter => $problem2->id,
+        alert_type => 'new_updates',
+        whensubscribed => '2015-12-01 07:00:00',
+        confirmed => 1,
+        cobrand => 'default',
+    }
+);
 
 my $data = [
     {
@@ -62,6 +72,7 @@ my $p = FixMyStreet::Script::ProcessUpdateFile->new(
     body_name => 'City of Edinburgh Council',
     data => $data,
     commit => 1,
+    suppress_alerts => 1,
 );
 
 $p->process;
@@ -74,6 +85,13 @@ is $problem2->comments->count, 1, "problem 2 has a comment";
 my $u = $problem2->comments->first;
 is $u->external_id, '654321', 'comment external id correct';
 is $u->text, 'We are investigating this report.', 'comment text uses response template';
+my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->search(
+    {
+        alert_id => $alert->id,
+        parameter => $u->id,
+    }
+);
+is $alerts_sent->count(), 1, 'alerts suppressed';
 
 $problem2->discard_changes;
 is $problem2->state, 'investigating', 'problem status updated correctly';
