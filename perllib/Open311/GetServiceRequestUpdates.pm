@@ -10,6 +10,8 @@ has '+send_comments_flag' => ( default => 1 );
 has start_date => ( is => 'ro', default => sub { undef } );
 has end_date => ( is => 'ro', default => sub { undef } );
 
+has comments_created => ( is => 'rw', default => 0 );
+
 Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 
@@ -62,6 +64,7 @@ sub process_body {
 sub process_requests {
     my ($self, $requests, $args) = @_;
 
+    my $created = 0;
     for my $request (@$requests) {
         next unless defined $request->{update_id};
 
@@ -69,8 +72,11 @@ sub process_requests {
         my $c = $p->comments->search( { external_id => $request->{update_id} } );
         next if $c->first;
 
+        $created++;
+
         $self->process_update($request, $p);
     }
+    $self->comments_created( $created );
 }
 
 sub _find_problem {

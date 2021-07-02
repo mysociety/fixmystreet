@@ -7,6 +7,9 @@ use FixMyStreet::DB;
 
 has send_comments_flag => ( is => 'ro' );
 
+# Default is yes, as this has previously been assumed
+has commit => ( is => 'ro', default => 1 );
+
 has system_user => ( is => 'rw' );
 has body => ( is => 'ro', default => sub { undef } );
 has verbose => ( is => 'ro', default => 0 );
@@ -219,6 +222,9 @@ sub process_update {
     # will *also* reshift comment->created's time zone to TIME_ZONE.
     my $created = $comment->created->set_time_zone(FixMyStreet->local_time_zone);
     $p->lastupdate($created->clone);
+
+    return $comment unless $self->commit;
+
     $p->update;
     $comment->insert();
 

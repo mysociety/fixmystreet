@@ -15,6 +15,10 @@ use Open311::GetServiceRequestUpdates;
 
 has verbose => ( is => 'ro', default => 0 );
 
+has commit => ( is => 'ro', default => 0 );
+
+has suppress_alerts => ( is => 'ro', default => 0 );
+
 has body_name => ( is => 'ro' );
 
 has file => ( is => 'ro' );
@@ -59,12 +63,18 @@ sub process {
 
     die "Problem loading body\n" unless $self->body;
 
+    print "Dry run, not adding comments. Use --commit to add\n" unless $self->commit;
+
     my $updates = Open311::GetServiceRequestUpdates->new(
         verbose => $self->verbose,
+        commit => $self->commit,
     );
     $updates->initialise_body($self->body);
+    $updates->suppress_alerts(1) if $self->suppress_alerts;
 
-    $updates->process_requests( $self->data, [$self->start_date, $self->end_date] )
+    $updates->process_requests( $self->data, [$self->start_date, $self->end_date] );
+
+    printf("added %d comments\n", $updates->comments_created);
 }
 
 1;

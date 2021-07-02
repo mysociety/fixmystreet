@@ -700,7 +700,7 @@ sub bin_services_for_address {
         541 => 4,
         542 => 6,
         544 => 4,
-        545 => 3,
+        545 => 6,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -1295,7 +1295,7 @@ sub waste_sub_due {
     my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
 
     my $diff = $now->delta_days($sub_end)->in_units('weeks');
-    return $diff < 6;
+    return $diff < 7;
 }
 
 sub waste_sub_overdue {

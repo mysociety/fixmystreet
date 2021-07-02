@@ -861,6 +861,22 @@ FixMyStreet::override_config {
         $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if never had a sub');
     };
 
+    subtest 'check overdue and soon due messages' => sub {
+        set_fixed_time('2021-04-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Garden Waste');
+        $mech->content_contains('Your subscription is now overdue', "overdue link if after expired");
+        set_fixed_time('2021-03-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
+        set_fixed_time('2021-02-10T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if 7 weeks before expiry");
+        set_fixed_time('2021-02-08T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 7 weeks before expiry");
+    };
+
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
@@ -876,8 +892,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Please specify how many bins you already have');
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 0 } });
         $mech->content_contains('Please specify how many bins you already have');
-        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 4 } });
-        $mech->content_contains('Existing bin count must be between 1 and 3');
+        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 7 } });
+        $mech->content_contains('Existing bin count must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         my $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
         ok $form, "form found";
@@ -892,28 +908,28 @@ FixMyStreet::override_config {
         $mech->content_contains('The total number of bins must be at least 1');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
-                bins_wanted => 4,
+                bins_wanted => 7,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->content_contains('The total number of bins cannot exceed 3');
+        $mech->content_contains('The total number of bins cannot exceed 6');
         $mech->submit_form_ok({ with_fields => {
-                current_bins => 4,
+                current_bins => 7,
                 bins_wanted => 0,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->content_contains('Value must be between 0 and 3');
+        $mech->content_contains('Value must be between 0 and 6');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
-                bins_wanted => 4,
+                bins_wanted => 7,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->content_contains('Value must be between 0 and 3');
+        $mech->content_contains('Value must be between 0 and 6');
 
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
@@ -1216,8 +1232,8 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 4 } });
-        $mech->content_contains('Value must be between 1 and 3');
+        $mech->submit_form_ok({ with_fields => { bin_number => 7 } });
+        $mech->content_contains('Value must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
         $mech->content_contains('40.00');
         $mech->content_contains('5.50');
@@ -1324,7 +1340,7 @@ FixMyStreet::override_config {
             bins_wanted => 0,
             payment_method => 'credit_card',
         } });
-        $mech->content_contains('Value must be between 1 and 3');
+        $mech->content_contains('Value must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 1,
@@ -1418,10 +1434,10 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
-            bins_wanted => 4,
+            bins_wanted => 7,
             payment_method => 'credit_card',
         } });
-        $mech->content_contains('The total number of bins cannot exceed 3');
+        $mech->content_contains('The total number of bins cannot exceed 6');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 2,

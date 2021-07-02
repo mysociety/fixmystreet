@@ -44,6 +44,8 @@ sub reports_per_page { return 20; }
 
 sub admin_user_domain { 'royalgreenwich.gov.uk' }
 
+sub send_questionnaires { 0 }
+
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 

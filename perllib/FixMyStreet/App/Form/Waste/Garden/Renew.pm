@@ -78,7 +78,7 @@ has_field current_bins => (
     tags => { number => 1 },
     required => 1,
     range_start => 1,
-    range_end => 3,
+    range_end => 6,
 );
 
 has_field bins_wanted => (
@@ -87,7 +87,7 @@ has_field bins_wanted => (
     tags => { number => 1 },
     required => 1,
     range_start => 1,
-    range_end => 3,
+    range_end => 6,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     }
