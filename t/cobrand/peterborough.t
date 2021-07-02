@@ -266,7 +266,6 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
         my $test_data = FixMyStreet::Script::Reports::send();
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
-        ok !$p->get_extra_metadata('flytipping_email'), 'flytipping_email extra metadata not set';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata is set';
         is $p->state, 'confirmed', 'report state unchanged';
         is $p->comments->count, 0, 'no comment added';
@@ -318,7 +317,6 @@ subtest "flytipping on non PCC land is emailed" => sub {
 
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
-        is $p->get_extra_metadata('flytipping_email'), 'flytipping@example.org', 'flytipping_email extra metadata set';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';

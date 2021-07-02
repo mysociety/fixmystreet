@@ -44,7 +44,7 @@ describe('new report form', function() {
     cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_hazardous').select('no');
-    cy.get('.js-post-category-messages:hidden').should('not.contain', 'Please phone customer services to report this problem');
+    cy.get('.js-post-category-messages:visible').should('not.contain', 'Please phone customer services to report this problem');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');

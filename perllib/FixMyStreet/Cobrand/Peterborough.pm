@@ -167,7 +167,6 @@ sub get_body_sender {
         if ( $emails->{flytipping} ) {
             my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
             $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
-            $problem->update;
             return { method => 'Email', contact => $contact};
         }
     }
@@ -225,6 +224,7 @@ sub post_report_sent {
             problem_state => 'closed',
             text => $text,
         });
+        $problem->unset_extra_metadata('flytipping_email');
     }
 }
 
