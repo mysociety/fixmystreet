@@ -25,7 +25,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 });
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
-    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit'] });
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private'] });
 $staffuser->add_to_roles($role);
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -254,6 +254,20 @@ subtest 'check display of TfL and waste reports' => sub {
     $mech->content_like(qr{<a title="TfL Test[^>]*www.example.org[^>]*><img[^>]*grey});
     $mech->content_like(qr{<a title="Test Test[^>]*href="/[^>]*><img[^>]*yellow});
     $mech->content_lacks('Report missed collection');
+};
+
+subtest 'check staff can filter on waste reports' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok( '/reports/Bromley');
+        $mech->content_lacks('<optgroup label="Waste"');
+
+        $mech->log_in_ok($staffuser->email);
+        $mech->get_ok( '/reports/Bromley');
+        $mech->content_contains('<optgroup label="Waste"');
+    };
 };
 
 subtest 'check geolocation overrides' => sub {
