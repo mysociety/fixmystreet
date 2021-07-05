@@ -1607,6 +1607,14 @@ sub waste_reconcile_direct_debits {
         } elsif ( $p ) {
             my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
             unless ($service) {
+                my $hidden = FixMyStreet::DB->resultset('Problem')->search({
+                    category => 'Cancel Garden Subscription',
+                    state => 'hidden',
+                    extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+                    created => \" > now() - interval '7' day",
+                });
+                # no service and we're already seen it
+                next if $hidden->count;
                 warn "no matching service to cancel for $payer\n";
                 next;
             }
