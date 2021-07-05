@@ -41,7 +41,7 @@ it('uses the Curo Group housing layer correctly', function() {
 });
 
 it('handles code names with spaces without error', function() {
-    cy.visit('http://bathnes.localhost:3001/report/new?longitude=-2.368929&latitude=51.386969');
+    cy.visit('http://bathnes.localhost:3001/report/new?longitude=-2.3659276latitude=51.379009');
     cy.contains('Bath & North East Somerset Council');
     cy.get('input[value="Abandoned vehicles"]').click();
     cy.get('input[value="Blocked drain"]').click();
