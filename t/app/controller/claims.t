@@ -84,6 +84,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Please provide a valid report ID');
         $mech->submit_form_ok({ with_fields => { report_id => $report_id } }, "report id");
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ button => 'goto-where' }, 'back to enter more location details');
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
         $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => '09', 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', direction => 'east', details => 'some details', in_vehicle => 'Yes', speed => '20mph', actions => 'an action' } }, "incident details");
