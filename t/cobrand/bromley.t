@@ -1266,6 +1266,18 @@ subtest 'check direct debit reconcilliation' => sub {
         'uprn' => '654323',
     });
 
+    # e.g if they tried to create a DD but the process failed
+    my $failed_new_sub = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '54323',
+        'uprn' => '654321',
+    });
+    $failed_new_sub->state('unconfirmed');
+    $failed_new_sub->created(\" created - interval '2' second");
+    $failed_new_sub->update;
+
     my $new_sub = setup_dd_test_report({
         'Subscription_Type' => 1,
         'Subscription_Details_Quantity' => 1,
@@ -1448,6 +1460,24 @@ subtest 'check direct debit reconcilliation' => sub {
     $unprocessed_cancel->discard_changes;
     is $unprocessed_cancel->state, 'confirmed', 'Unprocessed cancel is confirmed';
     is $unprocessed_cancel->get_extra_metadata('dd_date'), "21/02/2021", "dd date set for unprocessed cancelled";
+
+    $failed_new_sub->discard_changes;
+    is $failed_new_sub->state, 'hidden', 'failed sub not hidden';
+
+    warnings_are {
+        $c->waste_reconcile_direct_debits;
+    } [
+        "no matching record found for Garden Subscription payment with id GGW554321\n",
+        "no matching service to renew for GGW754322\n",
+        "no matching record found for Garden Subscription payment with id GGW854324\n",
+        "no matching record found for Garden Subscription payment with id GGW954325\n",
+        "no matching record found for Cancel payment with id GGW954326\n",
+    ], "warns if no matching record";
+
+    $failed_new_sub->discard_changes;
+    is $failed_new_sub->state, 'hidden', 'failed sub still hidden on second run';
+    $ad_hoc_skipped->discard_changes;
+    is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
 };
 
 sub setup_dd_test_report {

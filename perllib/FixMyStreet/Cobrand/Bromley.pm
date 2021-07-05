@@ -1506,7 +1506,7 @@ sub waste_reconcile_direct_debits {
             while ( my $cur = $rs->next ) {
 
                 if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
-                    if ( $cur->state eq 'unconfirmed' ) {
+                    if ( $cur->state eq 'unconfirmed' && !$handled) {
                         if ( $type eq 'New' ) {
                             if ( !$cur->get_extra_metadata('payerReference') ) {
                                 $cur->set_extra_metadata('payerReference', $payer);
@@ -1526,6 +1526,11 @@ sub waste_reconcile_direct_debits {
                         $cur->confirm;
                         $cur->update;
                         $handled = 1;
+                    } elsif ( $cur->state eq 'unconfirmed' ) {
+                        # if we've pulled out more that one record, e.g. because they
+                        # failed to make a payment then skip remaining ones.
+                        $cur->state('hidden');
+                        $cur->update;
                     } elsif ( $cur->get_extra_metadata('dd_date') eq $date)  {
                         next RECORD;
                     }
