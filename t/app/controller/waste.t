@@ -1260,6 +1260,17 @@ FixMyStreet::override_config {
 
         $mech->content_contains('This property has a direct debit subscription which will renew automatically.',
             "error message displayed if try to renew by direct debit");
+
+        $p->state('hidden');
+        $p->update;
+
+        $mech->get_ok('/waste/12345/garden_renew');
+
+        $mech->content_lacks('This property has a direct debit subscription which will renew automatically.',
+            "error message displayed not displayed for hidden direct debit sub");
+
+        $p->state('confirmed');
+        $p->update;
     };
 
     subtest 'cancel direct debit sub' => sub {
