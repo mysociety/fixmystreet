@@ -1412,13 +1412,21 @@ sub waste_reconcile_direct_debits {
             next unless $payment->{Status} eq 'Paid';
             $rs = $rs->search({ category => 'Garden Subscription' });
             my $p;
+            # loop over all matching records and pick the most recent new sub or renewal
+            # record. This is where we get the details of the renewal from. There should
+            # always be one of these for an automatic DD renewal. If there isn't then
+            # something has gone wrong and we need to error.
             while ( my $cur = $rs->next ) {
+                # only confirmed records are valid.
+                next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 my $sub_type = $cur->get_extra_field_value('Subscription_Type');
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    $p = $cur;
+                    $p = $cur if !$p;
                 } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
                     # already processed
                     next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
+                    # if it's a renewal of a DD where the initial setup was as a renewal
+                    $p = $cur if !$p;
                 }
             }
             if ( $p ) {

@@ -890,7 +890,7 @@ subtest 'check direct debit reconcilliation' => sub {
                 ] }
             } } } ];
         }
-        if ( $id == 54322 || $id == 54324 || $id == 84324 ) {
+        if ( $id == 54322 || $id == 54324 || $id == 84324 || $id == 154323 ) {
             return [ {
                 Id => 1005,
                 ServiceId => 545,
@@ -1104,6 +1104,21 @@ subtest 'check direct debit reconcilliation' => sub {
                             Status => "Paid",
                             Type => "Regular",
                         },
+                        {   # subsequent renewal from a cc sub
+                            AlternateKey => "",
+                            Amount => 10.00,
+                            ClientName => "London Borough of Bromley",
+                            CollectionDate => "16/03/2021",
+                            DueDate => "16/03/2021",
+                            PayerAccountHoldersName => "A Payer",
+                            PayerAccountNumber => 123,
+                            PayerName => "A Payer",
+                            PayerReference => "GGW3654321",
+                            PayerSortCode => "12345",
+                            ProductName => "Garden Waste",
+                            Status => "Paid",
+                            Type => "Regular",
+                        },
                         {   # renewal from cc payment
                             AlternateKey => "",
                             Amount => 10.00,
@@ -1296,7 +1311,18 @@ subtest 'check direct debit reconcilliation' => sub {
         'uprn' => '1654321',
     });
     $renewal_from_cc_sub->state('unconfirmed');
+    $renewal_from_cc_sub->set_extra_metadata('payerReference' => 'GGW1654321');
     $renewal_from_cc_sub->update;
+
+    my $sub_for_subsequent_renewal_from_cc_sub = setup_dd_test_report({
+        'Subscription_Type' => 2,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '154323',
+        'uprn' => '3654321',
+    });
+    $sub_for_subsequent_renewal_from_cc_sub->set_extra_metadata('payerReference' => 'GGW3654321');
+    $sub_for_subsequent_renewal_from_cc_sub->update;
 
     my $sub_for_unprocessed_cancel = setup_dd_test_report({
         'Subscription_Type' => 1,
@@ -1375,9 +1401,23 @@ subtest 'check direct debit reconcilliation' => sub {
 
     $renewal_from_cc_sub->discard_changes;
     is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-    is $renewal_from_cc_sub->get_extra_metadata('payerReference'), "GGW1654321", "payer reference set";
     is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
+    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
     is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+
+    my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({
+            extra => { like => '%uprn,T5:value,I7:3654321%' }
+        },
+        {
+            order_by => { -desc => 'id' }
+        }
+    );
+    is $subsequent_renewal_from_cc_sub->count, 2, "two record for subsequent renewal property";
+    $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
+    is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     $ad_hoc_orig->discard_changes;
     is $ad_hoc_orig->get_extra_metadata('dd_date'), "01/01/2021", "dd date unchanged ad hoc orig";
