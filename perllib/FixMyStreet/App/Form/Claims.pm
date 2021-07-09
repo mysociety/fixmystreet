@@ -86,7 +86,10 @@ has_field address => (
     required => 1,
     type => 'Text',
     widget => 'Textarea',
-    label => 'Address',
+    label => 'Full address',
+    tags => {
+        hint => "Including postcode",
+    },
 );
 
 has_page fault_fixed => (
@@ -163,11 +166,7 @@ has_field report_id => (
         my $self = shift;
         my $c = $self->form->c;
         return if $self->has_errors; # Called even if already failed
-        my $report = $c->cobrand->problems->search([
-            id => $self->value,
-            external_id => $self->value,
-        ])->count;
-        if (!$report) {
+        unless ($self->value =~ /^[0-9]+$/) {
             $self->add_error('Please provide a valid report ID');
         }
     },
@@ -625,6 +624,9 @@ has_field v5 => (
     validate_when_empty => 1,
     type => 'FileIdUpload',
     label => 'Copy of the vehicle’s V5 Registration Document',
+    tags => {
+        hint => "If the vehicle is hired please upload a copy of the rental agreement",
+    },
     messages => {
         upload_file_not_found => 'Please provide a copy of the V5 Registration Document',
     },
@@ -1135,6 +1137,10 @@ sub get_params {
 # but the field isn't highlighted
 sub validate_datetime {
     my ($form, $field) = @_;
+
+    if ($field->value > DateTime->today(time_zone => FixMyStreet->local_time_zone)) {
+        $field->add_error("You cannot enter a date in the future");
+    }
 
     return if scalar @{ $field->errors };
     my $valid = 1;
