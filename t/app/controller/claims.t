@@ -80,7 +80,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { fault_reported => 'No' } }, "fault not reported");
         $mech->submit_form_ok({ with_fields => { continue => 'Continue' } }, "go back");
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
-        $mech->submit_form_ok({ with_fields => { report_id => $report_id - 1 } }, "report id");
+        $mech->submit_form_ok({ with_fields => { report_id => "hmm" } }, "report id");
         $mech->content_contains('Please provide a valid report ID');
         $mech->submit_form_ok({ with_fields => { report_id => $report_id } }, "report id");
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
@@ -118,7 +118,7 @@ Have you ever filed a Claim for damages with Buckinghamshire Council?: Yes
 Full name: Test McTest
 Telephone number: 01234 567890
 Email address: test\@example.org
-Address: 12 A Street
+Full address: 12 A Street
 A Town
 Has the fault been fixed?: No
 Have you reported the fault to the Council?: Yes
@@ -239,6 +239,8 @@ EOF
         $mech->submit_form_ok({ with_fields => { report_id => $report->external_id } });
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
         $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
+        $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 3020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
+        $mech->content_contains('You cannot enter a date in the future');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } });
         $mech->submit_form_ok({ with_fields => { weather => 'sunny', details => 'some details' } });
         $mech->submit_form_ok({ with_fields => { witnesses => 'Yes', witness_details => 'some witnesses', report_police => 'Yes', incident_number => 23 } });
