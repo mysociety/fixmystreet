@@ -197,6 +197,11 @@ my $contact6 = $mech->create_contact_ok(
     category => 'Grit bins',
     email => 'AOAT,gritbins@example.com',
 );
+$mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Countdown - not working',
+    email => 'countdown@example.net',
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet'],
@@ -407,6 +412,7 @@ subtest "extra information included in email" => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
+    like $email[0]->header('From'), qr/"Joe Bloggs" <fms-report-$id-/;
     is $email[0]->header('To'), 'TfL <busstops@example.com>';
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
     like $mech->get_text_body_from_email($email[0]), qr/Stop number: 12345678/, "Bus stop code in TfL email";
@@ -417,6 +423,16 @@ subtest "extra information included in email" => sub {
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
+};
+
+subtest "Countdown reports sent from different email" => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $report->update({ whensent => undef, category => "Countdown - not working" });
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    is $email[0]->header('From'), '"TfL Street Care" <fms-tfl-DO-NOT-REPLY@example.com>';
+    $mech->clear_emails_ok;
+    $report->update({ category => "Bus stops" });
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
@@ -432,7 +448,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
     $mech->content_contains('"Bus things","Bus stops"');
     $mech->content_contains('"BR1 3UH",Bromley,');
-    $mech->content_contains(',,,no,busstops@example.com,,,,Yes');
+    $mech->content_contains(',,,no,countdown@example.net,,,,Yes');
 
     $report->set_extra_fields({ name => 'safety_critical', value => 'yes' });
     $report->anonymous(1);
@@ -457,7 +473,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
     $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains($dt . ',,,confirmed,51.4021');
-    $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
+    $mech->content_contains(',,,yes,countdown@example.net,,' . $dt . ',"Council User"');
 };
 
 subtest 'Inspect form state choices' => sub {
@@ -804,6 +820,7 @@ for my $test (
         expected => [
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
+            'Countdown - not working',
             'Flooding',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
@@ -821,6 +838,7 @@ for my $test (
         expected => [
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
+            'Countdown - not working',
             'Flooding (Bromley)',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
@@ -836,6 +854,7 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Bus stops',
+            'Countdown - not working',
             'Flooding',
             'Grit bins',
             'Pothole',
@@ -851,6 +870,7 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Bus stops',
+            'Countdown - not working',
             'Flooding',
             'Grit bins',
             'Pothole',
@@ -867,6 +887,7 @@ for my $test (
         expected => [
             'Accumulated Litter',
             'Bus stops',
+            'Countdown - not working',
             'Flooding',
             'Flytipping (Bromley)',
             'Grit bins',
@@ -884,6 +905,7 @@ for my $test (
         expected => [
             'Accumulated Litter',
             'Bus stops',
+            'Countdown - not working',
             'Flooding (Bromley)',
             'Flytipping (Bromley)',
             'Grit bins',
@@ -899,6 +921,7 @@ for my $test (
         lon => -0.063326,
         expected => [
             'Bus stops',
+            'Countdown - not working',
             'Flooding',
             'Grit bins',
             'Pothole',

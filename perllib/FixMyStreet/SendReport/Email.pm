@@ -97,7 +97,9 @@ sub send {
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 
     my $sender = $self->envelope_sender($row);
-    if ($row->user->email && $row->user->email_verified) {
+    if ($params->{From}) {
+        # Don't do anything if something has been included already
+    } elsif ($row->user->email && $row->user->email_verified) {
         $params->{From} = $self->send_from( $row );
     } else {
         my $name = sprintf(_("On behalf of %s"), @{ $self->send_from($row) }[1]);
