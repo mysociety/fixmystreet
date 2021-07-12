@@ -492,8 +492,8 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property;
 
-    $c->stash->{latitude} = $property->{latitude};
-    $c->stash->{longitude} = $property->{longitude};
+    $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
+    $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
 
     $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
