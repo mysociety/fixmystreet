@@ -30,3 +30,11 @@
     [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
     [% END %]
 [% END %]
+<div class='assigned-to' style='margin-top:0.25em'>
+[%  IF c.user.has_permission_to('report_inspect', c.cobrand.body.id ) %] 
+    <span class="inline-text assigned-to-label" for="assignment">[% loc('Assigned to:') %] </span>
+    <strong>
+        [% INCLUDE 'report/_get_assigned_user.html' %]
+    </strong>
+[% END %]
+</div>
