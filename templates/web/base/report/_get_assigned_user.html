@@ -1,0 +1,6 @@
+[% IF problem.user_planned_reports.user.name OR problem.shortlisted_user %] [%# this report is on a shortlist %]
+    [% problem.user_planned_reports.user.name OR problem.shortlisted_user.name
+    OR problem.user_planned_reports.user.username OR problem.shortlisted_user.username %]
+[% ELSE %]
+    (unassigned)
+[% END %]

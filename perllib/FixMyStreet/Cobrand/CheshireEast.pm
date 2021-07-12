@@ -173,5 +173,12 @@ sub open311_post_send {
     $row->detail($h->{ce_original_detail});
 }
 
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+
+    return $perms;
+}
 
 1;

@@ -261,13 +261,36 @@ sub shortlist_multiple : Path('planned/change_multiple') {
     $c->forward('/auth/check_csrf_token');
 
     my @ids = $c->get_param_list('ids[]');
-
-    foreach my $id (@ids) {
-      $c->forward( '/report/load_problem_or_display_error', [ $id ] );
-      $c->user->add_to_planned_reports($c->stash->{problem});
+    my @bulk_reports = $c->get_param_list('bulk-assign-reports');
+    my $assignee = $c->get_param('inspector');
+    if (@bulk_reports) {
+        if ($assignee eq 'unassigned') {
+            # take off shortlist
+            my @problems = $c->model('DB::Problem')->search( id => { -in => [ @bulk_reports ]});
+            foreach my $problem (@problems) {
+                # check is actually on a shortlist – otherwise do nothing
+                my $shortlisted = $problem->user_planned_reports->search({ removed => undef })->first;
+                if ($shortlisted) {
+                    $shortlisted->removed( \'current_timestamp' );
+                    $shortlisted->update;
+                }
+            }
+        } else {
+            my $inspector = $c->model('DB::User')->find({ id => $assignee });
+            foreach my $report (@bulk_reports) {
+                $c->forward( '/report/load_problem_or_display_error', [ $report ] ); # is this required?
+                $inspector->add_to_planned_reports($c->stash->{problem});
+            }
+        }
+        $c->stash->{body} = $c->user->from_body;;
+        $c->detach('/reports/redirect_body');
+    } else {
+        foreach my $id (@ids) {
+            $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+            $c->user->add_to_planned_reports($c->stash->{problem});
+            $c->res->body(encode_json({ outcome => 'add' }));
+        }
     }
-
-    $c->res->body(encode_json({ outcome => 'add' }));
 }
 
 sub by_shortlisted {
