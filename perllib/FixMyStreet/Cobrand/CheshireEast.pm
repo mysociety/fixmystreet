@@ -172,6 +172,15 @@ sub open311_post_send {
 
     $row->detail($h->{ce_original_detail});
 }
+ 
+sub available_permissions {
+    my $self = shift;
 
+    my $perms = $self->next::method();
+
+    $perms->{Problems}->{assign_report_to_user} = "Assign problem reports to users";
+
+    return $perms;
+}
 
 1;
