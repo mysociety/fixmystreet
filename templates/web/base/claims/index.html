@@ -1,6 +1,8 @@
 [% SET bodyclass = 'formflow govuk';
    SET title = form.title;
-   SET extra_js = [];
+   SET extra_js = [
+       'https://cdn.jsdelivr.net/npm/time-input-polyfill',
+   ];
 %]
 
 [% INCLUDE header.html %]

@@ -15,6 +15,8 @@ has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 
 has finished_action => ( is => 'ro' );
 
+has '+is_html5' => ( default => 1 );
+
 before _process_page_array => sub {
     my ($self, $pages) = @_;
     foreach my $page (@$pages) {
@@ -328,6 +330,7 @@ has_field 'incident_date.day' => (
 has_field incident_time => (
     required => 1,
     type => 'Text',
+    html5_type_attr => 'time',
     label => 'What time did the incident happen?',
 );
 

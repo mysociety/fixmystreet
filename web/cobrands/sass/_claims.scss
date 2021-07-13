@@ -11,7 +11,11 @@ body.formflow {
       max-width: 9ex;
     }
 
-    input[type="text"].govuk-input {
+    input[type="time"].govuk-input {
+      max-width: 12ex;
+    }
+
+    input[type="text"].govuk-input, input[type="time"].govuk-input {
       font-size: 16px;
       font-size: 1rem;
       line-height: 1.25;
