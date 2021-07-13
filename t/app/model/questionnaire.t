@@ -13,7 +13,6 @@ use FixMyStreet;
 use FixMyStreet::TestMech;
 
 my $user = FixMyStreet::DB->resultset('User')->find_or_create( { email => 'test@example.com' } );
-
 my $problem = FixMyStreet::DB->resultset('Problem')->create(
     {
         postcode     => 'EH99 1SP',
@@ -105,11 +104,9 @@ for my $test (
         $problem->state( $test->{state} );
         $problem->send_questionnaire( 1 );
         $problem->update;
-
         $problem->questionnaires->delete;
 
         $mech->email_count_is(0);
-
         FixMyStreet::DB->resultset('Questionnaire')
           ->send_questionnaires( { site => 'fixmystreet' } );
 
@@ -142,6 +139,93 @@ for my $test (
             is $problem->send_questionnaire, 0;
         };
     };
+}
+
+for my $test (
+    {
+        state => 'fixed',
+        send_email => 0,
+        user => 'staff',
+        description_string => 'can not update',
+    },
+    {
+        state => 'fixed',
+        send_email => 0,
+        user => 'none',
+        description_string => 'can not update',
+    },
+    {
+        state => 'open',
+        send_email => 0,
+        user => 'staff',
+        description_string => 'can not update',
+    },
+    {
+        state => 'open',
+        send_email => 0,
+        user => 'none',
+        description_string => 'can not update',
+    },
+    {
+        state => 'in progress',
+        send_email => 0,
+        user => 'staff',
+        description_string => 'can not update',
+    },
+    {
+        state => 'fixed',
+        send_email => 1,
+        user => 'reporter',
+        description_string => 'can update',
+    },
+    {
+        state => 'confirmed',
+        send_email => 1,
+        user => 'open',
+        description_string => 'can update',
+    },
+    {
+        state => 'confirmed',
+        send_email => 1,
+        user => 'reporter-open',
+        description_string => 'can update',
+    },
+    {
+        state => 'in progress',
+        send_email => 1,
+        user => 'open',
+        description_string => 'can update',
+    },
+    {
+        state => 'in progress',
+        send_email => 1,
+        user => 'reporter-open',
+        description_string => 'can update',
+    },
+) {
+    subtest "correct questionnaire behaviour for state $test->{state} when $test->{user} $test->{description_string}" => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'bexley',
+            COBRAND_FEATURES => {
+                updates_allowed => { bexley => $test->{user} },
+            },
+        }, sub {
+            $problem->cobrand( 'bexley' );
+            $problem->state( $test->{state} );
+            $problem->send_questionnaire( 1 );
+            $problem->update;
+            $problem->questionnaires->delete;
+
+            $mech->email_count_is(0);
+            FixMyStreet::DB->resultset('Questionnaire')
+            ->send_questionnaires( { site => 'fixmystreet' } );
+
+            $mech->email_count_is( $test->{send_email} );
+
+            $mech->clear_emails_ok();
+            $problem->discard_changes;
+        }
+    }
 }
 
 done_testing();
