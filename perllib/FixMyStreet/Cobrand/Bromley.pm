@@ -441,8 +441,12 @@ sub munge_around_category_where {
 
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
-    return if $self->{c}->action eq 'dashboard/heatmap';
-    @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+    my $c = $self->{c};
+    return if $c->action eq 'dashboard/heatmap';
+
+    unless ( $c->user_exists && $c->user->from_body && $c->user->has_permission_to('report_mark_private', $self->body->id) ) {
+        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+    }
 }
 
 sub munge_report_new_contacts {
