@@ -208,4 +208,88 @@ FixMyStreet::override_config {
     };
 };
 
+my $cobrand = FixMyStreet::Cobrand::Birmingham->new;
+
+for my $test (
+    {
+        update_permission => 'staff',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'none',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'none',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'staff',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'reporter-open',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'open',
+        problem_state => 'closed',
+    }
+) {
+    subtest 'Cobrand set to deny updates' => sub {
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+            updates_allowed => { birmingham => $test->{update_permission} },
+            },
+    }, sub {
+        my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test problem', {
+             state => "$$test{problem_state}",
+        });
+        ok($cobrand->deny_updates_by_user($problem), "Reports updates denied with $test->{update_permission} and problem $test->{problem_state}");
+        $mech->delete_problems_for_body($body->id);
+    };
+    };
+};
+
+for my $test (
+    {
+        update_permission => 'reporter',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'reporter',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'reporter-open',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => '',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => '',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'open',
+        problem_state => 'confirmed',
+    }
+) {
+    subtest 'Cobrand set to allow updates' => sub {
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+            updates_allowed => { birmingham => $test->{update_permission} },
+            },
+    }, sub {
+        my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test problem', {
+             state => "$$test{problem_state}",
+        });
+        ok(!$cobrand->deny_updates_by_user($problem), "Reports updates allowed with $test->{update_permission} and problem $test->{problem_state}");
+        $mech->delete_problems_for_body($body->id);
+    };
+    };
+};
+
 done_testing();

@@ -1378,4 +1378,10 @@ sub emergency_message {
     FixMyStreet::Template::SafeString->new($body->get_extra_metadata($field));
 }
 
+# Report if cobrand denies updates by user
+# Default 'allows'
+sub deny_updates_by_user {
+    return;
+}
+
 1;
