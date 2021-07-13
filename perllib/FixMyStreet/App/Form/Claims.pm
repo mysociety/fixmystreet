@@ -162,6 +162,14 @@ has_field report_id => (
     type => 'Text',
     label => 'Fault ID',
     tags => { hint => 'This will have been sent to you in an email when you reported the fault' },
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->c;
+        return if $self->has_errors; # Called even if already failed
+        unless ($self->value =~ /^[0-9]+$/) {
+            $self->add_error('Please provide a valid report ID');
+        }
+    },
 );
 
 has_page where => (
