@@ -1,0 +1,37 @@
+[%
+
+email_summary = "Thanks for logging your report";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Your claim has been&nbsp;submitted</h1>
+ [% IF report.external_id %]
+  <p style="[% p_style %]">Ref: [% report.external_id %].</p>
+ [% END %]
+  <p style="[% p_style %]">Thank you for your submitted claim form.
+   [% IF report.external_id %]
+    The reference number is [% report.external_id %].
+   [% END %]
+  </p>
+
+ [% IF update %]
+  [% email_sanitize_html(update) | replace('<p>', '<p style="' _ p_style _ '">') %]
+ [% END %]
+
+  <p style="margin: 20px auto; text-align: center">
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.view_url %]">View my report</a>
+  </p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

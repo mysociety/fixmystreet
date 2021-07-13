@@ -1,7 +1,7 @@
 [%
+    SET extra_js = [ ];
     SET bodyclass = 'mappage formflow';
-    SET title = 'Source of the noise';
-    SET extra_js = [];
+    SET title = 'Location of the incident';
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
     PROCESS 'govuk/fields.html';
@@ -19,7 +19,7 @@
 
     <ul class="change_location">
         <li class="change_location__map">Click the map or drag the pin to adjust the location</li>
-        <li class="change_location__search">Or <input type="submit" name="goto-address_unknown" value="search for a different location" class="govuk-button"></li>
+        <li class="change_location__search">Or <input type="submit" name="goto-where" value="search for a different location" class="govuk-button"></li>
     </ul>
 <style>
 .change_location { display: block !important; }

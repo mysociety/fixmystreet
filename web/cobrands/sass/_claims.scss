@@ -1,8 +1,4 @@
 body.formflow {
-    .content {
-      padding: 1em 0;
-    }
-
     label, legend {
       margin-top: 0; font-weight: normal !important;
     } /* from base/h5bp */
@@ -15,7 +11,11 @@ body.formflow {
       max-width: 9ex;
     }
 
-    input[type="text"].govuk-input {
+    input[type="time"].govuk-input {
+      max-width: 12ex;
+    }
+
+    input[type="text"].govuk-input, input[type="time"].govuk-input {
       font-size: 16px;
       font-size: 1rem;
       line-height: 1.25;
@@ -26,7 +26,7 @@ body.formflow {
     }
 }
 
-.noise__summary {
+.claims__summary {
   .govuk-summary-list {
     font-size: 1em;
     border-top: 1px solid #808080;
@@ -45,9 +45,7 @@ body.formflow {
     padding-top: 10px; 
     font-weight: normal !important; /* Ugh */ 
   }
-}
 
-.noise__summary {
   .govuk-button--secondary {
     font-size: 1em;
   }

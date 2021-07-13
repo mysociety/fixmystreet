@@ -657,7 +657,7 @@ $.extend(fixmystreet.set_up, {
     // If we haven't got any reporting data (e.g. came straight to
     // /report/new), fetch it first. That will then automatically call this
     // function again, due to it calling change() on the category if set.
-    if (!fixmystreet.reporting_data && fixmystreet.page === 'new') {
+    if (!fixmystreet.reporting_data && fixmystreet.page === 'new' && !$('body').hasClass('formflow')) {
         fixmystreet.fetch_reporting_data();
     }
   },
@@ -745,6 +745,7 @@ $.extend(fixmystreet.set_up, {
       var $originalLabel = $('[for="form_photo"], .js-photo-label', $context);
       var $originalInput = $('#form_photos, .js-photo-fields', $context);
       var $dropzone = $('<div tabindex=0>').addClass('dropzone');
+      var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
 
       $originalLabel.removeAttr('for');
       $('[data-plural]', $originalLabel).text(
@@ -789,18 +790,25 @@ $.extend(fixmystreet.set_up, {
             $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
           });
           this.on("success", function(file, xhrResponse) {
-            var ids = $('input[name=upload_fileid]', $context).val().split(','),
-                id = (file.server_id = xhrResponse.id),
-                l = ids.push(id),
-                newstr = ids.join(',');
-            $('input[name=upload_fileid]', $context).val(newstr);
+            var $upload_fileids = $('input[name=' + $fileid_input + ']', $context);
+            var ids = [];
+            // only split if it has a value otherwise you get a spurious empty string
+            // in the array as split returns the whole string if no match
+            if ( $upload_fileids.val() ) {
+                ids = $upload_fileids.val().split(',');
+            }
+            var id = (file.server_id = xhrResponse.id),
+                l = ids.push(id);
+            newstr = ids.join(',');
+            $upload_fileids.val(newstr);
           });
           this.on("error", function(file, errorMessage, xhrResponse) {
           });
           this.on("removedfile", function(file) {
-            var ids = $('input[name=upload_fileid]', $context).val().split(','),
+            var $upload_fileids = $('input[name=' + $fileid_input + ']', $context);
+            var ids = $upload_fileids.val().split(','),
                 newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
-            $('input[name=upload_fileid]', $context).val(newstr);
+            $upload_fileids.val(newstr);
           });
           this.on("maxfilesexceeded", function(file) {
             this.removeFile(file);
@@ -822,7 +830,7 @@ $.extend(fixmystreet.set_up, {
           }
       });
 
-      $.each($('input[name=upload_fileid]', $context).val().split(','), function(i, f) {
+      $.each($('input[name=' + $fileid_input + ']', $context).val().split(','), function(i, f) {
         if (!f) {
             return;
         }
@@ -1410,8 +1418,8 @@ fixmystreet.update_councils_text = function(data) {
 fixmystreet.update_pin = function(lonlat, savePushState) {
     var lonlats = fixmystreet.maps.update_pin(lonlat);
 
-    if ($('body').hasClass('noise')) {
-        // Do nothing for noise map page
+    if ($('body').hasClass('formflow')) {
+        // Do nothing for form flow map page
         return;
     }
 
@@ -1836,8 +1844,8 @@ $(function() {
     // The replaceState below means that normal browser behaviour with POSTed
     // pages stops working (because the replaceState turns the POST into a
     // GET), e.g. clicking back in a multi-page form reloads the page and
-    // takes you back to the start, so avoid that on the noise flow.
-    if ($('body').hasClass('noise')) {
+    // takes you back to the start, so avoid that on the form-based flow.
+    if ($('body').hasClass('formflow')) {
         return;
     }
 

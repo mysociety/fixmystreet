@@ -1,0 +1,68 @@
+[% SET bodyclass = 'formflow' %]
+
+[% USE date(format = '%A, %-d~~~ %B') ~%]
+[% PROCESS 'govuk/fields.html' ~%]
+[% INCLUDE header.html %]
+
+[% PROCESS errors %]
+[% SET data = form.saved_data ~%]
+
+<h1 class="govuk-heading-xl">[% form.title %]</h1>
+<p>Please review all information provided and make sure all is correct and all documents attached before submitting your claim.</p>
+
+<div class="claims__summary">
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      [% summary_title %]
+    </dt>
+    <dd class="govuk-summary-list__value">
+    </dd>
+    <dd class="govuk-summary-list__actions">
+    </dd>
+  </div>
+
+  [% FOR page IN form.fields_for_display %]
+      [% NEXT IF page.hide %]
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          [% page.title %]
+        </dt>
+        <dd class="govuk-summary-list__value">
+        </dd>
+        <dd class="govuk-summary-list__actions">
+        <form method="post">
+            <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+            <input type="hidden" name="goto" value="[% page.stage %]">
+            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+        </form>
+        </dd>
+      </div>
+      [% FOR field IN page.fields %]
+      [% NEXT IF field.hide %]
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% field.desc %]</dt>
+            <dd class="govuk-summary-list__value">
+            [% IF field.type == 'Photo' %]
+                [% SET photos = field.value.split(',');
+                   FOR photo IN photos ~%]
+                    <img align="left" src="/photo/temp.[% photo %]">
+                [% END ~%]
+            [% ELSE %]
+                [% field.pretty %]
+            [% END %]
+            </dd>
+        </div>
+       [% END %]
+  [% END %]
+
+</dl>
+
+<p>A copy of the above will be emailed to you, but you may also wish to save or print a copy of this page for your records.</p>
+
+<form method="post">
+    [% PROCESS form %]
+</form>
+</div>
+
+[% INCLUDE footer.html %]
