@@ -83,10 +83,12 @@
   </form>
   [% END %]
   [% IF NOT pending_cancellation && NOT unit.garden_overdue %]
+  [% IF NOT unit.garden_due %]
   <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Modify your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>
+  [% END %]
   <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">

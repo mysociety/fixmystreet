@@ -824,20 +824,27 @@ FixMyStreet::override_config {
         $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if never had a sub');
     };
 
-    subtest 'check overdue and soon due messages' => sub {
+    subtest 'check overdue, soon due messages and modify link' => sub {
+        $mech->log_in_ok($user->email);
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Garden Waste');
+        $mech->content_lacks('Modify your garden waste subscription');
         $mech->content_contains('Your subscription is now overdue', "overdue link if after expired");
         set_fixed_time('2021-03-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
+        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->get_ok('/waste/12345/garden_modify');
+        is $mech->uri->path, '/waste/12345', 'link redirect to bin list if modify in renewal period';
         set_fixed_time('2021-02-10T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Your subscription is soon due for renewal', "due soon link if 7 weeks before expiry");
         set_fixed_time('2021-02-08T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 7 weeks before expiry");
+        $mech->content_contains('Modify your garden waste subscription');
+        $mech->log_out_ok;
     };
 
     my $echo = Test::MockModule->new('Integrations::Echo');
@@ -1111,18 +1118,18 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check modify sub credit card payment' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
         $mech->log_out_ok();
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
         $mech->content_contains('40.00');
-        $mech->content_contains('5.50');
+        $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 550, 'correct amount used';
+        is $sent_params->{amount}, 750, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1149,7 +1156,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'check modify sub credit card payment reducing bin count' => sub {
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
         $sent_params = undef;
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
@@ -1191,7 +1198,7 @@ FixMyStreet::override_config {
     subtest 'check modify sub direct debit payment' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
@@ -1199,7 +1206,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Value must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
         $mech->content_contains('40.00');
-        $mech->content_contains('5.50');
+        $mech->content_contains('7.50');
         $mech->content_contains('Amend Direct Debit');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
@@ -1215,7 +1222,7 @@ FixMyStreet::override_config {
 
         is_deeply $dd_sent_params->{one_off_payment}, {
             payer_reference => 'GGW1000000002',
-            amount => '5.50',
+            amount => '7.50',
             reference => $new_report->id,
             comments => '',
         }, "correct direct debit ad hoc payment params sent";
@@ -1227,6 +1234,7 @@ FixMyStreet::override_config {
 
     $dd_sent_params = {};
     subtest 'check modify sub direct debit payment reducing bin count' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
@@ -1733,6 +1741,7 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check staff cannot update direct debit subs' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_out_ok;
         $mech->log_in_ok($staff_user->email);
 
@@ -1829,7 +1838,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'check modify sub staff' => sub {
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        set_fixed_time('2021-01-09T17:00:00Z');
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => {
@@ -1838,7 +1847,7 @@ FixMyStreet::override_config {
             email => 'test@example.net'
         } });
         $mech->content_contains('40.00');
-        $mech->content_contains('5.50');
+        $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_contains('Enter paye.net code');
         $mech->submit_form_ok({ with_fields => {
@@ -1864,7 +1873,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'check modify sub staff reducing bin count' => sub {
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        set_fixed_time('2021-01-09T17:00:00Z');
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
 
@@ -2333,18 +2342,18 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'modify sub with no existing waste sub - credit card payment' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_out_ok();
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
         $mech->content_contains('40.00');
-        $mech->content_contains('5.50');
+        $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 550, 'correct amount used';
+        is $sent_params->{amount}, 750, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -2374,7 +2383,7 @@ FixMyStreet::override_config {
 
     subtest 'modify sub user with no name' => sub {
         $mech->log_out_ok();
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($nameless_user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
@@ -2386,9 +2395,9 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('A Name');
         $mech->content_contains('40.00');
-        $mech->content_contains('5.50');
+        $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 550, 'correct amount used';
+        is $sent_params->{amount}, 750, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -2483,6 +2492,7 @@ FixMyStreet::override_config {
         payment_gateway => { bromley => { cc_url => 'http://example.com', ggw_cost => 2000, pro_rata_minimum => 500, pro_rata_weekly => 25, } },
     },
 }, sub {
+    set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
     $mech->log_in_ok($staff_user->email);
     $mech->get_ok('/waste/12345');
     $mech->content_contains('Modify your garden waste subscription');

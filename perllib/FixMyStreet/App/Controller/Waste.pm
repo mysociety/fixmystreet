@@ -830,7 +830,7 @@ sub garden_modify : Chained('property') : Args(0) {
 
     my $max_bins = $c->stash->{quantity_max}->{$service};
     $service = $c->stash->{services}{$service};
-    if (!$service) {
+    if (!$service || $service->{garden_due}) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
