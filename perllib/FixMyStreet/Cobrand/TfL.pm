@@ -461,6 +461,16 @@ sub munge_red_route_categories {
     }
 }
 
+around 'munge_sendreport_params' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    $self->$orig($row, $h, $params);
+
+    if ($row->category eq "Countdown - not working") {
+        $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
+    }
+};
+
 sub is_hardcoded_category {
     my ($self, $category) = @_;
 
