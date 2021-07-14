@@ -64,7 +64,13 @@ sub form : Private {
 
     my $form = $self->load_form($c);
     if ($c->get_param('process') && !$c->stash->{override_no_process}) {
-        $c->forward('/auth/check_csrf_token');
+        # A claim form will quite possibly have people logging in part-way
+        # through (to make a new report required for the claim), and this will
+        # invalidate the token and cause the form to error. We already generate
+        # another CSRF token with a random unique ID in the session, so there
+        # is no need for this check as well.
+        $c->forward('/auth/check_csrf_token')
+            unless $self->feature eq "claims";
         my @params = $form->get_params($c);
         $form->process(params => @params);
         if ($form->validated) {
