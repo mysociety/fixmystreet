@@ -38,6 +38,52 @@
             [%- IF problem.is_closed %]<br>[% prettify_state('closed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
         </small></td>
+        [%- IF c.user.has_permission_to('assign_report_to_user', c.cobrand.body.id) -%]       [%# problem.bodies_str_ids) %] 
+        <td>
+            <form action='[%- c.uri_for %]' method='post' id='report-[%- problem.id - %]' name='report-[%- problem.id - %]'>
+            <select>
+            [%- IF problem.user_planned_reports -%] [%# this report is on a shortlist %]
+                <option value='[%- problem.user_planned_reports.user.id -%]'>
+                [%- IF problem.user_planned_reports.user.name -%]
+                    [%- problem.user_planned_reports.user.name -%]
+                [%- ELSE -%]
+                    [%- problem.user_planned_reports.user.username -%]
+                [%- END -%]
+                </option>
+            [%- ELSE -%]
+                <option value='unassigned'>unassigned</option>
+            [%- END -%]
+            [% FOR user IN c.cobrand.users %]
+                [%- IF user.has_body_permission_to('planned_reports', c.cobrand.body.id) -%]
+                    <option value='[%- user.id -%]'>
+                    [%- IF user.name -%]
+                        [%- user.name -%]
+                    [%- ELSE -%]
+                        [%- user.username -%]
+                    [%- END -%]
+                    </option>
+                [%- END -%]
+            [% END %]
+            <input type="submit" class="btn" name="Assign" value="Assign" style="margin-top:1em"> 
+            </select>
+            </form>
+        </td>
+        [%- ELSIF c.user.has_permission_to('planned_reports', c.cobrand.body.id ) %] 
+        [%# just see who has it if 'manage shortlist' is set %]
+        <td>
+            <span>
+            [%- IF problem.user_planned_reports -%] [%# this report is on a shortlist %]
+                [%- IF problem.user_planned_reports.user.name -%]
+                    [%- problem.user_planned_reports.user.name -%]
+                [%- ELSE -%]
+                    [%- problem.user_planned_reports.user.username -%]
+                [%- END -%]
+            [%- ELSE -%]
+                unassigned
+            [%- END -%]
+            </span>
+        </td>
+        [%- END -%] 
         <td>
             [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
                 <a href="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]">[% loc('Edit') %]</a>
