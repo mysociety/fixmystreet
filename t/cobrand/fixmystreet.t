@@ -292,4 +292,19 @@ for my $test (
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet shows Environment Agency categories' => sub {
+        my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+        my $environment_agency = $mech->create_body_ok(2494, 'Environment Agency');
+        my $odour_contact = $mech->create_contact_ok(body_id => $environment_agency->id, category => 'Odour', email => 'ics@example.com');
+        my $tree_contact = $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_contains('Trees');
+        $mech->content_contains('Odour');
+    };
+};
+
 done_testing();
