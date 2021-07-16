@@ -1125,7 +1125,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('40.00');
         $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1164,7 +1164,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
         $mech->content_contains('20.00');
         $mech->content_lacks('Continue to payment');
         $mech->content_contains('Confirm changes');
@@ -1202,9 +1202,9 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 7 } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 7 } });
         $mech->content_contains('Value must be between 1 and 6');
-        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('40.00');
         $mech->content_contains('7.50');
         $mech->content_contains('Amend Direct Debit');
@@ -1238,7 +1238,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 1 } });
+        $mech->submit_form_ok({ with_fields => { current_bins=> 2, bins_wanted => 1 } });
         $mech->content_like(qr#Total to pay today</dt>\s*<dd[^>]*>£0.00#);
         $mech->content_like(qr#Total</dt>\s*<dd[^>]*>£20.00#);
         $mech->content_contains('Amend Direct Debit');
@@ -1842,7 +1842,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => {
-            bin_number => 2,
+            current_bins => 1,
+            bins_wanted => 2,
             name => 'Test McTest',
             email => 'test@example.net'
         } });
@@ -1880,7 +1881,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => {
-            bin_number => 1,
+            current_bins => 2,
+            bins_wanted => 1,
             name => 'A user',
             email => '',
         } });
@@ -2349,7 +2351,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('40.00');
         $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -2387,10 +2389,11 @@ FixMyStreet::override_config {
         $mech->log_in_ok($nameless_user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { bin_number => 2 } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('Your name field is required');
         $mech->submit_form_ok({ with_fields => {
-            bin_number => 2,
+            current_bins => 1,
+            bins_wanted => 2,
             name => 'A Name',
         } });
         $mech->content_contains('A Name');

@@ -22,21 +22,25 @@ has_page intro => (
 my %alter_fields = (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify.html',
-    fields => ['bin_number', 'name', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'name', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
         my $data = $c->stash->{garden_form_data};
-        $c->stash->{cost_per_year} = $c->cobrand->garden_waste_cost($data->{bins}) / 100;
+        $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
+        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
+        my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
+        $c->stash->{cost_per_year} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
         $c->stash->{new_bin_count} = 0;
         $c->stash->{pro_rata} = 0;
-        if ( $form->saved_data->{bin_number} && $form->saved_data->{bin_number} > $data->{bins} ) {
-            $c->stash->{new_bin_count} = $form->saved_data->{bin_number} - $data->{bins};
+        if ( $bins_wanted > $current_bins ) {
+            $c->stash->{new_bin_count} = $bins_wanted - $current_bins;
             $c->stash->{pro_rata} = $c->cobrand->waste_get_pro_rata_cost( $c->stash->{new_bin_count}, $c->stash->{garden_form_data}->{end_date}) / 100;
         }
         return {
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
-            bin_number => { default => $data->{bins} },
+            current_bins => { default => $data->{bins} },
+            bins_wanted => { default => $data->{bins} },
         };
     },
     next => 'summary',
@@ -44,7 +48,7 @@ my %alter_fields = (
 
 my %alter_fields_staff = (
     %alter_fields,
-    ( fields => ['bin_number', 'name', 'phone', 'email', 'continue_review'] ),
+    ( fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'] ),
 );
 
 has_page alter => ( %alter_fields );
@@ -61,10 +65,9 @@ has_page summary => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        my $current_bins = $c->stash->{garden_form_data}->{bins};
-        my $new_bins = $data->{bin_number} - $current_bins;
+        my $new_bins = $data->{bins_wanted} - $data->{current_bins};
         my $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-        my $total = $c->cobrand->garden_waste_cost($data->{bin_number});
+        my $total = $c->cobrand->garden_waste_cost($data->{bins_wanted});
 
         $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
         $data->{billing_address} = $c->stash->{garden_form_data}->{billing_address} || $c->stash->{property}{address};
@@ -110,13 +113,25 @@ has_field task => (
     ],
 );
 
-has_field bin_number => (
+has_field current_bins => (
     type => 'Integer',
-    label => 'How many bins do you need in your subscription?',
+    label => 'Number of bins currently on site',
     tags => { number => 1 },
     required => 1,
     range_start => 1,
     range_end => 6,
+);
+
+has_field bins_wanted => (
+    type => 'Integer',
+    label => 'How many bins to collect (including bins already on site)',
+    tags => { number => 1 },
+    required => 1,
+    range_start => 1,
+    range_end => 6,
+    tags => {
+        hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
+    }
 );
 
 has_field tandc => (
