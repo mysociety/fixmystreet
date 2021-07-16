@@ -25,6 +25,7 @@
         - Fix moderation of update text.
         - Only trigger one refresh going Back to list view. #3476
         - Fix checked order of updates in dashboard export.
+        - Fix unable to edit user with verified landline #3295
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.

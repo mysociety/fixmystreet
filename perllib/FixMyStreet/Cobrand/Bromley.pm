@@ -1426,13 +1426,21 @@ sub waste_reconcile_direct_debits {
             next unless $payment->{Status} eq 'Paid';
             $rs = $rs->search({ category => 'Garden Subscription' });
             my $p;
+            # loop over all matching records and pick the most recent new sub or renewal
+            # record. This is where we get the details of the renewal from. There should
+            # always be one of these for an automatic DD renewal. If there isn't then
+            # something has gone wrong and we need to error.
             while ( my $cur = $rs->next ) {
+                # only confirmed records are valid.
+                next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 my $sub_type = $cur->get_extra_field_value('Subscription_Type');
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    $p = $cur;
+                    $p = $cur if !$p;
                 } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
                     # already processed
                     next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
+                    # if it's a renewal of a DD where the initial setup was as a renewal
+                    $p = $cur if !$p;
                 }
             }
             if ( $p ) {
@@ -1520,7 +1528,7 @@ sub waste_reconcile_direct_debits {
             while ( my $cur = $rs->next ) {
 
                 if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
-                    if ( $cur->state eq 'unconfirmed' ) {
+                    if ( $cur->state eq 'unconfirmed' && !$handled) {
                         if ( $type eq 'New' ) {
                             if ( !$cur->get_extra_metadata('payerReference') ) {
                                 $cur->set_extra_metadata('payerReference', $payer);
@@ -1540,6 +1548,11 @@ sub waste_reconcile_direct_debits {
                         $cur->confirm;
                         $cur->update;
                         $handled = 1;
+                    } elsif ( $cur->state eq 'unconfirmed' ) {
+                        # if we've pulled out more that one record, e.g. because they
+                        # failed to make a payment then skip remaining ones.
+                        $cur->state('hidden');
+                        $cur->update;
                     } elsif ( $cur->get_extra_metadata('dd_date') eq $date)  {
                         next RECORD;
                     }
@@ -1616,6 +1629,14 @@ sub waste_reconcile_direct_debits {
         } elsif ( $p ) {
             my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
             unless ($service) {
+                my $hidden = FixMyStreet::DB->resultset('Problem')->search({
+                    category => 'Cancel Garden Subscription',
+                    state => 'hidden',
+                    extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+                    created => \" > now() - interval '7' day",
+                });
+                # no service and we're already seen it
+                next if $hidden->count;
                 warn "no matching service to cancel for $payer\n";
                 next;
             }

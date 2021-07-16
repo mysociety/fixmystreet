@@ -79,12 +79,11 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'No' } }, "fault fixed");
         $mech->submit_form_ok({ with_fields => { fault_reported => 'No' } }, "fault not reported");
         $mech->submit_form_ok({ with_fields => { continue => 'Continue' } }, "go back");
+        $mech->clone->log_in_ok('madeareport@example.org'); # Clone so as to remain on same page here (but clones share cookie jar)
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
         $mech->submit_form_ok({ with_fields => { report_id => "hmm" } }, "report id");
         $mech->content_contains('Please provide a valid report ID');
         $mech->submit_form_ok({ with_fields => { report_id => $report_id } }, "report id");
-        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
-        $mech->submit_form_ok({ button => 'goto-where' }, 'back to enter more location details');
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
         $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => '09', 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
@@ -163,13 +162,14 @@ EOF
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $report_id - Rain Road, Aylesbury";
-        is $email[1]->header('To'), 'test@example.org';
+        like $email[1]->header('To'), qr/madeareport\@/;
         is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
         my $req = $test_data->{test_req_used};
         is $req, undef, 'Nothing sent by Open311';
         is $report->user->alerts->count, 1, 'User has an alert for this report';
         is $report->user->alerts->first->alerts_sent->count, 1, 'But has been sent in the logged email';
         $mech->clear_emails_ok;
+        $mech->log_out_ok;
     };
 
     subtest 'Report new vehicle claim, report fixed' => sub {
@@ -178,6 +178,8 @@ EOF
         $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'No' } }, 'claim type');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, 'about you details');
         $mech->submit_form_ok({ with_fields => { fault_fixed => 'Yes' } }, 'fault fixed');
+        $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
+        $mech->submit_form_ok({ button => 'goto-where' }, 'back to enter more location details');
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
         $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => 10, 'incident_date.day' => 10, incident_time => 'morning' } }, 'incident time');
