@@ -222,6 +222,17 @@ sub open311_extra_data_include {
         $title .= ' | PROW ID: ' . $_->{value} if $_->{name} eq 'prow_reference';
     }
 
+    # Add contributing user's roles to report title
+    my $contributed_by = $row->get_extra_metadata('contributed_by');
+    my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
+    my $roles;
+    if ($contributing_user) {
+        $roles = join(',', map { $_->name } $contributing_user->roles->all);
+    }
+    if ($roles) {
+        $title .= ' | ROLES: ' . $roles;
+    }
+
     my $open311_only = [
         { name => 'report_url',
           value => $h->{url} },
