@@ -1053,17 +1053,17 @@ sub process_garden_modification : Private {
     $data->{title} = 'Garden Subscription - Amend';
     $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Amend});
 
-    my $new_bins = $data->{bin_number} - $c->stash->{garden_form_data}->{bins};
+    my $new_bins = $data->{bins_wanted} - $data->{current_bins};
 
     $data->{new_bins} = $new_bins;
-    $data->{bin_count} = $data->{bin_number};
+    $data->{bin_count} = $data->{bins_wanted};
 
     my $pro_rata;
     if ( $new_bins > 0 ) {
         $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
         $c->set_param('pro_rata', $pro_rata);
     }
-    my $payment = $c->cobrand->garden_waste_cost($data->{bin_number});
+    my $payment = $c->cobrand->garden_waste_cost($data->{bins_wanted});
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
