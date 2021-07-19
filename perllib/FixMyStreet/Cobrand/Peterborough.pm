@@ -735,7 +735,7 @@ sub waste_munge_enquiry_data {
     my $bin = $container_ids{$self->{c}->get_param('service_id')};
     $data->{category} = $self->{c}->get_param('category');
     $data->{title} = $bin;
-    $data->{detail} = "$bin\n\n" . $self->{c}->stash->{property}->{address};
+    $data->{detail} = $data->{category} . "\n\n" . $self->{c}->stash->{property}->{address};
 }
 
 
