@@ -1,32 +1,6 @@
-[% IF c.user.has_permission_to('assign_report_to_user', c.cobrand.body.id) %]    [%# problem.bodies_str_ids %] 
-<label class="inline-text" for="assignment">[% loc('Assigned to:') %]</label>
-    <select class="form-control" name="assignment" id="assignment">
-    [% IF problem.user_planned_reports %] [%# this report is on a shortlist %]
-        <option value='[% problem.user_planned_reports.user.id %]'>
-        [% IF problem.user_planned_reports.user.name %]
-            [% problem.user_planned_reports.user.name %]
-        [% ELSE %]
-            [% problem.user_planned_reports.user.username %]
-        [% END %]
-        </option>
-    [% ELSE %]
-        <option value='unassigned'>unassigned</option>
-    [% END %]
-    [% FOR user IN c.cobrand.users %]
-        [% IF user.has_body_permission_to('planned_reports', c.cobrand.body.id) %]
-            <option value='[% user.id %]'>
-            [% IF user.name %]
-                [% user.name %]
-            [% ELSE %]
-                [% user.username %]
-            [% END %]
-            </option>
-        [% END %]
-    [% END %]
-    </select>
-[% ELSIF c.user.has_permission_to('planned_reports', c.cobrand.body.id ) %] 
-[%# see report's assigned user %]
-<label class="inline-text" for="assignment">[% loc('Assigned to:') %]</label>
+[%  IF c.user.has_permission_to('planned_reports', c.cobrand.body.id ) %] 
+    [%# see report's assigned user %]
+    <label class="inline-text" for="assignment">[% loc('Assigned to:') %]</label>
     <p style="margin-top: 0.5em; font-style: italic">
     [% IF problem.user_planned_reports %] [%# this report is on a shortlist %]
         [% IF problem.user_planned_reports.user.name %]

@@ -521,6 +521,14 @@ sub inspect : Private {
             }
         }
 
+        # set assignment 
+        my $assigned = ($c->get_param('assignment'));
+        unless ($assigned) {
+           # remove problem's shortlist registration 
+        }
+        my $assignee = $c->model('DB::User')->find({ id => $c->get_param('assignment') });
+        $assignee->add_to_planned_reports($problem);
+
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
         if ($problem->non_public) {
             $problem->get_photoset->delete_cached(plus_updates => 1);
