@@ -255,6 +255,11 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/new?longitude=0.15356&latitude=51.45556');
         $mech->content_contains('name="private_comments"');
     };
+
+    subtest 'reference number is shown' => sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Council ref:&nbsp;' . $report->id);
+    };
 };
 
 subtest 'nearest road returns correct road' => sub {
