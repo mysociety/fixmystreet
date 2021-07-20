@@ -1,19 +1,5 @@
 [% IF c.user.has_permission_to('assign_report_to_user', c.cobrand.body.id) %]
     <select class="form-control" name="assignment" id="assignment">
-        <div> [%# USE Dumper; Dumper.Dump(problem) %] </div>
-        <div> [% c %] </div>
-        [% IF problem.shortlisted_user %] [%# **this report is on a shortlist** %]
-            <option value='[% problem.shortlisted_user.id %]'
-                selected="selected">
-            [% IF problem.shortlisted_user.name %]
-                [% problem.shortlisted_user.name %]
-            [% ELSE %]
-                [% problem.shortlisted_user.username %]
-            [% END %]
-            </option>
-        [% ELSE %]
-            <option value='unassigned'selected="selected">unassigned</option>
-        [% END %]
         [% FOR user IN c.cobrand.users %]
             <option value='[% user.id %]' 
             [%- IF user.id == problem.shortlisted_user.id -%]
