@@ -1539,7 +1539,7 @@ sub waste_reconcile_direct_debits {
                         # failed to make a payment then skip remaining ones.
                         $cur->state('hidden');
                         $cur->update;
-                    } elsif ( $cur->get_extra_metadata('dd_date') eq $date)  {
+                    } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date)  {
                         next RECORD;
                     }
                 }
