@@ -1346,6 +1346,12 @@ sub waste_payment_type {
     return ($category, $sub_type);
 }
 
+sub waste_is_dd_payment {
+    my ($self, $row) = @_;
+
+    return $row->get_extra_field_value('payment_method') && $row->get_extra_field_value('payment_method') eq 'direct_debit';
+}
+
 sub waste_dd_paid {
     my ($self, $date) = @_;
 
@@ -1417,6 +1423,8 @@ sub waste_reconcile_direct_debits {
             # always be one of these for an automatic DD renewal. If there isn't then
             # something has gone wrong and we need to error.
             while ( my $cur = $rs->next ) {
+                # only match direct debit payments
+                next unless $self->waste_is_dd_payment($cur);
                 # only confirmed records are valid.
                 next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 my $sub_type = $cur->get_extra_field_value('Subscription_Type');
@@ -1459,6 +1467,7 @@ sub waste_reconcile_direct_debits {
             $rs = $rs->search({ category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] } });
             my ($p, $r);
             while ( my $cur = $rs->next ) {
+                next unless $self->waste_is_dd_payment($cur);
                 my $sub_type = $cur->get_extra_field_value('Subscription_Type') || '';
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
                     $p = $cur;
@@ -1512,7 +1521,7 @@ sub waste_reconcile_direct_debits {
             # processed reports so we can warn on those we are missing.
             $rs = $rs->search({ category => 'Garden Subscription' });
             while ( my $cur = $rs->next ) {
-
+                next unless $self->waste_is_dd_payment($cur);
                 if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
                     if ( $cur->state eq 'unconfirmed' && !$handled) {
                         if ( $type eq 'New' ) {

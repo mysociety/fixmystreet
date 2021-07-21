@@ -968,6 +968,26 @@ subtest 'check direct debit reconcilliation' => sub {
     $ad_hoc_skipped->state('unconfirmed');
     $ad_hoc_skipped->update;
 
+    my $hidden = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '54399',
+        'uprn' => '554399',
+    });
+    $hidden->state('hidden');
+    $hidden->update;
+
+    my $cc_to_ignore = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'credit_card',
+        'property_id' => '54399',
+        'uprn' => '554399',
+    });
+    $cc_to_ignore->state('unconfirmed');
+    $cc_to_ignore->update;
+
     my $integ = Test::MockModule->new('Integrations::Pay360');
     $integ->mock('config', sub { return { dd_sun => 'sun', dd_client_id => 'client' }; } );
     $integ->mock('call', sub {
@@ -1008,6 +1028,21 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
                             PayerReference => "GGW554321",
+                            PayerSortCode => "12345",
+                            ProductName => "Garden Waste",
+                            Status => "Paid",
+                            Type => "First Time",
+                        },
+                        {   # hidden new sub
+                            AlternateKey => "",
+                            Amount => 10.00,
+                            ClientName => "London Borough of Bromley",
+                            CollectionDate => "16/03/2021",
+                            DueDate => "16/03/2021",
+                            PayerAccountHoldersName => "A Payer",
+                            PayerAccountNumber => 123,
+                            PayerName => "A Payer",
+                            PayerReference => "GGW554399",
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1387,6 +1422,7 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits;
     } [
         "no matching record found for Garden Subscription payment with id GGW554321\n",
+        "no matching record found for Garden Subscription payment with id GGW554399\n",
         "no matching service to renew for GGW754322\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "no matching record found for Garden Subscription payment with id GGW954325\n",
@@ -1430,6 +1466,12 @@ subtest 'check direct debit reconcilliation' => sub {
 
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed";
+
+    $hidden->discard_changes;
+    is $hidden->state, 'hidden', "hidden report not confirmed";
+
+    $cc_to_ignore->discard_changes;
+    is $cc_to_ignore->state, 'unconfirmed', "cc payment not confirmed";
 
     $cancel_nothing_in_echo->discard_changes;
     is $cancel_nothing_in_echo->state, 'hidden', 'hide already cancelled report';
@@ -1508,6 +1550,7 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits;
     } [
         "no matching record found for Garden Subscription payment with id GGW554321\n",
+        "no matching record found for Garden Subscription payment with id GGW554399\n",
         "no matching service to renew for GGW754322\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "no matching record found for Garden Subscription payment with id GGW954325\n",
