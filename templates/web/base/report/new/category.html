@@ -26,6 +26,12 @@ END
           [% IF group_or_cat.name %]
                 <input class="govuk-radios__input" required id="category_[% group_or_cat.id %]" type="radio" name="category" value="[% group_or_cat.name %]" data-subcategory="[% group_or_cat.id %]"[% ' checked' IF filter_group == group_or_cat.name %]>
             <label class="govuk-label govuk-radios__label" for="category_[% group_or_cat.id %]">[% group_or_cat.name %]</label>
+            [% group_hint = group_or_cat.categories.first.get_extra_metadata('group_hint') %]
+            [%~ IF group_hint %]
+            <div class="govuk-hint govuk-radios__hint">
+              [% group_hint | safe %]
+            </div>
+            [% END ~%]
           [% ELSE # A category not in a group %]
             [% cat_lc = group_or_cat.category | lower =%]
             <input class="govuk-radios__input" required id="category_[% group_or_cat.id %]" type="radio" name="category" value='[% group_or_cat.category %]'[% ' checked' IF ( report.category == group_or_cat.category || category_lc == cat_lc ) AND NOT filter_group ~%]>
@@ -34,6 +40,11 @@ END
                 ([% group_or_cat.get_extra_metadata('help_text') %])
             [% END ~%]
             </label>
+            [%~ IF group_or_cat.get_extra_metadata('category_hint') %]
+            <div class="govuk-hint govuk-radios__hint">
+              [% group_or_cat.get_extra_metadata('category_hint') | safe %]
+            </div>
+            [% END ~%]
           [%~ END =%]
             </div>
         [%~ END =%]

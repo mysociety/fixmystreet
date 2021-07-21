@@ -10,6 +10,11 @@
         <label class="govuk-label govuk-radios__label" for="subcategory_[% cat.id %]">[% cat.category_display %]
             [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
         </label>
+        [%~ IF cat.get_extra_metadata('category_hint') %]
+        <div class="govuk-hint govuk-radios__hint">
+          [% cat.get_extra_metadata('category_hint') | safe %]
+        </div>
+        [% END ~%]
         </div>
       [%~ END ~%]
     </fieldset>
