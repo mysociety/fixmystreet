@@ -1,4 +1,4 @@
-[%  IF c.user.has_permission_to('planned_reports', c.cobrand.body.id ) %] 
+[%  IF c.user.has_permission_to('report_inspect', c.cobrand.body.id ) %] 
     [%# see report's assigned user %]
     <label class="inline-text" for="assignment">[% loc('Assigned to:') %]</label>
     <p style="margin-top: 0.5em; font-style: italic">

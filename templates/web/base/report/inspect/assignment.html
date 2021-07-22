@@ -1,4 +1,6 @@
 [% IF c.user.has_permission_to('assign_report_to_user', c.cobrand.body.id) %]
+    <p>
+    <label for="assignment">[% loc('Assign to:') %]</label>
     <select class="form-control" name="assignment" id="assignment">
         [% FOR user IN c.cobrand.users %]
             <option value='[% user.id %]' 
@@ -16,4 +18,5 @@
         [%- UNLESS problem.shortlisted_user -%] selected="selected"[%- END -%] 
         >unassigned</option>
     </select>
+    </p>
 [% END %]
