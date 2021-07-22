@@ -208,4 +208,120 @@ FixMyStreet::override_config {
     };
 };
 
+for my $test (
+    {
+        update_permission => 'staff',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'none',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'none',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'staff',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'reporter-open',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'open',
+        problem_state => 'closed',
+    }
+) {
+    subtest 'Cobrand set to deny updates' => sub {
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+            updates_allowed => { birmingham => $test->{update_permission} },
+            },
+    }, sub {
+        my $problem = FixMyStreet::DB->resultset('Problem')->create(
+        {
+        postcode     => 'EH99 1SP',
+        latitude     => 1,
+        longitude    => 1,
+        areas        => 1,
+        title        => 'to be sent',
+        detail       => 'detail',
+        used_map     => 1,
+        user_id      => 1,
+        name         => 'A Name',
+        state        => $$test{problem_state},
+        service      => '',
+        cobrand      => 'default',
+        cobrand_data => '',
+        confirmed    => \"current_timestamp - '5 weeks'::interval",
+        whensent     => \"current_timestamp - '5 weeks'::interval",
+        anonymous    => 0,
+        }
+        );
+        my $cobrand = FixMyStreet::Cobrand::Birmingham->new;
+        ok($cobrand->deny_updates_by_user($problem), "Reports updates denied with $test->{update_permission} and problem $test->{problem_state}");
+    };
+    };
+};
+
+for my $test (
+    {
+        update_permission => 'reporter',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'reporter',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'reporter-open',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => '',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => '',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'open',
+        problem_state => 'confirmed',
+    }
+) {
+    subtest 'Cobrand set to allow updates' => sub {
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+            updates_allowed => { birmingham => $test->{update_permission} },
+            },
+    }, sub {
+        my $problem = FixMyStreet::DB->resultset('Problem')->create(
+        {
+        postcode     => 'EH99 1SP',
+        latitude     => 1,
+        longitude    => 1,
+        areas        => 1,
+        title        => 'to be sent',
+        detail       => 'detail',
+        used_map     => 1,
+        user_id      => 1,
+        name         => 'A Name',
+        state        => $$test{problem_state},
+        service      => '',
+        cobrand      => 'default',
+        cobrand_data => '',
+        confirmed    => \"current_timestamp - '5 weeks'::interval",
+        whensent     => \"current_timestamp - '5 weeks'::interval",
+        anonymous    => 0,
+        }
+        );
+        my $cobrand = FixMyStreet::Cobrand::Birmingham->new;
+        ok(!$cobrand->deny_updates_by_user($problem), "Reports updates allowed with $test->{update_permission} and problem $test->{problem_state}");
+    };
+    };
+};
+
 done_testing();

@@ -50,6 +50,10 @@ sub send_questionnaires_period {
         # Not all cobrands send questionnaires
         next unless $cobrand->send_questionnaires;
 
+        # If cobrand doesn't allow users to
+        # update don't send questionnaires
+        next if $cobrand->deny_updates_by_user($row);
+
         # Cobrands can also override sending per row if they wish
         my $cobrand_send = $cobrand->call_hook('send_questionnaire', $row) // 1;
 
