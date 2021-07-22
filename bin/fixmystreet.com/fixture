@@ -116,7 +116,7 @@ if ($opt->test_fixtures) {
         { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council' },
         { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks' ], name => 'TfL' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Oxfordshire County Council' },
-        { area_id => 2551, categories => [ 'Dog fouling' ], name => 'Bath and North East Somerset Council' }
+        { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council' }
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
@@ -140,6 +140,20 @@ if ($opt->test_fixtures) {
         $cat->set_extra_metadata( group => 'Street lighting' );
         $cat->update;
     }
+
+    my $drain = FixMyStreet::DB->resultset('Contact')->find({
+        body => $bodies->{2551},
+        category => 'Blocked drain',
+    });
+    $drain->set_extra_fields( { code => 'Extra Question' } );
+    $drain->update;
+
+    my $ab_vehicle = FixMyStreet::DB->resultset('Contact')->find({
+        body => $bodies->{2551},
+        category => 'Abandoned vehicles',
+    });
+    $ab_vehicle->set_extra_fields( { code => 'Extra Question' } );
+    $ab_vehicle->update;
 
     my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2234},
