@@ -307,7 +307,7 @@ sub bin_services_for_address {
         "FOOD_BINS" => "Food bins",
         "ASSISTED_COLLECTION" => "Assisted collection",
 
-        # For missed collections
+        # For missed collections or repairs
         6533 => "240L Black",
         6534 => "240L Green",
     };
@@ -363,6 +363,9 @@ sub bin_services_for_address {
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
+    $self->{c}->stash->{open_service_requests} = $open_requests;
+
+    $self->{c}->stash->{waste_features} = $self->feature('waste_features');
 
     my @out;
 
@@ -389,13 +392,13 @@ sub bin_services_for_address {
             request_allowed => $container_request_ids{$container_id} ? 1 : 0,
             # what's the maximum number of this container that can be request?
             request_max => $container_request_max{$container_id} || 0,
-            # is there already an open bin requset for this container?
+            # is there already an open bin request for this container?
             request_open => @request_service_ids_open ? 1 : 0,
             # can this collection be reported as having been missed?
-            # allowed if we're within 24 hours of the last collection
-            report_allowed => DateTime->now < $last->add(hours => 24),
-            # is there already a missed collection report open for this container?
-            report_open => @report_service_ids_open ? 1 : 0,
+            report_allowed => $self->_waste_report_allowed($last),
+            # is there already a missed collection report open for this container
+            # (or a missed assisted collection for any container)?
+            report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         push @out, $row;
     }
@@ -424,6 +427,18 @@ sub bin_services_for_address {
     };
 
     return \@out;
+}
+
+sub _waste_report_allowed {
+    my ($self, $last) = @_;
+
+    # missed bin reports are allowed if we're within 36 hours of end the last collection day
+    # e.g.:
+    #  A bin not collected on Tuesday can be rung though any time on collection day
+    #  Then any time the next day
+    #  Then up to noon the next day, which is when missed bins are collected
+
+    return DateTime->now < $last->truncate(to => 'day')->add(hours => 60);
 }
 
 sub bin_future_collections {
@@ -499,10 +514,10 @@ sub waste_munge_report_form_data {
         # The details of the bins that were missed are stored in the problem body.
 
         $data->{assisted_detail} = "";
-        $data->{assisted_detail} .= "Missed collection: food bins\n\n" if $data->{"service-FOOD_BINS"};
-        $data->{assisted_detail} .= "Missed collection: black bin\n\n" if $data->{"service-6533"};
-        $data->{assisted_detail} .= "Missed collection: brown bin\n\n" if $data->{"service-6534"};
-        $data->{assisted_detail} .= "Missed collection: green bin\n\n" if $data->{"service-6579"};
+        $data->{assisted_detail} .= "Food bins\n\n" if $data->{"service-FOOD_BINS"};
+        $data->{assisted_detail} .= "Black bin\n\n" if $data->{"service-6533"};
+        $data->{assisted_detail} .= "Green bin\n\n" if $data->{"service-6534"};
+        $data->{assisted_detail} .= "Brown bin\n\n" if $data->{"service-6579"};
 
         $data->{"service-FOOD_BINS"} = 0;
         $data->{"service-6533"} = 0;
@@ -551,11 +566,12 @@ sub waste_munge_report_data {
 
     my $service_id = $container_service_ids{$id};
     my $container = $c->stash->{containers}{$id};
-    $data->{title} = "Report missed $container";
     if ( $data->{assisted_detail} ) {
+        $data->{title} = "Report missed assisted collection";
         $data->{detail} = $data->{assisted_detail};
         $data->{detail} .= "\n\n" . $c->stash->{property}->{address};
     } else {
+        $data->{title} = "Report missed $container";
         $data->{detail} = $c->stash->{property}->{address};
     }
 
@@ -572,10 +588,10 @@ sub waste_munge_enquiry_data {
     );
 
 
-    my $bin = $container_ids{$data->{service_id}};
+    my $bin = $container_ids{$self->{c}->get_param('service_id')};
     $data->{category} = $self->{c}->get_param('category');
-    $data->{title} = "$bin $data->{category}";
-    $data->{detail} = $self->{c}->stash->{property}->{address};
+    $data->{title} = $bin;
+    $data->{detail} = $data->{category} . "\n\n" . $self->{c}->stash->{property}->{address};
 }
 
 

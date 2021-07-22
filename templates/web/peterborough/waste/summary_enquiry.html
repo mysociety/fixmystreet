@@ -1,0 +1,34 @@
+[%
+title = 'Submit enquiry';
+thing = 'enquiry';
+summary_title = data.category;
+step1 = 'enquiry';
+
+service_id = c.get_param('service_id');
+cat = c.get_param('category');
+cats = {
+  'Not returned to collection point' = 'The bin wasn’t returned to the collection point',
+  'Lid' = 'The bin’s lid is damaged',
+  'Wheels' = 'The bin’s wheels are damaged',
+};
+cat_display = cats.$cat;
+
+%]
+
+[% BLOCK answers %]
+  [% FOR extra IN data.keys.grep('^extra_') %]
+    [% NEXT UNLESS data.$extra %]
+    [% SET extra_name = extra.replace('extra_', '') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% extra_name | title %]</dt>
+        <dd class="govuk-summary-list__value">[% data.$extra %]</dd>
+    </div>
+  [% END %]
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Problem</dt>
+    <dd class="govuk-summary-list__value">[% containers.$service_id %]: [% cat_display %]</dd>
+</div>
+
+[% END %]
+
+[% PROCESS waste/summary.html %]
