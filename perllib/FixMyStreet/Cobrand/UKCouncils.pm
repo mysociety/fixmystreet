@@ -331,6 +331,12 @@ sub munge_report_new_bodies {
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
         }
     }
+
+    # Environment agency added with odour category for FixmyStreet
+    # in all England areas, but should not show for cobrands
+    if ( $bodies{'Environment Agency'} ) {
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Environment Agency' } values %$bodies;
+    }
 }
 
 sub munge_report_new_contacts {

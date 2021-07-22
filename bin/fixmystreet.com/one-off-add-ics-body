@@ -1,0 +1,92 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use v5.14;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use FixMyStreet::MapIt;
+use Term::ANSIColor;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+my $db;
+END {
+    if ($db) {
+        $opt->commit ? $db->txn_commit : $db->txn_rollback;
+    }
+}
+
+$db = FixMyStreet::DB->schema->storage;
+$db->txn_begin;
+if (!$opt->commit) {
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
+}
+
+my $areas = mySociety::MaPit::call('areas', 'CTY,UTA,MTD,LBO');
+
+my $body_ics = FixMyStreet::DB->resultset("Body")->find_or_create({
+	name => 'Environment Agency',
+});
+
+my $new_category_name = 'Odour';
+
+my $cat = FixMyStreet::DB->resultset('Contact')->find_or_new({
+	body => $body_ics,
+	category => $new_category_name,
+	email => 'ics@environment-agency.gov.uk',
+	state =>    'confirmed',
+	editor => 'one-off-add-ics-body',
+	whenedited => \'current_timestamp',
+	note => 'Adding odour category automatically',
+});
+
+unless ($cat->in_storage) {
+	$cat->set_extra_fields({
+	code => 'odour-level',
+	datatype => 'singlevaluelist',
+	description => '
+		<div>How strong is the odour?</div>
+		<ul>
+			<li>Very faint odour (need to inhale into the wind to smell anything)</li>
+			<li>Faint odour (you can detect an odour when you inhale normally)</li>
+			<li>Distinct odour (there is clearly an odour in the air as you leave your car or enter the area)</li>
+			<li>Strong odour (a bearable odour but strong, you could stay in the area for some time)</li>
+			<li>Very strong odour (unpleasantly strong, you will want to leave the area quickly)</li>
+			<li>Extremely strong odour (likely to cause nausea and a strong need to remove yourself from the odour immediately)</li>
+		</ul>
+				', 
+	order => 100,
+	required => 'true',
+	variable => 'true',
+	values => [
+	{ key => '1', name => 'Very faint odour' },
+	{ key => '2', name => 'Faint odour' },
+	{ key => '3', name => 'Distinct odour' },
+	{ key => '4', name => 'Strong odour' },
+	{ key => '5', name => 'Very strong odour' },
+	{ key => '6', name => 'Extremely strong odour' },
+	],
+	},
+	);
+$cat->insert;
+}
+
+for my $area ( values %{ $areas } ) {
+    next unless $area->{country} eq 'E';
+    FixMyStreet::DB->resultset('BodyArea')->find_or_create( { body => $body_ics, area_id => $area->{id} } );
+}
