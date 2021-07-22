@@ -549,8 +549,7 @@ sub bin_services_for_address {
             # is there already an open bin request for this container?
             request_open => @request_service_ids_open ? 1 : 0,
             # can this collection be reported as having been missed?
-            # allowed if we're within 24 hours of the last collection
-            report_allowed => DateTime->now < $last->add(hours => 24),
+            report_allowed => $self->_waste_report_allowed($last),
             # is there already a missed collection report open for this container
             # (or a missed assisted collection for any container)?
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
@@ -582,6 +581,18 @@ sub bin_services_for_address {
     };
 
     return \@out;
+}
+
+sub _waste_report_allowed {
+    my ($self, $last) = @_;
+
+    # missed bin reports are allowed if we're within 36 hours of end the last collection day
+    # e.g.:
+    #  A bin not collected on Tuesday can be rung though any time on collection day
+    #  Then any time the next day
+    #  Then up to noon the next day, which is when missed bins are collected
+
+    return DateTime->now < $last->truncate(to => 'day')->add(hours => 60);
 }
 
 sub bin_future_collections {

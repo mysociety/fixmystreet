@@ -8,7 +8,6 @@
     [% INCLUDE 'waste/_address_display.html' %]
   [% END %]
   <form class="waste" method="post">
-    [% PROCESS form %]
     [% UNLESS property %]
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -20,6 +19,7 @@
       </div>
     </div>
     [% END %]
+    [% PROCESS form %]
 </form>
 
 [% INCLUDE footer.html %]
