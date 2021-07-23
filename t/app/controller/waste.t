@@ -938,6 +938,8 @@ FixMyStreet::override_config {
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('client_reference'), 'GGW1000000002', 'correct client reference on report';
+        is $new_report->get_extra_field_value('current_containers'), '', 'correct current bins on report';
+        is $new_report->get_extra_field_value('new_containers'), '1', 'correct new bins on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
@@ -972,9 +974,8 @@ FixMyStreet::override_config {
     subtest 'check new sub credit card payment with no bins required' => sub {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
-        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 1 } });
         $mech->submit_form_ok({ with_fields => {
-                current_bins => 1,
                 bins_wanted => 1,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
@@ -994,6 +995,8 @@ FixMyStreet::override_config {
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('current_containers'), '1', 'correct current bins on report';
+        is $new_report->get_extra_field_value('new_containers'), '', 'correct new bins on report';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $new_report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
@@ -1021,9 +1024,8 @@ FixMyStreet::override_config {
     subtest 'check new sub credit card payment with one less bin required' => sub {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });
-        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
         $mech->submit_form_ok({ with_fields => {
-                current_bins => 2,
                 bins_wanted => 1,
                 payment_method => 'credit_card',
                 name => 'Test McTest',
