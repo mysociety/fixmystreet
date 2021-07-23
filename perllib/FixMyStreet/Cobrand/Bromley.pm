@@ -756,17 +756,11 @@ sub bin_services_for_address {
         my $garden_overdue = $expired{$_->{Id}};
         if ($service_name eq 'Garden Waste') {
             $garden = 1;
-            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+            my $data = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskLines}, 'ServiceTaskLine');
             foreach (@$data) {
-                next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
-                    if ( $_->{DatatypeName} eq 'Quantity' ) {
-                        $garden_bins = $_->{Value};
-                        $garden_cost = $self->garden_waste_cost($garden_bins) / 100;
-                    }
-                }
+                next unless $_->{AssetTypeName} eq 'Garden 240L'; # DatatypeId 5093
+                $garden_bins = $_->{ScheduledAssetQuantity};
+                $garden_cost = $self->garden_waste_cost($garden_bins) / 100;
             }
             $request_max = $garden_bins;
 
@@ -1711,14 +1705,10 @@ sub waste_get_sub_quantity {
     my ($self, $service) = @_;
 
     my $quantity;
-    for my $data ( @{ $service->{Data}->{ExtensibleDatum} } ) {
-        next unless $data->{DatatypeName} eq 'LBB - GW Container';
-        my $kids = $data->{ChildData}->{ExtensibleDatum};
-        $kids = [ $kids ] if ref $kids eq 'HASH';
-        for my $child ( @$kids ) {
-            next unless $child->{DatatypeName} eq 'Quantity';
-            $quantity = $child->{Value}
-        }
+    my $lines = Integrations::Echo::force_arrayref($service->{ServiceTaskLines}, 'ServiceTaskLine');
+    for my $data ( @$lines ) {
+        next unless $data->{AssetTypeName} eq 'Garden 240L'; # DatatypeId 5093
+        $quantity = $data->{ScheduledAssetQuantity};
     }
 
     return $quantity;

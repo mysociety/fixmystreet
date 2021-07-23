@@ -416,6 +416,10 @@ FixMyStreet::override_config {
                 ServiceTasks => { ServiceTask => {
                     Id => 405,
                     Data => { ExtensibleDatum => [ { DatatypeName => 'LBB - GW Container', ChildData => { ExtensibleDatum => { DatatypeName => 'Quantity', Value => 1, } }, } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 1,
+                    } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         StartDate => { DateTime => '2019-04-01T23:00:00Z' },
                         EndDate => { DateTime => '2050-05-14T23:00:00Z' },
@@ -869,6 +873,10 @@ subtest 'check direct debit reconcilliation' => sub {
                             Value => 2,
                         } },
                     } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 2,
+                    } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                         LastInstance => {
@@ -904,6 +912,10 @@ subtest 'check direct debit reconcilliation' => sub {
                             DatatypeName => 'Quantity',
                             Value => 1,
                         } },
+                    } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 1,
                     } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         EndDate => { DateTime => '2020-01-01T00:00:00Z' },

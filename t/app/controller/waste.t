@@ -376,6 +376,10 @@ FixMyStreet::override_config {
                                 Value => 44,
                             } ] },
                         } ] },
+                        ServiceTaskLines => { ServiceTaskLine => [ {
+                            AssetTypeName => 'Garden 240L',
+                            ScheduledAssetQuantity => 1,
+                        } ] },
                         ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                             StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -480,6 +484,10 @@ FixMyStreet::override_config {
                                 DatatypeName => 'Container',
                                 Value => 44,
                             } ] },
+                        } ] },
+                        ServiceTaskLines => { ServiceTaskLine => [ {
+                            AssetTypeName => 'Garden 240L',
+                            ScheduledAssetQuantity => 1,
                         } ] },
                         ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                             ScheduleDescription => 'every other Monday',
@@ -609,6 +617,10 @@ sub _garden_waste_service_units {
                     Value => 44,
                 } ] },
             } ] },
+            ServiceTaskLines => { ServiceTaskLine => [ {
+                AssetTypeName => 'Garden 240L',
+                ScheduledAssetQuantity => $bin_count,
+            } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -724,6 +736,10 @@ FixMyStreet::override_config {
                             Value => 2,
                         } },
                     } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 2,
+                    } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                         EndDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -754,6 +770,10 @@ FixMyStreet::override_config {
                             DatatypeName => 'Quantity',
                             Value => 2,
                         } },
+                    } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 2,
                     } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -2182,6 +2202,10 @@ FixMyStreet::override_config {
                             Value => 1,
                         } },
                     } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 1,
+                    } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         StartDate => { DateTime => '2019-04-01T23:00:00Z' },
                         EndDate => { DateTime => '2020-05-14T23:00:00Z' },
@@ -2267,6 +2291,10 @@ FixMyStreet::override_config {
                             DatatypeName => 'Quantity',
                             Value => 1,
                         } },
+                    } ] },
+                    ServiceTaskLines => { ServiceTaskLine => [ {
+                        AssetTypeName => 'Garden 240L',
+                        ScheduledAssetQuantity => 1,
                     } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                         StartDate => { DateTime => '2019-04-01T23:00:00Z' },

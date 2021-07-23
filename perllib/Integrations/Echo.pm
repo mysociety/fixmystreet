@@ -312,6 +312,10 @@ sub GetServiceUnitsForObject {
                     Value => 44,
                 } ] },
             } ] },
+            ServiceTaskLines => { ServiceTaskLine => [ {
+                AssetTypeName => 'Garden 240L',
+                ScheduledAssetQuantity => 1,
+            } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
