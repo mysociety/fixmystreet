@@ -1769,9 +1769,10 @@ sub redirect_or_confirm_creation : Private {
         }
         # If the user has shortlist permission, and either we're not on a
         # council cobrand or the just-created problem is owned by the cobrand
-        # (so we'll stay on-cobrand), redirect to the problem.
+        # (so we'll stay on-cobrand), redirect to the problem (except WasteWorks).
         if ($c->user_exists && $c->user->has_body_permission_to('planned_reports') &&
-            (!$c->cobrand->is_council || $c->cobrand->owns_problem($report))) {
+            (!$c->cobrand->is_council || $c->cobrand->owns_problem($report)) &&
+            $report->cobrand_data ne 'waste') {
             $c->log->info($report->user->id . ' is an inspector - redirecting straight to report page for ' . $report->id);
             $c->res->redirect( $report->url );
         } else {
