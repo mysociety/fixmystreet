@@ -1485,7 +1485,7 @@ sub waste_reconcile_direct_debits {
                 # if there's not a service then it's fine as it's already been cancelled
                 if ( $service ) {
                     $r->set_extra_metadata('dd_date', $date);
-                    $r->state('confirmed');
+                    $r->confirm;
                     $r->update;
                 # there's no service but we don't want to be processing the report all the time.
                 } else {
@@ -1612,7 +1612,7 @@ sub waste_reconcile_direct_debits {
             # if there's not a service then it's fine as it's already been cancelled
             if ( $service ) {
                 $r->set_extra_metadata('dd_date', $date);
-                $r->state('confirmed');
+                $r->confirm;
                 $r->update;
             # there's no service but we don't want to be processing the report all the time.
             } else {
