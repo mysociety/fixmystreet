@@ -32,6 +32,7 @@ FixMyStreet::override_config {
 
 my $mech = FixMyStreet::TestMech->new;
 
+
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ConfirmABAN");
@@ -84,6 +85,16 @@ FixMyStreet::override_config {
     subtest 'cobrand displays council name' => sub {
         $mech->get_ok('/reports/Bexley');
         $mech->content_contains('Bexley');
+    };
+
+    subtest 'cobrand does not show Environment Agency categories' => sub {
+        my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+        my $environment_agency = $mech->create_body_ok(2494, 'Environment Agency');
+        my $odour_contact = $mech->create_contact_ok(body_id => $environment_agency->id, category => 'Odour', email => 'ics@example.com');
+        my $tree_contact = $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_contains('Trees');
+        $mech->content_lacks('Odour');
     };
 
     my $report;
@@ -330,5 +341,7 @@ EOF
     set_fixed_time('2019-12-25T12:00:00Z');
     is $cobrand->_is_out_of_hours(), 1, 'out of hours on bank holiday';
 };
+
+
 
 done_testing();

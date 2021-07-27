@@ -208,4 +208,103 @@ FixMyStreet::override_config {
     };
 };
 
+my $cobrand = FixMyStreet::Cobrand::Birmingham->new;
+
+for my $test (
+    {
+        update_permission => 'staff',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'none',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'none',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'staff',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'reporter-open',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'open',
+        problem_state => 'closed',
+    }
+) {
+    subtest 'Cobrand set to deny updates' => sub {
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+            updates_allowed => { birmingham => $test->{update_permission} },
+            },
+    }, sub {
+        my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test problem', {
+             state => "$$test{problem_state}",
+        });
+        ok($cobrand->deny_updates_by_user($problem), "Reports updates denied with $test->{update_permission} and problem $test->{problem_state}");
+        $mech->delete_problems_for_body($body->id);
+    };
+    };
+};
+
+for my $test (
+    {
+        update_permission => 'reporter',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => 'reporter',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'reporter-open',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => '',
+        problem_state => 'confirmed',
+    },
+    {
+        update_permission => '',
+        problem_state => 'closed',
+    },
+    {
+        update_permission => 'open',
+        problem_state => 'confirmed',
+    }
+) {
+    subtest 'Cobrand set to allow updates' => sub {
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+            updates_allowed => { birmingham => $test->{update_permission} },
+            },
+    }, sub {
+        my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test problem', {
+             state => "$$test{problem_state}",
+        });
+        ok(!$cobrand->deny_updates_by_user($problem), "Reports updates allowed with $test->{update_permission} and problem $test->{problem_state}");
+        $mech->delete_problems_for_body($body->id);
+    };
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet shows Environment Agency categories' => sub {
+        my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+        my $environment_agency = $mech->create_body_ok(2494, 'Environment Agency');
+        my $odour_contact = $mech->create_contact_ok(body_id => $environment_agency->id, category => 'Odour', email => 'ics@example.com');
+        my $tree_contact = $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_contains('Trees');
+        $mech->content_contains('Odour');
+    };
+};
+
 done_testing();
