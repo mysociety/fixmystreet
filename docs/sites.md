@@ -8,36 +8,13 @@ title: Sites running on the FixMyStreet platform
 FixMyStreet works everywhere! Take a look at how FixmyStreet is being
 used in cities and countries across the world.
 
-<h2>Africa</h2>
-<h3>Uganda</h3>
-Site: <a href="http://fixmycommunity.ug/">FixMyCommunity</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://cewit.or.ug">CEW-IT</a>
-
 <h2>Americas</h2>
-<h3>Dominican Republic</h3>
-Site: <a href="https://www.cuidomiciudad.do/">CuidoMiCiudad</a>
-<br>
-Launched: 2017
-<br>
-Run by: <a href="http://www.adn.gob.do/">Ayuntamiento del Distrito Nacional (ADN)</a>
-
 <h3>Uruguay</h3>
 Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
 <br>
 Launched: 2014
 <br>
 Run by: <a href="http://www.datauy.org/">DATA</a>
-
-<h2>Asia</h2>
-<h3>Malaysia</h3>
-Site: <a href="http://aduanku.my/">Aduanku</a>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://sinarproject.org/">Sinar project</a>
 
 <h2>Australasia</h2>
 <h3>Australia</h3>
@@ -64,13 +41,6 @@ Launched: 2012
 Run by: <a href="http://mygov.ie/">mygov.ie</a>
 
 <h3>Kosovo</h3>
-Site: <a href="https://lokalizo.org">Lokalizo</a>
-<br>
-Launched: 2017
-<br>
-Run by: <a href="http://pi-ks.org/">Prosperity Initiative in Kosovo (PIKS)</a>
-
-<h3>Kosovo</h3>
 Site: <a href="https://ndreqe.com">ndreqe.</a>
 <br>
 Launched: 2017
@@ -83,20 +53,6 @@ Site: <a href="http://www.fiksgatami.no/">FiksGataMi</a>
 Launched: 2011
 <br>
 Run by: <a href="http://www.nuug.no/">NUUG</a>
-
-<h3>Alcantarilla, Spain</h3>
-Site: <a href="http://arreglamibarrio.org/">Arregla Mi Barrio</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://ocm.ocmalcantarilla.es/">Observatorio Ciudadano Municipal de Alcantarilla</a>
-
-<h3>Alcalá de Henares, Spain</h3>
-Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://www.kyopol.net">La Asociación KYOPOL</a>
 
 <h3>Sweden</h3>
 Site: <a href="http://www.fixamingata.se/">FixaMinGata</a>
@@ -146,3 +102,44 @@ Launched: 2014
 <br>
 Run by: <a href="http://www.ciudadviva.cl/">Ciudad Viva</a>
 
+<h3>Uganda</h3>
+Site: <a href="http://fixmycommunity.ug/">FixMyCommunity</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://cewit.or.ug">CEW-IT</a>
+
+<h3>Dominican Republic</h3>
+Site: <a href="https://www.cuidomiciudad.do/">CuidoMiCiudad</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://www.adn.gob.do/">Ayuntamiento del Distrito Nacional (ADN)</a>
+
+<h3>Malaysia</h3>
+Site: <a href="http://aduanku.my/">Aduanku</a>
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://sinarproject.org/">Sinar project</a>
+
+<h3>Kosovo</h3>
+Site: <a href="https://lokalizo.org">Lokalizo</a>
+<br>
+Launched: 2017
+<br>
+Run by: <a href="http://pi-ks.org/">Prosperity Initiative in Kosovo (PIKS)</a>
+
+<h3>Alcantarilla, Spain</h3>
+Site: <a href="http://arreglamibarrio.org/">Arregla Mi Barrio</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://ocm.ocmalcantarilla.es/">Observatorio Ciudadano Municipal de Alcantarilla</a>
+
+<h3>Alcalá de Henares, Spain</h3>
+Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://www.kyopol.net">La Asociación KYOPOL</a>
