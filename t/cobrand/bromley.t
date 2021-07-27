@@ -1569,9 +1569,11 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Container_Instruction_Action'), 2, "correct containter instruction";
     is $p->get_extra_field_value('Container_Instruction_Quantity'), 1, "cancel has correct number of bins";
     is $p->category, 'Cancel Garden Subscription', 'cancel has correct category';
+    is $p->title, 'Garden Subscription - Cancel', 'cancel has correct title';
     is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for cancelled";
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->get_extra_field_value('PaymentCode'), "GGW654323", 'correct echo payment code field';
+    is $p->get_extra_field_value('Subscription_End_Date'), "2021-03-19", 'correct end subscription date';
     is $p->state, 'confirmed';
 
     my $cancel_no_extended = FixMyStreet::DB->resultset('Problem')->search({

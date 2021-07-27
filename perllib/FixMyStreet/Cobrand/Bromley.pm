@@ -1635,6 +1635,7 @@ sub waste_reconcile_direct_debits {
                 warn "no matching service to cancel for $payer\n";
                 next;
             }
+            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
             my $cancel = _duplicate_waste_report($p, 'Cancel Garden Subscription', {
                 service_id => 545,
                 uprn => $uprn,
@@ -1643,7 +1644,9 @@ sub waste_reconcile_direct_debits {
                 Container_Instruction_Quantity => $self->waste_get_sub_quantity($service),
                 LastPayMethod => $self->bin_payment_types->{direct_debit},
                 PaymentCode => $payer,
+                Subscription_End_Date => $now->ymd,
             } );
+            $cancel->title('Garden Subscription - Cancel');
             $cancel->set_extra_metadata('dd_date', $date);
             $cancel->insert;
             $handled = 1;
