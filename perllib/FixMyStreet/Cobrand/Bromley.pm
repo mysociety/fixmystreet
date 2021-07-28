@@ -1688,7 +1688,7 @@ sub _duplicate_waste_report {
         detail => $report->detail,
         postcode => $report->postcode,
         used_map => $report->used_map,
-        name => $report->user->name,
+        name => $report->user->name || $report->name,
         areas => $report->areas,
         anonymous => $report->anonymous,
         state => 'confirmed',
