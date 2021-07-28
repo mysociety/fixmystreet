@@ -2,6 +2,8 @@
 
 use v5.14;
 use warnings;
+# avoid wide character warnings
+no warnings 'utf8';
 
 BEGIN {
     use File::Basename qw(dirname);
@@ -20,6 +22,7 @@ my ($opt, $usage) = describe_options(
     [ 'name=s', "Name of body" ],
     [ 'import=s', "File to import" ],
     [ 'commit', "Actually commit changes to the database" ],
+    [ 'update-templates', "Update existing templates (default is to skip)" ],
     [ 'categories=s', "pipe-separated list of categories to export contacts for and filter templates by" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
@@ -32,7 +35,7 @@ my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opt->name }) or d
 my @categories = split(/\|/, ($opt->{categories} || ''));
 
 if ($opt->import) {
-    import($opt->import);
+    import($opt->import, $opt->update_templates);
 } else {
     export();
 }
@@ -102,6 +105,7 @@ sub export {
 
 sub import {
     my $file = shift;
+    my $update_templates = shift;
 
     my $json = path($file)->slurp;
     my $out = $J->decode($json);
@@ -130,20 +134,29 @@ sub import {
 
     foreach (@{$out->{templates}}) {
         my $existing = $body->response_templates->search({ title => $_->{title} })->single;
-        if ($existing) {
+        if ($existing && !$update_templates) {
             warn "Template with title $_->{title} already exists, skipping";
             next;
         }
-        my $template = $body->response_templates->new({
+        my $template = $body->response_templates->update_or_new({
             title => $_->{title},
             text => $_->{text},
             state => $_->{state},
             auto_response => $_->{auto_response},
             external_status_code => $_->{external_status_code},
         });
-        $template->insert;
+        $template->insert unless $template->in_storage;
         foreach (@{$_->{categories}}) {
-            my $contact = $body->contacts->find({ category => $_ }) or die "Cannot find category $_ for template " . $template->title . "\n";
+            my $contact = $body->contacts->find({ category => $_ });
+            unless ( $contact ) {
+                my $msg = "Cannot find category $_ for template " . $template->title . "\n";
+                if ($update_templates) {
+                    warn $msg;
+                    next;
+                } else {
+                    die $msg;
+                }
+            }
             $template->contact_response_templates->find_or_create({
                 contact_id => $contact->id,
             });
