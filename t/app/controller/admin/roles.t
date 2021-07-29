@@ -22,6 +22,12 @@ $user->user_body_permissions->create({
     permission_type => 'report_edit_priority',
 });
 
+my $contact = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Traffic lights',
+    email => 'lights@example.com'
+);
+
 my $role_a = FixMyStreet::DB->resultset("Role")->create({
     body => $body,
     name => 'Role A',
@@ -77,6 +83,17 @@ FixMyStreet::override_config {
     subtest 'delete a role' => sub {
         $mech->submit_form_ok({ button => 'delete_role' });
         $mech->content_lacks('Role A');
+    };
+
+    subtest 'adding category restrictions to a role' => sub {
+        $mech->get_ok("/admin/roles");
+        $mech->follow_link_ok({ text => 'Edit' });
+
+        my $contact_id = $contact->id;
+        $mech->content_contains("contacts[$contact_id]");
+        $mech->submit_form_ok({ with_fields => { "contacts[$contact_id]" =>  1 } });
+        $mech->follow_link_ok({ text => 'Edit' });
+        $mech->content_like(qr/name="contacts\[$contact_id\]"[^>]*checked/);
     };
 
     subtest 'assign a user to a role' => sub {

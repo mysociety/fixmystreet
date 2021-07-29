@@ -557,6 +557,10 @@ maintenance) to a staff user by editing the user and checking the relevant categ
 staff user, when logged in, will then only see reports within those categories. This is useful where a
 staff user only deals with reports of a specific type.
 
+Roles can also have categories associated with them. This works in the same way as assigning categories
+to a user. You can assign categories to a role by editing the role and checking the relevant category
+boxes. Users will then only be able to see categories relevant to their role.
+
 #### Removing staff status from accounts
 
 To remove the staff status from an account visit the user page and
