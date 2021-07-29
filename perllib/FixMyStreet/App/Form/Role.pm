@@ -6,6 +6,7 @@ extends 'HTML::FormHandler::Model::DBIC';
 use namespace::autoclean;
 
 has 'body_id' => ( isa => 'Int', is => 'ro' );
+has 'categories' => ( isa => 'Maybe[ArrayRef[Int]]', is => 'rw' );
 
 has '+widget_name_space' => ( default => sub { ['FixMyStreet::App::Form::Widget'] } );
 has '+widget_tags' => ( default => sub { { wrapper_tag => 'p' } } );
@@ -22,6 +23,7 @@ has_field 'permissions' => (
 before 'update_model' => sub {
     my $self = shift;
     $self->item->body_id($self->body_id) if $self->body_id;
+    $self->item->set_extra_metadata('categories', $self->categories);
 };
 
 sub _build_language_handle { FixMyStreet::App::Form::I18N->new }

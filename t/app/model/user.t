@@ -100,6 +100,23 @@ subtest 'OIDC ids can be manipulated correctly' => sub {
 
 };
 
+subtest 'user categories includes role categories' => sub {
+    my $user = $problem->user;
+
+    my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+    my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'Cows', email => 'cows@example.net' );
+    my $role = $user->roles->create({
+        body => $body,
+        name => 'Role A',
+        permissions => ['moderate', 'user_edit'],
+    });
+    $role->set_extra_metadata('categories', [$contact->id]);
+    $role->update;
+    $user->add_to_roles($role);
+
+    is $user->categories_string, 'Cows';
+};
+
 done_testing();
 
 sub create_update {
