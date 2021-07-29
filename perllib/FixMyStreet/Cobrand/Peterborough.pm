@@ -311,6 +311,7 @@ sub _flytipping_categories { [
     "Hazardous fly tipping",
     "Non offensive graffiti",
     "Offensive graffiti",
+    "Offensive graffiti - STAFF ONLY",
 ] }
 
 =head2 Waste product code

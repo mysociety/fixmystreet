@@ -48,7 +48,7 @@ var arcgis_defaults = $.extend(true, {}, defaults, {
     geometryName: 'SHAPE'
 });
 
-var waste_categories = ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti' ];
+var waste_categories = ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ];
 
 fixmystreet.assets.add(tilma_defaults, {
     http_options: {
