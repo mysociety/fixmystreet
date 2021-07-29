@@ -1364,7 +1364,7 @@ sub waste_reconcile_direct_debits {
     my $self = shift;
 
     my $today = DateTime->now;
-    my $start = $today->clone->add( days => -7 );
+    my $start = $today->clone->add( days => -14 );
 
     my $config = $self->feature('payment_gateway');
     my $i = Integrations::Pay360->new({
