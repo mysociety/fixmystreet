@@ -1648,6 +1648,7 @@ sub waste_reconcile_direct_debits {
             } );
             $cancel->title('Garden Subscription - Cancel');
             $cancel->set_extra_metadata('dd_date', $date);
+            $cancel->confirm;
             $cancel->insert;
             $handled = 1;
         }
