@@ -123,6 +123,8 @@
         - Allow throttling by user login attempts
     - Changes
         - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
+    - New features:
+        - Roles can now have category restrictions like users.
 
 * v3.1 (16th November 2020)
     - Security:

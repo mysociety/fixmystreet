@@ -999,6 +999,27 @@ FixMyStreet::override_config {
         $mech->content_lacks('shortlist');
         $contact2->unset_extra_metadata('assigned_users_only');
         $contact2->update;
+
+        # Now add user to a role with a category of "Sheep".
+        # User should then be able to see staff things on 2 and 3.
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        my $role = $user->roles->create({
+            body => $oxon,
+            name => 'Role B',
+            permissions => ['moderate', 'planned_reports'],
+        });
+        $role->set_extra_metadata('categories', [$contact2->id]);
+        $role->update;
+        $user->add_to_roles($role);
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $mech->get_ok("/report/$report3_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $user->unset_extra_metadata('assigned_categories_only');
+        $user->update;
     };
 
     subtest 'instruct defect' => sub {
