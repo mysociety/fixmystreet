@@ -55,7 +55,17 @@ sub item :PathPart('admin/roles') :Chained :CaptureArgs(1) {
 
 sub edit :PathPart('') :Chained('item') :Args(0) {
     my ($self, $c) = @_;
-    return $self->form($c, $c->stash->{obj});
+
+    my $role = $c->stash->{obj};
+
+    $c->stash->{body} = $role->body;
+    $c->forward('/admin/fetch_contacts');
+    $c->forward('/admin/stash_contacts_for_template', [
+        \@{$role->get_extra_metadata('categories') || []},
+    ]);
+    $c->forward('/report/stash_category_groups', [ $c->stash->{contacts}, { combine_multiple => 1 } ]);
+
+    return $self->form($c, $role);
 }
 
 sub form {
@@ -92,7 +102,18 @@ sub form {
     my $action = $role->in_storage ? 'edit' : 'add';
     my $form = FixMyStreet::App::Form::Role->new(%$opts);
     $c->stash(template => 'admin/roles/form.html', form => $form);
-    $form->process(item => $role, params => $c->req->params);
+
+    my %form_params;
+    if ($action eq 'edit') {
+        # Check which contacts should be used for this role's category restrictions.
+        my @live_contacts = $c->stash->{live_contacts}->all;
+        my @live_contact_ids = map { $_->id } @live_contacts;
+        my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
+
+        $form_params{categories} = \@new_contact_ids;
+    }
+
+    $form->process(item => $role, params => $c->req->params, %form_params);
     return unless $form->validated;
 
     $c->forward('/admin/log_edit', [ $role->id, 'role', $action ]);
