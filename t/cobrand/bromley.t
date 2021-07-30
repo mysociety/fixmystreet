@@ -124,7 +124,7 @@ for my $test (
           'attribute[easting]' => 540315,
           'attribute[northing]' => 168935,
           'attribute[service_request_id_ext]' => $report->id,
-          'attribute[report_title]' => 'Test Test 1 for ' . $body->id,
+          'attribute[report_title]' => 'Test Test 1 for ' . $body->id . ' | ROLES: Role A',
           'jurisdiction_id' => 'FMS',
           address_id => undef,
         },
@@ -148,7 +148,7 @@ for my $test (
         feature_id => '1234',
         expected => {
           'attribute[service_request_id_ext]' => $report->id,
-          'attribute[report_title]' => 'Test Test 1 for ' . $body->id . ' | ID: 1234',
+          'attribute[report_title]' => 'Test Test 1 for ' . $body->id . ' | ID: 1234 | ROLES: Role A',
         },
     },
 ) {
