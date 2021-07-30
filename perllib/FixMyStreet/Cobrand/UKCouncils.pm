@@ -54,7 +54,7 @@ sub restriction {
 # body. Except TfL and Highways England.
 sub body {
     my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'Highways England'] } })->first;
+    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'Highways England', 'Environment Agency'] } })->first;
     return $body;
 }
 
