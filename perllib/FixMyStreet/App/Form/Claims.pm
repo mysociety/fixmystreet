@@ -339,6 +339,7 @@ has_field incident_time => (
     required => 1,
     type => 'Text',
     html5_type_attr => 'time',
+    tags => { hint => 'For example 06:30 PM or 18:30 depending on your settings' },
     label => 'What time did the incident happen?',
 );
 
