@@ -1575,6 +1575,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('PaymentCode'), "GGW654323", 'correct echo payment code field';
     is $p->get_extra_field_value('Subscription_End_Date'), "2021-03-19", 'correct end subscription date';
     is $p->state, 'confirmed';
+    ok $p->confirmed, "confirmed is not null";
 
     my $cancel_no_extended = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I7:6654326%' }
@@ -1594,6 +1595,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->get_extra_field_value('PaymentCode'), "GGW6654326", 'correct echo payment code field';
     is $p->state, 'confirmed';
+    ok $p->confirmed, "confirmed is not null";
 
     my $processed = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I6:654324%' }
@@ -1615,6 +1617,7 @@ subtest 'check direct debit reconcilliation' => sub {
 
     $unprocessed_cancel->discard_changes;
     is $unprocessed_cancel->state, 'confirmed', 'Unprocessed cancel is confirmed';
+    ok $unprocessed_cancel->confirmed, "confirmed is not null";
     is $unprocessed_cancel->get_extra_metadata('dd_date'), "21/02/2021", "dd date set for unprocessed cancelled";
 
     $failed_new_sub->discard_changes;
