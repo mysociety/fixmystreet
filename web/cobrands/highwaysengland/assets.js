@@ -90,14 +90,18 @@ fixmystreet.assets.add(defaults, {
     always_visible: true,
     non_interactive: true,
     road: true,
-    asset_category: ['Litter'],
+    // asset_category: ["Flytipping"],
+    all_categories: true,
     asset_type: 'road',
     actions: {
         found: function (layer, feature) {
-            alert("Unexpected");
+            $('#js-top-message').hide();
+            $('.js-reporting-page--category').addClass('hidden-js');
+            console.warn(feature);
+            return false;
         },
         not_found: function(layer) {
-            console.warn("Not found");
+            console.warn("Not found", layer);
             alert("Not found");
         }
     },
