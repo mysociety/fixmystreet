@@ -258,7 +258,7 @@ FixMyStreet::override_config {
 
     subtest 'reference number is shown' => sub {
         $mech->get_ok('/report/' . $report->id);
-        $mech->content_contains('Council ref:&nbsp;' . $report->id);
+        $mech->content_contains('Report ref:&nbsp;' . $report->id);
     };
 };
 
