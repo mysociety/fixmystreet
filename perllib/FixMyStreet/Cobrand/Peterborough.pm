@@ -559,12 +559,17 @@ sub bin_services_for_address {
     $self->{c}->stash->{waste_features} = $self->feature('waste_features');
 
     my @out;
+    my %seen_containers;
 
     foreach (@$jobs) {
         my $last = construct_bin_date($_->{PreviousDate});
         my $next = construct_bin_date($_->{NextDate});
         my $name = $_->{JobName};
         my $container_id = $schedules{$name}->{Feature}->{FeatureType}->{ID};
+
+        # Some properties may have multiple of the same containers - only display each once.
+        next if $seen_containers{$container_id};
+        $seen_containers{$container_id} = 1;
 
         my $report_service_ids = $container_removal_ids{$container_id};
         my @report_service_ids_open = grep { $open_requests->{$_} } @$report_service_ids;
