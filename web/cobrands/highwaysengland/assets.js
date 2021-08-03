@@ -21,8 +21,7 @@ highways_style.addRules([rule_motorway, rule_a_road]);
 var highways_stylemap = new OpenLayers.StyleMap({ 'default': highways_style });
 
 var defaults = {
-    // wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/highways" : "https://tilma.mysociety.org/mapserver/highways",
-    wfs_url: "https://tilma.staging.mysociety.org/mapserver/highways",
+    wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/highways" : "https://tilma.mysociety.org/mapserver/highways",
     // this covers zoomed right out on Cumbrian sections of the M6
     max_resolution: 40,
     min_resolution: 0.0001,
@@ -90,10 +89,8 @@ fixmystreet.assets.add(defaults, {
     always_visible: true,
     non_interactive: true,
     road: true,
-    //asset_category: ["Litter", "Potholes"],
-    all_categories: true,
+    asset_category: ["Litter"],
     asset_type: 'road',
-    body: 'Highways England',
     actions: {
         found: function (layer, feature) {
             //$('#js-top-message').hide();
