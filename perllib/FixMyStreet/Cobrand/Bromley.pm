@@ -1389,7 +1389,7 @@ sub waste_reconcile_direct_debits {
     my $self = shift;
 
     my $today = DateTime->now;
-    my $start = $today->clone->add( days => -7 );
+    my $start = $today->clone->add( days => -14 );
 
     my $config = $self->feature('payment_gateway');
     my $i = Integrations::Pay360->new({
@@ -1673,6 +1673,7 @@ sub waste_reconcile_direct_debits {
             } );
             $cancel->title('Garden Subscription - Cancel');
             $cancel->set_extra_metadata('dd_date', $date);
+            $cancel->confirm;
             $cancel->insert;
             $handled = 1;
         }
@@ -1713,7 +1714,7 @@ sub _duplicate_waste_report {
         detail => $report->detail,
         postcode => $report->postcode,
         used_map => $report->used_map,
-        name => $report->user->name,
+        name => $report->user->name || $report->name,
         areas => $report->areas,
         anonymous => $report->anonymous,
         state => 'confirmed',

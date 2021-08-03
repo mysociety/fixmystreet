@@ -115,7 +115,7 @@ sub get_body_sender {
             {
                 type => 'arcgis',
                 url => 'https://peterborough.assets/2/query?',
-                buffer => 10,
+                buffer => 1,
             },
             $x,
             $y,
@@ -127,7 +127,7 @@ sub get_body_sender {
                 {
                     type => 'arcgis',
                     url => 'https://peterborough.assets/3/query?',
-                    buffer => 10,
+                    buffer => 1,
                 },
                 $x,
                 $y,
@@ -141,7 +141,7 @@ sub get_body_sender {
             unless ( $leased_features && scalar @$leased_features ) {
                 my $road_features = $self->_fetch_features(
                     {
-                        buffer => 10, # metres
+                        buffer => 1, # metres
                         url => "https://tilma.mysociety.org/mapserver/peterborough",
                         srsname => "urn:ogc:def:crs:EPSG::27700",
                         typename => "highways",

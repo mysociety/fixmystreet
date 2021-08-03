@@ -117,6 +117,7 @@ sub get_pending_subscription : Private {
         created => { '>=' => \"current_timestamp-'20 days'::interval" },
         category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
         -or => [
+                title => 'Garden Subscription - Renew',
                 title => 'Garden Subscription - New',
                 title => 'Garden Subscription - Cancel',
         ],
@@ -126,7 +127,8 @@ sub get_pending_subscription : Private {
     my ($new, $cancel);
     while (my $sub = $subs->next) {
         if ( $sub->get_extra_field_value('payment_method') eq 'direct_debit' ) {
-            if ( $sub->title eq 'Garden Subscription - New' ) {
+            if ( $sub->title eq 'Garden Subscription - New' ||
+                 $sub->title eq 'Garden Subscription - Renew' ) {
                 $new = $sub;
             } elsif ( $sub->title eq 'Garden Subscription - Cancel' ) {
                 $cancel = $sub;
