@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2020-11-11 16:01+0000\n"
-"PO-Revision-Date: 2019-07-17 11:27+0200\n"
+"PO-Revision-Date: 2021-08-03 16:36+0200\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
 "Language-Team: German (Switzerland) (https://www.transifex.com/mysociety/teams/12067/de_CH/)\n"
 "Language: de_CH\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 3.0\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:717
 #: perllib/FixMyStreet/DB/Result/Problem.pm:719
@@ -3640,7 +3640,7 @@ msgstr ""
 #: templates/web/base/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
 msgid "Report, view, or discuss local problems"
-msgstr "Melden Sie Schäden an der Infrastruktur von Zürich"
+msgstr "Melden Sie Schäden und Mängel an der Infrastruktur von Zürich"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:655
 #: templates/web/base/contact/index.html:64
@@ -4082,7 +4082,7 @@ msgstr ""
 #: templates/web/base/admin/triage/_list-filters.html:44
 #: templates/web/base/reports/_list-filters.html:49
 msgid "Show older reports"
-msgstr ""
+msgstr "Ältere Meldungen anzeigen"
 
 #: templates/web/base/report/_main.html:95
 msgid "Show photo"
@@ -5715,7 +5715,7 @@ msgstr ""
 #: templates/web/base/report/form/user_loggedout_by_email.html:82
 #: templates/web/zurich/auth/general.html:56
 msgid "Your password should include %d or more characters."
-msgstr ""
+msgstr "Das Passwort muss länger als %d Zeichen sein."
 
 #: templates/web/base/auth/change_phone.html:19
 #: templates/web/base/contact/enquiry/index.html:25
