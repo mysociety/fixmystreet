@@ -175,6 +175,7 @@ recommends 'Mac::FSEvents' if $^O eq 'darwin';
 # Modules used by the test suite
 requires 'Test::PostgreSQL', '1.27';
 requires 'CGI::Simple';
+requires 'HTML::Selector::Element';
 requires 'HTTP::Headers';
 requires 'HTTP::Response';
 requires 'LWP::Protocol::PSGI';
