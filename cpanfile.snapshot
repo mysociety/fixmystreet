@@ -3542,6 +3542,19 @@ DISTRIBUTIONS
       perl 5.008
       strict 0
       warnings 0
+  HTML-Selector-Element-0.95
+    pathname: B/BA/BARTL/HTML-Selector-Element-0.95.tar.gz
+    provides:
+      HTML::Element 0.95
+      HTML::Selector::Element 0.95
+      HTML::Selector::Element::Trait 0.95
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      HTML::TreeBuilder 0
+      perl 5.008001
+      strict 0
   HTML-Selector-XPath-0.15
     pathname: C/CO/CORION/HTML-Selector-XPath-0.15.tar.gz
     provides:
