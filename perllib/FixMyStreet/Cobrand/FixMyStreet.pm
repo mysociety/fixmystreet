@@ -1,6 +1,6 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
-
+use Data::Dumper;
 use Moo;
 with 'FixMyStreet::Roles::BoroughEmails';
 
@@ -119,17 +119,17 @@ sub munge_report_new_bodies {
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
-        if (!$on_he_road) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
+        if ($on_he_road) {
+            my $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
+        } else {
+            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;            
         }
     }
 }
 
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
-
     my %bodies = map { $_->body->name => $_->body } @$contacts;
-
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
     }
@@ -144,8 +144,20 @@ sub munge_report_new_contacts {
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
     }
+    if ( $bodies{'Highways England'} && !$self->{c}->stash->{on_he_road_for_litter}) {
+        @$contacts = grep { $_->category ne 'Litter' } @$contacts;
+    } 
 
 }
+
+sub _replace_he_litter_contact {
+    # my ($self, $bodies) = @_;
+    # for my $value (values %$bodies) {
+    #     warn "$value\n";
+    # }
+    #@$contacts = grep { $_->category_display ne 'Litter' } @$contacts;
+    #warn Dumper $contacts;
+ }
 
 sub munge_load_and_group_problems {
     my ($self, $where, $filter) = @_;

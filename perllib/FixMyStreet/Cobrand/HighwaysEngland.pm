@@ -158,6 +158,10 @@ sub munge_report_new_contacts {
     }
 }
 
+sub report_new_is_on_he_road_for_litter {
+    return 0;                                       
+}
+
 sub report_new_is_on_he_road {
     my ( $self ) = @_;
 

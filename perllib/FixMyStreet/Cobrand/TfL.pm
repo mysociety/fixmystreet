@@ -379,6 +379,7 @@ sub report_new_munge_before_insert {
 }
 
 sub report_new_is_on_tlrn {
+    warn "HEREE";
     my ( $self ) = @_;
 
     my ($x, $y) = Utils::convert_latlon_to_en(
