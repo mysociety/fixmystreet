@@ -1478,6 +1478,7 @@ sub waste_reconcile_direct_debits {
                     PaymentCode => $payer,
                 } );
                 $renew->set_extra_metadata('dd_date', $date);
+                $renew->confirm;
                 $renew->insert;
                 $handled = 1;
             }
@@ -1535,6 +1536,7 @@ sub waste_reconcile_direct_debits {
                     PaymentCode => $payer,
                 } );
                 $cancel->set_extra_metadata('dd_date', $date);
+                $cancel->confirm;
                 $cancel->insert;
                 $handled = 1;
             }
@@ -1717,7 +1719,7 @@ sub _duplicate_waste_report {
         name => $report->user->name || $report->name,
         areas => $report->areas,
         anonymous => $report->anonymous,
-        state => 'confirmed',
+        state => 'unconfirmed',
     });
 
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
