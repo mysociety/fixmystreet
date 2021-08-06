@@ -83,19 +83,19 @@
             <option value="">-- Pick a detail --</option>
             <optgroup class="defect-fill-options defect-minor-carriageway-options defect-non-cluster-options defect-non-pothole-options defect-non-kerb-options defect-non-drainage-options" 
                 data-show="defect-fill-options" data-hide="defect-non-fill-options"
-                label="Minor Carriageway/ Footway/ Cycleway">
+                label="Sweep &amp; Fill">
                 <option>Pothole Sweep &amp; Fill 0-1m&sup2;</option>
                 <option>Pothole Cluster Sweep &amp; Fill 1-2m&sup2;</option>
             </optgroup>
             <optgroup class="defect-pothole-options defect-minor-carriageway-options defect-non-cluster-options defect-non-fill-options defect-non-kerb-options defect-non-drainage-options" 
                 data-show="defect-pothole-options" data-hide="defect-non-pothole-options"
-                label="Minor Carriageway/ Footway/ Cycleway">
+                label="Pothole (Permanent)">
                 <option>0-1m&sup2;</option>
                 <option>1-2m&sup2;</option>
             </optgroup>
             <optgroup class="defect-cluster-options defect-minor-carriageway-options defect-non-pothole-options defect-non-fill-options defect-non-kerb-options defect-non-drainage-options" 
                 data-show="defect-cluster-options" data-hide="defect-non-cluster-options"
-                label="Minor Carriageway/ Footway/ Cycleway">
+                label="Pothole Cluster (Permanent)">
                 <option>Pothole Cluster</option>
             </optgroup>
             <optgroup class="defect-kerb-options defect-non-minor-carriageway-options defect-non-drainage-options" label="Kerbing">
@@ -128,18 +128,17 @@
     var item = document.getElementById('defect_item_category');
     item.addEventListener('change', function(){
         var opt = item.options[item.selectedIndex].value;
-        if (opt !== 'Kerbing') {
-            var type = document.getElementById('defect_item_type');
-            var event = document.createEvent("Event");
-            event.initEvent("change", true, false);
-            type.selectedIndex = 0;
-            type.dispatchEvent(event);
-        }
+        var type = document.getElementById('defect_item_type');
+        var event = document.createEvent("Event");
+        event.initEvent("change", true, false);
+        type.dispatchEvent(event);
+        type.selectedIndex = 0;
     });
-    let type = document.getElementById('defect_item_type');
-    type.addEventListener('change', function(e){
-        let detail = document.getElementById('defect_item_detail');
-        const event = new CustomEvent('change', {"bubbles":true, "cancelable":false});
+    var type = document.getElementById('defect_item_type');
+    type.addEventListener('change', function(){
+        var detail = document.getElementById('defect_item_detail');
+        var event = document.createEvent("Event");
+        event.initEvent("change", true, false);
         detail.dispatchEvent(event);
         detail.selectedIndex = 0;
     });
