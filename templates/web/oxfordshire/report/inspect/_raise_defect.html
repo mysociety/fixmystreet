@@ -38,35 +38,72 @@
         <label for="defect_item_category">Defect category</label>
         <select id="defect_item_category" name="defect_item_category" class="form-control" required>
             <option value="">-- Pick a category --</option>
-            <option data-show=".defect-non-kerb-options" data-hide=".defect-kerb-options">Minor Carriageway</option>
-            <option data-show=".defect-non-kerb-options" data-hide=".defect-kerb-options">Footway/ Cycleway</option>
-            <option data-show=".defect-kerb-options" data-hide=".defect-non-kerb-options">Kerbing</option>
+            <option data-show=".defect-minor-carriageway-options"
+                data-hide=".defect-non-minor-carriageway-options">
+                Minor Carriageway
+            </option>
+            <option data-show=".defect-minor-carriageway-options"
+                data-hide=".defect-non-minor-carriageway-options">
+                Footway/ Cycleway
+            </option>
+            <option data-show=".defect-kerb-options"
+                data-hide=".defect-non-kerb-options">
+                Kerbing
+            </option>
+            <option data-show=".defect-drainage-options"
+                data-hide=".defect-non-drainage-options">
+                Drainage
+            </option>
         </select>
 
         <label for="defect_item_type">Defect type</label>
         <select id="defect_item_type" name="defect_item_type" class="form-control" required>
             <option value="">-- Pick a type --</option>
-            <optgroup class="defect-non-kerb-options" label="Minor Carriageway/ Footway/ Cycleway">
+            <optgroup class="defect-fill-options defect-minor-carriageway-options defect-non-kerb-options defect-non-drainage-options" label="Minor Carriageway/ Footway/ Cycleway">
                 <option>Sweep &amp; Fill</option>
+            <optgroup class="defect-pothole-options defect-non-fill-options defect-non-cluster-options defect-minor-carriageway-options defect-non-kerb-options defect-non-drainage-options" label="Minor Carriageway/ Footway/ Cycleway">
+                <option>Pothole (Permanent)</option>
             </optgroup>
-            <optgroup class="defect-kerb-options" label="Kerbing">
+            <optgroup class="defect-cluster-options defect-non-pothole-options defect-non-fill-options defect-minor-carriageway-options defect-non-kerb-options defect-non-drainage-options" label="Minor Carriageway/ Footway/ Cycleway">
+                <option>Pothole Cluster (Permanent)</option>
+            </optgroup>
+            <optgroup class="defect-kerb-options defect-non-fill-options defect-non-minor-carriageway-options defect-non-drainage-options" label="Kerbing">
                 <option>Damaged</option>
                 <option>Loose</option>
                 <option>Misaligned Single Units or Uneven Run of Units</option>
                 <option>Missing</option>
+            </optgroup>
+            <optgroup class="defect-drainage-options defect-non-kerb-options defect-non-minor-carriageway-options" label="Drainage">
+                <option>Blockage</option>
             </optgroup>
         </select>
 
         <label for="defect_item_detail">Defect detail</label>
         <select id="defect_item_detail" name="defect_item_detail" class="form-control" required>
             <option value="">-- Pick a detail --</option>
-            <optgroup class="defect-non-kerb-options" label="Minor Carriageway/ Footway/ Cycleway">
+            <optgroup class="defect-fill-options defect-minor-carriageway-options defect-non-cluster-options defect-non-pothole-options defect-non-kerb-options defect-non-drainage-options"
+                data-show="defect-fill-options" data-hide="defect-non-fill-options"
+                label="Sweep &amp; Fill">
                 <option>Pothole Sweep &amp; Fill 0-1m&sup2;</option>
                 <option>Pothole Cluster Sweep &amp; Fill 1-2m&sup2;</option>
             </optgroup>
-            <optgroup class="defect-kerb-options" label="Kerbing">
-                <option>1 kerb unit or 1 linear m</option>
-                <option>Greater than 1 kerb unit or 1 linear m</option>
+            <optgroup class="defect-pothole-options defect-minor-carriageway-options defect-non-cluster-options defect-non-fill-options defect-non-kerb-options defect-non-drainage-options"
+                data-show="defect-pothole-options" data-hide="defect-non-pothole-options"
+                label="Pothole (Permanent)">
+                <option>0-1m&sup2;</option>
+                <option>1-2m&sup2;</option>
+            </optgroup>
+            <optgroup class="defect-cluster-options defect-minor-carriageway-options defect-non-pothole-options defect-non-fill-options defect-non-kerb-options defect-non-drainage-options"
+                data-show="defect-cluster-options" data-hide="defect-non-cluster-options"
+                label="Pothole Cluster (Permanent)">
+                <option>Pothole Cluster</option>
+            </optgroup>
+            <optgroup class="defect-kerb-options defect-non-minor-carriageway-options defect-non-drainage-options" label="Kerbing">
+                <option>1 kerb unit or I liner length</option>
+                <option>Greater than 1 kerb unit or I liner length</option>
+            </optgroup>
+            <optgroup class="defect-drainage-options defect-non-kerb-options defect-non-minor-carriageway-options" label="Drainage">
+                <option>Blockage raised as a defect</option>
             </optgroup>
         </select>
 
@@ -85,22 +122,6 @@
     </div>
 
 </div>
-
-<script nonce="[% csp_nonce %]">
-(function(){
-    var item = document.getElementById('defect_item_category');
-    item.addEventListener('change', function(){
-        var opt = item.options[item.selectedIndex].value;
-        if (opt !== 'Kerbing') {
-            var type = document.getElementById('defect_item_type');
-            type.selectedIndex = 1;
-            var event = document.createEvent("Event");
-            event.initEvent("change", true, false);
-            type.dispatchEvent(event);
-        }
-    });
-})();
-</script>
 
 [% END %]
 
