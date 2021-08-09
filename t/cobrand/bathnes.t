@@ -59,7 +59,6 @@ FixMyStreet::override_config {
 }, sub {
 
 subtest 'cobrand displays council name' => sub {
-    ok $mech->host("bathnes.fixmystreet.com"), "change host to bathnes";
     $mech->get_ok('/');
     $mech->content_like( qr/Bath and North East Somerset\b/ );
 };
@@ -220,7 +219,38 @@ subtest 'extra CSV columns are present if permission granted' => sub {
         'Column headers look correct';
 };
 
+subtest 'report a problem link post-report is not location-specific' => sub {
+        $mech->log_in_ok( $normaluser->email );
+        $mech->get_ok('/report/new?longitude=-2.364050&latitude=51.386269');
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test',
+                    detail        => 'Detail',
+                    photo1        => '',
+                    name          => $normaluser->name,
+                    may_show_name => '1',
+                    phone         => '',
+                    category      => 'Other',
+                }
+            },
+            'submit report form ok'
+        );
+        $mech->content_like(qr/Your reference for this report is (\d+),/);
+        $mech->base_like(qr(/report/new$), 'expected redirect back to /report/new');
 
+        my $tree = HTML::TreeBuilder->new_from_content($mech->content());
+        my $report_link = $tree->look_down(
+            '_tag' => 'li',
+            'class' => 'navigation-primary-list__item',
+        )->look_down(
+            '_tag' => 'a',
+            'class' => 'report-a-problem-btn'
+        );
+        is ($report_link->as_text, 'Report a problem', 'RAP link has correct text');
+        is ($report_link->attr('href'), '/', 'report link href should be /');
+    }
 };
 
 subtest 'check cobrand correctly reset on each request' => sub {
