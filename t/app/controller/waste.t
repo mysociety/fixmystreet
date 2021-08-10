@@ -541,28 +541,6 @@ FixMyStreet::override_config {
     };
 };
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'peterborough',
-    COBRAND_FEATURES => { bartec => { peterborough => { url => 'http://example.org/', auth_url => 'http://auth.example.org/', sample_data => 1 } }, waste => { peterborough => 1 } },
-}, sub {
-    $mech->host('peterborough.fixmystreet.com');
-    subtest 'Missing address lookup' => sub {
-        $mech->get_ok('/waste');
-        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
-        $mech->submit_form_ok({ with_fields => { address => 'missing' } });
-        $mech->content_contains('can’t find your address');
-    };
-    subtest 'Address lookup' => sub {
-        set_fixed_time('2020-05-28T17:00:00Z'); # After sample data collection
-        $mech->get_ok('/waste');
-        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
-        $mech->content_contains('1 Pope Way, Peterborough, PE1 3NA');
-        # $mech->submit_form_ok({ with_fields => { address => 'PE1 3NA:100090215480' } });
-        # $mech->content_contains('1 Pope Way Peterborough');
-    };
-};
-
-
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
