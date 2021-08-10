@@ -50,14 +50,19 @@ before after_build => sub {
 sub validate {
     my $self = shift;
 
-    return 1 unless $self->field('email') && $self->field('phone');
+    my $email = $self->field('email');
+    my $phone = $self->field('phone');
+    return 1 unless $email && $phone;
+
     my $c = $self->c;
+    my $cobrand = $c->cobrand->moniker;
     my $is_staff_user = ($c->user_exists && ($c->user->from_body || $c->user->is_superuser));
+
     $self->add_form_error('Please specify an email address')
-        unless $self->field('email')->is_inactive || $self->field('email')->value || $is_staff_user;
+        unless $email->is_inactive || $email->value || $is_staff_user;
 
     $self->add_form_error('Please specify at least one of phone or email')
-        unless $self->field('phone')->is_inactive || $self->field('phone')->value || $self->field('email')->value || $is_staff_user;
+        unless $phone->is_inactive || $phone->value || $email->value || ($is_staff_user && $cobrand eq 'bromley');
 }
 
 1;
