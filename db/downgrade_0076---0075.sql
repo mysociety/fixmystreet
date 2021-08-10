@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE roles
+    DROP COLUMN extra;
+
+COMMIT;
