@@ -73,6 +73,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address => 'PE1 3NA:100090215480' } });
         $mech->content_contains('1 Pope Way, Peterborough');
         $mech->content_contains('Every two weeks');
+        $mech->content_contains('Thursday, 5th August 2021');
+        $mech->content_contains('Report a recycling collection as missed');
+        set_fixed_time('2021-08-09T10:00:00Z');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_contains('Report a recycling collection as missed');
+        set_fixed_time('2021-08-09T14:00:00Z');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('Report a recycling collection as missed');
     };
     subtest 'Future collection calendar' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
@@ -80,6 +88,7 @@ FixMyStreet::override_config {
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
     };
     subtest 'No reporting/requesting if open request' => sub {
+        set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->content_contains('Report a recycling collection as missed');
         $mech->content_contains('Request a new recycling container');

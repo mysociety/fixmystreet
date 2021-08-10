@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Integrations::Bartec;
 use Sort::Key::Natural qw(natkeysort_inplace);
+use FixMyStreet::WorkingDays;
 use Utils;
 
 use Moo;
@@ -627,15 +628,18 @@ sub bin_services_for_address {
 }
 
 sub _waste_report_allowed {
-    my ($self, $last) = @_;
+    my ($self, $dt) = @_;
 
-    # missed bin reports are allowed if we're within 36 hours of end the last collection day
+    # missed bin reports are allowed if we're within 1.5 working days of the last collection day
     # e.g.:
-    #  A bin not collected on Tuesday can be rung though any time on collection day
-    #  Then any time the next day
-    #  Then up to noon the next day, which is when missed bins are collected
+    #  A bin not collected on Tuesday can be rung through up to noon Thursday
+    #  A bin not collected on Thursday can be rung through up to noon Monday
 
-    return DateTime->now < $last->truncate(to => 'day')->add(hours => 60);
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    $dt = $wd->add_days($dt, 2);
+    $dt->set( hour => 12, minute => 0, second => 0 );
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    return $now <= $dt;
 }
 
 sub bin_future_collections {
