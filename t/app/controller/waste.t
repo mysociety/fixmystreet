@@ -145,9 +145,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test" } });
         $mech->content_contains('Please enter your full name');
-        $mech->content_contains('Please specify at least one of phone or email');
+        $mech->content_contains('Please provide email and/or phone');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", phone => '+441234567890' } });
-        $mech->content_contains('Please specify an email address');
+        $mech->content_contains('Please provide an email address');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org' } });
         $mech->content_contains('Non-Recyclable Refuse');
         $mech->content_contains('Test McTest');
@@ -2461,7 +2461,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
-        $mech->content_contains('Your name field is required');
+        $mech->content_contains('Your name is required');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 2,
