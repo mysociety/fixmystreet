@@ -987,15 +987,6 @@ sub _parse_schedules {
     };
 }
 
-sub _parse_servicetasks {
-    my $unit = shift;
-    my $servicetasks = Integrations::Echo::force_arrayref($unit->{ServiceTasks}, 'ServiceTask');
-    @$servicetasks = grep { $_->{ServiceTaskSchedules} } @$servicetasks;
-    return unless @$servicetasks;
-    # If there is more than one, take first one
-    return $servicetasks->[0];
-}
-
 sub bin_day_format { '%A, %-d~~~ %B' }
 
 sub bin_future_collections {

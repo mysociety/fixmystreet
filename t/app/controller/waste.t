@@ -184,6 +184,11 @@ FixMyStreet::override_config {
         $mech->content_contains($user->name);
         $mech->content_contains($user->email);
         $mech->content_contains($user->phone);
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/report');
+        $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
+        $mech->content_lacks($staff_user->name);
+        $mech->content_lacks($staff_user->email);
         $mech->log_out_ok;
     };
     subtest 'Check report visibility' => sub {
