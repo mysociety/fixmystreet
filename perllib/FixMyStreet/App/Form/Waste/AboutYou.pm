@@ -15,6 +15,9 @@ has_field name => (
                 || $self->value !~ m/\s/
                 || $self->value =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
     },
+    messages => {
+        required => 'Your name is required',
+    },
 );
 
 has non_staff_user => (

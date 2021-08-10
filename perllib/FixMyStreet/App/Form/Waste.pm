@@ -58,10 +58,10 @@ sub validate {
     my $cobrand = $c->cobrand->moniker;
     my $is_staff_user = ($c->user_exists && ($c->user->from_body || $c->user->is_superuser));
 
-    $self->add_form_error('Please specify an email address')
+    $self->add_form_error('Please provide an email address')
         unless $email->is_inactive || $email->value || $is_staff_user;
 
-    $self->add_form_error('Please specify at least one of phone or email')
+    $self->add_form_error('Please provide email and/or phone')
         unless $phone->is_inactive || $phone->value || $email->value || ($is_staff_user && $cobrand eq 'bromley');
 }
 
