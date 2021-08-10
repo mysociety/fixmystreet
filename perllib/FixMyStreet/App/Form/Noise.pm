@@ -594,7 +594,7 @@ has_field submit => ( type => 'Submit', value => 'Submit', element_attr => { cla
 
 sub validate {
     my $self = shift;
-    $self->add_form_error('Please specify at least one of phone or email')
+    $self->add_form_error('Please provide email and/or phone')
         unless $self->field('phone')->is_inactive || $self->field('phone')->value || $self->field('email')->value;
 }
 
