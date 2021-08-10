@@ -15,6 +15,12 @@
     </div>
     [% form.field('permissions').render | safe %]
 
+    [% IF contacts %]
+    <div class="js-user-categories">
+      [% INCLUDE 'admin/category-checkboxes.html' hint=loc("Roles can be associated with the categories in which they operate.") %]
+    </div>
+    [% END %]
+
     [% form.field('submit').render | safe %]
 
     <p>
