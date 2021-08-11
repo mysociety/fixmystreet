@@ -4,7 +4,6 @@ use Moo;
 with 'FixMyStreet::Roles::SOAPIntegration';
 
 use DateTime;
-use Tie::IxHash;
 use MIME::Base64;
 use Digest::HMAC;
 use Crypt::Digest::SHA256;
@@ -184,8 +183,4 @@ sub version {
     return $res;
 }
 
-sub ixhash {
-    tie (my %data, 'Tie::IxHash', @_);
-    return \%data;
-}
 1;
