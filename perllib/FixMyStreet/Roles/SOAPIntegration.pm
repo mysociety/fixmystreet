@@ -1,5 +1,6 @@
 package FixMyStreet::Roles::SOAPIntegration;
 use Moo::Role;
+use Tie::IxHash;
 
 sub force_arrayref {
     my ($res, $key) = @_;
@@ -48,6 +49,11 @@ sub make_soap_structure_with_attr {
         }
     }
     return @out;
+}
+
+sub ixhash {
+    tie (my %data, 'Tie::IxHash', @_);
+    return \%data;
 }
 
 1;
