@@ -3,11 +3,13 @@
 f = [];
 service_id = c.req.params.service_id;
 service = services.$service_id;
-f.push(
-    { value = 'Not returned to collection point', label = 'The bin wasn’t returned to the collection point', disabled = open_service_requests.497 },
-    { value = 'Lid', label = 'The bin’s lid is damaged', disabled = open_service_requests.236 },
-    { value = 'Wheels', label = 'The bin’s wheels are damaged', disabled = open_service_requests.237 },
-);
+
+FOR enquiry_cat_id IN enquiry_cat_ids;
+    enquiry_cat = enquiry_cats.$enquiry_cat_id;
+    f.push(
+        { value = enquiry_cat, label = enquiry_verbose.$enquiry_cat, disabled = open_service_requests.$enquiry_cat_id },
+    );
+END;
 
 PROCESS waste/enquiry.html
     title = 'Report a problem'
