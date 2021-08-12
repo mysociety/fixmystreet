@@ -59,6 +59,12 @@ FixMyStreet::override_config {
         # No open requests at present
     ] });
     $b->mock('Premises_Attributes_Get', sub { [] });
+    $b->mock('Premises_Events_Get', sub { [
+        # No open events at present
+    ] });
+    $b->mock('Streets_Events_Get', sub { [
+        # No open events at present
+    ] });
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
@@ -82,13 +88,31 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('Report a recycling collection as missed');
     };
+    subtest 'Check lock out conditions' => sub {
+        set_fixed_time('2021-08-06T10:00:00Z');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        #Premise Event of BIN NOT OUT
+        #premise event of BIN NOT OUT, different job
+        #premise event of NO ACCESS
+
+        #street event of NO ACCESS PARKED CAR
+        #street event of NO ACCESS PARKED CAR, different day
+        #street event of STREET COMPLETED, different day
+
+        #on the day before 5pm
+
+        #$mech->content_contains('There is no need to report this as there was no access');
+        #$mech->content_contains('To report a missed ... please call');
+        #$mech->content_contains('There was a problem with your bin collection, please call');
+        $b->mock('Premises_Events_Get', sub { [] });
+        $b->mock('Streets_Events_Get', sub { [] });
+    };
     subtest 'Future collection calendar' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
     };
     subtest 'No reporting/requesting if open request' => sub {
-        set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->content_contains('Report a recycling collection as missed');
         $mech->content_contains('Request a new recycling container');
