@@ -399,6 +399,7 @@ sub _premises_for_postcode {
         $self->{c}->session->{$key} = [ map { {
             id => $pc . ":" . $_->{UPRN},
             uprn => $_->{UPRN},
+            usrn => $_->{USRN},
             address => $self->_format_address($_),
             latitude => $_->{Location}->{Metric}->{Latitude},
             longitude => $_->{Location}->{Metric}->{Longitude},
@@ -553,8 +554,30 @@ sub bin_services_for_address {
     # TODO parallelize these calls if performance is an issue
     my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
-    my %schedules = map { $_->{JobName} => $_ } @$schedules;
+    my $events_uprn = $bartec->Premises_Events_Get($property->{uprn});
+    my $events_usrn = $bartec->Streets_Events_Get($property->{usrn});
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
+
+    my %lock_out_types = map { $_ => 1 } ('BIN NOT OUT', 'CONTAMINATION', 'EXCESS WASTE', 'OVERWEIGHT', 'WRONG COLOUR BIN', 'NO ACCESS - street', 'NO ACCESS');
+    my %premise_dates_to_lock_out;
+    my %street_dates_to_lock_out;
+    foreach (@$events_uprn) {
+        my $container_id = $_->{Features}{FeatureType}{ID};
+        my $date = construct_bin_date($_->{EventDate})->ymd;
+        my $type = $_->{EventType}{Description};
+        next unless $lock_out_types{$type};
+        $premise_dates_to_lock_out{$date}{$container_id} = $type;
+    }
+    foreach (@$events_usrn) {
+        my $date = construct_bin_date($_->{EventDate})->ymd;
+        my $type = $_->{EventType}{Description};
+        # e.g. NO ACCESS 1ST TRY, NO ACCESS 2ND TRY, NO ACCESS BAD WEATHE, NO ACCESS GATELOCKED, NO ACCESS PARKED CAR, NO ACCESS POLICE, NO ACCESS ROADWORKS
+        $type = 'NO ACCESS - street' if $type =~ /NO ACCESS/;
+        next unless $lock_out_types{$type};
+        $street_dates_to_lock_out{$date} = $type;
+    }
+
+    my %schedules = map { $_->{JobName} => $_ } @$schedules;
     $self->{c}->stash->{open_service_requests} = $open_requests;
 
     $self->{c}->stash->{waste_features} = $self->feature('waste_features');
@@ -562,6 +585,7 @@ sub bin_services_for_address {
     my @out;
     my %seen_containers;
 
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     foreach (@$jobs) {
         my $last = construct_bin_date($_->{PreviousDate});
         my $next = construct_bin_date($_->{NextDate});
@@ -598,6 +622,18 @@ sub bin_services_for_address {
             # (or a missed assisted collection for any container)?
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
+        if ($row->{report_allowed}) {
+            # If on the day, but before 5pm, show a special message to call
+            if ($last->ymd eq $now->ymd && $now->hour < 17) {
+                $row->{report_allowed} = 0;
+                $row->{report_locked_out} = "ON DAY PRE 5PM";
+            }
+            # But if it has been marked as locked out, show that
+            if (my $type = ($premise_dates_to_lock_out{$last->ymd}{$container_id} || $street_dates_to_lock_out{$last->ymd})) {
+                $row->{report_allowed} = 0;
+                $row->{report_locked_out} = $type;
+            }
+        }
         push @out, $row;
     }
 

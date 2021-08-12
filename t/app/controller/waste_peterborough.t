@@ -59,6 +59,12 @@ FixMyStreet::override_config {
         # No open requests at present
     ] });
     $b->mock('Premises_Attributes_Get', sub { [] });
+    $b->mock('Premises_Events_Get', sub { [
+        # No open events at present
+    ] });
+    $b->mock('Streets_Events_Get', sub { [
+        # No open events at present
+    ] });
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
@@ -82,13 +88,61 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('Report a recycling collection as missed');
     };
+    subtest 'Check lock out conditions' => sub {
+        set_fixed_time('2021-08-05T14:00:00Z');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_contains('To report a missed recycling please call');
+
+        set_fixed_time('2021-08-06T10:00:00Z');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('To report a missed recycling please call');
+
+        $b->mock('Premises_Events_Get', sub { [
+            { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
+        ] });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_contains('There was a problem with your bin collection, please call');
+
+        $b->mock('Premises_Events_Get', sub { [
+            { Features => { FeatureType => { ID => 9999 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
+        ] });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('There was a problem with your bin collection, please call');
+
+        $b->mock('Premises_Events_Get', sub { [
+            { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'NO ACCESS' }, EventDate => '2021-08-05T10:10:10' },
+        ] });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_contains('There was a problem with your bin collection, please call');
+
+        $b->mock('Premises_Events_Get', sub { [] }); # reset
+
+        $b->mock('Streets_Events_Get', sub { [
+            { EventDate => '2021-08-05T12:00:00', EventType => { Description => 'NO ACCESS PARKED CAR' } },
+        ] });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_contains('There is no need to report this as there was no access');
+
+        $b->mock('Streets_Events_Get', sub { [
+            { EventDate => '2021-08-04T12:00:00', EventType => { Description => 'NO ACCESS PARKED CAR' } },
+        ] });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('There is no need to report this as there was no access');
+
+        $b->mock('Streets_Events_Get', sub { [
+            { EventDate => '2021-08-01T12:00:00', EventType => { Description => 'STREET COMPLETED' } },
+        ] });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('There was a problem with your bin collection');
+
+        $b->mock('Streets_Events_Get', sub { [] }); # reset
+    };
     subtest 'Future collection calendar' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
     };
     subtest 'No reporting/requesting if open request' => sub {
-        set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->content_contains('Report a recycling collection as missed');
         $mech->content_contains('Request a new recycling container');

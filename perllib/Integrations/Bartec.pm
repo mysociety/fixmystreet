@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use DateTime;
 use DateTime::Format::W3CDTF;
+use Memcached;
 use Moo;
 use FixMyStreet;
 
@@ -219,6 +220,30 @@ sub Premises_Attributes_Get {
 
     my $attributes = $self->call('Premises_Attributes_Get', token => $self->token, UPRN => $uprn );
     return force_arrayref($attributes, 'Attribute');
+}
+
+sub Premises_Events_Get {
+    my ($self, $uprn) = @_;
+
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 1);
+    my $events = $self->call('Premises_Events_Get',
+        token => $self->token, UPRN => $uprn, DateRange => ixhash(MinimumDate => {
+            attr => { xmlns => "http://www.bartec-systems.com" },
+            value => $from->iso8601,
+        }, MaximumDate => {
+            attr => { xmlns => "http://www.bartec-systems.com" },
+            value => $from->clone->add(months=>3)->iso8601
+        }));
+    return force_arrayref($events, 'Event');
+}
+
+sub Streets_Events_Get {
+    my ($self, $usrn) = @_;
+
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 1);
+    my $events = $self->call('Streets_Events_Get',
+        token => $self->token, USRN => $usrn, StartDate => $from->iso8601 );
+    return force_arrayref($events, 'Event');
 }
 
 1;
