@@ -494,6 +494,7 @@ sub _tlrn_categories { [
     "Damage - general (Trees)",
     "Dead animal in the carriageway or footway",
     "Debris in the carriageway",
+    "Drain Cover - Missing or Damaged",
     "Fallen Tree",
     "Flooding",
     "Graffiti / Flyposting (non-offensive)",
