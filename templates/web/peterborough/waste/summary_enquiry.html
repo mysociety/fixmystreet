@@ -6,12 +6,7 @@ step1 = 'enquiry';
 
 service_id = c.get_param('service_id');
 cat = c.get_param('category');
-cats = {
-  'Not returned to collection point' = 'The bin wasn’t returned to the collection point',
-  'Lid' = 'The bin’s lid is damaged',
-  'Wheels' = 'The bin’s wheels are damaged',
-};
-cat_display = cats.$cat;
+cat_display = enquiry_verbose.$cat;
 
 %]
 

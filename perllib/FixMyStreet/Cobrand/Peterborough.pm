@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::Peterborough;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use utf8;
 use strict;
 use warnings;
 use Integrations::Bartec;
@@ -486,6 +487,18 @@ sub bin_services_for_address {
         "Empty Bin Refuse 660l" => "Refuse",
     );
 
+    $self->{c}->stash->{enquiry_cat_ids} = [ 497, 236, 237 ];
+    $self->{c}->stash->{enquiry_cats} = {
+        497 => 'Not returned to collection point',
+        236 => 'Lid',
+        237 => 'Wheels',
+    };
+    $self->{c}->stash->{enquiry_verbose} = {
+        'Not returned to collection point' => 'The bin wasn’t returned to the collection point',
+        'Lid' => 'The bin’s lid is damaged',
+        'Wheels' => 'The bin’s wheels are damaged',
+    };
+
     $self->{c}->stash->{containers} = {
         # For new containers
         419 => "240L Black",
@@ -823,11 +836,13 @@ sub waste_munge_enquiry_data {
         6579 => "240L Brown",
     );
 
-
+    my $verbose = $self->{c}->stash->{enquiry_verbose};
     my $bin = $container_ids{$self->{c}->get_param('service_id')};
-    $data->{category} = $self->{c}->get_param('category');
+    my $category = $self->{c}->get_param('category');
+    my $category_verbose = $verbose->{$category} || $category;
+    $data->{category} = $category;
     $data->{title} = $bin;
-    $data->{detail} = $data->{category} . "\n\n" . $self->{c}->stash->{property}->{address};
+    $data->{detail} = $category_verbose . "\n\n" . $self->{c}->stash->{property}->{address};
 }
 
 
