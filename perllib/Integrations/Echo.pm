@@ -4,7 +4,6 @@ use Moo;
 with 'FixMyStreet::Roles::SOAPIntegration';
 
 use DateTime;
-use Tie::IxHash;
 use FixMyStreet;
 
 has attr => ( is => 'ro', default => 'http://www.twistedfish.com/xmlns/echo/api/v1' );
@@ -438,11 +437,6 @@ sub GetEventsForObject {
         ),
     );
     return force_arrayref($res, 'Event');
-}
-
-sub ixhash {
-    tie (my %data, 'Tie::IxHash', @_);
-    return \%data;
 }
 
 sub dt_to_hash {

@@ -4,8 +4,11 @@ use strict;
 use warnings;
 use DateTime;
 use DateTime::Format::W3CDTF;
+use Memcached;
 use Moo;
 use FixMyStreet;
+
+with 'FixMyStreet::Roles::SOAPIntegration';
 
 has attr => ( is => 'ro', default => 'http://bartec-systems.com/' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
@@ -57,7 +60,7 @@ sub call {
     my ($self, $method, @params) = @_;
 
     require SOAP::Lite;
-    @params = make_soap_structure(@params);
+    @params = make_soap_structure_with_attr(@params);
     my $som = $self->endpoint->call(
         SOAP::Data->name($method)->attr({ xmlns => $self->attr }),
         @params
@@ -71,7 +74,7 @@ sub Authenticate {
     my ($self) = @_;
 
     require SOAP::Lite;
-    my @params = make_soap_structure(user => $self->username, password => $self->password);
+    my @params = make_soap_structure_with_attr(user => $self->username, password => $self->password);
     my $res = $self->auth_endpoint->call(
         SOAP::Data->name("Authenticate")->attr({ xmlns => $self->attr }),
         @params
@@ -208,44 +211,39 @@ sub Features_Schedules_Get {
 sub ServiceRequests_Get {
     my ($self, $uprn) = @_;
 
-    my $requests = $self->call('ServiceRequests_Get', token => $self->token, UPRNs => { decimal => $uprn })->{ServiceRequest} || [];
-    # make sure an array is alway returned (e.g. if there's only one service request)
-    $requests = [ $requests ] unless ref $requests eq 'ARRAY';
-
-    return $requests;
+    my $requests = $self->call('ServiceRequests_Get', token => $self->token, UPRNs => { decimal => $uprn });
+    return force_arrayref($requests, 'ServiceRequest');
 }
 
 sub Premises_Attributes_Get {
     my ($self, $uprn) = @_;
 
-    my $attributes = $self->call('Premises_Attributes_Get', token => $self->token, UPRN => $uprn )->{Attribute} || [];
-    # make sure an array is alway returned (e.g. if there's only one attribute)
-    $attributes = [ $attributes ] unless ref $attributes eq 'ARRAY';
-
-    return $attributes;
+    my $attributes = $self->call('Premises_Attributes_Get', token => $self->token, UPRN => $uprn );
+    return force_arrayref($attributes, 'Attribute');
 }
 
-sub make_soap_structure {
-    my @out;
-    for (my $i=0; $i<@_; $i+=2) {
-        my $name = $_[$i];
-        my $v = $_[$i+1];
-        if (ref $v eq 'HASH') {
-            my $attr = delete $v->{attr};
-            my $value = delete $v->{value};
+sub Premises_Events_Get {
+    my ($self, $uprn) = @_;
 
-            my $d = SOAP::Data->name($name => $value ? $value : \SOAP::Data->value(make_soap_structure(%$v)));
-
-            $d->attr( $attr ) if $attr;
-            push @out, $d;
-        } elsif (ref $v eq 'ARRAY') {
-            push @out, map { SOAP::Data->name($name => \SOAP::Data->value(make_soap_structure(%$_))) } @$v;
-        } else {
-            push @out, SOAP::Data->name($name => $v);
-        }
-    }
-    return @out;
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 1);
+    my $events = $self->call('Premises_Events_Get',
+        token => $self->token, UPRN => $uprn, DateRange => ixhash(MinimumDate => {
+            attr => { xmlns => "http://www.bartec-systems.com" },
+            value => $from->iso8601,
+        }, MaximumDate => {
+            attr => { xmlns => "http://www.bartec-systems.com" },
+            value => $from->clone->add(months=>3)->iso8601
+        }));
+    return force_arrayref($events, 'Event');
 }
 
+sub Streets_Events_Get {
+    my ($self, $usrn) = @_;
+
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 1);
+    my $events = $self->call('Streets_Events_Get',
+        token => $self->token, USRN => $usrn); #, StartDate => $from->iso8601 );
+    return force_arrayref($events, 'Event');
+}
 
 1;
