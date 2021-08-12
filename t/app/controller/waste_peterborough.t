@@ -71,6 +71,12 @@ FixMyStreet::override_config {
         $b->mock('ServiceRequests_Get', sub { [
             # No open requests at present
         ] });
+        $b->mock('Premises_Events_Get', sub { [
+            # No open events at present
+        ] });
+        $b->mock('Streets_Events_Get', sub { [
+            # No open events at present
+        ] });
         set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
