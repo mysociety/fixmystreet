@@ -137,6 +137,42 @@ FixMyStreet::override_config {
         $contact->discard_changes;
         is_deeply $contact->get_extra_fields, $contact_extra_fields, 'new field was added';
 
+        $mech->get_ok("/admin/body/" . $body->id . "/" . $contact->category);
+        $mech->submit_form_ok( { with_fields => {
+            "metadata[9999].order" => "4",
+            "metadata[9999].code" => "list_test_order",
+            "metadata[9999].behaviour" => "question",
+            "metadata[9999].disable_form" => "1",
+            "metadata[9999].description" => "this field is a list with multiple options",
+            "metadata[9999].datatype" => "singlevaluelist",
+            "note" => "Added list field",
+        }});
+        $mech->content_contains('Values updated');
+
+        push @$contact_extra_fields, {
+            order => "4",
+            code => "list_test_order",
+            required => "false",
+            variable => "true",
+            protected => "false",
+            description => "this field is a list with multiple options",
+            datatype => "singlevaluelist",
+            values => [],
+        };
+
+        for my $num (1..11) {
+            $mech->get_ok("/admin/body/" . $body->id . "/" . $contact->category);
+            $mech->submit_form_ok( { with_fields => {
+                "metadata[3].values[8888].key" => "key" . $num,
+                "metadata[3].values[8888].name" => "name" . $num,
+            } } );
+            $mech->content_contains('Values updated');
+            push @{ $contact_extra_fields->[3]{values} }, { name => 'name' . $num, key => 'key' . $num };
+        };
+
+        $contact->discard_changes;
+        is_deeply $contact->get_extra_fields, $contact_extra_fields, 'multiple fields were added and retain order';
+
         $contact->set_extra_fields();
         $contact->update;
     };
