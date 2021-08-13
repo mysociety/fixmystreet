@@ -377,13 +377,10 @@ sub _premises_for_postcode {
 
 sub clear_cached_lookups {
     my ($self, $id) = @_;
-
     my ($pc, $uprn) = split ":", $id;
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
-
     delete $self->{c}->session->{$key};
 }
-
 
 sub bin_addresses_for_postcode {
     my $self = shift;
@@ -536,6 +533,7 @@ sub bin_services_for_address {
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
     my $events_uprn = $bartec->Premises_Events_Get($property->{uprn});
     my $events_usrn = $bartec->Streets_Events_Get($property->{usrn});
+    my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
 
     my %lock_out_types = map { $_ => 1 } ('BIN NOT OUT', 'CONTAMINATION', 'EXCESS WASTE', 'OVERWEIGHT', 'WRONG COLOUR BIN', 'NO ACCESS');
     my %jobs_to_lock_out;
@@ -557,7 +555,6 @@ sub bin_services_for_address {
     }
 
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
-    my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
     $self->{c}->stash->{open_service_requests} = $open_requests;
 
     $self->{c}->stash->{waste_features} = $self->feature('waste_features');
@@ -702,7 +699,6 @@ sub property_attributes {
 
     return \%attribs;
 }
-
 
 sub waste_munge_request_form_data {
     my ($self, $data) = @_;
