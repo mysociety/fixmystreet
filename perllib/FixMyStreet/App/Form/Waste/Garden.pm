@@ -14,7 +14,7 @@ sub details_update_fields {
 
     my $existing = $data->{existing_number} || 0;
     $existing = 0 if $data->{existing} eq 'no';
-    my $bin_count = $c->get_param('bins_wanted') || $existing;
+    my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
     my $cost = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($bin_count);
     $form->{c}->stash->{payment} = $cost / 100;
     return {
