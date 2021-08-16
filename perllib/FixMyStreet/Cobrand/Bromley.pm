@@ -739,6 +739,7 @@ sub bin_services_for_address {
 
     my $events = $self->{api_events};
     my $open = $self->_parse_open_events($events);
+    $self->{c}->stash->{open_service_requests} = $open->{enquiry};
 
     my @to_fetch;
     my %schedules;
@@ -815,7 +816,6 @@ sub bin_services_for_address {
             request_open => $open_request,
             request_containers => $containers,
             request_max => $request_max,
-            enquiry_open_events => $open->{enquiry},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
             service_task_type_id => $servicetask->{TaskTypeId},
