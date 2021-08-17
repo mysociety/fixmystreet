@@ -406,14 +406,16 @@ var url_with_style = base_url + '?styleIds=${styleid}';
 var layers = [
     {
         categories: [
-            "Mains Supply Fault",
-            "Day Burner",
+            "Cover hanging",
+            "Door Missing",
             "Flashing Lamp",
-            "Twisted Lantern",
-            "Twisted Bracket",
-            "Missing No",
-            "Low Output",
-            "Lamp Out"
+            "HIT",
+            "Knocked Down Bollard",
+            "Lamp appears dim",
+            "Lamp on during day",
+            "Not on at night",
+            "Other",
+            "Twisted Lantern"
         ],
         item_name: "street light",
         layer_name: "Street Lights",
