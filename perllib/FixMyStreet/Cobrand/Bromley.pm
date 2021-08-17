@@ -282,6 +282,20 @@ sub open311_config_updates {
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
+    $self->_include_user_title_in_extra($row);
+
+    $self->{bromley_original_detail} = $row->detail;
+
+    my $private_comments = $row->get_extra_metadata('private_comments');
+    if ($private_comments) {
+        my $text = $row->detail . "\n\nPrivate comments: $private_comments";
+        $row->detail($text);
+    }
+}
+
+sub _include_user_title_in_extra {
+    my ($self, $row) = @_;
+
     my $extra = $row->extra || {};
     unless ( $extra->{title} ) {
         $extra->{title} = $row->user->title;
@@ -289,9 +303,15 @@ sub open311_pre_send {
     }
 }
 
+sub open311_post_send {
+    my ($self, $row, $h, $contact) = @_;
+
+    $row->detail($self->{bromley_original_detail});
+}
+
 sub open311_pre_send_updates {
     my ($self, $row) = @_;
-    return $self->open311_pre_send($row);
+    return $self->_include_user_title_in_extra($row);
 }
 
 sub open311_munge_update_params {
@@ -1871,6 +1891,10 @@ sub dashboard_export_problems_add_columns {
             staff_role => $staff_role,
         };
     });
+}
+
+sub report_form_extras {
+    ( { name => 'private_comments' } )
 }
 
 1;
