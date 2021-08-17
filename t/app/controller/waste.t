@@ -955,6 +955,16 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
         $mech->content_contains('1 bin');
+        $mech->submit_form_ok({ with_fields => { goto => 'details' } });
+        $mech->content_contains('<span id="cost_pa">20.00');
+        $mech->content_contains('<span id="cost_now">20.00');
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
         # external redirects make Test::WWW::Mechanize unhappy so clone
         # the mech for the redirect
         my $mech2 = $mech->clone;
@@ -1156,8 +1166,13 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
+        $mech->content_contains('2 bins');
         $mech->content_contains('40.00');
         $mech->content_contains('7.50');
+        $mech->submit_form_ok({ with_fields => { goto => 'alter' } });
+        $mech->content_contains('<span id="cost_per_year">40.00');
+        $mech->content_contains('<span id="pro_rata_cost">7.50');
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 750, 'correct amount used';
 
@@ -1358,7 +1373,16 @@ FixMyStreet::override_config {
             bins_wanted => 1,
             payment_method => 'credit_card',
         } });
+        $mech->content_contains('1 bin');
         $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { goto => 'intro' } });
+        $mech->content_contains('<span id="cost_pa">20.00');
+        $mech->content_contains('<span id="cost_now">20.00');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+        } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{amount}, 2000, 'correct amount used';
 
@@ -2272,7 +2296,6 @@ FixMyStreet::override_config {
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        #warn $mech->content;
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
@@ -2354,7 +2377,6 @@ FixMyStreet::override_config {
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        #warn $mech->content;
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
         $new_report->discard_changes;
