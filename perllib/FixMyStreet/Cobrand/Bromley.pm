@@ -1736,11 +1736,12 @@ sub waste_get_current_garden_sub {
 sub waste_get_sub_quantity {
     my ($self, $service) = @_;
 
-    my $quantity;
+    my $quantity = 0;
     my $tasks = Integrations::Echo::force_arrayref($service->{Data}, 'ExtensibleDatum');
     return 0 unless scalar @$tasks;
     for my $data ( @$tasks ) {
         next unless $data->{DatatypeName} eq 'LBB - GW Container';
+        next unless $data->{ChildData};
         my $kids = $data->{ChildData}->{ExtensibleDatum};
         $kids = [ $kids ] if ref $kids eq 'HASH';
         for my $child ( @$kids ) {
