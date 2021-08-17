@@ -1,0 +1,12 @@
+<!-- after_detail.html -->
+
+[% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies_ids) %]
+
+[% IF can_contribute_as_body %]
+<p>
+  <label for="form_private_comments">Private comments</label>
+  <textarea class="form-control" id="form_private_comments" name="private_comments"></textarea>
+</p>
+[% END %]
+
+<!-- /after_detail.html -->
