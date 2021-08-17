@@ -178,6 +178,29 @@ for my $test (
     };
 }
 
+subtest 'ensure private_comments are added to open311 description' => sub {
+    $report->set_extra_metadata(private_comments => 'Secret notes go here');
+    $report->whensent(undef);
+    $report->update;
+
+    my $test_data;
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $test_data = FixMyStreet::Script::Reports::send();
+    };
+
+    $report->discard_changes;
+    ok $report->whensent, 'Report marked as sent';
+    unlike $report->detail, qr/Private comments/, 'private comments not saved to report detail';
+
+    my $req = $test_data->{test_req_used};
+    my $c = CGI::Simple->new($req->content);
+    like $c->param('description'), qr/Private comments: Secret notes go here/, 'private comments included in description';
+};
+
 for my $test (
     {
         cobrand => 'bromley',
