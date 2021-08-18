@@ -115,40 +115,6 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
-var streetlight_select = $.extend({
-    label: "${UNITNO}",
-    fontColor: "#FFD800",
-    labelOutlineColor: "black",
-    labelOutlineWidth: 3,
-    labelYOffset: 69,
-    fontSize: '18px',
-    fontWeight: 'bold'
-}, fixmystreet.assets.style_default_select.defaultStyle);
-
-var streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': occ_default,
-  'select': new OpenLayers.Style(streetlight_select),
-  'hover': occ_hover
-});
-
-fixmystreet.assets.add(defaults, {
-    select_action: true,
-    stylemap: streetlight_stylemap,
-    wfs_feature: "Street_Lights",
-    asset_id_field: 'UNITID',
-    attributes: {
-        feature_id: 'UNITID',
-        column_no: 'UNITNO'
-    },
-    asset_category: ["Street lighting"],
-    asset_item: 'street light',
-    feature_code: 'UNITNO',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
-});
-
 var owned_base = $.extend({}, defaults, {
     select_action: true,
     srsName: "EPSG:27700",
@@ -322,7 +288,6 @@ fixmystreet.assets.add(defaults, {
         "Pothole",
         "Road Traffic Signs and Road Markings",
         "Roads/highways",
-        "Street lighting",
         "Traffic Lights (permanent only)",
         "Trees"
     ]
@@ -393,8 +358,23 @@ $(function() {
 });
 
 // Alloy street lighting stuff from here
-// TODO: Remove obsolete street lighting code above
 // TODO: Further reduce duplicate between here & Northamptonshire
+
+var streetlight_select = $.extend({
+    label: "${title}",
+    fontColor: "#FFD800",
+    labelOutlineColor: "black",
+    labelOutlineWidth: 3,
+    labelYOffset: 69,
+    fontSize: '18px',
+    fontWeight: 'bold'
+}, fixmystreet.assets.style_default_select.defaultStyle);
+
+var streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': occ_default,
+  'select': new OpenLayers.Style(streetlight_select),
+  'hover': occ_hover
+});
 
 var street_lighting_layer = 'layers_streetLightingAssets';
 var base_url = fixmystreet.staging ?
@@ -427,7 +407,7 @@ var layers = [
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
 var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
-  stylemap: occ_stylemap,
+  stylemap: streetlight_stylemap,
   class: OpenLayers.Layer.AlloyVectorAsset,
   protocol_class: OpenLayers.Protocol.AlloyV2,
   http_options: {
@@ -437,16 +417,22 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   non_interactive: false,
   body: "Oxfordshire County Council",
   attributes: {
+    // feature_id
+    column_no: "title",
     asset_resource_id: function() {
       return this.fid;
     }
   },
   select_action: true,
+  asset_item: 'street light',
+  feature_code: 'title',
+  asset_id_field: 'itemId',
   actions: {
     asset_found: function(asset) {
       if (fixmystreet.message_controller.asset_found.call(this)) {
           return;
       }
+      fixmystreet.assets.named_select_action_found.call(this, asset);
       var lonlat = asset.geometry.getBounds().getCenterLonLat();
       // Features considered overlapping if within 1M of each other
       // TODO: Should zoom/marker size be considered when determining if markers overlap?
@@ -477,6 +463,7 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
     asset_not_found: function() {
       $("#overlapping_features_msg").addClass('hidden');
       fixmystreet.message_controller.asset_not_found.call(this);
+      fixmystreet.assets.named_select_action_not_found.call(this);
     }
   }
 });
