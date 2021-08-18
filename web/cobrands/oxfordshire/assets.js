@@ -8,6 +8,35 @@ var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.myso
 var tilma_url = "https://" + wfs_host + "/mapserver/oxfordshire";
 var proxy_base_url = "https://" + wfs_host + "/proxy/occ/";
 
+var lighting_categories = [
+    "Cover hanging",
+    "Door Missing",
+    "Flashing Lamp",
+    "HIT",
+    "Knocked Down Bollard",
+    "Lamp appears dim",
+    "Lamp on during day",
+    "Not on at night",
+    "Other",
+    "Twisted Lantern"
+];
+var road_categories = lighting_categories.concat([
+    "Bridges",
+    "Carriageway Defect",
+    "Current Roadworks",
+    "Drainage",
+    "Gully and Catchpits",
+    "Highway Schemes",
+    "Ice/Snow",
+    "Manhole",
+    "Pavements",
+    "Pothole",
+    "Road Traffic Signs and Road Markings",
+    "Roads/highways",
+    "Traffic Lights (permanent only)",
+    "Trees"
+]);
+
 var defaults = {
     wfs_url: tilma_url,
     asset_type: 'spot',
@@ -275,22 +304,7 @@ fixmystreet.assets.add(defaults, {
         },
         not_found: fixmystreet.message_controller.road_not_found
     },
-    asset_category: [
-        "Bridges",
-        "Carriageway Defect",
-        "Current Roadworks",
-        "Drainage",
-        "Gully and Catchpits",
-        "Highway Schemes",
-        "Ice/Snow",
-        "Manhole",
-        "Pavements",
-        "Pothole",
-        "Road Traffic Signs and Road Markings",
-        "Roads/highways",
-        "Traffic Lights (permanent only)",
-        "Trees"
-    ]
+    asset_category: road_categories
 });
 
 // Track open popup for defect pins
@@ -385,18 +399,7 @@ var url_with_style = base_url + '?styleIds=${styleid}';
 
 var layers = [
     {
-        categories: [
-            "Cover hanging",
-            "Door Missing",
-            "Flashing Lamp",
-            "HIT",
-            "Knocked Down Bollard",
-            "Lamp appears dim",
-            "Lamp on during day",
-            "Not on at night",
-            "Other",
-            "Twisted Lantern"
-        ],
+        categories: lighting_categories,
         item_name: "street light",
         layer_name: "Street Lights",
         styleid: '5e0e0edfca31500efc379151',
@@ -418,13 +421,12 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   body: "Oxfordshire County Council",
   attributes: {
     // feature_id
-    column_no: "title",
+    unit_number: "title",
     asset_resource_id: function() {
       return this.fid;
     }
   },
   select_action: true,
-  asset_item: 'street light',
   feature_code: 'title',
   asset_id_field: 'itemId',
   actions: {
