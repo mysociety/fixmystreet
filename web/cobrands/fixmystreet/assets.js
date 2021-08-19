@@ -434,7 +434,7 @@ function asset_selected(e) {
 }
 
 function asset_unselected(e) {
-    if (selected_feature.layer !== this) {
+    if (selected_feature && selected_feature.layer !== this) {
         // The selected feature has already changed to something in a different
         // layer, so we don't want to mess that up by clearing it
         return;
@@ -511,9 +511,9 @@ function _update_message(message, c) {
         id = "category_meta_message_" + prefix,
         $p = $('#' + id);
     if (message) {
-        $p.html(message);
+        $p.html(message).show();
     } else {
-        $p.remove();
+        $p.hide();
     }
 }
 

@@ -4,9 +4,13 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
+var tilma_url = "https://" + wfs_host + "/mapserver/bucks";
+var proxy_base_url = "https://" + wfs_host + "/proxy/bcc/";
+
 var defaults = {
     http_options: {
-        url: "https://tilma.mysociety.org/mapserver/bucks",
+        url: tilma_url,
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -169,15 +173,64 @@ fixmystreet.assets.add(labeled_defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
+        url: proxy_base_url + 'drains/wfs',
         params: {
-            TYPENAME: "Gullies"
+            TYPENAME: "junction_inspections"
         }
     },
-    asset_category: [
-        'Blocked drain'
-        ],
-    asset_item: 'drain'
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    asset_category: ["Blocked drain"],
+    asset_item: 'drain',
+    non_interactive: true
 });
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: proxy_base_url + 'drains/wfs',
+        params: {
+            TYPENAME: "junctions"
+        }
+    },
+    asset_category: ["Blocked drain"],
+    asset_item: 'drain',
+    select_action: true,
+    construct_selected_asset_message: function(asset) {
+        var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
+            return elem.fixmystreet.body == "Buckinghamshire Council" && 
+            elem.fixmystreet.http_options.format.featureType == 'junction_inspections';
+        });
+        var inspection;
+        if (junctionInspectionLayer[0]) {
+            inspection = junctionInspectionLayer[0].features.filter(function(elem) {
+                return elem.attributes.asset_id == asset.attributes.asset_id &&
+                format_date(elem.attributes.created) == format_date(asset.attributes.last_inspected);
+            });
+        }
+        var last_clean = '';
+        var message = ' ';
+        if (inspection && inspection[0]) {
+            if (asset.attributes.last_inspected && inspection[0].attributes.junction_cleaned === 'true') {
+                last_clean = format_date(asset.attributes.last_inspected);
+                message = 'This gulley was last cleaned on ' + last_clean;
+            }
+        }
+        return message;
+    },
+    actions: {
+        asset_found: fixmystreet.assets.named_select_action_found,
+        asset_not_found: fixmystreet.assets.named_select_action_not_found
+    }
+});
+
+function format_date(date_field) {
+    var regExDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
+    var myMatch = regExDate.exec(date_field);
+    if (myMatch) {
+        return myMatch[3] + '/' + myMatch[2] + '/' + myMatch[1];
+    } else {
+        return '';
+    }
+}
 
 // The "whole street asset" layer indicates who is responsible for maintaining
 // a road via the 'feature_ty' attribute on features.
