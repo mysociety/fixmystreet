@@ -7,25 +7,18 @@ $(function() {
     });
 
     var cost = $('#per_bin_cost').val();
-    function bin_cost(total_bins) {
+    function bin_cost_new() {
+      var total_bins = parseInt($('#bins_wanted').val() || 0);
       var total_cost = ( total_bins * cost ) / 100;
       $('#cost_pa').text(total_cost.toFixed(2));
       $('#cost_now').text(total_cost.toFixed(2));
     }
-    function bin_cost_new() {
-      var total_bins = parseInt($('#bins_wanted').val() || 0);
-      bin_cost(total_bins);
-    }
-    function bin_cost_renew() {
-      var total_bins = parseInt($('#current_bins').val() || 0);
-      bin_cost(total_bins);
-    }
-    $('#bins_wanted').on('change', bin_cost_new);
-    $('#renew #current_bins').on('change', bin_cost_renew);
+    $('#subscribe_details #bins_wanted').on('change', bin_cost_new);
+    $('#renew #bins_wanted').on('change', bin_cost_new);
 
     function modify_cost() {
-      var total_bins = parseInt($('#bin_number').val() || 0);
-      var existing_bins = parseInt($('#existing_bins').val() || 0);
+      var total_bins = parseInt($('#bins_wanted').val() || 0);
+      var existing_bins = parseInt($('#current_bins').val() || 0);
       var new_bins = total_bins - existing_bins;
       var pro_rata_cost = 0;
       var total_cost = ( total_bins * cost ) / 100;
@@ -41,5 +34,5 @@ $(function() {
       $('#cost_per_year').text(total_cost.toFixed(2));
       $('#pro_rata_cost').text(pro_rata_cost.toFixed(2));
     }
-    $('#bin_number').on('change', modify_cost);
+    $('#modify #bins_wanted').on('change', modify_cost);
 });
