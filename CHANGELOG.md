@@ -28,6 +28,7 @@
         - Fix unable to edit user with verified landline #3295
         - Fix 'sites' page to reflect active fixmystreet sites #2481
         - Fix ordering of dropdown lists in extra questions #3566
+        - Fix removal of cached opengraph photos.
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
