@@ -235,8 +235,10 @@ sub delete_cached {
     my @dirs = ('web', 'photo');
     push @dirs, 'c' if ref $object eq 'FixMyStreet::DB::Result::Comment';
 
+    my @photo_types = ("", ".fp", ".tn", ".full", ".og");
+
     # Old files without an index number; will always be .jpeg
-    foreach my $size ("", ".fp", ".tn", ".full") {
+    foreach my $size (@photo_types) {
         unlink FixMyStreet->path_to(@dirs, "$id$size.jpeg");
     }
 
@@ -245,7 +247,7 @@ sub delete_cached {
     foreach (map [ $_, $images[$_] ], 0 .. $#images) {
         my ($i, $file) = @$_;
         my ($fileid, $type) = split /\./, $file;
-        foreach my $size ("", ".fp", ".tn", ".full") {
+        foreach my $size (@photo_types) {
             unlink FixMyStreet->path_to(@dirs, "$id.$i$size.$type");
         }
     }
