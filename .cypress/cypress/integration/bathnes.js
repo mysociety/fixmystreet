@@ -39,3 +39,12 @@ it('uses the Curo Group housing layer correctly', function() {
     cy.pickCategory('Dog fouling');
     cy.contains('Maintained by Curo Group').should('be.visible');
 });
+
+it('handles code names with spaces without error', function() {
+    cy.visit('http://bathnes.localhost:3001/report/new?longitude=-2.359276&latitude=51.379009');
+    cy.contains('Bath & North East Somerset Council');
+    cy.get('input[value="Abandoned vehicles"]').click();
+    cy.get('input[value="Blocked drain"]').click();
+    cy.get('input[value="Abandoned vehicles"]').click();
+    cy.contains('Not maintained by Bath & North East Somerset Council');
+});

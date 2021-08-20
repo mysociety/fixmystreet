@@ -564,7 +564,7 @@ $.extend(fixmystreet.set_up, {
             $new_category_meta.closest('.js-reporting-page').toggleClass('js-reporting-page--skip', !!data.extra_hidden);
             // Preserve any existing values
             $category_meta.find("[name]").each(function() {
-                $new_category_meta.find("[name="+this.name+"]").val(this.value);
+                $new_category_meta.find("[name='"+this.name+"']").val(this.value);
             });
         } else {
             $category_meta.closest('.js-reporting-page').addClass('js-reporting-page--skip');

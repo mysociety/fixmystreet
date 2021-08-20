@@ -26,6 +26,7 @@
         - Only trigger one refresh going Back to list view. #3476
         - Fix checked order of updates in dashboard export.
         - Fix unable to edit user with verified landline #3295
+        - Fix 'sites' page to reflect active fixmystreet sites #2481
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
@@ -44,6 +45,8 @@
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
         - Show relevant updates in alert-update email preview. #3417
+        - Add German and Swiss language packs to default
+        linux install #3544
         - Upgrade jQuery. #3017
     - Open311 improvements:
         - Consistent protected field ordering.
