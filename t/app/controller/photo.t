@@ -127,11 +127,14 @@ subtest "Check no access to update photos on hidden reports" => sub {
         $image_path->copy( path($UPLOAD_DIR, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg') );
 
         $mech->get_ok('/photo/c/' . $update->id . '.0.jpeg');
+        $mech->get_ok('/photo/c/' . $update->id . '.0.og.jpeg');
 
         $report->update({ state => 'hidden' });
         $report->get_photoset->delete_cached(plus_updates => 1);
 
         my $res = $mech->get('/photo/c/' . $update->id . '.0.jpeg');
+        is $res->code, 404, 'got 404';
+        $res = $mech->get('/photo/c/' . $update->id . '.0.og.jpeg');
         is $res->code, 404, 'got 404';
     };
 };
