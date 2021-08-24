@@ -535,23 +535,23 @@ sub bin_services_for_address {
     my $events_usrn = $bartec->Streets_Events_Get($property->{usrn});
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
 
-    my %lock_out_types = map { $_ => 1 } ('BIN NOT OUT', 'CONTAMINATION', 'EXCESS WASTE', 'OVERWEIGHT', 'WRONG COLOUR BIN', 'NO ACCESS');
-    my %jobs_to_lock_out;
-    my %dates_to_lock_out;
+    my %lock_out_types = map { $_ => 1 } ('BIN NOT OUT', 'CONTAMINATION', 'EXCESS WASTE', 'OVERWEIGHT', 'WRONG COLOUR BIN', 'NO ACCESS - street', 'NO ACCESS');
+    my %premise_dates_to_lock_out;
+    my %street_dates_to_lock_out;
     foreach (@$events_uprn) {
-        my $id = $_->{Job}{ID};
+        my $container_id = $_->{Features}{FeatureType}{ID};
+        my $date = construct_bin_date($_->{EventDate})->ymd;
         my $type = $_->{EventType}{Description};
-        # e.g. NO ACCESS 1ST TRY, NO ACCESS 2ND TRY, NO ACCESS BAD WEATHE, NO ACCESS GATELOCKED, NO ACCESS PARKED CAR, NO ACCESS POLICE, NO ACCESS ROADWORKS
-        $type = 'NO ACCESS' if $type =~ /NO ACCESS/;
         next unless $lock_out_types{$type};
-        $jobs_to_lock_out{$id} = $type;
+        $premise_dates_to_lock_out{$date}{$container_id} = $type;
     }
     foreach (@$events_usrn) {
         my $date = construct_bin_date($_->{EventDate})->ymd;
         my $type = $_->{EventType}{Description};
-        $type = 'NO ACCESS' if $type =~ /NO ACCESS/;
+        # e.g. NO ACCESS 1ST TRY, NO ACCESS 2ND TRY, NO ACCESS BAD WEATHE, NO ACCESS GATELOCKED, NO ACCESS PARKED CAR, NO ACCESS POLICE, NO ACCESS ROADWORKS
+        $type = 'NO ACCESS - street' if $type =~ /NO ACCESS/;
         next unless $lock_out_types{$type};
-        $dates_to_lock_out{$date} = $type;
+        $street_dates_to_lock_out{$date} = $type;
     }
 
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
@@ -605,7 +605,7 @@ sub bin_services_for_address {
                 $row->{report_locked_out} = "ON DAY PRE 5PM";
             }
             # But if it has been marked as locked out, show that
-            if (my $type = ($jobs_to_lock_out{$_->{JobID}} || $dates_to_lock_out{$last->ymd})) {
+            if (my $type = ($premise_dates_to_lock_out{$last->ymd}{$container_id} || $street_dates_to_lock_out{$last->ymd})) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = $type;
             }
