@@ -98,22 +98,22 @@ FixMyStreet::override_config {
         $mech->content_lacks('To report a missed recycling please call');
 
         $b->mock('Premises_Events_Get', sub { [
-            { Job => { ID => 456 }, EventType => { Description => 'BIN NOT OUT' } },
+            { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('There was a problem with your bin collection, please call');
 
         $b->mock('Premises_Events_Get', sub { [
-            { Job => { ID => 756 }, EventType => { Description => 'BIN NOT OUT' } },
+            { Features => { FeatureType => { ID => 9999 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There was a problem with your bin collection, please call');
 
         $b->mock('Premises_Events_Get', sub { [
-            { Job => { ID => 456 }, EventType => { Description => 'NO ACCESS' } },
+            { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'NO ACCESS' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('There is no need to report this as there was no access');
+        $mech->content_contains('There was a problem with your bin collection, please call');
 
         $b->mock('Premises_Events_Get', sub { [] }); # reset
 
