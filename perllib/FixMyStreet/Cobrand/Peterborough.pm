@@ -480,6 +480,7 @@ sub bin_services_for_address {
         # For missed collections or repairs
         6533 => "240L Black",
         6534 => "240L Green",
+        6579 => "240L Brown",
     };
 
     my %container_request_ids = (
