@@ -47,6 +47,10 @@ FixMyStreet::override_config {
     $b->mock('Authenticate', sub {
         { Token => { TokenString => "TOKEN" } }
     });
+    $b->mock('Jobs_Get', sub { [
+        { WorkPack => { Name => 'Waste-R1-010821' }, Name => 'Empty Bin 240L Black', ScheduledDate => '2021-08-01T07:00:00' },
+        { WorkPack => { Name => 'Waste-R1-050821' }, Name => 'Empty Bin Recycling 240l', ScheduledDate => '2021-08-05T07:00:00' },
+    ] });
     $b->mock('Jobs_FeatureScheduleDates_Get', sub { [
         { JobID => 123, PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Empty Bin 240L Black' },
         { JobID => 456, PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
@@ -118,19 +122,19 @@ FixMyStreet::override_config {
         $b->mock('Premises_Events_Get', sub { [] }); # reset
 
         $b->mock('Streets_Events_Get', sub { [
-            { EventDate => '2021-08-05T12:00:00', EventType => { Description => 'NO ACCESS PARKED CAR' } },
+            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'NO ACCESS PARKED CAR' } },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('There is no need to report this as there was no access');
 
         $b->mock('Streets_Events_Get', sub { [
-            { EventDate => '2021-08-04T12:00:00', EventType => { Description => 'NO ACCESS PARKED CAR' } },
+            { Workpack => { Name => 'Waste-R1-040821' }, EventType => { Description => 'NO ACCESS PARKED CAR' } },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There is no need to report this as there was no access');
 
         $b->mock('Streets_Events_Get', sub { [
-            { EventDate => '2021-08-01T12:00:00', EventType => { Description => 'STREET COMPLETED' } },
+            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'STREET COMPLETED' } },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There was a problem with your bin collection');
