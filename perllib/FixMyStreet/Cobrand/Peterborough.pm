@@ -480,6 +480,7 @@ sub bin_services_for_address {
         # For missed collections or repairs
         6533 => "240L Black",
         6534 => "240L Green",
+        6579 => "240L Brown",
     };
 
     my %container_request_ids = (
@@ -529,15 +530,25 @@ sub bin_services_for_address {
     $bartec = Integrations::Bartec->new(%$bartec);
 
     # TODO parallelize these calls if performance is an issue
-    my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
+    my $jobs = $bartec->Jobs_Get($property->{uprn});
+    my $job_dates = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
     my $events_uprn = $bartec->Premises_Events_Get($property->{uprn});
     my $events_usrn = $bartec->Streets_Events_Get($property->{usrn});
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
 
+    my %feature_to_workpack;
+    foreach (@$jobs) {
+        my $workpack = $_->{WorkPack}{Name};
+        my $name = $_->{Name};
+        #my $start = construct_bin_date($_->{ScheduledStart})->ymd;
+        #my $status = $_->{Status}{Status};
+        $feature_to_workpack{$name} = $workpack;
+    }
+
     my %lock_out_types = map { $_ => 1 } ('BIN NOT OUT', 'CONTAMINATION', 'EXCESS WASTE', 'OVERWEIGHT', 'WRONG COLOUR BIN', 'NO ACCESS - street', 'NO ACCESS');
     my %premise_dates_to_lock_out;
-    my %street_dates_to_lock_out;
+    my %street_workpacks_to_lock_out;
     foreach (@$events_uprn) {
         my $container_id = $_->{Features}{FeatureType}{ID};
         my $date = construct_bin_date($_->{EventDate})->ymd;
@@ -546,12 +557,12 @@ sub bin_services_for_address {
         $premise_dates_to_lock_out{$date}{$container_id} = $type;
     }
     foreach (@$events_usrn) {
-        my $date = construct_bin_date($_->{EventDate})->ymd;
+        my $workpack = $_->{Workpack}{Name};
         my $type = $_->{EventType}{Description};
         # e.g. NO ACCESS 1ST TRY, NO ACCESS 2ND TRY, NO ACCESS BAD WEATHE, NO ACCESS GATELOCKED, NO ACCESS PARKED CAR, NO ACCESS POLICE, NO ACCESS ROADWORKS
         $type = 'NO ACCESS - street' if $type =~ /NO ACCESS/;
         next unless $lock_out_types{$type};
-        $street_dates_to_lock_out{$date} = $type;
+        $street_workpacks_to_lock_out{$workpack} = $type;
     }
 
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
@@ -563,10 +574,11 @@ sub bin_services_for_address {
     my %seen_containers;
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    foreach (@$jobs) {
+    foreach (@$job_dates) {
         my $last = construct_bin_date($_->{PreviousDate});
         my $next = construct_bin_date($_->{NextDate});
-        my $container_id = $schedules{$_->{JobName}}->{Feature}->{FeatureType}->{ID};
+        my $name = $_->{JobName};
+        my $container_id = $schedules{$name}->{Feature}->{FeatureType}->{ID};
 
         # Some properties may have multiple of the same containers - only display each once.
         next if $seen_containers{$container_id};
@@ -581,8 +593,8 @@ sub bin_services_for_address {
             id => $_->{JobID},
             last => { date => $last, ordinal => ordinal($last->day) },
             next => { date => $next, ordinal => ordinal($next->day) },
-            service_name => $service_name_override{$_->{JobDescription}} || $_->{JobDescription},
-            schedule => $schedules{$_->{JobName}}->{Frequency},
+            service_name => $service_name_override{$name} || $name,
+            schedule => $schedules{$name}->{Frequency},
             service_id => $container_id,
             request_containers => $container_request_ids{$container_id},
 
@@ -600,15 +612,21 @@ sub bin_services_for_address {
         };
         if ($row->{report_allowed}) {
             # If on the day, but before 5pm, show a special message to call
-            if ($row->{last}{date}->ymd eq $now->ymd && $now->hour < 17) {
+            if ($last->ymd eq $now->ymd && $now->hour < 17) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = "ON DAY PRE 5PM";
             }
             # But if it has been marked as locked out, show that
-            if (my $type = ($premise_dates_to_lock_out{$last->ymd}{$container_id} || $street_dates_to_lock_out{$last->ymd})) {
+            if (my $type = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = $type;
             }
+        }
+        # Last date is last successful collection. If whole street locked out, it hasn't started
+        my $workpack = $feature_to_workpack{$name} || '';
+        if (my $type = $street_workpacks_to_lock_out{$workpack}) {
+            $row->{report_allowed} = 0;
+            $row->{report_locked_out} = $type;
         }
         push @out, $row;
     }

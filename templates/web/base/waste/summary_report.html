@@ -11,7 +11,11 @@ step1 = 'report';
     [% SET service_id = service.replace('service-', '') %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% services.$service_id.service_name %]</dt>
-        <dd class="govuk-summary-list__value">[% date.format(services.$service_id.last.date) | replace('~~~', services.$service_id.last.ordinal) %]</dd>
+        <dd class="govuk-summary-list__value">
+            [%~ IF services.$service_id.last.date %]
+                [%~ date.format(services.$service_id.last.date) | replace('~~~', services.$service_id.last.ordinal) %]
+            [%~ END ~%]
+        </dd>
     </div>
   [% END %]
 [% END %]

@@ -47,13 +47,17 @@ FixMyStreet::override_config {
     $b->mock('Authenticate', sub {
         { Token => { TokenString => "TOKEN" } }
     });
+    $b->mock('Jobs_Get', sub { [
+        { WorkPack => { Name => 'Waste-R1-010821' }, Name => 'Empty Bin 240L Black', ScheduledDate => '2021-08-01T07:00:00' },
+        { WorkPack => { Name => 'Waste-R1-050821' }, Name => 'Empty Bin Recycling 240l', ScheduledDate => '2021-08-05T07:00:00' },
+    ] });
     $b->mock('Jobs_FeatureScheduleDates_Get', sub { [
-        { JobID => 123, JobDescription => 'Empty Bin 240L Black', PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Black' },
-        { JobID => 456, JobDescription => 'Empty Bin Recycling 240l', PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Recycling' },
+        { JobID => 123, PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Empty Bin 240L Black' },
+        { JobID => 456, PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
     ] });
     $b->mock('Features_Schedules_Get', sub { [
-        { JobName => 'Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
-        { JobName => 'Recycling', Feature => { FeatureType => { ID => 6534 } } },
+        { JobName => 'Empty Bin 240L Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
+        { JobName => 'Empty Bin Recycling 240l', Feature => { FeatureType => { ID => 6534 } } },
     ] });
     $b->mock('ServiceRequests_Get', sub { [
         # No open requests at present
@@ -118,19 +122,19 @@ FixMyStreet::override_config {
         $b->mock('Premises_Events_Get', sub { [] }); # reset
 
         $b->mock('Streets_Events_Get', sub { [
-            { EventDate => '2021-08-05T12:00:00', EventType => { Description => 'NO ACCESS PARKED CAR' } },
+            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'NO ACCESS PARKED CAR' } },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('There is no need to report this as there was no access');
 
         $b->mock('Streets_Events_Get', sub { [
-            { EventDate => '2021-08-04T12:00:00', EventType => { Description => 'NO ACCESS PARKED CAR' } },
+            { Workpack => { Name => 'Waste-R1-040821' }, EventType => { Description => 'NO ACCESS PARKED CAR' } },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There is no need to report this as there was no access');
 
         $b->mock('Streets_Events_Get', sub { [
-            { EventDate => '2021-08-01T12:00:00', EventType => { Description => 'STREET COMPLETED' } },
+            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'STREET COMPLETED' } },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There was a problem with your bin collection');
@@ -208,6 +212,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
         $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_lacks('Friday, 6 August'); # No date for food bins
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
