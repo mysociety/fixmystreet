@@ -7,6 +7,7 @@ use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
+use Data::Dumper;
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -393,18 +394,39 @@ FixMyStreet::override_config {
         $mech->content_contains('May, at 10:00am');
         $mech->content_contains('We could not collect your waste as it was not correctly presented.');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
-        $mech->content_contains('Report a non-recyclable refuse collection');
+        $mech->content_lacks('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a non-recyclable refuse collection');
-        set_fixed_time('2020-05-29T12:00:00Z');
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a non-recyclable refuse collection');
+        $mech->content_lacks('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-30T12:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a non-recyclable refuse collection');
+        set_fixed_time('2020-05-28T12:00:00Z');
+        $mech->get_ok('/waste/14345');       
         restore_time();
     };
+
+    for my $date ('2020-05-28T12:00:00Z', '2020-05-29T12:00:00Z') {
+        subtest 'test reporting allowed within two days of last collection' => sub {
+		    my $echo = Test::MockModule->new('Integrations::Echo');
+            $echo->mock('GetEventsForObject', sub { return []});
+            set_fixed_time($date);
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a paper &amp; cardboard collection');
+            restore_time();
+        };
+    }
+
+    for my $date ('2020-05-27T12:00:00Z', '2020-05-30T12:00:00Z', '2020-05-31T12:00:00Z', , '2020-06-01T12:00:00Z') {
+        subtest 'test reporting only allowed within two days of last collection' => sub {
+		    my $echo = Test::MockModule->new('Integrations::Echo');
+            $echo->mock('GetEventsForObject', sub { return []});
+            set_fixed_time($date);
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a paper &amp; cardboard collection');
+            restore_time();
+        };
+    }
 
     subtest 'test requesting garden waste' => sub {
 		my $echo = Test::MockModule->new('Integrations::Echo');

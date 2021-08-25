@@ -6,6 +6,7 @@ with 'FixMyStreet::Roles::SOAPIntegration';
 use DateTime;
 use Tie::IxHash;
 use FixMyStreet;
+use Data::Dumper;
 
 has attr => ( is => 'ro', default => 'http://www.twistedfish.com/xmlns/echo/api/v1' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
@@ -75,7 +76,6 @@ sub call {
 # corresponding tasks.
 sub GetTasks {
     my $self = shift;
-
     my @refs;
     foreach my $ref (@_) {
         my $a = ixhash(
@@ -88,7 +88,6 @@ sub GetTasks {
         );
         push @refs, $a;
     }
-
     if ($self->sample_data) {
         my %lookup = map { $_->[0] . ',' . $_->[1] => 1 } @_;
         my $data = [];
@@ -420,7 +419,7 @@ sub GetEventsForObject {
             ] },
             ServiceId => 535,
             ResolutionCodeId => 584,
-        } ] if $type eq 'PointAddress';
+        } ] if ($type eq 'PointAddress');
         return [ {
             # Missed collection for service 537 (paper)
             EventTypeId => 2099,

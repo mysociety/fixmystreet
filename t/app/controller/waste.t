@@ -129,11 +129,17 @@ FixMyStreet::override_config {
         $mech->content_contains('A food waste collection has been reported as missed');
         $mech->content_contains('A paper &amp; cardboard collection has been reported as missed'); # as part of service unit, not property
     };
-    subtest 'Report a missed bin' => sub {
-        $mech->content_contains('service-531', 'Can report, last collection was 27th');
+    subtest 'Cannot report situations' => sub {
+        $mech->content_lacks('service-531', 'Cannot report, last collection was 27th but has a completed report since last collection');
         $mech->content_lacks('service-537', 'Cannot report, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
         $mech->content_lacks('service-542', 'Cannot report, last collection was 18th');
+    };
+    subtest 'Report a missed bin' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetEventsForObjects', sub { return []});
+        set_fixed_time('2020-05-28T17:00:00Z');
+        $mech->get_ok('/waste/15345');
         $mech->follow_link_ok({ text => 'Report a missed collection' });
         $mech->content_contains('service-531', 'Checkbox, last collection was 27th');
         $mech->content_lacks('service-537', 'No checkbox, last collection was 27th but the service unit has a report');

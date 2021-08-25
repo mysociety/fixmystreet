@@ -20,6 +20,7 @@ use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
 use Memcached;
 use BromleyParks;
+use Data::Dumper;
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -505,14 +506,12 @@ sub bin_addresses_for_postcode {
 
 sub look_up_property {
     my ($self, $id) = @_;
-
     my $calls = $self->call_api(
         "look_up_property:$id",
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
     );
-
     $self->{api_serviceunits} = $calls->{"GetServiceUnitsForObject $id"};
     $self->{api_events} = $calls->{"GetEventsForObject PointAddress $id"};
     my $result = $calls->{"GetPointAddress $id"};
@@ -822,8 +821,7 @@ sub bin_services_for_address {
             my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
             my $completed = construct_bin_date($_->{CompletedDate});
             my $state = $_->{State}{Name} || '';
-            my $task_type_id = $_->{TaskTypeId} || '';
-
+            my $task_type_id = $_->{TaskTypeId} || ''; 
             my $orig_resolution = $_->{Resolution}{Name} || '';
             my $resolution = $orig_resolution;
             my $resolution_id = $_->{Resolution}{Ref}{Value}{anyType};
@@ -845,8 +843,7 @@ sub bin_services_for_address {
             $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
             $row->{last}{completed} = $completed;
             $row->{last}{resolution} = $resolution;
-            $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
-
+            $row->{report_allowed} = _test_report_allowed($row);
             # Special handling if last instance is today
             if ($row->{last}{date}->ymd eq $now->ymd) {
                 # If it's before 5pm and outstanding, show it as in progress
@@ -860,16 +857,31 @@ sub bin_services_for_address {
                 }
             }
 
-            # If the task is ended and could not be done, do not allow reporting
+            #If the task is ended and could not be done, do not allow reporting
             if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution eq 'Excess Waste')) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = 1;
-            }
+            };
         }
     }
 
     return \@out;
 }
+
+sub _test_report_allowed {
+    my $row = shift;
+    my $completed = $row->{last}{completed};
+    my $last = $row->{last}{date};
+    if (!within_working_days($last, 2)) {
+        #warn "Not within two days: " . $row->{id};
+        return 0;
+    } elsif ($completed && $completed > $last) {
+        warn "Task recently closed: " . $row->{id};
+        return 0;
+    } else {
+        return 1;
+   }
+};
 
 sub _get_current_service_task {
     my $service = shift;
