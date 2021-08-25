@@ -208,6 +208,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
         $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_lacks('Friday, 6 August'); # No date for food bins
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
