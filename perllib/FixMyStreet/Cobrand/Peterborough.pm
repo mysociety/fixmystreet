@@ -567,7 +567,8 @@ sub bin_services_for_address {
     foreach (@$jobs) {
         my $last = construct_bin_date($_->{PreviousDate});
         my $next = construct_bin_date($_->{NextDate});
-        my $container_id = $schedules{$_->{JobName}}->{Feature}->{FeatureType}->{ID};
+        my $name = $_->{JobName};
+        my $container_id = $schedules{$name}->{Feature}->{FeatureType}->{ID};
 
         # Some properties may have multiple of the same containers - only display each once.
         next if $seen_containers{$container_id};
@@ -582,8 +583,8 @@ sub bin_services_for_address {
             id => $_->{JobID},
             last => { date => $last, ordinal => ordinal($last->day) },
             next => { date => $next, ordinal => ordinal($next->day) },
-            service_name => $service_name_override{$_->{JobDescription}} || $_->{JobDescription},
-            schedule => $schedules{$_->{JobName}}->{Frequency},
+            service_name => $service_name_override{$name} || $name,
+            schedule => $schedules{$name}->{Frequency},
             service_id => $container_id,
             request_containers => $container_request_ids{$container_id},
 
@@ -601,7 +602,7 @@ sub bin_services_for_address {
         };
         if ($row->{report_allowed}) {
             # If on the day, but before 5pm, show a special message to call
-            if ($row->{last}{date}->ymd eq $now->ymd && $now->hour < 17) {
+            if ($last->ymd eq $now->ymd && $now->hour < 17) {
                 $row->{report_allowed} = 0;
                 $row->{report_locked_out} = "ON DAY PRE 5PM";
             }
