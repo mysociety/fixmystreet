@@ -242,7 +242,7 @@ sub Streets_Events_Get {
 
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 1);
     my $events = $self->call('Streets_Events_Get',
-        token => $self->token, USRN => $usrn); #, StartDate => $from->iso8601 );
+        token => $self->token, USRN => $usrn, StartDate => $from->iso8601 );
     return force_arrayref($events, 'Event');
 }
 
