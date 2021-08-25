@@ -175,17 +175,44 @@ sub Premises_Get {
     return \@premises;
 }
 
+sub Jobs_Get {
+    my ($self, $uprn) = @_;
+
+    my $w3c = DateTime::Format::W3CDTF->new;
+
+    # how many days before today to search for jobs
+    # The assumption is that collections have a minimum frequency of every two weeks, so a day of wiggle room.
+    my $days_buffer = 15;
+
+    my $start = $w3c->format_datetime(DateTime->now->subtract(days => $days_buffer));
+    my $end = $w3c->format_datetime(DateTime->now);
+
+    my $res = $self->call('Jobs_Get', token => $self->token, UPRN => $uprn, ScheduleStart => {
+        MinimumDate => {
+            attr => { xmlns => "http://www.bartec-systems.com" },
+            value => $start,
+        },
+        MaximumDate => {
+            attr => { xmlns => "http://www.bartec-systems.com" },
+            value => $end,
+        },
+    });
+    my $jobs = $res->{Jobs} || [];
+    @$jobs = sort { $a->{ScheduledDate} cmp $b->{ScheduledDate} } map { $_->{Job} } @$jobs;
+    return $jobs;
+}
+
 sub Jobs_FeatureScheduleDates_Get {
     my ($self, $uprn, $start, $end) = @_;
 
     my $w3c = DateTime::Format::W3CDTF->new;
 
-    # how many days either side of today to search for collections if $start/$end aren't given.
+    # how many days before today to search for collections if $start/$end aren't given.
     # The assumption is that collections have a minimum frequency of every two weeks, so a day of wiggle room.
     my $days_buffer = 15;
 
     $start = $w3c->format_datetime($start || DateTime->now->subtract(days => $days_buffer));
-    $end = $w3c->format_datetime($end || DateTime->now->add(days => $days_buffer));
+    $end = $w3c->format_datetime($end || DateTime->now);
 
     my $res = $self->call('Jobs_FeatureScheduleDates_Get', token => $self->token, UPRN => $uprn, DateRange => {
         MinimumDate => {
