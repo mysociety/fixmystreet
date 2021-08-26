@@ -244,7 +244,6 @@ var curo_categories = [
     'Dead animals',
     'Dog fouling',
     'Excessive or dangerous littering',
-    'Household bins left out',
     'Needles'
 ];
 
@@ -273,14 +272,11 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
             fixmystreet.message_controller.road_not_found(layer);
             $('#js-roads-responsibility > strong').hide();
 
-            var domain = '@curo-group.co.uk';
-            var email = 'estates';
-            if (category === 'Household bins left out early or after collection day') {
-                email = 'tennancycompliance&support';
-            }
+            var domain = 'curo-group.co.uk';
+            var email = 'estates@' + domain;
             var email_string = $(layer.fixmystreet.no_asset_msg_id).find('.js-roads-asset');
             if (email_string) {
-                email_string.html('<a href="mailto:' + email + domain + '">' + email + domain + '</a>');
+                email_string.html('<a href="mailto:' + email + '">' + email + '</a>');
             }
         },
         not_found: function(layer) {
