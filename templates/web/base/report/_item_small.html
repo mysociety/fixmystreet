@@ -32,7 +32,7 @@
 [% END %]
 <div class='assigned-to' style='margin-top:0.25em'>
 [%  IF c.user.has_permission_to('report_inspect', c.cobrand.body.id ) %] 
-    <span class="inline-text assigned-to-label" for="assignment">[% loc('Assigned to:') %] </span>
+    <span class="inline-text">[% loc('Assigned to:') %] </span>
     <strong>
         [% INCLUDE 'report/_get_assigned_user.html' %]
     </strong>
