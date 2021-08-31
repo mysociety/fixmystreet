@@ -1295,7 +1295,7 @@ sub export_as_csv {
             'Interne meldung',
         ],
         csv_columns => [
-            'id', 'created', 'whensent',' lastupdate', 'local_coords_x',
+            'id', 'created', 'whensent', 'lastupdate', 'local_coords_x',
             'local_coords_y', 'category', 'state', 'closure_status',
             'user_id', 'user_email', 'user_phone', 'user_name',
             'body_name', 'sum_time_spent', 'title', 'detail',

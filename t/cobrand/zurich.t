@@ -1080,6 +1080,14 @@ subtest 'A visit to /reports is okay' => sub {
     $mech->content_contains('<option value="Cat1">');
 };
 
+subtest 'CSV export includes lastupdate for problem' => sub {
+    $mech->get_ok( '/admin/stats?export=1' );
+    is $mech->res->code, 200, 'csv retrieved ok';
+    my @rows = $mech->content_as_csv;
+    is $rows[0]->[3], 'Last Updated', "Last Updated field has correct column heading";
+    isnt $rows[1]->[3], '', "Last Updated field isn't blank";
+};
+
 };
 
 done_testing();
