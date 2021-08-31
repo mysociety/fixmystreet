@@ -35,7 +35,7 @@ describe("Oxfordshire cobrand", function() {
     cy.visit('http://oxfordshire.localhost:3001/_test/teardown/oxfordshire-defect');
   });
 
-  it.only("shows the correct dropdown options for each category", function() {
+  it("shows the correct dropdown options for each category", function() {
     cy.request({
       method: 'POST',
       url: 'http://oxfordshire.localhost:3001/auth',
@@ -73,11 +73,12 @@ describe("Oxfordshire cobrand", function() {
                 cy.get('@didetail').select(rdetail);
             });
             rtype.wrong_details.forEach( function(wdetail) {
-                cy.get('@didetail').contains('^' + wdetail + '$').should('not.be.visible');
+                cy.get('@didetail').contains(new RegExp('^' + wdetail + '$')).parent('optgroup').should('not.be.visible');
             });
         });
         wrongtypes.forEach(function(wtype) {
-            cy.get('@ditype').contains('^' + wtype.typename + '$').should('not.be.visible');
+            var t = wtype.typename.replace('(','\\(').replace(')','\\)');
+            cy.get('@ditype').contains(new RegExp('^' + t + '$')).parent('optgroup').should('not.be.visible');
         });
     }
 
@@ -181,8 +182,7 @@ describe("Oxfordshire cobrand", function() {
     var blockage = {
         typename: 'Blockage',
         right_details: [
-            '1 kerb unit or I liner length',
-            'Greater than 1 kerb unit or I liner length'
+            'Blockage raised as a defect'
         ],
         wrong_details: [
             '0-1m²',
@@ -190,7 +190,8 @@ describe("Oxfordshire cobrand", function() {
             'Pothole Sweep & Fill 0-1m²',
             'Pothole Cluster Sweep & Fill 1-2m²',
             'Pothole Cluster',
-            'Blockage raised as a defect'
+            '1 kerb unit or I liner length',
+            'Greater than 1 kerb unit or I liner length'
         ]
     };
 
