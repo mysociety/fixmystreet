@@ -1,10 +1,9 @@
 ///*
 (function(){
-    var item = document.getElementById('defect_item_category');
-    var type = document.getElementById('defect_item_type');
-    var detail = document.getElementById('defect_item_detail');
-
     $(document).on('change', '#defect_item_category', function(){
+        var item = document.getElementById('defect_item_category');
+        var type = document.getElementById('defect_item_type');
+        var detail = document.getElementById('defect_item_detail');
         var opt = item.options[item.selectedIndex].value;
         // reset all if '-- Pick' option chosen
         if (item.selectedIndex === 0){
@@ -36,8 +35,10 @@
     });
 
     function show_relevant_details() {
-        // find text value & optgroup label of selected defect type
+        var type = document.getElementById('defect_item_type');
         var selected = type.selectedOptions;
+        var detail = document.getElementById('defect_item_detail');
+        // find text value & optgroup label of selected defect type
         var type_text = selected[0].innerText;
         var type_label = selected[0].parentElement.label;
         // hide all detail options, then show options of correct type

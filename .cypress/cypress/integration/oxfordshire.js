@@ -65,22 +65,19 @@ describe("Oxfordshire cobrand", function() {
         cy.get('@dicat').select(catval);
 
         // check types
-        righttypes.forEach( function(rtype) {
+        righttypes.forEach(function(rtype) {
             cy.get('@ditype').select(rtype.typename);
 
             // check details
-            rtype.right_details.forEach( function(rdetail) {
+            rtype.right_details.forEach(function(rdetail) {
                 cy.get('@didetail').select(rdetail);
             });
             rtype.wrong_details.forEach( function(wdetail) {
-                //cy.contains('#defect_item_detail option', new RegExp('^' + wdetail + '$')).should('not.be.visible');
-                cy.contains('#defect_item_detail option', '^' + wdetail + '$').should('not.be.visible');
-                // cy.contains('#defect_item_detail option', wdetail).should('not.be.visible');
-                //cy.get('@didetail').contains('^' + wdetail + '$').should('not.be.visible');
+                cy.get('@didetail').contains('^' + wdetail + '$').should('not.be.visible');
             });
         });
-        wrongtypes.forEach( function(wtype) {
-            cy.contains('#defect_item_type option', new RegExp('^' + wtype.typename + '$')).should('not.be.visible');
+        wrongtypes.forEach(function(wtype) {
+            cy.get('@ditype').contains('^' + wtype.typename + '$').should('not.be.visible');
         });
     }
 
@@ -117,7 +114,7 @@ describe("Oxfordshire cobrand", function() {
             'Pothole Sweep & Fill 0-1m²',
             'Pothole Cluster Sweep & Fill 1-2m²',
             '1 kerb unit or I liner length',
-            'Greater than 1 kerb unit or I liner length',
+           'Greater than 1 kerb unit or I liner length',
             'Blockage raised as a defect'
         ]
     };
