@@ -28,15 +28,37 @@ describe("Oxfordshire cobrand", function() {
     cy.get('#raise_defect_yes').click({force: true});
     cy.get('#defect_item_category').should('be.visible');
 
+    cy.get('#report_inspect_form select[name=state]').select('No further action');
+    cy.get('#js-inspect-action-scheduled').should('not.be.visible');
+    cy.get('#raise_defect_yes').should('not.have.attr', 'required');
+
+    cy.visit('http://oxfordshire.localhost:3001/_test/teardown/oxfordshire-defect');
+  });
+
+  it.only("shows the correct dropdown options for each category", function() {
+    cy.request({
+      method: 'POST',
+      url: 'http://oxfordshire.localhost:3001/auth',
+      form: true,
+      body: { username: 'inspector-instructor@example.org', password_sign_in: 'password' }
+    });
+    cy.visit('http://oxfordshire.localhost:3001/report/1');
+
+    cy.get('#report_inspect_form').should('be.visible');
+    cy.get('#js-inspect-action-scheduled').should('not.be.visible');
+    cy.get('#raise_defect_yes').should('not.have.attr', 'required');
+
+    cy.get('#report_inspect_form select[name=state]').select('Action scheduled');
+    cy.get('#js-inspect-action-scheduled').should('be.visible');
+    cy.get('#raise_defect_yes').should('have.attr', 'required', 'required');
+    cy.get('#raise_defect_yes').click({force: true});
+    cy.get('#defect_item_category').should('be.visible');
+ 
     // test defect dropdowns' interaction
     cy.get('#defect_item_category').as('dicat');
     cy.get('#defect_item_type').as('ditype');
     cy.get('#defect_item_detail').as('didetail');
 
-    // all the --s
-    cy.get('@dicat').select('-- Pick a category --');
-    cy.get('@ditype').should('have.value', '');
-    cy.get('@didetail').should('have.value', '');
 
     function testDefectDropdowns(catval, righttypes, wrongtypes) {
         // select cat
@@ -44,21 +66,21 @@ describe("Oxfordshire cobrand", function() {
 
         // check types
         righttypes.forEach( function(rtype) {
-            cy.get('@ditype').contains(rtype.typename);
-
-            // select type
             cy.get('@ditype').select(rtype.typename);
 
             // check details
             rtype.right_details.forEach( function(rdetail) {
-                cy.get('@didetail').contains(rdetail);
+                cy.get('@didetail').select(rdetail);
             });
             rtype.wrong_details.forEach( function(wdetail) {
-                cy.get('@didetail').should('not.have.text', wdetail);
+                //cy.contains('#defect_item_detail option', new RegExp('^' + wdetail + '$')).should('not.be.visible');
+                cy.contains('#defect_item_detail option', '^' + wdetail + '$').should('not.be.visible');
+                // cy.contains('#defect_item_detail option', wdetail).should('not.be.visible');
+                //cy.get('@didetail').contains('^' + wdetail + '$').should('not.be.visible');
             });
         });
         wrongtypes.forEach( function(wtype) {
-            cy.get('@ditype').should('not.have.text', wtype);
+            cy.contains('#defect_item_type option', new RegExp('^' + wtype.typename + '$')).should('not.be.visible');
         });
     }
 
@@ -200,10 +222,9 @@ describe("Oxfordshire cobrand", function() {
         cy.log('Drainage category types & details are correct');
     }());
 
-    cy.get('#report_inspect_form select[name=state]').select('No further action');
-    cy.get('#js-inspect-action-scheduled').should('not.be.visible');
-    cy.get('#raise_defect_yes').should('not.have.attr', 'required');
-
-    cy.visit('http://oxfordshire.localhost:3001/_test/teardown/oxfordshire-defect');
+    // test reset all dropdowns
+    cy.get('@dicat').select('-- Pick a category --');
+    cy.get('@ditype').should('have.value', '');
+    cy.get('@didetail').should('have.value', '');
   });
 });
