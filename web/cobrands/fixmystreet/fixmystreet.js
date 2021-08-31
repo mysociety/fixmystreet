@@ -540,6 +540,10 @@ $.extend(fixmystreet.set_up, {
     }
 
     var category_changed = function(category) {
+        if (!fixmystreet.reporting_data) {
+            return; // This will be called again when the data arrives
+        }
+
         var data = fixmystreet.reporting_data.by_category[category] || {},
             $category_meta = $('#category_meta');
 
