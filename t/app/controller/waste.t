@@ -794,7 +794,37 @@ FixMyStreet::override_config {
         set_fixed_time('2021-05-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if expired');
+
+        # Just the 537 paper service (which has report + request),
+        # to test whether garden waste sub still shown
         my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1002,
+                ServiceId => 537,
+                ServiceName => 'Paper recycling collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 402,
+                    ServiceTaskSchedules => { ServiceTaskSchedule => {
+                        ScheduleDescription => 'every other Wednesday',
+                        StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                            Ref => { Value => { anyType => [ 234, 567 ] } },
+                        },
+                    } },
+                } },
+            } ];
+        } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present even if all requested');
+
         set_fixed_time('2021-03-09T17:00:00Z');
         $echo->mock('GetServiceUnitsForObject', sub {
             return [ {

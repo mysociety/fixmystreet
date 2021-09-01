@@ -107,7 +107,8 @@
             <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar (.ics file)</a></li>
           </ul>
         </div>
-       [% IF any_report_allowed OR any_request_allowed %]
+       [% SET show_garden_subscribe = NOT waste_features.garden_disabled AND NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
+       [% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
         <div class="aside-services">
           <h3>More services</h3>
           <ul>
@@ -117,9 +118,9 @@
             [% IF any_request_allowed %]
               <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
             [% END %]
-            [% IF NOT waste_features.garden_disabled AND NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
+            [% IF show_garden_subscribe %]
               <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
-          [% END %]
+            [% END %]
           </ul>
         </div>
        [% END %]
