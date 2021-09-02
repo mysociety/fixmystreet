@@ -7,7 +7,13 @@ has been logged on [% site_name %].
 
 [% TRY %][% INCLUDE '_council_reference.txt' problem=report %][% CATCH file %][% END %]
 
+[% IF c.cobrand.moniker == 'bromley' %]
+The Direct Debit will take up to 10 working days to process
+and the payment a further 5 working days to be receipted by
+the London Borough of Bromley.
+[% ELSE %]
 It will take up to 10 working days to process this.
+[% END %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
