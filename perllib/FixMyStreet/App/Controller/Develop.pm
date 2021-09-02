@@ -62,7 +62,8 @@ sub email_list : Path('/_dev/email') : Args(0) {
         'problem-confirm' => 1, 'problem-confirm-not-sending' => 1,
         'confirm_report_sent' => 1,
         'problem-moderated' => 1, 'questionnaire' => 1, 'submit' => 1,
-        'alert-subscribed' => 1);
+        'alert-subscribed' => 1, 'csc_payment_failed' => 1, 
+        'direct_debit_in_progress' => 1);
 
     my $update = $c->model('DB::Comment')->search(undef, { rows => 1 } )->first;
     my $problem = $c->model('DB::Problem')->search(undef, { rows => 1 } )->first;
