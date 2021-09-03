@@ -1,0 +1,279 @@
+@import "../sass/h5bp";
+@import "_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+.content a {
+    text-decoration: underline;
+}
+
+.item-list--wards__item a,
+.item-list--reports__item a {
+    color: $link-color;
+
+    &:hover {
+        color: $link-hover-color;
+    }
+
+    small {
+        display: inline-block; // Prevent inheriting underline from parent element
+    }
+}
+
+a:focus,
+input:focus,
+button:focus,
+.green-btn:focus,
+.btn-primary:focus,
+select:focus,
+textarea:focus,
+.multi-select-button:focus,
+.dropzone:focus,
+.focussed,
+.segmented-control--radio input:focus + label {
+    outline: 3px #ffd302 solid !important;
+    outline-offset: 0;
+    box-shadow: 0 0 0 5px #333 !important;
+}
+
+.button,
+.green-btn,
+.btn-primary,
+input[type=button],
+input[type=reset],
+input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
+#front-main #postcodeForm div input#sub,
+a#geolocate_link,
+:not(.segmented-control--radio) > .btn {
+    color: #ffffff !important;
+    background-color: #009578;
+    background-image: none;
+    border-bottom: 2px solid $merton-dark-green;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-radius: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.button:hover,
+.btn:hover,
+.green-btn:hover,
+.btn-primary:hover,
+input[type=button]:hover,
+input[type=reset]:hover,
+input[type=submit]:hover :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
+#front-main #postcodeForm div input#sub:hover,
+a#geolocate_link:hover,
+.button:focus, 
+.green-btn:focus,
+.btn:focus,
+input[type=button]:focus,
+input[type=reset]:focus,
+input[type=submit]:focus :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
+#front-main #postcodeForm div input#sub:focus,
+a#geolocate_link:focus {
+    border-color: $merton-dark-green;
+    background-color: $merton-dark-green;
+    background-image: none;
+    color: #ffffff !important;
+}
+
+input.fake-link {
+    text-decoration: underline;
+    font-weight: bold;
+    color: $link-color;
+    background-color: unset;
+    border-bottom: none;
+    font-size: 1em;
+}
+
+input[type=text],
+input[type=password],
+input[type=tel],
+input[type=email],
+textarea,
+textarea.form-control {
+    border-bottom: 2px solid #1d9b80 !important;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+a.skiplink:focus {
+    color: black;
+    background-color: #ffd302;
+}
+
+.container {
+    max-width: $container-max-width;
+}
+
+.merton-header {
+    background: $merton-lavender-l2;
+    padding-bottom: 0.75em;
+    border-top: 5px solid $primary;
+}
+
+.map-fullscreen .merton-header {
+    display: none;
+}
+
+.merton-header__logo {
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-top: 75px;
+    width: 88px;
+    height: 0;
+    background: $merton-lavender-l2 url(images/merton-logo.png) 0 15px no-repeat;
+}
+
+a {
+    font-weight: bold;
+}
+
+#report-cta,
+html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.scss
+    background-color: #007F66 !important;
+    color: white !important;
+    border-bottom: 2px solid $merton-dark-green;
+    border-radius: 0;
+    
+    &:hover,
+    &:focus {}
+}
+
+p.form-error, div.form-error, input.form-error {
+    background-color: #e00;
+    border-color: #e00;
+}
+
+#report-cta {
+    padding: 0.4em 0.6em;
+}
+
+.frontpage #report-cta,
+.frontpage .report-a-problem-btn {
+    display: none;
+}
+
+#front-main {
+    background-color: $merton-jade-j3;
+    margin: 0;
+    padding: 1em;
+
+    h1 {
+        font-weight: bold;
+        color: $merton-headline;
+    }
+}
+
+#front-main {
+    #postcodeForm {
+        background: $merton-jade-j1;
+        color: #ffffff;
+
+        #pc-hint {
+            color: inherit;
+        }
+    }
+}
+
+.nav-menu {
+    background-color: $merton-jade-j3;
+    padding-top: 2em;
+
+    a, span {
+        background: transparent;
+        border-bottom: none;
+        font-size: 1em;
+    }
+}
+
+#site-logo {
+    display: inline-block;
+    background: transparent;
+    font-size: 1.5em;
+    line-height: 60px;
+    width: auto;
+    text-indent: 0;
+}
+
+#site-logo, .nav-menu a, .nav-menu span {
+    color: $merton-dark-green;
+}
+
+html.js .form-section-preview {
+    background-color: $merton-jade-j3;
+}
+
+.big-green-banner {
+    text-transform: none;
+}
+
+ol.big-numbers {
+    li {
+        &:before {
+            color: $merton-lavender-l2;
+        }
+    }
+}
+
+#front_stats {
+    color: #ffffff;
+    div {
+        big {
+            color: $merton-lavender-l2;
+        }
+    }
+}
+
+.segmented-control--radio input:checked + label {
+    background: $merton-jade-j3;
+}
+
+.confirmation-header h1 a {
+    &:hover,
+    &:focus {
+        color: $link-color;
+    }
+}
+
+#site-header {
+    border-top: none;
+}
+
+.site-footer {
+    display: flex;
+    justify-content: space-between;
+
+    a {
+        color: white;
+        font-size: smaller;
+        font-weight: normal;
+    }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
+
+/* fixes for around page */
+.big-green-banner {
+    font-weight: bold;
+}
+
+.item-list__item--empty p {
+    color: #666666;
+}
+
+.item-list__item__state {
+    background-color: #666666;
+}
+
+.item-list--reports__item a {
+    color: black;
+}
+/* end of fixes for around page */
+
