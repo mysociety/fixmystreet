@@ -220,4 +220,13 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+sub post_report_report_problem_link {
+    return {
+        uri => '/',
+        label => 'Report a problem',
+        attrs => 'class="report-a-problem-btn"',
+    };
+
+}
+
 1;

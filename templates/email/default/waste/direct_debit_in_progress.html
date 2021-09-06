@@ -13,8 +13,11 @@ INCLUDE '_email_top.html';
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
   <p style="[% p_style %]">Your application for a Direct Debit waste subscription for [% report.body %] has been logged on [% site_name %].</p>
 
+[% IF c.cobrand.moniker == 'bromley' %]
+  <p style="[% p_style %]">The Direct Debit will take up to 10 working days to process and the payment a further 5 working days to be receipted by the London Borough of Bromley.</p>
+[% ELSE %]
   <p style="[% p_style %]">It will take up to 10 working days to process this.</p>
-
+[% END %]
 
 [% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]
 

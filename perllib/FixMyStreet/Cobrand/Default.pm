@@ -1384,4 +1384,17 @@ sub deny_updates_by_user {
     return;
 }
 
+=item report_a_problem_link
+
+Cobrand-specific option for the 'Report a problem here' link displayed in the
+top left-hand corner of the page after a problem report.
+
+Default is empty string (false).
+
+=cut
+
+sub post_report_report_problem_link {
+    return;
+}
+
 1;
