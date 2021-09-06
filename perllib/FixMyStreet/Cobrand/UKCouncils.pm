@@ -386,7 +386,6 @@ sub lookup_site_code {
 
 sub _fetch_features {
     my ($self, $cfg, $x, $y) = @_;
-
     # default to a buffered bounding box around the given point unless
     # a custom filter parameter has been specified.
     unless ( $cfg->{filter} ) {

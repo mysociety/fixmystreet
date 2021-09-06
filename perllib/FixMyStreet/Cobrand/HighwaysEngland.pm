@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 sub council_name { 'Highways England' }
 
@@ -159,7 +160,22 @@ sub munge_report_new_contacts {
 }
 
 sub report_new_is_on_he_road_for_litter {
-    return 0;                                       
+    my ( $self ) = @_;
+
+    my ($x, $y) = (
+        $self->{c}->stash->{longitude},
+        $self->{c}->stash->{latitude},
+    );
+
+    my $cfg = {
+        url => "https://tilma.staging.mysociety.org/mapserver/highways",
+        srsname => "urn:ogc:def:crs:EPSG::4326",
+        typename => "highways_litter_pick",
+        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",
+    };
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features($cfg, $x, $y);
+    return scalar @$features ? 1 : 0;                                      
 }
 
 sub report_new_is_on_he_road {
@@ -176,7 +192,6 @@ sub report_new_is_on_he_road {
         typename => "Highways",
         filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",
     };
-
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
     my $features = $ukc->_fetch_features($cfg, $x, $y);
     return scalar @$features ? 1 : 0;

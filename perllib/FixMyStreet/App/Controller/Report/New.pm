@@ -741,7 +741,7 @@ sub setup_categories_and_bodies : Private {
 
     my $contacts = $c->model('DB::Contact')->for_new_reports($c, \%bodies);
     my @contacts = $c->cobrand->categories_restriction($contacts)->all_sorted;
-
+    
     $c->cobrand->call_hook(munge_report_new_contacts => \@contacts);
 
     # variables to populate

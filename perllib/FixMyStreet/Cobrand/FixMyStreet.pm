@@ -85,7 +85,6 @@ sub _iow_category_munge {
 
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
-
     my %bodies = map { $_->body->name => $_->body } @$categories;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $categories);
@@ -118,11 +117,12 @@ sub munge_report_new_bodies {
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
-
-        if ($on_he_road) {
-            my $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
-        } else {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;            
+        my $on_he_road_for_litter;
+        if (!$on_he_road) {
+            $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
+        }
+        if (!$on_he_road_for_litter) {
+            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
         }
     }
 }
@@ -145,6 +145,7 @@ sub munge_report_new_contacts {
         $tfl->munge_red_route_categories($contacts);
     }
     if ( $bodies{'Highways England'} && !$self->{c}->stash->{on_he_road_for_litter}) {
+        warn "HELLLO";
         @$contacts = grep { $_->category ne 'Litter' } @$contacts;
     } 
 
