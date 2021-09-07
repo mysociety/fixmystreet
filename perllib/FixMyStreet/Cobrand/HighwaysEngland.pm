@@ -178,6 +178,10 @@ sub report_new_is_on_he_road_for_litter {
     return scalar @$features ? 1 : 0;                                      
 }
 
+sub munge_litter_picking_categories {
+    my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
+}
+
 sub report_new_is_on_he_road {
     my ( $self ) = @_;
 
@@ -242,4 +246,19 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+sub _cleaning_categories { [
+    'Street cleaning',
+    'Street Cleaning',
+    'Street cleaning and litter',
+    'Accumulated Litter',
+    'Street Cleaning Enquiry',
+    'Street Cleansing',
+    'Flytipping',
+    'Fly tipping',
+    'Fly Tipping',
+    'Fly-tipping',
+    'Fly-Tipping',
+    'Fly tipping - Enforcement Request'
+] }
+ 
 1;

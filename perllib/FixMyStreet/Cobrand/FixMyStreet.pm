@@ -129,6 +129,7 @@ sub munge_report_new_bodies {
 
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
+    warn $self->{c}->stash->{on_he_road_for_litter};
     my %bodies = map { $_->body->name => $_->body } @$contacts;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
@@ -144,21 +145,11 @@ sub munge_report_new_contacts {
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
     }
-    if ( $bodies{'Highways England'} && !$self->{c}->stash->{on_he_road_for_litter}) {
-        warn "HELLLO";
-        @$contacts = grep { $_->category ne 'Litter' } @$contacts;
-    } 
+    if ( $self->{c}->stash->{on_he_road_for_litter} ) {
+        # Swap any litter categories for HE litter category
 
+    }
 }
-
-sub _replace_he_litter_contact {
-    # my ($self, $bodies) = @_;
-    # for my $value (values %$bodies) {
-    #     warn "$value\n";
-    # }
-    #@$contacts = grep { $_->category_display ne 'Litter' } @$contacts;
-    #warn Dumper $contacts;
- }
 
 sub munge_load_and_group_problems {
     my ($self, $where, $filter) = @_;
