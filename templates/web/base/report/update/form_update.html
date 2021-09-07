@@ -14,6 +14,8 @@
 [% END %]
 <textarea rows="7" cols="30" name="update" class="form-control" id="form_update" required>[% update.text | html %]</textarea>
 
+[% TRY %][% PROCESS 'report/update/after_update.html' %][% CATCH file %][% END %]
+
 [% IF relevant_staff_user %]
     <label for="state">[% loc( 'State' ) %]</label>
     [% INCLUDE 'report/inspect/state_groups_select.html' %]
