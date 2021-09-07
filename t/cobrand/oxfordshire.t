@@ -165,9 +165,10 @@ FixMyStreet::override_config {
     my $problem1 = $problems[0];
     $problem1->external_id("132987");
     $problem1->set_extra_metadata(customer_reference => "ENQ12098123");
+    $problem1->whensent($problem1->confirmed);
     $problem1->update;
     my $problem2 = $problems[1];
-    $problem2->update({ external_id => "AlloyV2-687000682500b7000a1f3006" });
+    $problem2->update({ external_id => "AlloyV2-687000682500b7000a1f3006", whensent => $problem2->confirmed });
 
     # reports should display the same info on both cobrands
     for my $host ( 'oxfordshire.fixmystreet.com', 'www.fixmystreet.com' ) {
@@ -181,6 +182,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok('/report/' . $problem2->id);
             $mech->content_lacks($problem2->external_id, "Alloy external ID not shown");
+            $mech->content_contains('Council ref:</strong> ' . $problem2->id, "FMS id is shown");
         };
     }
 
