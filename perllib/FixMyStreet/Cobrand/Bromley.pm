@@ -303,7 +303,22 @@ sub _include_user_title_in_extra {
 
 sub open311_pre_send_updates {
     my ($self, $row) = @_;
+
+    $self->{bromley_original_update_text} = $row->text;
+
+    my $private_comments = $row->get_extra_metadata('private_comments');
+    if ($private_comments) {
+        my $text = $row->text . "\n\nPrivate comments: $private_comments";
+        $row->text($text);
+    }
+
     return $self->_include_user_title_in_extra($row);
+}
+
+sub open311_post_send_updates {
+    my ($self, $row) = @_;
+
+    $row->text($self->{bromley_original_update_text});
 }
 
 sub open311_munge_update_params {
@@ -369,7 +384,10 @@ sub open311_contact_meta_override {
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
-    return $update->user->from_body && !$update->text;
+
+    my $private_comments = $update->get_extra_metadata('private_comments');
+
+    return $update->user->from_body && !$update->text && !$private_comments;
 }
 
 # If any subcategories ticked in user edit admin, make sure they're saved.

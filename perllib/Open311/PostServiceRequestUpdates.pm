@@ -130,6 +130,8 @@ sub process_update {
 
     my $id = $o->post_service_request_update( $comment );
 
+    $cobrand->call_hook(open311_post_send_updates => $comment);
+
     if ( $id ) {
         $comment->update( {
             external_id => $id,

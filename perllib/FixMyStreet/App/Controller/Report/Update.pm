@@ -353,6 +353,11 @@ sub process_update : Private {
         $update->extra( $extra );
     }
 
+    my $private_comments = $c->get_param('private_comments');
+    if ( $private_comments ) {
+        $update->set_extra_metadata(private_comments => $private_comments);
+    }
+
     $c->stash->{add_alert} = $c->get_param('add_alert');
 
     return 1;
