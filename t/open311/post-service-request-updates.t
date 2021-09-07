@@ -23,6 +23,7 @@ my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params,
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id });
 my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire', $params);
 my $lewisham = $mech->create_body_ok(2492, 'Lewisham', $params);
+my $oxon_other = $mech->create_contact_ok(body_id => $oxon->id, category => 'Other', email => "OTHER");
 
 subtest 'Check Open311 params' => sub {
   FixMyStreet::override_config {
@@ -99,6 +100,22 @@ subtest 'Send comments' => sub {
     is $c1->extra->{title}, "MRS", 'Title set on Bromley update';
     $c2->discard_changes;
     is $c2->send_fail_count, 0, 'Oxfordshire update skipped entirely';
+
+    $oxon_other->update({ email => 'Alloy-OTHER' });
+    $o->send;
+    $c2->discard_changes;
+    my $p_id = $c2->problem->external_id;
+    is $c2->send_fail_count, 1, 'Oxfordshire update attempted';
+    like $c2->send_fail_reason, qr/service_request_id: $p_id/;
+    $oxon_other->update({ email => 'OTHER' });
+    $c2->update({ send_fail_count => 0 });
+
+    $c2->problem->set_extra_metadata(customer_reference => 'ENQ12345');
+    $c2->problem->update;
+    $o->send;
+    $c2->discard_changes;
+    is $c2->send_fail_count, 1, 'Oxfordshire update attempted';
+    like $c2->send_fail_reason, qr/service_request_id: ENQ12345/;
   };
 };
 
