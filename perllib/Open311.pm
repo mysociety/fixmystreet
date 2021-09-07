@@ -434,7 +434,8 @@ sub _populate_service_request_update_params {
 
     my $service_request_id = $comment->problem->external_id;
     if ( $self->use_customer_reference ) {
-        $service_request_id = $comment->problem->get_extra_metadata('customer_reference');
+        my $customer_ref = $comment->problem->get_extra_metadata('customer_reference');
+        $service_request_id = $customer_ref || $service_request_id;
     }
     my $params = {
         updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed->set_nanosecond(0)),

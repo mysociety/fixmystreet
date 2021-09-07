@@ -13,22 +13,23 @@ my $params = {
     send_method => 'Open311',
     send_comments => 1,
     api_key => 'KEY',
-    endpoint => 'endpoint',
+    endpoint => '//endpoint/',
     jurisdiction => 'home',
 };
 my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params,
-    endpoint => 'www.bromley.gov.uk',
+    endpoint => '//www.bromley.gov.uk/',
     send_extended_statuses => 1,
     can_be_devolved => 1 });
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id });
 my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire', $params);
+my $oxon_other = $mech->create_contact_ok(body_id => $oxon->id, category => 'Other', email => "OTHER");
 
 subtest 'Check Open311 params' => sub {
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['fixmystreet', 'bromley', 'buckinghamshire', 'oxfordshire'],
   }, sub {
     my $result = {
-        endpoint => 'endpoint',
+        endpoint => '//endpoint/',
         jurisdiction => 'home',
         api_key => 'KEY',
         extended_statuses => undef,
@@ -36,7 +37,7 @@ subtest 'Check Open311 params' => sub {
     my %conf = $o->open311_params($bromley);
     is_deeply \%conf, {
         %$result,
-        endpoint => 'www.bromley.gov.uk',
+        endpoint => '//www.bromley.gov.uk/',
         extended_statuses => 1,
         endpoints => { service_request_updates => 'update.xml', update => 'update.xml' },
         fixmystreet_body => $bromley,
@@ -92,6 +93,24 @@ subtest 'Send comments' => sub {
     is $c1->extra->{title}, "MRS", 'Title set on Bromley update';
     $c2->discard_changes;
     is $c2->send_fail_count, 0, 'Oxfordshire update skipped entirely';
+
+    Open311->_inject_response('/servicerequestupdates.xml', "", 500);
+    $oxon_other->update({ email => 'Alloy-OTHER' });
+    $o->send;
+    $c2->discard_changes;
+    my $p_id = $c2->problem->external_id;
+    is $c2->send_fail_count, 1, 'Oxfordshire update attempted';
+    like $c2->send_fail_reason, qr/service_request_id: $p_id/;
+    $oxon_other->update({ email => 'OTHER' });
+    $c2->update({ send_fail_count => 0 });
+
+    Open311->_inject_response('/servicerequestupdates.xml', "", 500);
+    $c2->problem->set_extra_metadata(customer_reference => 'ENQ12345');
+    $c2->problem->update;
+    $o->send;
+    $c2->discard_changes;
+    is $c2->send_fail_count, 1, 'Oxfordshire update attempted';
+    like $c2->send_fail_reason, qr/service_request_id: ENQ12345/;
   };
 };
 
