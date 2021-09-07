@@ -330,6 +330,8 @@ FixMyStreet::override_config {
         $comment->problem->set_extra_metadata(detailed_information => '100x100');
         $comment->problem->update;
 
+        $mech->create_contact_ok( body_id => $oxon->id, category => $comment->problem->category, email => $comment->problem->category );
+
         my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
         $cbr->mock('_fetch_features', sub {
             my ($self, $cfg, $x, $y) = @_;

@@ -3,6 +3,8 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
+use Moo;
+with 'FixMyStreet::Roles::Open311Multi';
 
 use LWP::Simple;
 use URI;
