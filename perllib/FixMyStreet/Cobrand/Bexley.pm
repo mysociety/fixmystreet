@@ -5,6 +5,8 @@ use strict;
 use warnings;
 use Time::Piece;
 use DateTime;
+use Moo;
+with 'FixMyStreet::Roles::Open311Multi';
 
 sub council_area_id { 2494 }
 sub council_area { 'Bexley' }
@@ -81,9 +83,6 @@ sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
     $params->{service_request_id_ext} = $comment->problem->id;
-
-    my $contact = $comment->problem->contact;
-    $params->{service_code} = $contact->email;
 }
 
 sub open311_get_update_munging {
