@@ -1570,6 +1570,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Container_Instruction_Quantity'), 1, "cancel has correct number of bins";
     is $p->category, 'Cancel Garden Subscription', 'cancel has correct category';
     is $p->title, 'Garden Subscription - Cancel', 'cancel has correct title';
+    is $p->non_public, 1, 'new report non-public';
     is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for cancelled";
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->get_extra_field_value('PaymentCode'), "GGW654323", 'correct echo payment code field';

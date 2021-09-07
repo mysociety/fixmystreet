@@ -1706,6 +1706,7 @@ sub _duplicate_waste_report {
         areas => $report->areas,
         anonymous => $report->anonymous,
         state => 'unconfirmed',
+        non_public => 1,
     });
 
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
