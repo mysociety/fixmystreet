@@ -182,6 +182,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok('/report/' . $problem2->id);
             $mech->content_lacks($problem2->external_id, "Alloy external ID not shown");
+            $mech->content_contains('Council ref:</strong> ' . $problem2->id, "FMS id is shown");
         };
     }
 
