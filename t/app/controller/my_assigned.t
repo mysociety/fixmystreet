@@ -53,7 +53,6 @@ FixMyStreet::override_config {
             return map {map { s/ ^ \s+ | \s+ $ //grx } $_->content_list} @strong;
         };
         my @all_match_unassigned = qw((unassigned) (unassigned) (unassigned));
-        diag explain [$get_assignees->()];
         is_deeply([$get_assignees->()], \@all_match_unassigned, 'all reports correctly unassigned');
 
         $mech->form_name('bulk-assign-form');
