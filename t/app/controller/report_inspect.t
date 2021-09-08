@@ -901,15 +901,11 @@ FixMyStreet::override_config {
         is $report->whensent, undef, "Report marked as unsent";
         is $report->bodies_str, $oxfordcity->id, "Reported to Oxford City";
 
-        # XXX looks like this redirect should happen automatically after report update
-        SKIP: {
-        skip 'Reports do not seem to be redirecting properly.', 4 if 1;
         is $mech->uri->path, "/report/$report_id", "redirected to correct page";
         is $mech->res->code, 200, "got 200 for final destination";
         is $mech->res->previous->code, 302, "got 302 for redirect";
         # Extra check given host weirdness
         is $mech->res->previous->header('Location'), "http://fixmystreet.site/report/$report_id";
-        }
     };
 };
 
