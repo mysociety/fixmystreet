@@ -147,7 +147,8 @@ sub munge_report_new_contacts {
     }
     if ( $self->{c}->stash->{on_he_road_for_litter} ) {
         # Swap any litter categories for HE litter category
-
+        my $he = FixMyStreet::Cobrand::HighwaysEngland->new();
+        $he->munge_litter_picking_categories($contacts);
     }
 }
 

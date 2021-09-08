@@ -179,7 +179,12 @@ sub report_new_is_on_he_road_for_litter {
 }
 
 sub munge_litter_picking_categories {
+    my ($self, $contacts) = @_;
     my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
+    @$contacts = grep { 
+        ( $_->body->name ne 'Highways England' && $cleaning_cats{$_->category} )
+        || ($_->body->name eq 'Highways England' && $_->category eq 'Litter')
+    } @$contacts;
 }
 
 sub report_new_is_on_he_road {
@@ -247,6 +252,7 @@ sub dashboard_export_problems_add_columns {
 }
 
 sub _cleaning_categories { [
+    'Litter',
     'Street cleaning',
     'Street Cleaning',
     'Street cleaning and litter',
