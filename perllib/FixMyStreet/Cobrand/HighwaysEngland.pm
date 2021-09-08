@@ -3,7 +3,6 @@ use parent 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 sub council_name { 'Highways England' }
 
@@ -175,7 +174,7 @@ sub report_new_is_on_he_road_for_litter {
     };
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
     my $features = $ukc->_fetch_features($cfg, $x, $y);
-    return scalar @$features ? 1 : 0;                                      
+    return scalar @$features ? 1 : 0;
 }
 
 sub munge_litter_picking_categories {
@@ -266,5 +265,4 @@ sub _cleaning_categories { [
     'Fly-Tipping',
     'Fly tipping - Enforcement Request'
 ] }
- 
 1;

@@ -1,6 +1,5 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
-use Data::Dumper;
 use Moo;
 with 'FixMyStreet::Roles::BoroughEmails';
 
@@ -129,7 +128,6 @@ sub munge_report_new_bodies {
 
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
-    warn $self->{c}->stash->{on_he_road_for_litter};
     my %bodies = map { $_->body->name => $_->body } @$contacts;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
