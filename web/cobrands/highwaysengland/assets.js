@@ -21,7 +21,7 @@ highways_style.addRules([rule_motorway, rule_a_road]);
 var highways_stylemap = new OpenLayers.StyleMap({ 'default': highways_style });
 
 var defaults = {
-    wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/highways" : "https://tilma.mysociety.org/mapserver/highways",
+    wfs_url: "https://tilma.mysociety.org/mapserver/highways",
     // this covers zoomed right out on Cumbrian sections of the M6
     max_resolution: 40,
     min_resolution: 0.0001,
@@ -81,27 +81,6 @@ fixmystreet.assets.add(defaults, {
           $('.js-reporting-page--category').addClass('hidden-js');
         }
     }
-});
-
-fixmystreet.assets.add(defaults, {
-    wfs_feature: "Highways_litter_pick",
-    stylemap: fixmystreet.assets.stylemap_invisible,
-    always_visible: true,
-    non_interactive: true,
-    road: true,
-    asset_category: ["Litter"],
-    asset_type: 'road',
-    actions: {
-        found: function (layer, feature) {
-            //$('#js-top-message').hide();
-            //$('.js-reporting-page--category').addClass('hidden-js');
-            console.warn(feature);
-            return false;
-        },
-        not_found: function(layer) {
-            console.warn("Not found", layer);
-        }
-    },
 });
 
 })();
