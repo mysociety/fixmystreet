@@ -715,7 +715,6 @@ foreach my $test (
 
             $report->discard_changes;
             like $report->get_extra_metadata('detailed_information'), qr/XXX164XXX/, 'detailed information saved';
-            $mech->get_ok("/report/$report_id");
             $mech->content_lacks('limited to 164 characters', "164 charcters of detailed information ok");
             $mech->content_contains('XXX164XXX', "Detailed information field contains submitted text");
 
