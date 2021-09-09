@@ -1,5 +1,6 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
+use Data::Dumper;
 use Moo;
 with 'FixMyStreet::Roles::BoroughEmails';
 
@@ -116,11 +117,9 @@ sub munge_report_new_bodies {
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
-        my $on_he_road_for_litter;
-        if (!$on_he_road) {
-            $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
-        }
-        if (!$on_he_road_for_litter) {
+        my $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
+        if (!$on_he_road && !$on_he_road_for_litter) {
+            warn "Neither";
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
         }
     }
@@ -143,10 +142,19 @@ sub munge_report_new_contacts {
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
     }
-    if ( $self->{c}->stash->{on_he_road_for_litter} ) {
-        # Swap any litter categories for HE litter category
-        my $he = FixMyStreet::Cobrand::HighwaysEngland->new();
-        $he->munge_litter_picking_categories($contacts);
+    if ( $bodies{'Highways England'} ) {
+        my $on_he_road = $self->{c}->stash->{on_he_road};
+        my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter};
+        if (($on_he_road && $on_he_road_for_litter) ) { # Or on motorway
+            # Do nothing
+            warn "Doing nothing";
+        } elsif ($on_he_road && !$on_he_road_for_litter) {
+            # Change litter to message to use local council
+            warn "Use local council";
+        } elsif (!$on_he_road && $on_he_road_for_litter) { 
+            # Change everything to use HE litter category
+            warn "Use HE";
+        }
     }
 }
 

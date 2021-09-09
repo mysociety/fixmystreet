@@ -181,9 +181,10 @@ sub munge_litter_picking_categories {
     my ($self, $contacts) = @_;
     my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
     @$contacts = grep { 
-        ( $_->body->name ne 'Highways England' && $cleaning_cats{$_->category} )
+        ( $_->body->name ne 'Highways England' && !$cleaning_cats{$_->category} )
         || ($_->body->name eq 'Highways England' && $_->category eq 'Litter')
     } @$contacts;
+    warn @$contacts;
 }
 
 sub report_new_is_on_he_road {
