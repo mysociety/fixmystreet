@@ -1,7 +1,0 @@
-[%  IF c.user.has_permission_to('report_inspect', c.cobrand.body.id ) %] 
-    [%# see report's assigned user %]
-    <span>[% loc('Assigned to:') %]</span>
-    <p style="margin-top: 0.5em; font-style: italic">
-        [% INCLUDE 'report/_get_assigned_user.html' %]
-    </p>
-[% END %]
