@@ -5,6 +5,7 @@ use Test::Warn;
 use DateTime;
 use Test::Output;
 use FixMyStreet::TestMech;
+use FixMyStreet::SendReport::Open311;
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
 my $mech = FixMyStreet::TestMech->new;
@@ -177,6 +178,26 @@ for my $test (
             for keys %{$test->{expected}};
     };
 }
+
+subtest 'test waste duplicate' => sub {
+    my $sender = FixMyStreet::SendReport::Open311->new(
+        bodies => [ $body ], body_config => { $body->id => $body },
+    );
+    my $test_res = HTTP::Response->new();
+    $test_res->code(500);
+    $test_res->message('Internal Server Error');
+    $test_res->content('<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Missed Collection event already open for the property</description></error></errors>');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        }, $test_res);
+    };
+    is $report->state, 'duplicate', 'State updated';
+};
 
 for my $test (
     {

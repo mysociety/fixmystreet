@@ -13,7 +13,7 @@ has open311_test_req_used => (
 
 sub send {
     my $self = shift;
-    my ( $row, $h ) = @_;
+    my ( $row, $h, $test_res_override ) = @_;
 
     my $result = -1;
 
@@ -72,10 +72,13 @@ sub send {
         $row->set_extra_fields( @$extra ) if @$extra;
 
         if (FixMyStreet->test_mode) {
-            my $test_res = HTTP::Response->new();
-            $test_res->code(200);
-            $test_res->message('OK');
-            $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>');
+            my $test_res = $test_res_override || do {
+                my $test_res = HTTP::Response->new();
+                $test_res->code(200);
+                $test_res->message('OK');
+                $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>');
+                $test_res;
+            };
             $open311_params{test_mode} = 1;
             $open311_params{test_get_returns} = { 'requests.xml' => $test_res };
         }

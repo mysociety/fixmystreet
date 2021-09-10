@@ -302,6 +302,14 @@ sub open311_munge_update_params {
     $params->{service_request_id_ext} = $comment->problem->id;
 }
 
+sub open311_post_send {
+    my ($self, $row, $h, $sender) = @_;
+    my $error = $sender->error;
+    if ($error =~ /Missed Collection event already open for the property/) {
+        $row->state('duplicate');
+    }
+}
+
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
