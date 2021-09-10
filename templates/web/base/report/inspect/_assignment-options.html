@@ -1,14 +1,10 @@
 [% FOR user IN c.cobrand.users %]
     [% IF user.has_permission_to('report_inspect', c.cobrand.body.id ) AND NOT user.is_superuser %]
         <option value='[% user.id %]'
-        [%- IF user.id == problem.shortlisted_user.id -%]
+        [%- IF problem AND (user.id == problem.shortlisted_user.id) -%]
             selected="selected"
         [%- END -%]>
-        [% IF user.name %]
-            [% user.name %]
-        [% ELSE %]
-            [% user.username %]
-        [% END %]
+        [% user.name OR user.username %]
         </option>
     [% END %]
 [% END %]
