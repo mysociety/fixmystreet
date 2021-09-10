@@ -106,7 +106,7 @@ sub send {
             $self->error( $self->error . "\n" . $open311->error );
         }
 
-        $cobrand->call_hook(open311_post_send => $row, $h, $contact);
+        $cobrand->call_hook(open311_post_send => $row, $h, $self);
     }
 
 

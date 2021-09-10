@@ -164,7 +164,7 @@ sub open311_extra_data_include {
 sub admin_user_domain { 'bexley.gov.uk' }
 
 sub open311_post_send {
-    my ($self, $row, $h, $contact) = @_;
+    my ($self, $row, $h, $sender) = @_;
 
     # Check Open311 was successful
     return unless $row->external_id;
@@ -219,6 +219,7 @@ sub open311_post_send {
     }
 
     my @to;
+    my $contact = $sender->contact;
     my $p1_email_to_use = ($contact->email =~ /^Confirm/) ? $emails->{p1confirm} : $emails->{p1};
     push @to, email_list($p1_email_to_use, 'Bexley P1 email') if $p1_email;
     push @to, email_list($emails->{lighting}, 'FixMyStreet Bexley Street Lighting') if $lighting{$row->category};
@@ -230,7 +231,7 @@ sub open311_post_send {
     }
 
     return unless @to;
-    my $sender = FixMyStreet::SendReport::Email->new(
+    my $emailsender = FixMyStreet::SendReport::Email->new(
         use_verp => 0,
         use_replyto => 1,
         to => \@to,
@@ -238,7 +239,7 @@ sub open311_post_send {
 
     $self->open311_config($row, $h, {}, $contact); # Populate NSGRef again if needed
 
-    $sender->send($row, $h);
+    $emailsender->send($row, $h);
 }
 
 sub email_list {

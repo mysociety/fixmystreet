@@ -24,7 +24,7 @@ sub open311_extra_data {
 }
 
 sub open311_post_send {
-    my ($self, $row, $h, $contact) = @_;
+    my ($self, $row, $h) = @_;
 
     $row->detail($h->{es_original_detail});
 }

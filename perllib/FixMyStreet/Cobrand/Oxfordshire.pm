@@ -155,7 +155,7 @@ sub open311_pre_send {
 }
 
 sub open311_post_send {
-    my ($self, $row, $h, $contact) = @_;
+    my ($self, $row, $h) = @_;
 
     $row->detail($self->{ox_original_detail});
 }
