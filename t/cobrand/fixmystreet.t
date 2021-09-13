@@ -10,7 +10,6 @@ use FixMyStreet::Script::UpdateAllReports;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
-use Data::Dumper;
 my $mech = FixMyStreet::TestMech->new;
 
 my $resolver = Test::MockModule->new('Email::Valid');
@@ -323,7 +322,6 @@ FixMyStreet::override_config {
         $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
         $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
-        warn Dumper $mech->response;
         $mech->content_contains('Litter');
         $mech->content_contains('Potholes');
         $mech->content_lacks('Trees');
@@ -346,7 +344,6 @@ FixMyStreet::override_config {
         $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
         $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
-        #warn Dumper $mech->response;
         $mech->content_contains('Trees');
         $mech->content_contains('Flytipping');
         $mech->content_lacks('Litter');
@@ -369,7 +366,6 @@ FixMyStreet::override_config {
         $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
         $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
-        #warn Dumper $mech->response;
         $mech->content_lacks('Trees');
         $mech->content_lacks('Litter');
         $mech->content_contains('Flytipping');
@@ -392,7 +388,6 @@ FixMyStreet::override_config {
         $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
         $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
-        #warn Dumper $mech->response;
         $mech->content_contains('Trees');
         $mech->content_contains('Litter');
         $mech->content_lacks('Flytipping');

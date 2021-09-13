@@ -1,6 +1,5 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
-use Data::Dumper;
 use Moo;
 with 'FixMyStreet::Roles::BoroughEmails';
 
@@ -85,6 +84,7 @@ sub _iow_category_munge {
 
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
+
     my %bodies = map { $_->body->name => $_->body } @$categories;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $categories);
@@ -105,6 +105,7 @@ sub munge_reports_area_list {
 
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
+
     my %bodies = map { $_->name => 1 } values %$bodies;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
@@ -115,11 +116,9 @@ sub munge_report_new_bodies {
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
+
         my $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
-        warn "on road: $on_he_road";
-        warn "on litter: $on_he_road_for_litter";
         if (!$on_he_road && !$on_he_road_for_litter) {
-            warn "Nada";
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
         }
     }
@@ -127,7 +126,9 @@ sub munge_report_new_bodies {
 
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
+
     my %bodies = map { $_->body->name => $_->body } @$contacts;
+
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
     }
@@ -145,16 +146,13 @@ sub munge_report_new_contacts {
     if ( $bodies{'Highways England'} ) {
         my $on_he_road = $self->{c}->stash->{on_he_road};
         my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter};
-        warn "Checking";
         if ($on_he_road && !$on_he_road_for_litter) {
             # Change litter to use local council
             my $he = FixMyStreet::Cobrand::HighwaysEngland->new;
-            warn "Use local council";
             $he->munge_litter_picking_categories($contacts, 0);
         } elsif (!$on_he_road && $on_he_road_for_litter) { 
             # Change litter to use HE
             my $he = FixMyStreet::Cobrand::HighwaysEngland->new;
-            warn "Use HE";
             $he->munge_litter_picking_categories($contacts, 1);
         } elsif ($on_he_road && $on_he_road_for_litter) {
             @$contacts = grep { ( $_->body->name eq 'Highways England') } @$contacts;

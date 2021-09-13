@@ -150,7 +150,7 @@ sub munge_report_new_bodies {
     my $on_he_road = $self->{c}->stash->{on_he_road} = $self->report_new_is_on_he_road;
     my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter} = $self->report_new_is_on_he_road_for_litter;
     # On the cobrand there is only the HE body
-    if ($self->{c}->stash->{on_he_road_for_litter}) {    
+    if ($self->{c}->stash->{on_he_road_for_litter}) {
         %$bodies = map { $_->id => $_ } grep { $_->name eq 'Highways England' } values %$bodies;
     }
 }
@@ -162,7 +162,6 @@ sub munge_report_new_contacts {
     # my $on_he_road_for_litter = $self->report_new_is_on_he_road_for_litter;
     # if ($on_he_road && !$on_he_road_for_litter) {
     #     # Change litter to use local council
-    #     warn "Use local council";
     #         $self->munge_litter_picking_categories($contacts, 0);
     #     } else {
     #         @$contacts = grep { ( $_->body->name eq 'Highways England') } @$contacts;
@@ -195,12 +194,12 @@ sub munge_litter_picking_categories {
     my ($self, $contacts, $he_litter_category_bool) = @_;
     my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
     if ($he_litter_category_bool) {
-        @$contacts = grep { 
+        @$contacts = grep {
             ( $_->body->name ne 'Highways England' && !$cleaning_cats{$_->category} )
             || ($_->body->name eq 'Highways England' && $_->category eq 'Litter')
         } @$contacts;
     } else {
-        @$contacts = grep { 
+        @$contacts = grep {
             ( $_->body->name ne 'Highways England' && $cleaning_cats{$_->category} )
             || ($_->body->name eq 'Highways England' && $_->category ne 'Litter')
         } @$contacts;
@@ -223,7 +222,6 @@ sub report_new_is_on_he_road {
     };
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
     my $features = $ukc->_fetch_features($cfg, $x, $y);
-    warn Dumper @$features;
     return scalar @$features ? 1 : 0;
 }
 
@@ -302,8 +300,8 @@ sub _cleaning_categories { [
     'Fly tipping',
     'Hazardous fly tipping',
     'Street Cleaning',
-    'Litter bin damaged',
-    'Litter bin full',
+    #'Litter bin damaged',
+    #'Litter bin full',
     #Bus Station Cleaning - Floor,
     'General fly tipping',
     'Litter in the street',
@@ -319,7 +317,7 @@ sub _cleaning_categories { [
     'Fly-Tipping',
     #Overflowing Litter Bin / Dog Bin,
     #Litter Bin overflow in Parks & Open spaces,
-    'Litter bin',
+    #'Litter bin',
     'Fly Tipping on a road, footway, verge or open space',
     #Fly Tipping on a public right of way,
     'Litter',
@@ -338,6 +336,6 @@ sub _cleaning_categories { [
     #Dog and litter bins,
     'Cleanliness Sub Standard',
     'Street cleansing',
-    'Flytipping (off-road)',
+    #'Flytipping (off-road)',
 ] }
 1;
