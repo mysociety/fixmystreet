@@ -16,6 +16,11 @@ $t = DateTime->now->subtract(months => 4);
 $user_inactive->last_active($t);
 $user_inactive->update;
 
+my $comment_user = $mech->create_user_ok('commentuser@example.com');
+$comment_user->last_active($t);
+$comment_user->update;
+my $body = $mech->create_body_ok(2237, 'Oxfordshire Council', { comment_user_id => $comment_user->id });
+
 my @problems;
 for (my $m = 1; $m <= 12; $m++) {
     my $t = DateTime->new(year => 2017, month => $m, day => 1, hour => 12);

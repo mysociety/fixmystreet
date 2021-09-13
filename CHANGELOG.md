@@ -29,6 +29,7 @@
         - Fix 'sites' page to reflect active fixmystreet sites #2481
         - Fix ordering of dropdown lists in extra questions #3566
         - Fix removal of cached opengraph photos.
+        - Do not email inactive body comment users. #3587
     - Admin improvements:
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
