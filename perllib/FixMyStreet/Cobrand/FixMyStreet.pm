@@ -119,7 +119,7 @@ sub munge_report_new_bodies {
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
         my $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
         if (!$on_he_road && !$on_he_road_for_litter) {
-            warn "Neither";
+            warn "Nada";
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
         }
     }
@@ -145,15 +145,17 @@ sub munge_report_new_contacts {
     if ( $bodies{'Highways England'} ) {
         my $on_he_road = $self->{c}->stash->{on_he_road};
         my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter};
-        if (($on_he_road && $on_he_road_for_litter) ) { # Or on motorway
-            # Do nothing
-            warn "Doing nothing";
-        } elsif ($on_he_road && !$on_he_road_for_litter) {
-            # Change litter to message to use local council
+        warn "Checking";
+        if ($on_he_road && !$on_he_road_for_litter) {
+            # Change litter to use local council
+            my $he = FixMyStreet::Cobrand::HighwaysEngland->new;
             warn "Use local council";
+            $he->munge_litter_picking_categories($contacts, 0);
         } elsif (!$on_he_road && $on_he_road_for_litter) { 
-            # Change everything to use HE litter category
+            # Change litter to use HE
+            my $he = FixMyStreet::Cobrand::HighwaysEngland->new;
             warn "Use HE";
+            $he->munge_litter_picking_categories($contacts, 1);
         }
     }
 }

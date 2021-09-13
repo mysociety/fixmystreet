@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 sub council_name { 'Highways England' }
 
@@ -146,13 +147,26 @@ sub fetch_area_children {
 
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
+    my $on_he_road = $self->{c}->stash->{on_he_road} = $self->report_new_is_on_he_road;
+    my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter} = $self->report_new_is_on_he_road_for_litter;
     # On the cobrand there is only the HE body
-    %$bodies = map { $_->id => $_ } grep { $_->name eq 'Highways England' } values %$bodies;
+    if ($self->{c}->stash->{on_he_road_for_litter}) {    
+        %$bodies = map { $_->id => $_ } grep { $_->name eq 'Highways England' } values %$bodies;
+    }
 }
 
 # Want to remove the group our categories are all in
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
+    warn "AAAAAGGGGHHHHHH";
+        my $on_he_road = $self->{c}->stash->{on_he_road};
+        my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter};
+        if ($on_he_road && !$on_he_road_for_litter) {
+            # Change litter to use local council
+            my $he = FixMyStreet::Cobrand::HighwaysEngland->new;
+            warn "Use local council";
+            $he->munge_litter_picking_categories($contacts, 0);
+        }
     foreach (@$contacts) {
         $_->unset_extra_metadata("group");
     }
@@ -178,13 +192,19 @@ sub report_new_is_on_he_road_for_litter {
 }
 
 sub munge_litter_picking_categories {
-    my ($self, $contacts) = @_;
+    my ($self, $contacts, $he_litter_category_bool) = @_;
     my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
-    @$contacts = grep { 
-        ( $_->body->name ne 'Highways England' && !$cleaning_cats{$_->category} )
-        || ($_->body->name eq 'Highways England' && $_->category eq 'Litter')
-    } @$contacts;
-    warn @$contacts;
+    if ($he_litter_category_bool) {
+        @$contacts = grep { 
+            ( $_->body->name ne 'Highways England' && !$cleaning_cats{$_->category} )
+            || ($_->body->name eq 'Highways England' && $_->category eq 'Litter')
+        } @$contacts;
+    } else {
+        @$contacts = grep { 
+            ( $_->body->name ne 'Highways England' && $cleaning_cats{$_->category} )
+            || ($_->body->name eq 'Highways England' && $_->category ne 'Litter')
+        } @$contacts;
+    }
 }
 
 sub report_new_is_on_he_road {
@@ -203,6 +223,7 @@ sub report_new_is_on_he_road {
     };
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
     my $features = $ukc->_fetch_features($cfg, $x, $y);
+    warn Dumper @$features;
     return scalar @$features ? 1 : 0;
 }
 
@@ -251,19 +272,72 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+# select distinct category from contacts where category ilike '%litter%' or category ilike '%clean%' or category ilike '%fly%tip%';
+# search to find categories in all contacts and then manually edited
 sub _cleaning_categories { [
-    'Litter',
-    'Street cleaning',
-    'Street Cleaning',
-    'Street cleaning and litter',
-    'Accumulated Litter',
-    'Street Cleaning Enquiry',
-    'Street Cleansing',
+    #Bus Station Cleaning - Windows,
+    #Car Park Cleansing,
+    #Litter Bin overflow,
+    'General Litter / Rubbish Collection',
+    #Bus Station Cleaning - General,
+    'Excessive or dangerous littering',
+    #Litter bins,
+    'Litter and Bins',
+    #Litter Bins,
     'Flytipping',
-    'Fly tipping',
+    'Flytipping/flyposting',
     'Fly Tipping',
+    'Street cleaning',
+    'Litter removal',
+    #Litter or flytipping in a woodland,
+    #Litter Bins Full/Damaged/Missing,
+    #Damage to litter bin,
+    #Damage Public Litter Bin,
+    #Flytipping (TfL),
     'Fly-tipping',
+    'Litter in Parks & Open spaces',
+    #Overflowing Street Litter Bin,
+    #Bus Station Cleaning - Toilets,
+    'Flytipping and dumped rubbish',
+    'Fly tipping',
+    'Hazardous fly tipping',
+    'Street Cleaning',
+    'Litter bin damaged',
+    'Litter bin full',
+    #Bus Station Cleaning - Floor,
+    'General fly tipping',
+    'Litter in the street',
+    #Shelter needs cleaning (not including litter),
+    #Litter Bin on a verge or open space,
+    'Litter On Road/Street Cleaning',
+    #Bench/cycle rack/litter bin/planter,
+    'Cleanliness Issue',
+    #River Piers - Cleaning,
+    #Litter Bin,
+    #Planter not Clean and Tidy,
+    'General (Cleanliness)',
     'Fly-Tipping',
-    'Fly tipping - Enforcement Request'
+    #Overflowing Litter Bin / Dog Bin,
+    #Litter Bin overflow in Parks & Open spaces,
+    'Litter bin',
+    'Fly Tipping on a road, footway, verge or open space',
+    #Fly Tipping on a public right of way,
+    'Litter',
+    #Fly tipping - Enforcement Request,
+    'Accumulated Litter',
+    'Rubbish or fly tipping on the roads',
+    #Shelter needs cleaning (hazardous waste),
+    'Sweeping & Cleansing Hazard',
+    'Littering',
+    #Pavement cleaning,
+    #Overflowing litter bin,
+    #Street Cleaning Enquiry,
+    #Litter Bin Overflowing,
+    #Street Cleansing,
+    'Street cleaning and litter',
+    #Dog and litter bins,
+    'Cleanliness Sub Standard',
+    'Street cleansing',
+    'Flytipping (off-road)',
 ] }
 1;
