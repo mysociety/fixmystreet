@@ -56,20 +56,19 @@ subtest 'testing special Open311 behaviour', sub {
     $report->set_extra_fields();
     $report->update;
     $body->update( { send_method => 'Open311', endpoint => 'http://rutland.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
-    my $test_data;
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet', 'rutland' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
     $report->discard_changes;
     ok $report->whensent, 'Report marked as sent';
     is $report->send_method_used, 'Open311', 'Report sent via Open311';
     is $report->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[title]'), $report->title, 'Request had title';
     is $c->param('attribute[description]'), $report->detail, 'Request had description';
@@ -138,9 +137,8 @@ subtest 'check open311_contact_meta_override' => sub {
     my $o = Open311->new(
         jurisdiction => 'mysociety',
         endpoint => 'http://example.com',
-        test_mode => 1,
-        test_get_returns => { 'services/100.xml' => $meta_xml }
     );
+    Open311->_inject_response('/services/100.xml', $meta_xml);
 
     $processor->_current_open311( $o );
     FixMyStreet::override_config {

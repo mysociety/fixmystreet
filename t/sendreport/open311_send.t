@@ -34,20 +34,19 @@ my ($report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 
 subtest 'testing Open311 behaviour', sub {
     $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
-    my $test_data;
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
     $report->discard_changes;
     ok $report->whensent, 'Report marked as sent';
     is $report->send_method_used, 'Open311', 'Report sent via Open311';
     is $report->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[easting]'), 529025, 'Request had easting';
     is $c->param('attribute[northing]'), 179716, 'Request had northing';
@@ -69,7 +68,6 @@ $photo_report->update;
 
 subtest 'test report with multiple photos only sends one', sub {
     $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
-    my $test_data;
 
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
@@ -80,14 +78,14 @@ subtest 'test report with multiple photos only sends one', sub {
             UPLOAD_DIR => $UPLOAD_DIR,
         },
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
     $photo_report->discard_changes;
     ok $photo_report->whensent, 'Report marked as sent';
     is $photo_report->send_method_used, 'Open311', 'Report sent via Open311';
     is $photo_report->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[easting]'), 529025, 'Request had easting';
     is $c->param('attribute[northing]'), 179716, 'Request had northing';
@@ -106,7 +104,6 @@ $photo_report->update();
 
 subtest 'test sending multiple photos', sub {
     $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
-    my $test_data;
 
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
@@ -117,14 +114,14 @@ subtest 'test sending multiple photos', sub {
             UPLOAD_DIR => $UPLOAD_DIR,
         },
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
     $photo_report->discard_changes;
     ok $photo_report->whensent, 'Report marked as sent';
     is $photo_report->send_method_used, 'Open311', 'Report sent via Open311';
     is $photo_report->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     my @media = $c->param('media_url');
     is_deeply \@media, [
@@ -142,13 +139,12 @@ my ($bad_category_report) = $mech->create_problems_for_body( 1, $body->id, 'Test
 
 subtest 'test handles bad category', sub {
     $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
-    my $test_data;
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
     $bad_category_report->discard_changes;
     ok !$bad_category_report->whensent, 'Report not marked as sent';

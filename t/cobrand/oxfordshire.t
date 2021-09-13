@@ -270,7 +270,7 @@ FixMyStreet::override_config {
             $p->set_extra_fields({ name => $test->{field}, value => $test->{value}});
             $p->update;
 
-            my $test_data = FixMyStreet::Script::Reports::send();
+            FixMyStreet::Script::Reports::send();
 
             $p->discard_changes;
             ok $p->whensent, 'Report marked as sent';
@@ -278,7 +278,7 @@ FixMyStreet::override_config {
             is $p->external_id, 248, 'Report has right external ID';
             unlike $p->detail, qr/$test->{text}:/, $test->{text} . ' not saved to report detail';
 
-            my $req = $test_data->{test_req_used};
+            my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             like $c->param('description'), qr/$test->{text}: $test->{value}/, $test->{text} . ' included in body';
         };
@@ -306,16 +306,12 @@ FixMyStreet::override_config {
                 properties => { TYPE1_2_USRN => 13579 },
             } ];
         });
-        my $test_res = HTTP::Response->new();
-        $test_res->code(200);
-        $test_res->message('OK');
-        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>');
+        my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
 
         my $o = Open311->new(
             fixmystreet_body => $oxon,
-            test_mode => 1,
-            test_get_returns => { 'servicerequestupdates.xml' => $test_res },
         );
+        Open311->_inject_response('/servicerequestupdates.xml', $test_res);
 
         $o->post_service_request_update($comment);
         my $cgi = CGI::Simple->new($o->test_req_used->content);

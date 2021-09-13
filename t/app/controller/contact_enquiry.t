@@ -249,8 +249,8 @@ FixMyStreet::override_config {
     subtest 'Check Open311 sending of the above report' => sub {
         my $module = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
         $module->mock(get => sub ($) { '{}' });
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
         my $found = 0;
         foreach ($req->parts) {
             my $cd = $_->header('Content-Disposition');

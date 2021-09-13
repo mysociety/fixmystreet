@@ -17,13 +17,12 @@ $p->update;
 
 subtest 'Check special Open311 request handling', sub {
     my $orig_detail = $p->detail;
-    my $test_data;
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => 'eastsussex',
         BASE_URL => 'https://www.fixmystreet.com',
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
 
     $p->discard_changes;
@@ -32,7 +31,7 @@ subtest 'Check special Open311 request handling', sub {
     is $p->external_id, 248, 'Report has right external ID';
     is $p->detail, $orig_detail, 'Detail in database not changed';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     my $expected = join "\r\n", $p->title, '', $p->detail, '',
         'Is it urgent?', 'no', '', "https://www.fixmystreet.com" . $p->url, '';

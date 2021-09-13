@@ -56,9 +56,8 @@ subtest 'check services override' => sub {
     my $o = Open311->new(
         jurisdiction => 'mysociety',
         endpoint => 'http://example.com',
-        test_mode => 1,
-        test_get_returns => { 'services/HOLE.xml' => $meta_xml }
     );
+    Open311->_inject_response('/services/HOLE.xml', $meta_xml);
 
     $processor->_current_open311( $o );
     FixMyStreet::override_config {
@@ -91,20 +90,19 @@ subtest 'check services override' => sub {
 };
 
 subtest 'testing special Open311 behaviour', sub {
-    my $test_data;
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'greenwich' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
     $report->discard_changes;
     ok $report->whensent, 'Report marked as sent';
     is $report->send_method_used, 'Open311', 'Report sent via Open311';
     is $report->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[external_id]'), $report->id, 'Request had correct ID';
     is $c->param('attribute[easting]'), 529025, 'Request had correct easting';

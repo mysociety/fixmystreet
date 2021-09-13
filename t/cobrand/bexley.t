@@ -137,8 +137,8 @@ FixMyStreet::override_config {
         }
 
         subtest 'NSGRef and correct email config' => sub {
-            my $test_data = FixMyStreet::Script::Reports::send();
-            my $req = $test_data->{test_req_used};
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), $test->{code};
             if ($test->{code} =~ /Confirm/) {
@@ -180,18 +180,19 @@ FixMyStreet::override_config {
     subtest "resending of reports by changing category" => sub {
         $mech->get_ok('/admin/report_edit/' . $report->id);
         $mech->submit_form_ok({ with_fields => { category => 'Damaged road' } });
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'ROAD', 'Report resent in new category';
 
         $mech->submit_form_ok({ with_fields => { category => 'Gulley covers' } });
-        $test_data = FixMyStreet::Script::Reports::send();
-        is_deeply $test_data, {}, 'Report not resent';
+        FixMyStreet::Script::Reports::send();
+        $req = Open311->test_req_used;
+        is_deeply $req, undef, 'Report not resent';
 
         $mech->submit_form_ok({ with_fields => { category => 'Lamp post' } });
-        $test_data = FixMyStreet::Script::Reports::send();
-        $req = $test_data->{test_req_used};
+        FixMyStreet::Script::Reports::send();
+        $req = Open311->test_req_used;
         $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'StreetLightingLAMP', 'Report resent';
     };
@@ -211,13 +212,13 @@ FixMyStreet::override_config {
         });
         my $report = $reports[0];
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         ok $report->whensent, 'Report marked as sent';
         is $report->send_method_used, 'Open311', 'Report sent via Open311';
         is $report->external_id, 248, 'Report has right external ID';
 
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('attribute[title]'), 'Test Test 1 for ' . $body->id, 'Request had correct title';
         is_deeply [ $c->param('media_url') ], [

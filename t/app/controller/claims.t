@@ -158,13 +158,13 @@ Age and Mileage of the tyre(s) at the time of the incident: 20
 EOF
         is $report->detail, $expected_detail;
         is $report->latitude, 51.81386;
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $report_id - Rain Road, Aylesbury";
         like $email[1]->header('To'), qr/madeareport\@/;
         is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         is $req, undef, 'Nothing sent by Open311';
         is $report->user->alerts->count, 1, 'User has an alert for this report';
         is $report->user->alerts->first->alerts_sent->count, 1, 'But has been sent in the logged email';
@@ -212,7 +212,7 @@ EOF
         $mech->content_contains('is a lengthy process');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->comments->count, 0, 'No updates added to report';
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         is $report->comments->count, 1, 'updates added to report post send';
         my @email = $mech->get_email;
@@ -223,7 +223,7 @@ EOF
         is $email[1]->header('Subject'), "Your claim has been submitted, ref 248";
         like $text, qr/reference number is 248/;
         like $text, qr/is a lengthy process/;
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'CLAIM';
         is $c->param('attribute[title]'), 'east';

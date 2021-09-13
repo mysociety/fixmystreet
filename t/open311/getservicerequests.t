@@ -74,9 +74,8 @@ my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 my $o = Open311->new(
     jurisdiction => 'mysociety',
     endpoint => 'http://example.com',
-    test_mode => 1,
-    test_get_returns => { 'requests.xml' => $requests_xml }
 );
+Open311->_inject_response('/requests.xml', $requests_xml);
 
 my $p1_date = $dtf->parse_datetime('2010-04-14T06:37:38-08:00')
                 ->set_time_zone(FixMyStreet->local_time_zone);
@@ -178,9 +177,8 @@ for my $test (
         my $o = Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
+        Open311->_inject_response('/requests.xml', $xml);
 
         my $count = FixMyStreet::DB->resultset('Problem')->count;
         my $update = Open311::GetServiceRequests->new( system_user => $user );
@@ -234,9 +232,8 @@ for my $test (
         my $o = Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
+        Open311->_inject_response('/requests.xml', $xml);
 
         my $update = Open311::GetServiceRequests->new(
             start_date => $test->{start_date},
@@ -276,11 +273,10 @@ subtest 'check fetch_all body setting ignores date errors' => sub {
     $update = Test::MockObject::Extends->new($update);
 
     $update->mock('create_open311_object', sub {
+        Open311->_inject_response('/requests.xml', $xml);
         return Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
     } );
 
@@ -308,9 +304,8 @@ for my $test (
         my $o = Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
+        Open311->_inject_response('/requests.xml', $xml);
 
         my $update = Open311::GetServiceRequests->new(
             system_user => $user,
@@ -403,9 +398,8 @@ for my $test (
         my $o = Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
+        Open311->_inject_response('/requests.xml', $xml);
 
         my $update = Open311::GetServiceRequests->new(
             system_user => $user,
@@ -469,9 +463,8 @@ for my $test (
         my $o = Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
+        Open311->_inject_response('/requests.xml', $xml);
 
         my $update = Open311::GetServiceRequests->new(
             system_user => $user,
@@ -504,9 +497,8 @@ subtest "non_public contacts result in non_public reports" => sub {
     my $o = Open311->new(
         jurisdiction => 'mysociety',
         endpoint => 'http://example.com',
-        test_mode => 1,
-        test_get_returns => { 'requests.xml' => prepare_xml( {} ) }
     );
+    Open311->_inject_response('/requests.xml', prepare_xml({}));
 
     my $update = Open311::GetServiceRequests->new(
         system_user => $user,
@@ -543,9 +535,8 @@ subtest "staff and non_public contacts result in non_public reports" => sub {
     my $o = Open311->new(
         jurisdiction => 'mysociety',
         endpoint => 'http://example.com',
-        test_mode => 1,
-        test_get_returns => { 'requests.xml' => prepare_xml( {} ) }
     );
+    Open311->_inject_response('/requests.xml', prepare_xml({}));
 
     my $update = Open311::GetServiceRequests->new(
         system_user => $user,
@@ -594,9 +585,8 @@ for my $test (
         my $o = Open311->new(
             jurisdiction => 'mysociety',
             endpoint => 'http://example.com',
-            test_mode => 1,
-            test_get_returns => { 'requests.xml' => $xml}
         );
+        Open311->_inject_response('/requests.xml', $xml);
 
         my $update = Open311::GetServiceRequests->new(
             system_user => $user,

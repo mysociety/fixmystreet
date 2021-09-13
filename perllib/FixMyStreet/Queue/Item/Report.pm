@@ -232,8 +232,6 @@ sub _send {
                     }
                 }
             }
-            $self->manager->test_data->{test_req_used} = $sender->open311_test_req_used
-                if FixMyStreet->test_mode && $sender->can('open311_test_req_used');
         }
     }
 

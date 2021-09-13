@@ -19,10 +19,6 @@ use FixMyStreet::App::Model::PhotoSet;
 has jurisdiction => ( is => 'ro', isa => Str );;
 has api_key => ( is => 'ro', isa => Str );
 has endpoint => ( is => 'ro', isa => Str );
-has test_mode => ( is => 'ro', isa => Bool );
-has test_uri_used => ( is => 'rw', 'isa' => Str );
-has test_req_used => ( is => 'rw' );
-has test_get_returns => ( is => 'rw' );
 has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'servicerequestupdates.xml', update => 'servicerequestupdates.xml' } } );
 has debug => ( is => 'ro', isa => Bool, default => 0 );
 has debug_details => ( is => 'rw', 'isa' => Str, default => '' );
@@ -545,21 +541,7 @@ sub _request {
     $debug_request .= $self->_params_to_string($params, $debug_request);
     $self->debug_details( $self->debug_details . $debug_request );
 
-    if ( $self->test_mode && $req->method eq 'GET') {
-        $self->success(1);
-        $self->test_uri_used( $uri->as_string );
-        return $self->test_get_returns->{ $path };
-    }
-
-    my $res = do {
-        if ( $self->test_mode ) {
-            $self->test_req_used( $req );
-            $self->test_get_returns->{ $path };
-        } else {
-            my $ua = LWP::UserAgent->new;
-            $ua->request( $req );
-        }
-    };
+    my $res = $self->_make_request($req);
 
     if ( $res->is_success ) {
         $self->success(1);
@@ -574,6 +556,13 @@ sub _request {
         ) );
         return;
     }
+}
+
+sub _make_request {
+    my ($self, $req) = @_;
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->request( $req );
+    return $res;
 }
 
 sub _get {

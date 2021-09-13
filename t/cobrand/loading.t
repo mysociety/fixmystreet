@@ -95,14 +95,14 @@ FixMyStreet::override_config {
 };
 
 # check that the moniker works as expected both on class and object.
-is FixMyStreet::Cobrand::FiksGataMi->moniker, 'fiksgatami',
-  'class->moniker works';
-is FixMyStreet::Cobrand::FiksGataMi->new->moniker, 'fiksgatami',
-  'object->moniker works';
+is(FixMyStreet::Cobrand::FiksGataMi->moniker, 'fiksgatami',
+  'class->moniker works');
+is(FixMyStreet::Cobrand::FiksGataMi->new->moniker, 'fiksgatami',
+  'object->moniker works');
 
 # check is_default works
-ok FixMyStreet::Cobrand::Default->is_default,     '::Default is default';
-ok !FixMyStreet::Cobrand::FiksGataMi->is_default, '::FiksGataMi is not default';
+ok(FixMyStreet::Cobrand::Default->is_default,     '::Default is default');
+ok(!FixMyStreet::Cobrand::FiksGataMi->is_default, '::FiksGataMi is not default');
 
 # all done
 done_testing();

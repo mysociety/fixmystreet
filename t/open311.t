@@ -42,6 +42,7 @@ for my $sfc (0..2) {
     } );
     my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
 
+    Open311->_inject_response('/open311/requests.xml', 'Failure', 400);
     if ($sfc == 1) {
         warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1 )} $expected_error, 'warning generated on failed call';
     } else {
@@ -921,18 +922,12 @@ sub _make_req {
     my %open311_conf = %{ $args->{open311_conf} || {} };
     my @args         = @{ $args->{method_args} || [] };
 
-    $open311_conf{'test_mode'} = 1;
     $open311_conf{'end_point'} = 'http://localhost/o311';
     $open311_conf{fixmystreet_body} = $bromley;
     my $o =
       Open311->new( %open311_conf );
 
-    my $test_res = HTTP::Response->new();
-    $test_res->code(200);
-    $test_res->message('OK');
-    $test_res->content($xml);
-
-    $o->test_get_returns( { $path => $test_res } );
+    Open311->_inject_response($path, $xml);
 
     my $res = $o->$method($object, @args);
 

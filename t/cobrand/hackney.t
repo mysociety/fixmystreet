@@ -324,8 +324,8 @@ FixMyStreet::override_config {
                 my ($self, $cfg, $x, $y) = @_;
                 return []; # Not in park or estate
             });
-            my $test_data = FixMyStreet::Script::Reports::send();
-            my $req = $test_data->{test_req_used};
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), 'OTHER';
         };

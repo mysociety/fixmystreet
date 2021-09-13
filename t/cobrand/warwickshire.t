@@ -54,9 +54,8 @@ subtest 'check Warwickshire override' => sub {
     my $o = Open311->new(
         jurisdiction => 'mysociety',
         endpoint => 'http://example.com',
-        test_mode => 1,
-        test_get_returns => { 'services/100.xml' => $meta_xml }
     );
+    Open311->_inject_response('/services/100.xml', $meta_xml);
 
     $processor->_current_open311( $o );
     FixMyStreet::override_config {

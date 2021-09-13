@@ -195,7 +195,8 @@ for my $status ( qw/ CLOSED FIXED DUPLICATE NOT_COUNCILS_RESPONSIBILITY NO_FURTH
         $requests_xml =~ s/ID_EXTERNAL/@{[$p->id]}/;
         $requests_xml =~ s/UPDATED_DATETIME/$update_dt/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $system_user,
@@ -243,7 +244,8 @@ subtest "fetched requests do not use the description text" => sub {
     my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
     $requests_xml =~ s/DATETIME/$dt/gm;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+    Open311->_inject_response('/requests.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequests->new(
         system_user => $iow_user,
@@ -270,16 +272,12 @@ subtest "fixing passes along the correct message" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'isleofwight',
     }, sub {
-        my $test_res = HTTP::Response->new();
-        $test_res->code(200);
-        $test_res->message('OK');
-        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>');
+        my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
 
         my $o = Open311->new(
             fixmystreet_body => $isleofwight,
-            test_mode => 1,
-            test_get_returns => { 'servicerequestupdates.xml' => $test_res },
         );
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
 
         my ($p) = $mech->create_problems_for_body(1, $isleofwight->id, 'Title', { external_id => 1 });
 
@@ -298,6 +296,7 @@ subtest "fixing passes along the correct message" => sub {
         $c = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Update text', 'f', 'confirmed', 'fixed - user');
         $c->discard_changes; # Otherwise cannot set_nanosecond
 
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
         $id = $o->post_service_request_update($c);
         is $id, 248, 'correct update ID returned';
         $cgi = CGI::Simple->new($o->test_req_used->content);
@@ -313,13 +312,12 @@ subtest 'Check special Open311 request handling', sub {
     $p->set_extra_fields({ name => 'urgent', value => 'no'});
     $p->update;
 
-    my $test_data;
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => ['isleofwight' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
     };
 
     $p->discard_changes;
@@ -327,7 +325,7 @@ subtest 'Check special Open311 request handling', sub {
     is $p->send_method_used, 'Open311', 'Report sent via Open311';
     is $p->external_id, 248, 'Report has right external ID';
 
-    my $req = $test_data->{test_req_used};
+    my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[urgent]'), undef, 'no urgent param sent';
     is $c->param('attribute[site_code]'), 'Road ID', 'road ID set';
@@ -344,16 +342,7 @@ subtest "comment recording triage details is not sent" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => [ 'isleofwight' ],
     }, sub {
-        my $test_res = HTTP::Response->new();
-        $test_res->code(200);
-        $test_res->message('OK');
-        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates></service_request_updates>');
-
-        my $o = Open311->new(
-            fixmystreet_body => $isleofwight,
-            test_mode => 1,
-            test_get_returns => { 'servicerequestupdates.xml' => $test_res },
-        );
+        my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates></service_request_updates>';
 
         my ($p) = $mech->create_problems_for_body(
             1, $isleofwight->id, 'Title',
@@ -388,11 +377,9 @@ subtest "comment recording triage details is not sent" => sub {
             whensent => DateTime->now->add( minutes => -5 ),
         });
 
-        my $updates = Open311::PostServiceRequestUpdates->new(
-            current_open311 => $o,
-        );
+        my $updates = Open311::PostServiceRequestUpdates->new();
         my $id = $updates->process_body($isleofwight);
-        ok !$o->test_req_used, 'no open311 update sent';
+        ok !Open311->test_req_used, 'no open311 update sent';
 
         $p->comments->delete;
         $p->delete;

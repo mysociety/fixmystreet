@@ -22,7 +22,7 @@ $uk->mock('_fetch_url', sub { '{}' });
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
-    send_method => 'Open311', endpoint => 'e', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
+    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
 });
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
@@ -159,20 +159,19 @@ for my $test (
         $report->set_extra_fields({ name => 'feature_id', value => $test->{feature_id} })
             if $test->{feature_id};
         $report->update;
-        my $test_data;
         FixMyStreet::override_config {
             STAGING_FLAGS => { send_reports => 1 },
             ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $test_data = FixMyStreet::Script::Reports::send();
+            FixMyStreet::Script::Reports::send();
         };
         $report->discard_changes;
         ok $report->whensent, 'Report marked as sent';
         is $report->send_method_used, 'Open311', 'Report sent via Open311';
         is $report->external_id, 248, 'Report has right external ID';
 
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param($_), $test->{expected}->{$_}, "Request had correct $_"
             for keys %{$test->{expected}};
@@ -183,10 +182,7 @@ subtest 'test waste duplicate' => sub {
     my $sender = FixMyStreet::SendReport::Open311->new(
         bodies => [ $body ], body_config => { $body->id => $body },
     );
-    my $test_res = HTTP::Response->new();
-    $test_res->code(500);
-    $test_res->message('Internal Server Error');
-    $test_res->content('<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Missed Collection event already open for the property</description></error></errors>');
+    Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Missed Collection event already open for the property</description></error></errors>', 500);
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
     }, sub {
@@ -194,7 +190,7 @@ subtest 'test waste duplicate' => sub {
             easting => 1,
             northing => 2,
             url => 'http://example.org/',
-        }, $test_res);
+        });
     };
     is $report->state, 'duplicate', 'State updated';
 };

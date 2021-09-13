@@ -96,7 +96,8 @@ for my $test (
         my $local_requests_xml = $requests_xml;
         $local_requests_xml =~ s/UPDATED_DATETIME/$test->{updated_datetime}/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/requests.xml', $local_requests_xml);
 
         my $updates = Open311::GetUpdates->new(
             system_user => $user,
@@ -104,7 +105,7 @@ for my $test (
             current_body => $body,
         );
         $updates->update_reports( [ $problem ] );
-        my @parts = uri_split($o->test_uri_used);
+        my @parts = uri_split($o->test_req_used->uri);
         is $parts[2], '/requests.xml', 'path matches';
         my @qs = sort split '&', $parts[3];
         is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638344' ], 'query string matches');
@@ -179,7 +180,8 @@ subtest 'update with two requests' => sub {
     $local_requests_xml =~ s/UPDATED_DATETIME2/$date2/;
     $local_requests_xml =~ s/UPDATED_DATETIME/$date1/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/requests.xml', $local_requests_xml);
 
     my $updates = Open311::GetUpdates->new(
         system_user => $user,
@@ -188,7 +190,7 @@ subtest 'update with two requests' => sub {
     );
 
     $updates->update_reports( [ $problem, $problem2 ] );
-    my @parts = uri_split($o->test_uri_used);
+    my @parts = uri_split($o->test_req_used->uri);
     is $parts[2], '/requests.xml', 'path matches';
     my @qs = sort split '&', $parts[3];
     is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638344%2C638345' ], 'query string matches');
@@ -239,7 +241,8 @@ subtest 'test auto-added comment from old-style Open311 update' => sub {
     my $dt = sprintf( '<updated_datetime>%s</updated_datetime>', DateTime->now );
     $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/requests.xml', $requests_xml);
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
@@ -252,7 +255,7 @@ subtest 'test auto-added comment from old-style Open311 update' => sub {
         );
         $updates->update_reports( [ $problem3 ] );
     };
-    my @parts = uri_split($o->test_uri_used);
+    my @parts = uri_split($o->test_req_used->uri);
     is $parts[2], '/requests.xml', 'path matches';
     my @qs = sort split '&', $parts[3];
     is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638346' ], 'query string matches');

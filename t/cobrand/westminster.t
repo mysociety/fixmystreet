@@ -180,8 +180,8 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => { anonymous_account => { westminster => 'anon' } },
 }, sub {
     subtest 'USRN set correctly' => sub {
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'BIKE';
         is $c->param('attribute[USRN]'), 'My USRN';

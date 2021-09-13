@@ -43,7 +43,7 @@ subtest 'open311 request handling', sub {
         $p->push_extra_fields({ name => 'tree_code', value => 'tree-42'});
         $p->update;
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
 
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
@@ -51,7 +51,7 @@ subtest 'open311 request handling', sub {
         is $p->external_id, 248, 'Report has correct external ID';
         is $p->get_extra_field_value('emergency'), 'no';
 
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('attribute[description]'), "Title Test 1 for " . $peterborough->id . " Detail\r\n\r\nSkanska CSC ref: 1234", 'Ref added to description';
         is $c->param('attribute[emergency]'), undef, 'no emergency param sent';
@@ -67,15 +67,10 @@ subtest "extra update params are sent to open311" => sub {
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
         my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Trees', email => 'TREES');
-        my $test_res = HTTP::Response->new();
-        $test_res->code(200);
-        $test_res->message('OK');
-        $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>ezytreev-248</update_id></request_update></service_request_updates>');
+        Open311->_inject_response('servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>ezytreev-248</update_id></request_update></service_request_updates>');
 
         my $o = Open311->new(
             fixmystreet_body => $peterborough,
-            test_mode => 1,
-            test_get_returns => { 'servicerequestupdates.xml' => $test_res },
         );
 
         my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { external_id => 1, category => 'Trees', whensent => DateTime->now });
@@ -105,12 +100,12 @@ subtest "bartec report with no gecode handled correctly" => sub {
         my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Bins', email => 'Bartec-Bins');
         ($problem) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough', areas => ',2566,' });
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
 
         $problem->discard_changes;
         ok $problem->whensent, 'Report marked as sent';
 
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[postcode]'), undef, 'postcode param not set';
         is $cgi->param('attribute[house_no]'), undef, 'house_no param not set';
@@ -151,12 +146,12 @@ subtest "extra bartec params are sent to open311" => sub {
             },
         } );
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
 
         $report->discard_changes;
         ok $report->whensent, 'Report marked as sent';
 
-        my $req = $test_data->{test_req_used};
+        my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[postcode]'), 'XX1 1XZ', 'postcode param sent';
         is $cgi->param('attribute[house_no]'), '12', 'house_no param sent';
@@ -263,14 +258,13 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
             },
         } );
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata is set';
         is $p->state, 'confirmed', 'report state unchanged';
         is $p->comments->count, 0, 'no comment added';
-        ok $test_data->{test_req_used}, 'open311 sent';
-        my $cgi = CGI::Simple->new($test_data->{test_req_used}->content);
+        my $cgi = CGI::Simple->new(Open311->test_req_used->content);
         is $cgi->param('service_code'), 'FLY', 'service code is correct';
 
         $mech->email_count_is(1);
@@ -345,7 +339,7 @@ subtest "flytipping on non PCC land is emailed" => sub {
             },
         } );
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
 
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
@@ -354,7 +348,7 @@ subtest "flytipping on non PCC land is emailed" => sub {
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
         like $p->comments->first->text, qr/As this is private land/, 'correct comment text';
-        ok !$test_data->{test_req_used}, 'no open311 sent';
+        ok !Open311->test_req_used, 'no open311 sent';
 
         $mech->email_count_is(1);
         my $email = $mech->get_email;

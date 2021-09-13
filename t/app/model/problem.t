@@ -179,7 +179,7 @@ for my $test (
         $problem->update;
         my $w3c = DateTime::Format::W3CDTF->new();
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1 );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
         my $updates = Open311::GetUpdates->new(
             current_open311 => $o,
             current_body => $body,

@@ -9,7 +9,6 @@ use FixMyStreet::Queue::Item::Report;
 has verbose => ( is => 'ro' );
 
 has unconfirmed_data => ( is => 'ro', default => sub { {} } );
-has test_data => ( is => 'ro', default => sub { {} } );
 
 # Static method, used by send-reports cron script and tests.
 # Creates a manager object from provided data and processes it.
@@ -44,8 +43,6 @@ sub send {
         $manager->end_line($unsent_count);
         $manager->end_summary_unconfirmed;
     });
-
-    return $manager->test_data;
 }
 
 sub construct_query {

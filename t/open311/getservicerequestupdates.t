@@ -98,7 +98,8 @@ for my $test (
         my $local_requests_xml = $requests_xml;
         $local_requests_xml =~ s/UPDATED_DATETIME/$test->{updated_datetime}/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
         my $res = $o->get_service_request_updates;
         is_deeply $res->[0], $test->{ res }, 'result looks correct';
@@ -126,7 +127,8 @@ subtest 'check extended request parsed correctly' => sub {
 
     $extended_requests_xml =~ s/UPDATED_DATETIME/$updated_datetime/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $extended_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+    Open311->_inject_response('/servicerequestupdates.xml', $extended_requests_xml);
 
     my $res = $o->get_service_request_updates;
     is_deeply $res->[0], $expected_res, 'result looks correct';
@@ -431,7 +433,8 @@ for my $test (
 ) {
     subtest $test->{desc} => sub {
         my $local_requests_xml = setup_xml($problem->external_id, $problem->id, $test->{comment_status}, $test->{xml_description});
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => $test->{extended_statuses}, test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => $test->{extended_statuses} );
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
         $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
         $problem->state( $test->{start_state} );
@@ -463,7 +466,8 @@ my $response_template_vars = $bodies{2482}->response_templates->create({
 });
 subtest 'Check template placeholders' => sub {
     my $local_requests_xml = setup_xml($problem->external_id, $problem->id, 'ACTION_SCHEDULED', 'We will do this in the morning.');
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => undef, test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => undef );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
     $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
     $problem->state( 'fixed - council' );
@@ -506,7 +510,8 @@ for my $test (
 ) {
     subtest $test->{desc} => sub {
         my $local_requests_xml = setup_xml($problemB->external_id, $problemB->id, $test->{comment_status});
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
         $problemB->lastupdate( DateTime->now()->subtract( days => 1 ) );
         $problemB->state( $test->{start_state} );
@@ -537,7 +542,8 @@ for (
 ) {
     subtest "Marking report as fixed closes it for updates ($_->{cobrand})" => sub {
         my $local_requests_xml = setup_xml($problemB->external_id, $problemB->id, 'CLOSED');
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
         $problemB->update( { bodies_str => $bodies{$_->{id}}->id } );
 
@@ -572,7 +578,8 @@ subtest 'Update with media_url includes image in update' => sub {
     my $local_requests_xml = setup_xml($problem->external_id, 1, "");
     $local_requests_xml =~ s#</service_request_id>#</service_request_id>
         <media_url>http://example.com/image.jpeg</media_url>#;
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
     $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
     $problem->state('confirmed');
@@ -599,7 +606,8 @@ subtest 'Update with customer_reference adds reference to problem' => sub {
     my $local_requests_xml = setup_xml($problem->external_id, 1, "");
     $local_requests_xml =~ s#</service_request_id>#</service_request_id>
         <customer_reference>REFERENCE</customer_reference>#;
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
     $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
     $problem->state('confirmed');
@@ -622,7 +630,8 @@ subtest 'Update with customer_reference adds reference to problem' => sub {
 
 subtest 'date for comment correct' => sub {
     my $local_requests_xml = setup_xml($problem->external_id, $problem->id, "");
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -665,7 +674,8 @@ for my $test (
 ) {
     subtest $test->{desc} => sub {
         my $local_requests_xml = setup_xml($test->{request_id}, $test->{request_id_ext}, "");
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -681,7 +691,8 @@ for my $test (
 
 subtest 'using start and end date' => sub {
     my $local_requests_xml = $requests_xml;
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
     my $start_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
     my $end_dt = $start_dt->clone;
@@ -700,7 +711,7 @@ subtest 'using start and end date' => sub {
     my $start = $start_dt . '';
     my $end = $end_dt . '';
 
-    my $uri = URI->new( $o->test_uri_used );
+    my $uri = $o->test_req_used->uri;
     my $c = CGI::Simple->new( $uri->query );
 
     is $c->param('start_date'), $start, 'start date used';
@@ -749,7 +760,7 @@ subtest 'check that existing comments are not duplicated' => sub {
     my $confirmed = DateTime::Format::W3CDTF->format_datetime($comment->confirmed);
     $requests_xml =~ s/UPDATED_DATETIME/$confirmed/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -757,16 +768,19 @@ subtest 'check that existing comments are not duplicated' => sub {
         current_body => $bodies{2482},
     );
 
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
     $update->process_body;
 
     $problem->discard_changes;
     is $problem->comments->count, 2, 'two comments after fetching updates';
 
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
     $update->process_body;
     $problem->discard_changes;
     is $problem->comments->count, 2, 're-fetching updates does not add comments';
 
     $problem->comments->delete;
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
     $update->process_body;
     $problem->discard_changes;
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
@@ -791,7 +805,8 @@ subtest 'check that can limit fetching to a body' => sub {
 
     $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         body => 'Oxfordshire',
@@ -842,7 +857,8 @@ subtest 'check that external_status_code is stored correctly' => sub {
     $requests_xml =~ s/UPDATED_DATETIME2/$dt/;
     $requests_xml =~ s/UPDATED_DATETIME/$dt2/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -880,7 +896,8 @@ subtest 'check that external_status_code is stored correctly' => sub {
     my $dt3 = $dt->clone->add( minutes => 1 );
     $requests_xml =~ s/UPDATED_DATETIME/$dt3/;
 
-    $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -919,7 +936,8 @@ subtest 'check that external_status_code triggers auto-responses' => sub {
 
     $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -973,7 +991,8 @@ foreach my $test ( {
         $requests_xml =~ s/UPDATED_DATETIME/$test->{dt1}/;
         $requests_xml =~ s/UPDATED_DATETIME2/$test->{dt2}/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -1044,7 +1063,8 @@ for my $test (
         $requests_xml =~ s/UPDATED_DATETIME/$dt/;
         $requests_xml =~ s/UPDATED_DATETIME2/$dt2/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -1085,7 +1105,8 @@ subtest 'check that first comment always updates state'  => sub {
 
     $requests_xml =~ s/UPDATED_DATETIME/@{[$dt->clone->subtract( minutes => 62 )]}/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -1150,7 +1171,8 @@ foreach my $test ( {
 
         $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -1214,7 +1236,8 @@ foreach my $test ( {
 
         $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -1271,7 +1294,8 @@ subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
     $requests_xml =~ s/UPDATED_DATETIME2/$dt2/;
     $requests_xml =~ s/UPDATED_DATETIME/$dt3/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -1308,7 +1332,8 @@ subtest 'check bad fixmystreet_id is handled' => sub {
 
     $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,

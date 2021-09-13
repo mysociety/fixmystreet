@@ -53,6 +53,7 @@
         - Upgrade jQuery. #3017
     - Open311 improvements:
         - Consistent protected field ordering.
+        - Move test handling out of core code.
     - Security:
         - Increase minimum password length to eight.
     - Changes

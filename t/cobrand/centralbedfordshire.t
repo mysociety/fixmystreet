@@ -73,8 +73,8 @@ FixMyStreet::override_config {
     subtest 'Correct area_code and NSGRef parameters for Open311' => sub {
         $report->set_extra_fields({ name => 'UnitID', value => 'Asset 123' });
         $report->update;
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'BRIDGES';
         is $c->param('attribute[area_code]'), 'Area1';
@@ -116,8 +116,8 @@ FixMyStreet::override_config {
             latitude => 52.030695, longitude => -0.357033, areas => ',117960,11804,135257,148868,21070,37488,44682,59795,65718,83582,',
         });
 
-        my $test_data = FixMyStreet::Script::Reports::send();
-        my $req = $test_data->{test_req_used};
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'POTHOLES';
 
