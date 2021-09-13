@@ -158,15 +158,15 @@ sub munge_report_new_bodies {
 # Want to remove the group our categories are all in
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
-    warn "AAAAAGGGGHHHHHH";
-        my $on_he_road = $self->{c}->stash->{on_he_road};
-        my $on_he_road_for_litter = $self->{c}->stash->{on_he_road_for_litter};
-        if ($on_he_road && !$on_he_road_for_litter) {
-            # Change litter to use local council
-            my $he = FixMyStreet::Cobrand::HighwaysEngland->new;
-            warn "Use local council";
-            $he->munge_litter_picking_categories($contacts, 0);
-        }
+    # my $on_he_road = $self->report_new_is_on_he_road;
+    # my $on_he_road_for_litter = $self->report_new_is_on_he_road_for_litter;
+    # if ($on_he_road && !$on_he_road_for_litter) {
+    #     # Change litter to use local council
+    #     warn "Use local council";
+    #         $self->munge_litter_picking_categories($contacts, 0);
+    #     } else {
+    #         @$contacts = grep { ( $_->body->name eq 'Highways England') } @$contacts;
+    # }
     foreach (@$contacts) {
         $_->unset_extra_metadata("group");
     }

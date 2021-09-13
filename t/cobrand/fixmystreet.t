@@ -308,26 +308,95 @@ FixMyStreet::override_config {
     };
 };
 
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet changes litter options for Highways England' => sub {
+        my $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::HighwaysEngland');
+        $he_mod->mock('report_new_is_on_he_road', sub { 1 });
+        $he_mod->mock('report_new_is_on_he_road_for_litter', sub { 1 });
+        my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+        my $he = $mech->create_body_ok(2494, 'Highways England');
+        $mech->create_contact_ok(body_id => $bexley->id, category => 'Flytipping', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        warn Dumper $mech->response;
+        $mech->content_contains('Litter');
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Trees');
+        $mech->content_lacks('Flytipping');
+    };
+};
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     subtest 'fixmystreet changes litter options for Highways England' => sub {
-        my $he_mod = Test::MockModule->new('HighwaysEngland');
+        my $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::HighwaysEngland');
         $he_mod->mock('report_new_is_on_he_road', sub { 0 });
-        $he_mod->mock('report_new_is_on_he_road_for_litter', sub { 1 });
+        $he_mod->mock('report_new_is_on_he_road_for_litter', sub { 0 });
         my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
-        my $he = $mech->create_body_ok(1000, 'Highways England');
+        my $he = $mech->create_body_ok(2494, 'Highways England');
         $mech->create_contact_ok(body_id => $bexley->id, category => 'Flytipping', email => 'foo@bexley');
         $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
         $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
         #warn Dumper $mech->response;
         $mech->content_contains('Trees');
+        $mech->content_contains('Flytipping');
+        $mech->content_lacks('Litter');
+        $mech->content_lacks('Potholes');
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet changes litter options for Highways England' => sub {
+        my $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::HighwaysEngland');
+        $he_mod->mock('report_new_is_on_he_road', sub { 1 });
+        $he_mod->mock('report_new_is_on_he_road_for_litter', sub { 0 });
+        my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+        my $he = $mech->create_body_ok(2494, 'Highways England');
+        $mech->create_contact_ok(body_id => $bexley->id, category => 'Flytipping', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        #warn Dumper $mech->response;
+        $mech->content_lacks('Trees');
         $mech->content_lacks('Litter');
         $mech->content_contains('Flytipping');
+        $mech->content_contains('Potholes');
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet changes litter options for Highways England' => sub {
+        my $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::HighwaysEngland');
+        $he_mod->mock('report_new_is_on_he_road', sub { 0 });
+        $he_mod->mock('report_new_is_on_he_road_for_litter', sub { 1 });
+        my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+        my $he = $mech->create_body_ok(2494, 'Highways England');
+        $mech->create_contact_ok(body_id => $bexley->id, category => 'Flytipping', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $bexley->id, category => 'Trees', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Litter', email => 'litter@he');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes', email => 'potholes@he');
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        #warn Dumper $mech->response;
+        $mech->content_contains('Trees');
+        $mech->content_contains('Litter');
+        $mech->content_lacks('Flytipping');
+        $mech->content_lacks('Potholes');
     };
 };
 
