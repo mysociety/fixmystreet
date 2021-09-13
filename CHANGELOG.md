@@ -14,6 +14,7 @@
         - Fix unable to edit user with verified landline #3295
         - Fix ordering of dropdown lists in extra questions #3566
         - Fix removal of cached opengraph photos.
+        - Do not email inactive body comment users. #3587
 
 * v3.1 (16th November 2020)
     - Security:

@@ -155,14 +155,19 @@ sub delete_reports {
     $problems->delete;
 }
 
-sub anonymize_users {
-    my $self = shift;
-
+sub _body_users {
     my $body_users = FixMyStreet::DB->resultset("Body")->search({
         comment_user_id => { '!=' => undef },
     }, {
         columns => 'comment_user_id',
     });
+    return $body_users;
+}
+
+sub anonymize_users {
+    my $self = shift;
+
+    my $body_users = _body_users();
     my $users = FixMyStreet::DB->resultset("User")->search({
         last_active => { '<', interval($self->anonymize) },
         id => { -not_in => $body_users->as_query },
@@ -179,9 +184,11 @@ sub anonymize_users {
 sub email_inactive_users {
     my $self = shift;
 
+    my $body_users = _body_users();
     my $users = FixMyStreet::DB->resultset("User")->search({
-       last_active => [ -and => { '<', interval($self->email) },
-           { '>=', interval($self->anonymize) } ],
+        last_active => [ -and => { '<', interval($self->email) },
+            { '>=', interval($self->anonymize) } ],
+        id => { -not_in => $body_users->as_query },
     });
     while (my $user = $users->next) {
         next if $user->get_extra_metadata('inactive_email_sent');
