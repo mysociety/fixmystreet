@@ -192,10 +192,13 @@ FixMyStreet::override_config {
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Request new Both food bins';
     };
-    subtest 'Request food containers from front page' => sub {
+    subtest 'Request/report food containers from front page' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('name="container-428" value="1"');
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
+        $mech->content_contains('name="service-FOOD_BINS" value="1"');
     };
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
