@@ -389,15 +389,22 @@ sub munge_report_new_contacts {
 sub _premises_for_postcode {
     my $self = shift;
     my $pc = shift;
+    my $c = $self->{c};
 
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
 
-    unless ( $self->{c}->session->{$key} ) {
-        my $bartec = $self->feature('bartec');
-        $bartec = Integrations::Bartec->new(%$bartec);
+    unless ( $c->session->{$key} ) {
+        my $cfg = $self->feature('bartec');
+        my $bartec = Integrations::Bartec->new(%$cfg);
         my $response = $bartec->Premises_Get($pc);
 
-        $self->{c}->session->{$key} = [ map { {
+        if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
+            my $blocked = $cfg->{blocked_uprns} || [];
+            my %blocked = map { $_ => 1 } @$blocked;
+            @$response = grep { !$blocked{$_->{UPRN}} } @$response;
+        }
+
+        $c->session->{$key} = [ map { {
             id => $pc . ":" . $_->{UPRN},
             uprn => $_->{UPRN},
             usrn => $_->{USRN},
@@ -407,7 +414,7 @@ sub _premises_for_postcode {
         } } @$response ];
     }
 
-    return $self->{c}->session->{$key};
+    return $c->session->{$key};
 }
 
 sub clear_cached_lookups_postcode {

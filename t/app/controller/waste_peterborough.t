@@ -14,6 +14,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2566, 'Peterborough Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -273,6 +274,29 @@ FixMyStreet::override_config {
         is $report->title, '360L Black';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
         $b->mock('Premises_Attributes_Get', sub { [] });
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => {
+            sample_data => 1,
+            blocked_uprns => [ '100090215480' ]
+        } },
+        waste => { peterborough => 1 }
+    },
+}, sub {
+    subtest 'Blocked UPRN check' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->content_contains('10 Pope Way');
+        $mech->content_lacks('1 Pope Way');
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->content_contains('10 Pope Way');
+        $mech->content_contains('1 Pope Way');
     };
 };
 
