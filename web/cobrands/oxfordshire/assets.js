@@ -9,14 +9,14 @@ var tilma_url = "https://" + wfs_host + "/mapserver/oxfordshire";
 var proxy_base_url = "https://" + wfs_host + "/proxy/occ/";
 
 var lighting_categories = [
-    "Cover hanging",
+    "Cover Hanging",
     "Door Missing",
     "Flashing Lamp",
-    "HIT",
+    "Vehicle/ Accident Damage",
     "Knocked Down Bollard",
-    "Lamp appears dim",
-    "Lamp on during day",
-    "Not on at night",
+    "Lamp Appears Dim",
+    "Lamp On During Day",
+    "Lamp Out of Light",
     "Other",
     "Twisted Lantern"
 ];
