@@ -3,6 +3,10 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
+
 use JSON::MaybeXS;
 use URI::Escape;
 use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
@@ -128,25 +132,11 @@ sub addresses_for_postcode {
     return { addresses => \@addresses };
 }
 
-sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
 
-    $params->{multi_photos} = 1;
-}
-
-sub open311_extra_data {
-    my ($self, $row, $h, $contact) = @_;
-
-    my $open311_only = [
-        { name => 'report_url',
-          value => $h->{url} },
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail },
-        { name => 'category',
-          value => $row->category },
-    ];
+    my ($row, $h, $contact) = @_;
 
     # Make sure contact 'email' set correctly for Open311
     if (my $split_match = $row->get_extra_metadata('split_match')) {
@@ -156,7 +146,7 @@ sub open311_extra_data {
     }
 
     return $open311_only;
-}
+};
 
 sub map_type { 'OSM' }
 
