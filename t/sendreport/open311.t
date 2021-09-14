@@ -135,6 +135,29 @@ test_overrides greenwich =>
         ),
     });
 
+test_overrides hackney =>
+    {
+        body_name => 'Hackney',
+        area_id   => 2508,
+        extra => {
+            url => 'http://example.com/1234',
+        },
+    },
+    superhashof({
+        handler => isa('FixMyStreet::Cobrand::Hackney'),
+        'open311' => noclass(superhashof({
+            %standard_open311_parameters,
+            multi_photos => 1,
+            upload_files => 1,
+        })),
+        problem_extra => bag(
+            { name => 'report_url' => value => 'http://example.com/1234' },
+            { name => 'title', value => 'Problem' },
+            { name => 'description', value => 'A big problem' },
+            { name => 'category', value => 'ZZ' },
+        ),
+    });
+
 test_overrides fixmystreet =>
     {
         body_name => 'West Berkshire',
@@ -185,7 +208,7 @@ sub test_overrides {
     subtest "$cobrand ($input->{body_name}) overrides" => sub {
 
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast'],
+            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney'],
         }, sub {
             my $db = FixMyStreet::DB->schema;
             #$db->txn_begin;
