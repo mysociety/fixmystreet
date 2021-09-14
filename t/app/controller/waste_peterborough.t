@@ -32,6 +32,7 @@ create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collec
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
 create_contact({ category => 'Lid', email => 'Bartec-236' }, 'Bin repairs');
+create_contact({ category => 'Black 360L bin', email => 'Bartec-422' }, 'Request new container');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'peterborough',
@@ -256,6 +257,22 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '240L Black';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+    };
+    subtest 'Report broken large bin' => sub {
+        $b->mock('Premises_Attributes_Get', sub { [
+            { AttributeDefinition => { Name => 'LARGE BIN' } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+        $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry submitted');
+        $mech->content_contains('Please leave your bin accessible');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, '360L Black';
+        is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+        $b->mock('Premises_Attributes_Get', sub { [] });
     };
 };
 

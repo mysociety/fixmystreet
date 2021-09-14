@@ -846,16 +846,30 @@ sub waste_munge_report_data {
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
+    my $service_id = $self->{c}->get_param('service_id');
+    my $category = $self->{c}->get_param('category');
+
+    my $verbose = $self->{c}->stash->{enquiry_verbose};
+    my $category_verbose = $verbose->{$category} || $category;
+
+    if ($service_id == 6533 && ($category eq 'Lid' || $category eq 'Wheels')) { # 240L Black repair
+        my $uprn = $self->{c}->stash->{property}->{uprn};
+        my $attributes = $self->property_attributes($uprn);
+        if ($attributes->{"LARGE BIN"}) {
+            # For large bins, we need to raise a new bin request instead
+            $service_id = "LARGE BIN";
+            $category = 'Black 360L bin';
+        }
+    }
+
     my %container_ids = (
         6533 => "240L Black",
         6534 => "240L Green",
         6579 => "240L Brown",
+        "LARGE BIN" => "360L Black",
     );
 
-    my $verbose = $self->{c}->stash->{enquiry_verbose};
-    my $bin = $container_ids{$self->{c}->get_param('service_id')};
-    my $category = $self->{c}->get_param('category');
-    my $category_verbose = $verbose->{$category} || $category;
+    my $bin = $container_ids{$service_id};
     $data->{category} = $category;
     $data->{title} = $bin;
     $data->{detail} = $category_verbose . "\n\n" . $self->{c}->stash->{property}->{address};
