@@ -5,7 +5,7 @@
         [% IF problem.shortlisted_user %]
             [% problem.shortlisted_user.name OR problem.shortlisted_user.username %]
         [% ELSE %]
-            (unassigned)
+            [% loc('(unassigned)') %]
         [% END %]
     </span>
 [% END %]
