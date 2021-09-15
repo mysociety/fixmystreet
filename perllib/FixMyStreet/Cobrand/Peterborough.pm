@@ -600,10 +600,11 @@ sub bin_services_for_address {
     foreach (@$events_usrn) {
         my $workpack = $_->{Workpack}{Name};
         my $type = $_->{EventType}{Description};
+        my $date = construct_bin_date($_->{EventDate});
         # e.g. NO ACCESS 1ST TRY, NO ACCESS 2ND TRY, NO ACCESS BAD WEATHE, NO ACCESS GATELOCKED, NO ACCESS PARKED CAR, NO ACCESS POLICE, NO ACCESS ROADWORKS
         $type = 'NO ACCESS - street' if $type =~ /NO ACCESS/;
         next unless $lock_out_types{$type};
-        $street_workpacks_to_lock_out{$workpack} = $type;
+        $street_workpacks_to_lock_out{$workpack} = { type => $type, date => $date };
     }
 
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
@@ -665,9 +666,11 @@ sub bin_services_for_address {
         }
         # Last date is last successful collection. If whole street locked out, it hasn't started
         my $workpack = $feature_to_workpack{$name} || '';
-        if (my $type = $street_workpacks_to_lock_out{$workpack}) {
+        if (my $lockout = $street_workpacks_to_lock_out{$workpack}) {
             $row->{report_allowed} = 0;
-            $row->{report_locked_out} = $type;
+            $row->{report_locked_out} = $lockout->{type};
+            my $last = $lockout->{date};
+            $row->{last} = { date => $last, ordinal => ordinal($last->day) };
         }
         push @out, $row;
     }
