@@ -284,6 +284,8 @@ sub bulk_assign : Path('planned/bulk_assign') {
                 # check is actually on a shortlist – otherwise do nothing
                 # need to return $problem, so can't use $user->remove_from_planned_reports($problem)
                 my $shortlisted = $problem->user_planned_reports->search({ removed => undef })->first;
+                # as this allows us to handle user trying to unassign a non-assigned report
+                # without throwing an error
                 if ($shortlisted) {
                     $shortlisted->removed( \'current_timestamp' );
                     $shortlisted->update;
