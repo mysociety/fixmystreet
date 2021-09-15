@@ -571,7 +571,7 @@ $.extend(fixmystreet.utils, {
     },
     update_unassigned: function($li, $ul) {
         $li.find('span.assignee').addClass('oldassign').hide();
-        $li.find('span.assignee').after('<span class="assignee newassign">(unassigned)</strong>');
+        $li.find('span.assignee').after('<span class="assignee newassign">(unassigned)</span>');
     },
     update_assignee: function($li, $ul) {
         var user_name = $ul.data('userName');
