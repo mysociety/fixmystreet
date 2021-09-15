@@ -303,12 +303,6 @@ sub _include_user_title_in_extra {
     }
 }
 
-sub open311_post_send {
-    my ($self, $row, $h, $contact) = @_;
-
-    $row->detail($self->{bromley_original_detail});
-}
-
 sub open311_pre_send_updates {
     my ($self, $row) = @_;
 
@@ -339,6 +333,7 @@ sub open311_munge_update_params {
 
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
+    $row->detail($self->{bromley_original_detail});
     my $error = $sender->error;
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
