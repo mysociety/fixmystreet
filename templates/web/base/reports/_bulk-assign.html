@@ -1,4 +1,4 @@
-[%  IF c.user.has_permission_to('assign_report_to_user', c.cobrand.body.id ) %]
+[%  IF c.user.has_body_permission_to('assign_report_to_user') %]
 <form id='bulk-assign-form' name='bulk-assign-form' method='post' action='/my/planned/bulk_assign'>
     <label for='inspector'>[% loc('Assign to') %]</label>
     <input type="hidden" name="token" value="[% csrf_token %]">
