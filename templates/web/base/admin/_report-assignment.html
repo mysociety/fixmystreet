@@ -1,4 +1,4 @@
-[%  IF c.user.has_permission_to('report_inspect', problem.bodies_str_ids ) %]
+[%  IF c.user.has_body_permission_to('report_inspect') OR c.user.has_body_permission_to('assign_report_to_user') %]
     [%# see report's assigned user %]
     <span>[% loc('Assigned to:') %]</span>
     <span class="assignee">
