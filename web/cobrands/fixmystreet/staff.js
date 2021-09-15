@@ -570,17 +570,15 @@ $.extend(fixmystreet.utils, {
         btn.attr('name', 'shortlist-' + sw);
     },
     update_unassigned: function($li, $ul) {
-        $li.find('strong').addClass('oldassign').hide();
-        $li.find('strong').after('<strong class="newassign">(unassigned)</strong>');
+        $li.find('span.assignee').addClass('oldassign').hide();
+        $li.find('span.assignee').after('<span class="assignee newassign">(unassigned)</strong>');
     },
     update_assignee: function($li, $ul) {
         var user_name = $ul.data('userName');
         var user_email = $ul.data('userEmail');
         var user_handle = user_name ? user_name : user_email;
-        var $a2label = $li.find('span.assigned-to-label'); 
-        $li.find('strong').before('<span class="inline-text assigned-to-label" for="assignment" style="display: inline;">Assigned to: </span>');
-        $li.find('strong').addClass('oldassign').hide();
-        $li.find('strong').after('<strong class="newassign">' + user_handle + '</strong>');
+        $li.find('span.assignee').addClass('oldassign').hide();
+        $li.find('span.assignee').after('<span class="assignee newassign">' + user_handle + '</span>');
     }
 });
 
