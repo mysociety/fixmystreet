@@ -526,7 +526,8 @@ sub inspect : Private {
         if ($assigned && $assigned eq 'unassigned') {
             # take off shortlist...
             my $shortlisted = $problem->user_planned_reports->search({ removed => undef })->first;
-            # ...(catching already unassigned)
+            # ... catching already not-assigned problems. Otherwise, if a user tries to unassign a
+            # non-assigned problem, this causes an error.
             if ($shortlisted) {
                 $shortlisted->removed( \'current_timestamp' );
                 $shortlisted->update;
