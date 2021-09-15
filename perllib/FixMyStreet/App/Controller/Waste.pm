@@ -41,9 +41,12 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $id = $c->get_param('address')) {
-        $c->cobrand->call_hook( clear_cached_lookups => $id );
+        $c->cobrand->call_hook( clear_cached_lookups_property => $id );
         $c->detach('redirect_to_id', [ $id ]);
     }
+
+    $c->cobrand->call_hook( clear_cached_lookups_postcode => $c->get_param('postcode') )
+        if $c->get_param('postcode');
 
     $c->stash->{title} = 'What is your address?';
     my $form = FixMyStreet::App::Form::Waste::UPRN->new( cobrand => $c->cobrand );
@@ -488,7 +491,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     # clear this every time they visit this page to stop stale content.
     if ( $c->req->path =~ m#^waste/\d+$# ) {
-        $c->cobrand->call_hook( clear_cached_lookups => $id );
+        $c->cobrand->call_hook( clear_cached_lookups_property => $id );
     }
 
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
@@ -1296,7 +1299,7 @@ sub add_report : Private {
         $c->forward('/report/new/redirect_or_confirm_creation');
     }
 
-    $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
+    $c->cobrand->call_hook( clear_cached_lookups_property => $c->stash->{property}{id} );
 
     return 1;
 }

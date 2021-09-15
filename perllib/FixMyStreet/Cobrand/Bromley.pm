@@ -482,7 +482,7 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
-sub clear_cached_lookups {
+sub clear_cached_lookups_property {
     my ($self, $id) = @_;
 
     my $key = "bromley:echo:look_up_property:$id";
