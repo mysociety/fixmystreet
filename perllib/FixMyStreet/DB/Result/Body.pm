@@ -280,4 +280,23 @@ sub calculate_average {
     return $count >= $threshold ? $avg : undef;
 }
 
+=head2 staff_with_permission
+
+Returns a resultset of all staff users for the body who have been
+granted a specific permission.
+
+=cut
+
+sub staff_with_permission {
+    my ( $self, $permission ) = @_;
+    if ($permission) {
+        return $self->users->search([
+            { 'user_body_permissions.permission_type' => $permission },
+            { permissions => \"@> ARRAY['$permission']" }
+        ], {
+            join => [ 'user_body_permissions', { "user_roles" => "role" } ]
+        });
+    }
+}
+
 1;
