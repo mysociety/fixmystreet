@@ -17,7 +17,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
 $ukc->mock('_fetch_features', sub {
     my ($self, $cfg, $x, $y) = @_;
-    is $y, 259573, 'Correct latitude';
+    is $y, 52.23025, "Correct latitude";
     return [
         {
             properties => { area_name => 'Area 1', ROA_NUMBER => 'M1', sect_label => 'M1/111' },

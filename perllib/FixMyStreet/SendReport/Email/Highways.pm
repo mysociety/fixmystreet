@@ -30,7 +30,7 @@ sub build_recipient_list {
 sub _lookup_site_code_config { {
     buffer => 15, # metres
     url => "https://tilma.mysociety.org/mapserver/highways",
-    srsname => "urn:ogc:def:crs:EPSG::27700",
+    srsname => "urn:ogc:def:crs:EPSG::4326",
     typename => "Highways",
     accept_feature => sub { 1 }
 } }
@@ -38,7 +38,7 @@ sub _lookup_site_code_config { {
 sub _lookup_site_code {
     my $row = shift;
     my $cfg = _lookup_site_code_config();
-    my ($x, $y) = $row->local_coords;
+    my ($x, $y) = ($row->longitude, $row->latitude);
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
     my $features = $ukc->_fetch_features($cfg, $x, $y);
     my $nearest = $ukc->_nearest_feature($cfg, $x, $y, $features);
