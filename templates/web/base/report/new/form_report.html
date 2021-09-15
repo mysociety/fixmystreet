@@ -93,6 +93,8 @@
 
     [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 
+    [% TRY %][% PROCESS 'report/new/after_detail.html' %][% CATCH file %][% END %]
+
     <div class="js-reporting-page--single-hidden">
         [% PROCESS report/form/user.html type='report' %]
     </div>

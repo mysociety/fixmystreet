@@ -282,6 +282,20 @@ sub open311_config_updates {
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
+    $self->_include_user_title_in_extra($row);
+
+    $self->{bromley_original_detail} = $row->detail;
+
+    my $private_comments = $row->get_extra_metadata('private_comments');
+    if ($private_comments) {
+        my $text = $row->detail . "\n\nPrivate comments: $private_comments";
+        $row->detail($text);
+    }
+}
+
+sub _include_user_title_in_extra {
+    my ($self, $row) = @_;
+
     my $extra = $row->extra || {};
     unless ( $extra->{title} ) {
         $extra->{title} = $row->user->title;
@@ -289,9 +303,30 @@ sub open311_pre_send {
     }
 }
 
+sub open311_post_send {
+    my ($self, $row, $h, $contact) = @_;
+
+    $row->detail($self->{bromley_original_detail});
+}
+
 sub open311_pre_send_updates {
     my ($self, $row) = @_;
-    return $self->open311_pre_send($row);
+
+    $self->{bromley_original_update_text} = $row->text;
+
+    my $private_comments = $row->get_extra_metadata('private_comments');
+    if ($private_comments) {
+        my $text = $row->text . "\n\nPrivate comments: $private_comments";
+        $row->text($text);
+    }
+
+    return $self->_include_user_title_in_extra($row);
+}
+
+sub open311_post_send_updates {
+    my ($self, $row) = @_;
+
+    $row->text($self->{bromley_original_update_text});
 }
 
 sub open311_munge_update_params {
@@ -300,6 +335,14 @@ sub open311_munge_update_params {
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
     $params->{update_id_ext} = $comment->id;
     $params->{service_request_id_ext} = $comment->problem->id;
+}
+
+sub open311_post_send {
+    my ($self, $row, $h, $sender) = @_;
+    my $error = $sender->error;
+    if ($error =~ /Missed Collection event already open for the property/) {
+        $row->state('duplicate');
+    }
 }
 
 sub open311_contact_meta_override {
@@ -348,7 +391,10 @@ sub open311_contact_meta_override {
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
-    return $update->user->from_body && !$update->text;
+
+    my $private_comments = $update->get_extra_metadata('private_comments');
+
+    return $update->user->from_body && !$update->text && !$private_comments;
 }
 
 # If any subcategories ticked in user edit admin, make sure they're saved.
@@ -1711,6 +1757,7 @@ sub _duplicate_waste_report {
         areas => $report->areas,
         anonymous => $report->anonymous,
         state => 'unconfirmed',
+        non_public => 1,
     });
 
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
@@ -1867,6 +1914,10 @@ sub dashboard_export_problems_add_columns {
             staff_role => $staff_role,
         };
     });
+}
+
+sub report_form_extras {
+    ( { name => 'private_comments' } )
 }
 
 1;
