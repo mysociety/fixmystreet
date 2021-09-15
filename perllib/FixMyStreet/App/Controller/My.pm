@@ -282,7 +282,8 @@ sub bulk_assign : Path('planned/bulk_assign') {
             my @problems = $c->model('DB::Problem')->search( id => { -in => [ @bulk_reports ]});
             foreach my $problem (@problems) {
                 # check is actually on a shortlist – otherwise do nothing
-                my $shortlisted = $problem->user->remove_from_planned_reports($problem);
+                # need to return $problem, so can't use $user->remove_from_planned_reports($problem)
+                my $shortlisted = $problem->user_planned_reports->search({ removed => undef })->first;
                 if ($shortlisted) {
                     $shortlisted->removed( \'current_timestamp' );
                     $shortlisted->update;
