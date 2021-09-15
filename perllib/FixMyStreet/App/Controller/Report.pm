@@ -525,7 +525,7 @@ sub inspect : Private {
         my $assigned = ($c->get_param('assignment'));
         if ($assigned && $assigned eq 'unassigned') {
             # take off shortlist...
-            my $shortlisted = $problem->user->remove_from_planned_reports($problem);
+            my $shortlisted = $problem->user_planned_reports->search({ removed => undef })->first;
             # ...(catching already unassigned)
             if ($shortlisted) {
                 $shortlisted->removed( \'current_timestamp' );
