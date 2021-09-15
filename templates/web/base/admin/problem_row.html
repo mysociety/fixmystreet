@@ -43,11 +43,7 @@
         <td>
             <span>
             [%- IF problem.user_planned_reports -%] [%# this report is on a shortlist %]
-                [%- IF problem.shortlisted_user.name -%]
-                    [%- problem.shortlisted_user.name -%]
-                [%- ELSE -%]
-                    [%- problem.shortlisted_user.username -%]
-                [%- END -%]
+                [%- problem.shortlisted_user.name OR problem.shortlisted_user.username -%]
             [%- ELSE -%]
                 unassigned
             [%- END -%]
