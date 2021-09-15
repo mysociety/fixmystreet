@@ -118,4 +118,15 @@ subtest 'report search' => sub {
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id"[^>]*>$r_id</a>} );
 };
 
+FixMyStreet::override_config {
+    PHONE_COUNTRY => 'GB',
+}, sub {
+    subtest 'numeric external ID search' => sub {
+        $report->external_id('402609');
+        $report->update;
+        $mech->get_ok('/admin/reports?search=ref:402609');
+        $mech->content_contains("/report/" . $report->id);
+    };
+};
+
 done_testing();

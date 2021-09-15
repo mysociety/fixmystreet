@@ -71,15 +71,7 @@ sub index : Path {
         my $valid_phone = $parsed->{phone};
         my $valid_email = $parsed->{email};
 
-        if ($valid_email) {
-            $query->{'-or'} = [
-                'user.email' => { ilike => $like_search },
-            ];
-        } elsif ($valid_phone) {
-            $query->{'-or'} = [
-                'user.phone' => { ilike => $like_search },
-            ];
-        } elsif ($search =~ /^id:(\d+)$/) {
+        if ($search =~ /^id:(\d+)$/) {
             $query->{'-or'} = [
                 'me.id' => int($1),
             ];
@@ -90,6 +82,14 @@ sub index : Path {
         } elsif ($search =~ /^ref:(\d+)$/) {
             $query->{'-or'} = [
                 'me.external_id' => { like => "%$1%" }
+            ];
+        } elsif ($valid_email) {
+            $query->{'-or'} = [
+                'user.email' => { ilike => $like_search },
+            ];
+        } elsif ($valid_phone) {
+            $query->{'-or'} = [
+                'user.phone' => { ilike => $like_search },
             ];
         } else {
             $problems = $problems->search_text($search);
