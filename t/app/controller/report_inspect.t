@@ -667,7 +667,7 @@ FixMyStreet::override_config {
         my $root = HTML::TreeBuilder->new_from_content($mech->content());
 
         $mech->content_contains('unassigned');
-        my @assigned_to = $root->find("li#report-$report_id div.assigned-to strong")->content_list;
+        my @assigned_to = $root->find("li#report-$report_id div.assigned-to span.assignee")->content_list;
         like($assigned_to[0], qr/Inspector Ian/, "report $report_id assigned to Ian");
 
         my $toggle_shortlist = sub {
@@ -675,7 +675,7 @@ FixMyStreet::override_config {
             $mech->click();
             $mech->get_ok("/reports");
             $root = HTML::TreeBuilder->new_from_content($mech->content());
-            @assigned_to = $root->find("li#report-$report_id div.assigned-to strong")->content_list;
+            @assigned_to = $root->find("li#report-$report_id div.assigned-to span.assignee")->content_list;
         };
         $toggle_shortlist->();
         like($assigned_to[0], qr/Body User/, 'assignment by shortlist-add button still works' );
