@@ -45,7 +45,7 @@
             [%- IF problem.user_planned_reports -%] [%# this report is on a shortlist %]
                 [%- problem.shortlisted_user.name OR problem.shortlisted_user.username -%]
             [%- ELSE -%]
-                unassigned
+                [% loc('unassigned') %]
             [%- END -%]
             </span>
         </td>
