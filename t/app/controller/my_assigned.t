@@ -41,7 +41,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest "test report assignment" => sub {
         $mech->get_ok("/reports");
-        $mech->content_contains('Assign to:');
+        $mech->content_contains('Assign to');
 
         my $root = HTML::TreeBuilder->new_from_content($mech->content());
         ok ($root->find('select#inspector'), 'Inspector assignment dropdown exists');
@@ -49,8 +49,8 @@ FixMyStreet::override_config {
 
         # check report(s) are not assigned to Ian
         my $get_assignees = sub {
-            my @strong = $root->find('li div.assigned-to strong');
-            return map {map { s/ ^ \s+ | \s+ $ //grx } $_->content_list} @strong;
+            my @span = $root->find('li div.assigned-to span.assignee');
+            return map {map { s/ ^ \s+ | \s+ $ //grx } $_->content_list} @span;
         };
         my @all_match_unassigned = qw((unassigned) (unassigned) (unassigned));
         is_deeply([$get_assignees->()], \@all_match_unassigned, 'all reports correctly unassigned');
