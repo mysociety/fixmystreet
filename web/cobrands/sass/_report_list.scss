@@ -87,4 +87,11 @@
   #bulk-assign-btn::after {
     content: none;
   }
+
+}
+
+input.bulk-assign {
+    float: right;
+    margin: 2em;
+    transform: scale(2);
 }
