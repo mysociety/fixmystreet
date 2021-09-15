@@ -410,9 +410,8 @@ sub _premises_for_postcode {
     return $self->{c}->session->{$key};
 }
 
-sub clear_cached_lookups {
-    my ($self, $id) = @_;
-    my ($pc, $uprn) = split ":", $id;
+sub clear_cached_lookups_postcode {
+    my ($self, $pc) = @_;
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
     delete $self->{c}->session->{$key};
 }
