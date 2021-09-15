@@ -29,6 +29,17 @@
                 [%- PROCESS value_or_nbsp value=problem.bodies_str -%]
             [%- END -%]
             <br>[% problem.cobrand %]<br>[% problem.cobrand_data | html %]
+            <br>
+            [% IF c.user.has_body_permission_to('assign_report_to_user') %] [%# see report's assigned user %]
+                <span>[% loc('Assigned to') %]: </span>
+                <span>
+                [%- IF problem.user_planned_reports -%]
+                    [%- problem.shortlisted_user.name OR problem.shortlisted_user.username -%]
+                [%- ELSE -%]
+                    [% loc('unassigned') %]
+                [%- END -%]
+                </span>
+            [%- END -%]
         </td>
         <td>[% prettify_state(problem.state, 1) %]<br><small>
             [% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
@@ -38,18 +49,6 @@
             [%- IF problem.is_closed %]<br>[% prettify_state('closed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
         </small></td>
-        [%- IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids ) %]
-        [%# see report's assigned user %]
-        <td>
-            <span>
-            [%- IF problem.user_planned_reports -%] [%# this report is on a shortlist %]
-                [%- problem.shortlisted_user.name OR problem.shortlisted_user.username -%]
-            [%- ELSE -%]
-                [% loc('unassigned') %]
-            [%- END -%]
-            </span>
-        </td>
-        [%- END -%]
         <td>
             [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
                 <a href="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]">[% loc('Edit') %]</a>

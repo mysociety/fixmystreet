@@ -14,7 +14,6 @@
         <th>[% loc('Name') %]</th>
         <th>[% loc('Body') %]</th>
         <th>[% loc('State') %]</th>
-        [% IF c.user.has_permission_to('assign_report_to_user', problem.bodies_str_ids) %]<th>[% loc('Assigned to') %]</th>[% END %]
         <th>*</th>
     </tr>
     [% INCLUDE 'admin/problem_row.html' %]
