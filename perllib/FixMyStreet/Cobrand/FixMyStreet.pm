@@ -116,7 +116,6 @@ sub munge_report_new_bodies {
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
-
         my $on_he_road_for_litter = $c->stash->{on_he_road_for_litter} = $he->report_new_is_on_he_road_for_litter;
         if (!$on_he_road && !$on_he_road_for_litter) {
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
