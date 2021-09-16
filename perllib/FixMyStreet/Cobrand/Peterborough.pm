@@ -209,6 +209,7 @@ sub post_report_sent {
         my $text;
         $tt->process('report/new/flytipping_text.html', {}, \$text);
 
+        $problem->unset_extra_metadata('flytipping_email');
         $problem->update({
             state => 'closed'
         });
@@ -221,7 +222,6 @@ sub post_report_sent {
             problem_state => 'closed',
             text => $text,
         });
-        $problem->unset_extra_metadata('flytipping_email');
     }
 }
 

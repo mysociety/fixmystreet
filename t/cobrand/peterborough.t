@@ -317,6 +317,7 @@ subtest "flytipping on non PCC land is emailed" => sub {
 
         $p->discard_changes;
         ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('flytipping_email'), undef, 'flytipping_email extra metadata unset';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
