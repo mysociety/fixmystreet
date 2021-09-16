@@ -276,6 +276,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
+        $mech->content_contains('Please leave your bin accessible');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '360L Black';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
