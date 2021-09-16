@@ -280,6 +280,38 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
     };
 };
 
+subtest "flytipping on PCC land witnessed is only sent by email" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.5708,
+            longitude => 0.2505,
+            cobrand => 'peterborough',
+            extra => {
+                _fields => [
+                    { name => 'site_code', value => '12345', },
+                    { name => 'pcc-witness', value => 'yes', },
+                ],
+            },
+        } );
+
+        my $test_data = FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        ok !$test_data->{test_req_used}, 'open311 not sent';
+
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+    };
+};
 
 subtest "flytipping on non PCC land is emailed" => sub {
     FixMyStreet::override_config {
