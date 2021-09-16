@@ -263,8 +263,8 @@ sub shortlist_multiple : Path('planned/change_multiple') {
     my @ids = $c->get_param_list('ids[]');
 
     foreach my $id (@ids) {
-      $c->forward( '/report/load_problem_or_display_error', [ $id ] );
-      $c->user->add_to_planned_reports($c->stash->{problem});
+        $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+        $c->user->add_to_planned_reports($c->stash->{problem});
     }
 
     $c->res->body(encode_json({ outcome => 'add' }));
