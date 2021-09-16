@@ -33,11 +33,7 @@
             [% IF c.user.has_body_permission_to('assign_report_to_user') %] [%# see report's assigned user %]
                 <span>[% loc('Assigned to') %]: </span>
                 <span>
-                [%- IF problem.user_planned_reports -%]
-                    [%- problem.shortlisted_user.name OR problem.shortlisted_user.username -%]
-                [%- ELSE -%]
-                    [% loc('unassigned') %]
-                [%- END -%]
+                    [%- problem.shortlisted_user.name OR problem.shortlisted_user.username OR loc('unassigned') -%]
                 </span>
             [%- END -%]
         </td>
