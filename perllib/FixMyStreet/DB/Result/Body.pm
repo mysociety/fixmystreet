@@ -289,14 +289,13 @@ granted a specific permission.
 
 sub staff_with_permission {
     my ( $self, $permission ) = @_;
-    if ($permission) {
-        return $self->users->search([
-            { 'user_body_permissions.permission_type' => $permission },
-            { permissions => \"@> ARRAY['$permission']" }
-        ], {
-            join => [ 'user_body_permissions', { "user_roles" => "role" } ]
-        });
-    }
+    return $self->users->search([
+        { 'user_body_permissions.permission_type' => $permission },
+        { permissions => \"@> ARRAY['$permission']" }
+    ], {
+        join => [ 'user_body_permissions', { "user_roles" => "role" } ],
+        order_by => { '-asc' => ['name'] },
+    });
 }
 
 1;
