@@ -64,7 +64,13 @@ around open311_extra_data_include => sub {
     return $open311_only;
 };
 # remove categories which are informational only
-sub open311_extra_data_exclude { [ '^PCC-', '^emergency$', '^private_land$' ] }
+sub open311_extra_data_exclude {
+    my ($self, $row, $h) = @_;
+    # We need to store this as Open311 pre_send needs to check it and it will
+    # have been removed due to this function.
+    $row->set_extra_metadata(pcc_witness => $row->get_extra_field_value('pcc-witness'));
+    [ '^PCC-', '^emergency$', '^private_land$' ]
+}
 
 sub lookup_site_code_config { {
     buffer => 50, # metres
@@ -181,11 +187,25 @@ sub munge_sendreport_params {
     }
 }
 
+sub _witnessed_general_flytipping {
+    my $row = shift;
+    my $witness = $row->get_extra_metadata('pcc_witness') || '';
+    return ($row->category eq 'General fly tipping' && $witness eq 'yes');
+}
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    return 'SKIP' if _witnessed_general_flytipping($row);
+}
+
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
     # Check Open311 was successful
-    return unless $row->external_id;
+    my $send_email = $row->external_id || _witnessed_general_flytipping($row);
+    # Unset here because check above used it
+    $row->unset_extra_metadata('pcc_witness');
+    return unless $send_email;
 
     my $emails = $self->feature('open311_email');
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
