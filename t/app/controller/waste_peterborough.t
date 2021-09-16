@@ -14,6 +14,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2566, 'Peterborough Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -32,6 +33,7 @@ create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collec
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
 create_contact({ category => 'Lid', email => 'Bartec-236' }, 'Bin repairs');
+create_contact({ category => 'Black 360L bin', email => 'Bartec-422' }, 'Request new container');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'peterborough',
@@ -51,10 +53,11 @@ FixMyStreet::override_config {
         { WorkPack => { Name => 'Waste-R1-010821' }, Name => 'Empty Bin 240L Black', ScheduledDate => '2021-08-01T07:00:00' },
         { WorkPack => { Name => 'Waste-R1-050821' }, Name => 'Empty Bin Recycling 240l', ScheduledDate => '2021-08-05T07:00:00' },
     ] });
-    $b->mock('Jobs_FeatureScheduleDates_Get', sub { [
+    my $jobs_fsd_get = [
         { JobID => 123, PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Empty Bin 240L Black' },
         { JobID => 456, PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
-    ] });
+    ];
+    $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
     $b->mock('Features_Schedules_Get', sub { [
         { JobName => 'Empty Bin 240L Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
         { JobName => 'Empty Bin Recycling 240l', Feature => { FeatureType => { ID => 6534 } } },
@@ -122,19 +125,25 @@ FixMyStreet::override_config {
         $b->mock('Premises_Events_Get', sub { [] }); # reset
 
         $b->mock('Streets_Events_Get', sub { [
-            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'NO ACCESS PARKED CAR' } },
+            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'NO ACCESS PARKED CAR' }, EventDate => '2021-08-05T10:10:10' },
         ] });
+        my $alt_jobs_fsd_get = [
+            { JobID => 456, PreviousDate => '2021-08-02T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
+        ];
+        $b->mock('Jobs_FeatureScheduleDates_Get', sub { $alt_jobs_fsd_get });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('There is no need to report this as there was no access');
+        $mech->content_contains('Thursday, 5th August 2021');
+        $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
 
         $b->mock('Streets_Events_Get', sub { [
-            { Workpack => { Name => 'Waste-R1-040821' }, EventType => { Description => 'NO ACCESS PARKED CAR' } },
+            { Workpack => { Name => 'Waste-R1-040821' }, EventType => { Description => 'NO ACCESS PARKED CAR' }, EventDate => '2021-08-04T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There is no need to report this as there was no access');
 
         $b->mock('Streets_Events_Get', sub { [
-            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'STREET COMPLETED' } },
+            { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'STREET COMPLETED' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('There was a problem with your bin collection');
@@ -192,10 +201,13 @@ FixMyStreet::override_config {
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Request new Both food bins';
     };
-    subtest 'Request food containers from front page' => sub {
+    subtest 'Request/report food containers from front page' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('name="container-428" value="1"');
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
+        $mech->content_contains('name="service-FOOD_BINS" value="1"');
     };
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
@@ -253,6 +265,44 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '240L Black';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+    };
+    subtest 'Report broken large bin' => sub {
+        $b->mock('Premises_Attributes_Get', sub { [
+            { AttributeDefinition => { Name => 'LARGE BIN' } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+        $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, '360L Black';
+        is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+        $b->mock('Premises_Attributes_Get', sub { [] });
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => {
+            sample_data => 1,
+            blocked_uprns => [ '100090215480' ]
+        } },
+        waste => { peterborough => 1 }
+    },
+}, sub {
+    subtest 'Blocked UPRN check' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->content_contains('10 Pope Way');
+        $mech->content_lacks('1 Pope Way');
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->content_contains('10 Pope Way');
+        $mech->content_contains('1 Pope Way');
     };
 };
 

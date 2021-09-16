@@ -352,15 +352,22 @@ sub munge_report_new_contacts {
 sub _premises_for_postcode {
     my $self = shift;
     my $pc = shift;
+    my $c = $self->{c};
 
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
 
-    unless ( $self->{c}->session->{$key} ) {
-        my $bartec = $self->feature('bartec');
-        $bartec = Integrations::Bartec->new(%$bartec);
+    unless ( $c->session->{$key} ) {
+        my $cfg = $self->feature('bartec');
+        my $bartec = Integrations::Bartec->new(%$cfg);
         my $response = $bartec->Premises_Get($pc);
 
-        $self->{c}->session->{$key} = [ map { {
+        if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
+            my $blocked = $cfg->{blocked_uprns} || [];
+            my %blocked = map { $_ => 1 } @$blocked;
+            @$response = grep { !$blocked{$_->{UPRN}} } @$response;
+        }
+
+        $c->session->{$key} = [ map { {
             id => $pc . ":" . $_->{UPRN},
             uprn => $_->{UPRN},
             usrn => $_->{USRN},
@@ -370,12 +377,11 @@ sub _premises_for_postcode {
         } } @$response ];
     }
 
-    return $self->{c}->session->{$key};
+    return $c->session->{$key};
 }
 
-sub clear_cached_lookups {
-    my ($self, $id) = @_;
-    my ($pc, $uprn) = split ":", $id;
+sub clear_cached_lookups_postcode {
+    my ($self, $pc) = @_;
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
     delete $self->{c}->session->{$key};
 }
@@ -557,10 +563,11 @@ sub bin_services_for_address {
     foreach (@$events_usrn) {
         my $workpack = $_->{Workpack}{Name};
         my $type = $_->{EventType}{Description};
+        my $date = construct_bin_date($_->{EventDate});
         # e.g. NO ACCESS 1ST TRY, NO ACCESS 2ND TRY, NO ACCESS BAD WEATHE, NO ACCESS GATELOCKED, NO ACCESS PARKED CAR, NO ACCESS POLICE, NO ACCESS ROADWORKS
         $type = 'NO ACCESS - street' if $type =~ /NO ACCESS/;
         next unless $lock_out_types{$type};
-        $street_workpacks_to_lock_out{$workpack} = $type;
+        $street_workpacks_to_lock_out{$workpack} = { type => $type, date => $date };
     }
 
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
@@ -622,9 +629,11 @@ sub bin_services_for_address {
         }
         # Last date is last successful collection. If whole street locked out, it hasn't started
         my $workpack = $feature_to_workpack{$name} || '';
-        if (my $type = $street_workpacks_to_lock_out{$workpack}) {
+        if (my $lockout = $street_workpacks_to_lock_out{$workpack}) {
             $row->{report_allowed} = 0;
-            $row->{report_locked_out} = $type;
+            $row->{report_locked_out} = $lockout->{type};
+            my $last = $lockout->{date};
+            $row->{last} = { date => $last, ordinal => ordinal($last->day) };
         }
         push @out, $row;
     }
@@ -809,16 +818,30 @@ sub waste_munge_report_data {
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
+    my $service_id = $self->{c}->get_param('service_id');
+    my $category = $self->{c}->get_param('category');
+
+    my $verbose = $self->{c}->stash->{enquiry_verbose};
+    my $category_verbose = $verbose->{$category} || $category;
+
+    if ($service_id == 6533 && ($category eq 'Lid' || $category eq 'Wheels')) { # 240L Black repair
+        my $uprn = $self->{c}->stash->{property}->{uprn};
+        my $attributes = $self->property_attributes($uprn);
+        if ($attributes->{"LARGE BIN"}) {
+            # For large bins, we need to raise a new bin request instead
+            $service_id = "LARGE BIN";
+            $category = 'Black 360L bin';
+        }
+    }
+
     my %container_ids = (
         6533 => "240L Black",
         6534 => "240L Green",
         6579 => "240L Brown",
+        "LARGE BIN" => "360L Black",
     );
 
-    my $verbose = $self->{c}->stash->{enquiry_verbose};
-    my $bin = $container_ids{$self->{c}->get_param('service_id')};
-    my $category = $self->{c}->get_param('category');
-    my $category_verbose = $verbose->{$category} || $category;
+    my $bin = $container_ids{$service_id};
     $data->{category} = $category;
     $data->{title} = $bin;
     $data->{detail} = $category_verbose . "\n\n" . $self->{c}->stash->{property}->{address};
