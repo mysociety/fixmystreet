@@ -116,7 +116,7 @@ has_field existing_number => (
 
 has_field current_bins => (
     type => 'Integer',
-    label => 'Bins already on property (0-6)',
+    label => 'Number of bins currently on site (0-6)',
     required => 1,
     range_start => 0,
     range_end => 6,
@@ -124,7 +124,7 @@ has_field current_bins => (
 
 has_field bins_wanted => (
     type => 'Integer',
-    label => 'Total number of bins required (0-6)',
+    label => 'Number of bins to collect (including bins already on site) (0-6)',
     required => 1,
     range_start => 0,
     range_end => 6,
