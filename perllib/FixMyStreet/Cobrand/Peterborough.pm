@@ -87,6 +87,14 @@ sub lookup_site_code_config { {
     accept_types => { Polygon => 1 },
 } }
 
+# We want to send confirmation emails only for Waste reports
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    my $contact = $report->contact or return;
+    return 'id' if $report->contact->get_extra_metadata('waste_only');
+    return '';
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
