@@ -26,7 +26,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 });
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
-    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private'] });
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect'] });
 $staffuser->add_to_roles($role);
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -279,15 +279,18 @@ subtest 'check display of TfL and waste reports' => sub {
 
 subtest 'check staff can filter on waste reports' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
+        $mech->host('bromley.fixmystreet.com');
         $mech->get_ok( '/reports/Bromley');
         $mech->content_lacks('<optgroup label="Waste"');
 
         $mech->log_in_ok($staffuser->email);
         $mech->get_ok( '/reports/Bromley');
         $mech->content_contains('<optgroup label="Waste"');
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->content_contains('<option value="Report missed collection">');
     };
 };
 

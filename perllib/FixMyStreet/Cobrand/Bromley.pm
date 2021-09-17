@@ -473,7 +473,11 @@ sub munge_report_new_contacts {
 
     return if $self->{c}->action =~ /^waste/;
 
-    @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+    if ($self->{c}->stash->{categories_for_point}) {
+        # Have come from an admin tool
+    } else {
+        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
+    }
     $self->SUPER::munge_report_new_contacts($categories);
 }
 
