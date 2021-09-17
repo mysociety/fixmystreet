@@ -96,6 +96,7 @@ subtest "extra update params are sent to open311" => sub {
     };
 };
 
+my $problem;
 subtest "bartec report with no gecode handled correctly" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
@@ -103,12 +104,12 @@ subtest "bartec report with no gecode handled correctly" => sub {
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
         my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Bins', email => 'Bartec-Bins');
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough' });
+        ($problem) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough', areas => ',2566,' });
 
         my $test_data = FixMyStreet::Script::Reports::send();
 
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
+        $problem->discard_changes;
+        ok $problem->whensent, 'Report marked as sent';
 
         my $req = $test_data->{test_req_used};
         my $cgi = CGI::Simple->new($req->content);
@@ -383,6 +384,5 @@ foreach my $cobrand ( "peterborough", "fixmystreet" ) {
         };
     };
 }
-
 
 done_testing;

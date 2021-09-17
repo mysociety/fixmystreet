@@ -53,8 +53,10 @@ fixmystreet.staff_set_up = {
         $item.insertBefore( $item.prev() );
       } else if ('shortlist-remove' === whatUserWants) {
           fixmystreet.utils.toggle_shortlist($submitButton, 'add', report_id);
+          fixmystreet.utils.update_unassigned($item, $list);
       } else if ('shortlist-add' === whatUserWants) {
           fixmystreet.utils.toggle_shortlist($submitButton, 'remove', report_id);
+          fixmystreet.utils.update_assignee($item, $list);
       }
 
       // Items have moved around. We need to make sure the "up" button on the
@@ -77,10 +79,14 @@ fixmystreet.staff_set_up = {
           fixmystreet.utils.toggle_shortlist($submitButton, 'add', report_id);
         }
         fixmystreet.update_list_item_buttons($list);
+        // undo assignee changes
+        $('.oldassign').removeClass('oldassign').show();
+        $('.newassign').remove();
       }).complete(function() {
         if ($hiddenInput) {
           $hiddenInput.remove();
         }
+        $('.oldassign').remove();
       });
     });
   },
@@ -562,6 +568,17 @@ $.extend(fixmystreet.utils, {
             sw += '-' + id;
         }
         btn.attr('name', 'shortlist-' + sw);
+    },
+    update_unassigned: function($li, $ul) {
+        $li.find('span.assignee').addClass('oldassign').hide();
+        $li.find('span.assignee').after('<span class="assignee newassign">(unassigned)</span>');
+    },
+    update_assignee: function($li, $ul) {
+        var user_name = $ul.data('userName');
+        var user_email = $ul.data('userEmail');
+        var user_handle = user_name ? user_name : user_email;
+        $li.find('span.assignee').addClass('oldassign').hide();
+        $li.find('span.assignee').after('<span class="assignee newassign">' + user_handle + '</span>');
     }
 });
 

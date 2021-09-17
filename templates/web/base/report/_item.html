@@ -43,9 +43,13 @@ END;
   [% PROCESS 'report/_item_extra_class.html' %]
 [%~ CATCH file ~%]
 [%~ END ~%]
-
 <li class="item-list__item item-list--reports__item [% item_extra_class %]"
     data-report-id="[% problem.id | html %]" data-lastupdate="[% problem.lastupdate %]" id="report-[% problem.id | html %]">
+[% IF relevant_staff AND (c.user.has_permission_to('assign_report_to_user', problem.bodies_str_ids)) %]
+    [% UNLESS page == 'my' OR page == 'around' OR page == '' %]
+        <input type='checkbox' class='bulk-assign' name='bulk-assign-reports' form='bulk-assign-form' value='[%- problem.id -%]'>
+    [% END %]
+[% END %]
 <a href="[% c.cobrand.relative_url_for_report( problem ) %][% problem.url %]">
   [% TRY ~%]
     [% PROCESS 'report/_item_photo_title.html' ~%]
@@ -119,11 +123,12 @@ END;
     [%# The around page list is already contained within the new report form %]
     [% item_action.replace('("shortlist-[^"]*)', '$1-' _ problem.id) | safe %]
   [% ELSE ~%]
-    <form method="post" action="/my/planned/change">
+    <form method="post" id="add_remove_shortlist_[% problem.id %]" action="/my/planned/change">
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
         [% item_action | safe %]
     </form>
   [% END ~%]
 [% END %]
+
 </li>
