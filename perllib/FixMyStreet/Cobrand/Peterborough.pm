@@ -530,6 +530,7 @@ sub bin_services_for_address {
         6533 => "240L Black",
         6534 => "240L Green",
         6579 => "240L Brown",
+        "LARGE BIN" => "360L Black", # Actually would be service 422
     };
 
     my %container_request_ids = (
@@ -827,6 +828,7 @@ sub waste_munge_request_data {
 
 sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
+    my $c = $self->{c};
 
     my %container_service_ids = (
         "FOOD_BINS" => 252, # Food bins (pseudocontainer hardcoded in bin_services_for_address)
@@ -840,19 +842,25 @@ sub waste_munge_report_data {
         6840 => undef, # Recycling 1100l
         6841 => undef, # Recycling 660l
         6843 => undef, # Recycling 240l
-        # black 360L?
     );
 
-
-    my $c = $self->{c};
-
     my $service_id = $container_service_ids{$id};
-    my $container = $c->stash->{containers}{$id};
+
+    if ($service_id == 255) {
+        my $uprn = $c->stash->{property}->{uprn};
+        my $attributes = $self->property_attributes($uprn);
+        if ($attributes->{"LARGE BIN"}) {
+            # For large bins, we need different text to show
+            $id = "LARGE BIN";
+        }
+    }
+
     if ( $data->{assisted_detail} ) {
         $data->{title} = "Report missed assisted collection";
         $data->{detail} = $data->{assisted_detail};
         $data->{detail} .= "\n\n" . $c->stash->{property}->{address};
     } else {
+        my $container = $c->stash->{containers}{$id};
         $data->{title} = "Report missed $container";
         $data->{detail} = $c->stash->{property}->{address};
     }
@@ -862,15 +870,16 @@ sub waste_munge_report_data {
 
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
+    my $c = $self->{c};
 
-    my $service_id = $self->{c}->get_param('service_id');
-    my $category = $self->{c}->get_param('category');
+    my $service_id = $c->get_param('service_id');
+    my $category = $c->get_param('category');
 
-    my $verbose = $self->{c}->stash->{enquiry_verbose};
+    my $verbose = $c->stash->{enquiry_verbose};
     my $category_verbose = $verbose->{$category} || $category;
 
     if ($service_id == 6533 && ($category eq 'Lid' || $category eq 'Wheels')) { # 240L Black repair
-        my $uprn = $self->{c}->stash->{property}->{uprn};
+        my $uprn = $c->stash->{property}->{uprn};
         my $attributes = $self->property_attributes($uprn);
         if ($attributes->{"LARGE BIN"}) {
             # For large bins, we need to raise a new bin request instead
@@ -879,17 +888,10 @@ sub waste_munge_enquiry_data {
         }
     }
 
-    my %container_ids = (
-        6533 => "240L Black",
-        6534 => "240L Green",
-        6579 => "240L Brown",
-        "LARGE BIN" => "360L Black",
-    );
-
-    my $bin = $container_ids{$service_id};
+    my $bin = $c->stash->{containers}{$service_id};
     $data->{category} = $category;
     $data->{title} = $bin;
-    $data->{detail} = $category_verbose . "\n\n" . $self->{c}->stash->{property}->{address};
+    $data->{detail} = $category_verbose . "\n\n" . $c->stash->{property}->{address};
 }
 
 
