@@ -275,6 +275,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
         $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_contains('Black Bin');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
         $mech->content_contains('Please leave your bin accessible');
