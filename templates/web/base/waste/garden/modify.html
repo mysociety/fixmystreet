@@ -12,47 +12,9 @@
     <dd class="waste__address__property">[% property.address %]</dd>
 </dl>
 
-<form method="post">
-  <!-- [% PROCESS form override_fields=['bin_number'] %] -->
-
+<form method="post" id="modify">
   <fieldset class="govuk-fieldset">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-      <h2 class="govuk-fieldset__heading">[% field.label %]</h2>
-    </legend>
-  [% IF field.get_tag('hint') %]
-  <span id="[% field.id %]-hint" class="govuk-hint">
-      [% field.get_tag('hint') %]
-  </span>
-  [% END %]
-  [% IF error %]
-  <span id="[% field.id %]-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> [% error %]
-  </span>
-  [% END %]
-  <hr class="fieldset-hr">
-  <div class="fieldset-container">
-    <div class="fieldset-item">
-      <label class="govuk-label" for="bin_number">
-        Amount of bins required
-    </label>
-    </div>
-
-    <div class="fieldset-item">
-      <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="bin_number" name="bin_number" type="number"
-      value="[% field.fif %]"
-      [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
-      [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
-      [%~ IF field.disabled %] disabled[% END ~%]
-      [%~ IF field.get_tag('hint') OR error %]
-        aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
-      [%~ END %]>
-    </div>
-
-    <div class="fieldset-item">
-      <span class="cost-pa">£[% tprintf('%.2f', garden_form_data.per_bin_cost / 100 ) %] per bin per year</span>
-    </div>
-    
-  </div>
+    [% INCLUDE waste/garden/_bin_quantities.html %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total">
     <span class="cost-pa__total-costs">
@@ -63,7 +25,7 @@
     </span>
   </div>
   </fieldset>
-  
+
     [% IF staff_payments_allowed %]
     [% PROCESS form override_fields=['name', 'email', 'phone'] %]
     [% ELSE %]

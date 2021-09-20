@@ -12,7 +12,7 @@ my %intro_fields = (
         my $form = shift;
         my $c = $form->{c};
         $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
-        my $current_bins = $c->get_param('current_bins') || $c->stash->{garden_form_data}->{bins};
+        my $current_bins = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
         $c->stash->{payment} = $c->cobrand->garden_waste_cost( $current_bins ) / 100;
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins} },
@@ -50,7 +50,6 @@ has_page summary => (
         if ( $orig_sub ) {
             $data->{billing_address} = $orig_sub->get_extra_field_value('billing_address');
         }
-        $data->{bin_number} = $bins_wanted;
         $data->{billing_address} ||= $c->stash->{property}{address};
         $data->{display_total} = $total / 100;
 
