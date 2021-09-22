@@ -729,6 +729,18 @@ subtest 'check reports from abuser not sent' => sub {
     ok $abuse->delete(), 'user removed from abuse table';
 };
 
+subtest 'check always using reply-to' => sub {
+    FixMyStreet::override_config {
+        COBRAND_FEATURES => { always_use_reply_to => { default => 1 } },
+    }, sub {
+        $problem->update({ state => 'confirmed' });
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        is $email->header("Reply-To"), '"Test User" <system_user@example.net>';
+        like $email->header('From'), qr/"Test User" <fms-report-\d+-\w+\@example.org>/, 'from line looks correct';
+    };
+};
+
 subtest 'check response templates' => sub {
     my $c1 = $mech->create_contact_ok(category => 'Potholes', body_id => $body_ids{2651}, email => 'p');
     my $c2 = $mech->create_contact_ok(category => 'Graffiti', body_id => $body_ids{2651}, email => 'g');

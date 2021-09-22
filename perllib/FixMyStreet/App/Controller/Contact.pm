@@ -283,6 +283,7 @@ sub send_email : Private {
 
     my $recipient      = $c->cobrand->contact_email;
     my $recipient_name = $c->cobrand->contact_name();
+    my $use_reply_to = $c->cobrand->feature('always_use_reply_to');
 
     if (my $localpart = $c->get_param('recipient')) {
         $recipient = join('@', $localpart, FixMyStreet->config('EMAIL_DOMAIN'));
@@ -300,7 +301,7 @@ sub send_email : Private {
         to => [ [ $recipient, _($recipient_name) ] ],
         user_agent => $c->req->user_agent,
     };
-    if (FixMyStreet::Email::test_dmarc($c->stash->{em})) {
+    if ($use_reply_to || FixMyStreet::Email::test_dmarc($c->stash->{em})) {
         $params->{'Reply-To'} = [ $from ];
         $params->{from} = [ FixMyStreet->config('DO_NOT_REPLY_EMAIL'), $c->stash->{form_name} ];
     } else {

@@ -106,8 +106,11 @@ sub send {
         $params->{From} = [ $sender, $name ];
     }
 
-    if (FixMyStreet::Email::test_dmarc($params->{From}[0])
-      || $self->use_replyto
+    my $use_reply_to = $cobrand->feature('always_use_reply_to');
+
+    if ( $self->use_replyto
+      || $use_reply_to
+      || FixMyStreet::Email::test_dmarc($params->{From}[0])
       || Utils::Email::same_domain($params->{From}, $params->{To})) {
         $params->{'Reply-To'} = [ $params->{From} ];
         $params->{From} = [ $sender, $params->{From}[1] ];

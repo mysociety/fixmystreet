@@ -353,6 +353,24 @@ subtest 'use do-not-reply address when recepient uses DMARC' => sub {
     is $email->header('From'), "\"$common{name}\" <$from_email>", 'from name and email correct';
 };
 
+subtest 'use reply-to when cobrand asks to' => sub {
+    FixMyStreet::override_config {
+        COBRAND_FEATURES => {
+            always_use_reply_to => { default => 1 }
+        },
+    }, sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/contact');
+        $mech->submit_form_ok( { with_fields => \%common } );
+        $mech->content_contains('Thank you for your enquiry');
+
+        my $email = $mech->get_email;
+        my $from_email = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+        is $email->header('From'), "\"$common{name}\" <$from_email>", 'from name and email correct';
+        is $email->header('Reply-To'), "\"$common{name}\" <$common{em}>", 'reply-to correct';
+    }
+};
+
 for my $test (
     { fields => \%common }
   )
