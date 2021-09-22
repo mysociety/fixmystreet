@@ -456,18 +456,20 @@ subtest 'test waste max-per-day' => sub {
         ALLOWED_COBRANDS => 'bromley',
         COBRAND_FEATURES => {
             echo => { bromley => {
-                max_requests_per_day => 3,
-                max_properties_per_day => 1,
                 sample_data => 1
             } },
             payment_gateway => { bromley => { ggw_cost => 1000 } },
+            waste_features => { bromley => {
+                max_requests_per_day => 3,
+                max_properties_per_day => 1,
+            } },
             waste => { bromley => 1 }
         },
     }, sub {
         SKIP: {
-            skip( "No memcached", 7 ) unless Memcached::set('bromley-waste-prop-test', 1);
-            Memcached::delete("bromley-waste-prop-test");
-            Memcached::delete("bromley-waste-req-test");
+            skip( "No memcached", 7 ) unless Memcached::set('waste-prop-test', 1);
+            Memcached::delete("waste-prop-test");
+            Memcached::delete("waste-req-test");
             $mech->get_ok('/waste/12345');
             $mech->get_ok('/waste/12345');
             $mech->get('/waste/12346');

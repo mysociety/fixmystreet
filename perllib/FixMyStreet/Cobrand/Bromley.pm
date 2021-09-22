@@ -10,7 +10,6 @@ use File::Temp;
 use Integrations::Echo;
 use Integrations::Pay360;
 use JSON::MaybeXS;
-use List::Util qw(any);
 use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use Storable;
@@ -18,7 +17,6 @@ use Try::Tiny;
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
-use Memcached;
 use BromleyParks;
 
 sub council_area_id { return 2482; }
@@ -538,46 +536,6 @@ sub look_up_property {
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
     };
-}
-
-sub waste_bin_days_check {
-    my ($self, $staff) = @_;
-
-    my $cfg = $self->feature('echo');
-    my $c = $self->{c};
-
-    return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
-
-    # Allow lookups of max_per_day different properties per day
-    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    my $ip = $c->req->address;
-
-    if ($cfg->{max_requests_per_day}) {
-        my $key = FixMyStreet->test_mode ? "bromley-waste-req-test" : "bromley-waste-req-$ip-$today";
-        my $count = Memcached::increment($key, 86400) || 0;
-        $self->waste_bin_day_deny if $count > $cfg->{max_requests_per_day};
-    }
-
-    # Allow lookups of max_per_day different properties per day
-    if ($cfg->{max_properties_per_day}) {
-        my $key = FixMyStreet->test_mode ? "bromley-waste-prop-test" : "bromley-waste-prop-$ip-$today";
-        my $list = Memcached::get($key) || [];
-
-        my $id = $c->stash->{property}->{id};
-        return if any { $_ == $id } @$list; # Already visited today
-
-        $self->waste_bin_day_deny if @$list >= $cfg->{max_properties_per_day};
-
-        push @$list, $id;
-        Memcached::set($key, $list, 86400);
-    }
-}
-
-sub waste_bin_day_deny {
-    my $self = shift;
-    my $c = $self->{c};
-    my $msg = 'Please note that for security and privacy reasons Bromley have limited the number of different properties you can look up on the waste collection schedule in a 24-hour period.  You should be able to continue looking up against properties you have already viewed.  For other locations please try again after 24 hours.  If you are still seeing this message after that time please try refreshing the page.';
-    $c->detach('/page_error_403_access_denied', [ $msg ]);
 }
 
 my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');

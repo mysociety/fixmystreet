@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller' }
 
 use utf8;
 use Lingua::EN::Inflect qw( NUMWORDS );
+use List::Util qw(any);
 use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
@@ -18,6 +19,7 @@ use FixMyStreet::App::Form::Waste::Garden::Renew;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
+use Memcached;
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -511,7 +513,41 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 
     my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
-    $c->cobrand->call_hook(waste_bin_days_check => $staff);
+
+    my $cfg = $c->cobrand->feature('waste_features');
+
+    return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
+
+    # Allow lookups of max_per_day different properties per day
+    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    my $ip = $c->req->address;
+
+    if ($cfg->{max_requests_per_day}) {
+        my $key = FixMyStreet->test_mode ? "waste-req-test" : "waste-req-$ip-$today";
+        my $count = Memcached::increment($key, 86400) || 0;
+        $c->detach('bin_day_deny') if $count > $cfg->{max_requests_per_day};
+    }
+
+    # Allow lookups of max_per_day different properties per day
+    if ($cfg->{max_properties_per_day}) {
+        my $key = FixMyStreet->test_mode ? "waste-prop-test" : "waste-prop-$ip-$today";
+        my $list = Memcached::get($key) || [];
+
+        my $id = $c->stash->{property}->{id};
+        return if any { $_ == $id } @$list; # Already visited today
+
+        $c->detach('bin_day_deny') if @$list >= $cfg->{max_properties_per_day};
+
+        push @$list, $id;
+        Memcached::set($key, $list, 86400);
+    }
+}
+
+sub bin_day_deny : Private {
+    my ($self, $c) = @_;
+    my $council = $c->cobrand->council_area;
+    my $msg = "Please note that for security and privacy reasons $council have limited the number of different properties you can look up on the waste collection schedule in a 24-hour period.  You should be able to continue looking up against properties you have already viewed.  For other locations please try again after 24 hours.  If you are still seeing this message after that time please try refreshing the page.";
+    $c->detach('/page_error_403_access_denied', [ $msg ]);
 }
 
 sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {
