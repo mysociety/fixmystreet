@@ -41,9 +41,12 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $id = $c->get_param('address')) {
-        $c->cobrand->call_hook( clear_cached_lookups => $id );
+        $c->cobrand->call_hook( clear_cached_lookups_property => $id );
         $c->detach('redirect_to_id', [ $id ]);
     }
+
+    $c->cobrand->call_hook( clear_cached_lookups_postcode => $c->get_param('postcode') )
+        if $c->get_param('postcode');
 
     $c->stash->{title} = 'What is your address?';
     my $form = FixMyStreet::App::Form::Waste::UPRN->new( cobrand => $c->cobrand );
@@ -488,7 +491,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     # clear this every time they visit this page to stop stale content.
     if ( $c->req->path =~ m#^waste/\d+$# ) {
-        $c->cobrand->call_hook( clear_cached_lookups => $id );
+        $c->cobrand->call_hook( clear_cached_lookups_property => $id );
     }
 
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
@@ -555,7 +558,8 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless $_->{next} && !$_->{request_open};
+        next unless ( $_->{next} && !$_->{request_open} ) || $_->{request_only};
+        my $service = $_;
         my $name = $_->{service_name};
         my $containers = $_->{request_containers};
         my $max = $_->{request_max};
@@ -595,6 +599,7 @@ sub construct_bin_request_form {
                     required_when => { "container-$id" => 1 },
                 };
             }
+            $c->cobrand->call_hook("bin_request_form_extra_fields", $service, $id, $field_list);
         }
     }
 
@@ -626,6 +631,7 @@ sub request : Chained('property') : Args(0) {
 sub process_request_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
+    $c->cobrand->call_hook("waste_munge_request_form_data", $data);
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
     foreach (@services) {
@@ -654,7 +660,7 @@ sub construct_bin_report_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless $_->{last} && $_->{report_allowed} && !$_->{report_open};
+        next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {
@@ -688,6 +694,7 @@ sub report : Chained('property') : Args(0) {
 sub process_report_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
+    $c->cobrand->call_hook("waste_munge_report_form_data", $data);
     my @services = grep { /^service-/ && $data->{$_} } sort keys %$data;
     my @reports;
     foreach (@services) {
@@ -734,7 +741,12 @@ sub enquiry : Chained('property') : Args(0) {
         };
     }
 
-    $c->stash->{first_page} = 'enquiry';
+    # If the contact has no extra fields (e.g. Peterborough) then skip to the
+    # "about you" page instead of showing an empty first page.
+    # NB this will mean you need to set $data->{category} in the cobrand's
+    # waste_munge_enquiry_data.
+    $c->stash->{first_page} = @$field_list ? 'enquiry' : 'about_you';
+
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry';
     $c->stash->{page_list} = [
         enquiry => {
@@ -1287,7 +1299,7 @@ sub add_report : Private {
         $c->forward('/report/new/redirect_or_confirm_creation');
     }
 
-    $c->cobrand->call_hook( clear_cached_lookups => $c->stash->{property}{id} );
+    $c->cobrand->call_hook( clear_cached_lookups_property => $c->stash->{property}{id} );
 
     return 1;
 }
@@ -1308,8 +1320,6 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{area_check_action} = 'submit_problem';
     $c->forward('/council/load_and_check_areas', []);
     $c->forward('/report/new/setup_categories_and_bodies');
-    my $contacts = $c->stash->{contacts};
-    @$contacts = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$contacts;
 }
 
 sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {

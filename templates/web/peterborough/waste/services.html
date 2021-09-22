@@ -1,0 +1,53 @@
+[% UNLESS waste_features.report_disabled %]
+  [% IF unit.report_open %]
+    <span class="waste-service-descriptor">
+      A [% unit.service_name FILTER lower %] collection has been reported as missed
+      [% IF unit.report_open.report %] – <a href="[% unit.report_open.report.url %]" class="waste-service-link">check status</a>[% END %]
+    </span>
+  [% ELSIF unit.report_locked_out %]
+    <span class="waste-service-descriptor">
+      [%~ IF unit.report_locked_out == 'NO ACCESS - street' %]
+        There is no need to report this as there was no access to your property, your collection has been rescheduled.
+      [%~ ELSIF unit.report_locked_out == 'ON DAY PRE 5PM' %]
+        To report a missed [% unit.service_name FILTER lower %] please call 01733 74 74 74 or email us at
+        <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.
+      [%~ ELSE %]
+        There was a problem with your bin collection, please call 01733 74 74 74 or email us at
+        <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.
+        Please note: we will not return to collect bins that have been recorded
+        by the crews as overweight, contaminated or bin not presented. For more
+        information please visit
+        <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice">https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice</a>
+      [%~ END ~%]
+    </span>
+  [% ELSIF unit.report_allowed %]
+    [% any_report_allowed = 1 %]
+    <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
+      <input type="hidden" name="token" value="[% csrf_token %]">
+      <input type="hidden" name="service-[% unit.service_id %]" value="1">
+      <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
+    </form>
+  [% ELSE %]
+    <span class="waste-service-descriptor">Please note that missed collections can only be reported within 2&frac12; working days of your collection day (including the collection day).</span>
+  [% END %]
+[% END %]
+
+[% UNLESS waste_features.enquiry_disabled %]
+  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %]</a>
+[% END %]
+
+[% UNLESS waste_features.request_disabled %]
+  [% IF unit.request_open %]
+    <span class="waste-service-descriptor">
+      A new [% unit.service_name FILTER lower %] container request has been made
+      [% IF unit.request_open.report %] – <a href="[% unit.request_open.report.url %]" class="waste-service-link">check status</a>[% END %]
+    </span>
+  [% ELSIF unit.request_allowed %]
+    [% any_request_allowed = 1 %]
+    <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+      <input type="hidden" name="token" value="[% csrf_token %]">
+      <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
+      <input type="submit" value="Request a new [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+    </form>
+  [% END %]
+[% END %]

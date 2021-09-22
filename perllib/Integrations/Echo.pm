@@ -4,7 +4,6 @@ use Moo;
 with 'FixMyStreet::Roles::SOAPIntegration';
 
 use DateTime;
-use Tie::IxHash;
 use FixMyStreet;
 
 has attr => ( is => 'ro', default => 'http://www.twistedfish.com/xmlns/echo/api/v1' );
@@ -19,7 +18,7 @@ has endpoint => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs';
+        # $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs';
         SOAP::Lite->soapversion(1.2);
         my $soap = SOAP::Lite->on_action( sub { $self->action . $_[1]; } )->proxy($self->url);
         $soap->serializer->register_ns("http://schemas.microsoft.com/2003/10/Serialization/Arrays", 'msArray'),
@@ -438,11 +437,6 @@ sub GetEventsForObject {
         ),
     );
     return force_arrayref($res, 'Event');
-}
-
-sub ixhash {
-    tie (my %data, 'Tie::IxHash', @_);
-    return \%data;
 }
 
 sub dt_to_hash {

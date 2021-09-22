@@ -15,6 +15,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'Bromley Council');
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+$user->update({ phone => "07123 456789" });
 my $nameless_user = $mech->create_user_ok('nameless@example.net', name => '');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
@@ -144,9 +145,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test" } });
         $mech->content_contains('Please enter your full name');
-        $mech->content_contains('Please specify at least one of phone or email');
+        $mech->content_contains('Please provide email and/or phone');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", phone => '+441234567890' } });
-        $mech->content_contains('Please specify an email address');
+        $mech->content_contains('Please provide an email address');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org' } });
         $mech->content_contains('Non-Recyclable Refuse');
         $mech->content_contains('Test McTest');
@@ -171,6 +172,24 @@ FixMyStreet::override_config {
 
         is $user->alerts->count, 1;
         $mech->clear_emails_ok;
+    };
+    subtest 'About You form is pre-filled when logged in' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
+        $mech->follow_link_ok({ text => 'Report a missed collection' });
+        $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
+        $user->discard_changes;
+        $mech->content_contains($user->name);
+        $mech->content_contains($user->email);
+        $mech->content_contains($user->phone);
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/report');
+        $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
+        $mech->content_lacks($staff_user->name);
+        $mech->content_lacks($staff_user->email);
+        $mech->log_out_ok;
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
@@ -2442,7 +2461,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
-        $mech->content_contains('Your name field is required');
+        $mech->content_contains('Your name is required');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 2,

@@ -1,0 +1,34 @@
+[% PROCESS 'waste/header.html' %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+  [% IF form.current_page.name == 'about_you' %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p>
+          We need the information below so we can contact you if we need further information to complete this request.
+        </p>
+      </div>
+    </div>
+  [% END %]
+  [% IF property %]
+    [% INCLUDE 'waste/_address_display.html' %]
+  [% END %]
+  <form class="waste" method="post">
+    [% UNLESS property %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p>
+          We need to know your address to help us provide you with accurate
+          information about your household’s waste collections.
+          You can also report problems such as missed collections or broken bins at your address.
+        </p>
+      </div>
+    </div>
+    [% END %]
+    [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]

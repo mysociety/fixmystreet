@@ -471,7 +471,10 @@ sub munge_reports_category_list {
 sub munge_report_new_contacts {
     my ($self, $categories) = @_;
 
-    return if $self->{c}->action =~ /^waste/;
+    if ($self->{c}->action =~ /^waste/) {
+        @$categories = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$categories;
+        return;
+    }
 
     if ($self->{c}->stash->{categories_for_point}) {
         # Have come from an admin tool
@@ -491,7 +494,7 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
-sub clear_cached_lookups {
+sub clear_cached_lookups_property {
     my ($self, $id) = @_;
 
     my $key = "bromley:echo:look_up_property:$id";
@@ -736,6 +739,7 @@ sub bin_services_for_address {
 
     my $events = $self->{api_events};
     my $open = $self->_parse_open_events($events);
+    $self->{c}->stash->{open_service_requests} = $open->{enquiry};
 
     my @to_fetch;
     my %schedules;
@@ -812,7 +816,6 @@ sub bin_services_for_address {
             request_open => $open_request,
             request_containers => $containers,
             request_max => $request_max,
-            enquiry_open_events => $open->{enquiry},
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
             service_task_type_id => $servicetask->{TaskTypeId},
@@ -995,6 +998,8 @@ sub _parse_schedules {
         end_date => $max_end_date,
     };
 }
+
+sub bin_day_format { '%A, %-d~~~ %B' }
 
 sub bin_future_collections {
     my $self = shift;

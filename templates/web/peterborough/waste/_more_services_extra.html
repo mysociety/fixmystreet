@@ -1,0 +1,18 @@
+[% IF any_request_allowed %]
+<li>
+    <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <input type="hidden" name="container-428" value="1">
+        <input type="submit" value="Request more food bags" class="waste-service-descriptor waste-service-link">
+      </form>
+</li>
+[% END %]
+[% IF any_report_allowed %]
+<li>
+    <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <input type="hidden" name="service-FOOD_BINS" value="1">
+        <input type="submit" value="Report missed food bin collection" class="waste-service-descriptor waste-service-link">
+      </form>
+</li>
+[% END %]
