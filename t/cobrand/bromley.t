@@ -449,6 +449,21 @@ FixMyStreet::override_config {
         $mech->content_lacks('Request a replacement garden waste container');
     };
 
+    subtest 'test pending garden event' => sub {
+		my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetEventsForObject', sub { [
+            {
+                Id => 123,
+                ServiceId => '545', # Garden waste
+                EventStateId => '14795', # Allocated to crew
+                EventTypeId => '2106', # Garden subscription
+            },
+        ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste');
+    };
+
 };
 
 subtest 'test waste max-per-day' => sub {

@@ -139,7 +139,7 @@ sub get_pending_subscription : Private {
         }
 
     }
-    $c->stash->{pending_subscription} = $new;
+    $c->stash->{pending_subscription} ||= $new;
     $c->stash->{pending_cancellation} = $cancel;
 }
 

@@ -741,6 +741,10 @@ sub bin_services_for_address {
     my $open = $self->_parse_open_events($events);
     $self->{c}->stash->{open_service_requests} = $open->{enquiry};
 
+    # If there is an open Garden subscription (2106) event, assume
+    # that means a bin is being delivered and so a pending subscription
+    $self->{c}->stash->{pending_subscription} = $open->{enquiry}{2106} ? { title => 'Garden Subscription' } : undef;
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
