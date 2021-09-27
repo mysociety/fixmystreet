@@ -11,7 +11,10 @@
       [%~ ELSIF unit.report_locked_out == 'ON DAY PRE 5PM' %]
         To report a missed [% unit.service_name FILTER lower %] please call 01733 74 74 74.
       [%~ ELSE %]
-        There was a problem with your bin collection, please call 01733 74 74 74 or email us at
+        There was a problem with your bin collection
+    [%~ IF c.user.from_body OR c.user.is_superuser %]
+        ([% unit.report_locked_out %])
+    [%~ END %], please call 01733 74 74 74 or email us at
         <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.
         Please note: we will not return to collect bins that have been recorded
         by the crews as overweight, contaminated or bin not presented. For more

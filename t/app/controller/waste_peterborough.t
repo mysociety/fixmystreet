@@ -110,6 +110,12 @@ FixMyStreet::override_config {
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('There was a problem with your bin collection, please call');
+        $mech->content_lacks('BIN NOT OUT');
+
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_contains('BIN NOT OUT');
+        $mech->log_out_ok();
 
         $b->mock('Premises_Events_Get', sub { [
             { Features => { FeatureType => { ID => 9999 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
