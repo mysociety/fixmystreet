@@ -1,7 +1,10 @@
 package Utils::Email;
 
 use Email::Address;
+use IO::Socket::SSL::PublicSuffix;
 use Net::DNS::Resolver;
+
+my $ps = IO::Socket::SSL::PublicSuffix->default;
 
 # DMARC stabbity stab
 sub test_dmarc {
@@ -11,12 +14,25 @@ sub test_dmarc {
     return unless $addr;
 
     my $domain = $addr->host;
+    my $org_domain = $ps->public_suffix($domain, 1);
+
     my @answers = _send(Net::DNS::Resolver->new, "_dmarc.$domain", 'TXT');
     @answers = map { $_->txtdata } @answers;
     my $dmarc = join(' ', @answers);
-    return unless $dmarc =~ /p *= *(reject|quarantine)/;
 
-    return 1;
+    return 1 if $dmarc =~ /; *p *= *(reject|quarantine)/;
+    return if $dmarc;
+
+    return unless $domain ne $org_domain;
+
+    @answers = _send(Net::DNS::Resolver->new, "_dmarc.$org_domain", 'TXT');
+    @answers = map { $_->txtdata } @answers;
+    $dmarc = join(' ', @answers);
+
+    return 1 if $dmarc =~ /; *sp *= *(reject|quarantine)/;
+    return if $dmarc =~ /; *sp *= *none/;
+    return 1 if $dmarc =~ /; *p *= *(reject|quarantine)/;
+    return;
 }
 
 # Same as send->answer, but follows one CNAME and returns only matching results
