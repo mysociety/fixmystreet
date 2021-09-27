@@ -6,7 +6,7 @@
 [% SET data = form.saved_data ~%]
 
 <h1 class="govuk-heading-xl">[% title %]</h1>
-<p>Please review the information you’ve provided before you submit your [% thing %].</p>
+[% INCLUDE 'waste/_summary_intro.html' %]
 
 <div class="waste__summary">
 <dl class="govuk-summary-list">
