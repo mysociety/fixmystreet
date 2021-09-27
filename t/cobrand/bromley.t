@@ -449,6 +449,21 @@ FixMyStreet::override_config {
         $mech->content_lacks('Request a replacement garden waste container');
     };
 
+    subtest 'test pending garden event' => sub {
+		my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetEventsForObject', sub { [
+            {
+                Id => 123,
+                ServiceId => '545', # Garden waste
+                EventStateId => '14795', # Allocated to crew
+                EventTypeId => '2106', # Garden subscription
+            },
+        ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste');
+    };
+
 };
 
 subtest 'test waste max-per-day' => sub {
@@ -456,18 +471,20 @@ subtest 'test waste max-per-day' => sub {
         ALLOWED_COBRANDS => 'bromley',
         COBRAND_FEATURES => {
             echo => { bromley => {
-                max_requests_per_day => 3,
-                max_properties_per_day => 1,
                 sample_data => 1
             } },
             payment_gateway => { bromley => { ggw_cost => 1000 } },
+            waste_features => { bromley => {
+                max_requests_per_day => 3,
+                max_properties_per_day => 1,
+            } },
             waste => { bromley => 1 }
         },
     }, sub {
         SKIP: {
-            skip( "No memcached", 7 ) unless Memcached::set('bromley-waste-prop-test', 1);
-            Memcached::delete("bromley-waste-prop-test");
-            Memcached::delete("bromley-waste-req-test");
+            skip( "No memcached", 7 ) unless Memcached::set('waste-prop-test', 1);
+            Memcached::delete("waste-prop-test");
+            Memcached::delete("waste-req-test");
             $mech->get_ok('/waste/12345');
             $mech->get_ok('/waste/12345');
             $mech->get('/waste/12346');

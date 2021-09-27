@@ -10,7 +10,6 @@ use File::Temp;
 use Integrations::Echo;
 use Integrations::Pay360;
 use JSON::MaybeXS;
-use List::Util qw(any);
 use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use Storable;
@@ -18,7 +17,6 @@ use Try::Tiny;
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
-use Memcached;
 use BromleyParks;
 
 sub council_area_id { return 2482; }
@@ -540,46 +538,6 @@ sub look_up_property {
     };
 }
 
-sub waste_bin_days_check {
-    my ($self, $staff) = @_;
-
-    my $cfg = $self->feature('echo');
-    my $c = $self->{c};
-
-    return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
-
-    # Allow lookups of max_per_day different properties per day
-    my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    my $ip = $c->req->address;
-
-    if ($cfg->{max_requests_per_day}) {
-        my $key = FixMyStreet->test_mode ? "bromley-waste-req-test" : "bromley-waste-req-$ip-$today";
-        my $count = Memcached::increment($key, 86400) || 0;
-        $self->waste_bin_day_deny if $count > $cfg->{max_requests_per_day};
-    }
-
-    # Allow lookups of max_per_day different properties per day
-    if ($cfg->{max_properties_per_day}) {
-        my $key = FixMyStreet->test_mode ? "bromley-waste-prop-test" : "bromley-waste-prop-$ip-$today";
-        my $list = Memcached::get($key) || [];
-
-        my $id = $c->stash->{property}->{id};
-        return if any { $_ == $id } @$list; # Already visited today
-
-        $self->waste_bin_day_deny if @$list >= $cfg->{max_properties_per_day};
-
-        push @$list, $id;
-        Memcached::set($key, $list, 86400);
-    }
-}
-
-sub waste_bin_day_deny {
-    my $self = shift;
-    my $c = $self->{c};
-    my $msg = 'Please note that for security and privacy reasons Bromley have limited the number of different properties you can look up on the waste collection schedule in a 24-hour period.  You should be able to continue looking up against properties you have already viewed.  For other locations please try again after 24 hours.  If you are still seeing this message after that time please try refreshing the page.';
-    $c->detach('/page_error_403_access_denied', [ $msg ]);
-}
-
 my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
 sub ordinal {
     my $n = shift;
@@ -740,6 +698,10 @@ sub bin_services_for_address {
     my $events = $self->{api_events};
     my $open = $self->_parse_open_events($events);
     $self->{c}->stash->{open_service_requests} = $open->{enquiry};
+
+    # If there is an open Garden subscription (2106) event, assume
+    # that means a bin is being delivered and so a pending subscription
+    $self->{c}->stash->{pending_subscription} = $open->{enquiry}{2106} ? { title => 'Garden Subscription' } : undef;
 
     my @to_fetch;
     my %schedules;
@@ -1366,9 +1328,6 @@ sub waste_payment_type {
         } else {
             $sub_type = $self->waste_subscription_types->{Renew};
         }
-    } elsif ( $type eq 'AUDDIS: 0C' ) {
-        $sub_type = 0;
-        $category = 'Cancel';
     }
 
     return ($category, $sub_type);
@@ -1434,11 +1393,6 @@ sub waste_reconcile_direct_debits {
         # Renewal is an automatic event so there is never a record in the database
         # and we have to generate one.
         #
-        # Cancellations may have an event in the database if the user has cancelled
-        # through the front end but they can also cancel the Direct Debit itself in
-        # which case we need to create a report.
-        #
-        #
         # If we're a renew payment then find the initial subscription payment, also
         # checking if we've already processed this payment. If we've not processed it
         # create a renewal record using the original subscription as a basis.
@@ -1483,64 +1437,6 @@ sub waste_reconcile_direct_debits {
                 $renew->set_extra_metadata('dd_date', $date);
                 $renew->confirm;
                 $renew->insert;
-                $handled = 1;
-            }
-        # There's two options with a cancel payment. If the user has cancelled it outside of
-        # WasteWorks then we need to find the original sub and generate a new cancel subscription
-        # report.
-        #
-        # If it's been cancelled inside WasteWorks then we'll have an unconfirmed cancel report
-        # which we need to confirm.
-        } elsif ( $category eq 'Cancel' ) {
-            next unless $payment->{Status} eq 'Processed';
-            $rs = $rs->search({ category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] } });
-            my ($p, $r);
-            while ( my $cur = $rs->next ) {
-                next unless $self->waste_is_dd_payment($cur);
-                my $sub_type = $cur->get_extra_field_value('Subscription_Type') || '';
-                if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    $p = $cur;
-                } elsif ( $cur->category eq 'Cancel Garden Subscription' ) {
-                    if ( $cur->state eq 'unconfirmed' ) {
-                        $r = $cur;
-                    # already processed
-                    } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
-                        next RECORD;
-                    }
-                }
-            }
-            if ( $r ) {
-                my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
-                # if there's not a service then it's fine as it's already been cancelled
-                if ( $service ) {
-                    $r->set_extra_metadata('dd_date', $date);
-                    $r->confirm;
-                    $r->update;
-                # there's no service but we don't want to be processing the report all the time.
-                } else {
-                    $r->state('hidden');
-                    $r->update;
-                }
-                # regardless this has been handled so no need to alert on it.
-                $handled = 1;
-            } elsif ( $p ) {
-                my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
-                unless ($service) {
-                    warn "no matching service to cancel for $payer\n";
-                    next;
-                }
-                my $cancel = _duplicate_waste_report($p, 'Cancel Garden Subscription', {
-                    service_id => 545,
-                    uprn => $uprn,
-                    Container_Instruction_Action => $self->waste_container_actions->{remove},
-                    Container_Instruction_Container_Type => 44,
-                    Container_Instruction_Quantity => $self->waste_get_sub_quantity($service),
-                    LastPayMethod => $self->bin_payment_types->{direct_debit},
-                    PaymentCode => $payer,
-                } );
-                $cancel->set_extra_metadata('dd_date', $date);
-                $cancel->confirm;
-                $cancel->insert;
                 $handled = 1;
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
@@ -1589,6 +1485,13 @@ sub waste_reconcile_direct_debits {
             warn "no matching record found for $category payment with id $payer\n";
         }
     }
+
+    # There's two options with a cancel payment. If the user has cancelled it outside of
+    # WasteWorks then we need to find the original sub and generate a new cancel subscription
+    # report.
+    #
+    # If it's been cancelled inside WasteWorks then we'll have an unconfirmed cancel report
+    # which we need to confirm.
 
     my $cancelled = $i->get_cancelled_payers({
         start => $start,
