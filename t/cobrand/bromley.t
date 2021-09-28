@@ -26,7 +26,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 });
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
-    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect'] });
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
 $staffuser->add_to_roles($role);
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -115,6 +115,39 @@ subtest 'Check updates not sent for staff with no text' => sub {
     $comment->discard_changes;
     is $comment->send_fail_count, 0, "comment sending not attempted";
     is $comment->get_extra_metadata('cobrand_skipped_sending'), 1, "skipped sending comment";
+};
+
+subtest 'Updates from staff with no text but with private comments are sent' => sub {
+    my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
+        problem_state => 'unable to fix',
+        problem_id => $report->id,
+        user_id    => $staffuser->id,
+        name       => 'User',
+        mark_fixed => 'f',
+        text       => "",
+        state      => 'confirmed',
+        confirmed  => 'now()',
+        anonymous  => 'f',
+    } );
+    $comment->unset_extra_metadata('cobrand_skipped_sending');
+    $comment->set_extra_metadata(private_comments => 'This comment has secret notes');
+    $comment->update;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
+
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+
+        $comment->discard_changes;
+        ok $comment->whensent, "comment was sent";
+        ok !$comment->get_extra_metadata('cobrand_skipped_sending'), "didn't skip sending comment";
+
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        like $c->param('description'), qr/Private comments: This comment has secret notes/, 'private comments included in update description';
+    };
 };
 
 for my $test (
@@ -215,6 +248,50 @@ subtest 'test waste duplicate' => sub {
         });
     };
     is $report->state, 'duplicate', 'State updated';
+};
+
+subtest 'Private comments on updates are added to open311 description' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+    }, sub {
+        $report->comments->delete;
+
+        Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
+
+        $mech->log_out_ok;
+        $mech->log_in_ok($staffuser->email);
+        $mech->host('bromley.fixmystreet.com');
+
+        $mech->get_ok('/report/' . $report->id);
+
+        $mech->submit_form_ok( {
+                with_fields => {
+                    submit_update => 1,
+                    update => 'Test',
+                    private_comments => 'Secret update notes',
+                    fms_extra_title => 'DR',
+                    first_name => 'Bromley',
+                    last_name => 'Council',
+                },
+            },
+            'update form submitted'
+        );
+
+        is $report->comments->count, 1, 'comment was added';
+        my $comment = $report->comments->first;
+        is $comment->get_extra_metadata('private_comments'), 'Secret update notes', 'private comments saved to comment';
+
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+
+        $comment->discard_changes;
+        ok $comment->whensent, 'Comment marked as sent';
+        unlike $comment->text, qr/Private comments/, 'private comments not saved to update text';
+
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        like $c->param('description'), qr/Private comments: Secret update notes/, 'private comments included in update description';
+    };
 };
 
 for my $test (
