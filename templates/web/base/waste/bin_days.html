@@ -38,7 +38,7 @@
       <div class="govuk-warning-text__content">
           <span class="govuk-warning-text__assistive">Warning</span>
           <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is soon due for renewal.</h3>    
-          Avoid distruption to your service.
+          Avoid disruption to your service.
           [% IF ( unit.garden_due || unit.garden_overdue ) && unit.garden_payment != 'direct_debit' %]
           <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
             <input type="hidden" name="token" value="[% csrf_token %]">
