@@ -480,6 +480,16 @@ sub contact_email {
     return $self->feature('contact_email') || $self->next::method();
 }
 
+sub do_not_reply_email {
+    my $self = shift;
+    return $self->feature('do_not_reply_email') || $self->next::method();
+}
+
+sub verp_email_domain {
+    my $self = shift;
+    return $self->feature('verp_email_domain');
+}
+
 # Allow cobrands to disallow updates on some things.
 # Note this only ever locks down more than the default.
 sub updates_disallowed {

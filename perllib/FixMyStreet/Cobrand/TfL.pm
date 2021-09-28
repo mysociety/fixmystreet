@@ -68,8 +68,6 @@ sub get_geocoder { 'OSM' }
 
 sub category_change_force_resend { 1 }
 
-sub do_not_reply_email { shift->feature('do_not_reply_email') }
-
 sub area_check {
     my ( $self, $params, $context ) = @_;
 
