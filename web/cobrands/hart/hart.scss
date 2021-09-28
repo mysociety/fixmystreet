@@ -24,7 +24,7 @@
 
 
 h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; }
-body { color: #333; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
+body { color: #000; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
 
 /* -------- For Google translate select box only */
 .header-nav div#google_translate_element .goog-te-gadget { font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif;    }
@@ -45,34 +45,6 @@ body { color: #333; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica 
 }
 .sign-in a:link, .sign-in a:visited {color:#333; font-weight:bold; text-decoration:none;}
 .sign-in a:hover, .sign-in a:active {text-decoration:underline;}
-
-.nav-menu--main {
-    font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif;
-    a {
-        &:link, &:visited {
-            color: $hart_primary;
-        }
-        &:hover {
-            background-color: $hart_primary;
-            color: #FFF;
-        }
-    }
-    span { display: none }
-}
-
-#front-main {
-  background-color: #FFF;
-
-  #front-main-container {
-    padding-bottom: 1em;
-  }
-}
-
-#postcode-intro {
-  background-color: #FFF;
-  color: $hart_primary;
-  padding-bottom: 1em;
-}
 
 .content,
 body.frontpage .table-cell .content {

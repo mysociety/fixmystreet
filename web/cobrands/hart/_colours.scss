@@ -11,21 +11,21 @@ $primary_text: #ffffff;
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
 
-$link-color: #369;
-$link-hover-color: #369;
+$link-color: #0077cc;
+$link-hover-color: #003078;
 
 $base_bg: #ffffff;
 $base_fg: #1a1a1a;
 
-/* Unused here */
-$nav_colour: #fff;
-$nav_hover_background_colour: #444;
+$nav_colour: $link-color;
+$nav_background_colour: #fff;
+$nav_hover_background_colour: #fff;
 
 $nav_background_colour: $primary;
-$mappage-header-height: 173px + 32px;
+$mappage-header-height: 165px + 40px; // green header plus white nav-wrapper
 $header-top-border: false;
 
-$container-max-width: 60em;
+$container-max-width: 80em;
 
 $search-help-background: #fff3f3;
 $search-help-header-font-size-desktop: 1.25em;
