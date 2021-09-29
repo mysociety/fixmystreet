@@ -82,7 +82,7 @@ has_field current_bins => (
 
 has_field bins_wanted => (
     type => 'Integer',
-    label => 'Number of bins to collect (including bins already on site)',
+    label => 'Number of bins to be emptied (including bins already on site)',
     tags => { number => 1 },
     required => 1,
     range_start => 1,
