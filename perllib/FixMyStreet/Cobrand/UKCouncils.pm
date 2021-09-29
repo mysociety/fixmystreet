@@ -51,10 +51,10 @@ sub restriction {
 }
 
 # UK cobrands assume that each MapIt area ID maps both ways with one
-# body. Except TfL and Highways England.
+# body. Except TfL and National Highways.
 sub body {
     my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'Highways England', 'Environment Agency'] } })->first;
+    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'National Highways', 'Environment Agency'] } })->first;
     return $body;
 }
 
@@ -242,7 +242,7 @@ sub owns_problem {
         @bodies = values %{$report->bodies};
     }
     # Want to ignore the TfL body that covers London councils, and HE that is all England
-    my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|Highways England/ } @bodies;
+    my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|National Highways/ } @bodies;
     return $areas{$self->council_area_id} ? 1 : undef;
 }
 
@@ -322,13 +322,13 @@ sub munge_report_new_bodies {
         $tfl->munge_surrounding_london($bodies);
     }
 
-    if ( $bodies{'Highways England'} ) {
+    if ( $bodies{'National Highways'} ) {
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
         if (!$on_he_road) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
+            %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
         }
     }
 

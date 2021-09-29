@@ -23,7 +23,7 @@ for my $body (
     { area_id => 2227, name => 'Hampshire County Council' },
     { area_id => 2333, name => 'Hart Council' },
     { area_id => 2535, name => 'Sandwell Borough Council' },
-    { area_id => 1000, name => 'Highways England' },
+    { area_id => 1000, name => 'National Highways' },
     { area_id => 2483, name => 'Hounslow Borough Council' },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
@@ -504,10 +504,10 @@ foreach my $test (
         email_count => 1,
     },
     {
-        desc => "test single_body_only with Highways England",
+        desc => "test single_body_only with National Highways",
         category => 'Street lighting',
         councils => [ 1000 ],
-        extra_fields => { single_body_only => 'Highways England' },
+        extra_fields => { single_body_only => 'National Highways' },
         email_count => 1,
     },
 ) {

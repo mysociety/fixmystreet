@@ -28,7 +28,7 @@ sub disambiguate_location {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    return $rs->search( { 'body.name' => [ $self->council_name, 'Highways England' ] } );
+    return $rs->search( { 'body.name' => [ $self->council_name, 'National Highways' ] } );
 }
 
 sub send_questionnaires { 0 }

@@ -229,7 +229,7 @@ sub cobrand_name {
     # Bromley Council" when making a report within Westminster on the TfL
     # cobrand.
     # If the current body is TfL then we always want to show TfL as the cobrand name.
-    return $self->name if $self->name eq 'TfL' || $self->name eq 'Highways England' || $self->name eq 'Environment Agency';
+    return $self->name if $self->name eq 'TfL' || $self->name eq 'National Highways' || $self->name eq 'Environment Agency';
 
     my $handler = $self->get_cobrand_handler;
     if ($handler && $handler->can('council_name')) {

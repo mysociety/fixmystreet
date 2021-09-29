@@ -125,13 +125,13 @@ sub munge_report_new_bodies {
         $tfl->munge_surrounding_london($bodies);
     }
 
-    if ( $bodies{'Highways England'} ) {
+    if ( $bodies{'National Highways'} ) {
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
         if (!$on_he_road) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
+            %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
         }
     }
 }

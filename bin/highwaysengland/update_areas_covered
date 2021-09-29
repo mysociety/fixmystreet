@@ -41,8 +41,8 @@ if (!$opt->commit) {
     say colored("NOT COMMITTING TO DATABASE", 'cyan');
 }
 
-my $body = FixMyStreet::DB->resultset('Body')->find({ name => 'Highways England' });
-die "Highways England not found\n" unless $body;
+my $body = FixMyStreet::DB->resultset('Body')->find({ name => 'National Highways' });
+die "National Highways not found\n" unless $body;
 
 for my $area ( values %{ $areas } ) {
     next unless $area->{country} eq 'E';

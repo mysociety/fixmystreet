@@ -1,4 +1,4 @@
-describe('Highways England cobrand tests', function() {
+describe('National Highways cobrand tests', function() {
     beforeEach(function() {
         cy.server();
         cy.route('POST', '**/mapserver/highways', 'fixture:highways.xml').as('highways-tilma');
@@ -28,7 +28,7 @@ describe('Highways England cobrand tests', function() {
     });
 });
 
-describe('Highways England cobrand mobile tests', function() {
+describe('National Highways cobrand mobile tests', function() {
     it('does not allow reporting on DBFO roads on mobile either', function() {
         cy.server();
         cy.route('POST', '**/mapserver/highways', 'fixture:highways.xml').as('highways-tilma');

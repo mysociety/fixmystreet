@@ -1128,7 +1128,7 @@ sub process_report : Private {
                 my $body = $c->model('DB::Body')->search({ name => $single_body_only })->first;
                 if ($body) {
                     # Drop the contacts down to those in this body
-                    # (potentially none for e.g. Highways England)
+                    # (potentially none for e.g. National Highways)
                     # so that set_report_extras doesn't error when
                     # there are 'missing' extra fields
                     @contacts = grep { $_->body->id == $body->id } @contacts;

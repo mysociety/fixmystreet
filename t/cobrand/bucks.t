@@ -152,7 +152,7 @@ subtest 'Flytipping not on a road going to HE does not get recategorised' => sub
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
     $mech->submit_form_ok({
         with_fields => {
-            single_body_only => 'Highways England',
+            single_body_only => 'National Highways',
             title => "Test Report",
             detail => 'Test report details.',
             category => 'Flytipping',

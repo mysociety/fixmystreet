@@ -27,7 +27,7 @@ var defaults = {
     min_resolution: 0.0001,
     srsName: "EPSG:3857",
     strategy_class: OpenLayers.Strategy.FixMyStreet,
-    body: 'Highways England'
+    body: 'National Highways'
 };
 
 fixmystreet.assets.add(defaults, {

@@ -75,9 +75,9 @@ fixmystreet.assets.add(defaults, {
             }
         },
         not_found: function(layer) {
-            if (fixmystreet.body_overrides.get_only_send() === 'Highways England') {
+            if (fixmystreet.body_overrides.get_only_send() === 'National Highways') {
                 fixmystreet.body_overrides.remove_only_send();
-                fixmystreet.body_overrides.do_not_send('Highways England');
+                fixmystreet.body_overrides.do_not_send('National Highways');
             }
             $('.js-reporting-page--highways').remove();
         }
@@ -87,14 +87,14 @@ fixmystreet.assets.add(defaults, {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    var he_input = $('#form_category_fieldset input[value*="Highways England"]');
+    var he_input = $('#form_category_fieldset input[value*="National Highways"]');
     if (he_flag) {
         he_input.prop('checked', true).trigger('change', [ 'no_event' ]);
         $('.js-reporting-page--category').addClass('js-reporting-page--skip');
     } else {
         $('.js-reporting-page--category').removeClass('js-reporting-page--skip');
         var old_category = $('#form_category_fieldset input:checked');
-        if (old_category.val() == 'Highways England') {
+        if (old_category.val() == 'National Highways') {
             old_category[0].checked = false;
         }
         he_input.parent('div').hide();
@@ -103,21 +103,21 @@ function regenerate_category(he_flag) {
 }
 
 function he_selected() {
-    fixmystreet.body_overrides.only_send('Highways England');
-    fixmystreet.body_overrides.allow_send('Highways England');
+    fixmystreet.body_overrides.only_send('National Highways');
+    fixmystreet.body_overrides.allow_send('National Highways');
     regenerate_category(true);
     $(fixmystreet).trigger('report_new:highways_change');
 }
 
 function non_he_selected() {
     fixmystreet.body_overrides.remove_only_send();
-    fixmystreet.body_overrides.do_not_send('Highways England');
+    fixmystreet.body_overrides.do_not_send('National Highways');
     regenerate_category(false);
     $(fixmystreet).trigger('report_new:highways_change');
 }
 
 function add_highways_warning(road_name) {
-  var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>Highways England</strong>. ' +
+  var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>National Highways</strong>. ' +
                    'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
   var $page = $('<div data-page-name="highwaysengland" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
   var $radios = $('<p class="segmented-control segmented-control--radio"></p>');

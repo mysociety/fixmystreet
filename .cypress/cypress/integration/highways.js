@@ -1,4 +1,4 @@
-describe('Highways England tests', function() {
+describe('National Highways tests', function() {
     it('report as defaults to body', function() {
         cy.server();
         cy.route('**/mapserver/highways*', 'fixture:highways.xml').as('highways-tilma');
@@ -13,10 +13,10 @@ describe('Highways England tests', function() {
         cy.wait('@highways-tilma');
 
         cy.get('#highways').should('contain', 'M6');
-        cy.get('#js-councils_text').should('contain', 'Highways England');
-        cy.get('#single_body_only').should('have.value', 'Highways England');
+        cy.get('#js-councils_text').should('contain', 'National Highways');
+        cy.get('#single_body_only').should('have.value', 'National Highways');
         cy.nextPageReporting();
-        cy.get('#subcategory_HighwaysEngland').should('be.visible');
+        cy.get('#subcategory_NationalHighways').should('be.visible');
         cy.go('back');
 
         cy.get('#js-not-highways').click();
@@ -24,13 +24,13 @@ describe('Highways England tests', function() {
         cy.get('#single_body_only').should('have.value', '');
         cy.nextPageReporting();
         cy.get('#form_category_fieldset').should('be.visible');
-        cy.get('#form_category_fieldset input[value="Highways England"]').should('not.be.visible');
+        cy.get('#form_category_fieldset input[value="National Highways"]').should('not.be.visible');
         cy.go('back');
 
         cy.get('#js-highways').click({ force: true });
-        cy.get('#js-councils_text').should('contain', 'Highways England');
-        cy.get('#single_body_only').should('have.value', 'Highways England');
+        cy.get('#js-councils_text').should('contain', 'National Highways');
+        cy.get('#single_body_only').should('have.value', 'National Highways');
         cy.nextPageReporting();
-        cy.get('#subcategory_HighwaysEngland label').contains('Sign issue').click();
+        cy.get('#subcategory_NationalHighways label').contains('Sign issue').click();
     });
 });

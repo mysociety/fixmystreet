@@ -20,7 +20,7 @@ has '+copyright' => ( default => sub {
     my $self = shift;
     my $year = 1900 + (localtime)[5];
     my $licence = $self->licence || '';
-    "Contains Highways England and OS data &copy; Crown copyright and database rights $year $licence";
+    "Contains National Highways and OS data &copy; Crown copyright and database rights $year $licence";
 });
 
 sub map_tiles {

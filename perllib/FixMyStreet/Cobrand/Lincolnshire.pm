@@ -57,7 +57,7 @@ sub categories_restriction {
     # Lincolnshire is a two-tier council, but don't want to display
     # all district-level categories on their cobrand - just a couple.
     return $rs->search( { -or => [
-        'body.name' => [ "Lincolnshire County Council", 'Highways England' ],
+        'body.name' => [ "Lincolnshire County Council", 'National Highways' ],
 
         # District categories:
         'me.category' => { -in => [

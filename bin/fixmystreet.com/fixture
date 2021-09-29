@@ -95,7 +95,7 @@ if ($opt->test_fixtures) {
     my $bodies;
 
     my $params = {
-        name => 'Highways England',
+        name => 'National Highways',
         area_id => 2608,
         categories => ['Fallen sign', 'Driver on phone']
     };

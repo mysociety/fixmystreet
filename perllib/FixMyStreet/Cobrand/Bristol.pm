@@ -51,7 +51,7 @@ sub categories_restriction {
     # cobrand, not the email categories from FMS.com. We've set up the
     # Email categories with a devolved send_method, so can identify Open311
     # categories as those which have a blank send_method.
-    # Also Highways England categories have a blank send_method.
+    # Also National Highways categories have a blank send_method.
     return $rs->search( { -or => [
         'me.send_method' => undef, # Open311 categories
         'me.send_method' => '', # Open311 categories that have been edited in the admin

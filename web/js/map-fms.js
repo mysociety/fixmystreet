@@ -33,14 +33,14 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         var in_gb = c ? this.in_gb(c) : true;
         var year = (new Date()).getFullYear();
         if (z >= 16 && in_gb) {
-            copyrights = 'Contains Highways England and Ordnance Survey data &copy; Crown copyright and database rights ' + year;
+            copyrights = 'Contains National Highways and Ordnance Survey data &copy; Crown copyright and database rights ' + year;
             if (fixmystreet.os_licence) {
                 copyrights += " " + fixmystreet.os_licence;
             }
         } else {
             logo = '<a href="https://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
             if (in_gb) {
-                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, Highways England, Ordnance Survey';
+                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, National Highways, Ordnance Survey';
             } else {
                 copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, Ordnance Survey';
             }

@@ -4,7 +4,7 @@ use parent 'FixMyStreet::Cobrand::UK';
 use strict;
 use warnings;
 
-sub council_name { 'Highways England' }
+sub council_name { 'National Highways' }
 
 sub council_url { 'highwaysengland' }
 
@@ -14,11 +14,11 @@ sub restriction { { cobrand => shift->moniker } }
 
 sub hide_areas_on_reports { 1 }
 
-sub all_reports_single_body { { name => 'Highways England' } }
+sub all_reports_single_body { { name => 'National Highways' } }
 
 sub body {
     my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->search({ name => 'Highways England' })->first;
+    my $body = FixMyStreet::DB->resultset('Body')->search({ name => 'National Highways' })->first;
     return $body;
 }
 
@@ -46,7 +46,7 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
-    return $user->from_body->name eq 'Highways England';
+    return $user->from_body->name eq 'National Highways';
 }
 
 sub report_form_extras {
@@ -90,7 +90,7 @@ sub allow_photo_upload { 0 }
 
 sub allow_anonymous_reports { 'button' }
 
-sub admin_user_domain { 'highwaysengland.co.uk' }
+sub admin_user_domain { ( 'highwaysengland.co.uk', 'nationalhighways.co.uk' ) }
 
 sub abuse_reports_only { 1 }
 
@@ -147,7 +147,7 @@ sub fetch_area_children {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
     # On the cobrand there is only the HE body
-    %$bodies = map { $_->id => $_ } grep { $_->name eq 'Highways England' } values %$bodies;
+    %$bodies = map { $_->id => $_ } grep { $_->name eq 'National Highways' } values %$bodies;
 }
 
 # Want to remove the group our categories are all in

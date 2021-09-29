@@ -110,7 +110,7 @@ sub base_url_for_report {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    $rs = $rs->search( { 'body.name' => [ 'TfL', 'Highways England' ] } );
+    $rs = $rs->search( { 'body.name' => [ 'TfL', 'National Highways' ] } );
     return $rs unless $self->{c}->stash->{categories_for_point}; # Admin page
     return $rs->search( { category => { -not_in => $self->_tfl_no_resend_categories } } );
 }
@@ -407,13 +407,13 @@ sub munge_report_new_contacts { }
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    # Highways England handling
+    # National Highways handling
     my $c = $self->{c};
     my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
     my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
     if (!$on_he_road) {
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Highways England' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
     }
     # Environment agency added with odour category for FixmyStreet
     # in all England areas, but should not show for cobrands

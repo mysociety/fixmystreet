@@ -1030,7 +1030,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   page_controller: function() {
-    // Delegation because e.g. Highways England button gets added
+    // Delegation because e.g. National Highways button gets added
     $('#problem_form, #form_update_form').on('click', '.js-reporting-page .js-reporting-page--next', function(e) {
         e.preventDefault();
         var v = $(this).closest('form').validate();
