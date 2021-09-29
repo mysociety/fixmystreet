@@ -1,10 +1,6 @@
 @import "_colours";
 @import "../sass/layout";
 
-#front-main-container {
-    background-color: $hart_primary;
-}
-
 body.twothirdswidthpage .content {
     .sticky-sidebar {
         aside {
@@ -17,117 +13,127 @@ body.twothirdswidthpage .content {
     display: none;
 }
 
-#site-header {
-    margin-bottom: 2em; // To push main content down under abs. pos menu
-}
-
 #site-logo {
-    margin-left: 2.25em;
-    border-bottom: solid 0.75em $primary;
     padding: 1em 0;
     background: url("/cobrands/hart/hart-logo.png") 0 50% no-repeat;
     width: 123px;
     height: 132px;
 }
 
-#main-nav--hart {
-    margin: 0;
-}
-
 // "Home | My Services | Residents" etc menu *in* the header
-.nav-menu--hart {
-  margin-left: 157px;
-  position: relative;
-  top: 110px;
-  float: none;
-  li {
-    text-align: center;
-    text-transform: uppercase;
-    padding: 0 15px;
-    font-size: 16px;
-    border-right: solid 1px white;
-    line-height: 1.5em;
-  }
-  li:last-child {
-    border-right: none;
-  }
-  a {
-    padding: 0;
-    font-size: inherit;
-  }
-  li:hover, li:hover a {
-    background-color: white;
-    color: black;
-    text-decoration: none;
-  }
-}
+.hart-header-menu {
+    @include list-reset-soft;
 
-// Menu *under* header - with a full width shadow first
-.container--hart {
-    box-shadow: 0 0 20px rgba(0,0,0,0.2); // shadow to add contrast with map
+    display: block;
+    left: 150px;
     position: absolute;
-    max-width: none;
-    padding: 0;
-    width: 100%;
+    top: 110px;
+    float: none;
+    
+    li {
+        float: left;
+        text-transform: uppercase;
+        border-right: solid 1px #000;
+        color: #000;
 
-    body.mappage & {
-        position: absolute; // rather than static
+        &:last-child {
+            border-right: none;
+        }
+    }
+    
+    a {
+        display: block;
+        padding: 5px 15px;
+        color: inherit;
+    }
+    
+    li:hover, li:hover a {
+        background-color: white;
+        text-decoration: none;
     }
 }
 
 #main-nav {
     min-height: 0;
     float: none;
-    margin: 11em auto 0; // To push it under header
     background-color: #fff;
     height: auto;
 
     // #main-nav acts a bit like a .container, so we give it the same max-width.
     max-width: $container-max-width;
 
-    // And, like other .containers, we remove the max-width on the map page.
     body.mappage & {
+        // And, like other .containers, we remove the max-width on the map page.
         max-width: none;
-    }
 
-    .ie9 & {
-        position: static;
-
-        & > * {
-            position: static;
-            -ms-transform: none;
-        }
+        position: absolute;
+        top: 165px;
+        box-shadow: 0 2px 4px rgba(#000, 0.2);
     }
 }
 
-// FixMyStreet "Report a problem | Sign in | All reports" etc menu
-.nav-menu--first {
-    padding: 0.25em 0;
-    float: none;
 
-    li {
-      float: left;
-      margin-left: 1em;
-      text-align: center;
+.nav-wrapper {
+    position: static;
+    margin-top: 0.5em;
+}
 
-      a, span {
-        padding: 0;
-        display: inline;
+.nav-menu {
+    a,
+    span,
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
         font-size: 1em;
-        color: #333;
-        background: #fff;
-      }
-
-      a {
-          &:link, &:visited {
-              color: $hart_primary;
-              text-decoration: none;
-          }
-          &:hover {
-              background-color: #fff;
-              color: $hart_primary;
-              text-decoration: underline;
-          }
-      }
+        line-height: 1em;
+        color: $link-color !important;
+        background-color: transparent !important;
+        cursor: pointer;
     }
+
+    a {
+        &:visited {
+            color: $link-color;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: transparent !important;
+            color: $link-hover-color !important;
+            text-decoration: underline;
+        }
+    }
+
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
+        padding: 0.75em;
+        margin: 0;
+        @include border-radius(0);
+    }
+}
+
+#front-main {
+    color: #000;
+    background: transparent;
+    padding: 0 1em;
+
+    a,
+    a:hover {
+        color: inherit;
+    }
+}
+
+#front-main-container {
+    background-color: $hart_primary;
+}
+
+#postcode-intro {
+    padding: 2em 0;
+}
+
+#front_stats big {
+    color: #000;
+}
+
+.big-green-banner {
+    background: $col_click_map inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
 }
