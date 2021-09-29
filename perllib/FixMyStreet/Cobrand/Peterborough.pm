@@ -885,6 +885,7 @@ sub waste_munge_enquiry_data {
             # For large bins, we need to raise a new bin request instead
             $service_id = "LARGE BIN";
             $category = 'Black 360L bin';
+            $category_verbose .= ", exchange bin";
         }
     }
 

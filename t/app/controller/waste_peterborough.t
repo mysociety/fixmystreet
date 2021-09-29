@@ -287,7 +287,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please leave your bin accessible');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '360L Black';
-        is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->detail, "The bin’s lid is damaged, exchange bin\n\n1 Pope Way, Peterborough, PE1 3NA";
         $b->mock('Premises_Attributes_Get', sub { [] });
     };
     subtest 'Report missed large bin' => sub {
