@@ -12,6 +12,13 @@ sub council_url { 'bexley' }
 sub get_geocoder { 'Bexley' }
 sub default_map_zoom { 4 }
 
+sub working_hours {
+    return {
+        start => 9,
+        end => 16,
+    };
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -224,7 +231,7 @@ sub open311_post_send {
     push @to, email_list($p1_email_to_use, 'Bexley P1 email') if $p1_email;
     push @to, email_list($emails->{lighting}, 'FixMyStreet Bexley Street Lighting') if $lighting{$row->category};
     push @to, email_list($emails->{flooding}, 'FixMyStreet Bexley Flooding') if $flooding{$row->category};
-    push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && _is_out_of_hours();
+    push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && $self->_is_out_of_hours();
     if ($contact->email =~ /^Uniform/) {
         push @to, email_list($emails->{eh}, 'FixMyStreet Bexley EH');
         $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
@@ -248,15 +255,6 @@ sub email_list {
     my @emails = split /,/, $emails;
     my @to = map { [ $_, $name ] } @emails;
     return @to;
-}
-
-sub _is_out_of_hours {
-    my $time = localtime;
-    return 1 if $time->hour > 16 || ($time->hour == 16 && $time->min >= 45);
-    return 1 if $time->hour < 8;
-    return 1 if $time->wday == 1 || $time->wday == 7;
-    return 1 if FixMyStreet::Cobrand::UK::is_public_holiday();
-    return 0;
 }
 
 sub update_anonymous_message {

@@ -341,11 +341,11 @@ EOF
     set_fixed_time('2019-10-16T12:00:00Z');
     is $cobrand->_is_out_of_hours(), 0, 'not out of hours in the day';
     set_fixed_time('2019-10-16T04:00:00Z');
-    is $cobrand->_is_out_of_hours(), 1, 'out of hours early in the morning';
+    like $cobrand->_is_out_of_hours(), qr/early/, 'out of hours early in the morning';
     set_fixed_time('2019-10-13T12:00:00Z');
-    is $cobrand->_is_out_of_hours(), 1, 'out of hours at weekends';
+    like $cobrand->_is_out_of_hours(), qr/non-work day/, 'out of hours at weekends';
     set_fixed_time('2019-12-25T12:00:00Z');
-    is $cobrand->_is_out_of_hours(), 1, 'out of hours on bank holiday';
+    like $cobrand->_is_out_of_hours(), qr/public holiday/, 'out of hours on bank holiday';
 };
 
 

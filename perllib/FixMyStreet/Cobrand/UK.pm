@@ -506,4 +506,23 @@ sub _fetch_url {
     $ua->get($url)->content;
 }
 
+sub _is_out_of_hours {
+    # args: opening hours & non-working / weekend days, whether to not
+    my ($self, $opening_hours, $non_working_days, $ignore_public_hols) = @_;
+    my (%hrs, @nwd);
+    %hrs = %$opening_hours if $opening_hours;
+    @nwd = @$non_working_days if $non_working_days;
+    $hrs{open}{h} //= 8;
+    $hrs{open}{m} //= 0;
+    $hrs{closed}{h} //= 16;
+    $hrs{closed}{m} //= 45;
+    @nwd or @nwd = (1,7);
+    my $time = localtime;
+    return 'ooh: late' if $time->hour > $hrs{closed}{h} || ($time->hour == $hrs{closed}{h} && $time->min >= $hrs{closed}{m});
+    return 'ooh: early' if $time->hour < $hrs{open}{h} || ($time->hour == $hrs{open}{h} && $time->min >= $hrs{open}{m});
+    return 'ooh: non-work day' if grep { $time->wday == $_ } @nwd;
+    return 'ooh: public holiday' if $self->is_public_holiday() && not $ignore_public_hols;
+    return 0;
+}
+
 1;
