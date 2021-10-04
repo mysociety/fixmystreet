@@ -57,6 +57,8 @@ var cleaning_cats = [
   'Play Area Safety Issue',
   'Street Sweeping',
   'Abandoned Vehicle',
+  'Abandoned Vehicles - Not Taxed',
+  'Abandoned Vehicles - Taxed'
 ];
 
 fixmystreet.assets.add(defaults, {
