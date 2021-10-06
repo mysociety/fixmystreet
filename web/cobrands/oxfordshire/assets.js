@@ -423,9 +423,7 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   attributes: {
     // feature_id
     unit_number: "title",
-    asset_resource_id: function() {
-      return this.fid;
-    }
+    asset_resource_id: "itemId"
   },
   select_action: true,
   feature_code: 'title',
