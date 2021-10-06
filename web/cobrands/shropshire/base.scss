@@ -1,0 +1,132 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+a:focus,
+.fake-link:focus,
+#nav-link.focussed {
+    outline: solid 3px $shropshire-yellow;
+}
+
+#site-header {
+    border-bottom: solid 3px $shropshire-dark-blue;
+}
+
+#site-logo {
+    width: 150px;
+    // height: 61px; // see below
+    background-size: 150px 45px;
+    background-image: url("/cobrands/shropshire/images/sc-logo-v3.png");
+
+    // text-indent doesn’t play nicely with focus outline,
+    // so use padding overflow trick instead
+    text-indent: 0;
+    height: 0;
+    padding-top: 61px;
+    overflow: hidden;
+}
+
+#report-cta {
+    border-color: #fff;
+}
+
+#front-main {
+    text-align: left;
+
+    #postcodeForm {
+        background: transparent;
+
+        div {
+            border: none;
+            background: transparent;
+
+            input#pc {
+                @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+                font-size: 1.25em;
+            }
+
+            input#sub {
+                @include shropshire-button-primary();
+                font-size: 1.25em;
+            }
+        }
+    }
+
+    h2 {
+        font-style: inherit;
+    }
+}
+
+a#geolocate_link {
+    @include shropshire-button-secondary();
+}
+
+h1 {
+    color: $shropshire-mid-grey;
+    font-size: 2em;
+    line-height: 1.25em;
+    font-weight: bold;
+}
+
+label {
+    @include shropshire-form-label();
+}
+
+.form-control {
+    @include shropshire-form-input();
+
+    .form-txt-submit-box & {
+        margin: 0 0 0.5em 0;
+    }
+}
+
+input.form-error,
+textarea.form-error {
+    background: #FBE3E4;
+    border: 1px solid #FBC2C4;
+    border-radius: 4px;
+}
+
+div.form-error,
+p.form-error {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+
+    color: #8A1F11;
+    font-weight: 700;
+}
+
+.dropzone {
+    padding: 1.5em;
+}
+
+.btn,
+.green-btn {
+    @include shropshire-button-primary();
+}
+
+#front_stats {
+    color: $shropshire-blue;
+    background: transparent;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    aside {
+        margin: 1em 0 2em 0;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.5em;
+    }
+
+    li {
+        margin: 0 0.5em;
+    }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
