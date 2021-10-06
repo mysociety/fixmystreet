@@ -156,9 +156,7 @@ var hackney_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   non_interactive: false,
   body: "Hackney Council",
   attributes: {
-    asset_resource_id: function() {
-      return this.fid;
-    }
+    asset_resource_id: "itemId"
   }
 });
 

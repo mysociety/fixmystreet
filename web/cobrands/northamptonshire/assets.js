@@ -143,9 +143,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   non_interactive: false,
   body: "Northamptonshire Highways",
   attributes: {
-    asset_resource_id: function() {
-      return this.fid;
-    }
+    asset_resource_id: "itemId"
   },
   select_action: true,
   actions: {
