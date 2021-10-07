@@ -8,18 +8,20 @@
           <a href="[% photo.url_full %]" rel="fancy">
               <img alt="Photo of this report" src="[% photo.url %]">
           <span>zoom</span></a>
+        [% IF can_moderate %]
           <p class="moderate-edit">
             <label>
               <input type="checkbox" name="[% object.text ? 'update' : 'problem' %]_photo_[% loop.index %]" checked>
               [% loc('Show photo') %]
             </label>
           </p>
-        [% SET unique_id = 'canvas_' _ (object.text ? 'update' : 'problem') _ '_' _ object.id _ '_' _ loop.index ~%]
+          [% SET unique_id = 'canvas_' _ (object.text ? 'update' : 'problem') _ '_' _ object.id _ '_' _ loop.index ~%]
           <input type="hidden" name="redact_[% loop.index %]" id="[% unique_id %]_redact">
           <input type="hidden" name="size_[% loop.index %]" id="[% unique_id %]_size">
           <p class="moderate-edit">
             <a rel="fancy_moderation" href="[% photo.url_temp_full %]" id="[% unique_id %]">[% loc('Redact') %]</a>
           </p>
+        [% END %]
       </div>
     [% END %]
   [% END %]
