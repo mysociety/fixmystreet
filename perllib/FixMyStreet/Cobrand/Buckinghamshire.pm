@@ -9,6 +9,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::BoroughEmails';
+use SUPER;
 
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
@@ -561,5 +562,21 @@ around 'munge_sendreport_params' => sub {
 
     $row->areas($original_areas);
 };
+
+sub council_rss_alert_options {
+    my ($self, @args) = @_;
+    my ($options) = super();
+
+    # rename old district councils to 'area' and remove 'ward' from their wards
+    # remove 'County' from Bucks Council name
+    for my $area (@$options) {
+        for my $key (qw(rss_text text)) {
+            $area->{$key} =~ s/District Council/area/ && $area->{$key} =~ s/ ward//;
+            $area->{$key} =~ s/ County//;
+        }
+    }
+
+    return ($options);
+}
 
 1;
