@@ -453,7 +453,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
 
     my $dt = DateTime->now()->add(days => 2);
 
-    my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
         dt => $dt,
         user => $user1,
         postcode           => 'EH1 1BB',
@@ -531,7 +531,7 @@ subtest "Test alerts are not sent for no-text updates" => sub {
     my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
     my $dt = DateTime->now()->add(days => 2);
 
-    my ($report, $report2) = $mech->create_problems_for_body(2, 1, 'Testing', {
+    my ($report, $report2) = $mech->create_problems_for_body(2, $body->id, 'Testing', {
         user => $user1,
     });
     my $report_id = $report->id;
@@ -579,23 +579,28 @@ subtest "Test no marked as confirmed added to alerts" => sub {
     my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
     my $dt = DateTime->now()->add(days => 2);
 
-    my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
+    my ($report1, $report2) = $mech->create_problems_for_body(2, $body->id, 'Testing', {
         user => $user1,
         state => 'investigating',
     });
-    my $report_id = $report->id;
-    ok $report, "created test report - $report_id";
+    my $report_id = $report1->id;
+    ok $report1, "created test reports - $report_id";
 
-    my $alert = FixMyStreet::DB->resultset('Alert')->create( {
+    my $alert1 = FixMyStreet::DB->resultset('Alert')->create( {
         parameter  => $report_id,
         alert_type => 'new_updates',
         user       => $user2,
     } )->confirm;
-    ok $alert, 'created alert for other user';
+    my $alert2 = FixMyStreet::DB->resultset('Alert')->create( {
+        parameter  => $report2->id,
+        alert_type => 'new_updates',
+        user       => $user2,
+    } )->confirm;
 
-    $mech->create_comment_for_problem($report, $user3, 'Staff User', 'this is update', 'f', 'confirmed', 'confirmed', { confirmed  => $dt->clone->add( hours => 9 ) });
-    $mech->create_comment_for_problem($report, $user3, 'Staff User', 'this is another update', 'f', 'confirmed', 'investigating', { confirmed  => $dt->clone->add( hours => 10 ) });
-    $mech->create_comment_for_problem($report, $user3, 'Staff User', 'this is a third update, same state', 'f', 'confirmed', 'investigating', { confirmed  => $dt->clone->add( hours => 11 ) });
+    $mech->create_comment_for_problem($report1, $user3, 'Staff User', 'this is update', 'f', 'confirmed', 'confirmed', { confirmed  => $dt->clone->add( hours => 9 ) });
+    $mech->create_comment_for_problem($report1, $user3, 'Staff User', 'this is another update', 'f', 'confirmed', 'investigating', { confirmed  => $dt->clone->add( hours => 10 ) });
+    $mech->create_comment_for_problem($report1, $user3, 'Staff User', 'this is a third update, same state', 'f', 'confirmed', 'investigating', { confirmed  => $dt->clone->add( hours => 11 ) });
+    $mech->create_comment_for_problem($report2, $user3, 'Staff User', 'this is update', 'f', 'confirmed', 'confirmed', { confirmed  => $dt->clone->add( hours => 9 ) });
 
     $mech->clear_emails_ok;
     FixMyStreet::override_config {
@@ -604,14 +609,18 @@ subtest "Test no marked as confirmed added to alerts" => sub {
         FixMyStreet::Script::Alerts::send_updates();
     };
 
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
-    my $body = $mech->get_text_body_from_email($email);
+    $mech->email_count_is(2);
+    my @email = $mech->get_email;
+    my $body = $mech->get_text_body_from_email($email[0]);
     like $body, qr/The following updates have been left on this report:/, 'email is about updates to existing report';
     like $body, qr/Staff User/, 'Update comes from correct user';
     unlike $body, qr/State changed to: Open/s, 'no marked as confirmed text';
     like $body, qr/State changed to: Investigating/, 'mention of state change';
     unlike $body, qr/State changed to: Investigating.*State changed to: Investigating/s, 'only one mention of state change';
+    $body = $mech->get_text_body_from_email($email[1]);
+    like $body, qr/The following updates have been left on this report:/, 'email is about updates to existing report';
+    like $body, qr/Staff User/, 'Update comes from correct user';
+    unlike $body, qr/State changed to: Open/s, 'no marked as confirmed text';
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);
@@ -644,7 +653,7 @@ for my $test (
         my $user3 = $mech->create_user_ok('staff@example.com', name => 'Staff User', from_body => $gloucester );
         my $dt = DateTime->now()->add(days => 2);
 
-        my ($report) = $mech->create_problems_for_body(1, 1, 'Testing', {
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
             user => $user1,
         });
         my $report_id = $report->id;

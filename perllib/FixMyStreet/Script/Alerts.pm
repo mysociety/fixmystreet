@@ -109,6 +109,10 @@ sub send_alert_type {
             parameter => $row->{item_id},
         } );
 
+        if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
+            $last_problem_state = 'confirmed';
+        }
+
         # this is currently only for new_updates
         if ($row->{is_new_update}) {
             # this might throw up the odd false positive but only in cases where the
@@ -125,7 +129,6 @@ sub send_alert_type {
         }
 
         if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
-            $last_problem_state = '';
             _send_aggregated_alert(%data);
             %data = ( template => $alert_type->template, data => [], schema => $schema );
         }
