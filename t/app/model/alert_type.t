@@ -133,7 +133,7 @@ for my $test (
         $report->state( $test->{state} );
         $report->update;
 
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
 
         $mech->email_count_is( 2 );
         my @emails = $mech->get_email;
@@ -184,7 +184,7 @@ subtest "correct text for title after URL" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_other();
     };
 
     (my $title = $report->title) =~ s/ /\\s+/;
@@ -320,7 +320,7 @@ foreach my $test (
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            FixMyStreet::Script::Alerts::send();
+            FixMyStreet::Script::Alerts::send_other();
         };
 
         my $body = $mech->get_text_body_from_email;
@@ -432,7 +432,7 @@ subtest "check alerts from cobrand send main site url for alerts for different c
         BASE_URL => 'https://national.example.org',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_other();
 
         my $body = $mech->get_text_body_from_email;
 
@@ -468,7 +468,7 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
         }
     )->delete;
 
-    FixMyStreet::Script::Alerts::send();
+    FixMyStreet::Script::Alerts::send_local();
 
     my $body = $mech->get_text_body_from_email;
 
@@ -495,7 +495,7 @@ subtest "correct i18n-ed summary for state of closed" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
     };
 
     my $body = $mech->get_text_body_from_email;

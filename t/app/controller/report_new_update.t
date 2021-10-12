@@ -45,7 +45,7 @@ subtest "test report creation with initial auto-update" => sub {
     is $comment->external_id, 'auto-internal';
     is $comment->name, 'Glos Council';
 
-    FixMyStreet::Script::Alerts::send();
+    FixMyStreet::Script::Alerts::send_updates();
     my $email = $mech->get_email;
 };
 

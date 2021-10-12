@@ -203,7 +203,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_contains('Investigation complete');
 
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);

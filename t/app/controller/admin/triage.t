@@ -140,7 +140,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report triaged from Potholes to Traffic lights');
 
         $mech->clear_emails_ok;
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
         $mech->email_count_is(0);
     };
 };

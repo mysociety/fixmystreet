@@ -80,7 +80,7 @@ my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create({
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixamingata' ],
 }, sub {
-    FixMyStreet::Script::Alerts::send();
+    FixMyStreet::Script::Alerts::send_updates();
 };
 
 $email = $mech->get_email;

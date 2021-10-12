@@ -402,7 +402,7 @@ subtest "sends branded alert emails" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => ['isleofwight','fixmystreet'],
     }, sub {
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
     };
 
     $mech->email_count_is(1);

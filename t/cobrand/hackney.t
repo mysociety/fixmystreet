@@ -156,7 +156,7 @@ subtest "sends branded alert emails" => sub {
             govuk_notify => { hackney => { key => 'test-0123456789abcdefghijklmnopqrstuvwxyz-key-goes-here' } },
         },
     }, sub {
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
     };
 
     my $id = $p->id;

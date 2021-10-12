@@ -17,6 +17,7 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
+use Getopt::Long::Descriptive;
 use CronFns;
 
 use FixMyStreet;
@@ -25,5 +26,16 @@ use FixMyStreet::Script::Alerts;
 my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
-FixMyStreet::Script::Alerts::send();
+my ($opts, $usage) = describe_options(
+    '%c %o - if no subgroup picked, all will be sent',
+    ['updates|u', 'send report update alerts'],
+    ['local|l', 'send non-radius-based local alerts'],
+    ['radius|r', 'send radius-based local alerts'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
 
+my $any = $opts->updates || $opts->local || $opts->radius;
+FixMyStreet::Script::Alerts::send_updates() if $opts->updates || !$any;
+FixMyStreet::Script::Alerts::send_other() if $opts->local || !$any;
+FixMyStreet::Script::Alerts::send_local() if $opts->radius || !$any;

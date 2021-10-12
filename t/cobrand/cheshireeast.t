@@ -123,7 +123,7 @@ FixMyStreet::override_config {
     subtest 'testing reference numbers shown' => sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Council ref:&nbsp;' . $report->id);
-        FixMyStreet::Script::Alerts::send();
+        FixMyStreet::Script::Alerts::send_updates();
         like $mech->get_text_body_from_email, qr/reference number is @{[$report->id]}/;
     };
 
