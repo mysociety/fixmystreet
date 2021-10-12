@@ -248,6 +248,9 @@ subtest 'staff-only categories when reporting' => sub {
         $mech->get_ok('/admin/templates/' . $body_ids{2651} . '/new');
         $mech->content_contains('Trees');
 
+        $mech->get_ok('/reports/City+of+Edinburgh');
+        $mech->content_contains('<option value="Trees">');
+
         my $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
         is_deeply [ sort keys %{$extra_details->{by_category}} ], [ 'Street lighting', 'Trees' ], 'Superuser can see staff-only category';
 

@@ -331,6 +331,8 @@ subtest 'check category, status and extra filtering works on /around' => sub {
     is scalar @$pins, 1, 'correct number of external_body reports';
 };
 
+my $district = $mech->create_body_ok(2421, "Oxford City");
+
 subtest 'check categories with same name are only shown once in filters' => sub {
     my $params = {
         postcode  => 'OX20 1SZ',
@@ -340,7 +342,6 @@ subtest 'check categories with same name are only shown once in filters' => sub 
     my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
 
-    my $district = $mech->create_body_ok(2421, "Oxford City");
     # Identically-named categories should be combined even if their extra metadata is different
     my $contact2 = $mech->create_contact_ok( category => "Pothole", body_id => $district->id, email => 'pothole@district-example.org' );
     $contact2->set_extra_metadata(some_extra_field => "dummy");
@@ -359,6 +360,36 @@ subtest 'check categories with same name are only shown once in filters' => sub 
         $mech->content_contains('<option value="Pothole">');
         $mech->content_unlike(qr{Pothole</option>.*<option value="Pothole">\s*Pothole</option>}s, "Pothole category only appears once");
         $mech->content_lacks('<option value="Pothole (alternative)">');
+    };
+};
+
+subtest 'check staff categories shown appropriately in filter' => sub {
+    my $params = {
+        postcode  => 'OX20 1SZ',
+        latitude  => 51.754926,
+        longitude => -1.256179,
+    };
+    my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
+                . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
+
+    $mech->create_contact_ok( category => "Needles district", body_id => $district->id, email => 'needles@district.example.org', state => 'staff' );
+    $mech->create_contact_ok( category => "Needles county", body_id => $body->id, email => 'needles@county.example.org', state => 'staff' );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => { category_groups => { fixmystreet => 1 } },
+    }, sub {
+        $mech->get_ok( '/around?bbox=' . $bbox );
+        $mech->content_lacks('<option value="Needles district">');
+        $mech->content_lacks('<option value="Needles county">');
+        my $user = $mech->log_in_ok( 'test@example.com' );
+        $user->update({ from_body => $district });
+        $user->user_body_permissions->find_or_create({ body => $district, permission_type => 'report_mark_private' });
+        $mech->get_ok( '/around?bbox=' . $bbox );
+        $mech->content_contains('<option value="Needles district">');
+        $mech->content_lacks('<option value="Needles county">');
+        $mech->log_out_ok;
     };
 };
 

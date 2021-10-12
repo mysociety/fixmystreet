@@ -186,7 +186,13 @@ sub ward : Path : Args(2) {
 sub setup_categories :Private {
     my ($self, $c) = @_;
 
-    my @categories = $c->stash->{body}->contacts->not_deleted->search( undef, {
+    my $rs = $c->stash->{body}->contacts;
+    if ($c->user_exists && ($c->user->is_superuser || $c->user->from_body == $c->stash->{body}->id)) {
+        $rs = $rs->not_deleted_admin;
+    } else {
+        $rs = $rs->not_deleted;
+    }
+    my @categories = $rs->search( undef, {
         columns => [ 'id', 'category', 'extra', 'body_id', 'send_method' ],
         distinct => 1,
     } )->all_sorted;

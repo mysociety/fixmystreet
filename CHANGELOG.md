@@ -46,6 +46,7 @@
         - UK Councils no questionnaires for non-updating users
         - Script to export/import response templates, #3549
         - Include non-public report in front page search for staff. #3616
+        - Include staff categories in map filters for staff. #3616
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323

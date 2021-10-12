@@ -243,7 +243,31 @@ sub check_and_stash_category : Private {
     my $where = { body_id => [ keys %bodies ], };
     $c->cobrand->call_hook('munge_around_category_where', $where);
 
-    my @categories = $c->model('DB::Contact')->not_deleted->search(
+    my $rs = $c->model('DB::Contact');
+    if ($c->user_exists) {
+        if ($c->user->is_superuser) {
+            $rs = $rs->not_deleted_admin;
+        } elsif ($c->user->has_body_permission_to('report_inspect') ||
+                 $c->user->has_body_permission_to('report_mark_private')) {
+            $where = {
+                -or => [
+                    {
+                        body_id => [ keys %bodies ],
+                        state => { -not_in => [ "deleted", "staff" ] },
+                    },
+                    {
+                        body_id => $c->user->from_body->id,
+                        state => { -not_in => [ "deleted" ] },
+                    }
+                ],
+            };
+        } else {
+            $rs = $rs->not_deleted;
+        }
+    } else {
+        $rs = $rs->not_deleted;
+    }
+    my @categories = $rs->search(
         $where,
         {
             columns => [ 'category', 'extra' ],
