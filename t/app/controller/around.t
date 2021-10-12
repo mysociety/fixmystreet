@@ -127,8 +127,9 @@ subtest 'check lat/lng for Maidenhead code' => sub {
       "got expected location for Maidenhead code";
 };
 
-my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
-my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
+my $body_edin = $mech->create_body_ok(2651, 'City of Edinburgh Council');
+my $body_edin_id = $body_edin->id;
+my $body_west = $mech->create_body_ok(2504, 'Westminster City Council');
 
 my @edinburgh_problems = $mech->create_problems_for_body( 5, $body_edin_id, 'Around page', {
     postcode  => 'EH1 1BB',
@@ -153,6 +154,17 @@ subtest 'check lookup by reference does not show non_public reports' => sub {
     $mech->get_ok('/');
     $mech->submit_form_ok( { with_fields => { pc => $id } }, 'non_public ref');
     $mech->content_contains('Searching found no reports');
+};
+
+subtest '...unless staff' => sub {
+    my $user = $mech->log_in_ok( 'test@example.com' );
+    $user->update({ from_body => $body_edin });
+    $user->user_body_permissions->find_or_create({ body => $body_edin, permission_type => 'report_mark_private' });
+    my $id = $edinburgh_problems[0]->id;
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => $id } }, 'non_public ref');
+    is $mech->uri->path, "/report/$id", "redirects to correct report";
+    $mech->log_out_ok;
 };
 
 subtest 'check non public reports are not displayed on around page' => sub {
@@ -181,13 +193,11 @@ subtest 'check missing body message not shown when it does not need to be' => su
 
 for my $permission ( qw/ report_inspect report_mark_private/ ) {
     subtest "check non public reports are displayed on around page with $permission permission" => sub {
-        my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
-        my $body2 = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->user_body_permissions->delete();
-        $user->update({ from_body => $body });
+        $user->update({ from_body => $body_edin });
         $user->user_body_permissions->find_or_create({
-            body => $body,
+            body => $body_edin,
             permission_type => $permission,
         });
 
@@ -206,9 +216,9 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
             'problem marked public is not visible' );
 
         $user->user_body_permissions->delete();
-        $user->update({ from_body => $body2 });
+        $user->update({ from_body => $body_west });
         $user->user_body_permissions->find_or_create({
-            body => $body2,
+            body => $body_west,
             permission_type => $permission,
         });
 
@@ -229,16 +239,15 @@ for my $permission ( qw/ report_inspect report_mark_private/ ) {
 }
 
 subtest 'check assigned-only list items do not display shortlist buttons' => sub {
-    my $body = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );
-    my $contact = $mech->create_contact_ok( category => 'Horses & Ponies', body_id => $body->id, email => "horses\@example.org" );
+    my $contact = $mech->create_contact_ok( category => 'Horses & Ponies', body_id => $body_edin->id, email => "horses\@example.org" );
     $edinburgh_problems[4]->update({ category => 'Horses & Ponies' });
 
     my $user = $mech->log_in_ok( 'test@example.com' );
     $user->set_extra_metadata(assigned_categories_only => 1);
     $user->user_body_permissions->delete();
     $user->set_extra_metadata(categories => [ $contact->id ]);
-    $user->update({ from_body => $body });
-    $user->user_body_permissions->find_or_create({ body => $body, permission_type => 'planned_reports' });
+    $user->update({ from_body => $body_edin });
+    $user->user_body_permissions->find_or_create({ body => $body_edin, permission_type => 'planned_reports' });
 
     $mech->get_ok('/around?pc=EH1+1BB');
     $mech->content_contains('shortlist-add-' . $edinburgh_problems[4]->id);
