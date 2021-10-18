@@ -29,4 +29,11 @@ sub enter_postcode_text { 'Enter a postcode, street name and area, or check an e
 
 sub admin_user_domain { 'merton.gov.uk' }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+}
+
 1;
