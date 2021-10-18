@@ -15,11 +15,11 @@
     [%~ IF c.user.from_body OR c.user.is_superuser %]
         ([% unit.report_locked_out %])
     [%~ END %], please call 01733 74 74 74 or email us at
-        <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.
-        Please note: we will not return to collect bins that have been recorded
-        by the crews as overweight, contaminated or bin not presented. For more
+        <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.<br />
+        <small>Please note: we will not return to collect bins that have been recorded
+        by the crew as overweight, contaminated or bin not presented. For more
         information please visit
-        <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice">https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice</a>
+        <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice">https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice</a></small>
       [%~ END ~%]
     </span>
   [% ELSIF unit.report_allowed %]
