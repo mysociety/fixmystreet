@@ -31,4 +31,11 @@ sub admin_user_domain { 'merton.gov.uk' }
 
 sub privacy_policy_url { "https://www.merton.gov.uk/legal/privacy-and-cookies" }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+}
+
 1;
