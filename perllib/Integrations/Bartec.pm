@@ -197,7 +197,7 @@ sub Jobs_Get {
             value => $end,
         },
     });
-    my $jobs = $res->{Jobs} || [];
+    my $jobs = force_arrayref($res, 'Jobs');
     @$jobs = sort { $a->{ScheduledDate} cmp $b->{ScheduledDate} } map { $_->{Job} } @$jobs;
     return $jobs;
 }
@@ -224,7 +224,7 @@ sub Jobs_FeatureScheduleDates_Get {
             value => $end,
         },
     });
-    return $res->{Jobs_FeatureScheduleDates} || [];
+    return force_arrayref($res, 'Jobs_FeatureScheduleDates');
 }
 
 sub Features_Schedules_Get {
@@ -232,7 +232,7 @@ sub Features_Schedules_Get {
     my $uprn = shift;
 
     # This SOAP call fails if the <Types> element is missing, so the [undef] forces an empty <Types /> element
-    return $self->call('Features_Schedules_Get', token => $self->token, UPRN => $uprn, Types => [undef])->{FeatureSchedule} || [];
+    return force_arrayref($self->call('Features_Schedules_Get', token => $self->token, UPRN => $uprn, Types => [undef]), 'FeatureSchedule');
 }
 
 sub ServiceRequests_Get {
