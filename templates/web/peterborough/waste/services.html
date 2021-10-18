@@ -9,7 +9,7 @@
       [%~ IF unit.report_locked_out == 'NO ACCESS - street' %]
         There is no need to report this as there was no access to your property, your collection has been rescheduled.
       [%~ ELSIF unit.report_locked_out == 'ON DAY PRE 5PM' %]
-        To report a missed [% unit.service_name FILTER lower %] please call 01733 74 74 74.
+        The crew may still be in the area so before 5pm on collection day, to report a missed [% unit.service_name FILTER lower %] please call 01733 74 74 74.
       [%~ ELSE %]
         There was a problem with your bin collection
     [%~ IF c.user.from_body OR c.user.is_superuser %]

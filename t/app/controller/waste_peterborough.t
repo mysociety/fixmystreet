@@ -99,11 +99,11 @@ FixMyStreet::override_config {
     subtest 'Check lock out conditions' => sub {
         set_fixed_time('2021-08-05T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('To report a missed recycling please call');
+        $mech->content_contains('to report a missed recycling please call');
 
         set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_lacks('To report a missed recycling please call');
+        $mech->content_lacks('to report a missed recycling please call');
 
         $b->mock('Premises_Events_Get', sub { [
             { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
