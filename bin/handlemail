@@ -166,8 +166,13 @@ sub handle_non_bounce_to_verp_address {
         print_log('info', "Received non-bounce for alert " . $object->id . ", forwarding to support");
         forward_on_to($bouncemgr);
     } elsif ($type eq 'report') {
-        print_log('info', "Received non-bounce for report " . $object->id . ", forwarding to report creator");
-        forward_on_to($object->user->email);
+        my $contributed_as = $object->get_extra_metadata('contributed_as') || '';
+        if ($contributed_as eq 'body' || $contributed_as eq 'anonymous_user') {
+            print_log('info', "Received non-bounce for report " . $object->id . " to anon report, dropping");
+        } else {
+            print_log('info', "Received non-bounce for report " . $object->id . ", forwarding to report creator");
+            forward_on_to($object->user->email);
+        }
     }
 }
 
