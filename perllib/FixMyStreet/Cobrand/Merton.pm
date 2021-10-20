@@ -49,4 +49,33 @@ sub reopening_disallowed {
     return 1;
 }
 
+sub open311_extra_data_include {
+    my ($self, $row, $h) = @_;
+
+    my $open311_only = [
+        { name => 'service', value => $row->service },
+    ];
+
+    # Reports made via FMS.com or the app probably won't have a USRN
+    # value because we don't access the USRN layer on those
+    # frontends. Instead we'll look up the closest asset from the WFS
+    # service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row, 'usrn')) {
+            $row->update_extra_field({ name => 'usrn', value => $usrn });
+        }
+    }
+
+    return $open311_only;
+}
+
+sub lookup_site_code_config { {
+    buffer => 50, # metres
+    url => FixMyStreet->config('STAGING_SITE') ? "https://tilma.staging.mysociety.org/mapserver/openusrn" : "https://tilma.mysociety.org/mapserver/openusrn",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => 'usrn',
+    property => "usrn",
+    accept_feature => sub { 1 },
+} }
+
 1;
