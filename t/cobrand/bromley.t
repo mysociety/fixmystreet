@@ -491,6 +491,9 @@ subtest 'category restrictions for roles restricts reporting categories for user
 
         $mech->content_contains('Potholes');
         $mech->content_lacks('Flytipping');
+
+        # TfL categories should always be displayed, regardless of role restrictions.
+        $mech->content_contains('Traffic Lights');
     };
 };
 
