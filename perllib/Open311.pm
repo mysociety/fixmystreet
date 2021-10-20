@@ -503,7 +503,6 @@ sub _request {
     my $path = shift;
     my $params = shift || {};
     my $uploads = shift;
-
     my $uri = URI->new( $self->endpoint );
     $uri->path( $uri->path . $path );
 
