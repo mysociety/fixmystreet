@@ -663,8 +663,10 @@ sub bin_services_for_address {
         };
         if ($row->{report_allowed}) {
             # If on the day, but before 5pm, show a special message to call
+            # (which is slightly different for staff, who are actually allowed to report)
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
-                $row->{report_allowed} = 0;
+                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
+                $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = "ON DAY PRE 5PM";
             }
             # But if it has been marked as locked out, show that
