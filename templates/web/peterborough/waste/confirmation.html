@@ -1,5 +1,11 @@
 [% SET bodyclass = 'waste' %]
 [%
+
+# We might be reaching this confirmation page from an email link, in which
+# case the first page of the wizard will be stored in the token, not available
+# in the stash.
+DEFAULT first_page = token_data.extra.first_page;
+
 IF first_page == 'request';
     title = 'Request sent';
 ELSIF first_page == 'report';
