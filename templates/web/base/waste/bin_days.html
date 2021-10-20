@@ -9,7 +9,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-[% SET any_report_allowed = 0 ~%]
+[% DEFAULT any_report_allowed = 0 ~%]
 [% SET any_request_allowed = 0 ~%]
 [% IF NOT waste_features.garden_disabled AND pending_subscription %]
     <p>You have a pending [% pending_subscription.title %]</p>

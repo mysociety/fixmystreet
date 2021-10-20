@@ -662,6 +662,11 @@ sub bin_services_for_address {
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         if ($row->{report_allowed}) {
+            # We only get here if we're within the 2.5 day window after the collection.
+            # Set this so missed food collections can always be reported, as they don't
+            # have their own collection event.
+            $self->{c}->stash->{any_report_allowed} = 1;
+
             # If on the day, but before 5pm, show a special message to call
             # (which is slightly different for staff, who are actually allowed to report)
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
@@ -698,6 +703,7 @@ sub bin_services_for_address {
         request_only => 1,
         report_only => 1,
     };
+
     # We want this one to always appear first
     unshift @out, {
         id => "_ALL_BINS",
