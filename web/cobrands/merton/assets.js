@@ -24,7 +24,7 @@ var defaults = {
 
 var tilma_defaults = $.extend(true, {}, defaults, {
     http_options: {
-        url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/merton" : "https://tilma.mysociety.org/mapserver/merton",
+        url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/openusrn" : "https://tilma.mysociety.org/mapserver/openusrn",
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -38,7 +38,7 @@ var tilma_defaults = $.extend(true, {}, defaults, {
 fixmystreet.assets.add(tilma_defaults, {
     http_options: {
         params: {
-            TYPENAME: "USRN"
+            TYPENAME: "usrn"
         }
     },
     nearest_radius: 2,
@@ -49,7 +49,7 @@ fixmystreet.assets.add(tilma_defaults, {
         attribute: 'Usrn',
         field: 'site_code'
     },
-    name: "USRN"
+    name: "usrn"
 });
 
 // This is required so that the found/not found actions are fired on category
