@@ -9,6 +9,7 @@ $societyworks-footer-logo-vertical-align: -5px !default;
 .societyworks-footer {
     padding: $societyworks-footer-padding;
     background: $societyworks-footer-background;
+    box-shadow: 0 1000px 0 1000px $societyworks-footer-background;
     color: $societyworks-footer-color;
 
     p {
