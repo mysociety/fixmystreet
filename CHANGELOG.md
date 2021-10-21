@@ -14,6 +14,7 @@
         - Update URL on /my when map moves. #3358
         - Make anonymous updates clearer in email alerts. #3417
         - Add Maidenhead Locator support to search box.
+        - Update RSS link when distance box changed. #3624
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.

@@ -1234,16 +1234,21 @@ $.extend(fixmystreet.set_up, {
   alert_page_buttons: function() {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
+    $('#distance').on('change', function() {
+        var dist = this.value;
+        if (!parseInt(dist)) {
+            return;
+        }
+        var a = $('a.js-alert-local');
+        if (!a.data('originalHref')) {
+            a.data('originalHref', a.attr('href'));
+        }
+        a.attr('href', a.data('originalHref') + '/' + dist);
+    });
     $('body').on('click', '#alert_rss_button', function(e) {
         e.preventDefault();
         var a = $('input[name=feed][type=radio]:checked').parent().prevAll('a');
         var feed = a.attr('href');
-        if (a.hasClass('js-alert-local')) {
-            var dist = $('#distance').val();
-            if (parseInt(dist)) {
-                feed += '/' + dist;
-            }
-        }
         window.location.href = feed;
     });
     $('body').on('click', '#alert_email_button', function(e) {
