@@ -38,9 +38,9 @@ describe('Staff user tests', function() {
         cy.url().should('include', '/around');
         cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
-        cy.pickCategory('Graffiti');
-        cy.get('[name=title]').should('have.value', 'A Graffiti problem has been found');
-        cy.get('[name=detail]').should('have.value', 'A Graffiti problem has been found by Borsetshire County Council');
+        cy.pickCategory('Graffiti (offensive)');
+        cy.get('[name=title]').should('have.value', 'A Graffiti (offensive) problem has been found');
+        cy.get('[name=detail]').should('have.value', 'A Graffiti (offensive) problem has been found by Borsetshire County Council');
         cy.cleanUpXHR();
     });
 });

@@ -458,7 +458,7 @@ $(fixmystreet).on('display:report', function() {
 
 $(fixmystreet).on('report_new:category_change', function() {
     var $this = $('#form_category_fieldset');
-    var category = fixmystreet.reporting.selectedCategory().category;
+    var category = fixmystreet.reporting.selectedCategory().category_display;
     if (!category) { return; }
     var prefill_reports = $this.data('prefill');
     var display_names = fixmystreet.reporting_data ? fixmystreet.reporting_data.display_names || {} : {};

@@ -15,6 +15,7 @@ describe('Basic categories', function() {
         'Flytipping',
         'Footpath/bridleway away from road',
         'Graffiti',
+        'Offensive graffiti',
         'Licensing',
         'Parks/landscapes',
         'Pavements',

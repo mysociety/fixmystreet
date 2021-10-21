@@ -1562,19 +1562,24 @@ fixmystreet.fetch_reporting_data = function() {
 
 fixmystreet.reporting = {};
 fixmystreet.reporting.selectedCategory = function() {
-    var group_or_cat = $('#form_category_fieldset input:checked').val() || '',
+    var $group_or_cat_input = $('#form_category_fieldset input:checked'),
+        group_or_cat = $group_or_cat_input.val() || '',
         group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
         $subcategory = $("#subcategory_" + group_id),
+        $subcategory_input = $subcategory.find('input:checked'),
         category,
+        category_display,
         group;
     if ($subcategory.length) {
-        category = $subcategory.find('input:checked').val() || '';
+        category = $subcategory_input.val() || '';
+        category_display = $subcategory_input.data('category_display') || '';
         group = group_or_cat;
     } else {
         category = group_or_cat;
+        category_display = $group_or_cat_input.data('category_display') || category;
         group = '';
     }
-    return { group: group, category: category };
+    return { group: group, category: category, category_display: category_display };
 };
 
 })(); // fetch_reporting_data closure
