@@ -512,7 +512,23 @@ sub munge_report_new_contacts {
     } else {
         @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
     }
+
     $self->SUPER::munge_report_new_contacts($categories);
+}
+
+sub munge_report_new_category_list {
+    my ($self, $category_options, $contacts) = @_;
+
+    my $user = $self->{c}->user;
+    if ($user && $user->belongs_to_body($self->body->id) && $user->get_extra_metadata('assigned_categories_only')) {
+        my %user_categories = map { $_ => 1} @{$user->categories};
+        my $non_bromley_or_assigned_category = sub {
+            $_->body_id != $self->body->id || $user_categories{$_->category}
+        };
+
+        @$category_options = grep &$non_bromley_or_assigned_category, @$category_options;
+        @$contacts = grep &$non_bromley_or_assigned_category, @$contacts;
+    }
 }
 
 sub updates_disallowed {

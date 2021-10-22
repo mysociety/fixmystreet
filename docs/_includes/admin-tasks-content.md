@@ -323,7 +323,7 @@ priority’ must be ticked</span>
 
 - You can click and drag a pin at any time to change the report’s specified location.
 - When viewing a report on the ground, staff with the appropriate permissions may click
-‘set to my current location’. This will reset the co-ordinates of the issue to reflect a more accurate placement. 
+‘set to my current location’. This will reset the co-ordinates of the issue to reflect a more accurate placement.
 
 </div>
 
@@ -533,6 +533,10 @@ The Administrator can allocate one or more categories of report (e.g. Potholes o
 maintenance) to a staff user by editing the user and checking the relevant category boxes. The
 staff user, when logged in, will then only see reports within those categories. This is useful where a
 staff user only deals with reports of a specific type.
+
+Roles can also have categories associated with them. This works in the same way as assigning categories
+to a user. You can assign categories to a role by editing the role and checking the relevant category
+boxes. Users will then only be able to see categories relevant to their role.
 
 #### Removing staff status from accounts
 

@@ -1,3 +1,4 @@
+[% RETURN IF problem.service == 'Open311' %]
 [% SET duration_clause = problem.duration_string %]
 [% IF duration_clause %]
     <p class="council_sent_info">[% duration_clause %]</p>

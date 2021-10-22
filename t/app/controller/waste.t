@@ -160,6 +160,19 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         is $email->header('Subject'), 'Confirm your report on Bromley Recycling Services';
         my $link = $mech->get_link_from_email($email);
+
+        # Peterborough uses first page of process (not report category) to display
+        # correct confirmation message so test that it's been stored in token.
+        my ($token_id) = $link =~ m{/P/(\S+)};
+        my $token = FixMyStreet::DB->resultset('Token')->find(
+            {
+                token => $token_id,
+                scope => 'problem'
+            }
+        );
+        ok $token, 'Token found in database';
+        is $token->data->{extra}->{first_page}, "report", 'token stored first_page correctly';
+
         $mech->clear_emails_ok;
         $mech->get_ok($link);
         $mech->content_contains('Your missed collection has been reported');

@@ -12,6 +12,7 @@ use Utils;
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
+with 'FixMyStreet::Roles::Open311Multi';
 
 sub council_area_id { 2566 }
 sub council_area { 'Peterborough' }
@@ -104,9 +105,6 @@ sub open311_munge_update_params {
 
     # Send the FMS problem ID with the update.
     $params->{service_request_id_ext} = $comment->problem->id;
-
-    my $contact = $comment->problem->contact;
-    $params->{service_code} = $contact->email;
 }
 
 around 'open311_config' => sub {
@@ -662,9 +660,16 @@ sub bin_services_for_address {
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         if ($row->{report_allowed}) {
+            # We only get here if we're within the 2.5 day window after the collection.
+            # Set this so missed food collections can always be reported, as they don't
+            # have their own collection event.
+            $self->{c}->stash->{any_report_allowed} = 1;
+
             # If on the day, but before 5pm, show a special message to call
+            # (which is slightly different for staff, who are actually allowed to report)
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
-                $row->{report_allowed} = 0;
+                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
+                $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = "ON DAY PRE 5PM";
             }
             # But if it has been marked as locked out, show that
@@ -696,6 +701,7 @@ sub bin_services_for_address {
         request_only => 1,
         report_only => 1,
     };
+
     # We want this one to always appear first
     unshift @out, {
         id => "_ALL_BINS",

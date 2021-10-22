@@ -32,7 +32,7 @@ disambiguate_location
 The results of this are used to provide a bounding box for reverse
 geolocation.
 
-There's a script in bin - generate_council_location that takes the
+There's a script in bin/fixmystreet.com - generate_council_location that takes the
 mapit area code for the council  as a argument and generates the 
 contents of the disambiguate_location hash.
 
