@@ -83,7 +83,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Heard from: Facebook/, 'where hear included in email';
         like $body, qr/Road: M1/, 'road data included in email';
-
+        like $body, qr/Area: Area 1/, 'area data included in email';
     };
 
     my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title');

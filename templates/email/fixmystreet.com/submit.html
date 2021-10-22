@@ -79,6 +79,12 @@ of a local problem that they believe might require your attention.</p>
         [% report.get_extra_field_value('sect_label') %]
     </p>
   [% END %]
+  [% IF report.get_extra_field_value('area_name') %]
+    <p style="[% secondary_p_style %]">
+      <strong>Area:</strong>
+        [% report.get_extra_field_value('area_name') %]
+    </p>
+  [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
