@@ -40,19 +40,16 @@ sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
     my $open311_only = [
-        { name => 'northing', value => $h->{northing} },
-        { name => 'easting', value => $h->{easting} },
-        { name => 'service', value => $h->{service} },
-        { name => 'USRN', value => $h->{USRN} },
+        { name => 'service', value => $h->{report}->{service} },
     ];
 
     # Reports made via FMS.com or the app probably won't have a USRN
     # value because we don't access the USRN layer on those
     # frontends. Instead we'll look up the closest asset from the WFS
     # service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('USRN')) {
-        if (my $usrn = $self->lookup_site_code($row, 'USRN')) {
-            $row->update_extra_field({ name => 'USRN', value => $usrn });
+    if (!$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row, 'usrn')) {
+            $row->update_extra_field({ name => 'usrn', value => $usrn });
         }
     }
 
