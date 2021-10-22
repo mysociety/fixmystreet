@@ -173,5 +173,4 @@ sub open311_post_send {
     $row->detail($h->{ce_original_detail});
 }
 
-
 1;

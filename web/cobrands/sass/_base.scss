@@ -2144,6 +2144,19 @@ img.pin {
   }
 }
 
+#map_sidebar .assignee {
+  font-weight: bold;
+}
+
+.admin #map_sidebar .assignee {
+  font-style: italic;
+  font-weight: normal;
+}
+
+div.assigned-to {
+    margin-top: 0.25em;
+}
+
 // When you're in the reporting flow on mobile, we make the map full screen to
 // reduce distractions. JavaScript also tweaks the text content of some of the
 // map-related elements, to make it more "app-like".

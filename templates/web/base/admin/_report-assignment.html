@@ -1,0 +1,11 @@
+[%  IF c.user.has_body_permission_to('report_inspect') OR c.user.has_body_permission_to('assign_report_to_user') %]
+    [%# see report's assigned user %]
+    <span>[% loc('Assigned to:') %]</span>
+    <span class="assignee">
+        [% IF problem.shortlisted_user %]
+            [% problem.shortlisted_user.name OR problem.shortlisted_user.username %]
+        [% ELSE %]
+            [% loc('(unassigned)') %]
+        [% END %]
+    </span>
+[% END %]

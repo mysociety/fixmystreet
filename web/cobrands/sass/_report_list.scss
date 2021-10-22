@@ -1,4 +1,4 @@
-.report-list-filters-wrapper {
+.report-list-filters-wrapper, #bulk-assign-form {
   color: #666;
 
   .mobile-filters-active & {
@@ -12,7 +12,7 @@
   }
 }
 
-.report-list-filters {
+.report-list-filters, #bulk-assign-form {
   padding: 1em;
   padding-bottom: 0.75em; // compensate for 0.25em border-top on .item-list__item
   margin-bottom: 0;
@@ -66,4 +66,32 @@
     line-height: 1.8em;
     vertical-align: top;
   }
+
+  .multi-select-button #bulk-assign-btn {
+    display: inline;
+  }
+
+  #bulk-assign-form {
+    padding-top: 0;
+  }
+
+  #inspector {
+    max-width: 40%;
+  }
+
+  #bulk-assign-btn {
+    width: 25%;
+    line-height: 1.7em;
+  }
+
+  #bulk-assign-btn::after {
+    content: none;
+  }
+
+}
+
+input.bulk-assign {
+    float: right;
+    margin: 2em;
+    transform: scale(2);
 }

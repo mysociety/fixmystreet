@@ -3,7 +3,7 @@
 %]
 
 [% BLOCK column %]
-    <ul class="item-list item-list--reports">
+    <ul class="item-list item-list--reports" data-user-name="[% c.user.name %]" data-user-email="[% c.user.email %]">
         [% IF problems %]
             [% FOREACH problem IN problems %]
                 [% INCLUDE 'reports/_list-entry.html' include_sentinfo = 1 include_lastupdate = 1 %]

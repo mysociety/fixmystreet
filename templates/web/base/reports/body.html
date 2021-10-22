@@ -71,6 +71,9 @@
 
 <section class="full-width">
 [% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+<div class="bulk-assignment-form">
+[% INCLUDE "reports/_bulk-assign.html" %]
+</div>
 <div class="js-pagination">
 [% INCLUDE 'pagination.html', param = 'p' %]
 </div>

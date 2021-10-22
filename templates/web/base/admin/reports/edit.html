@@ -131,6 +131,9 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label class="inline-text" for="category">[% loc('Category:') %]</label>
     [% INCLUDE 'admin/report-category.html' %]
 </li>
+<li>
+    [% INCLUDE 'admin/_report-assignment.html' %]
+</li>
 
 <li>[% loc('Extra data:') ~%]
     [%~ IF extra_fields.size ~%]
