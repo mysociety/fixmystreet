@@ -7,7 +7,7 @@ if (!fixmystreet.maps) {
 var defaults = {
     max_resolution: 4.777314267158508,
     srsName: "EPSG:27700",
-    body: "Merton Council",
+    body: "Merton Borough Council",
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 

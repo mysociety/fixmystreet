@@ -6,7 +6,7 @@ use warnings;
 
 sub council_area_id { 2500 }
 sub council_area { 'Merton' }
-sub council_name { 'Merton Borough Council' }
+sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
 sub send_questionnaires { 0 }
 
@@ -60,7 +60,7 @@ sub lookup_site_code_config { {
     buffer => 50, # metres
     url => FixMyStreet->config('STAGING_SITE') ? "https://tilma.staging.mysociety.org/mapserver/openusrn" : "https://tilma.mysociety.org/mapserver/openusrn",
 "https://tilma.staging.mysociety.org/mapserver/merton",
-    typename => 'openusrn',
+    typename => 'usrn',
     property => "usrn",
     accept_feature => sub { 1 },
 } }
