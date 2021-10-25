@@ -162,4 +162,20 @@ var hackney_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
 
 fixmystreet.alloy_add_layers(hackney_defaults, layers);
 
+var environment_layers = [
+  {
+    "categories": ["Gully"],
+    "item_name": "gully",
+    "layer_name": "Gullies",
+    "styleid": "5ea81c3eca31500e24de3b45",
+    "layerid": "layers_gullies_5ea81c09ca315000b0da4ffa"
+  },
+];
+var environment_defaults = $.extend(true, {}, hackney_defaults, {
+  http_options: {
+    base: base + "/resource-proxy/proxy.php?https://hackney-env.assets/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
+  },
+});
+fixmystreet.alloy_add_layers(environment_defaults, environment_layers);
+
 })();
