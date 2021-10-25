@@ -40,7 +40,7 @@ sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
     my $open311_only = [
-        { name => 'service', value => $h->{report}->{service} },
+        { name => 'service', value => $row->service },
     ];
 
     # Reports made via FMS.com or the app probably won't have a USRN
@@ -55,7 +55,6 @@ sub open311_extra_data_include {
 
     return $open311_only;
 }
-
 sub lookup_site_code_config { {
     buffer => 50, # metres
     url => "https://tilma.mysociety.org/mapserver/merton",
