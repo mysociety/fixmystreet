@@ -59,6 +59,7 @@ sub open311_extra_data_include {
 sub lookup_site_code_config { {
     buffer => 50, # metres
     url => FixMyStreet->config('STAGING_SITE') ? "https://tilma.staging.mysociety.org/mapserver/openusrn" : "https://tilma.mysociety.org/mapserver/openusrn",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
     typename => 'usrn',
     property => "usrn",
     accept_feature => sub { 1 },
