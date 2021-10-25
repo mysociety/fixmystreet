@@ -261,6 +261,13 @@ sub munge_sendreport_params {
     }
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 sub _split_emails {
     my ($self, $email) = @_;
 
@@ -331,7 +338,7 @@ sub update_email_shortlisted_user {
     my $c = $self->{c};
     my $cobrand = FixMyStreet::Cobrand::Hackney->new; # $self may be FMS
     return if $update->problem->cobrand_data eq 'noise' || !$update->problem->to_body_named('Hackney');
-    my $sent_to = $update->problem->get_extra_metadata('sent_to');
+    my $sent_to = $update->problem->get_extra_metadata('sent_to') || [];
     if (@$sent_to) {
         my @to = map { [ $_, $cobrand->council_name ] } @$sent_to;
         $c->send_email('alert-update.txt', {
