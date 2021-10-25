@@ -306,7 +306,7 @@ sub update_email_shortlisted_user {
     my $c = $self->{c};
     my $cobrand = FixMyStreet::Cobrand::Hackney->new; # $self may be FMS
     return if !$update->problem->to_body_named('Hackney');
-    my $sent_to = $update->problem->get_extra_metadata('sent_to');
+    my $sent_to = $update->problem->get_extra_metadata('sent_to') || [];
     if (@$sent_to) {
         my @to = map { [ $_, $cobrand->council_name ] } @$sent_to;
         $c->send_email('alert-update.txt', {
