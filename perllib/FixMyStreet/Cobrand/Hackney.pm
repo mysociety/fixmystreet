@@ -243,6 +243,13 @@ sub munge_sendreport_params {
     }
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 sub _split_emails {
     my ($self, $email) = @_;
 

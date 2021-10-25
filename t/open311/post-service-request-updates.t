@@ -127,25 +127,31 @@ subtest 'Processing things that do not need sending' => sub {
     is $c2->send_state, 'processed', 'Comment 2 marked as processed';
 };
 
-subtest 'Check Bexley munging' => sub {
-  FixMyStreet::override_config {
-    ALLOWED_COBRANDS => ['fixmystreet', 'bexley'],
-  }, sub {
-    my $bexley = $mech->create_body_ok(2494, 'Bexley', $params);
-    $mech->create_contact_ok(body_id => $bexley->id, category => 'Other', email => "OTHER");
+for my $test (
+  ['Bexley', 'bexley', 2494],
+  ['Hackney', 'hackney', 2508],
+) {
+  my ($name, $cobrand, $body_id) = @$test;
 
-    my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
-    my $o = Open311->new(
-        fixmystreet_body => $bexley,
-    );
-    Open311->_inject_response('servicerequestupdates.xml', $test_res);
-    my ($p5, $c5) = p_and_c($bexley);
-    my $id = $o->post_service_request_update($c5);
-    is $id, 248, 'correct update ID returned';
-    like $o->test_req_used->content, qr/service_code=OTHER/, 'Service code included';
+  subtest "Check $name munging" => sub {
+    FixMyStreet::override_config {
+      ALLOWED_COBRANDS => ['fixmystreet', $cobrand],
+    }, sub {
+      my $body = $mech->create_body_ok($body_id, $name, $params);
+      $mech->create_contact_ok(body_id => $body->id, category => 'Other', email => "OTHER");
+
+      my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
+      my $o = Open311->new(
+          fixmystreet_body => $body,
+      );
+      Open311->_inject_response('servicerequestupdates.xml', $test_res);
+      my ($p5, $c5) = p_and_c($body);
+      my $id = $o->post_service_request_update($c5);
+      is $id, 248, 'correct update ID returned';
+      like $o->test_req_used->content, qr/service_code=OTHER/, 'Service code included';
+    };
   };
-};
-
+}
 
 subtest 'Oxfordshire gets an ID' => sub {
   FixMyStreet::override_config {
