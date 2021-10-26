@@ -9,22 +9,41 @@ body {
 }
 
 .nav-menu--main {
-    span,
-    span:hover,
-    a.report-a-problem-btn,
-    a.report-a-problem-btn:hover,
-    span.report-a-problem-btn,
-    span.report-a-problem-btn:hover {
-        color: $nav_colour;
-    }
-
     // remove special styling for this nav item
     a.report-a-problem-btn {
-        padding: 0.75em;
         border-radius: 0;
         margin: 0;
 
         &:hover {
+            background-color: $nav_hover_background_colour;
+        }
+    }
+
+    a,
+    span,
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
+        padding: 0.5em 0.75em;
+
+        &, &:hover {
+            color: $nav_colour;
+        }
+    }
+
+    // underlines for clickable nav items
+    a,
+    a.report-a-problem-btn {
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    // darken background for selected nav item
+    span,
+    span.report-a-problem-btn {
+        &, &:hover {
             background-color: $nav_hover_background_colour;
         }
     }
