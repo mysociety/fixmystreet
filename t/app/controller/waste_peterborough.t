@@ -34,6 +34,7 @@ create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collec
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
 create_contact({ category => 'Lid', email => 'Bartec-236' }, 'Bin repairs');
+create_contact({ category => 'Wheels', email => 'Bartec-237' }, 'Bin repairs', { code => 'extra_detail', required => 0, datatype => 'text' });
 create_contact({ category => 'Black 360L bin', email => 'Bartec-422' }, 'Request new container');
 
 FixMyStreet::override_config {
@@ -232,6 +233,17 @@ FixMyStreet::override_config {
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 240L Green';
     };
+    subtest 'Report missed collection with extra text' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480/report');
+        $mech->submit_form_ok({ with_fields => { 'service-6534' => 1, extra_detail => 'This is the extra detail.' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Missed collection reported');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: This is the extra detail.";
+        is $report->title, 'Report missed 240L Green';
+    };
     subtest 'Report missed food bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
         $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
@@ -277,6 +289,20 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '240L Black';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+    };
+    subtest 'Report broken wheels' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+        $mech->submit_form_ok({ with_fields => { category => 'Wheels' } });
+        $mech->content_contains('name="extra_extra_detail" rows="5" maxlength="1000"');
+        $mech->submit_form_ok({ with_fields => { extra_extra_detail => 'Some extra detail' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_contains('The bin’s wheels are damaged');
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, '240L Black';
+        is $report->detail, "The bin’s wheels are damaged\n\n1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: Some extra detail";
     };
     subtest 'Report broken large bin' => sub {
         $b->mock('Premises_Attributes_Get', sub { [

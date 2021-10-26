@@ -706,6 +706,8 @@ sub construct_bin_report_form {
         };
     }
 
+    $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
+
     return $field_list;
 }
 
@@ -799,6 +801,7 @@ sub enquiry : Chained('property') : Args(0) {
             }
         },
     ];
+    $c->cobrand->call_hook("waste_munge_enquiry_form_fields", $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }

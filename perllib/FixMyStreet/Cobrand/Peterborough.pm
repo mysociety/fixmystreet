@@ -818,6 +818,20 @@ sub waste_munge_report_form_data {
     }
 }
 
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
+    };
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 
@@ -873,6 +887,10 @@ sub waste_munge_report_data {
         $data->{detail} = $c->stash->{property}->{address};
     }
 
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
+    }
+
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
 
@@ -901,9 +919,26 @@ sub waste_munge_enquiry_data {
     $data->{category} = $category;
     $data->{title} = $bin;
     $data->{detail} = $category_verbose . "\n\n" . $c->stash->{property}->{address};
+
+    if ( $data->{extra_extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_extra_detail};
+    }
 }
 
+sub waste_munge_enquiry_form_fields {
+    my ($self, $field_list) = @_;
 
+    # ConfirmValidation enforces a maxlength of 2000 on the overall report body.
+    # Limiting the fields at this point makes it less likely the user will
+    # see a validation error several steps after entering their text, at the
+    # confirmation step.
+    my %fields = @$field_list;
+    foreach (values %fields) {
+        if ($_->{type} eq 'TextArea')  {
+            $_->{maxlength} = 1000;
+        }
+    }
+}
 
 sub bin_request_form_extra_fields {
     my ($self, $service, $container_id, $field_list) = @_;

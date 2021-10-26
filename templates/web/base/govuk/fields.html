@@ -241,7 +241,7 @@
     </span>
   [% END %]
     <textarea class="govuk-textarea[% IF error %] govuk-textarea--error[% END %]" id="[% field.id %]"
-        name="[% field.html_name %]" rows="5"
+        name="[% field.html_name %]" rows="5" [% IF field.maxlength %]maxlength="[% field.maxlength %]"[% END %]
     [%~ IF field.get_tag('hint') OR error %]
         aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
     [%~ END %]>[% field.fif %]</textarea>
