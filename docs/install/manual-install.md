@@ -62,6 +62,7 @@ $ port install gettext p5-locale-gettext p5-perlmagick jhead postgresql91-server
 ##### ii. HomeBrew
 
 {% highlight bash %}
+$ brew tap davea/perlmagick
 $ brew install gettext perlmagick jhead postgresql
 $ brew link gettext --force
 {% endhighlight %}
