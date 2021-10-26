@@ -818,6 +818,16 @@ sub waste_munge_report_form_data {
     }
 }
 
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply additional information such as the location of the bin.',
+    };
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 
@@ -873,6 +883,10 @@ sub waste_munge_report_data {
         $data->{detail} = $c->stash->{property}->{address};
     }
 
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
+    }
+
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
 
@@ -901,6 +915,10 @@ sub waste_munge_enquiry_data {
     $data->{category} = $category;
     $data->{title} = $bin;
     $data->{detail} = $category_verbose . "\n\n" . $c->stash->{property}->{address};
+
+    if ( $data->{extra_extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_extra_detail};
+    }
 }
 
 
