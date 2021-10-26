@@ -129,4 +129,20 @@ body.twothirdswidthpage .content .sticky-sidebar {
     }
 }
 
+// As per Shropshire Website style guide
+.skiplink:focus {
+    border: 1px solid #FFFFFF;
+    background: #2C2C2C;
+    padding: 6px;
+    color: #FFFFFF;
+    min-width: 150px;
+    outline: none;
+    text-align: center;
+    border-radius: 6px;
+    box-shadow: 2px 2px 5px #5F5F5F;
+
+    top: 0.5em;
+    left: 0.5em;
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";
