@@ -706,6 +706,8 @@ sub construct_bin_report_form {
         };
     }
 
+    $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
+
     return $field_list;
 }
 
