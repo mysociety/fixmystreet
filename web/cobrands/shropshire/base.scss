@@ -4,6 +4,14 @@
 
 @import "../sass/base";
 
+a,
+.fake-link {
+    &:hover,
+    &:active {
+        color: $shropshire-dark-grey;
+    }
+}
+
 a:focus,
 .fake-link:focus,
 #nav-link.focussed,
@@ -156,6 +164,14 @@ body.twothirdswidthpage .content .sticky-sidebar {
 
     top: 0.5em;
     left: 0.5em;
+}
+
+.item-list__item--empty {
+    color: $shropshire-mid-grey;
+}
+
+.box-warning {
+    background-color: mix($shropshire-yellow, #fff, 15%);
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";
