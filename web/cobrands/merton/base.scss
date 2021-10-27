@@ -4,6 +4,101 @@
 
 @import "../sass/base";
 
+.content a {
+    text-decoration: underline;
+}
+
+.item-list--wards__item a,
+.item-list--reports__item a {
+    color: $link-color;
+
+    &:hover {
+        color: $link-hover-color;
+    }
+
+    small {
+        display: inline-block; // Prevent inheriting underline from parent element
+    }
+}
+
+a:focus,
+input:focus,
+button:focus,
+select:focus,
+textarea:focus,
+.multi-select-button:focus,
+.dropzone:focus,
+.focussed,
+.segmented-control--radio input:focus + label {
+    outline: 3px #ffd302 solid !important;
+    outline-offset: 0;
+    box-shadow: 0 0 0 5px #333 !important;
+}
+
+.button,
+input[type=button],
+input[type=reset],
+input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
+#front-main #postcodeForm div input#sub,
+a#geolocate_link,
+:not(.segmented-control--radio) > .btn {
+    color: #ffffff;
+    background-color: #009578;
+    background-image: none;
+    border-bottom: 2px solid $merton-dark-green;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-radius: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.button:hover,
+.btn:hover,
+input[type=button]:hover,
+input[type=reset]:hover,
+input[type=submit]:hover :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
+#front-main #postcodeForm div input#sub:hover,
+a#geolocate_link:hover,
+.button:focus, 
+.btn:focus,
+input[type=button]:focus,
+input[type=reset]:focus,
+input[type=submit]:focus :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
+#front-main #postcodeForm div input#sub:focus,
+a#geolocate_link:focus {
+    border-color: $merton-dark-green;
+    background-color: $merton-dark-green;
+    background-image: none;
+    color: #ffffff !important;
+}
+
+input.fake-link {
+    text-decoration: underline;
+    font-weight: bold;
+    color: $link-color;
+    background-color: unset;
+    border-bottom: none;
+    font-size: 1em;
+}
+
+input[type=text],
+input[type=password],
+input[type=tel],
+input[type=email],
+textarea,
+textarea.form-control {
+    border-bottom: 2px solid #1d9b80 !important;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+a.skiplink:focus {
+    color: black;
+    background-color: #ffd302;
+}
+
 .container {
     max-width: $container-max-width;
 }
@@ -33,26 +128,20 @@ a {
     font-weight: bold;
 }
 
-#site-logo {
-    display: inline-block;
-    background: transparent;
-    font-size: 1.5em;
-    line-height: 60px;
-    width: auto;
-    color: $primary;
-    text-indent: 0;
-}
-
 #report-cta,
 html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.scss
-    border: none;
-    color: #fff;
-    background-color: $merton-jade-j2;
-
+    background-color: #007F66 !important;
+    color: white !important;
+    border-bottom: 2px solid $merton-dark-green;
+    border-radius: 0;
+    
     &:hover,
-    &:focus {
-        background-color: darken($merton-jade-j2, 5%);
-    }
+    &:focus {}
+}
+
+p.form-error, div.form-error, input.form-error {
+    background-color: #e00;
+    border-color: #e00;
 }
 
 #report-cta {
@@ -86,10 +175,6 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
     }
 }
 
-#front_stats {
-    color: #ffffff;
-}
-
 .nav-menu {
     background-color: $merton-jade-j3;
     padding-top: 2em;
@@ -99,6 +184,19 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
         border-bottom: none;
         font-size: 1em;
     }
+}
+
+#site-logo {
+    display: inline-block;
+    background: transparent;
+    font-size: 1.5em;
+    line-height: 60px;
+    width: auto;
+    text-indent: 0;
+}
+
+#site-logo, .nav-menu a, .nav-menu span {
+    color: $merton-dark-green;
 }
 
 html.js .form-section-preview {
@@ -112,13 +210,44 @@ html.js .form-section-preview {
 ol.big-numbers {
     li {
         &:before {
-            color: $merton-jade-j2;
+            color: $merton-lavender-l2;
+        }
+    }
+}
+
+#front_stats {
+    color: #ffffff;
+    div {
+        big {
+            color: $merton-lavender-l2;
         }
     }
 }
 
 .segmented-control--radio input:checked + label {
     background: $merton-jade-j3;
+}
+
+.confirmation-header h1 a {
+    &:hover,
+    &:focus {
+        color: $link-color;
+    }
+}
+
+#site-header {
+    border-top: none;
+}
+
+.site-footer {
+    display: flex;
+    justify-content: space-between;
+
+    a {
+        color: white;
+        font-size: smaller;
+        font-weight: normal;
+    }
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";

@@ -6,7 +6,7 @@ use warnings;
 
 sub council_area_id { 2500 }
 sub council_area { 'Merton' }
-sub council_name { 'Merton Borough Council' }
+sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
 sub send_questionnaires { 0 }
 
@@ -35,5 +35,7 @@ sub open311_config {
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
 }
+
+sub privacy_policy_url { "https://www.merton.gov.uk/legal/privacy-and-cookies" }
 
 1;
