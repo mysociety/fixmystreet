@@ -501,18 +501,6 @@ sub bin_services_for_address {
         "Empty Bin Refuse 660l" => "Refuse",
     );
 
-    $self->{c}->stash->{enquiry_cat_ids} = [ 497, 236, 237 ];
-    $self->{c}->stash->{enquiry_cats} = {
-        497 => 'Not returned to collection point',
-        236 => 'Lid',
-        237 => 'Wheels',
-    };
-    $self->{c}->stash->{enquiry_verbose} = {
-        'Not returned to collection point' => 'The bin wasn’t returned to the collection point',
-        'Lid' => 'The bin’s lid is damaged',
-        'Wheels' => 'The bin’s wheels are damaged',
-    };
-
     $self->{c}->stash->{containers} = {
         # For new containers
         419 => "240L Black",
@@ -532,6 +520,38 @@ sub bin_services_for_address {
         6579 => "240L Brown",
         "LARGE BIN" => "360L Black", # Actually would be service 422
     };
+
+    if ( my $service_id = $self->{c}->get_param('service_id') ) {
+        # category to use for lid/wheel repairds depends on the container type that's been selected
+        $self->{c}->stash->{enquiry_cat_ids} = [ 497, 'lid', 'wheels' ];
+        $self->{c}->stash->{enquiry_cats} = {
+            497 => 'Not returned to collection point',
+            'lid' => $self->{c}->stash->{containers}->{$service_id} . ' - Lid',
+            'wheels' => $self->{c}->stash->{containers}->{$service_id} . ' - Wheels',
+        };
+        $self->{c}->stash->{enquiry_verbose} = {
+            'Not returned to collection point' => 'The bin wasn’t returned to the collection point',
+            $self->{c}->stash->{containers}->{$service_id} . ' - Lid' => 'The bin’s lid is damaged',
+            $self->{c}->stash->{containers}->{$service_id} . ' - Wheels' => 'The bin’s wheels are damaged',
+        };
+        $self->{c}->stash->{enquiry_open_ids} = {
+            6533 => { # 240L Black
+                497 => 497,
+                'lid' => 538,
+                'wheels' => 541,
+            },
+            6534 => { # 240L Green
+                497 => 497,
+                'lid' => 537,
+                'wheels' => 540,
+            },
+            6579 => { # 240L Brown
+                497 => 497,
+                'lid' => 539,
+                'wheels' => 542,
+            },
+        };
+    }
 
     my %container_request_ids = (
         6533 => [ 419 ], # 240L Black
@@ -904,7 +924,7 @@ sub waste_munge_enquiry_data {
     my $verbose = $c->stash->{enquiry_verbose};
     my $category_verbose = $verbose->{$category} || $category;
 
-    if ($service_id == 6533 && ($category eq 'Lid' || $category eq 'Wheels')) { # 240L Black repair
+    if ($service_id == 6533 && $category =~ /Lid|Wheels/) { # 240L Black repair
         my $uprn = $c->stash->{property}->{uprn};
         my $attributes = $self->property_attributes($uprn);
         if ($attributes->{"LARGE BIN"}) {
