@@ -1307,6 +1307,9 @@ sub add_report : Private {
         first_page => $c->stash->{first_page},
     };
 
+    # Don’t let staff inadvertently change their name when making reports
+    my $original_name = $c->user->name if $c->user_exists && $c->user->from_body && $c->user->email eq $data->{email};
+
     # XXX Is this best way to do this?
     if ($c->user_exists && $c->user->from_body && !$data->{email} && !$data->{phone}) {
         $c->set_param('form_as', 'anonymous_user');
@@ -1344,6 +1347,8 @@ sub add_report : Private {
     } else {
         $c->forward('/report/new/redirect_or_confirm_creation');
     }
+
+    $c->user->update({ name => $original_name }) if $original_name;
 
     $c->cobrand->call_hook( clear_cached_lookups_property => $c->stash->{property}{id} );
 
