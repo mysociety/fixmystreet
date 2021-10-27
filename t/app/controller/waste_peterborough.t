@@ -33,8 +33,8 @@ create_contact({ category => 'Refuse', email => 'Bartec-255' }, 'Missed Collecti
 create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
-create_contact({ category => 'Lid', email => 'Bartec-236' }, 'Bin repairs');
-create_contact({ category => 'Wheels', email => 'Bartec-237' }, 'Bin repairs', { code => 'extra_detail', required => 0, datatype => 'text' });
+create_contact({ category => '240L Black - Lid', email => 'Bartec-538' }, 'Bin repairs');
+create_contact({ category => '240L Black - Wheels', email => 'Bartec-541' }, 'Bin repairs', { code => 'extra_detail', required => 0, datatype => 'text'  });
 create_contact({ category => 'Black 360L bin', email => 'Bartec-422' }, 'Request new container');
 
 FixMyStreet::override_config {
@@ -271,17 +271,17 @@ FixMyStreet::override_config {
     };
     subtest 'Report broken bin, already reported' => sub {
         $b->mock('ServiceRequests_Get', sub { [
-            { ServiceType => { ID => 236 }, ServiceStatus => { Status => "OPEN" } },
+            { ServiceType => { ID => 538 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->content_like(qr/name="category" value="Lid"\s+disabled/);
+        $mech->content_like(qr/name="category" value="240L Black - Lid"\s+disabled/);
         $b->mock('ServiceRequests_Get', sub { [] }); # reset
     };
     subtest 'Report broken bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
+        $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->content_contains('The bin’s lid is damaged');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -293,7 +293,7 @@ FixMyStreet::override_config {
     subtest 'Report broken wheels' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => 'Wheels' } });
+        $mech->submit_form_ok({ with_fields => { category => '240L Black - Wheels' } });
         $mech->content_contains('name="extra_extra_detail" rows="5" maxlength="1000"');
         $mech->submit_form_ok({ with_fields => { extra_extra_detail => 'Some extra detail' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
@@ -310,7 +310,7 @@ FixMyStreet::override_config {
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => 'Lid' } });
+        $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->content_contains('Black Bin');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
