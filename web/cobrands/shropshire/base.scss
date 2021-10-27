@@ -14,8 +14,13 @@ a,
 
 a:focus,
 .fake-link:focus,
-#nav-link.focussed {
+#nav-link.focussed,
+.olButton:focus {
     outline: solid 3px $shropshire-yellow;
+}
+
+.olButton:focus {
+    z-index: 1; // pull forward, so entire outline is visible
 }
 
 #site-header {
