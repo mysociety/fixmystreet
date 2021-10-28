@@ -850,7 +850,11 @@ sub waste_munge_report_form_fields {
     push @$field_list, "extra_detail" => {
         type => 'Text',
         widget => 'Textarea',
-        label => 'Please supply additional information such as the location of the bin.',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
     };
 }
 

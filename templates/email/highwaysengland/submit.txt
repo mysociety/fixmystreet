@@ -27,6 +27,8 @@ Road: [% report.get_extra_field_value('road_name') %]
 
 Section: [% report.get_extra_field_value('sect_label') %]
 
+Area: [% report.get_extra_field_value('area_name') %]
+
 Heard from: [% report.get_extra_metadata('where_hear') %]
 
 View OpenStreetMap of this location: [% osm_url %]
