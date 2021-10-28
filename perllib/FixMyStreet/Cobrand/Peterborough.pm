@@ -66,6 +66,14 @@ around open311_extra_data_include => sub {
             { name => 'street', value => $street }
         );
     }
+    if ( $row->contact->email =~ /Bartec/ && $row->get_extra_metadata('contributed_by') ) {
+        push @$open311_only, (
+            {
+                name => 'contributed_by',
+                value => $self->csv_staff_user_lookup($row->get_extra_metadata('contributed_by'), $self->csv_staff_users),
+            },
+        );
+    }
     return $open311_only;
 };
 # remove categories which are informational only
