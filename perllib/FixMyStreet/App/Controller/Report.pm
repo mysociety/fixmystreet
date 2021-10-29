@@ -94,8 +94,8 @@ sub display :PathPart('') :Chained('id') :Args(0) {
         my $okay = 1;
         my $contact = $c->stash->{problem}->contact;
         if ($contact && ($c->user->get_extra_metadata('assigned_categories_only') || $contact->get_extra_metadata('assigned_users_only'))) {
-            my $user_cats = $c->user->get_extra_metadata('categories') || [];
-            $okay = any { $contact->id eq $_ } @$user_cats;
+            my $user_cats = $c->user->categories || [];
+            $okay = any { $contact->category eq $_ } @$user_cats;
         }
         if ($okay) {
             $c->stash->{relevant_staff_user} = 1;
@@ -521,6 +521,21 @@ sub inspect : Private {
             }
         }
 
+        # set assignment
+        my $assigned = ($c->get_param('assignment'));
+        if ($assigned && $assigned eq 'unassigned') {
+            # take off shortlist...
+            my $shortlisted = $problem->user_planned_reports->search({ removed => undef })->first;
+            # ... catching already not-assigned problems. Otherwise, if a user tries to unassign a
+            # non-assigned problem, this causes an error.
+            if ($shortlisted) {
+                $shortlisted->removed( \'current_timestamp' );
+                $shortlisted->update;
+            }
+        } elsif ($assigned) {
+            my $assignee = $c->model('DB::User')->find({ id => $assigned });
+            $assignee->add_to_planned_reports($problem);
+        }
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
         if ($problem->non_public) {
             $problem->get_photoset->delete_cached(plus_updates => 1);

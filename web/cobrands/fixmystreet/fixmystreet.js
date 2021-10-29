@@ -1234,16 +1234,21 @@ $.extend(fixmystreet.set_up, {
   alert_page_buttons: function() {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
+    $('#distance').on('change', function() {
+        var dist = this.value;
+        if (!parseInt(dist)) {
+            return;
+        }
+        var a = $('a.js-alert-local');
+        if (!a.data('originalHref')) {
+            a.data('originalHref', a.attr('href'));
+        }
+        a.attr('href', a.data('originalHref') + '/' + dist);
+    });
     $('body').on('click', '#alert_rss_button', function(e) {
         e.preventDefault();
         var a = $('input[name=feed][type=radio]:checked').parent().prevAll('a');
         var feed = a.attr('href');
-        if (a.hasClass('js-alert-local')) {
-            var dist = $('#distance').val();
-            if (parseInt(dist)) {
-                feed += '/' + dist;
-            }
-        }
         window.location.href = feed;
     });
     $('body').on('click', '#alert_email_button', function(e) {
@@ -1557,19 +1562,24 @@ fixmystreet.fetch_reporting_data = function() {
 
 fixmystreet.reporting = {};
 fixmystreet.reporting.selectedCategory = function() {
-    var group_or_cat = $('#form_category_fieldset input:checked').val() || '',
+    var $group_or_cat_input = $('#form_category_fieldset input:checked'),
+        group_or_cat = $group_or_cat_input.val() || '',
         group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
         $subcategory = $("#subcategory_" + group_id),
+        $subcategory_input = $subcategory.find('input:checked'),
         category,
+        category_display,
         group;
     if ($subcategory.length) {
-        category = $subcategory.find('input:checked').val() || '';
+        category = $subcategory_input.val() || '';
+        category_display = $subcategory_input.data('category_display') || '';
         group = group_or_cat;
     } else {
         category = group_or_cat;
+        category_display = $group_or_cat_input.data('category_display') || category;
         group = '';
     }
-    return { group: group, category: category };
+    return { group: group, category: category, category_display: category_display };
 };
 
 })(); // fetch_reporting_data closure

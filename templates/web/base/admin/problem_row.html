@@ -12,8 +12,8 @@
         <a href="[% uri %]" class="admin-offsite-link">[% problem.id %]</a>
         [%- ELSE %]
         [%- problem.id %]
-        [%- END -%]</td> 
-        <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
+        [%- END -%]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
         <td>
             [% PROCESS value_or_nbsp value=problem.name %]
             <br>[% PROCESS value_or_nbsp value=problem.user.email %]
@@ -29,6 +29,13 @@
                 [%- PROCESS value_or_nbsp value=problem.bodies_str -%]
             [%- END -%]
             <br>[% problem.cobrand %]<br>[% problem.cobrand_data | html %]
+            <br>
+            [% IF c.user.has_body_permission_to('assign_report_to_user') %] [%# see report's assigned user %]
+                <span>[% loc('Assigned to') %]: </span>
+                <span>
+                    [%- problem.shortlisted_user.name OR problem.shortlisted_user.username OR loc('unassigned') -%]
+                </span>
+            [%- END -%]
         </td>
         <td>[% prettify_state(problem.state, 1) %]<br><small>
             [% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]

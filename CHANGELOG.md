@@ -14,6 +14,10 @@
         - Update URL on /my when map moves. #3358
         - Make anonymous updates clearer in email alerts. #3417
         - Add Maidenhead Locator support to search box.
+        - Inspector-managers can now assign reports to inspectors. #3535
+        - Inspectors & other staff can see report assignments and
+          which reports are unassigned. #3535
+        - Update RSS link when distance box changed. #3624
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.
@@ -45,6 +49,9 @@
         - Redaction support for photos.
         - UK Councils no questionnaires for non-updating users
         - Script to export/import response templates, #3549
+        - Assignees of reports are visible in list and edit page. #3535
+        - Include non-public report in front page search for staff. #3616
+        - Include staff categories in map filters for staff. #3616
     - Development improvements:
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
@@ -61,6 +68,8 @@
         - Increase minimum password length to eight.
     - Changes
         - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
+    - New features:
+        - Roles can now have category restrictions like users.
 
 * v3.1 (16th November 2020)
     - Security:

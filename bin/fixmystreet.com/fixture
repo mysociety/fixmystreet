@@ -78,6 +78,13 @@ for my $cat (qw/Overflowing Broken Missing/) {
     $child_cat->update;
 }
 
+my $offensive_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
+    body => $body,
+    category => "Offensive graffiti"
+});
+$offensive_cat->set_extra_metadata( display_name => 'Graffiti (offensive)' );
+$offensive_cat->update;
+
 for my $cat ('Dropped Kerbs', 'Skips') {
     my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create({
         body => $body,

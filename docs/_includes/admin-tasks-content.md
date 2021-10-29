@@ -323,7 +323,7 @@ priority’ must be ticked</span>
 
 - You can click and drag a pin at any time to change the report’s specified location.
 - When viewing a report on the ground, staff with the appropriate permissions may click
-‘set to my current location’. This will reset the co-ordinates of the issue to reflect a more accurate placement. 
+‘set to my current location’. This will reset the co-ordinates of the issue to reflect a more accurate placement.
 
 </div>
 
@@ -442,6 +442,22 @@ Shortlists can be ordered and filtered in the same way as the main list, by usin
 menus. You can also use the arrows beside each report title to move them up or down the list, until
 they are in a practical order for your route or priorities.
 
+#### Assigning reports to another user's shortlist
+
+<span class="admin-task__permissions">Permissions required: User must be marked as staff and 'Assign problem reports to users' must be ticked.</span>
+
+Managers of teams of inspectors can assign reports to the shortlists of inspectors (i.e. staff with the 'Markup problem details' permission). The assignment dropdown appears when editing reports with the inspector tool.
+
+Reports can also be assigned in bulk from the 'All reports' page, where inspector managers can see at a glance which reports are assigned to which inspectors, as well as which are unassigned.
+
+Assigned users can also be viewed on the Reports list page in the Admin area, as well as when editing a report in that list by clicking its 'Edit' link.
+
+#### Seeing which reports are assigned and unassigned
+
+<span class="admin-task__permissions">Permissions required: User must be marked as staff and 'Markup problem details' must be ticked.</span>
+
+In addition to seeing their own shortlist, inspectors can, like inspector managers, see which reports are assigned to other inspectors and which are unassigned both in the individual report webpage and in the 'All reports' list.
+
 #### Viewing navigation routes
 
 From any report, you can click the button marked ‘navigate to this problem’. This will open a
@@ -533,6 +549,10 @@ The Administrator can allocate one or more categories of report (e.g. Potholes o
 maintenance) to a staff user by editing the user and checking the relevant category boxes. The
 staff user, when logged in, will then only see reports within those categories. This is useful where a
 staff user only deals with reports of a specific type.
+
+Roles can also have categories associated with them. This works in the same way as assigning categories
+to a user. You can assign categories to a role by editing the role and checking the relevant category
+boxes. Users will then only be able to see categories relevant to their role.
 
 #### Removing staff status from accounts
 

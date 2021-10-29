@@ -5,7 +5,12 @@
       <a href="#" data-select-all>[% loc('all') %]</a> /
       <a href="#" data-select-none>[% loc('none') %]</a>
     </li>
-    [% FOR contact IN c.cobrand.add_admin_subcategories # Bromley-specific function %]
+    [% IF obj.body # obj is a role %]
+      [% collection = contacts %]
+    [% ELSE %]
+      [% collection = c.cobrand.add_admin_subcategories # Bromley-specific function %]
+    [% END %]
+    [% FOR contact IN collection %]
       <li>
         <label class="inline" title="[% contact.email | html %]">
           <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>

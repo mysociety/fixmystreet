@@ -706,6 +706,8 @@ sub construct_bin_report_form {
         };
     }
 
+    $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
+
     return $field_list;
 }
 
@@ -1296,6 +1298,13 @@ sub add_report : Private {
 
     $c->stash->{cobrand_data} = 'waste';
     $c->stash->{override_confirmation_template} = 'waste/confirmation.html';
+
+    # Store the name of the first page of the wizard on the token
+    # so Peterborough can show the appropriate confirmation page when the
+    # confirmation link is followed.
+    $c->stash->{token_extra_data} = {
+        first_page => $c->stash->{first_page},
+    };
 
     # XXX Is this best way to do this?
     if ($c->user_exists && $c->user->from_body && !$data->{email} && !$data->{phone}) {

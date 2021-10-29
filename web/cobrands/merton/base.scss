@@ -1,0 +1,124 @@
+@import "../sass/h5bp";
+@import "_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+.container {
+    max-width: $container-max-width;
+}
+
+.merton-header {
+    background: $merton-lavender-l2;
+    padding-bottom: 0.75em;
+    border-top: 5px solid $primary;
+}
+
+.map-fullscreen .merton-header {
+    display: none;
+}
+
+.merton-header__logo {
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-top: 75px;
+    width: 88px;
+    height: 0;
+    background: $merton-lavender-l2 url(images/merton-logo.png) 0 15px no-repeat;
+}
+
+a {
+    font-weight: bold;
+}
+
+#site-logo {
+    display: inline-block;
+    background: transparent;
+    font-size: 1.5em;
+    line-height: 60px;
+    width: auto;
+    color: $primary;
+    text-indent: 0;
+}
+
+#report-cta,
+html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.scss
+    border: none;
+    color: #fff;
+    background-color: $merton-jade-j2;
+
+    &:hover,
+    &:focus {
+        background-color: darken($merton-jade-j2, 5%);
+    }
+}
+
+#report-cta {
+    padding: 0.4em 0.6em;
+}
+
+.frontpage #report-cta,
+.frontpage .report-a-problem-btn {
+    display: none;
+}
+
+#front-main {
+    background-color: $merton-jade-j3;
+    margin: 0;
+    padding: 1em;
+
+    h1 {
+        font-weight: bold;
+        color: $merton-headline;
+    }
+}
+
+#front-main {
+    #postcodeForm {
+        background: $merton-jade-j1;
+        color: #ffffff;
+
+        #pc-hint {
+            color: inherit;
+        }
+    }
+}
+
+#front_stats {
+    color: #ffffff;
+}
+
+.nav-menu {
+    background-color: $merton-jade-j3;
+    padding-top: 2em;
+
+    a, span {
+        background: transparent;
+        border-bottom: none;
+        font-size: 1em;
+    }
+}
+
+html.js .form-section-preview {
+    background-color: $merton-jade-j3;
+}
+
+.big-green-banner {
+    text-transform: none;
+}
+
+ol.big-numbers {
+    li {
+        &:before {
+            color: $merton-jade-j2;
+        }
+    }
+}
+
+.segmented-control--radio input:checked + label {
+    background: $merton-jade-j3;
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";

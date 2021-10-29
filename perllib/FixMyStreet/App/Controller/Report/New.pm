@@ -1366,6 +1366,9 @@ sub tokenize_user : Private {
     if (my $template = $c->stash->{override_confirmation_template}) {
         $c->stash->{token_data}->{template} = $template;
     }
+    if (my $extra = $c->stash->{token_extra_data}) {
+        $c->stash->{token_data}->{extra} = $extra;
+    }
     $c->forward('/auth/set_oauth_token_data', [ $c->stash->{token_data} ])
         if $c->get_param('oauth_need_email');
 }

@@ -3,6 +3,8 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
+use Moo;
+with 'FixMyStreet::Roles::Open311Multi';
 
 use LWP::Simple;
 use URI;
@@ -120,6 +122,16 @@ sub state_groups_inspect {
     ]
 }
 
+sub updates_disallowed {
+    my $self = shift;
+    my ($problem) = @_;
+
+    # Not on reports made by the body user
+    return 1 if $self->body->comment_user_id && $problem->user_id == $self->body->comment_user_id;
+
+    return $self->next::method(@_);
+}
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 
@@ -128,14 +140,27 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
-    return [
-        { name => 'external_id', value => $row->id },
-        { name => 'northing', value => $h->{northing} },
-        { name => 'easting', value => $h->{easting} },
-        $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
-    ];
+    if ($contact->email =~ /^Alloy/) {
+        return [
+            { name => 'report_url',
+            value => $h->{url} },
+            { name => 'title',
+            value => $row->title },
+            { name => 'description',
+            value => $row->detail },
+            { name => 'category',
+            value => $row->category },
+        ];
+    } else { # WDM
+        return [
+            { name => 'external_id', value => $row->id },
+            { name => 'northing', value => $h->{northing} },
+            { name => 'easting', value => $h->{easting} },
+            $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
+        ];
+    }
 }
 
 sub open311_config_updates {
@@ -202,12 +227,28 @@ sub open311_munge_update_params {
     }
 }
 
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete open311 protected contacts when importing.
+    # WDM contacts are managed manually in the admin instead of via
+    # open311-populate-service-list, and this flag is used to stop them
+    # being deleted when that script runs.
+    return $contacts->search({
+        extra => { -not_like => '%T15:open311_protect,I1:1%' },
+    });
+}
+
+
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 
-    # Oxfordshire stores the external id of the problem as a customer reference
-    # in metadata, it arrives in a fetched update (but give up if it never does,
-    # or the update is for an old pre-ref report)
+    my $contact = $update->problem->contact;
+    return 0 if $contact && $contact->email =~ /^Alloy/; # Can always send these
+
+    # Oxfordshire HIAMS stores the external id of the problem as a customer
+    # reference in metadata, it arrives in a fetched update (but give up if it
+    # never does, or the update is for an old pre-ref report)
     my $customer_ref = $update->problem->get_extra_metadata('customer_reference');
     my $diff = time() - $update->confirmed->epoch;
     return 1 if !$customer_ref && $diff > 60*60*24;
@@ -215,6 +256,16 @@ sub should_skip_sending_update {
     return 0;
 }
 
+sub open311_skip_report_fetch {
+    my ($self, $problem) = @_;
+
+    # Abuse this hook a little bit to tidy up the report
+    $problem->title($problem->category);
+    $problem->detail($problem->category);
+    $problem->name($self->council_name);
+
+    return 0;
+}
 
 sub report_inspect_update_extra {
     my ( $self, $problem ) = @_;

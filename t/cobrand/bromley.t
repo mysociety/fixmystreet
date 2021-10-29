@@ -7,7 +7,10 @@ use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::SendReport::Open311;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 use Open311::PostServiceRequestUpdates;
+use List::Util 'any';
+use Regexp::Common 'URI';
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -448,6 +451,48 @@ subtest 'check heatmap page' => sub {
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
     $user->update({ area_ids => undef });
+};
+
+subtest 'category restrictions for roles restricts reporting categories for users with that role' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $potholes = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Potholes',
+            email => 'potholes@example.org',
+        );
+        my $flytipping = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Flytipping',
+            email => 'flytipping@example.org',
+        );
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        my $role = $user->roles->create({
+            body => $body,
+            name => 'Out of hours',
+            permissions => ['moderate', 'planned_reports'],
+        });
+        $role->set_extra_metadata('categories', [$potholes->id]);
+        $role->update;
+        $user->add_to_roles($role);
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } },
+            "submit location" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Flytipping');
+
+        # TfL categories should always be displayed, regardless of role restrictions.
+        $mech->content_contains('Traffic Lights');
+    };
 };
 
 FixMyStreet::override_config {
@@ -1775,6 +1820,56 @@ subtest 'check direct debit reconcilliation' => sub {
     is $failed_new_sub->state, 'hidden', 'failed sub still hidden on second run';
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
+
+};
+
+subtest 'Garden Waste new subs alert update emails contain bin collection days link' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my $property_id = '54323';
+
+        my $new_sub = setup_dd_test_report({ property_id => $property_id });
+
+        my $update = FixMyStreet::DB->resultset('Comment')->find_or_create({
+            problem_state => 'action scheduled',
+            problem_id => $new_sub->id,
+            user_id    => $staffuser->id,
+            name       => 'Staff User',
+            mark_fixed => 'f',
+            text       => "Green bin on way",
+            state      => 'confirmed',
+            confirmed  => 'now()',
+            anonymous  => 'f',
+        });
+
+        my $alert = FixMyStreet::DB->resultset('Alert')->create({
+            user => $user,
+            parameter => $new_sub->id,
+            alert_type => 'new_updates',
+            whensubscribed => '2021-09-27 12:00:00',
+            cobrand => 'bromley',
+            cobrand_data => 'waste',
+        });
+        $alert->confirm;
+
+        FixMyStreet::Script::Alerts::send_updates();
+
+        my $email = $mech->get_email;
+        my $text_body = $mech->get_text_body_from_email($email);
+        like $text_body, qr/Check your bin collections day/, 'has bin day link text in text part';
+        my @links = $mech->get_link_from_email($email, 'get_all_links');
+        my $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @links;
+        ok $found, 'Found bin day URL in text part of alert email';
+
+        my $html_body = $mech->get_html_body_from_email($email);
+        like $html_body, qr/Check your bin collections day/, 'has bin day link text in HTML part';
+        my @uris = $html_body =~ m/$RE{URI}/g;
+        $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @uris;
+        ok $found, 'Found bin day URL in HTML part of alert email';
+    }
 };
 
 sub setup_dd_test_report {
@@ -1784,6 +1879,7 @@ sub setup_dd_test_report {
         latitude => 51.402096,
         longitude => 0.015784,
         cobrand => 'bromley',
+        cobrand_data => 'waste',
         areas => '2482,8141',
         user => $user,
     });
