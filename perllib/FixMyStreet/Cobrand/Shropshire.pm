@@ -21,6 +21,10 @@ sub admin_user_domain {
     'shropshire.gov.uk'
 }
 
+sub send_questionnaires {
+    return 0;
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
