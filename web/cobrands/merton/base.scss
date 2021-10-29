@@ -24,6 +24,7 @@
 a:focus,
 input:focus,
 button:focus,
+.green-btn:focus,
 select:focus,
 textarea:focus,
 .multi-select-button:focus,
@@ -36,13 +37,14 @@ textarea:focus,
 }
 
 .button,
+.green-btn,
 input[type=button],
 input[type=reset],
 input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
 #front-main #postcodeForm div input#sub,
 a#geolocate_link,
 :not(.segmented-control--radio) > .btn {
-    color: #ffffff;
+    color: #ffffff !important;
     background-color: #009578;
     background-image: none;
     border-bottom: 2px solid $merton-dark-green;
@@ -56,12 +58,14 @@ a#geolocate_link,
 
 .button:hover,
 .btn:hover,
+.green-btn:hover,
 input[type=button]:hover,
 input[type=reset]:hover,
 input[type=submit]:hover :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
 #front-main #postcodeForm div input#sub:hover,
 a#geolocate_link:hover,
 .button:focus, 
+.green-btn:focus,
 .btn:focus,
 input[type=button]:focus,
 input[type=reset]:focus,
