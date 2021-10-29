@@ -4,10 +4,23 @@
 
 @import "../sass/base";
 
+a,
+.fake-link {
+    &:hover,
+    &:active {
+        color: $shropshire-dark-grey;
+    }
+}
+
 a:focus,
 .fake-link:focus,
-#nav-link.focussed {
+#nav-link.focussed,
+.olButton:focus {
     outline: solid 3px $shropshire-yellow;
+}
+
+.olButton:focus {
+    z-index: 1; // pull forward, so entire outline is visible
 }
 
 #site-header {
@@ -82,6 +95,14 @@ label {
     }
 }
 
+.multi-select-button {
+    &:focus {
+        outline: none;
+        border-color: #52A8EC;
+        box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
+    }
+}
+
 input.form-error,
 textarea.form-error {
     background: #FBE3E4;
@@ -143,6 +164,14 @@ body.twothirdswidthpage .content .sticky-sidebar {
 
     top: 0.5em;
     left: 0.5em;
+}
+
+.item-list__item--empty {
+    color: $shropshire-mid-grey;
+}
+
+.box-warning {
+    background-color: mix($shropshire-yellow, #fff, 15%);
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";
