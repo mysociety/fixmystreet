@@ -1902,9 +1902,6 @@ html.js #map .noscript {
 
     &:hover,
     &:focus {
-      opacity: 1;
-    }
-    &:hover {
       overflow: visible;
       width: auto;
       height: auto;
@@ -1913,6 +1910,7 @@ html.js #map .noscript {
       white-space: nowrap;
       color: #fff;
       text-decoration: none;
+      opacity: 1;
     }
   }
 

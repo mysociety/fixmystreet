@@ -1047,6 +1047,7 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         btn.id = this.id + "_" + id;
         btn.action = id;
         btn.className = "olButton";
+        btn.tabIndex = "0";
         this.div.appendChild(btn);
         this.buttons.push(btn);
         return btn;
