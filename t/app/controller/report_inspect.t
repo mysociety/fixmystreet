@@ -635,6 +635,34 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'oxfordshire',
+}, sub {
+    my $ian = $mech->create_user_ok('inspector@example.com', name => 'Inspector Ian', from_body => $oxon);
+    $user->user_body_permissions->create({ body => $oxon, permission_type => 'assign_report_to_user' });
+    $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    $user->update;
+    $ian->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+    $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    $ian->update;
+
+    subtest "assign report by dropdown in report page" => sub {
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Assign to:');
+        $mech->content_contains('<select class="form-control" name="assignment" id="assignment">');
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => 'unassigned' } });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('Shortlisted by');
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => $ian->id } });
+        $mech->content_contains('Shortlisted by Inspector Ian');
+    };
+
+    $user->user_body_permissions->delete;
+};
+
 foreach my $test (
     { cobrand => 'fixmystreet', limited => 0, desc => 'detailed_information has no max length' },
     { cobrand => 'oxfordshire', limited => 1, desc => 'detailed_information has max length'  },

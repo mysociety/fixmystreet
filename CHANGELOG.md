@@ -15,6 +15,8 @@
         - Make anonymous updates clearer in email alerts. #3417
         - Add Maidenhead Locator support to search box.
         - Update RSS link when distance box changed. #3624
+        - Inspector-managers can assign reports to inspectors
+          in the inspector toolbar.
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.

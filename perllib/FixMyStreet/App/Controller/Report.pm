@@ -521,6 +521,15 @@ sub inspect : Private {
             }
         }
 
+        # set assignment
+        my $assigned = ($c->get_param('assignment'));
+        if ($assigned && $assigned eq 'unassigned') {
+            # take off shortlist
+            $problem->user->remove_from_planned_reports($problem);
+        } elsif ($assigned) {
+            my $assignee = $c->model('DB::User')->find({ id => $assigned });
+            $assignee->add_to_planned_reports($problem);
+        }
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
         if ($problem->non_public) {
             $problem->get_photoset->delete_cached(plus_updates => 1);
