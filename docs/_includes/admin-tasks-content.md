@@ -454,7 +454,7 @@ Assigned users can also be viewed on the Reports list page in the Admin area, as
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and 'Markup problem details' must be ticked.</span>
 
-In addition to seeing their own shortlist, inspectors can, like inspector managers, see which reports are assigned to other inspectors and which are unassigned in the individual report webpage.
+In addition to seeing their own shortlist, inspectors can, like inspector managers, see which reports are assigned to other inspectors and which are unassigned both in the individual report webpage and in the 'All reports' list.
 
 #### Viewing navigation routes
 

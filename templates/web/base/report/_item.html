@@ -119,7 +119,7 @@ END;
     [%# The around page list is already contained within the new report form %]
     [% item_action.replace('("shortlist-[^"]*)', '$1-' _ problem.id) | safe %]
   [% ELSE ~%]
-    <form method="post" action="/my/planned/change">
+    <form method="post" id="add_remove_shortlist_[% problem.id %]" action="/my/planned/change">
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
         [% item_action | safe %]

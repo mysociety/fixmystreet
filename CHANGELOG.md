@@ -17,6 +17,8 @@
         - Update RSS link when distance box changed. #3624
         - Inspector-managers can assign reports to inspectors
           in the inspector toolbar.
+        - Inspectors & inspector-managers can see who a report is assigned
+          to or 'unassigned' if a report is unassigned.
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.
