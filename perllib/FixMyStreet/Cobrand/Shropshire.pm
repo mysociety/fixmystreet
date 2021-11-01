@@ -46,11 +46,4 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 }
 } }
 
-# Data is broken for sending USRN
-# Temporary cheat
-sub lookup_site_code {
-    warn "PASSING THROUGH";
-    return '29600269';
-}
-
 1;
