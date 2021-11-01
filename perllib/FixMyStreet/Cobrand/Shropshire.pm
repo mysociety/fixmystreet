@@ -23,6 +23,10 @@ sub admin_user_domain {
 
 sub default_map_zoom { 4 }
 
+sub send_questionnaires {
+    return 0;
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -34,5 +38,14 @@ sub disambiguate_location {
         bounds => [ 52.3062638566609, -3.23554076944319, 52.9983946233065, -2.23289847952914 ],
     };
 }
+
+sub lookup_site_code_config { {
+    buffer => 200, # metres
+    url => "https://tilma.staging.mysociety.org/mapserver/shropshire",
+    srsname => "urn:ogc:def:crs:EPSG::27700",
+    typename => "Street_Gazetteer",
+    property => "USRN",
+    accept_feature => sub { 1 }
+} }
 
 1;
