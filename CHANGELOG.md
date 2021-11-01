@@ -33,6 +33,7 @@
         - Do not email inactive body comment users. #3587
         - Look up organizational domain in DMARC checking. #3603
     - Admin improvements:
+        - Assignees of reports are now visible in admin reports list and report edit pages.
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
         - Add link to user edit admin from report/update edit admin.
