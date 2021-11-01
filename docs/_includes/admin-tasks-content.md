@@ -448,6 +448,8 @@ they are in a practical order for your route or priorities.
 
 Managers of teams of inspectors can assign reports to the shortlists of inspectors (i.e. staff with the 'Markup problem details' permission). The assignment dropdown appears when editing reports with the inspector tool.
 
+Reports can also be assigned in bulk from the 'All reports' page, where inspector managers can see at a glance which reports are assigned to which inspectors, as well as which are unassigned.
+
 Assigned users can also be viewed on the Reports list page in the Admin area, as well as when editing a report in that list by clicking its 'Edit' link.
 
 #### Seeing which reports are assigned and unassigned
