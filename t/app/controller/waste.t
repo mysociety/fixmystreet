@@ -335,9 +335,28 @@ FixMyStreet::override_config {
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $user->email;
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
-        is $report->get_extra_field_value('Source'), 9, 'Correct source'
+        is $report->get_extra_field_value('Source'), 9, 'Correct source';
     };
-
+    subtest "General enquiry, staff doesn't change name" => sub {
+        my $original_name = $staff_user->name;
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/enquiry?category=General+enquiry&service_id=537');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Some notes' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $staff_user->email } });
+        $mech->content_contains('Some notes');
+        $mech->content_contains('Test McTest');
+        $mech->content_contains($staff_user->email);
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Notes'), 'Some notes';
+        is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
+        is $report->user->email, $staff_user->email;
+        is $report->name, "Test McTest";
+        is $report->get_extra_field_value('Source'), 9, 'Correct source';
+        $staff_user->discard_changes;
+        is $staff_user->name, $original_name, 'Staff user name stayed the same';
+    };
     subtest 'Ignores expired services' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', sub {

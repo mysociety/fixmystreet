@@ -65,4 +65,6 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 },
 } }
 
+sub privacy_policy_url { "https://www.merton.gov.uk/legal/privacy-and-cookies" }
+
 1;
