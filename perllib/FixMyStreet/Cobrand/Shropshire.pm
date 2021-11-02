@@ -21,7 +21,7 @@ sub admin_user_domain {
     'shropshire.gov.uk'
 }
 
-sub default_map_zoom { 4 }
+sub default_map_zoom { 6 }
 
 sub send_questionnaires {
     return 0;
@@ -47,5 +47,13 @@ sub lookup_site_code_config { {
     property => "USRN",
     accept_feature => sub { 1 }
 } }
+
+sub staff_ignore_form_disable_form {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return $c->user_exists
+        && $c->user->belongs_to_body( $self->body->id );
+}
 
 1;
