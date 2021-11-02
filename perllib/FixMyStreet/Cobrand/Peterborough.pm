@@ -82,7 +82,7 @@ sub open311_extra_data_exclude {
     # We need to store this as Open311 pre_send needs to check it and it will
     # have been removed due to this function.
     $row->set_extra_metadata(pcc_witness => $row->get_extra_field_value('pcc-witness'));
-    [ '^PCC-', '^emergency$', '^private_land$' ]
+    [ '^PCC-', '^emergency$', '^private_land$', '^extra_detail$' ]
 }
 
 sub lookup_site_code_config { {

@@ -2,6 +2,8 @@ use utf8;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
+use CGI::Simple;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -12,7 +14,14 @@ $uk->mock('_fetch_url', sub { '{}' });
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2566, 'Peterborough Council');
+my $params = {
+    send_method => 'Open311',
+    api_key => 'KEY',
+    endpoint => 'endpoint',
+    jurisdiction => 'home',
+    can_be_devolved => 1,
+};
+my $body = $mech->create_body_ok(2566, 'Peterborough Council', $params);
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 
@@ -44,7 +53,10 @@ FixMyStreet::override_config {
         url => 'http://example.org/',
         auth_url => 'http://auth.example.org/',
         sample_data => 1 } },
-        waste => { peterborough => 1 }
+        waste => { peterborough => 1 },
+    },
+    STAGING_FLAGS => {
+        send_reports => 1,
     },
 }, sub {
     my $b = Test::MockModule->new('Integrations::Bartec');
@@ -291,6 +303,12 @@ FixMyStreet::override_config {
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
     };
     subtest 'Report broken wheels' => sub {
+        FixMyStreet::DB->resultset('Problem')->search(
+            {
+                whensent => undef
+            }
+        )->update( { whensent => \'current_timestamp' } );
+
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
         $mech->submit_form_ok({ with_fields => { category => '240L Black - Wheels' } });
@@ -300,9 +318,18 @@ FixMyStreet::override_config {
         $mech->content_contains('The bin’s wheels are damaged');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
+
+        FixMyStreet::Script::Reports::send();
+
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        ok $report->whensent, 'Report marked as sent';
         is $report->title, '240L Black';
         is $report->detail, "The bin’s wheels are damaged\n\n1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: Some extra detail";
+
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[title]'), $report->title, 'title param sent';
+        is $cgi->param('attribute[extra_detail]'), undef, 'extra_detail param not sent';
     };
     subtest 'Report broken large bin' => sub {
         $b->mock('Premises_Attributes_Get', sub { [
