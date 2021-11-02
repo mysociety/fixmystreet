@@ -29,11 +29,6 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-var streetlight_stylemap = new OpenLayers.StyleMap({
-    'default': fixmystreet.assets.style_default,
-    'hover': fixmystreet.assets.style_default_hover,
-  });
-
 var highways_style = new OpenLayers.Style({
     fill: false,
     strokeColor: "#5555FF",
@@ -52,16 +47,20 @@ fixmystreet.assets.add(defaults, {
      }),
     always_visible: true,
     non_interactive: true,
+    usrn: {
+        attribute: 'USRN',
+        field: 'site_code'
+    },
     road: true,
-    asset_item: 'USRN',
-    asset_type: 'USRN',
+    asset_item: 'road',
+    asset_type: 'road',
     all_categories: true,
 });
 
 fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
-            TYPENAME: "Street_Lights"
+            TYPENAME: "Lights_Union"
         }
     },
     asset_group: "Streetlights",
@@ -96,20 +95,6 @@ fixmystreet.assets.add(defaults, {
     asset_group: 'Illuminated signs',
     feature_code: 'CentralAssetId',
     asset_item: 'bollard',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
-});
-
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Parish_Street_Lights"
-        }
-    },
-    asset_group: 'Streetlights',
-    asset_item: 'streetlight',
     actions: {
         asset_found: fixmystreet.assets.named_select_action_found,
         asset_not_found: fixmystreet.assets.named_select_action_not_found
