@@ -41,7 +41,7 @@ sub lookup_site_code_config { {
     buffer => 200, # metres
     url => "https://tilma.staging.mysociety.org/mapserver/shropshire",
     srsname => "urn:ogc:def:crs:EPSG::27700",
-    typename => "Street_Gazeteer",
+    typename => "Street_Gazetteer",
     property => "USRN",
     accept_feature => sub { 1 }
 } }
