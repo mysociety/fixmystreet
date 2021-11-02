@@ -130,6 +130,10 @@ p.form-error {
         }
     }
 
+    .form-hint {
+        max-width: 32em;
+    }
+
     a#geolocate_link {
         border-radius: 4em;
     }
@@ -145,9 +149,21 @@ p.form-error {
     }
 }
 
-.front-blurb {
+.front-blurb,
+.highwaysengland-warning {
     max-width: 32em;
     margin: 1em 0;
+}
+
+.highwaysengland-warning {
+    box-sizing: border-box;
+    padding: 1em 1.5em;
+    border-radius: 0.25em;
+    background: #f9e4ae;
+
+    h2 {
+        font-weight: bold;
+    }
 }
 
 .form-control,
