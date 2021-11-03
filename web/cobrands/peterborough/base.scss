@@ -131,3 +131,31 @@ h1, h2 {
         color: $pale_green;
     }
 }
+
+.peterborough-waste-credits {
+    margin: 2em auto 1em;
+    text-align: left;
+    width: 193px;
+
+    p {
+      font-size: 0.875em;
+      color: #666;
+      margin: 0;
+    }
+
+    a {
+      display: inline-block;
+      height: 0;
+      padding-top: 40px;
+      overflow: hidden;
+      margin: 0.5em 0 0;
+
+      &[href*="societyworks"] {
+        width: 193px;
+        background: transparent none 0 0 no-repeat;
+        @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/logo-societyworks');
+        background-size: 193px 40px;
+        vertical-align: -4px;
+      }
+    }
+  }
