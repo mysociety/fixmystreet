@@ -34,6 +34,10 @@ sub auto : Private {
         $features->{garden_disabled} = 1;
     }
 
+    if ( my $site_name = Utils::trim_text($c->render_fragment('waste/site-name.html')) ) {
+        $c->stash->{site_name} = $site_name;
+    }
+
     $c->cobrand->call_hook( 'waste_check_staff_payment_permissions' );
 
     return 1;
