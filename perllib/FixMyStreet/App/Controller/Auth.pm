@@ -10,6 +10,7 @@ use Digest::HMAC_SHA1 qw(hmac_sha1);
 use JSON::MaybeXS;
 use MIME::Base64;
 use FixMyStreet::SMS;
+use Data::Dumper;
 
 =head1 NAME
 
@@ -101,6 +102,8 @@ Allow the user to sign in with a username and a password.
 
 sub sign_in : Private {
     my ( $self, $c, $username ) = @_;
+    
+    $c->forward('throttle_ip');
 
     $username ||= '';
     my $password = $c->get_param('password_sign_in') || '';
@@ -128,6 +131,32 @@ sub sign_in : Private {
         username => $username,
     );
     return;
+}
+
+=head 2 throttle_ip
+
+Set up memcache to watch for repeated login attempts from the same ip address
+within a specified time
+
+=cut
+
+sub throttle_ip : Private {
+    my ( $self, $c ) = @_;
+    if ($c->config->{COBRAND_FEATURES} &&
+        $c->config->{COBRAND_FEATURES}->{throttle_ips}
+        && $c->config->{COBRAND_FEATURES}->{throttle_ips}->{$c->cobrand->moniker}) {
+        my $conf = $c->config->{COBRAND_FEATURES}->{throttle_ips}->{$c->cobrand->moniker};
+        my $uri = $c->req->uri->{'reference'}->host;
+        if (Memcached::get($uri) ) {
+            my $count = Memcached::get($uri);
+            if ($count >= $conf->{attempts}) {
+                $c->detach('/page_error_403_access_denied');
+            }
+            Memcached::set($uri, ++$count, $conf->{time});
+        } else {
+        Memcached::set($uri, '1', $conf->{time});
+        }
+    }
 }
 
 =head2 code_sign_in
