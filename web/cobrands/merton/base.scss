@@ -25,6 +25,7 @@ a:focus,
 input:focus,
 button:focus,
 .green-btn:focus,
+.btn-primary:focus,
 select:focus,
 textarea:focus,
 .multi-select-button:focus,
@@ -38,6 +39,7 @@ textarea:focus,
 
 .button,
 .green-btn,
+.btn-primary,
 input[type=button],
 input[type=reset],
 input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
@@ -59,6 +61,7 @@ a#geolocate_link,
 .button:hover,
 .btn:hover,
 .green-btn:hover,
+.btn-primary:hover,
 input[type=button]:hover,
 input[type=reset]:hover,
 input[type=submit]:hover :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
@@ -255,3 +258,22 @@ ol.big-numbers {
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";
+
+/* fixes for around page */
+.big-green-banner {
+    font-weight: bold;
+}
+
+.item-list__item--empty p {
+    color: #666666;
+}
+
+.item-list__item__state {
+    background-color: #666666;
+}
+
+.item-list--reports__item a {
+    color: black;
+}
+/* end of fixes for around page */
+
