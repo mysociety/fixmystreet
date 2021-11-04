@@ -21,7 +21,7 @@ sub admin_user_domain {
     'shropshire.gov.uk'
 }
 
-sub default_map_zoom { 4 }
+sub default_map_zoom { 6 }
 
 sub disambiguate_location {
     my $self    = shift;
