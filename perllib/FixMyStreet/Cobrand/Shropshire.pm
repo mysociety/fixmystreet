@@ -13,10 +13,6 @@ sub council_area { return 'Shropshire'; }
 sub council_name { return 'Shropshire Council'; }
 sub council_url { return 'shropshire'; }
 
-sub example_places {
-    return [ 'SY11 1JN', 'Arthur Street, Oswestry' ];
-}
-
 sub admin_user_domain {
     'shropshire.gov.uk'
 }
