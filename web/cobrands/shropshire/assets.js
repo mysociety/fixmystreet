@@ -44,8 +44,6 @@ fixmystreet.assets.add(defaults, {
     stylemap: new OpenLayers.StyleMap({
          'default': highways_style
      }),
-    always_visible: true,
-    non_interactive: true,
     usrn: {
         attribute: 'USRN',
         field: 'site_code'
@@ -53,7 +51,22 @@ fixmystreet.assets.add(defaults, {
     road: true,
     asset_item: 'road',
     asset_type: 'road',
+    no_asset_msg_id: '#js-not-a-road',
+    no_asset_msgs_class: '.js-roads-shropshire',
+    always_visible: true,
+    non_interactive: true,
     all_categories: true,
+    actions: {
+        found: function(layer, asset) {
+            fixmystreet.message_controller.road_found(layer, asset.attributes.SITE_CLASS, function(name) {
+                if (name == 'PUB' || name === 'PUPI') { return 1; }
+                else { return 0; }
+            }, "#js-not-council-road");
+        },
+        not_found: function(layer) {
+              fixmystreet.message_controller.road_not_found(layer);
+        }
+    }
 });
 
 fixmystreet.assets.add(defaults, {
