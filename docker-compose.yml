@@ -17,8 +17,10 @@ services:
     image: fixmystreet/fixmystreet:stable
     tty: true
     depends_on:
-      - postgres
-      - memcached
+      postgres:
+        condition: service_healthy
+      memcached:
+        condition: service_started
     volumes:
       - ./conf/general.yml-docker:/var/www/fixmystreet/fixmystreet/conf/general.yml
     environment:
@@ -46,6 +48,11 @@ services:
       default:
         aliases:
           - postgres.svc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   memcached:
     image: memcached:1.5.10
     restart: always
