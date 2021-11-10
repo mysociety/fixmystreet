@@ -3,8 +3,6 @@ package Integrations::Pay360;
 use Moo;
 with 'FixMyStreet::Roles::SOAPIntegration';
 
-use SOAP::Lite; # +trace => [qw(method debug)];
-
 has config => (
     is => 'ro'
 );
@@ -41,6 +39,7 @@ has auth_header => (
 sub call {
     my ($self, $method, @params) = @_;
 
+    require SOAP::Lite;
     my $res = $self->endpoint->call(
         SOAP::Data->name($method)->attr({ xmlns => 'https://www.emandates.co.uk/v3/' }),
         $self->auth_header,
