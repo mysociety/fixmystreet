@@ -16,5 +16,3 @@ libexpat1-dev
 libssl-dev
 zlib1g-dev
 libxml2-dev
-language-pack-sv
-language-pack-de

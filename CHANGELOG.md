@@ -57,8 +57,6 @@
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
         - Show relevant updates in alert-update email preview. #3417
-        - Add German and Swiss language packs to default
-        linux install #3544
         - Upgrade jQuery to 3.6.0. #3017
         - Upgrade Mozilla::CA to handle new root certificates.
         - Factor alert script to slightly smaller functions. #3615
