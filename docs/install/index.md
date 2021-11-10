@@ -12,7 +12,8 @@ title: Installing
 
 ## Ways to install
 
-* [Use Docker]({{ "/install/docker/" | relative_url }})
+* [Use Docker for development]({{ "/install/docker-develop/" | relative_url }})
+* [Use Docker for deployment]({{ "/install/docker-deploy/" | relative_url }})
 * [Use an install script for Debian or Ubuntu servers]({{ "/install/install-script/" | relative_url }})
 * [Use a FixMyStreet AMI for Amazon EC2]({{ "/install/ami/" | relative_url }})
 * [Vagrant installation]({{ "/install/vagrant/" | relative_url }}), for development

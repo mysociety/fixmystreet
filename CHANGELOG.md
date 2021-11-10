@@ -60,6 +60,7 @@
         - Upgrade jQuery to 3.6.0. #3017
         - Upgrade Mozilla::CA to handle new root certificates.
         - Factor alert script to slightly smaller functions. #3615
+        - Add development Docker environment.
     - Open311 improvements:
         - Consistent protected field ordering.
         - Move test handling out of core code.

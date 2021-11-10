@@ -1,1 +1,5 @@
 **
+!docker
+!cpanfile*
+!vendor
+!conf/packages.docker

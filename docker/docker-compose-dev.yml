@@ -1,0 +1,91 @@
+version: '3'
+
+services:
+  setup:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-development
+    command: docker/setup
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../:/var/www/fixmystreet
+      - fixmystreet-local:/var/www/fixmystreet/local
+  css_watcher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-development
+    command: bin/make_css --watch
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    volumes:
+      - ../:/var/www/fixmystreet
+      - fixmystreet-local:/var/www/fixmystreet/local
+  fixmystreet:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-development
+    command: script/server
+    tty: true
+    ports:
+      - 3000:3000
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      memcached:
+        condition: service_started
+    volumes:
+      - ../:/var/www/fixmystreet
+      - fixmystreet-local:/var/www/fixmystreet/local
+    environment:
+      POSTGRES_PASSWORD: 'password'
+    networks:
+      default:
+        aliases:
+          - fixmystreet.svc
+  db:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-postgres
+    restart: always
+    volumes:
+      - ../:/var/www/fixmystreet
+      - fixmystreet-local:/var/www/fixmystreet/local
+      - fixmystreet-pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_PASSWORD: 'password'
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+    networks:
+      default:
+        aliases:
+          - postgres.svc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  memcached:
+    image: memcached:1.5.10
+    restart: always
+    networks:
+      default:
+        aliases:
+          - memcached.svc
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+     default:
+       aliases:
+         - email.svc
+
+volumes:
+  fixmystreet-pgdata:
+  fixmystreet-local:
