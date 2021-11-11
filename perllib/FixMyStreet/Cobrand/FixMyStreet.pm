@@ -429,4 +429,11 @@ around 'munge_sendreport_params' => sub {
     $row->areas($original_areas);
 };
 
+sub reopening_disallowed {
+    my ($self, $problem) = @_;
+    my $c = $self->{c};
+    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
+    return $self->next::method($problem);
+}
+
 1;
