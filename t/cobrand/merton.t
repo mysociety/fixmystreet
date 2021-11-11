@@ -1,0 +1,90 @@
+use Test::MockModule;
+use FixMyStreet::TestMech;
+use HTML::Selector::Element qw(find);
+
+my $mech = FixMyStreet::TestMech->new;
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Merton');
+
+$cobrand->mock('area_types', sub { [ 'LBO' ] });
+
+my $merton = $mech->create_body_ok(2500, 'Merton Council');
+my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
+for my $contact ( @cats ) {
+    $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org");
+}
+
+my $hackney = $mech->create_body_ok(2508, 'Hackney Council');
+for my $contact ( @cats ) {
+    $mech->create_contact_ok(body_id => $hackney->id, category => $contact, email => "\L$contact\@hackney.example.org");
+}
+
+my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
+my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $merton);
+my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal User');
+my $hackneyuser = $mech->create_user_ok('hackneyuser@example.com', name => 'Hackney User', from_body => $hackney);
+
+$normaluser->update({ phone => "+447123456789" });
+
+my ($problem1) = $mech->create_problems_for_body(1, $merton->id, 'Title', {
+    postcode => 'SM4 5DX', areas => ",2500,", category => 'Potholes',
+    cobrand => 'merton', user => $normaluser, state => 'fixed'
+});
+
+my ($problem2) = $mech->create_problems_for_body(1, $hackney->id, 'Title', {
+    postcode => 'E8 1DY', areas => ",2508,", category => 'Litter',
+    cobrand => 'fixmystreet', user => $normaluser, state => 'fixed'
+});
+
+subtest 'only Merton staff can reopen closed reports on Merton cobrand' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'merton' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        test_reopen_problem($normaluser, $problem1);
+        test_reopen_problem($counciluser, $problem1);
+    };
+};
+
+subtest 'only Merton staff can reopen closed reports in Merton on fixmystreet.com' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        test_reopen_problem($normaluser, $problem1);
+        test_reopen_problem($counciluser, $problem1);
+    };
+};
+
+subtest 'staff and problems for other bodies are not affected by this change on fixmystreet.com' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        test_visit_problem($normaluser, $problem2);
+        test_visit_problem($hackneyuser, $problem2);
+    };
+};
+
+sub test_reopen_problem {
+    my ($user, $problem) = @_;
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok('/report/' . $problem->id);
+    $mech->content_contains("banner--fixed");
+    if ($user->from_body) {
+        my $page = HTML::TreeBuilder->new_from_content($mech->content());
+        ok (my $select = $page->find('select#state'), 'State selection dropdown exists.');
+    } else {
+        ok $mech->content_lacks("This problem has not been fixed");
+    }
+    $mech->log_out_ok;
+}
+
+sub test_visit_problem {
+    my ($user, $problem) = @_;
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok('/report/' . $problem->id);
+    $mech->content_contains("banner--fixed");
+    $mech->log_out_ok;
+}
+
+done_testing;
