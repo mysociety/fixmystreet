@@ -125,6 +125,10 @@ dl dt {
     }
 }
 
+.pagination a {
+  color: #fff;
+}
+
 label {
   @extend %bold-font;
 }
