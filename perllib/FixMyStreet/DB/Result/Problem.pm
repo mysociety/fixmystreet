@@ -687,6 +687,7 @@ sub nearest_address {
     my $self = shift;
 
     return '' unless $self->geocode;
+    return '' if $self->cobrand_data && $self->cobrand_data eq 'waste';
 
     my $address = $self->geocode->{resourceSets}[0]{resources}[0];
     return $address->{name};
