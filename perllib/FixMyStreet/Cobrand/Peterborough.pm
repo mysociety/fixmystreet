@@ -646,7 +646,8 @@ sub bin_services_for_address {
         my $date = construct_bin_date($_->{EventDate})->ymd;
         my $type = $_->{EventType}{Description};
         next unless $lock_out_types{$type};
-        $premise_dates_to_lock_out{$date}{$container_id} = $type;
+        my $types = $premise_dates_to_lock_out{$date}{$container_id} ||= [];
+        push @$types, $type;
     }
     foreach (@$events_usrn) {
         my $workpack = $_->{Workpack}{Name};
@@ -714,19 +715,19 @@ sub bin_services_for_address {
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
                 my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
                 $row->{report_allowed} = $is_staff ? 1 : 0;
-                $row->{report_locked_out} = "ON DAY PRE 5PM";
+                $row->{report_locked_out} = [ "ON DAY PRE 5PM" ];
             }
             # But if it has been marked as locked out, show that
-            if (my $type = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {
+            if (my $types = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {
                 $row->{report_allowed} = 0;
-                $row->{report_locked_out} = $type;
+                $row->{report_locked_out} = $types;
             }
         }
         # Last date is last successful collection. If whole street locked out, it hasn't started
         my $workpack = $feature_to_workpack{$name} || '';
         if (my $lockout = $street_workpacks_to_lock_out{$workpack}) {
             $row->{report_allowed} = 0;
-            $row->{report_locked_out} = $lockout->{type};
+            $row->{report_locked_out} = [ $lockout->{type} ];
             my $last = $lockout->{date};
             $row->{last} = { date => $last, ordinal => ordinal($last->day) };
         }
