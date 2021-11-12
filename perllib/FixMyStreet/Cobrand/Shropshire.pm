@@ -52,4 +52,14 @@ sub staff_ignore_form_disable_form {
         && $c->user->belongs_to_body( $self->body->id );
 }
 
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+    for my $meta_data (@$meta) {
+        if ($meta_data->{'description'} && $meta_data->{'description'} =~ 'Abandoned since') {
+            $meta_data->{'fieldtype'} = 'date';
+            last;
+        }
+    }
+}
+
 1;
