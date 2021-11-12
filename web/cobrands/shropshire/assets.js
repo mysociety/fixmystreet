@@ -120,7 +120,7 @@ fixmystreet.assets.add(defaults, {
             TYPENAME: "Grit_Bins"
         }
     },
-    asset_category: ["Salt bins new", "Salt bins replenish"],
+    asset_category: ["Salt bins replenish"],
     asset_item: 'grit bin',
     actions: {
         asset_found: fixmystreet.assets.named_select_action_found,
