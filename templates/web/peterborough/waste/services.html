@@ -6,9 +6,9 @@
     </span>
   [% ELSIF unit.report_locked_out %]
     <span class="waste-service-descriptor">
-      [%~ IF unit.report_locked_out == 'NO ACCESS - street' %]
+      [%~ IF unit.report_locked_out.join(', ').match('NO ACCESS - street') %]
         There is no need to report this as there was no access to your property, your collection has been rescheduled.
-      [%~ ELSIF unit.report_locked_out == 'ON DAY PRE 5PM' %]
+      [%~ ELSIF unit.report_locked_out.join(', ').match('ON DAY PRE 5PM') %]
         [%~ IF c.user.from_body %]
           Please call through to Aragon to see if they can return to collect, if not
           <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]" style="display: inline">
@@ -22,7 +22,7 @@
       [%~ ELSE %]
         There was a problem with your bin collection
     [%~ IF c.user.from_body OR c.user.is_superuser %]
-        ([% unit.report_locked_out %])
+        ([% unit.report_locked_out.join(', ') %])
     [%~ END %], please call 01733 74 74 74 or email us at
         <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.<br />
         <small>Please note: we will not return to collect bins that have been recorded
