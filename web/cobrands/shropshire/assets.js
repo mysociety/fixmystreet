@@ -18,10 +18,9 @@ var defaults = {
         }
     },
     asset_type: 'spot',
-    asset_id_field: 'central_as',
+    asset_id_field: 'CentralAssetId',
     attributes: {
-        central_asset_id: 'central_as',
-        site_code: 'site_code'
+        central_asset_id: 'CentralAssetId',
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
@@ -77,11 +76,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_group: "Streetlights",
-    asset_item: 'streetlight',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
+    asset_item: 'streetlight'
 });
 
 fixmystreet.assets.add(defaults, {
@@ -90,13 +85,12 @@ fixmystreet.assets.add(defaults, {
             TYPENAME: "Traffic_Signal_Areas"
         }
     },
-    feature_code: 'FEATURE_ID',
+    asset_id_field: 'ASSET_ID',
+    attributes: {
+        central_asset_id: 'ASSET_ID',
+    },
     asset_group: 'Traffic Signals & Crossings',
-    asset_item: 'traffic signal',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
+    asset_item: 'traffic signal'
 });
 
 fixmystreet.assets.add(defaults, {
@@ -106,12 +100,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_group: 'Illuminated signs',
-    feature_code: 'CentralAssetId',
-    asset_item: 'bollard',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
+    asset_item: 'bollard'
 });
 
 fixmystreet.assets.add(defaults, {
@@ -121,11 +110,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_category: ["Salt bins new", "Salt bins replenish"],
-    asset_item: 'grit bin',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
+    asset_item: 'salt bin'
 });
 
 fixmystreet.assets.add(defaults, {
@@ -135,11 +120,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_category: ["Cattle Grid"],
-    asset_item: 'cattle grid',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
+    asset_item: 'cattle grid'
 });
 
 fixmystreet.assets.add(defaults, {
@@ -149,11 +130,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_category: ["Bridge"],
-    asset_item: 'bridge',
-    actions: {
-        asset_found: fixmystreet.assets.named_select_action_found,
-        asset_not_found: fixmystreet.assets.named_select_action_not_found
-    }
+    asset_item: 'bridge'
 });
 
 })();
