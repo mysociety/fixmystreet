@@ -959,7 +959,8 @@ sub waste_munge_enquiry_data {
 
     my $bin = $c->stash->{containers}{$service_id};
     $data->{category} = $category;
-    $data->{title} = $bin;
+    $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
+                     $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
     $data->{detail} = $category_verbose . "\n\n" . $c->stash->{property}->{address};
 
     if ( $data->{extra_extra_detail} ) {
