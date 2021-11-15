@@ -67,6 +67,7 @@
         - Move test handling out of core code.
     - Security:
         - Increase minimum password length to eight.
+        - Allow throttling by user login attempts
     - Changes
         - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
 

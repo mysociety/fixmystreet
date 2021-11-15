@@ -10,7 +10,6 @@ use Digest::HMAC_SHA1 qw(hmac_sha1);
 use JSON::MaybeXS;
 use MIME::Base64;
 use FixMyStreet::SMS;
-use Data::Dumper;
 
 =head1 NAME
 
@@ -103,8 +102,6 @@ Allow the user to sign in with a username and a password.
 sub sign_in : Private {
     my ( $self, $c, $username ) = @_;
     
-    $c->forward('throttle_ip');
-
     $username ||= '';
     my $password = $c->get_param('password_sign_in') || '';
 
@@ -112,6 +109,8 @@ sub sign_in : Private {
     $c->logout();
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
+
+    $c->forward('throttle_username', [$parsed]);
 
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
         # Upgrade hash count if necessary
@@ -133,28 +132,24 @@ sub sign_in : Private {
     return;
 }
 
-=head 2 throttle_ip
+=head 2 throttle_username
 
-Set up memcache to watch for repeated login attempts from the same ip address
+Set up memcache to watch for repeated login attempts from the same user name
 within a specified time
 
 =cut
 
-sub throttle_ip : Private {
-    my ( $self, $c ) = @_;
-    if ($c->config->{COBRAND_FEATURES} &&
-        $c->config->{COBRAND_FEATURES}->{throttle_ips}
-        && $c->config->{COBRAND_FEATURES}->{throttle_ips}->{$c->cobrand->moniker}) {
-        my $conf = $c->config->{COBRAND_FEATURES}->{throttle_ips}->{$c->cobrand->moniker};
-        my $uri = $c->req->uri->{'reference'}->host;
-        if (Memcached::get($uri) ) {
-            my $count = Memcached::get($uri);
-            if ($count >= $conf->{attempts}) {
-                $c->detach('/page_error_403_access_denied');
-            }
-            Memcached::set($uri, ++$count, $conf->{time});
+sub throttle_username : Private {
+    my ( $self, $c, $details ) = @_;
+    my $name = $details->{'username'};
+    if (my $conf = $c->cobrand->feature('throttle_username')) {
+        if (Memcached::get($name) ) {
+            my $count = Memcached::increment($name);
+            if ($count > $conf->{attempts}) {
+                $c->detach('/page_error_403_access_denied', ['Too many login attempts. Please wait ' . $conf->{time} . ' seconds before trying again']);
+                         }
         } else {
-        Memcached::set($uri, '1', $conf->{time});
+            Memcached::set($name, '1', $conf->{time});
         }
     }
 }

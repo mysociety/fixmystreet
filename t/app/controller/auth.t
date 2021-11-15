@@ -61,45 +61,6 @@ for my $test (
     is_deeply $mech->page_errors, [ $error_message ], 'errors match';
 }
 
-# check that submitting form with no / bad email creates an error.
-
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'fixmystreet',
-}, sub {
-    subtest 'Throttling should take place when configured' => sub {
-        $mech->get_ok('/auth');
-
-    for my $test (
-        [ 'bob@foonaoedudnueu.co.uk'                         => 'Please enter your email' ],
-        [ 'bob@foonaoedudnueu.co.uk'             => 'Please check your email address is correct' ],
-        [ 'bob@foonaoedudnueu.co.uk'                  => 'Please check your email address is correct' ],
-        [ 'bob@foonaoedudnueu.co.uk' => 'Please check your email address is correct' ],
-    )
-    {
-        my ( $email, $error_message ) = @$test;
-
-        my $resolver = Test::MockModule->new('Net::DNS::Resolver');
-        $resolver->mock('send', sub {
-        my ($self, $domain, $type) = @_;
-        return Net::DNS::Packet->new;
-    });
-
-    pass "--- testing bad email '$email' gives error '$error_message'";
-    $mech->get_ok('/auth');
-    is_deeply $mech->page_errors, [], 'no errors initially';
-    $mech->submit_form_ok(
-        {
-            form_name => 'general_auth',
-            fields => { username => $email, },
-            button => 'sign_in_by_code',
-        },
-        "try to create an account with email '$email'"
-    );
-    is $mech->uri->path, '/auth', "still on auth page";
-    is_deeply $mech->page_errors, [ $error_message ], 'errors match'; 
-}}
-}
-
 # Email address parsing should pass from here
 my $resolver = Test::MockModule->new('Email::Valid');
 $resolver->mock('address', sub { $_[1] });
@@ -169,21 +130,48 @@ $mech->submit_form_ok(
 is $mech->uri->path, '/auth', "redirected to correct page";
 $mech->content_contains( 'problem with your login information', 'found error message' );
 
-# try to sign in with bad details and be throttled
-$mech->get_ok('/auth');
-$mech->submit_form_ok(
-    {
-        form_name => 'general_auth',
-        fields    => {
-            username => $test_email,
-            password_sign_in => 'not the password',
+# try multiple login attempts with same user name and be throttled
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    COBRAND_FEATURES => {
+        throttle_username => {
+            fixmystreet => {
+                time => 60,
+                attempts => 3
+            },
         },
-        button => 'sign_in_by_password',
-    },
-    "sign in with '$test_email' & 'not the password'"
-);
-is $mech->uri->path, '/auth', "redirected to correct page";
-$mech->content_contains( 'problem with your login information', 'found error message' );
+    }
+}, sub {
+    for my $count (1..3) {
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+            {
+                form_name => 'general_auth',
+                fields    => {
+                    username => $test_email,
+                    password_sign_in => 'not the password',
+                },
+            button => 'sign_in_by_password',
+            },
+        "sign in with '$test_email' & 'not the password'. Attempt $count"
+        );
+    is $mech->uri->path, '/auth', "redirected to correct page";
+    $mech->content_contains( 'problem with your login information', 'found error message' );
+    };
+    $mech->get_ok('/auth');
+    $mech->submit_form(
+                form_name => 'general_auth',
+                fields    => {
+                    username => $test_email,
+                    password_sign_in => 'not the password',
+                },
+            button => 'sign_in_by_password'
+        );
+    is $mech->uri->path, '/auth', "redirected to correct page";
+    is $mech->status, '403', "status forbidden";
+    $mech->content_contains( 'Too many login attempts', 'found error message for too many login attempts' );
+    Memcached::delete($test_email);
+};
 
 subtest "sign in but have email form autofilled" => sub {
     $mech->get_ok('/auth');
