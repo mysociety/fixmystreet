@@ -130,6 +130,53 @@ $mech->submit_form_ok(
 is $mech->uri->path, '/auth', "redirected to correct page";
 $mech->content_contains( 'problem with your login information', 'found error message' );
 
+# try multiple login attempts with same user name and be throttled
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    COBRAND_FEATURES => {
+        throttle_username => {
+            fixmystreet => {
+                time => 60,
+                attempts => 3
+            },
+        },
+    }
+}, sub {
+    SKIP: {
+        skip( "No memcached", 10 ) unless Memcached::set('throttle-ip-test', 1);
+        Memcached::delete("throttle-ip-test");
+        for my $count (1..3) {
+            $mech->get_ok('/auth');
+            $mech->submit_form_ok(
+                {
+                    form_name => 'general_auth',
+                    fields    => {
+                        username => $test_email,
+                        password_sign_in => 'not the password',
+                    },
+                    button => 'sign_in_by_password',
+                },
+            "sign in with '$test_email' & 'not the password'. Attempt $count"
+            );
+        is $mech->uri->path, '/auth', "redirected to correct page";
+        $mech->content_contains( 'problem with your login information', 'found error message' );
+        };
+        $mech->get_ok('/auth');
+        $mech->submit_form(
+                form_name => 'general_auth',
+                fields    => {
+                    username => $test_email,
+                    password_sign_in => 'not the password',
+                },
+                button => 'sign_in_by_password'
+        );
+        is $mech->uri->path, '/auth', "redirected to correct page";
+        is $mech->status, '403', "status forbidden";
+        $mech->content_contains( 'Too many login attempts', 'found error message for too many login attempts' );
+        Memcached::delete("throttle_username_" . $test_email);
+    }
+};
+
 subtest "sign in but have email form autofilled" => sub {
     $mech->get_ok('/auth');
     $mech->submit_form_ok(

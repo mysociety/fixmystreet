@@ -21,6 +21,7 @@
         - Upgrade Mozilla::CA to handle new root certificates.
     - Security:
         - Increase minimum password length to eight.
+        - Allow throttling by user login attempts
 
 * v3.1 (16th November 2020)
     - Security:
