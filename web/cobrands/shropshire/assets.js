@@ -76,7 +76,11 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_group: "Streetlights",
-    asset_item: 'streetlight'
+    asset_item: 'streetlight',
+    asset_id_field: 'ASSET_ID',
+    attributes: {
+        central_asset_id: 'ASSET_ID',
+    }
 });
 
 fixmystreet.assets.add(defaults, {
@@ -100,7 +104,11 @@ fixmystreet.assets.add(defaults, {
         }
     },
     asset_group: 'Illuminated signs',
-    asset_item: 'bollard'
+    asset_item: 'bollard',
+    asset_id_field: 'ASSET_ID',
+    attributes: {
+        central_asset_id: 'ASSET_ID',
+    }
 });
 
 fixmystreet.assets.add(defaults, {
