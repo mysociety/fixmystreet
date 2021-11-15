@@ -110,6 +110,8 @@ sub sign_in : Private {
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
 
+    $c->forward('throttle_username', [$parsed]);
+
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
         # Upgrade hash count if necessary
         my $cost = sprintf("%02d", FixMyStreet::DB::Result::User->cost);
@@ -128,6 +130,26 @@ sub sign_in : Private {
         username => $username,
     );
     return;
+}
+
+=head 2 throttle_username
+
+Set up memcache to watch for repeated login attempts from the same user name
+within a specified time
+
+=cut
+
+sub throttle_username : Private {
+    my ( $self, $c, $details ) = @_;
+    my $name = $details->{'username'};
+    return if !$name;
+    my $conf = $c->cobrand->feature('throttle_username');
+    return if !$conf;
+    $name = "throttle_username_" . $name;
+    my $count = Memcached::increment($name, $conf->{time});
+    if ($count > $conf->{attempts}) {
+        $c->detach('/page_error_403_access_denied', [sprintf (_('Too many login attempts. Please wait %d seconds before trying again'), $conf->{time})]);
+    }
 }
 
 =head2 code_sign_in
