@@ -65,7 +65,7 @@ subtest 'check open311_contact_meta_override' => sub {
             <code>group_hint</code>
             <datatype>string</datatype>
             <datatype_description></datatype_description>
-            <description>Model number</description>
+            <description>Registration Mark</description>
             <order>2</order>
             <required>false</required>
             <variable>false</variable>
@@ -102,7 +102,8 @@ subtest 'check open311_contact_meta_override' => sub {
     my @extra_fields = $contact->get_extra_fields;
 
     is $extra_fields[0][0]->{fieldtype}, 'date', "added fieldtype 'date' to 'Abandoned since'";
-    is $extra_fields[0][1]->{fieldtype}, undef, "not added fieldtype 'date' to 'Model number'";
+    is $extra_fields[0][0]->{required}, 'true', "set required to true";
+    is $extra_fields[0][1]->{fieldtype}, undef, "not added fieldtype 'date' to 'Registration Mark'";
 };
 
 done_testing();
