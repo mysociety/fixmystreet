@@ -866,7 +866,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
     border-radius: 0;
 
     &:hover,
-    &.hover {
+    &.hover,
+    &:focus {
       text-decoration: none;
       background-color: #333;
       color: #fff !important;
