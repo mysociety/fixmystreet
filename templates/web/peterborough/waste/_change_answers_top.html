@@ -1,9 +1,5 @@
-[% IF first_page == 'about_you' %]
-    <a href="/waste/[% property.id %]/enquiry?template=problem&service_id=[% c.get_param('service_id') %]" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0">Change answers</a>
-[% ELSE %]
-    <form method="post">
-        <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
-        <input type="hidden" name="goto" value="[% first_page %]">
-        <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
-    </form>
-[% END %]
+<form method="post">
+    <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+    <input type="hidden" name="goto" value="[% first_page %]">
+    <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+</form>

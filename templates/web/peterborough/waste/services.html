@@ -42,8 +42,11 @@
   [% END %]
 [% END %]
 
-[% UNLESS waste_features.enquiry_disabled %]
-  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %]</a>
+[% UNLESS waste_features.problem_disabled %]
+  <form method="post" action="[% c.uri_for_action('waste/problem', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" value="Report a problem with a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+  </form>
 [% END %]
 
 [% UNLESS waste_features.request_disabled %]
