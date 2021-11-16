@@ -35,6 +35,16 @@ sub disambiguate_location {
     };
 }
 
+sub password_expiry {
+    return if FixMyStreet->test_mode;
+
+    # uncoverable subroutine
+    my $c = shift->{c};
+    return unless $c->user->from_body && $c->user->from_body->name == 'Shropshire Council';
+
+    return 86400 * 365 * 10;
+}
+
 sub lookup_site_code_config { {
     buffer => 200, # metres
     url => "https://tilma.staging.mysociety.org/mapserver/shropshire",
