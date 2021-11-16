@@ -1,2 +1,13 @@
 <h2>Your issue is on its way to the council.</h2>
-<p>You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+[% IF report.can_display_external_id %]
+    <p>Your reference number for this report is [% report.external_id %], please quote it in any enquiries.</p>
+[% ELSIF report.may_display_external_id %]
+    <div class="hidden-nojs js-external-id-loading" data-report-id="[% report.id %]">
+        [% INCLUDE 'around/geolocate_link_icon.html' size=32 icon_class="hidden" %]
+        <p class="js-external-id-message hidden">Your reference number for this report is <span class="js-external-id"></span>, please quote it in any enquiries.</p>
+    </div>
+
+    <p class="hidden-js js-external-id-not-available">You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+[% ELSE %]
+    <p>You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+[% END %]

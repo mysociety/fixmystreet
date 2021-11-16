@@ -665,6 +665,18 @@ sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
     } ]);
 }
 
+sub external_id_json :PathPart('external_id.json') :Chained('id') :Args(0) {
+    my ($self, $c) = @_;
+
+    my $p = $c->stash->{problem};
+
+    my $body = encode_json({
+        external_id => $p->can_display_external_id ? $p->external_id : undef,
+    });
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
+}
+
 sub _nearby_json :Private {
     my ($self, $c, $params) = @_;
 

@@ -1356,6 +1356,40 @@ $.extend(fixmystreet.set_up, {
               }
           }
       });
+  },
+
+  external_id_on_confirm_page: function() {
+    console.log("hello from external_id_on_confirm_page");
+    var $pending = $(".js-external-id-loading");
+
+    if (!$pending.length) {
+        return;
+    }
+    $(".geolocate-link__icon").hide();
+    $(".geolocate-link__loading").show();
+
+    var report_id = $pending.data('reportId');
+
+    var tries = 10;
+    var update_external_id = function() {
+        if (!tries) {
+            $(".js-external-id-not-available").removeClass("hidden-js");
+            $pending.hide();
+        } else {
+            $.getJSON('/report/' + report_id + '/external_id.json', function(data) {
+                if (data.external_id) {
+                    $(".js-external-id").text(data.external_id);
+                    $(".js-external-id-message").removeClass("hidden");
+                    $(".geolocate-link__loading").hide();
+                } else {
+                    console.log("not yet...", tries);
+                    tries--;
+                    window.setTimeout(update_external_id, 1000);
+                }
+            });
+        }
+    };
+    update_external_id();
   }
 
 });
