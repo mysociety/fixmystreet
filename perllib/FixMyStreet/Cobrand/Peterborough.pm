@@ -924,6 +924,38 @@ sub waste_munge_report_data {
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
 
+sub waste_munge_problem_data {
+    my ($self, $id, $data) = @_;
+    my $c = $self->{c};
+
+    my $service_details = $self->{c}->stash->{services_problems}->{$id};
+    my $container_id = $service_details->{container};
+
+    my $category = $self->body->contacts->find({ email => "Bartec-$id" })->category;
+    my $category_verbose = $service_details->{label};
+
+    if ($container_id == 6533 && $category =~ /Lid|Wheels/) { # 240L Black repair
+        my $uprn = $c->stash->{property}->{uprn};
+        my $attributes = $self->property_attributes($uprn);
+        if ($attributes->{"LARGE BIN"}) {
+            # For large bins, we need to raise a new bin request instead
+            $container_id = "LARGE BIN";
+            $category = 'Black 360L bin';
+            $category_verbose .= ", exchange bin";
+        }
+    }
+
+    my $bin = $c->stash->{containers}{$container_id};
+    $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
+                     $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
+    $data->{category} = $category;
+    $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
+
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
+    }
+}
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
     my $c = $self->{c};
@@ -969,6 +1001,95 @@ sub waste_munge_enquiry_form_fields {
             $_->{maxlength} = 1000;
         }
     }
+}
+
+sub waste_munge_problem_form_fields {
+    my ($self, $field_list) = @_;
+
+    my %services_problems = (
+        538 => {
+            container => 6533,
+            container_name => "Black bin",
+            label => "The bin’s lid is damaged",
+        },
+        541 => {
+            container => 6533,
+            container_name => "Black bin",
+            label => "The bin’s wheels are damaged",
+        },
+        537 => {
+            container => 6534,
+            container_name => "Green bin",
+            label => "The bin’s lid is damaged",
+        },
+        540 => {
+            container => 6534,
+            container_name => "Green bin",
+            label => "The bin’s wheels are damaged",
+        },
+        539 => {
+            container => 6579,
+            container_name => "Brown bin",
+            label => "The bin’s lid is damaged",
+        },
+        542 => {
+            container => 6579,
+            container_name => "Brown bin",
+            label => "The bin’s wheels are damaged",
+        },
+        497 => {
+            container_name => "General",
+            label => "The bin wasn’t returned to the collection point",
+        },
+    );
+    $self->{c}->stash->{services_problems} = \%services_problems;
+
+    my %services;
+    foreach (keys %services_problems) {
+        my $v = $services_problems{$_};
+        next unless $v->{container};
+        $services{$v->{container}} ||= {};
+        $services{$v->{container}}{$_} = $v->{label};
+    }
+
+    my $open_requests = $self->{c}->stash->{open_service_requests};
+    @$field_list = ();
+
+    foreach (@{$self->{c}->stash->{service_data}}) {
+        my $id = $_->{service_id};
+        my $name = $_->{service_name};
+
+        next unless $services{$id};
+
+        my $categories = $services{$id};
+        foreach (keys %$categories) {
+            my $cat_name = $categories->{$_};
+            push @$field_list, "service-$_" => {
+                type => 'Checkbox',
+                label => $name,
+                option_label => $cat_name,
+                $open_requests->{$_} ? ( disabled => 1 ) : (),
+            };
+
+            # Set this to empty so the heading isn't shown multiple times
+            $name = '';
+        }
+    }
+    push @$field_list, "service-497" => {
+        type => 'Checkbox',
+        label => $self->{c}->stash->{services_problems}->{497}->{container_name},
+        option_label => $self->{c}->stash->{services_problems}->{497}->{label},
+    };
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
+    };
+
 }
 
 sub bin_request_form_extra_fields {

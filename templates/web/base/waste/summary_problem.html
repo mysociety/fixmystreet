@@ -1,0 +1,27 @@
+[%
+title = 'Submit problem report';
+thing = 'bin problem';
+summary_title = 'Problem with your bins';
+step1 = 'problem';
+%]
+
+[% BLOCK answers %]
+  [% FOR service IN data.keys.grep('^service-') %]
+    [% NEXT UNLESS data.$service %]
+    [% SET service_id = service.replace('service-', '') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% services_problems.$service_id.container_name %]</dt>
+        <dd class="govuk-summary-list__value">[% services_problems.$service_id.label %]</dd>
+    </div>
+  [% END %]
+  [% FOR extra IN data.keys.grep('^extra_') %]
+    [% NEXT UNLESS data.$extra %]
+    [% SET extra_name = extra.replace('extra_', '') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% extra_name | title %]</dt>
+        <dd class="govuk-summary-list__value">[% data.$extra %]</dd>
+    </div>
+  [% END %]
+[% END %]
+
+[% PROCESS waste/summary.html %]
