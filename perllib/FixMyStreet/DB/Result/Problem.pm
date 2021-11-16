@@ -802,20 +802,24 @@ sub defect_types {
 # returns true if the external id is the council's ref, i.e., useful to publish it
 # (by way of an example, the Oxfordshire send method returns a useful reference when
 # it succeeds, so that is the ref we should show on the problem report page).
-#     Future: this is installation-dependent so maybe should be using the contact
-#             data to determine if the external id is public on a council-by-council basis.
-#     Note:   this only makes sense when called on a problem that has been sent!
+# Note: this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
+    my $self = shift;
+
+    return $self->external_id && $self->may_display_external_id;
+}
+
+# Returns true if the cobrand configuration allows external IDs to be displayed.
+# Note: This is independent of whether the problem has been sent.
+sub may_display_external_id {
     my $self = shift;
 
     my $cobrand = $self->result_source->schema->cobrand;
     $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $self) || $cobrand;
-
-    if ($self->external_id && $cobrand->feature('display_external_id')) {
-        return 1;
-    }
-    return 0;
+    return $cobrand->feature('display_external_id') ? 1 : 0;
 }
+
+
 
 # This can return HTML and is safe, so returns a FixMyStreet::Template::SafeString
 sub duration_string {
