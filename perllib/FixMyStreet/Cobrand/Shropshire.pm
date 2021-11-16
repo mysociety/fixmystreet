@@ -57,6 +57,7 @@ sub open311_contact_meta_override {
     for my $meta_data (@$meta) {
         if ($meta_data->{'description'} && $meta_data->{'description'} =~ 'Abandoned since') {
             $meta_data->{'fieldtype'} = 'date';
+            $meta_data->{'required'} = 'true';
             last;
         }
     }
