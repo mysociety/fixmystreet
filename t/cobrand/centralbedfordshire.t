@@ -44,7 +44,7 @@ my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
 });
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'centralbedfordshire' ],
+    ALLOWED_COBRANDS => [ 'centralbedfordshire', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => {
@@ -55,7 +55,10 @@ FixMyStreet::override_config {
         } },
         open311_email => { centralbedfordshire => {
             Potholes => 'potholes@example.org',
-        } }
+        } },
+        display_external_id => {
+            centralbedfordshire => 1,
+        }
     },
 }, sub {
 
@@ -95,6 +98,13 @@ FixMyStreet::override_config {
     subtest 'External ID is shown on report page' => sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains("Council ref:&nbsp;" . $report->external_id);
+    };
+
+    subtest 'External ID is shown on report page on fixmystreet.com' => sub {
+        ok $mech->host("fixmystreet.com"), "change host to fixmystreet";
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains("Council ref:&nbsp;" . $report->external_id);
+        ok $mech->host("centralbedfordshire.fixmystreet.com"), "change host back to centralbedfordshire";
     };
 
     subtest "it doesn't show old reports on the cobrand" => sub {

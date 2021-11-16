@@ -807,7 +807,11 @@ sub defect_types {
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->to_body_named('Oxfordshire|Lincolnshire|Isle of Wight|East Sussex|Central Bedfordshire')) {
+
+    my $cobrand = $self->result_source->schema->cobrand;
+    $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $self) || $cobrand;
+
+    if ($self->external_id && $cobrand->feature('display_external_id')) {
         return 1;
     }
     return 0;

@@ -94,6 +94,11 @@ subtest "use external id for reference number" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'isleofwight',
+        COBRAND_FEATURES => {
+            display_external_id => {
+                isleofwight => 1,
+            },
+        }
     }, sub {
         $mech->get_ok('/report/' . $reports[0]->id);
     };
