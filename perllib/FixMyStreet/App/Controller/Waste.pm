@@ -11,6 +11,7 @@ use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
 use FixMyStreet::App::Form::Waste::Report;
+use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
 use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
@@ -692,6 +693,45 @@ sub group_reports {
         $report->update;
     }
     $c->stash->{report} = $report;
+}
+
+sub construct_bin_problem_form {
+    my $c = shift;
+
+    my $field_list = [];
+
+    foreach (@{$c->stash->{service_data}}) {
+        # next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
+        my $id = $_->{service_id};
+        my $name = $_->{service_name};
+        push @$field_list, "service-$id" => {
+            type => 'Checkbox',
+            label => $name,
+            option_label => $name,
+        };
+    }
+
+    $c->cobrand->call_hook("waste_munge_problem_form_fields", $field_list);
+
+    return $field_list;
+}
+
+sub problem : Chained('property') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $field_list = construct_bin_problem_form($c);
+
+    $c->stash->{first_page} = 'problem';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Problem';
+    $c->stash->{page_list} = [
+        problem => {
+            fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
+            title => 'Report a problem with a bin',
+            next => 'about_you',
+        },
+    ];
+    $c->stash->{field_list} = $field_list;
+    $c->forward('form');
 }
 
 sub construct_bin_report_form {

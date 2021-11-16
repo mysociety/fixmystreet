@@ -971,6 +971,62 @@ sub waste_munge_enquiry_form_fields {
     }
 }
 
+sub waste_munge_problem_form_fields {
+    my ($self, $field_list) = @_;
+
+    my $services = {
+        6533 => { # 240L Black
+            538 => "Lid damaged black",
+            541 => "Wheels damaged black",
+        },
+        6534 => { # 240L Green
+            537 => 'lid green',
+            540 => 'wheels green',
+        },
+        6579 => { # 240L Brown
+            539 => 'lid brown',
+            542 => 'wheels brown',
+        },
+    };
+
+    @$field_list = ();
+
+    foreach (@{$self->{c}->stash->{service_data}}) {
+        my $id = $_->{service_id};
+        my $name = $_->{service_name};
+
+        next unless $services->{$id};
+
+        my $categories = $services->{$id};
+        foreach (keys %$categories) {
+            my $cat_name = $categories->{$_};
+            push @$field_list, "service-$_" => {
+                type => 'Checkbox',
+                label => $name,
+                option_label => $cat_name,
+            };
+
+            # Set this to empty so the heading isn't shown multiple times
+            $name = '';
+        }
+    }
+    push @$field_list, "service-497" => {
+        type => 'Checkbox',
+        label => "General",
+        option_label => "Bin not returned to collection point",
+    };
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
+    };
+
+}
+
 sub bin_request_form_extra_fields {
     my ($self, $service, $container_id, $field_list) = @_;
 
