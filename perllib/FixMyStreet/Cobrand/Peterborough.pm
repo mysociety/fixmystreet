@@ -976,16 +976,16 @@ sub waste_munge_problem_form_fields {
 
     my $services = {
         6533 => { # 240L Black
-            538 => "Lid damaged black",
-            541 => "Wheels damaged black",
+            538 => "The bin’s lid is damaged",
+            541 => "The bin’s wheels are damaged",
         },
         6534 => { # 240L Green
-            537 => 'lid green',
-            540 => 'wheels green',
+            537 => 'The bin’s lid is damaged',
+            540 => 'The bin’s wheels are damaged',
         },
         6579 => { # 240L Brown
-            539 => 'lid brown',
-            542 => 'wheels brown',
+            539 => 'The bin’s lid is damaged',
+            542 => 'The bin’s wheels are damaged',
         },
     };
 
@@ -1013,7 +1013,7 @@ sub waste_munge_problem_form_fields {
     push @$field_list, "service-497" => {
         type => 'Checkbox',
         label => "General",
-        option_label => "Bin not returned to collection point",
+        option_label => "The bin wasn’t returned to collection point",
     };
     push @$field_list, "extra_detail" => {
         type => 'Text',
