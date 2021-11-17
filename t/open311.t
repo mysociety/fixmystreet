@@ -126,6 +126,28 @@ subtest 'posting service request with basic_description' => sub {
     is $c->param('description'), $problem->detail, 'description correct';
 };
 
+subtest 'posting service request which responds with a token, then fetching id with token' => sub {
+    my $extra = {
+        url => 'http://example.com/report/1',
+    };
+
+    my $results = make_service_req(
+        $problem,
+        $extra,
+        $problem->category,
+        '<?xml version="1.0" encoding="utf-8"?><service_requests><request><token>369FBB0C-4755-11EC-96C0-F6CCC296753D</token></request></service_requests>',
+        { extended_description => 0 },
+    );
+
+    diag $results->{ res };
+
+    is $results->{ res }, 248, 'got request id';
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+
+    is $c->param('description'), $problem->detail, 'description correct';
+};
+done_testing; exit; # XXX
 for my $test (
     {
         desc  => 'extra values in service request',

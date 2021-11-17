@@ -102,7 +102,23 @@ sub send_service_request {
             if ( my $request_id = $obj->{request}->[0]->{service_request_id} ) {
                 return $request_id unless ref $request_id;
             } elsif ( my $token = $obj->{request}->[0]->{token} ) {
-                return $self->get_service_request_id_from_token( $token );
+
+                my $service_request_id;
+                my $polling_interval = FixMyStreet->config('O311_POLLING_INTERVAL') || 2;
+                my $polling_timeout = FixMyStreet->config('O311_POLLING_TIMEOUT') || 10;
+
+                while ($polling_timeout) {
+                    sleep $polling_interval;
+                    $polling_timeout -= $polling_interval;
+                    $service_request_id = $self->get_service_request_id_from_token( $token );
+                }
+                if ($service_request_id) {
+                    return $service_request_id;
+                } else {
+                    warn "Timed out while trying to fetch service_request_id for token $token";
+                    warn "and create remote case for FMS problem ID $problem->id.";
+                    return 0;
+                }
             }
         }
 
