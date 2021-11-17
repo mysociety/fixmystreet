@@ -284,3 +284,6 @@ FETCH_COMMENTS_PROCESS_TIMEOUT: 0
 # If you use the daemon for sending reports, rather than the cron script,
 # this is how many children it will have.
 QUEUE_DAEMON_PROCESSES: 4
+
+O311_POLLING_INTERVAL: 2
+O311_POLLING_MAX_TRIES: 5

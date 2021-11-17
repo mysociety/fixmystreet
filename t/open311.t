@@ -126,6 +126,60 @@ subtest 'posting service request with basic_description' => sub {
     is $c->param('description'), $problem->detail, 'description correct';
 };
 
+subtest 'post service request that responds with a token, then fetch SR id using token' => sub {
+    my $extra = {
+        url => 'http://example.com/report/1',
+    };
+
+    my $token = '369FBB0C-4755-11EC-96C0-F6CCC296753D';
+
+    # inject 'tokens/$token.xml' path to mock `GET svc_req_id from token`
+    Open311->_inject_response("tokens/$token.xml",'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>SRQ-0123-4567</service_request_id><token>' . $token . '</token></request></service_requests>', 200);
+
+    FixMyStreet::override_config {
+        O311_POLLING_INTERVAL => 0,
+        O311_POLLING_MAX_TRIES => 1,
+    }, sub {
+        # mock POST Service Request that returns a (GUID) token
+        my $results = make_service_req(
+            $problem,
+            $extra,
+            $problem->category,
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><token>' . $token . '</token></request></service_requests>',
+            { extended_description => 0 },
+        );
+
+        is $results->{ res }, 'SRQ-0123-4567', 'got request id';
+    };
+};
+
+subtest 'post service request that responds with a token and errors' => sub {
+    my $extra = {
+        url => 'http://example.com/report/1',
+    };
+
+    my $token = '369FBB0C-4755-11EC-96C0-F6CCC296753D';
+
+    # inject 'tokens/$token.xml' path to mock `GET svc_req_id from token`
+    Open311->_inject_response("tokens/$token.xml",'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id></service_request_id><token>' . $token . '</token></request></service_requests>', 400);
+
+    FixMyStreet::override_config {
+        O311_POLLING_INTERVAL => 0,
+        O311_POLLING_MAX_TRIES => 1,
+    }, sub {
+        # mock POST Service Request that returns a (GUID) token
+        my $results = make_service_req(
+            $problem,
+            $extra,
+            $problem->category,
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><token>' . $token . '</token></request></service_requests>',
+            { extended_description => 0 },
+        );
+
+        like $results->{ o }->error, qr/Timed out while trying to fetch service_request_id for token $token/, 'got correct error';
+    };
+};
+
 for my $test (
     {
         desc  => 'extra values in service request',
