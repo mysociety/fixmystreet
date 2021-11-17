@@ -212,7 +212,7 @@ sub Jobs_FeatureScheduleDates_Get {
     my $days_buffer = 15;
 
     $start = $w3c->format_datetime($start || DateTime->now->subtract(days => $days_buffer));
-    $end = $w3c->format_datetime($end || DateTime->now);
+    $end = $w3c->format_datetime($end || DateTime->now->add(days => $days_buffer));
 
     my $res = $self->call('Jobs_FeatureScheduleDates_Get', token => $self->token, UPRN => $uprn, DateRange => {
         MinimumDate => {
