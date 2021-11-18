@@ -68,6 +68,7 @@ sub categories_restriction {
         'body.name' => [ 'Hounslow Borough Council', 'National Highways' ],
         -or => [
             'me.send_method' => undef,
+            'me.send_method' => q[],
             'me.category' => { -in => [
                 'Pavement Overcrowding',
                 'Streetspace Suggestions and Feedback',
