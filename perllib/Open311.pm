@@ -105,18 +105,20 @@ sub send_service_request {
 
                 my $service_request_id;
                 my $polling_interval = FixMyStreet->config('O311_POLLING_INTERVAL') || 2;
-                my $polling_timeout = FixMyStreet->config('O311_POLLING_TIMEOUT') || 10;
+                my $polling_max_tries = FixMyStreet->config('O311_POLLING_MAX_TRIES') || 5;
 
-                while ($polling_timeout) {
+                for (1..$polling_max_tries) {
                     sleep $polling_interval;
-                    $polling_timeout -= $polling_interval;
                     $service_request_id = $self->get_service_request_id_from_token( $token );
+                    last if $service_request_id;
                 }
                 if ($service_request_id) {
                     return $service_request_id;
                 } else {
-                    warn "Timed out while trying to fetch service_request_id for token $token";
-                    warn "and create remote case for FMS problem ID $problem->id.";
+                    my $timeout_warning = "Timed out while trying to fetch service_request_id for token $token"
+                        . "and create remote case for FMS problem ID $problem->id.";
+                    $self->error($self->error . $timeout_warning);
+                    warn $timeout_warning;
                     return 0;
                 }
             }

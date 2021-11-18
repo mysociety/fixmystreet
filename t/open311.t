@@ -126,22 +126,27 @@ subtest 'posting service request with basic_description' => sub {
     is $c->param('description'), $problem->detail, 'description correct';
 };
 
-subtest 'posting service request which responds with a token, then fetching id with token' => sub {
+subtest 'post service request that responds with a token, then fetch SR id using token' => sub {
     my $extra = {
         url => 'http://example.com/report/1',
     };
 
+    my $token = '369FBB0C-4755-11EC-96C0-F6CCC296753D';
+
+    # inject 'tokens/$token.xml' path to mock `GET svc_req_id from token`
+    Open311->_inject_response("tokens/$token.xml",'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>SRQ-0123-4567</service_request_id><token>' . $token . '</request></service_requests>', 200);
+
+    # mock POST Service Request that returns a (GUID) token
     my $results = make_service_req(
         $problem,
         $extra,
         $problem->category,
-        '<?xml version="1.0" encoding="utf-8"?><service_requests><request><token>369FBB0C-4755-11EC-96C0-F6CCC296753D</token></request></service_requests>',
+        '<?xml version="1.0" encoding="utf-8"?><service_requests><request><token>' . $token . '</token></request></service_requests>',
         { extended_description => 0 },
     );
 
-    diag $results->{ res };
+    is $results->{ res }, 'SRQ-0123-4567', 'got request id';
 
-    is $results->{ res }, 248, 'got request id';
 
     my $c = CGI::Simple->new( $results->{ req }->content );
 
