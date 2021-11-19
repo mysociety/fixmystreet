@@ -101,7 +101,9 @@ sub get_closure_message {
         my $file = path($opts->{closure_file});
         chomp(my $message = $file->slurp_utf8);
         return $message;
-
+    } else {
+        my $message = "FixMyStreet is being updated in " . $opts->{council_name} . " to improve how problems get reported.\n\nAs part of this process we are closing all reports made before the update.\n\nAll of your reports will have been received and reviewed by " . $opts->{council_name} . " but, if you believe that this issue has not been resolved, please open a new report on it.\n\nThank you.";
+        return $message;
     }
 }
 
@@ -171,6 +173,7 @@ sub send_email_and_close {
       reports => [@problems],
       report_count => scalar(@problems),
       site_name => $cobrand->moniker,
+      council_name => $opts->{council_name},
       user => $user,
       cobrand => $cobrand,
     );
@@ -179,7 +182,7 @@ sub send_email_and_close {
     printf("    Sending email about %d reports: ", scalar(@problems));
     my $email_error = FixMyStreet::Email::send_cron(
         $problems->result_source->schema,
-        'archive.txt',
+        'archive-old-enquiries.txt',
         \%h,
         {
             To => [ [ $user->email, $user->name ] ],
