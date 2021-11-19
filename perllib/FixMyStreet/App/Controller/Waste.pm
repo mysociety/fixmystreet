@@ -734,6 +734,22 @@ sub problem : Chained('property') : Args(0) {
     $c->forward('form');
 }
 
+sub process_problem_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+    $c->cobrand->call_hook("waste_munge_problem_form_data", $data);
+    my @services = grep { /^service-/ && $data->{$_} } sort keys %$data;
+    my @reports;
+    foreach (@services) {
+        my ($id) = /service-(.*)/;
+        $c->cobrand->call_hook("waste_munge_problem_data", $id, $data);
+        $c->forward('add_report', [ $data ]) or return;
+        push @reports, $c->stash->{report};
+    }
+    group_reports($c, @reports);
+    return 1;
+}
+
 sub construct_bin_report_form {
     my $c = shift;
 

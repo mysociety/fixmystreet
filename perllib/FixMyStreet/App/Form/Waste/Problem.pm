@@ -17,7 +17,7 @@ with 'FixMyStreet::App::Form::Waste::AboutYou';
 has_page summary => (
     fields => ['submit'],
     title => 'Submit missed collection',
-    template => 'waste/summary_report.html',
+    template => 'waste/summary_problem.html',
     finished => sub {
         return $_[0]->wizard_finished('process_problem_data');
     },
@@ -27,11 +27,6 @@ has_page summary => (
 has_page done => (
     title => 'Problem report sent',
     template => 'waste/confirmation.html',
-);
-
-has_field category => (
-    type => 'Hidden',
-    default => 'Report missed collection'
 );
 
 has_field continue => (
