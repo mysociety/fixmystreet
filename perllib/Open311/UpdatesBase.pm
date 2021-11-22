@@ -259,10 +259,11 @@ sub comment_text_for_request {
     my $template;
     if ($state_changed || $ext_code_changed) {
         my $order;
-        my $state_params = {
-            'me.state' => $state
-        };
-        if ($ext_code) {
+        my $state_params = {};
+        if ($state_changed) {
+            $state_params->{'me.state'} = $state;
+        }
+        if ($ext_code_changed && $ext_code) {
             $state_params->{'me.external_status_code'} = $ext_code;
             # make sure that empty string/nulls come last.
             $order = { order_by => \"me.external_status_code DESC NULLS LAST" };
