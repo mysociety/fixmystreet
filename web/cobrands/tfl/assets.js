@@ -240,6 +240,7 @@ var tlrn_categories = [
     "Graffiti / Flyposting (offensive)",
     "Graffiti / Flyposting on street light (non-offensive)",
     "Graffiti / Flyposting on street light (offensive)",
+    "Graffiti / Flyposting – Political or Anti-Vaccination",
     "Grass Cutting and Hedges",
     "Hoardings blocking carriageway or footway",
     "Light on during daylight hours",
