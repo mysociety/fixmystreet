@@ -140,9 +140,7 @@ sub filter_report_description {
     return $description;
 }
 
-sub map_type { 'Buckinghamshire' }
-
-sub default_map_zoom { 3 }
+sub default_map_zoom { 4 }
 
 sub _dashboard_export_add_columns {
     my ($self, $csv) = @_;
