@@ -284,85 +284,85 @@ FixMyStreet::override_config {
         is $report->title, 'Report missed assisted collection';
         $b->mock('Premises_Attributes_Get', sub { [] });
     };
-    subtest 'Report broken bin, already reported' => sub {
-        $b->mock('ServiceRequests_Get', sub { [
-            { ServiceType => { ID => 538 }, ServiceStatus => { Status => "OPEN" } },
-        ] });
-        $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->content_like(qr/name="category" value="240L Black - Lid"\s+disabled/);
-        $b->mock('ServiceRequests_Get', sub { [] }); # reset
-    };
-    subtest 'Report broken bin' => sub {
-        $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
-        $mech->content_contains('The bin’s lid is damaged');
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Enquiry submitted');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->title, 'Damaged 240L Black bin';
-        is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
-    };
-    subtest 'Report bin not returned' => sub {
-        $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => 'Not returned to collection point' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
-        $mech->content_contains('The bin wasn’t returned to the collection point');
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Enquiry submitted');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->title, '240L Black bin not returned';
-        is $report->detail, "The bin wasn’t returned to the collection point\n\n1 Pope Way, Peterborough, PE1 3NA";
-    };
-    subtest 'Report broken wheels' => sub {
-        FixMyStreet::DB->resultset('Problem')->search(
-            {
-                whensent => undef
-            }
-        )->update( { whensent => \'current_timestamp' } );
+    # subtest 'Report broken bin, already reported' => sub {
+    #     $b->mock('ServiceRequests_Get', sub { [
+    #         { ServiceType => { ID => 538 }, ServiceStatus => { Status => "OPEN" } },
+    #     ] });
+    #     $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+    #     $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+    #     $mech->content_like(qr/name="category" value="240L Black - Lid"\s+disabled/);
+    #     $b->mock('ServiceRequests_Get', sub { [] }); # reset
+    # };
+    # subtest 'Report broken bin' => sub {
+    #     $mech->get_ok('/waste/PE1 3NA:100090215480');
+    #     $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+    #     $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
+    #     $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+    #     $mech->content_contains('The bin’s lid is damaged');
+    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+    #     $mech->content_contains('Enquiry submitted');
+    #     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    #     is $report->title, 'Damaged 240L Black bin';
+    #     is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+    # };
+    # subtest 'Report bin not returned' => sub {
+    #     $mech->get_ok('/waste/PE1 3NA:100090215480');
+    #     $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+    #     $mech->submit_form_ok({ with_fields => { category => 'Not returned to collection point' } });
+    #     $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+    #     $mech->content_contains('The bin wasn’t returned to the collection point');
+    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+    #     $mech->content_contains('Enquiry submitted');
+    #     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    #     is $report->title, '240L Black bin not returned';
+    #     is $report->detail, "The bin wasn’t returned to the collection point\n\n1 Pope Way, Peterborough, PE1 3NA";
+    # };
+    # subtest 'Report broken wheels' => sub {
+    #     FixMyStreet::DB->resultset('Problem')->search(
+    #         {
+    #             whensent => undef
+    #         }
+    #     )->update( { whensent => \'current_timestamp' } );
 
-        $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => '240L Black - Wheels' } });
-        $mech->content_contains('name="extra_extra_detail" rows="5" maxlength="1000"');
-        $mech->submit_form_ok({ with_fields => { extra_extra_detail => 'Some extra detail' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
-        $mech->content_contains('The bin’s wheels are damaged');
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Enquiry submitted');
+    #     $mech->get_ok('/waste/PE1 3NA:100090215480');
+    #     $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+    #     $mech->submit_form_ok({ with_fields => { category => '240L Black - Wheels' } });
+    #     $mech->content_contains('name="extra_extra_detail" rows="5" maxlength="1000"');
+    #     $mech->submit_form_ok({ with_fields => { extra_extra_detail => 'Some extra detail' } });
+    #     $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+    #     $mech->content_contains('The bin’s wheels are damaged');
+    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+    #     $mech->content_contains('Enquiry submitted');
 
-        FixMyStreet::Script::Reports::send();
+    #     FixMyStreet::Script::Reports::send();
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        ok $report->whensent, 'Report marked as sent';
-        is $report->title, 'Damaged 240L Black bin';
-        is $report->detail, "The bin’s wheels are damaged\n\n1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: Some extra detail";
+    #     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    #     ok $report->whensent, 'Report marked as sent';
+    #     is $report->title, 'Damaged 240L Black bin';
+    #     is $report->detail, "The bin’s wheels are damaged\n\n1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: Some extra detail";
 
-        my $req = Open311->test_req_used;
-        my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[title]'), $report->title, 'title param sent';
-        is $cgi->param('attribute[extra_detail]'), undef, 'extra_detail param not sent';
-    };
-    subtest 'Report broken large bin' => sub {
-        $b->mock('Premises_Attributes_Get', sub { [
-            { AttributeDefinition => { Name => 'LARGE BIN' } },
-        ] });
-        $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
-        $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
-        $mech->content_contains('Black Bin');
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Enquiry submitted');
-        $mech->content_contains('Please leave your bin accessible');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->title, '360L Black';
-        is $report->detail, "The bin’s lid is damaged, exchange bin\n\n1 Pope Way, Peterborough, PE1 3NA";
-        $b->mock('Premises_Attributes_Get', sub { [] });
-    };
+    #     my $req = Open311->test_req_used;
+    #     my $cgi = CGI::Simple->new($req->content);
+    #     is $cgi->param('attribute[title]'), $report->title, 'title param sent';
+    #     is $cgi->param('attribute[extra_detail]'), undef, 'extra_detail param not sent';
+    # };
+    # subtest 'Report broken large bin' => sub {
+    #     $b->mock('Premises_Attributes_Get', sub { [
+    #         { AttributeDefinition => { Name => 'LARGE BIN' } },
+    #     ] });
+    #     $mech->get_ok('/waste/PE1 3NA:100090215480');
+    #     $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
+    #     $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
+    #     $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+    #     $mech->content_contains('Black Bin');
+    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+    #     $mech->content_contains('Enquiry submitted');
+    #     $mech->content_contains('Please leave your bin accessible');
+    #     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    #     is $report->title, '360L Black';
+    #     is $report->detail, "The bin’s lid is damaged, exchange bin\n\n1 Pope Way, Peterborough, PE1 3NA";
+    #     $b->mock('Premises_Attributes_Get', sub { [] });
+    # };
     subtest 'Report missed large bin' => sub {
         set_fixed_time('2021-08-02T10:00:00Z');
         $b->mock('Premises_Attributes_Get', sub { [
