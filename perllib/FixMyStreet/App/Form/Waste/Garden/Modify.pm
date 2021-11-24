@@ -28,7 +28,7 @@ my %alter_fields = (
         my $c = $form->c;
         my $data = $c->stash->{garden_form_data};
         $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
-        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
+        my $current_bins = $form->saved_data->{current_bins} || $data->{bins};
         my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
         $c->stash->{cost_per_year} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
         $c->stash->{new_bin_count} = 0;
@@ -118,6 +118,7 @@ has_field current_bins => (
     label => 'Number of bins currently on site',
     tags => { number => 1 },
     required => 1,
+    disabled => 1,
     range_start => 1,
     range_end => 6,
 );

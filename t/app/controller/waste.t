@@ -1208,12 +1208,20 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
-    subtest 'check modify sub credit card payment' => sub {
+    subtest 'check modify sub with bad details' => sub {
         set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
         $mech->log_out_ok();
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
         $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 2 } });
+        $mech->content_contains('2 bins');
+        $mech->content_contains('40.00');
+        $mech->content_contains('7.50');
+    };
+    subtest 'check modify sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
