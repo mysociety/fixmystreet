@@ -32,7 +32,7 @@ sub scales {
 }
 
 sub copyright {
-    return '&copy; BCC';
+    return '&copy; Crown copyright and database rights 2021 OS 0100062456';
 }
 
 sub map_javascript { [
