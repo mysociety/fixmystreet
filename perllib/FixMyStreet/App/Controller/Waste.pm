@@ -1045,7 +1045,7 @@ sub get_original_sub : Private {
 
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
-        title => 'Garden Subscription - New',
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         extra => { like => '%property_id,T5:value,I_:'. $c->stash->{property}{id} . '%' },
         state => { '!=' => 'hidden' },
     },

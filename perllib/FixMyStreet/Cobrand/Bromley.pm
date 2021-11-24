@@ -1567,7 +1567,7 @@ sub waste_reconcile_direct_debits {
         my ($p, $r);
         while ( my $cur = $rs->next ) {
             my $sub_type = $cur->get_extra_field_value('Subscription_Type') || '';
-            if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+            if ( $sub_type eq $self->waste_subscription_types->{New} || $sub_type eq $self->waste_subscription_types->{Renew} ) {
                 $p = $cur;
             } elsif ( $cur->category eq 'Cancel Garden Subscription' ) {
                 if ( $cur->state eq 'unconfirmed' ) {

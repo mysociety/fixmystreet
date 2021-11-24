@@ -1519,6 +1519,9 @@ FixMyStreet::override_config {
 
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
+
+        # Delete report otherwise next test thinks we have a DD subscription (which we do now)
+        $new_report->delete;
     };
 
     subtest 'renew credit card sub with an extra bin' => sub {
@@ -1913,6 +1916,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
         is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
         is $report->state, 'confirmed', 'report confirmed';
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check staff renewal - no email' => sub {
@@ -1948,6 +1952,7 @@ FixMyStreet::override_config {
         is $report->state, 'confirmed', 'report confirmed';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check modify sub staff' => sub {
@@ -1984,6 +1989,7 @@ FixMyStreet::override_config {
         is $report->user->email, 'test@example.net', 'non staff email';
 
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check modify sub staff reducing bin count' => sub {
