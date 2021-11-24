@@ -951,8 +951,8 @@ sub waste_munge_problem_data {
     $data->{category} = $category;
     $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
 
-    if ( $data->{extra_extra_detail} ) {
-        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_extra_detail};
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
     }
 }
 
@@ -1039,7 +1039,7 @@ sub waste_munge_problem_form_fields {
         },
         497 => {
             container_name => "General",
-            label => "The bin wasn’t returned to collection point",
+            label => "The bin wasn’t returned to the collection point",
         },
     );
     $self->{c}->stash->{services_problems} = \%services_problems;

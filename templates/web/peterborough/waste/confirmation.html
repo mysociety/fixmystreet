@@ -14,6 +14,12 @@ ELSIF first_page == 'report';
   ELSE;
     title = 'Missed collection reported';
   END;
+ELSIF first_page == 'problem';
+  IF report.get_extra_metadata('grouped_ids');
+    title = 'Damaged bins reported';
+  ELSE;
+    title = 'Damaged bin reported';
+  END;
 ELSE;
     title = 'Enquiry submitted';
 END ~%]
