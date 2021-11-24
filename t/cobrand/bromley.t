@@ -250,6 +250,27 @@ subtest 'test waste duplicate' => sub {
     is $report->state, 'duplicate', 'State updated';
 };
 
+subtest 'test DD taking so long it expires' => sub {
+    my $title = $report->title;
+    $report->update({ title => "Garden Subscription - Renew" });
+    my $sender = FixMyStreet::SendReport::Open311->new(
+        bodies => [ $body ], body_config => { $body->id => $body },
+    );
+    Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Cannot renew this property, a new request is required</description></error></errors>', 500);
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+    };
+    is $report->get_extra_metadata("Subscription_Type"), 1, 'Type updated';
+    is $report->title, "Garden Subscription - New";
+    $report->update({ title => $title });
+};
+
 subtest 'Private comments on updates are added to open311 description' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => ['bromley', 'tfl'],

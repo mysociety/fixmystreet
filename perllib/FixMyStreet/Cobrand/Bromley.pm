@@ -333,6 +333,11 @@ sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
     $row->detail($self->{bromley_original_detail});
     my $error = $sender->error;
+    if ($error =~ /Cannot renew this property, a new request is required/ && $row->title eq "Garden Subscription - Renew") {
+        # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
+        $row->title("Garden Subscription - New");
+        $row->set_extra_metadata(Subscription_Type => $self->waste_subscription_types->{New});
+    }
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
     }
