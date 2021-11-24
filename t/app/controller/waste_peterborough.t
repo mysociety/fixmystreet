@@ -42,6 +42,7 @@ create_contact({ category => 'Refuse', email => 'Bartec-255' }, 'Missed Collecti
 create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
+create_contact({ category => 'Application for additional bin', email => 'Bartec-486' }, 'Request new container');
 create_contact({ category => '240L Black - Lid', email => 'Bartec-538' }, 'Bin repairs');
 create_contact({ category => '240L Black - Wheels', email => 'Bartec-541' }, 'Bin repairs');
 create_contact({ category => '240L Green - Wheels', email => 'Bartec-540' }, 'Bin repairs');
@@ -103,18 +104,18 @@ FixMyStreet::override_config {
         $mech->content_contains('1 Pope Way, Peterborough');
         $mech->content_contains('Every two weeks');
         $mech->content_contains('Thursday, 5th August 2021');
-        $mech->content_contains('Report a recycling collection as missed');
+        $mech->content_contains('Report a recycling bin collection as missed');
         set_fixed_time('2021-08-09T10:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('Report a recycling collection as missed');
+        $mech->content_contains('Report a recycling bin collection as missed');
         set_fixed_time('2021-08-09T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_lacks('Report a recycling collection as missed');
+        $mech->content_lacks('Report a recycling bin collection as missed');
     };
     subtest 'Check lock out conditions' => sub {
         set_fixed_time('2021-08-05T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('to report a missed recycling please call');
+        $mech->content_contains('to report a missed recycling bin please call');
 
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1%203NA:100090215480');
@@ -123,7 +124,7 @@ FixMyStreet::override_config {
 
         set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_lacks('to report a missed recycling please call');
+        $mech->content_lacks('to report a missed recycling bin please call');
 
         $b->mock('Premises_Events_Get', sub { [
             { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
@@ -186,57 +187,83 @@ FixMyStreet::override_config {
     };
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->content_contains('Report a recycling collection as missed');
-        $mech->content_contains('Request a new recycling container');
+        $mech->content_contains('Report a recycling bin collection as missed');
+        $mech->content_contains('Request a new recycling bin');
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 420 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->content_contains('A new recycling container request has been made');
-        $mech->content_contains('Report a recycling collection as missed');
+        $mech->content_contains('A new recycling bin request has been made');
+        $mech->content_contains('Report a recycling bin collection as missed');
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 488 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->content_contains('A recycling collection has been reported as missed');
-        $mech->content_contains('Request a new recycling container');
+        $mech->content_contains('A recycling bin collection has been reported as missed');
+        $mech->content_contains('Request a new recycling bin');
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 492 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->content_contains('A recycling collection has been reported as missed');
+        $mech->content_contains('A recycling bin collection has been reported as missed');
         $b->mock('ServiceRequests_Get', sub { [ ] }); # reset
     };
-    subtest 'Request a new container' => sub {
+    subtest 'Request a new bin' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'reason-425' => 'Reason' }});
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'cracked' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Reason";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin";
+        is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
     };
-    subtest 'Request food containers' => sub {
+    subtest 'Request an additional bin' => sub {
+        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'large_family' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Additional black/green due to a large family";
+        is $report->category, 'Application for additional bin';
+        is $report->title, 'Request new All bins';
+    };
+    subtest 'Request food bins' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1, request_reason => 'lost_stolen' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Request sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->title, 'Request new Both food bins';
     };
-    subtest 'Request/report food containers from front page' => sub {
+    subtest 'Request food bags from front page' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
-        $mech->content_contains('name="container-428" value="1"');
+        $mech->content_contains('About you');
+    },
+    subtest 'Request food bins from front page' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
         $mech->content_contains('name="service-FOOD_BINS" value="1"');
+    };
+    subtest 'Request bins from front page' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->submit_form_ok({ with_fields => { 'container-420' => 1 } });
+        $mech->content_contains('name="container-420" value="1"');
+        $mech->content_contains('Black Bin');
+        $mech->content_contains('Why do you need new bins?');
+        $mech->content_contains('Food bins');
+        $mech->content_contains('food caddy');
+        $mech->content_lacks('Food bags');
     };
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');

@@ -52,7 +52,7 @@
 [% UNLESS waste_features.request_disabled %]
   [% IF unit.request_open %]
     <span class="waste-service-descriptor">
-      A new [% unit.service_name FILTER lower %] container request has been made
+      A new [% unit.service_name FILTER lower %] request has been made
       [% IF unit.request_open.report %] – <a href="[% unit.request_open.report.url %]" class="waste-service-link">check status</a>[% END %]
     </span>
   [% ELSIF unit.request_allowed %]
@@ -60,7 +60,8 @@
     <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
-      <input type="submit" value="Request a new [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+      <input type="hidden" name="skip_bags" value="1">
+      <input type="submit" value="Request a new [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
     </form>
   [% END %]
 [% END %]

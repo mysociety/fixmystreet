@@ -10,6 +10,7 @@ use List::Util qw(any);
 use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request;
+use FixMyStreet::App::Form::Waste::Request::Peterborough;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
@@ -643,6 +644,9 @@ sub construct_bin_request_form {
         }
     }
 
+    $c->cobrand->call_hook("waste_munge_request_form_fields", $field_list);
+
+
     return $field_list;
 }
 
@@ -652,11 +656,11 @@ sub request : Chained('property') : Args(0) {
     my $field_list = construct_bin_request_form($c);
 
     $c->stash->{first_page} = 'request';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request';
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Request';
     $c->stash->{page_list} = [
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => 'Which containers do you need?',
+            title => $c->stash->{form_title} || 'Which containers do you need?',
             next => sub {
                 my $data = shift;
                 return 'replacement' if $data->{"container-44"}; # XXX
