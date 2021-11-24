@@ -591,7 +591,7 @@ sub bin_services_for_address {
 
     my %container_request_max = (
         6533 => 1, # 240L Black
-        6534 => 2, # 240L Green (max 2 per household, need to check how many property already has dynamically)
+        6534 => 1, # 240L Green (max 2 per household, need to check how many property already has dynamically)
         6579 => 1, # 240L Brown
         6836 => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
@@ -723,28 +723,33 @@ sub bin_services_for_address {
 
     # Some need to be added manually as they don't appear in Bartec responses
     # as they're not "real" collection types (e.g. requesting all bins)
-    push @out, {
-        id => "FOOD_BINS",
-        service_name => "Food bins",
-        service_id => "FOOD_BINS",
-        request_containers => [ 424, 423, 428 ],
-        request_allowed => 1,
-        request_max => 1,
-        request_only => 1,
-        report_only => 1,
-    };
+    
+    @out = () if $self->{c}->get_param('food_only');
+    unless ( $self->{c}->get_param('skip_food') ) {
+        push @out, {
+            id => "FOOD_BINS",
+            service_name => "Food bins",
+            service_id => "FOOD_BINS",
+            request_containers => [ 424, 423, 428 ],
+            request_allowed => 1,
+            request_max => 1,
+            request_only => 1,
+            report_only => 1,
+        };
+    }
 
-    # We want this one to always appear first
-    unshift @out, {
-        id => "_ALL_BINS",
-        service_name => "All bins",
-        service_id => "_ALL_BINS",
-        request_containers => [ 425 ],
-        request_allowed => 1,
-        request_max => 1,
-        request_only => 1,
-    };
-
+    unless ( $self->{c}->get_param('food_only') ) {
+        # We want this one to always appear first
+        unshift @out, {
+            id => "_ALL_BINS",
+            service_name => "All bins",
+            service_id => "_ALL_BINS",
+            request_containers => [ 425 ],
+            request_allowed => 1,
+            request_max => 1,
+            request_only => 1,
+        };
+    }
     return \@out;
 }
 
@@ -870,11 +875,22 @@ sub waste_munge_request_data {
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $quantity = $data->{"quantity-$id"};
+    my $reason = $data->{request_reason} || '';
+
+    # For "large family" requests we want to use a different
+    # non container-specific category
+    $id = '486' if $reason eq 'large_family';
+
+    $reason = {
+        large_family => 'Additional black/green due to a large family',
+        cracked => 'Cracked container',
+        lost_stolen => 'Lost/stolen bin',
+        new_build => 'New build',
+    }->{$reason} || $reason;
+
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: $quantity\n\n$address";
-    if (my $reason = $data->{"reason-$id"}) {
-        $data->{detail} .= "\n\nReason: $reason";
-    }
+    $data->{detail} .= "\n\nReason: $reason" if $reason;
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$id" })->category;
 }
 
@@ -1092,25 +1108,24 @@ sub waste_munge_problem_form_fields {
 
 }
 
-sub bin_request_form_extra_fields {
-    my ($self, $service, $container_id, $field_list) = @_;
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
 
-    if ($container_id =~ /419|425/) { # Request New Black 240L
-        # Add a new "reason" field
-        push @$field_list, "reason-$container_id" => {
-            type => 'Text',
+    unless ($self->{c}->get_param('food_only')) {
+        push @$field_list, "request_reason" => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            required => 1,
             label => 'Why do you need new bins?',
-            tags => {
-                initial_hidden => 1,
-            },
-            required_when => { "container-$container_id" => 1 },
+            options => [
+                { label => 'Additional black/green due to a large family', value => 'large_family' },
+                { label => 'Cracked container', value => 'cracked' },
+                { label => 'Lost/stolen bin', value => 'lost_stolen' },
+                { label => 'New build', value => 'new_build' },
+            ],
         };
-        # And make sure it's revealed when the box is ticked
-        my %fields = @$field_list;
-        $fields{"container-$container_id"}{tags}{toggle} .= ", #form-reason-$container_id-row";
     }
 }
-
 
 sub _format_address {
     my ($self, $property) = @_;

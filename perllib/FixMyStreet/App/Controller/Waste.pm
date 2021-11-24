@@ -644,6 +644,9 @@ sub construct_bin_request_form {
         }
     }
 
+    $c->cobrand->call_hook("waste_munge_request_form_fields", $field_list);
+
+
     return $field_list;
 }
 
