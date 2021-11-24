@@ -1052,6 +1052,7 @@ sub waste_munge_problem_form_fields {
         $services{$v->{container}}{$_} = $v->{label};
     }
 
+    my $open_requests = $self->{c}->stash->{open_service_requests};
     @$field_list = ();
 
     foreach (@{$self->{c}->stash->{service_data}}) {
@@ -1067,6 +1068,7 @@ sub waste_munge_problem_form_fields {
                 type => 'Checkbox',
                 label => $name,
                 option_label => $cat_name,
+                $open_requests->{$_} ? ( disabled => 1 ) : (),
             };
 
             # Set this to empty so the heading isn't shown multiple times
