@@ -872,9 +872,9 @@ sub waste_munge_request_data {
     my $quantity = $data->{"quantity-$id"};
     my $reason = $data->{request_reason};
 
-    warn "XXX $id $reason";
+    # For "large family" requests we want to use a different
+    # non container-specific category
     $id = '486' if $reason eq 'large_family';
-    warn "XXX $id $reason";
 
     $reason = {
         large_family => 'Additional black/green due to a large family',

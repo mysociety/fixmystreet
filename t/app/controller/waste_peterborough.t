@@ -42,6 +42,7 @@ create_contact({ category => 'Refuse', email => 'Bartec-255' }, 'Missed Collecti
 create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
+create_contact({ category => 'Application for additional bin', email => 'Bartec-486' }, 'Request new container');
 create_contact({ category => '240L Black - Lid', email => 'Bartec-538' }, 'Bin repairs');
 create_contact({ category => '240L Black - Wheels', email => 'Bartec-541' }, 'Bin repairs');
 create_contact({ category => '240L Green - Wheels', email => 'Bartec-540' }, 'Bin repairs');
@@ -210,24 +211,38 @@ FixMyStreet::override_config {
     subtest 'Request a new container' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'reason-425' => 'Reason' }});
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'cracked' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Reason";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked container";
+        is $report->category, 'All bins';
+        is $report->title, 'Request new All bins';
+    };
+    subtest 'Request an additional container' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'large_family' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Request sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Additional black/green due to a large family";
+        is $report->category, 'Application for additional bin';
         is $report->title, 'Request new All bins';
     };
     subtest 'Request food containers' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1, request_reason => 'lost_stolen' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->title, 'Request new Both food bins';
     };
     subtest 'Request/report food containers from front page' => sub {
