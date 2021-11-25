@@ -880,6 +880,7 @@ sub waste_munge_request_data {
         large_family => 'Additional black/green due to a large family',
         cracked => 'Cracked container',
         lost_stolen => 'Lost/stolen bin',
+        new_build => 'New build',
     }->{$reason} || $reason;
 
     $data->{title} = "Request new $container";
@@ -1113,6 +1114,7 @@ sub waste_munge_request_form_fields {
             { label => 'Additional black/green due to a large family', value => 'large_family' },
             { label => 'Cracked container', value => 'cracked' },
             { label => 'Lost/stolen bin', value => 'lost_stolen' },
+            { label => 'New build', value => 'new_build' },
         ],
     };
 
