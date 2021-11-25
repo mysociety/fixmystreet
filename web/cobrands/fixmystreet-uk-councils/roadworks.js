@@ -24,6 +24,8 @@ var roadworks_defaults = {
             if (!fixmystreet.roadworks.filter || fixmystreet.roadworks.filter(feature)) {
                 fixmystreet.roadworks.display_message(feature);
                 return true;
+            } else {
+                $(".js-roadworks-page").remove();
             }
         },
         not_found: function(layer) {
