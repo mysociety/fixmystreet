@@ -35,21 +35,15 @@ fixmystreet.assets.add(options, {
 });
 
 fixmystreet.assets.add(options, {
-    asset_category: "Gully/Drainage",
-    asset_item: 'gully',
-    filter_value: 'GULLY'
+    asset_category: "Flooding/Gully/Drainage",
+    asset_item: 'gully or flood risk structure',
+    filter_value: ['FRST', 'GULLY']
 });
 
 fixmystreet.assets.add(options, {
     asset_category: "Grit Bins",
     asset_item: 'grit bin',
     filter_value: 'GRITBIN'
-});
-
-fixmystreet.assets.add(options, {
-    asset_category: "Flooding",
-    asset_item: 'flood risk structure',
-    filter_value: 'FRST'
 });
 
 fixmystreet.assets.add(options, {
