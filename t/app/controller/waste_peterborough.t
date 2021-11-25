@@ -274,7 +274,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
-        is $report->title, 'Report missed 240L Green';
+        is $report->title, 'Report missed 240L Green bin';
     };
     subtest 'Report missed collection with extra text' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
@@ -285,7 +285,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: This is the extra detail.";
-        is $report->title, 'Report missed 240L Green';
+        is $report->title, 'Report missed 240L Green bin';
     };
     subtest 'Report missed food bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
@@ -421,7 +421,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Missed collection reported');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
-        is $report->title, 'Report missed 360L Black';
+        is $report->title, 'Report missed 360L Black bin';
         $b->mock('Premises_Attributes_Get', sub { [] });
     };
 };

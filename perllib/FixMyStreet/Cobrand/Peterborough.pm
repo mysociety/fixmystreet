@@ -919,6 +919,7 @@ sub waste_munge_report_data {
     } else {
         my $container = $c->stash->{containers}{$id};
         $data->{title} = "Report missed $container";
+        $data->{title} .= " bin" if $container !~ /^Food/;
         $data->{detail} = $c->stash->{property}->{address};
     }
 
