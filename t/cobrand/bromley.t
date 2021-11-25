@@ -1083,36 +1083,6 @@ subtest 'check direct debit reconcilliation' => sub {
                 ] }
             } } } ];
         }
-        if ( $id == 8854321 ) {
-            return [ {
-                Id => 1005,
-                ServiceId => 545,
-                ServiceName => 'Garden waste collection',
-                ServiceTasks => { ServiceTask => {
-                    Id => 405,
-                    ScheduleDescription => 'every other Monday',
-                    Data => { ExtensibleDatum => '' },
-                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                        },
-                    }, {
-                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
-                        NextInstance => {
-                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                        },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            Ref => { Value => { anyType => [ 567, 890 ] } },
-                        },
-                    }
-                ] }
-            } } } ];
-        }
     });
 
     my $ad_hoc_orig = setup_dd_test_report({
@@ -1518,14 +1488,6 @@ subtest 'check direct debit reconcilliation' => sub {
         'uprn' => '654323',
     });
 
-    my $sub_for_cancel_no_extended_data = setup_dd_test_report({
-        'Subscription_Type' => 1,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '8854321',
-        'uprn' => '6654326',
-    });
-
     # e.g if they tried to create a DD but the process failed
     my $failed_new_sub = setup_dd_test_report({
         'Subscription_Type' => 1,
@@ -1636,7 +1598,6 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching service to renew for GGW754322\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "no matching record found for Garden Subscription payment with id GGW954325\n",
-        "no matching record found for Cancel payment with id GGW954326\n",
     ], "warns if no matching record";
 
     $new_sub->discard_changes;
@@ -1712,48 +1673,9 @@ subtest 'check direct debit reconcilliation' => sub {
     );
     is $renewal_too_recent->count, 0, "ignore payments less that three days old";
 
-    my $cancel = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I6:654323%' }
-        },
-        {
-            order_by => { -desc => 'id' }
-        }
-    );
-
-    is $cancel->count, 2, "two records for cancel property";
-    $p = $cancel->first;
-    ok $p->id != $sub_for_cancel->id, "not the original record";
-    is $p->get_extra_field_value('Container_Instruction_Action'), 2, "correct containter instruction";
-    is $p->get_extra_field_value('Container_Instruction_Quantity'), 1, "cancel has correct number of bins";
-    is $p->category, 'Cancel Garden Subscription', 'cancel has correct category';
-    is $p->title, 'Garden Subscription - Cancel', 'cancel has correct title';
-    is $p->non_public, 1, 'new report non-public';
-    is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for cancelled";
-    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
-    is $p->get_extra_field_value('PaymentCode'), "GGW654323", 'correct echo payment code field';
-    is $p->get_extra_field_value('Subscription_End_Date'), "2021-03-19", 'correct end subscription date';
-    is $p->state, 'confirmed';
-    ok $p->confirmed, "confirmed is not null";
-
-    my $cancel_no_extended = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I7:6654326%' }
-        },
-        {
-            order_by => { -desc => 'id' }
-        }
-    );
-
-    is $cancel_no_extended->count, 2, "two records for no extended data cancel property";
-    $p = $cancel_no_extended->first;
-    ok $p->id != $sub_for_cancel_no_extended_data->id, "not the original record";
-    is $p->get_extra_field_value('Container_Instruction_Action'), 2, "correct containter instruction";
-    is $p->get_extra_field_value('Container_Instruction_Quantity'), 0, "no extended data cancel has correct number of bins";
-    is $p->category, 'Cancel Garden Subscription', 'no extended data cancel has correct category';
-    is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for no extended data cancelled";
-    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
-    is $p->get_extra_field_value('PaymentCode'), "GGW6654326", 'correct echo payment code field';
-    is $p->state, 'confirmed';
-    ok $p->confirmed, "confirmed is not null";
+    my $cancel = FixMyStreet::DB->resultset('Problem')->search({ extra => { like => '%uprn,T5:value,I6:654323%' } }, { order_by => { -desc => 'id' } });
+    is $cancel->count, 1, "one record for cancel property";
+    is $cancel->first->id, $sub_for_cancel->id, "only record is the original one, no cancellation report created";
 
     my $processed = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I6:654324%' }
@@ -1789,7 +1711,6 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching service to renew for GGW754322\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "no matching record found for Garden Subscription payment with id GGW954325\n",
-        "no matching record found for Cancel payment with id GGW954326\n",
     ], "warns if no matching record";
 
     $failed_new_sub->discard_changes;
