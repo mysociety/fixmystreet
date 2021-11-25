@@ -5,11 +5,11 @@ fixmystreet.roadworks.filter = function(feature) {
         'Damaged or missing cover', 'Damaged or missing utility cover', 'Damaged structure',
         'Damaged Telecomms cabinet', 'Flooded road', 'Flooded underpass', 'Highways - Emergency',
         'Light blocked', 'Light on during day', 'Lighting enquiry', 'Multiple lights out/flickering',
-        'Other emergency', 'Other public drainage issue', 'Other public road issue', 'Pavement cleaning',
+        'Other emergency', 'Other public drainage issue', 'Other public road issue',
         'Pedestrian railing', 'Permanent', 'Pothole', 'Problem with a light not shown on map',
         'Public footpath or cyclepath', 'Public right of way - problem with access or damage',
         'Road Traffic Accident', 'Road works', 'Safety fence or barrier', 'Seats and benches',
-        'Single light out/flickering', 'Street nameplate', 'Street sweeping', 'Temporary',
+        'Single light out/flickering', 'Street nameplate', 'Temporary',
         'Traffic sign', 'Traffic sign - lit', 'Wires exposed/Door off'
       ];
     return OpenLayers.Util.indexOf(categories, category) != -1;
