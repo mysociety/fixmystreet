@@ -35,6 +35,33 @@ my ($problem2) = $mech->create_problems_for_body(1, $hackney->id, 'Title', {
     cobrand => 'fixmystreet', user => $normaluser, state => 'fixed'
 });
 
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'merton' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+    subtest 'cobrand homepage displays council name' => sub {
+        $mech->get_ok('/');
+        $mech->content_contains('Merton Council');
+    };
+
+    subtest 'reports page displays council name' => sub {
+        $mech->get_ok('/reports/Merton');
+        $mech->content_contains('Merton Council');
+    };
+
+    subtest 'External ID is shown on report page' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Test Report', {
+            category => 'Litter', cobrand => 'merton',
+            external_id => 'merton-123', whensent => \'current_timestamp',
+        });
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains("Council ref:&nbsp;" . $report->external_id);
+    };
+
+};
+
 subtest 'only Merton staff can reopen closed reports on Merton cobrand' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'merton' ],
