@@ -266,7 +266,7 @@ subtest 'test DD taking so long it expires' => sub {
             url => 'http://example.org/',
         });
     };
-    is $report->get_extra_metadata("Subscription_Type"), 1, 'Type updated';
+    is $report->get_extra_field_value("Subscription_Type"), 1, 'Type updated';
     is $report->title, "Garden Subscription - New";
     $report->update({ title => $title });
 };
