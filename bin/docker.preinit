@@ -2,14 +2,6 @@
 
 # Things to do before starting FixMyStreet in Docker
 
-# Make sure that the Postgres environment is up and running.
-echo "Testing connection to ${FMS_DB_HOST}."
-while ! pg_isready -h $FMS_DB_HOST >/dev/null 2>&1 ; do
-  echo "Still waiting for ${FMS_DB_HOST}..."
-  sleep 1
-done
-echo "Done."
-
 # If there's a password for the postgres user, set it up for root and see if we need
 # to create an FMS user. This is intended for use when using a dedicated local postgres
 # container. If this variable doesn't exist, we're going to assume that the FMS user

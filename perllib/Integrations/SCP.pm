@@ -7,7 +7,6 @@ use DateTime;
 use MIME::Base64;
 use Digest::HMAC;
 use Crypt::Digest::SHA256;
-use SOAP::Lite; # +trace => [qw(method debug)];
 
 has config => (
     is => 'ro'
@@ -30,6 +29,7 @@ has endpoint => (
 sub call {
     my ($self, $method, @params) = @_;
 
+    require SOAP::Lite;
     my $res = $self->endpoint->call(
         SOAP::Data->name($method)->attr({
             'xmlns:scpbase' => 'http://www.capita-software-services.com/scp/base',

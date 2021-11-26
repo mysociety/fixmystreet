@@ -1,0 +1,11 @@
+FROM debian:stretch
+ARG DEBIAN_FRONTEND=noninteractive
+# git used by script/bootstrap to update submodules, perl just needed, postgresql for test running
+RUN apt-get -qq update && apt-get -qq -y install git perl postgresql
+COPY conf/packages.docker /opt/
+RUN xargs -a "/opt/packages.docker" apt-get -qq -y install >/dev/null
+WORKDIR /var/www/fixmystreet
+# Locales needed by tests
+RUN localedef -i en_GB -c -f UTF-8 -A /usr/share/locale/locale.alias en_GB.UTF-8
+RUN localedef -i de_CH -c -f UTF-8 -A /usr/share/locale/locale.alias de_CH.UTF-8
+RUN localedef -i sv_SE -c -f UTF-8 -A /usr/share/locale/locale.alias sv_SE.UTF-8
