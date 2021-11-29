@@ -249,9 +249,21 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('name="container-428" value="1"');
+        $mech->content_lacks('Green Bin');
+        $mech->content_lacks('Black Bin');
+        $mech->content_lacks('Why do you need new bins?');
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
         $mech->content_contains('name="service-FOOD_BINS" value="1"');
+    };
+    subtest 'Request bin containers from front page' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->submit_form_ok({ with_fields => { 'container-420' => 1 } });
+        $mech->content_contains('name="container-420" value="1"');
+        $mech->content_contains('Black Bin');
+        $mech->content_contains('Why do you need new bins?');
+        $mech->content_lacks('Food bins');
+        $mech->content_lacks('food caddy');
     };
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/report');
