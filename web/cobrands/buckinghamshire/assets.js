@@ -19,10 +19,7 @@ var defaults = {
         }
     },
     asset_type: 'spot',
-    max_resolution: {
-      'buckinghamshire': 2.116670900008467,
-      'fixmystreet': 4.777314267158508
-    },
+    max_resolution: 4.777314267158508,
     asset_id_field: 'central_as',
     attributes: {
         central_asset_id: 'central_as',
