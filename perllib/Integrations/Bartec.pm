@@ -87,6 +87,7 @@ sub Authenticate {
 sub Premises_Get {
     my $self = shift;
     my $pc = shift;
+    my %params = @_;
 
     if ($self->sample_data) {
         return [
@@ -159,7 +160,7 @@ sub Premises_Get {
         ];
     }
 
-    my $res = $self->call('Premises_Get', token => $self->token, Postcode => $pc);
+    my $res = $self->call('Premises_Get', token => $self->token, Postcode => $pc, %params);
     my $som = $res->{SOM};
 
     my @premises;
@@ -212,7 +213,7 @@ sub Jobs_FeatureScheduleDates_Get {
     my $days_buffer = 15;
 
     $start = $w3c->format_datetime($start || DateTime->now->subtract(days => $days_buffer));
-    $end = $w3c->format_datetime($end || DateTime->now);
+    $end = $w3c->format_datetime($end || DateTime->now->add(days => $days_buffer));
 
     my $res = $self->call('Jobs_FeatureScheduleDates_Get', token => $self->token, UPRN => $uprn, DateRange => {
         MinimumDate => {

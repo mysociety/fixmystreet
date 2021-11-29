@@ -206,6 +206,13 @@ FixMyStreet::override_config {
     };
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
+        $report->update({ geocode => {
+            resourceSets => [ {
+                resources => [ {
+                    name => '12 A Street, XX1 1SZ',
+                } ]
+            } ]
+        } });
         my $res = $mech->get('/report/' . $report->id);
         is $res->code, 403;
         $mech->log_in_ok($user->email);
@@ -216,6 +223,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks('Provide an update');
         $mech->content_contains( '<a href="/waste/12345">See your bin collections</a>' );
+        $mech->content_lacks('12 A Street, XX1 1SZ');
 
         $mech->host('www.fixmystreet.com');
         $res = $mech->get('/report/' . $report->id);

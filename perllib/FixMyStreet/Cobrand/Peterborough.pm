@@ -410,7 +410,7 @@ sub _premises_for_postcode {
     unless ( $c->session->{$key} ) {
         my $cfg = $self->feature('bartec');
         my $bartec = Integrations::Bartec->new(%$cfg);
-        my $response = $bartec->Premises_Get($pc);
+        my $response = $bartec->Premises_Get($pc, BLPUClass => 'RD%');
 
         if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
             my $blocked = $cfg->{blocked_uprns} || [];
@@ -589,7 +589,7 @@ sub bin_services_for_address {
 
     my %container_request_max = (
         6533 => 1, # 240L Black
-        6534 => 2, # 240L Green (max 2 per household, need to check how many property already has dynamically)
+        6534 => 1, # 240L Green (max 2 per household, need to check how many property already has dynamically)
         6579 => 1, # 240L Brown
         6836 => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
@@ -630,7 +630,9 @@ sub bin_services_for_address {
         my $date = construct_bin_date($_->{EventDate})->ymd;
         my $type = $_->{EventType}{Description};
         next unless $lock_out_types{$type};
-        $premise_dates_to_lock_out{$date}{$container_id} = $type;
+        my $types = $premise_dates_to_lock_out{$date}{$container_id} || [];
+        push @$types, $type;
+        $premise_dates_to_lock_out{$date}{$container_id} = $types;
     }
     foreach (@$events_usrn) {
         my $workpack = $_->{Workpack}{Name};
@@ -698,19 +700,19 @@ sub bin_services_for_address {
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
                 my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
                 $row->{report_allowed} = $is_staff ? 1 : 0;
-                $row->{report_locked_out} = "ON DAY PRE 5PM";
+                $row->{report_locked_out} = [ "ON DAY PRE 5PM" ];
             }
             # But if it has been marked as locked out, show that
-            if (my $type = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {
+            if (my $types = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {
                 $row->{report_allowed} = 0;
-                $row->{report_locked_out} = $type;
+                $row->{report_locked_out} = $types;
             }
         }
         # Last date is last successful collection. If whole street locked out, it hasn't started
         my $workpack = $feature_to_workpack{$name} || '';
         if (my $lockout = $street_workpacks_to_lock_out{$workpack}) {
             $row->{report_allowed} = 0;
-            $row->{report_locked_out} = $lockout->{type};
+            $row->{report_locked_out} = [ $lockout->{type} ];
             my $last = $lockout->{date};
             $row->{last} = { date => $last, ordinal => ordinal($last->day) };
         }
@@ -719,28 +721,33 @@ sub bin_services_for_address {
 
     # Some need to be added manually as they don't appear in Bartec responses
     # as they're not "real" collection types (e.g. requesting all bins)
-    push @out, {
-        id => "FOOD_BINS",
-        service_name => "Food bins",
-        service_id => "FOOD_BINS",
-        request_containers => [ 424, 423, 428 ],
-        request_allowed => 1,
-        request_max => 1,
-        request_only => 1,
-        report_only => 1,
-    };
+    
+    @out = () if $self->{c}->get_param('food_only');
+    unless ( $self->{c}->get_param('skip_food') ) {
+        push @out, {
+            id => "FOOD_BINS",
+            service_name => "Food bins",
+            service_id => "FOOD_BINS",
+            request_containers => [ 424, 423, 428 ],
+            request_allowed => 1,
+            request_max => 1,
+            request_only => 1,
+            report_only => 1,
+        };
+    }
 
-    # We want this one to always appear first
-    unshift @out, {
-        id => "_ALL_BINS",
-        service_name => "All bins",
-        service_id => "_ALL_BINS",
-        request_containers => [ 425 ],
-        request_allowed => 1,
-        request_max => 1,
-        request_only => 1,
-    };
-
+    unless ( $self->{c}->get_param('food_only') ) {
+        # We want this one to always appear first
+        unshift @out, {
+            id => "_ALL_BINS",
+            service_name => "All bins",
+            service_id => "_ALL_BINS",
+            request_containers => [ 425 ],
+            request_allowed => 1,
+            request_max => 1,
+            request_only => 1,
+        };
+    }
     return \@out;
 }
 
@@ -866,11 +873,22 @@ sub waste_munge_request_data {
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $quantity = $data->{"quantity-$id"};
+    my $reason = $data->{request_reason} || '';
+
+    # For "large family" requests we want to use a different
+    # non container-specific category
+    $id = '486' if $reason eq 'large_family';
+
+    $reason = {
+        large_family => 'Additional black/green due to a large family',
+        cracked => 'Cracked container',
+        lost_stolen => 'Lost/stolen bin',
+        new_build => 'New build',
+    }->{$reason} || $reason;
+
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: $quantity\n\n$address";
-    if (my $reason = $data->{"reason-$id"}) {
-        $data->{detail} .= "\n\nReason: $reason";
-    }
+    $data->{detail} .= "\n\nReason: $reason" if $reason;
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$id" })->category;
 }
 
@@ -910,6 +928,7 @@ sub waste_munge_report_data {
     } else {
         my $container = $c->stash->{containers}{$id};
         $data->{title} = "Report missed $container";
+        $data->{title} .= " bin" if $container !~ /^Food/;
         $data->{detail} = $c->stash->{property}->{address};
     }
 
@@ -918,6 +937,38 @@ sub waste_munge_report_data {
     }
 
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
+}
+
+sub waste_munge_problem_data {
+    my ($self, $id, $data) = @_;
+    my $c = $self->{c};
+
+    my $service_details = $self->{c}->stash->{services_problems}->{$id};
+    my $container_id = $service_details->{container};
+
+    my $category = $self->body->contacts->find({ email => "Bartec-$id" })->category;
+    my $category_verbose = $service_details->{label};
+
+    if ($container_id == 6533 && $category =~ /Lid|Wheels/) { # 240L Black repair
+        my $uprn = $c->stash->{property}->{uprn};
+        my $attributes = $self->property_attributes($uprn);
+        if ($attributes->{"LARGE BIN"}) {
+            # For large bins, we need to raise a new bin request instead
+            $container_id = "LARGE BIN";
+            $category = 'Black 360L bin';
+            $category_verbose .= ", exchange bin";
+        }
+    }
+
+    my $bin = $c->stash->{containers}{$container_id};
+    $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
+                     $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
+    $data->{category} = $category;
+    $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
+
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
+    }
 }
 
 sub waste_munge_enquiry_data {
@@ -943,7 +994,8 @@ sub waste_munge_enquiry_data {
 
     my $bin = $c->stash->{containers}{$service_id};
     $data->{category} = $category;
-    $data->{title} = $bin;
+    $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
+                     $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
     $data->{detail} = $category_verbose . "\n\n" . $c->stash->{property}->{address};
 
     if ( $data->{extra_extra_detail} ) {
@@ -966,25 +1018,113 @@ sub waste_munge_enquiry_form_fields {
     }
 }
 
-sub bin_request_form_extra_fields {
-    my ($self, $service, $container_id, $field_list) = @_;
+sub waste_munge_problem_form_fields {
+    my ($self, $field_list) = @_;
 
-    if ($container_id =~ /419|425/) { # Request New Black 240L
-        # Add a new "reason" field
-        push @$field_list, "reason-$container_id" => {
-            type => 'Text',
-            label => 'Why do you need new bins?',
-            tags => {
-                initial_hidden => 1,
-            },
-            required_when => { "container-$container_id" => 1 },
-        };
-        # And make sure it's revealed when the box is ticked
-        my %fields = @$field_list;
-        $fields{"container-$container_id"}{tags}{toggle} .= ", #form-reason-$container_id-row";
+    my %services_problems = (
+        538 => {
+            container => 6533,
+            container_name => "Black bin",
+            label => "The bin’s lid is damaged",
+        },
+        541 => {
+            container => 6533,
+            container_name => "Black bin",
+            label => "The bin’s wheels are damaged",
+        },
+        537 => {
+            container => 6534,
+            container_name => "Green bin",
+            label => "The bin’s lid is damaged",
+        },
+        540 => {
+            container => 6534,
+            container_name => "Green bin",
+            label => "The bin’s wheels are damaged",
+        },
+        539 => {
+            container => 6579,
+            container_name => "Brown bin",
+            label => "The bin’s lid is damaged",
+        },
+        542 => {
+            container => 6579,
+            container_name => "Brown bin",
+            label => "The bin’s wheels are damaged",
+        },
+        497 => {
+            container_name => "General",
+            label => "The bin wasn’t returned to the collection point",
+        },
+    );
+    $self->{c}->stash->{services_problems} = \%services_problems;
+
+    my %services;
+    foreach (keys %services_problems) {
+        my $v = $services_problems{$_};
+        next unless $v->{container};
+        $services{$v->{container}} ||= {};
+        $services{$v->{container}}{$_} = $v->{label};
     }
+
+    my $open_requests = $self->{c}->stash->{open_service_requests};
+    @$field_list = ();
+
+    foreach (@{$self->{c}->stash->{service_data}}) {
+        my $id = $_->{service_id};
+        my $name = $_->{service_name};
+
+        next unless $services{$id};
+
+        my $categories = $services{$id};
+        foreach (keys %$categories) {
+            my $cat_name = $categories->{$_};
+            push @$field_list, "service-$_" => {
+                type => 'Checkbox',
+                label => $name,
+                option_label => $cat_name,
+                $open_requests->{$_} ? ( disabled => 1 ) : (),
+            };
+
+            # Set this to empty so the heading isn't shown multiple times
+            $name = '';
+        }
+    }
+    push @$field_list, "service-497" => {
+        type => 'Checkbox',
+        label => $self->{c}->stash->{services_problems}->{497}->{container_name},
+        option_label => $self->{c}->stash->{services_problems}->{497}->{label},
+    };
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
+    };
+
 }
 
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
+
+    unless ($self->{c}->get_param('food_only')) {
+        push @$field_list, "request_reason" => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            required => 1,
+            label => 'Why do you need new bins?',
+            options => [
+                { label => 'Additional black/green due to a large family', value => 'large_family' },
+                { label => 'Cracked container', value => 'cracked' },
+                { label => 'Lost/stolen bin', value => 'lost_stolen' },
+                { label => 'New build', value => 'new_build' },
+            ],
+        };
+    }
+}
 
 sub _format_address {
     my ($self, $property) = @_;
