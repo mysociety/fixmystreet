@@ -32,6 +32,8 @@ describe('buckinghamshire cobrand', function() {
     cy.wait('@around-ajax');
 
     cy.nextPageReporting();
+    cy.get('#form_road-placement').select('off-road');
+    cy.nextPageReporting();
     cy.nextPageReporting(); // No photo
     cy.get('[name=title]').type('Title');
     cy.get('[name=detail]').type('Detail');

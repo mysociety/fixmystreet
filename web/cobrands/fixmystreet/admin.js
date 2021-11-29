@@ -32,7 +32,7 @@ $(function(){
     }
 
     // Some lists of checkboxes have 'select all/none' links at the top
-    $("a[data-select-none], a[data-select-all]").click(function(e) {
+    $("a[data-select-none], a[data-select-all]").on('click', function(e) {
         e.preventDefault();
         var checked = $(this).filter('[data-select-all]').length > 0;
         $(this).closest("ul").find('input[type=checkbox]').prop('checked', checked);
@@ -66,21 +66,21 @@ $(function(){
         });
     }
 
-    $("#start_date").change(function(){
+    $("#start_date").on('change', function(){
         $('#end_date').attr('min', $(this).val());
     });
-    $("#end_date").change(function(){
+    $("#end_date").on('change', function(){
         $('#start_date').attr('max', $(this).val());
     });
 
     // On user edit page, hide the area/categories fields if body changes
-    $("form#user_edit select#body").change(function() {
+    $("form#user_edit select#body").on('change', function() {
         var show_area = $(this).val() == $(this).find("[data-originally-selected]").val();
         $("form#user_edit select#area_ids").closest("li").toggle(show_area);
         $("form#user_edit .js-user-categories").toggle(show_area);
     });
 
-    $('form#user_edit select#roles').change(function() {
+    $('form#user_edit select#roles').on('change', function() {
         var $perms = $('.permissions-checkboxes');
         if ($(this).val()) {
             var selected_perms = {};
@@ -103,12 +103,12 @@ $(function(){
             });
             $perms.find('input').prop('disabled', false);
         }
-    }).change();
+    }).trigger('change');
 
     // Bits for the report extra fields form builder:
 
     // Reveal the UI when 'show' link is clicked
-    $(".js-show-extra-fields").click(function(e) {
+    $(".js-show-extra-fields").on('click', function(e) {
         e.preventDefault();
         $(this).hide();
         $(".js-extra-fields-ui").removeClass("hidden-js");
@@ -121,7 +121,7 @@ $(function(){
         var $new_item = $template_item.clone();
         $new_item.removeClass("hidden-js js-group-item-template");
         $new_item.insertBefore($template_item);
-        $new_item.focus();
+        $new_item.trigger('focus');
         return true;
     });
 
@@ -194,7 +194,7 @@ $(function(){
     // On the manifest theme editing page we have tickboxes for deleting individual
     // icons - ticking one of these should grey out that row to indicate it will be
     // deleted upon form submission.
-    $("input[name=delete_icon]").change(function() {
+    $("input[name=delete_icon]").on('change', function() {
         $(this).closest("tr").toggleClass("is-deleted", this.checked);
     });
 });

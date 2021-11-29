@@ -271,6 +271,12 @@ FixMyStreet::override_config {
         $mech->content_contains('Report ID');
     };
 
+    subtest 'export CSV with slash in category name' => sub {
+        $mech->create_contact_ok(body_id => $body->id, category => "This/That", email => "this\@example.org");
+        my $token = 'access_token=' . $counciluser->id . '-1234567890abcdefgh';
+        $mech->get_ok("/dashboard?export=2&$token&category=This/That");
+    };
+
     subtest 'view status page' => sub {
         # Simulate a partly done file
         my $f = Path::Tiny->tempfile(SUFFIX => '.csv-part', DIR => path($UPLOAD_DIR, 'dashboard_csv', $counciluser->id));

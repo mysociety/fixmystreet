@@ -157,6 +157,7 @@ subtest "extra bartec params are sent to open311" => sub {
         is $cgi->param('attribute[postcode]'), 'XX1 1XZ', 'postcode param sent';
         is $cgi->param('attribute[house_no]'), '12', 'house_no param sent';
         is $cgi->param('attribute[street]'), 'A Street', 'street param sent';
+        is $cgi->param('attribute[contributed_by]'), $staffuser->email, 'staff email address sent';
     };
 };
 

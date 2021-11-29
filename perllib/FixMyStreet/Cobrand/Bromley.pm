@@ -333,6 +333,11 @@ sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
     $row->detail($self->{bromley_original_detail});
     my $error = $sender->error;
+    if ($error =~ /Cannot renew this property, a new request is required/ && $row->title eq "Garden Subscription - Renew") {
+        # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
+        $row->title("Garden Subscription - New");
+        $row->update_extra_field({ name => "Subscription_Type", value => $self->waste_subscription_types->{New} });
+    }
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
     }
@@ -512,7 +517,23 @@ sub munge_report_new_contacts {
     } else {
         @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
     }
+
     $self->SUPER::munge_report_new_contacts($categories);
+}
+
+sub munge_report_new_category_list {
+    my ($self, $category_options, $contacts) = @_;
+
+    my $user = $self->{c}->user;
+    if ($user && $user->belongs_to_body($self->body->id) && $user->get_extra_metadata('assigned_categories_only')) {
+        my %user_categories = map { $_ => 1} @{$user->categories};
+        my $non_bromley_or_assigned_category = sub {
+            $_->body_id != $self->body->id || $user_categories{$_->category}
+        };
+
+        @$category_options = grep &$non_bromley_or_assigned_category, @$category_options;
+        @$contacts = grep &$non_bromley_or_assigned_category, @$contacts;
+    }
 }
 
 sub updates_disallowed {
@@ -1541,38 +1562,28 @@ sub waste_reconcile_direct_debits {
     CANCELLED: for my $payment ( @$cancelled ) {
 
         my $date = $payment->{CancelledDate};
-
         next unless $date;
 
         my $payer = $payment->{Reference};
-
         (my $uprn = $payer) =~ s/^GGW//;
-
-        my $handled;
-
         my $len = length($uprn);
         my $rs = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-        },
-        {
-                order_by => { -desc => 'created' }
+        }, {
+            order_by => { -desc => 'created' }
         })->to_body( $self->body );
 
-        $rs = $rs->search({ category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] } });
-        my ($p, $r);
+        $rs = $rs->search({ category => 'Cancel Garden Subscription' });
+        my $r;
         while ( my $cur = $rs->next ) {
-            my $sub_type = $cur->get_extra_field_value('Subscription_Type') || '';
-            if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                $p = $cur;
-            } elsif ( $cur->category eq 'Cancel Garden Subscription' ) {
-                if ( $cur->state eq 'unconfirmed' ) {
-                    $r = $cur;
-                # already processed
-                } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
-                    next CANCELLED;
-                }
+            if ( $cur->state eq 'unconfirmed' ) {
+                $r = $cur;
+            # already processed
+            } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+                next CANCELLED;
             }
         }
+
         if ( $r ) {
             my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
             # if there's not a service then it's fine as it's already been cancelled
@@ -1585,42 +1596,10 @@ sub waste_reconcile_direct_debits {
                 $r->state('hidden');
                 $r->update;
             }
-            # regardless this has been handled so no need to alert on it.
-            $handled = 1;
-        } elsif ( $p ) {
-            my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
-            unless ($service) {
-                my $hidden = FixMyStreet::DB->resultset('Problem')->search({
-                    category => 'Cancel Garden Subscription',
-                    state => 'hidden',
-                    extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-                    created => \" > now() - interval '7' day",
-                });
-                # no service and we're already seen it
-                next if $hidden->count;
-                warn "no matching service to cancel for $payer\n";
-                next;
-            }
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            my $cancel = _duplicate_waste_report($p, 'Cancel Garden Subscription', {
-                service_id => 545,
-                uprn => $uprn,
-                Container_Instruction_Action => $self->waste_container_actions->{remove},
-                Container_Instruction_Container_Type => 44,
-                Container_Instruction_Quantity => $self->waste_get_sub_quantity($service),
-                LastPayMethod => $self->bin_payment_types->{direct_debit},
-                PaymentCode => $payer,
-                Subscription_End_Date => $now->ymd,
-            } );
-            $cancel->title('Garden Subscription - Cancel');
-            $cancel->set_extra_metadata('dd_date', $date);
-            $cancel->confirm;
-            $cancel->insert;
-            $handled = 1;
-        }
-
-        unless ( $handled ) {
-            warn "no matching record found for Cancel payment with id $payer\n";
+        } else {
+            # We don't do anything with DD cancellations that don't have
+            # associated Cancel reports, so no need to warn on them
+            # warn "no matching record found for Cancel payment with id $payer\n";
         }
     }
 }

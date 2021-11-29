@@ -1,0 +1,204 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "cookies";
+
+a,
+.fake-link {
+    &:hover,
+    &:active {
+        color: $shropshire-dark-grey;
+    }
+}
+
+a:focus,
+.fake-link:focus,
+#nav-link.focussed,
+.olButton:focus {
+    outline: solid 3px $shropshire-yellow;
+}
+
+.pagination a {
+    color: #fff;
+}
+
+.olButton:focus {
+    z-index: 1; // pull forward, so entire outline is visible
+}
+
+#site-header {
+    border-bottom: solid 3px $shropshire-dark-blue;
+}
+
+#site-logo {
+    width: 150px;
+    // height: 61px; // see below
+    background-size: 150px 45px;
+    background-image: url("/cobrands/shropshire/images/sc-logo-v3.png");
+
+    // text-indent doesn’t play nicely with focus outline,
+    // so use padding overflow trick instead
+    text-indent: 0;
+    height: 0;
+    padding-top: 61px;
+    overflow: hidden;
+}
+
+.shropshire-footer {
+    background: $shropshire-dark-grey;
+    border-bottom: solid 1px $shropshire-mid-grey;
+    color: #fff;
+    padding: 1.5em 0;
+
+    ul {
+        margin: 0;
+        font-size: 12px;
+    }
+
+    li {
+        list-style: none;
+        margin: 0.66em 0;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
+#report-cta {
+    border-color: #fff;
+}
+
+#front-main {
+    text-align: left;
+
+    #postcodeForm {
+        background: transparent;
+
+        div {
+            border: none;
+            background: transparent;
+
+            input#pc {
+                @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+                font-size: 1.25em;
+            }
+
+            input#sub {
+                @include shropshire-button-primary();
+                font-size: 1.25em;
+            }
+        }
+    }
+
+    h2 {
+        font-style: inherit;
+    }
+}
+
+a#geolocate_link {
+    @include shropshire-button-secondary();
+}
+
+h1 {
+    color: $shropshire-mid-grey;
+    font-size: 2em;
+    line-height: 1.25em;
+    font-weight: bold;
+}
+
+label {
+    @include shropshire-form-label();
+}
+
+.form-control {
+    @include shropshire-form-input();
+
+    .form-txt-submit-box & {
+        margin: 0 0 0.5em 0;
+    }
+}
+
+.multi-select-button {
+    &:focus {
+        outline: none;
+        border-color: #52A8EC;
+        box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
+    }
+}
+
+input.form-error,
+textarea.form-error {
+    background: #FBE3E4;
+    border: 1px solid #FBC2C4;
+    border-radius: 4px;
+}
+
+div.form-error,
+p.form-error {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+
+    color: #8A1F11;
+    font-weight: 700;
+}
+
+.dropzone {
+    padding: 1.5em;
+}
+
+.btn,
+.green-btn {
+    @include shropshire-button-primary();
+}
+
+#front_stats {
+    color: $shropshire-blue;
+    background: transparent;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    aside {
+        margin: 1em 0 2em 0;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.5em;
+    }
+
+    li {
+        margin: 0 0.5em;
+    }
+}
+
+// As per Shropshire Website style guide
+.skiplink:focus {
+    border: 1px solid #FFFFFF;
+    background: #2C2C2C;
+    padding: 6px;
+    color: #FFFFFF;
+    min-width: 150px;
+    outline: none;
+    text-align: center;
+    border-radius: 6px;
+    box-shadow: 2px 2px 5px #5F5F5F;
+
+    top: 0.5em;
+    left: 0.5em;
+}
+
+.item-list__item--empty {
+    color: $shropshire-mid-grey;
+}
+
+.box-warning {
+    background-color: mix($shropshire-yellow, #fff, 15%);
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";

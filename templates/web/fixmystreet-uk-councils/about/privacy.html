@@ -28,6 +28,8 @@ The Council’s Data Protection Officer may be contacted at
 <p>
     [% IF c.cobrand.moniker == 'centralbedfordshire' %]
         The Highways Reporting Tool
+    [% ELSIF c.cobrand.moniker == 'shropshire' %]
+        The site <a href="https://improvingyourroads.shropshire.gov.uk/">https://improvingyourroads.shropshire.gov.uk/</a>
     [% ELSE %]
         This site
     [% END %]
@@ -121,8 +123,11 @@ When you make a report
 </p>
 
 <p>
-    These are accessible only to mySociety’s administrators, who adhere to
-    strict data-handling policies, and to [% c.cobrand.council_name %] staff,
+    These are accessible only to mySociety’s administrators,
+    [% IF c.cobrand.moniker == 'shropshire' %]
+        for the purposes of maintaining and administering FixMyStreet,
+    [% END %]
+    who adhere to strict data-handling policies, and to [% c.cobrand.council_name %] staff,
     who abide by their own data-handling and security policies.
 </p>
 
@@ -265,7 +270,20 @@ When you make a report
 [% ELSE %]
 <p>
     Your data is processed by [% c.cobrand.council_name %] under the legal
-    basis 6(1)(e) – <strong>public task</strong>. [% c.cobrand.council_name %]
+    basis
+[% IF c.cobrand.moniker == 'shropshire' %]
+<p>Article 6(1)(e) of the GDPR 2016 – the processing is necessary for the
+    performance of a task carried out in the public interest.
+</p>
+<p>
+    Article 6(1)(b) – performance of a contract with the data subject is likely
+    to apply also as it is necessary to provide the service to the individual
+    and fix the issue.
+</p>
+    [% c.cobrand.council_name %]
+[% ELSE %]
+    6(1)(e) – <strong>public task</strong>. [% c.cobrand.council_name %]
+[% END %]
     asserts that the processing of users’ personal information is necessary for
     us to perform a task in the public interest or for our official functions,
     and the task or function has a clear basis in law. Our obligation to keep
@@ -321,7 +339,13 @@ When you make a report
 </p>
 
 <p>
-    Changes you make to your reports will apply immediately on this site, on
+    Changes you make to your reports will apply immediately on
+    [% IF c.cobrand.moniker == 'shropshire' %]
+    https://improvingyourroads.shropshire.gov.uk/,
+    [% ELSE %]
+    this site,
+    [% END %]
+    on
     fixmystreet.com and will also be reflected, sometimes with a delay,
     anywhere else they appear (see “What information we collect and how we use
     it”, above, for more details about where reports are published). If you do
@@ -396,6 +420,15 @@ When you make a report
     (but do contact us first, so that we can try and help).
 </p>
 
+[% IF c.cobrand.moniker == 'shropshire' %]
+<h2 id="under-13">Under 13</h2>
+<p>
+    If you are accessing online services and are under the age of 13‚
+    please get your parent/guardian's permission beforehand whenever you
+    provide us with personal information.
+</p>
+[% END %]
+
 <h2 id="cookies">Cookies</h2>
 
 <p>To make our service easier or more useful, we sometimes place small data
@@ -403,7 +436,13 @@ files on your computer or mobile phone, known as cookies; many websites do
 this. We use this information to, for example, remember you have logged in so
 you don’t need to do that on every page, or to measure how people use the
 website so we can improve it and make sure it works properly. Below, we list
-the cookies and services that this site can use.
+the cookies and services that
+[% IF c.cobrand.moniker == 'shropshire' %]
+https://improvingyourroads.shropshire.gov.uk/
+[% ELSE %]
+this site
+[% END %]
+can use.
 
 <table class="nicetable">
     <tr>

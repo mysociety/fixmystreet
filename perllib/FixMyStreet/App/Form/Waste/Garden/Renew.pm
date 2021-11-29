@@ -12,8 +12,8 @@ my %intro_fields = (
         my $form = shift;
         my $c = $form->{c};
         $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
-        my $current_bins = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
-        $c->stash->{payment} = $c->cobrand->garden_waste_cost( $current_bins ) / 100;
+        my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
+        $c->stash->{payment} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins} },
             bins_wanted => { default => $c->stash->{garden_form_data}->{bins} },
@@ -76,6 +76,7 @@ has_field current_bins => (
     label => 'Number of bins currently on site',
     tags => { number => 1 },
     required => 1,
+    disabled => 1,
     range_start => 1,
     range_end => 6,
 );

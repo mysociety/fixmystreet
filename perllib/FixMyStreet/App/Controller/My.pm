@@ -270,6 +270,41 @@ sub shortlist_multiple : Path('planned/change_multiple') {
     $c->res->body(encode_json({ outcome => 'add' }));
 }
 
+sub bulk_assign : Path('planned/bulk_assign') {
+    my ($self, $c) = @_;
+    $c->forward('/auth/check_csrf_token');
+
+    # check here
+    $c->detach('/page_error_403_access_denied', [])
+        unless  ($c->user->has_body_permission_to('assign_report_to_user'));
+
+    my @bulk_reports = $c->get_param_list('bulk-assign-reports');
+    my $assignee = $c->get_param('inspector');
+
+    if (@bulk_reports) {
+        if ($assignee eq 'unassigned') {
+            # take off shortlist
+            my @problems = $c->model('DB::Problem')->search({ id => { -in => [ @bulk_reports ]} });
+            foreach my $problem (@problems) {
+                $problem->user->remove_from_planned_reports($problem);
+            }
+        } else {
+            # add to shortlist
+            my $inspector = $c->model('DB::User')->find({ id => $assignee });
+            # ... if actually an inspector:
+            if ($inspector->has_body_permission_to('report_inspect')) {
+                foreach my $report (@bulk_reports) {
+                    $c->forward( '/report/load_problem_or_display_error', [ $report ] ); 
+                    $inspector->add_to_planned_reports($c->stash->{problem});
+                }
+            }
+        }
+    }
+
+    $c->stash->{body} = $c->user->from_body;
+    $c->detach('/reports/redirect_body');
+}
+
 sub by_shortlisted {
     my $a_order = $a->get_extra_metadata('order') || 0;
     my $b_order = $b->get_extra_metadata('order') || 0;

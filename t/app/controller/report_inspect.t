@@ -635,6 +635,56 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'oxfordshire',
+}, sub {
+    my $ian = $mech->create_user_ok('inspector@example.com', name => 'Inspector Ian', from_body => $oxon);
+    $user->user_body_permissions->create({ body => $oxon, permission_type => 'assign_report_to_user' });
+    $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    $user->update;
+    $ian->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+    $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    $ian->update;
+
+    subtest "assign report by dropdown in report page" => sub {
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains('Assign to:');
+        $mech->content_contains('<select class="form-control" name="assignment" id="assignment">');
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => 'unassigned' } });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('Shortlisted by');
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => $ian->id } });
+        $mech->content_contains('Shortlisted by Inspector Ian');
+    };
+
+    subtest "reports list shows assignees' names" => sub {
+        $mech->get_ok("/reports");
+
+        use HTML::Selector::Element qw(find);
+        my $root = HTML::TreeBuilder->new_from_content($mech->content());
+
+        $mech->content_contains('unassigned');
+        my @assigned_to = $root->find("li#report-$report_id div.assigned-to span.assignee")->content_list;
+        like($assigned_to[0], qr/Inspector Ian/, "report $report_id assigned to Ian");
+
+        my $toggle_shortlist = sub {
+            $mech->form_id("add_remove_shortlist_$report_id");
+            $mech->click();
+            $mech->get_ok("/reports");
+            $root = HTML::TreeBuilder->new_from_content($mech->content());
+            @assigned_to = $root->find("li#report-$report_id div.assigned-to span.assignee")->content_list;
+        };
+        $toggle_shortlist->();
+        like($assigned_to[0], qr/Body User/, 'assignment by shortlist-add button still works' );
+        $toggle_shortlist->();
+        like($assigned_to[0], qr/unassigned/, 'unassignment by shortlist-remove button still works' );
+    };
+    $user->user_body_permissions->delete;
+};
+
 foreach my $test (
     { cobrand => 'fixmystreet', limited => 0, desc => 'detailed_information has no max length' },
     { cobrand => 'oxfordshire', limited => 1, desc => 'detailed_information has max length'  },
@@ -905,6 +955,27 @@ FixMyStreet::override_config {
         $mech->content_lacks('shortlist');
         $contact2->unset_extra_metadata('assigned_users_only');
         $contact2->update;
+
+        # Now add user to a role with a category of "Sheep".
+        # User should then be able to see staff things on 2 and 3.
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        my $role = $user->roles->create({
+            body => $oxon,
+            name => 'Role A',
+            permissions => ['moderate', 'planned_reports'],
+        });
+        $role->set_extra_metadata('categories', [$contact2->id]);
+        $role->update;
+        $user->add_to_roles($role);
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $mech->get_ok("/report/$report3_id");
+        $mech->content_contains('<select class="form-control" name="state"  id="state">');
+        $mech->content_contains('<div class="inspect-section">');
+        $user->unset_extra_metadata('assigned_categories_only');
+        $user->update;
     };
 
     subtest 'instruct defect' => sub {

@@ -34,6 +34,7 @@
             <label for="state">[% loc('State') %]</label>
             [% INCLUDE 'report/inspect/state_groups_select.html' %]
           </p>
+          [% INCLUDE 'report/inspect/assignment.html'%]
           [% TRY %][% INCLUDE 'report/inspect/_raise_defect.html' %][% CATCH file %][% END %]
           <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
             <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">

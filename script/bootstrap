@@ -4,4 +4,4 @@ set -e
 cd "$(dirname "$0")/.."
 
 git submodule --quiet update --init --recursive --rebase
-bin/install_perl_modules
+bin/install_perl_modules "$@"

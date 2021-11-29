@@ -9,6 +9,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::BoroughEmails';
+use SUPER;
 
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
@@ -34,10 +35,16 @@ sub on_map_default_status { 'open' }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
+    # updated to match Oxon CC
     return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
-    return 'green' if $p->is_fixed || $p->is_closed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'yellow';
+    return 'grey' if $p->is_closed;
+    return 'green' if $p->is_fixed;
+    return 'yellow' if $p->state eq 'confirmed';
+    return 'orange'; # all the other `open_states` like "in progress"
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/oxfordshire/images/';
 }
 
 sub admin_user_domain { ( 'buckscc.gov.uk', 'buckinghamshire.gov.uk' ) }
@@ -139,9 +146,7 @@ sub filter_report_description {
     return $description;
 }
 
-sub map_type { 'Buckinghamshire' }
-
-sub default_map_zoom { 3 }
+sub default_map_zoom { 4 }
 
 sub _dashboard_export_add_columns {
     my ($self, $csv) = @_;
@@ -561,5 +566,21 @@ around 'munge_sendreport_params' => sub {
 
     $row->areas($original_areas);
 };
+
+sub council_rss_alert_options {
+    my ($self, @args) = @_;
+    my ($options) = super();
+
+    # rename old district councils to 'area' and remove 'ward' from their wards
+    # remove 'County' from Bucks Council name
+    for my $area (@$options) {
+        for my $key (qw(rss_text text)) {
+            $area->{$key} =~ s/District Council/area/ && $area->{$key} =~ s/ ward//;
+            $area->{$key} =~ s/ County//;
+        }
+    }
+
+    return ($options);
+}
 
 1;

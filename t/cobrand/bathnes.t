@@ -2,6 +2,10 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 

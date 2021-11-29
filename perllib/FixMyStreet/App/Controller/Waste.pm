@@ -34,6 +34,10 @@ sub auto : Private {
         $features->{garden_disabled} = 1;
     }
 
+    if ( my $site_name = Utils::trim_text($c->render_fragment('waste/site-name.html')) ) {
+        $c->stash->{site_name} = $site_name;
+    }
+
     $c->cobrand->call_hook( 'waste_check_staff_payment_permissions' );
 
     return 1;
@@ -706,6 +710,8 @@ sub construct_bin_report_form {
         };
     }
 
+    $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
+
     return $field_list;
 }
 
@@ -799,6 +805,7 @@ sub enquiry : Chained('property') : Args(0) {
             }
         },
     ];
+    $c->cobrand->call_hook("waste_munge_enquiry_form_fields", $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }
@@ -1038,7 +1045,7 @@ sub get_original_sub : Private {
 
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
-        title => 'Garden Subscription - New',
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         extra => { like => '%property_id,T5:value,I_:'. $c->stash->{property}{id} . '%' },
         state => { '!=' => 'hidden' },
     },
@@ -1297,6 +1304,16 @@ sub add_report : Private {
     $c->stash->{cobrand_data} = 'waste';
     $c->stash->{override_confirmation_template} = 'waste/confirmation.html';
 
+    # Store the name of the first page of the wizard on the token
+    # so Peterborough can show the appropriate confirmation page when the
+    # confirmation link is followed.
+    $c->stash->{token_extra_data} = {
+        first_page => $c->stash->{first_page},
+    };
+
+    # Don’t let staff inadvertently change their name when making reports
+    my $original_name = $c->user->name if $c->user_exists && $c->user->from_body && $c->user->email eq $data->{email};
+
     # XXX Is this best way to do this?
     if ($c->user_exists && $c->user->from_body && !$data->{email} && !$data->{phone}) {
         $c->set_param('form_as', 'anonymous_user');
@@ -1334,6 +1351,8 @@ sub add_report : Private {
     } else {
         $c->forward('/report/new/redirect_or_confirm_creation');
     }
+
+    $c->user->update({ name => $original_name }) if $original_name;
 
     $c->cobrand->call_hook( clear_cached_lookups_property => $c->stash->{property}{id} );
 

@@ -28,6 +28,10 @@ SECURE_PROXY_SSL_HEADER: ''
 # If you're behind a proxy, set this to a two-element list containing the
 # trusted HTTP header and the required value. For example:
 #   SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]
+CONTENT_SECURITY_POLICY: ''
+# To activate CSP, set this to 1. If you have additional third party domains to
+# allow JavaScript on, or want to specify extra script-src CSP directives, set
+# this to a e.g. space-separated list of domains or a list of the same.
 
 # This is so the fixmystreet container knows it is running
 # behind an nginx container (not on the same host)
@@ -65,6 +69,10 @@ EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
 # <language code>,<pretty name>,<locale>
 LANGUAGES:
   - 'en-gb,English,en_GB'
+
+# A postgresql text search configuration value - it should match the
+# configuration used by the problem_fulltext_idx index.
+DB_FULL_TEXT_SEARCH_CONFIG: 'english'
 
 # If you're running an installation that is being used in a different time zone
 # from the server, you can set the time zone here (standard time zone string)
@@ -194,6 +202,14 @@ ALLOWED_COBRANDS:
 # the admin interface. Defaults to BASE_URL with "/admin" on the end.
 ADMIN_BASE_URL: ''
 
+# If your site has many cobrands, you may want to have per-cobrand settings. To
+# do this, make a hash of feature keys, each of which is a hash of monikers, eg
+#   COBRAND_FEATURES:
+#     suggest_duplicates:
+#       buckinghamshire: 1
+#       oxfordshire: 1
+COBRAND_FEATURES: ''
+
 # How many items are returned in the GeoRSS and Open311 feeds by default
 RSS_LIMIT: '20'
 OPEN311_LIMIT: 1000
@@ -214,6 +230,10 @@ SMTP_TYPE: ''
 SMTP_PORT: ''
 SMTP_USERNAME: ''
 SMTP_PASSWORD: ''
+
+# Set if you want password setting to be checked (securely) against the
+# Have I Been Pwned dataset
+CHECK_HAVEIBEENPWNED: 0
 
 # Gaze is a world-wide service for population density lookups. You can leave
 # this as is.
@@ -236,11 +256,15 @@ TESTING_COUNCILS: ''
 # if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
 MESSAGE_MANAGER_URL: ''
 
+# If you set up using recaptcha, you can put its configuration keys here
+RECAPTCHA: ''
+
 # If you want to use SMS login or 'report as' with just a phone number, you'll
 # need to set the site's two-digit ISO 3166 country code (e.g. GB) here.
 PHONE_COUNTRY: ''
 
-# If you enable login via SMS authentication, you'll need a twilio account
+# If you enable login via SMS authentication, you'll need a twilio account or a
+# GOV.UK Notify account
 SMS_AUTHENTICATION: 0
 TWILIO_ACCOUNT_SID: ''
 TWILIO_AUTH_TOKEN: ''
@@ -253,3 +277,14 @@ LOGIN_REQUIRED: 0
 # If you want to stop new users from registering, set this to 1.
 # NB: This also disables all Facebook/Twitter logins.
 SIGNUPS_DISABLED: 0
+
+# Setting these variable to more than 1 will let fetch-comments run in parallel
+# with MIN to MAX children (new children will be added if a child takes longer
+# than TIMEOUT on one body).
+FETCH_COMMENTS_PROCESSES_MIN: 0
+FETCH_COMMENTS_PROCESSES_MAX: 0
+FETCH_COMMENTS_PROCESS_TIMEOUT: 0
+
+# If you use the daemon for sending reports, rather than the cron script,
+# this is how many children it will have.
+QUEUE_DAEMON_PROCESSES: 4

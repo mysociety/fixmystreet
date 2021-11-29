@@ -866,7 +866,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
     border-radius: 0;
 
     &:hover,
-    &.hover {
+    &.hover,
+    &:focus {
       text-decoration: none;
       background-color: #333;
       color: #fff !important;
@@ -1902,9 +1903,6 @@ html.js #map .noscript {
 
     &:hover,
     &:focus {
-      opacity: 1;
-    }
-    &:hover {
       overflow: visible;
       width: auto;
       height: auto;
@@ -1913,6 +1911,7 @@ html.js #map .noscript {
       white-space: nowrap;
       color: #fff;
       text-decoration: none;
+      opacity: 1;
     }
   }
 
@@ -2142,6 +2141,19 @@ img.pin {
     display: block;
     height: 4em;
   }
+}
+
+#map_sidebar .assignee {
+  font-weight: bold;
+}
+
+.admin #map_sidebar .assignee {
+  font-style: italic;
+  font-weight: normal;
+}
+
+div.assigned-to {
+    margin-top: 0.25em;
 }
 
 // When you're in the reporting flow on mobile, we make the map full screen to

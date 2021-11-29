@@ -44,6 +44,9 @@ Road: [% report.get_extra_field_value('road_name') %]
 [% IF report.get_extra_field_value('sect_label') ~%]
 Section: [% report.get_extra_field_value('sect_label') %]
 [% END %]
+[% IF report.get_extra_field_value('area_name') ~%]
+Area: [% report.get_extra_field_value('area_name') %]
+[% END %]
 
 View OpenStreetMap of this location: [% osm_url %]
 

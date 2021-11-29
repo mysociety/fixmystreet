@@ -7,7 +7,10 @@ use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::SendReport::Open311;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 use Open311::PostServiceRequestUpdates;
+use List::Util 'any';
+use Regexp::Common 'URI';
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -250,6 +253,27 @@ subtest 'test waste duplicate' => sub {
     is $report->state, 'duplicate', 'State updated';
 };
 
+subtest 'test DD taking so long it expires' => sub {
+    my $title = $report->title;
+    $report->update({ title => "Garden Subscription - Renew" });
+    my $sender = FixMyStreet::SendReport::Open311->new(
+        bodies => [ $body ], body_config => { $body->id => $body },
+    );
+    Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Cannot renew this property, a new request is required</description></error></errors>', 500);
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+    };
+    is $report->get_extra_field_value("Subscription_Type"), 1, 'Type updated';
+    is $report->title, "Garden Subscription - New";
+    $report->update({ title => $title });
+};
+
 subtest 'Private comments on updates are added to open311 description' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => ['bromley', 'tfl'],
@@ -407,7 +431,7 @@ subtest 'check geolocation overrides' => sub {
 };
 
 subtest 'check special subcategories in admin' => sub {
-    $mech->create_user_ok('superuser@example.com', is_superuser => 1);
+    $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
     $mech->log_in_ok('superuser@example.com');
     $user->update({ from_body => $body->id });
     FixMyStreet::override_config {
@@ -448,6 +472,48 @@ subtest 'check heatmap page' => sub {
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
     $user->update({ area_ids => undef });
+};
+
+subtest 'category restrictions for roles restricts reporting categories for users with that role' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $potholes = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Potholes',
+            email => 'potholes@example.org',
+        );
+        my $flytipping = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Flytipping',
+            email => 'flytipping@example.org',
+        );
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        my $role = $user->roles->create({
+            body => $body,
+            name => 'Out of hours',
+            permissions => ['moderate', 'planned_reports'],
+        });
+        $role->set_extra_metadata('categories', [$potholes->id]);
+        $role->update;
+        $user->add_to_roles($role);
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } },
+            "submit location" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Flytipping');
+
+        # TfL categories should always be displayed, regardless of role restrictions.
+        $mech->content_contains('Traffic Lights');
+    };
 };
 
 FixMyStreet::override_config {
@@ -1062,36 +1128,6 @@ subtest 'check direct debit reconcilliation' => sub {
                 ] }
             } } } ];
         }
-        if ( $id == 8854321 ) {
-            return [ {
-                Id => 1005,
-                ServiceId => 545,
-                ServiceName => 'Garden waste collection',
-                ServiceTasks => { ServiceTask => {
-                    Id => 405,
-                    ScheduleDescription => 'every other Monday',
-                    Data => { ExtensibleDatum => '' },
-                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                        EndDate => { DateTime => '2020-01-01T00:00:00Z' },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
-                        },
-                    }, {
-                        EndDate => { DateTime => '2021-03-30T00:00:00Z' },
-                        NextInstance => {
-                            CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                            OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                        },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                            Ref => { Value => { anyType => [ 567, 890 ] } },
-                        },
-                    }
-                ] }
-            } } } ];
-        }
     });
 
     my $ad_hoc_orig = setup_dd_test_report({
@@ -1497,14 +1533,6 @@ subtest 'check direct debit reconcilliation' => sub {
         'uprn' => '654323',
     });
 
-    my $sub_for_cancel_no_extended_data = setup_dd_test_report({
-        'Subscription_Type' => 1,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '8854321',
-        'uprn' => '6654326',
-    });
-
     # e.g if they tried to create a DD but the process failed
     my $failed_new_sub = setup_dd_test_report({
         'Subscription_Type' => 1,
@@ -1615,7 +1643,6 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching service to renew for GGW754322\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "no matching record found for Garden Subscription payment with id GGW954325\n",
-        "no matching record found for Cancel payment with id GGW954326\n",
     ], "warns if no matching record";
 
     $new_sub->discard_changes;
@@ -1691,48 +1718,9 @@ subtest 'check direct debit reconcilliation' => sub {
     );
     is $renewal_too_recent->count, 0, "ignore payments less that three days old";
 
-    my $cancel = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I6:654323%' }
-        },
-        {
-            order_by => { -desc => 'id' }
-        }
-    );
-
-    is $cancel->count, 2, "two records for cancel property";
-    $p = $cancel->first;
-    ok $p->id != $sub_for_cancel->id, "not the original record";
-    is $p->get_extra_field_value('Container_Instruction_Action'), 2, "correct containter instruction";
-    is $p->get_extra_field_value('Container_Instruction_Quantity'), 1, "cancel has correct number of bins";
-    is $p->category, 'Cancel Garden Subscription', 'cancel has correct category';
-    is $p->title, 'Garden Subscription - Cancel', 'cancel has correct title';
-    is $p->non_public, 1, 'new report non-public';
-    is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for cancelled";
-    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
-    is $p->get_extra_field_value('PaymentCode'), "GGW654323", 'correct echo payment code field';
-    is $p->get_extra_field_value('Subscription_End_Date'), "2021-03-19", 'correct end subscription date';
-    is $p->state, 'confirmed';
-    ok $p->confirmed, "confirmed is not null";
-
-    my $cancel_no_extended = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I7:6654326%' }
-        },
-        {
-            order_by => { -desc => 'id' }
-        }
-    );
-
-    is $cancel_no_extended->count, 2, "two records for no extended data cancel property";
-    $p = $cancel_no_extended->first;
-    ok $p->id != $sub_for_cancel_no_extended_data->id, "not the original record";
-    is $p->get_extra_field_value('Container_Instruction_Action'), 2, "correct containter instruction";
-    is $p->get_extra_field_value('Container_Instruction_Quantity'), 0, "no extended data cancel has correct number of bins";
-    is $p->category, 'Cancel Garden Subscription', 'no extended data cancel has correct category';
-    is $p->get_extra_metadata('dd_date'), "26/02/2021", "dd date set for no extended data cancelled";
-    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
-    is $p->get_extra_field_value('PaymentCode'), "GGW6654326", 'correct echo payment code field';
-    is $p->state, 'confirmed';
-    ok $p->confirmed, "confirmed is not null";
+    my $cancel = FixMyStreet::DB->resultset('Problem')->search({ extra => { like => '%uprn,T5:value,I6:654323%' } }, { order_by => { -desc => 'id' } });
+    is $cancel->count, 1, "one record for cancel property";
+    is $cancel->first->id, $sub_for_cancel->id, "only record is the original one, no cancellation report created";
 
     my $processed = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I6:654324%' }
@@ -1768,13 +1756,62 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching service to renew for GGW754322\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "no matching record found for Garden Subscription payment with id GGW954325\n",
-        "no matching record found for Cancel payment with id GGW954326\n",
     ], "warns if no matching record";
 
     $failed_new_sub->discard_changes;
     is $failed_new_sub->state, 'hidden', 'failed sub still hidden on second run';
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
+
+};
+
+subtest 'Garden Waste new subs alert update emails contain bin collection days link' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my $property_id = '54323';
+
+        my $new_sub = setup_dd_test_report({ property_id => $property_id });
+
+        my $update = FixMyStreet::DB->resultset('Comment')->find_or_create({
+            problem_state => 'action scheduled',
+            problem_id => $new_sub->id,
+            user_id    => $staffuser->id,
+            name       => 'Staff User',
+            mark_fixed => 'f',
+            text       => "Green bin on way",
+            state      => 'confirmed',
+            confirmed  => 'now()',
+            anonymous  => 'f',
+        });
+
+        my $alert = FixMyStreet::DB->resultset('Alert')->create({
+            user => $user,
+            parameter => $new_sub->id,
+            alert_type => 'new_updates',
+            whensubscribed => '2021-09-27 12:00:00',
+            cobrand => 'bromley',
+            cobrand_data => 'waste',
+        });
+        $alert->confirm;
+
+        FixMyStreet::Script::Alerts::send_updates();
+
+        my $email = $mech->get_email;
+        my $text_body = $mech->get_text_body_from_email($email);
+        like $text_body, qr/Check your bin collections day/, 'has bin day link text in text part';
+        my @links = $mech->get_link_from_email($email, 'get_all_links');
+        my $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @links;
+        ok $found, 'Found bin day URL in text part of alert email';
+
+        my $html_body = $mech->get_html_body_from_email($email);
+        like $html_body, qr/Check your bin collections day/, 'has bin day link text in HTML part';
+        my @uris = $html_body =~ m/$RE{URI}/g;
+        $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @uris;
+        ok $found, 'Found bin day URL in HTML part of alert email';
+    }
 };
 
 sub setup_dd_test_report {
@@ -1784,6 +1821,7 @@ sub setup_dd_test_report {
         latitude => 51.402096,
         longitude => 0.015784,
         cobrand => 'bromley',
+        cobrand_data => 'waste',
         areas => '2482,8141',
         user => $user,
     });

@@ -160,6 +160,19 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         is $email->header('Subject'), 'Confirm your report on Bromley Recycling Services';
         my $link = $mech->get_link_from_email($email);
+
+        # Peterborough uses first page of process (not report category) to display
+        # correct confirmation message so test that it's been stored in token.
+        my ($token_id) = $link =~ m{/P/(\S+)};
+        my $token = FixMyStreet::DB->resultset('Token')->find(
+            {
+                token => $token_id,
+                scope => 'problem'
+            }
+        );
+        ok $token, 'Token found in database';
+        is $token->data->{extra}->{first_page}, "report", 'token stored first_page correctly';
+
         $mech->clear_emails_ok;
         $mech->get_ok($link);
         $mech->content_contains('Your missed collection has been reported');
@@ -322,9 +335,28 @@ FixMyStreet::override_config {
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $user->email;
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
-        is $report->get_extra_field_value('Source'), 9, 'Correct source'
+        is $report->get_extra_field_value('Source'), 9, 'Correct source';
     };
-
+    subtest "General enquiry, staff doesn't change name" => sub {
+        my $original_name = $staff_user->name;
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/enquiry?category=General+enquiry&service_id=537');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Some notes' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $staff_user->email } });
+        $mech->content_contains('Some notes');
+        $mech->content_contains('Test McTest');
+        $mech->content_contains($staff_user->email);
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Notes'), 'Some notes';
+        is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
+        is $report->user->email, $staff_user->email;
+        is $report->name, "Test McTest";
+        is $report->get_extra_field_value('Source'), 9, 'Correct source';
+        $staff_user->discard_changes;
+        is $staff_user->name, $original_name, 'Staff user name stayed the same';
+    };
     subtest 'Ignores expired services' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', sub {
@@ -1176,12 +1208,20 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
-    subtest 'check modify sub credit card payment' => sub {
+    subtest 'check modify sub with bad details' => sub {
         set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
         $mech->log_out_ok();
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
         $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 2 } });
+        $mech->content_contains('2 bins');
+        $mech->content_contains('40.00');
+        $mech->content_contains('7.50');
+    };
+    subtest 'check modify sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
@@ -1479,6 +1519,9 @@ FixMyStreet::override_config {
 
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
+
+        # Delete report otherwise next test thinks we have a DD subscription (which we do now)
+        $new_report->delete;
     };
 
     subtest 'renew credit card sub with an extra bin' => sub {
@@ -1873,6 +1916,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
         is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
         is $report->state, 'confirmed', 'report confirmed';
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check staff renewal - no email' => sub {
@@ -1908,6 +1952,7 @@ FixMyStreet::override_config {
         is $report->state, 'confirmed', 'report confirmed';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check modify sub staff' => sub {
@@ -1944,6 +1989,7 @@ FixMyStreet::override_config {
         is $report->user->email, 'test@example.net', 'non staff email';
 
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check modify sub staff reducing bin count' => sub {

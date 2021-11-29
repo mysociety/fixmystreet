@@ -95,46 +95,11 @@ var highway_layer = 'layers_highwayAssetsCustom_5d4806b0fe2ad809d85a774f';
 var prow_asset_layer = 'layers_pRoWAssets_5d48157cfe2ad809d85a7abc';
 var signal_asset_layer = 'layers_nETCOM_5d483dd7fe2ad809d85a8fab';
 
-// This is required so that the found/not found actions are fired on category
-// select and pin move rather than just on asset select/not select.
-OpenLayers.Layer.NCCVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
-    initialize: function(name, options) {
-        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
-        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
-        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.NCCVectorAsset'
-});
-
-OpenLayers.Layer.NCCVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNearest, {
-    feature_table: {},
-    initialize: function(name, options) {
-        OpenLayers.Layer.VectorNearest.prototype.initialize.apply(this, arguments);
-        this.events.register('beforefeatureadded', this, this.checkCanAddFeature);
-    },
-
-    destroyFeatures: function(features, options) {
-        OpenLayers.Layer.VectorNearest.prototype.destroyFeatures.apply(this, arguments);
-        this.feature_table = {};
-    },
-
-    checkCanAddFeature: function(obj) {
-      if (this.feature_table[obj.feature.fid]) {
-        return false;
-      }
-
-      this.feature_table[obj.feature.fid] = 1;
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.NCCVectorNearest'
-});
-
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
 var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
-  class: OpenLayers.Layer.NCCVectorAsset,
+  class: OpenLayers.Layer.AlloyVectorAsset,
   protocol_class: OpenLayers.Protocol.AlloyV2,
   http_options: {
       base: url_with_style,

@@ -15,6 +15,10 @@
         - Make anonymous updates clearer in email alerts. #3417
         - Add Maidenhead Locator support to search box.
         - Update RSS link when distance box changed. #3624
+        - Inspector-managers can assign reports to inspectors
+          in the inspector toolbar.
+        - Inspectors & inspector-managers can see who a report is assigned
+          to or 'unassigned' if a report is unassigned.
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.
@@ -32,7 +36,9 @@
         - Fix removal of cached opengraph photos.
         - Do not email inactive body comment users. #3587
         - Look up organizational domain in DMARC checking. #3603
+        - Stop slash in category name breaking csv download #3642
     - Admin improvements:
+        - Assignees of reports are now visible in admin reports list and report edit pages.
         - Enable per-category hint customisation.
         - Move ban/unban buttons to user edit admin page.
         - Add link to user edit admin from report/update edit admin.
@@ -52,18 +58,20 @@
         - Include failure count in send report error output, #3316
         - Sort output in export script. #3323
         - Show relevant updates in alert-update email preview. #3417
-        - Add German and Swiss language packs to default
-        linux install #3544
-        - Upgrade jQuery. #3017
+        - Upgrade jQuery to 3.6.0. #3017
         - Upgrade Mozilla::CA to handle new root certificates.
         - Factor alert script to slightly smaller functions. #3615
+        - Add development Docker environment.
     - Open311 improvements:
         - Consistent protected field ordering.
         - Move test handling out of core code.
     - Security:
         - Increase minimum password length to eight.
+        - Allow throttling by user login attempts
     - Changes
         - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
+    - New features:
+        - Roles can now have category restrictions like users.
 
 * v3.1 (16th November 2020)
     - Security:

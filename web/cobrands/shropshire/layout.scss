@@ -1,0 +1,104 @@
+@import "_colours";
+@import "../sass/layout";
+
+body {
+    background-image: url(/cobrands/shropshire/images/full-bg.jpg);
+    background-position: 0 64px; // height of #site-header
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.nav-menu--main {
+    // remove special styling for this nav item
+    a.report-a-problem-btn {
+        border-radius: 0;
+        margin: 0;
+
+        &:hover {
+            background-color: $nav_hover_background_colour;
+        }
+    }
+
+    a,
+    span,
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
+        padding: 0.5em 0.75em;
+
+        &, &:hover {
+            color: $nav_colour;
+        }
+    }
+
+    // underlines for clickable nav items
+    a,
+    a.report-a-problem-btn {
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    // darken background for selected nav item
+    span,
+    span.report-a-problem-btn {
+        &, &:hover {
+            background-color: $nav_hover_background_colour;
+        }
+    }
+}
+
+#front-main {
+    margin: 0 auto;
+    padding: 0 1em;
+    max-width: $container-max-width;
+    background: transparent;
+
+    #front-main-container {
+        max-width: none;
+        background: #fff;
+        padding: 4%;
+    }
+
+    #postcodeForm {
+        overflow: visible;
+
+        div {
+            margin: 0;
+        }
+    }
+}
+
+.content {
+    padding: 4%;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+input.form-error,
+textarea.form-error {
+    border-radius: 4px;
+}
+
+.shropshire-footer {
+    margin-top: 4em;
+}
+
+body.mappage #site-header {
+    height: $mappage-header-height - 3px;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    position: static;
+
+    aside {
+        position: static;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        margin: 0 0 2em 0;
+    }
+}

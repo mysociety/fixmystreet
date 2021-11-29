@@ -206,7 +206,7 @@ fixmystreet.maps = {};
         }
         */
 
-        $('.map-pins-toggle').click(function(e) {
+        $('.map-pins-toggle').on('click', function(e) {
             var i, m;
             e.preventDefault();
             if (this.innerHTML == translation_strings.show_pins) {

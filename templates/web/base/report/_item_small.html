@@ -30,3 +30,8 @@
     [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
     [% END %]
 [% END %]
+[% IF page != '' %]
+    <div class='assigned-to'>
+    [% INCLUDE 'admin/_report-assignment.html' %]
+    </div>
+[% END %]

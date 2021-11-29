@@ -64,7 +64,7 @@ fixmystreet.maps.matrix_ids = [
 
     $(function(){
         fixmystreet.maps.base_layer_aerial = true;
-        $('.map-layer-toggle').click(fixmystreet.maps.toggle_base);
+        $('.map-layer-toggle').on('click', fixmystreet.maps.toggle_base);
 
         /* Admin dragging of pin */
         if (fixmystreet.page == 'admin') {

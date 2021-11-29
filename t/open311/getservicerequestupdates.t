@@ -1057,6 +1057,7 @@ for my $test (
             external_status_code => $test->{external_code}
         });
 
+        $problem->update({ state => "confirmed" });
         $problem->comments->delete;
 
         my $dt2 = $dt->clone->add( minutes => 1 );

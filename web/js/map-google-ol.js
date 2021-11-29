@@ -6,7 +6,7 @@ $(function(){
     }
     // jshint undef:false
     if (typeof fixmystreet_google_default !== 'undefined' && fixmystreet_google_default == 'satellite') {
-        $('.map-layer-toggle').click();
+        $('.map-layer-toggle').trigger('click');
     }
 });
 

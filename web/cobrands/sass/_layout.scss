@@ -381,7 +381,8 @@ body.mappage.admin {
     position: absolute;
     top: -999px;
 
-    &:focus {
+    &:focus,
+    &:focus-within {
       // And show it again if it receives focus (eg: via tab key)
       position: static;
     }

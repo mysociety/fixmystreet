@@ -70,7 +70,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Flat 1, 176-179 Shoreditch High Street');
         $mech->content_lacks('1 Road Road');
         $mech->submit_form_ok({ with_fields => { address => '10008312004' } });
-        $mech->submit_form_ok({ with_fields => { kind => 'music' } });
+        $mech->submit_form_ok({ with_fields => { kind => 'music-pub' } });
         $mech->submit_form_ok({ with_fields => { where => 'residence', source_location => 'E1 6AX'  } });
         $mech->content_contains('1000000 Shoreditch High Street');
         $mech->submit_form_ok({ with_fields => { source_address => '100022950072' } });
@@ -98,7 +98,7 @@ FixMyStreet::override_config {
         is $user->alerts->count, 1;
         my $report = $user->problems->first;
         is $report->title, "1000000 Shoreditch High Street, E1 6AX";
-        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\nReporter email: pkg-tappcontrollernoiset-test\@example.net\nReporter phone: 01234 567890\n\nKind of noise: Music\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
+        is $report->detail, "Reporter address: Flat 1, 176-179 Shoreditch High Street, E1 6AX (10008312004)\nReporter availability: Weekday or evening, by email\nReporter email: pkg-tappcontrollernoiset-test\@example.net\nReporter phone: 01234 567890\n\nKind of noise: Music from pub\nNoise details: Details\n\nWhere is the noise coming from? A house, flat, park or street\n\nNoise source: 1000000 Shoreditch High Street, E1 6AX (100022950072)\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Monday, Thursday\nWhat time does the noise happen? Morning, Evening\n";
         is $report->latitude, 51.524448;
         is $report->areas, ',144379,2508,';
         $mech->clear_emails_ok;
@@ -237,7 +237,7 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/auth';
         $mech->submit_form_ok({ with_fields => { username => $user->email, password_sign_in => 'secret' } });
         $mech->submit_form_ok({ with_fields => { report => $report->id } });
-        $mech->submit_form_ok({ with_fields => { kind => 'music' } });
+        $mech->submit_form_ok({ with_fields => { kind => 'music-club' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 1,
             happening_pattern => 1,
@@ -250,7 +250,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your additional report has been submitted');
         my $update = $user->comments->first;
-        is $update->text, "Kind of noise: Music\nNoise details: Details\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Friday, Saturday\nWhat time does the noise happen? Night\n";
+        is $update->text, "Kind of noise: Music from club/bar\nNoise details: Details\n\nIs the noise happening now? Yes\nDoes the time of the noise follow a pattern? Yes\nWhat days does the noise happen? Friday, Saturday\nWhat time does the noise happen? Night\n";
         like $mech->get_text_body_from_email, qr/Kind of noise: Music/;
     };
     subtest 'Report another instance on existing marked-fixed report' => sub {
@@ -260,7 +260,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ button => 'start' });
         $mech->submit_form_ok({ with_fields => { existing => 1 } });
         $mech->submit_form_ok({ with_fields => { report => $report->id } });
-        $mech->submit_form_ok({ with_fields => { kind => 'music' } });
+        $mech->submit_form_ok({ with_fields => { kind => 'music-other' } });
         $mech->submit_form_ok({ with_fields => {
             happening_now => 1,
             happening_pattern => 1,

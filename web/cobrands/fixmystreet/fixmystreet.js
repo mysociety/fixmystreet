@@ -21,11 +21,11 @@ function isR2L() {
     // that doesn't change the main content at all.
     small_drawer: function(id) {
         var $this = $(this), d = $('#' + id);
-        this.click(function(e) {
+        this.on('click', function(e) {
             e.preventDefault();
             if (!$this.hasClass('hover')) {
                 if (opened) {
-                    opened.click();
+                    opened.trigger('click');
                 }
                 if (!$this.addClass('hover').data('setup')) {
                     d.hide().removeClass('hidden-js').css({
@@ -59,7 +59,7 @@ function isR2L() {
         var $drawer = $('#' + id);
 
         this.off('click');
-        this.click(function(e) {
+        this.on('click', function(e) {
             e.preventDefault();
             var drawer_top;
             if (!$this.hasClass('hover')) {
@@ -321,7 +321,7 @@ fixmystreet.pageController = {
         $('.mobile-map-banner span').text(translation_strings.right_place);
 
         // mobile user clicks 'ok' on map
-        $('#mob_ok').click(function(e){
+        $('#mob_ok').on('click', function(e){
             e.preventDefault();
             var $page = $('.js-reporting-page--active');
             var first_page = $('.js-reporting-page').first().data('pageName');
@@ -378,7 +378,7 @@ $.extend(fixmystreet.set_up, {
     });
 
     // Focus on postcode box on front page
-    $('#pc').focus();
+    $('#pc').trigger('focus');
 
     // In case we've come here by clicking back to a form that disabled a submit button
     $('form.validate input[type=submit]').prop('disabled', false);
@@ -461,19 +461,19 @@ $.extend(fixmystreet.set_up, {
     });
 
     /* set correct required status depending on what we submit */
-    $('.js-submit_sign_in').click( function(e) {
+    $('.js-submit_sign_in').on('click', function(e) {
         $('.js-form-name').removeClass('required');
     } );
 
-    $('.js-submit_register').click( function(e) {
+    $('.js-submit_register').on('click', function(e) {
         $('.js-form-name').addClass('required');
     } );
 
-    $('#facebook_sign_in, #twitter_sign_in, #oidc_sign_in').click(function(e){
+    $('#facebook_sign_in, #twitter_sign_in, #oidc_sign_in').on('click', function(e){
         $('#username, #form_username_register, #form_username_sign_in').removeClass('required');
     });
 
-    $('#planned_form').submit(function(e) {
+    $('#planned_form').on('submit', function(e) {
         if (e.metaKey || e.ctrlKey) {
             return;
         }
@@ -717,7 +717,7 @@ $.extend(fixmystreet.set_up, {
         }
         $('#form_service').val(type);
         last_type = type;
-    }).resize();
+    }).trigger('resize');
   },
 
   dropzone: function($context) {
@@ -830,7 +830,7 @@ $.extend(fixmystreet.set_up, {
 
       $dropzone.on('keydown', function(e) {
           if (e.keyCode === 13 || e.keyCode === 32) {
-              $dropzone.click();
+              $dropzone.trigger('click');
           }
       });
 
@@ -992,7 +992,7 @@ $.extend(fixmystreet.set_up, {
 
       // Inspector form asset changing
       if ($('html').hasClass('map-fullscreen') && $('.btn--change-asset').hasClass('asset-spot')) {
-          $('.btn--change-asset').click();
+          $('.btn--change-asset').trigger('click');
       }
 
       $('html, body').scrollTop(0);
@@ -1022,7 +1022,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   ward_select_multiple: function() {
-    $(".js-ward-select-multiple").click(function(e) {
+    $(".js-ward-select-multiple").on('click', function(e) {
         e.preventDefault();
         $(".js-ward-single").addClass("hidden");
         $(".js-ward-multi").removeClass("hidden");
@@ -1049,18 +1049,18 @@ $.extend(fixmystreet.set_up, {
 
   email_login_form: function() {
     // Password form split up
-    $('.js-sign-in-password-btn').click(function(e) {
+    $('.js-sign-in-password-btn').on('click', function(e) {
         if ($('.js-sign-in-password').is(':visible')) {
         } else {
             e.preventDefault();
             $('.js-sign-in-password-hide').hide();
             $('.js-sign-in-password').show().css('visibility', 'visible');
-            $('#password_sign_in').focus();
+            $('#password_sign_in').trigger('focus');
         }
     });
     // This is if the password box is filled programmatically (by
     // e.g. 1Password), show it so that it will auto-submit.
-    $('#password_sign_in').change(function() {
+    $('#password_sign_in').on('change', function() {
         $('.js-sign-in-password').show().css('visibility', 'visible');
     });
 
@@ -1084,19 +1084,19 @@ $.extend(fixmystreet.set_up, {
 
     var focusFirstVisibleInput = function() {
         // Ignore logged-in form here, because it should all be pre-filled already!
-        $('#form_sign_in_yes input, #form_sign_in_no input').filter(':visible').eq(0).focus();
+        $('#form_sign_in_yes input, #form_sign_in_no input').filter(':visible').eq(0).trigger('focus');
     };
 
     // Display tweak
     $('.js-new-report-sign-in-hidden.form-box, .js-new-report-sign-in-shown.form-box').removeClass('form-box');
 
-    $('.js-new-report-user-hide').click(function(e) {
+    $('.js-new-report-user-hide').on('click', function(e) {
         e.preventDefault();
         $('.js-new-report-user-shown')[0].scrollIntoView({behavior: "smooth"});
         hide('.js-new-report-user-shown');
         show('.js-new-report-user-hidden');
     });
-    $('.js-new-report-user-show').click(function(e) {
+    $('.js-new-report-user-show').on('click', function(e) {
         e.preventDefault();
         var v = $(this).closest('form').validate();
         if (!v.form()) {
@@ -1110,21 +1110,21 @@ $.extend(fixmystreet.set_up, {
         });
     });
 
-    $('.js-new-report-show-sign-in').click(function(e) {
+    $('.js-new-report-show-sign-in').on('click', function(e) {
         e.preventDefault();
         $('.js-new-report-sign-in-shown').removeClass('hidden-js');
         $('.js-new-report-sign-in-hidden').addClass('hidden-js');
         focusFirstVisibleInput();
     });
 
-    $('.js-new-report-hide-sign-in').click(function(e) {
+    $('.js-new-report-hide-sign-in').on('click', function(e) {
         e.preventDefault();
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
         focusFirstVisibleInput();
     });
 
-    $('.js-new-report-sign-in-forgotten').click(function(e) {
+    $('.js-new-report-sign-in-forgotten').on('click', function() {
         e.preventDefault();
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
@@ -1136,7 +1136,7 @@ $.extend(fixmystreet.set_up, {
     // XXX Is this still needed, should it be better done server side? Will need to spot multiple pages too
     var err = $('.form-error');
     if (err.length) {
-        $('.js-sign-in-password-btn').click();
+        $('.js-sign-in-password-btn').trigger('click');
         if (err.closest(".js-new-report-sign-in-shown").length) {
             $('.js-new-report-user-shown').removeClass('hidden-js');
             $('.js-new-report-user-hidden').addClass('hidden-js');
@@ -1260,7 +1260,7 @@ $.extend(fixmystreet.set_up, {
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
         $('body').append(form);
-        form.submit();
+        form.trigger('submit');
     });
   },
 
@@ -1552,7 +1552,7 @@ fixmystreet.fetch_reporting_data = function() {
             if (!data.contribute_as.body) {
                 $select.find('option[value=body]').remove();
             }
-            $select.change();
+            $select.trigger('change');
             $('#js-contribute-as-wrapper').show();
         } else {
             $('#js-contribute-as-wrapper').hide();
@@ -1730,7 +1730,7 @@ fixmystreet.display = {
             // Problems nearby on /my should go to the around page,
             // otherwise show reports within the current map view.
             if (fixmystreet.original.page === 'around' || fixmystreet.original.page === 'reports') {
-                $sideReport.find('#key-tool-problems-nearby').click(function(e) {
+                $sideReport.find('#key-tool-problems-nearby').on('click', function(e) {
                     var report_list_url = fixmystreet.original.href;
                     var map_state = fixmystreet.maps.get_map_state();
                     fixmystreet.back_to_reports_list(e, report_list_url, map_state);
@@ -1868,100 +1868,104 @@ $(function() {
         history.replaceState({ initial: true }, null);
     }
 
-    $(window).on('load', function () {
-        setTimeout(function () {
-            if (!window.addEventListener) { return; }
-            window.addEventListener('popstate', function(e) {
-                // The user has pressed the Back or Forward button, and there
-                // is a stored History state for them to return to.
+    if (document.readyState === 'complete') {
+        setup_popstate();
+    } else {
+        $(window).on('load', setup_popstate);
+    }
+});
 
-                // Note: no pushState callbacks in these display_* calls,
-                // because we're already inside a popstate: We want to roll
-                // back to a previous state, not create a new one!
+function setup_popstate() {
+    setTimeout(function () {
+        if (!window.addEventListener) { return; }
+        window.addEventListener('popstate', function(e) {
+            // The user has pressed the Back or Forward button, and there
+            // is a stored History state for them to return to.
 
-                var location = window.history.location || window.location;
-                var page;
+            // Note: no pushState callbacks in these display_* calls,
+            // because we're already inside a popstate: We want to roll
+            // back to a previous state, not create a new one!
 
-                if (e.state === null) {
-                    // Hashchange or whatever, we don't care.
-                    return;
-                }
+            var location = window.history.location || window.location;
+            var page;
 
-                var reports_list_trigger;
-                if ('initial' in e.state) {
-                    if (fixmystreet.original.page === 'new') {
-                        // Started at /report/new, so go back to first 'page' there
-                        fixmystreet.pageController.toPage('first', {
-                            popstate: true,
-                            forceMapShow: true
-                        });
-                        return;
-                    }
+            if (e.state === null) {
+                // Hashchange or whatever, we don't care.
+                return;
+            }
 
-                    // User has navigated Back from a pushStated state, presumably to
-                    // see the list of all reports (which was shown on pageload). By
-                    // this point, the browser has *already* updated the URL bar so
-                    // location.href is something like foo.com/around?pc=abc-123,
-                    // which we pass into fixmystreet.display.reports_list() as a fallback
-                    // in case the list isn't already in the DOM.
-                    var filters = $('#filter_categories').add('#statuses').add('#sort');
-                    filters.find('option').prop('selected', function() { return this.defaultSelected; });
-                    filters.trigger('change.multiselect');
-                    if (fixmystreet.utils && fixmystreet.utils.parse_query_string) {
-                        var qs = fixmystreet.utils.parse_query_string();
-                        page = qs.p || 1;
-                        $('#show_old_reports').prop('checked', qs.show_old_reports || '');
-                        fixmystreet.markers.protocol.use_page = true;
-                        $('.pagination:first').data('page', page);
-                    }
-                    reports_list_trigger = $('.pagination:first');
-                } else if ('reportId' in e.state) {
-                    fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
-                } else if ('newReportAtLonlat' in e.state) {
+            var reports_list_trigger;
+            if ('initial' in e.state) {
+                if (fixmystreet.original.page === 'new') {
+                    // Started at /report/new, so go back to first 'page' there
                     fixmystreet.pageController.toPage('first', {
                         popstate: true,
                         forceMapShow: true
                     });
-                    fixmystreet.display.begin_report(e.state.newReportAtLonlat, {
-                        popstate: true,
-                        saveHistoryState: false
-                    });
-                } else if ('page_change' in e.state) {
+                    return;
+                }
+
+                // User has navigated Back from a pushStated state, presumably to
+                // see the list of all reports (which was shown on pageload). By
+                // this point, the browser has *already* updated the URL bar so
+                // location.href is something like foo.com/around?pc=abc-123,
+                // which we pass into fixmystreet.display.reports_list() as a fallback
+                // in case the list isn't already in the DOM.
+                var filters = $('#filter_categories').add('#statuses').add('#sort');
+                filters.find('option').prop('selected', function() { return this.defaultSelected; });
+                filters.trigger('change.multiselect');
+                if (fixmystreet.utils && fixmystreet.utils.parse_query_string) {
+                    var qs = fixmystreet.utils.parse_query_string();
+                    page = qs.p || 1;
+                    $('#show_old_reports').prop('checked', qs.show_old_reports || '');
                     fixmystreet.markers.protocol.use_page = true;
-                    $('#show_old_reports').prop('checked', e.state.page_change.show_old_reports);
-                    $('.pagination:first').data('page', e.state.page_change.page);
-                    reports_list_trigger = $('.pagination:first');
-                } else if ('filter_change' in e.state) {
-                    $('#filter_categories').val(e.state.filter_change.filter_categories);
-                    $('#statuses').val(e.state.filter_change.statuses);
-                    $('#sort').val(e.state.filter_change.sort);
-                    $('#show_old_reports').prop('checked', e.state.filter_change.show_old_reports);
-                    $('#filter_categories').add('#statuses').trigger('change.multiselect');
-                    reports_list_trigger = $('#filter_categories');
-                // } else if ('hashchange' in e.state) {
-                    // This popstate was just here because the hash changed.
-                    // (eg: mobile nav click.) We want to ignore it.
-                } else if ('reportingPage' in e.state) {
-                    page = e.state.reportingPage;
-                    fixmystreet.pageController.toPage(page, {
-                        popstate: true
-                    });
+                    $('.pagination').first().data('page', page);
                 }
+                reports_list_trigger = $('.pagination').first();
+            } else if ('reportId' in e.state) {
+                fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
+            } else if ('newReportAtLonlat' in e.state) {
+                fixmystreet.pageController.toPage('first', {
+                    popstate: true,
+                    forceMapShow: true
+                });
+                fixmystreet.display.begin_report(e.state.newReportAtLonlat, {
+                    popstate: true,
+                    saveHistoryState: false
+                });
+            } else if ('page_change' in e.state) {
+                fixmystreet.markers.protocol.use_page = true;
+                $('#show_old_reports').prop('checked', e.state.page_change.show_old_reports);
+                $('.pagination').first().data('page', e.state.page_change.page);
+                reports_list_trigger = $('.pagination').first();
+            } else if ('filter_change' in e.state) {
+                $('#filter_categories').val(e.state.filter_change.filter_categories);
+                $('#statuses').val(e.state.filter_change.statuses);
+                $('#sort').val(e.state.filter_change.sort);
+                $('#show_old_reports').prop('checked', e.state.filter_change.show_old_reports);
+                $('#filter_categories').add('#statuses').trigger('change.multiselect');
+                reports_list_trigger = $('#filter_categories');
+            // } else if ('hashchange' in e.state) {
+                // This popstate was just here because the hash changed.
+                // (eg: mobile nav click.) We want to ignore it.
+            } else if ('reportingPage' in e.state) {
+                page = e.state.reportingPage;
+                fixmystreet.pageController.toPage(page, {
+                    popstate: true
+                });
+            }
 
-                if (reports_list_trigger) {
-                    if (fixmystreet.page.match(/reports|around|my/)) {
-                        reports_list_trigger.trigger('change.filters');
-                    } else {
-                        fixmystreet.display.reports_list(location.href);
-                    }
+            if (reports_list_trigger) {
+                if (fixmystreet.page.match(/reports|around|my/)) {
+                    reports_list_trigger.trigger('change.filters');
+                } else {
+                    fixmystreet.display.reports_list(location.href);
                 }
+            }
 
-                if ('mapState' in e.state) {
-                    fixmystreet.maps.set_map_state(e.state.mapState);
-                }
-
-            });
-        }, 0);
-    });
-
-});
+            if ('mapState' in e.state) {
+                fixmystreet.maps.set_map_state(e.state.mapState);
+            }
+        });
+    }, 0);
+}

@@ -12,6 +12,7 @@ use Utils;
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
+with 'FixMyStreet::Roles::Open311Multi';
 
 sub council_area_id { 2566 }
 sub council_area { 'Peterborough' }
@@ -66,6 +67,14 @@ around open311_extra_data_include => sub {
             { name => 'street', value => $street }
         );
     }
+    if ( $row->contact->email =~ /Bartec/ && $row->get_extra_metadata('contributed_by') ) {
+        push @$open311_only, (
+            {
+                name => 'contributed_by',
+                value => $self->csv_staff_user_lookup($row->get_extra_metadata('contributed_by'), $self->csv_staff_users),
+            },
+        );
+    }
     return $open311_only;
 };
 # remove categories which are informational only
@@ -74,7 +83,7 @@ sub open311_extra_data_exclude {
     # We need to store this as Open311 pre_send needs to check it and it will
     # have been removed due to this function.
     $row->set_extra_metadata(pcc_witness => $row->get_extra_field_value('pcc-witness'));
-    [ '^PCC-', '^emergency$', '^private_land$' ]
+    [ '^PCC-', '^emergency$', '^private_land$', '^extra_detail$' ]
 }
 
 sub lookup_site_code_config { {
@@ -104,9 +113,6 @@ sub open311_munge_update_params {
 
     # Send the FMS problem ID with the update.
     $params->{service_request_id_ext} = $comment->problem->id;
-
-    my $contact = $comment->problem->contact;
-    $params->{service_code} = $contact->email;
 }
 
 around 'open311_config' => sub {
@@ -501,18 +507,6 @@ sub bin_services_for_address {
         "Empty Bin Refuse 660l" => "Refuse",
     );
 
-    $self->{c}->stash->{enquiry_cat_ids} = [ 497, 236, 237 ];
-    $self->{c}->stash->{enquiry_cats} = {
-        497 => 'Not returned to collection point',
-        236 => 'Lid',
-        237 => 'Wheels',
-    };
-    $self->{c}->stash->{enquiry_verbose} = {
-        'Not returned to collection point' => 'The bin wasn’t returned to the collection point',
-        'Lid' => 'The bin’s lid is damaged',
-        'Wheels' => 'The bin’s wheels are damaged',
-    };
-
     $self->{c}->stash->{containers} = {
         # For new containers
         419 => "240L Black",
@@ -532,6 +526,38 @@ sub bin_services_for_address {
         6579 => "240L Brown",
         "LARGE BIN" => "360L Black", # Actually would be service 422
     };
+
+    if ( my $service_id = $self->{c}->get_param('service_id') ) {
+        # category to use for lid/wheel repairds depends on the container type that's been selected
+        $self->{c}->stash->{enquiry_cat_ids} = [ 497, 'lid', 'wheels' ];
+        $self->{c}->stash->{enquiry_cats} = {
+            497 => 'Not returned to collection point',
+            'lid' => $self->{c}->stash->{containers}->{$service_id} . ' - Lid',
+            'wheels' => $self->{c}->stash->{containers}->{$service_id} . ' - Wheels',
+        };
+        $self->{c}->stash->{enquiry_verbose} = {
+            'Not returned to collection point' => 'The bin wasn’t returned to the collection point',
+            $self->{c}->stash->{containers}->{$service_id} . ' - Lid' => 'The bin’s lid is damaged',
+            $self->{c}->stash->{containers}->{$service_id} . ' - Wheels' => 'The bin’s wheels are damaged',
+        };
+        $self->{c}->stash->{enquiry_open_ids} = {
+            6533 => { # 240L Black
+                497 => 497,
+                'lid' => 538,
+                'wheels' => 541,
+            },
+            6534 => { # 240L Green
+                497 => 497,
+                'lid' => 537,
+                'wheels' => 540,
+            },
+            6579 => { # 240L Brown
+                497 => 497,
+                'lid' => 539,
+                'wheels' => 542,
+            },
+        };
+    }
 
     my %container_request_ids = (
         6533 => [ 419 ], # 240L Black
@@ -662,9 +688,16 @@ sub bin_services_for_address {
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         if ($row->{report_allowed}) {
+            # We only get here if we're within the 2.5 day window after the collection.
+            # Set this so missed food collections can always be reported, as they don't
+            # have their own collection event.
+            $self->{c}->stash->{any_report_allowed} = 1;
+
             # If on the day, but before 5pm, show a special message to call
+            # (which is slightly different for staff, who are actually allowed to report)
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
-                $row->{report_allowed} = 0;
+                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
+                $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = "ON DAY PRE 5PM";
             }
             # But if it has been marked as locked out, show that
@@ -696,6 +729,7 @@ sub bin_services_for_address {
         request_only => 1,
         report_only => 1,
     };
+
     # We want this one to always appear first
     unshift @out, {
         id => "_ALL_BINS",
@@ -810,6 +844,20 @@ sub waste_munge_report_form_data {
     }
 }
 
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
+    };
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 
@@ -865,6 +913,10 @@ sub waste_munge_report_data {
         $data->{detail} = $c->stash->{property}->{address};
     }
 
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
+    }
+
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$service_id" })->category;
 }
 
@@ -878,7 +930,7 @@ sub waste_munge_enquiry_data {
     my $verbose = $c->stash->{enquiry_verbose};
     my $category_verbose = $verbose->{$category} || $category;
 
-    if ($service_id == 6533 && ($category eq 'Lid' || $category eq 'Wheels')) { # 240L Black repair
+    if ($service_id == 6533 && $category =~ /Lid|Wheels/) { # 240L Black repair
         my $uprn = $c->stash->{property}->{uprn};
         my $attributes = $self->property_attributes($uprn);
         if ($attributes->{"LARGE BIN"}) {
@@ -893,9 +945,26 @@ sub waste_munge_enquiry_data {
     $data->{category} = $category;
     $data->{title} = $bin;
     $data->{detail} = $category_verbose . "\n\n" . $c->stash->{property}->{address};
+
+    if ( $data->{extra_extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_extra_detail};
+    }
 }
 
+sub waste_munge_enquiry_form_fields {
+    my ($self, $field_list) = @_;
 
+    # ConfirmValidation enforces a maxlength of 2000 on the overall report body.
+    # Limiting the fields at this point makes it less likely the user will
+    # see a validation error several steps after entering their text, at the
+    # confirmation step.
+    my %fields = @$field_list;
+    foreach (values %fields) {
+        if ($_->{type} eq 'TextArea')  {
+            $_->{maxlength} = 1000;
+        }
+    }
+}
 
 sub bin_request_form_extra_fields {
     my ($self, $service, $container_id, $field_list) = @_;

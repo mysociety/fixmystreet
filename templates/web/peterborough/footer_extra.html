@@ -28,6 +28,14 @@ may be contacted or blocked from using the site.
             Contact us
         </a></li>
     </ul>
+    [% IF bodyclass == 'waste' %]
+        <div class="peterborough-waste-credits">
+            <p>Powered by</p>
+            <p>
+                <a href="https://www.societyworks.org/services/waste/">SocietyWorks</a>
+            </p>
+        </div>
+    [% END %]
 </div>
 
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]

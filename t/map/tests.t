@@ -5,7 +5,6 @@ my $requires = {
     'Bing' => 'map-bing-ol.js',
     'Bristol' => 'map-wmts-bristol.js',
     'Bromley' => 'map-fms.js',
-    'Buckinghamshire' => 'map-wmts-buckinghamshire.js',
     'CheshireEast' => 'map-cheshireeast.js',
     'FMS' => 'map-fms.js',
     'Google' => 'map-google.js',
