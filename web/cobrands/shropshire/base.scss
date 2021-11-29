@@ -46,6 +46,28 @@ a:focus,
     overflow: hidden;
 }
 
+.shropshire-footer {
+    background: $shropshire-dark-grey;
+    border-bottom: solid 1px $shropshire-mid-grey;
+    color: #fff;
+    padding: 1.5em 0;
+
+    ul {
+        margin: 0;
+        font-size: 12px;
+    }
+
+    li {
+        list-style: none;
+        margin: 0.66em 0;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
 #report-cta {
     border-color: #fff;
 }
