@@ -1,0 +1,70 @@
+@import "_colours";
+@import "../sass/layout";
+
+#site-header {
+    background: $merton-jade-j3;
+}
+.nav-menu {
+    padding-top: 0;
+    background: transparent;
+
+    a:hover {
+        color: $link-hover-color;
+        background: transparent;
+    }
+
+    span {
+        color: #333;
+    }
+}
+
+#front-main {
+    text-align: left;
+    padding: 3em 1em;
+    background: #ffffff;
+
+    #postcodeForm {
+        overflow: visible;
+    }
+}
+
+@media screen and (min-width: 48em) {
+    #front-main #postcodeForm div { margin-left: 0;}
+}
+
+#front_stats big {
+    color: $merton-jade-j2;
+}
+
+body.mappage {
+    .nav-wrapper {
+        background-color: $merton-jade-j3;
+    }
+}
+
+body.twothirdswidthpage .content {
+
+    background: #ffffff;
+
+    aside {
+        background-color: #ffffff;
+    }
+
+    .sticky-sidebar {
+        left: 43em; // up from 42em now we have a wider container
+        top: 0; // full height of .content, so aside can move vertically
+        bottom: 0;
+    }
+
+    aside,
+    .sticky-sidebar aside {
+        position: static; // fallback
+        position: sticky;
+        top: 0;
+    }
+}
+
+#skip-this-step em {
+    color: black;
+}
+

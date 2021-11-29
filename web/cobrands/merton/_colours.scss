@@ -1,0 +1,43 @@
+// Nomenclature from Merton's brand guidelines
+$merton-lavender-l1: #32245e;
+$merton-lavender-l2: #422d76;
+$merton-jade-j1: #014c59;
+$merton-jade-j2: #009578;
+$merton-jade-j3: #e8f4f1;
+$merton-grey-g1: #aaa9aa;
+$merton-grey-g2: #e8e8e8;
+$merton-blue-b1: #056eb6;
+$merton-green-g1: #7bbb58;
+$merton-neutrals-n1: #000000;
+$merton-headline: #333333;
+$merton-dark-green: #0c4c57;
+
+$link-color: #167d63;
+$link-hover-color: $merton-neutrals-n1;
+
+$primary: $merton-lavender-l1;
+$primary_b: #676767;
+$primary_text: #676767;
+
+$base_bg: $merton-grey-g2;
+$base_fg: #000;
+
+$nav_background_colour: #fff;
+$nav_colour: #676767;
+$nav_hover_background_colour: #eee;
+
+$header-top-border-width: 0.25em;
+$header-top-border: $header-top-border-width solid $merton-grey-g2;
+
+$body-font: Helvetica, Arial, sans-serif;
+$meta-font: $body-font;
+$heading-font: $body-font;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: #ccc;
+
+$col_click_map: $merton-jade-j2;
+
+$menu-image: 'menu-black';
+
+$container-max-width: 60em;
