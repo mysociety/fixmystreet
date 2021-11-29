@@ -37,6 +37,7 @@
         - Do not email inactive body comment users. #3587
         - Look up organizational domain in DMARC checking. #3603
         - Stop slash in category name breaking csv download #3642
+        - Fix CSS z-index bug that resulted in the main menu being hidden behind the map on small screens #3686
     - Admin improvements:
         - Assignees of reports are now visible in admin reports list and report edit pages.
         - Enable per-category hint customisation.

@@ -773,6 +773,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2; // So appears over map
 }
 
 #main-nav {
@@ -781,7 +782,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
   overflow: auto;
   left: 0;
   right: 0;
-  z-index: 1; // So appears over map
+  z-index: 3; // So appears over map and #js-menu-open-modal
 }
 
 #main-nav-btn {
