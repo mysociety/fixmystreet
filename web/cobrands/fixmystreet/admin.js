@@ -81,10 +81,12 @@ $(function(){
     });
 
     $('form#user_edit select#roles').on('change', function() {
-        var $perms = $('.permissions-checkboxes');
-        if ($(this).val()) {
+        var $perms = $('.permissions-checkboxes'),
+            $this = $(this),
+            value = $this.val() || [];
+        if (value.length) {
             var selected_perms = {};
-            $(this).find(':selected').each(function() {
+            $this.find(':selected').each(function() {
                 $.each($(this).data('permissions'), function(i, p) {
                     selected_perms['permissions[' + p + ']'] = 1;
                 });
