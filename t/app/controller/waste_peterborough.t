@@ -90,7 +90,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
-        $mech->content_contains('can’t find your address');
+        $mech->content_contains('can’t find your address', "Missing message found");
     };
     subtest 'Address lookup' => sub {
         set_fixed_time('2021-08-06T10:00:00Z');
@@ -295,7 +295,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({ text => 'Report a problem with a black bin' });
         $mech->submit_form_ok({ with_fields => { category => '240L Black - Lid' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
-        $mech->content_contains('The bin’s lid is damaged');
+        $mech->content_contains('The bin’s lid is damaged', "Damaged lid category found");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -315,7 +315,7 @@ FixMyStreet::override_config {
         $mech->content_contains('name="extra_extra_detail" rows="5" maxlength="1000"');
         $mech->submit_form_ok({ with_fields => { extra_extra_detail => 'Some extra detail' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
-        $mech->content_contains('The bin’s wheels are damaged');
+        $mech->content_contains('The bin’s wheels are damaged', "Damaged wheel category found");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry submitted');
 

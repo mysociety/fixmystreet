@@ -88,7 +88,7 @@ query parameter, and other data is taken from the database.
 sub email_previewer : Path('/_dev/email') : Args(1) {
     my ( $self, $c, $template ) = @_;
 
-    my $vars = {};
+    my $vars = { to => $c->user->email };
     if (my $id = $c->get_param('update')) {
         $vars->{update} = $c->model('DB::Comment')->find($id);
         $vars->{problem} = $vars->{report} = $vars->{update}->problem;

@@ -75,7 +75,7 @@ my $p = FixMyStreet::Script::ProcessUpdateFile->new(
     suppress_alerts => 1,
 );
 
-$p->process;
+output_like { $p->process } qr/added 2 comments/, qr/determine update text/;
 
 is $problem1->comments->count, 1, "problem 1 has same comment";
 $problem1->discard_changes;

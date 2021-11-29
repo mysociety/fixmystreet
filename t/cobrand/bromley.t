@@ -428,7 +428,7 @@ subtest 'check geolocation overrides' => sub {
 };
 
 subtest 'check special subcategories in admin' => sub {
-    $mech->create_user_ok('superuser@example.com', is_superuser => 1);
+    $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
     $mech->log_in_ok('superuser@example.com');
     $user->update({ from_body => $body->id });
     FixMyStreet::override_config {
