@@ -31,6 +31,16 @@ sub admin_user_domain { 'merton.gov.uk' }
 
 sub privacy_policy_url { "https://www.merton.gov.uk/legal/privacy-and-cookies" }
 
+sub allow_anonymous_reports { 'button' }
+
+sub anonymous_account {
+    my $self = shift;
+    return {
+        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
+        name => 'Anonymous user',
+    };
+}
+
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 

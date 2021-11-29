@@ -39,6 +39,11 @@ my ($problem2) = $mech->create_problems_for_body(1, $hackney->id, 'Title', {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'merton' ],
     MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        anonymous_account => {
+            merton => 'anonymous'
+        },
+    },
 }, sub {
 
     subtest 'cobrand homepage displays council name' => sub {
@@ -60,6 +65,46 @@ FixMyStreet::override_config {
         $mech->content_contains("Council ref:&nbsp;" . $report->external_id);
     };
 
+    subtest "test report creation anonymously by button" => sub {
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                button => 'report_anonymously',
+                with_fields => {
+                    title => 'Anonymous Test Report 1',
+                    detail => 'Test report details.',
+                    category => 'Litter',
+                }
+            },
+            "submit report anonymously"
+        );
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Anonymous Test Report 1'});
+        ok $report, "Found the report";
+
+        $mech->content_contains('Your issue has been sent.');
+
+        is_deeply $mech->page_errors, [], "check there were no errors";
+
+        is $report->state, 'confirmed', "report confirmed";
+        $mech->get_ok( '/report/' . $report->id );
+
+        is $report->bodies_str, $merton->id;
+        is $report->name, 'Anonymous user';
+        is $report->user->email, 'anonymous@merton.gov.uk';
+        is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
+        is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
+
+        my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+            user => $report->user,
+            alert_type => 'new_updates',
+            parameter => $report->id,
+        } );
+        is $alert, undef, "no alert created";
+
+        $mech->not_logged_in_ok;
+    };
 };
 
 subtest 'only Merton staff can reopen closed reports on Merton cobrand' => sub {
