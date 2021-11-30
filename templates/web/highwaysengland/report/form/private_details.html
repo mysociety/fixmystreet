@@ -1,0 +1,11 @@
+<!-- private_details.html -->
+<h2 class="form-section-heading form-section-heading--private">[% loc('Tell us about you') %]</h2>
+
+[% IF type == 'report' %]
+<p class="form-section-description js-new-report-sign-in-hidden">
+    [% loc('These details will be sent to us, but will never be shown online without your permission.') %]
+    (<a href="[% c.cobrand.privacy_policy_url %]">[% loc('See our privacy policy') %]</a>.)
+</p>
+[% END %]
+
+<!-- /private_details.html -->
