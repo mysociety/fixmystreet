@@ -172,6 +172,7 @@ fixmystreet.assets.add(defaults, {
     http_options: {
         url: proxy_base_url + 'drains/wfs',
         params: {
+            propertyName: 'id,msGeometry,asset_id,created,junction_cleaned',
             TYPENAME: "junction_inspections"
         }
     },
@@ -185,6 +186,7 @@ fixmystreet.assets.add(defaults, {
     http_options: {
         url: proxy_base_url + 'drains/wfs',
         params: {
+            propertyName: 'id,msGeometry,asset_id,created,last_inspected',
             TYPENAME: "junctions"
         }
     },
