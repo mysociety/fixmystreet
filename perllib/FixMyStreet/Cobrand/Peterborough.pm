@@ -722,21 +722,24 @@ sub bin_services_for_address {
     # Some need to be added manually as they don't appear in Bartec responses
     # as they're not "real" collection types (e.g. requesting all bins)
     
-    @out = () if $self->{c}->get_param('food_only');
-    unless ( $self->{c}->get_param('skip_food') ) {
-        push @out, {
-            id => "FOOD_BINS",
-            service_name => "Food bins",
-            service_id => "FOOD_BINS",
-            request_containers => [ 424, 423, 428 ],
-            request_allowed => 1,
-            request_max => 1,
-            request_only => 1,
-            report_only => 1,
-        };
-    }
+    my $bags_only = $self->{c}->get_param('bags_only');
+    my $skip_bags = $self->{c}->get_param('skip_bags');
 
-    unless ( $self->{c}->get_param('food_only') ) {
+    @out = () if $bags_only;
+    my $food_containers = $bags_only ? [ 428 ] : $skip_bags ? [ 424, 423 ] : [ 424, 423, 428 ];
+
+    push @out, {
+        id => "FOOD_BINS",
+        service_name => "Food bins",
+        service_id => "FOOD_BINS",
+        request_containers => $food_containers,
+        request_allowed => 1,
+        request_max => 1,
+        request_only => 1,
+        report_only => 1,
+    };
+
+    unless ( $bags_only ) {
         # We want this one to always appear first
         unshift @out, {
             id => "_ALL_BINS",
@@ -1110,7 +1113,7 @@ sub waste_munge_problem_form_fields {
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
 
-    unless ($self->{c}->get_param('food_only')) {
+    unless ($self->{c}->get_param('bags_only')) {
         push @$field_list, "request_reason" => {
             type => 'Select',
             widget => 'RadioGroup',
