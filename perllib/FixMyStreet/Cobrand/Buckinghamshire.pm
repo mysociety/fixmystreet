@@ -31,7 +31,7 @@ sub disambiguate_location {
     };
 }
 
-sub on_map_default_status { 'open' }
+sub on_map_default_status { ('open', 'fixed') }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
