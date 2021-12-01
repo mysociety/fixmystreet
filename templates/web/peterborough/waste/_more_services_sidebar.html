@@ -4,7 +4,7 @@
     <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
   [% END %]
   [% IF any_request_allowed %]
-    <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?skip_bags=1">Request a new container</a></li>
+    <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?skip_bags=1">Request a new bin</a></li>
   [% END %]
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>

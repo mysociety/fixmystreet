@@ -501,9 +501,9 @@ sub bin_services_for_address {
         "Empty Black 240l Bin" => "Black Bin",
         "Empty Brown 240l Bin" => "Brown Bin",
         "Empty Green 240l Bin" => "Green Bin",
-        "Empty Bin Recycling 1100l" => "Recycling",
-        "Empty Bin Recycling 240l" => "Recycling",
-        "Empty Bin Recycling 660l" => "Recycling",
+        "Empty Bin Recycling 1100l" => "Recycling Bin",
+        "Empty Bin Recycling 240l" => "Recycling Bin",
+        "Empty Bin Recycling 660l" => "Recycling Bin",
         "Empty Bin Refuse 1100l" => "Refuse",
         "Empty Bin Refuse 240l" => "Refuse",
         "Empty Bin Refuse 660l" => "Refuse",
@@ -886,7 +886,7 @@ sub waste_munge_request_data {
 
     $reason = {
         large_family => 'Additional black/green due to a large family',
-        cracked => 'Cracked container',
+        cracked => 'Cracked bin',
         lost_stolen => 'Lost/stolen bin',
         new_build => 'New build',
     }->{$reason} || $reason;
@@ -894,6 +894,11 @@ sub waste_munge_request_data {
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $data->{detail} .= "\n\nReason: $reason" if $reason;
+
+    if ( $data->{extra_detail} ) {
+        $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
+    }
+
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$id" })->category;
 }
 
@@ -1123,12 +1128,24 @@ sub waste_munge_request_form_fields {
             label => 'Why do you need new bins?',
             options => [
                 { label => 'Additional black/green due to a large family', value => 'large_family' },
-                { label => 'Cracked container', value => 'cracked' },
+                { label => 'Cracked bin', value => 'cracked' },
                 { label => 'Lost/stolen bin', value => 'lost_stolen' },
                 { label => 'New build', value => 'new_build' },
             ],
         };
+        push @$field_list, "extra_detail" => {
+            type => 'Text',
+            widget => 'Textarea',
+            label => 'Please supply any additional information.',
+            maxlength => 1_000,
+            messages => {
+                text_maxlength => 'Please use 1000 characters or less for additional information.',
+            },
+        };
     }
+
+    $self->{c}->stash->{form_title} = 'Which bins do you need?';
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Peterborough';
 }
 
 sub _format_address {
