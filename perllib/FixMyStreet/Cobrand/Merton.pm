@@ -27,6 +27,8 @@ sub disambiguate_location {
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
+sub get_geocoder { 'OSM' }
+
 sub admin_user_domain { 'merton.gov.uk' }
 
 sub privacy_policy_url { "https://www.merton.gov.uk/legal/privacy-and-cookies" }
