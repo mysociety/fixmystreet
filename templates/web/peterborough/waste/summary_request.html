@@ -1,0 +1,20 @@
+[%
+title = 'Submit bin request';
+thing = 'bin request';
+summary_title = 'Bin requests';
+step1 = 'request';
+%]
+
+[% BLOCK answers %]
+  [% FOR container IN data.keys.grep('^container-') %]
+    [% NEXT UNLESS data.$container %]
+    [% SET container_id = container.replace('container-', '') %]
+    [% SET quantity_key = container.replace('container-', 'quantity-') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
+        <dd class="govuk-summary-list__value">[% data.$quantity_key %]</dd>
+    </div>
+  [% END %]
+[% END %]
+
+[% PROCESS waste/summary.html %]
