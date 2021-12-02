@@ -122,6 +122,7 @@
                     $li.find('.item-list__item--expandable__actions').slideUp(250);
                     $li.removeClass('js-expandable');
                     $li.addClass('item-list__item--selected');
+                    $('.g-recaptcha').appendTo($div);
                 });
                 $li.find('.item-list__item--expandable__actions').append($button);
             });
