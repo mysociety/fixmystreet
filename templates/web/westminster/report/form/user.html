@@ -1,4 +1,7 @@
 <!-- report/form/user.html -->
+
+[% PROCESS 'auth/form_extra.html' %]
+
 <div class="[% IF type != 'report' %]js-new-report-user-hidden[% END %]
     form-section-preview form-section-preview--next
     [%~ ' hidden-nojs' IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]">
