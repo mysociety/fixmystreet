@@ -1,0 +1,4 @@
+[% IF c.cobrand.requires_recaptcha %]
+    <script nonce="[% csp_nonce %]" src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <div class="g-recaptcha" data-sitekey="[% c.config.RECAPTCHA.site_key %]"></div>
+[% END %]
