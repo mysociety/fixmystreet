@@ -5,14 +5,14 @@
 <div data-page-name="duplicates" id="js-duplicate-reports" class="js-reporting-page js-reporting-page--duplicates js-reporting-page--skip duplicate-report-suggestions hidden">
     <h2 class="form-section-heading">[% loc('Already been reported?') %]</h2>
     <div class="form-section-description">
-      [% IF c.cobrand.is_council %]
-        [% TRY %]
-            [% PROCESS 'report/new/duplicates_message.html' %]
-        [% CATCH file %]
-        <p>[% loc('There are similar problems nearby that we’re already aware of, is one of them yours?') %]</p>
+      [% TRY %]
+        [% PROCESS 'report/new/duplicates_message.html' %]
+      [% CATCH file %]
+        [% IF c.cobrand.is_council %]
+          <p>[% loc('There are similar problems nearby that we’re already aware of, is one of them yours?') %]</p>
+        [% ELSE %]
+          <p>[% loc('We’ve already reported these nearby problems to the council. Is one of them yours?') %]</p>
         [% END %]
-      [% ELSE %]
-         <p>[% loc('We’ve already reported these nearby problems to the council. Is one of them yours?') %]</p>
       [% END %]
     </div>
 
