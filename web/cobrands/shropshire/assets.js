@@ -143,7 +143,7 @@ fixmystreet.assets.add(defaults, {
     construct_selected_asset_message: function(asset) {
         var out = 'You have selected streetlight <b>' + asset.attributes.FEAT_LABEL + '</b>.';
         if (asset.attributes.PART_NIGHT === "YES") {
-            out += "<br>This light is switched off from 10pm until 5.30am.";
+            out += "<br>This light is switched off from 12am until 5.30am.";
         }
         if (asset.attributes.OWNER) {
             out += " This light is the responsibility of " + asset.attributes.OWNER + " and should be reported to them, please see <a href='https://shropshire.gov.uk/committee-services/mgParishCouncilDetails.aspx?bcr=1'>the list of parish councils</a>.";
