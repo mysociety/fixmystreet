@@ -3,6 +3,7 @@ use FixMyStreet::Script::Reports;
 use Test::MockModule;
 use CGI::Simple;
 use Test::LongString;
+use Open311::PostServiceRequestUpdates;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -74,7 +75,9 @@ subtest "extra update params are sent to open311" => sub {
             fixmystreet_body => $peterborough,
         );
 
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { external_id => 1, category => 'Trees', whensent => DateTime->now });
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            external_id => 1, category => 'Trees', whensent => DateTime->now,
+            send_method_used => "Open311", cobrand => 'peterborough' });
 
         my $c = FixMyStreet::DB->resultset('Comment')->create({
             problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
@@ -88,11 +91,14 @@ subtest "extra update params are sent to open311" => sub {
         is $cgi->param('description'), '[Customer FMS update] Update text', 'FMS update prefix included';
         is $cgi->param('service_request_id_ext'), $p->id, 'Service request ID included';
         is $cgi->param('service_code'), $contact->email, 'Service code included';
+
+        $mech->get_ok('/report/' . $p->id);
+        $mech->content_lacks('Please note that updates are not sent to the council.');
     };
 };
 
 my $problem;
-subtest "bartec report with no gecode handled correctly" => sub {
+subtest "bartec report with no geocode handled correctly" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
@@ -111,6 +117,25 @@ subtest "bartec report with no gecode handled correctly" => sub {
         is $cgi->param('attribute[postcode]'), undef, 'postcode param not set';
         is $cgi->param('attribute[house_no]'), undef, 'house_no param not set';
         is $cgi->param('attribute[street]'), undef, 'street param not set';
+    };
+};
+
+subtest "no update sent to Bartec" => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('Please note that updates are not sent to the council.');
+        my $o = Open311::PostServiceRequestUpdates->new;
+        my $c = FixMyStreet::DB->resultset('Comment')->create({
+            problem => $problem, user => $problem->user, anonymous => 't', text => 'Update text',
+            problem_state => 'fixed - council', state => 'confirmed', mark_fixed => 0,
+            confirmed => DateTime->now(),
+        });
+        $o->process_update($peterborough, $c);
+        $c->discard_changes;
+        is $c->get_extra_metadata("cobrand_skipped_sending"), 1;
     };
 };
 

@@ -871,7 +871,8 @@ sub updates_sent_to_body {
     # Some bodies only send updates *to* FMS, they don't receive updates.
     my $cobrand = $self->get_cobrand_logged;
     my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
-    return 0 if $handler && $handler->call_hook('open311_post_update_skip');
+    my $ret = $handler && $handler->call_hook(updates_sent_to_body => $self);
+    return $ret if defined $ret;
 
     my @bodies = values %{ $self->bodies };
     my @updates_sent = grep {

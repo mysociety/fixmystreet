@@ -31,8 +31,6 @@ sub fetch_bodies {
     }, { prefetch => 'body_areas' } );
     my %bodies;
     while ( my $body = $bodies->next ) {
-        my $cobrand = $body->get_cobrand_handler;
-        next if $cobrand && $cobrand->call_hook('open311_post_update_skip');
         $bodies{$body->id} = $body;
     }
     return \%bodies;

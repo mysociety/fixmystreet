@@ -117,6 +117,22 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+sub updates_sent_to_body {
+    my ($self, $problem) = @_;
+
+    my $code = $problem->contact->email;
+    return 0 if $code =~ /^Bartec/;
+    return 1;
+}
+
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $code = $update->problem->contact->email;
+    return 1 if $code =~ /^Bartec/;
+    return 0;
+}
+
 around 'open311_config' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
