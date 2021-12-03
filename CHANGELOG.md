@@ -1,6 +1,6 @@
 ## Releases
 
-* Unreleased
+* v4.0 (3rd December 2021)
     - Front end improvements:
         - Multi-page form reporting.
         - New aerial map toggle.
