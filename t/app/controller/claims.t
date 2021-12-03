@@ -119,7 +119,7 @@ Telephone number: 01234 567890
 Email address: test\@example.org
 Full address: 12 A Street
 A Town
-Has the fault been fixed?: No
+Has the highways fault been fixed?: No
 Have you reported the fault to the Council?: Yes
 Fault ID: $report_id
 Postcode, or street name and area of the source: A street
