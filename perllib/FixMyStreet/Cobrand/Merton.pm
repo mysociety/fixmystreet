@@ -31,8 +31,6 @@ sub get_geocoder { 'OSM' }
 
 sub admin_user_domain { 'merton.gov.uk' }
 
-sub privacy_policy_url { "https://www.merton.gov.uk/legal/privacy-and-cookies" }
-
 sub allow_anonymous_reports { 'button' }
 
 sub anonymous_account {
