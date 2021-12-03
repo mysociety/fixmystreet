@@ -104,7 +104,7 @@ FixMyStreet::override_config {
         like $body, qr/Never retype another FixMyStreet report/, 'FMS template used for email';
     };
 
-    my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title');
+    my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title', { created => '2021-11-30T12:34:56' });
     subtest "check anonymous display" => sub {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_lacks('Reported by Test User at');
