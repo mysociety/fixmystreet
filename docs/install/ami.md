@@ -87,7 +87,7 @@ One option that we get asked about is how to integrate the AMI with other servic
 within AWS such as RDS. This is more challenging as we can't know about each
 potential environment, but the Public Builds repository contains a recipe that can
 be used to create a slim version of the AMI that omits the Postgres database
-and memcache instance, similar in some respects to [the Docker build we provide](/install/docker/).
+and memcache instance, similar in some respects to [the Docker build we provide](/install/docker-deploy/).
 
 In order to use this effectively you will need to provide a Postgres database
 with the FixMyStreet schema loaded and a memcached endpoint, perhaps using RDS

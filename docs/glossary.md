@@ -356,7 +356,7 @@ technical information, see
       <code>cong/general.yml-example</code> you can
       copy and edit. If you install using an automated method such as the 
        <a href="{{ "/install/install-script/" | relative_url }}">installation script</a>
-       or <a href="{{ "/install/docker/" | relative_url }}">Docker</a>, this file will 
+       or <a href="{{ "/install/docker-develop/" | relative_url }}">Docker</a>, this file will
        automatically be created for you.
     </p>
     <div class="more-info">
