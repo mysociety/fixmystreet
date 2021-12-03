@@ -4,15 +4,17 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# mySociety <transifex@mysociety.org>, 2019
+# mySociety <transifex@mysociety.org>, 2020
+# Clon <fillip1@seznam.cz>, 2021
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2021-08-03 17:19+0100\n"
-"PO-Revision-Date: 2019-04-29 18:03+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
+"PO-Revision-Date: 2020-03-05 09:59+0000\n"
+"Last-Translator: Clon <fillip1@seznam.cz>, 2021\n"
 "Language-Team: Czech (Czech Republic) (https://www.transifex.com/mysociety/teams/12067/cs_CZ/)\n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
@@ -167,7 +169,7 @@ msgstr "(např. graffiti, rozbité pouliční osvětlení, díry v komunikacích
 
 #: templates/web/base/reports/index.html:82
 msgid "(no longer exists)"
-msgstr ""
+msgstr "(již neexistuje)"
 
 #: templates/web/base/report/_item_small.html:30
 msgid "(not sent to council)"
@@ -183,7 +185,7 @@ msgstr "(volitelně)"
 
 #: templates/web/base/report/_item_small.html:28
 msgid "(sent to all)"
-msgstr ""
+msgstr "(odeslat všem)"
 
 #: templates/web/base/report/_item_small.html:29
 msgid "(sent to both)"
@@ -196,15 +198,15 @@ msgstr "-- Vyberte kategorii --"
 
 #: templates/web/base/report/new/category_extras_fields.html:19
 msgid "-- Pick an option --"
-msgstr ""
+msgstr "-- Vyberte možnost --"
 
 #: templates/web/base/contact/enquiry/index.html:35
 msgid "-- Please select --"
-msgstr ""
+msgstr "-- Prosím vyberte --"
 
 #: templates/web/base/admin/response_templates_select.html:3
 msgid "--Choose a template--"
-msgstr ""
+msgstr "--Vyberte šablonu--"
 
 #: templates/web/base/admin/bodies/form.html:50
 #: templates/web/base/admin/bodies/form.html:51
@@ -269,16 +271,16 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Root.pm:128
 msgid "Access denied"
-msgstr ""
+msgstr "Přístup odepřen"
 
 #: templates/web/base/auth/2fa/intro.html:20
 #: templates/web/base/auth/generate_token.html:65
 msgid "Activate two-factor authentication"
-msgstr ""
+msgstr "Povolit dvou-stupňové ověření"
 
 #: templates/web/base/my/my.html:42 templates/web/base/my/my.html:53
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: templates/web/base/admin/bodies/form.html:3
 #: templates/web/base/admin/bodies/form.html:4
@@ -296,9 +298,8 @@ msgid "Add a contact using the form below."
 msgstr "Přidejte kontakt pomocí formuláře níže."
 
 #: templates/web/base/admin/bodies/contact-form.html:20
-#, fuzzy
 msgid "Add another parent category"
-msgstr "Přidat novou kategorii"
+msgstr ""
 
 #: templates/web/base/admin/bodies/form.html:139
 #: templates/web/base/admin/bodies/index.html:78
@@ -309,7 +310,7 @@ msgstr "Zadejte instituci"
 #: templates/web/base/auth/change_email.html:2
 #: templates/web/base/auth/change_email.html:7
 msgid "Add email address"
-msgstr ""
+msgstr "Přidat emailovou adresu"
 
 #: templates/web/base/admin/reportextrafields/index.html:24
 msgid "Add extra fields"
@@ -317,7 +318,7 @@ msgstr ""
 
 #: templates/web/base/admin/extra-metadata-form.html:11
 msgid "Add field"
-msgstr ""
+msgstr "Přidat pole"
 
 #: templates/web/base/admin/states/index.html:85
 msgid "Add fixed state"
@@ -330,12 +331,12 @@ msgstr "Přidat novou kategorii"
 
 #: templates/web/base/admin/extra-metadata-item.html:88
 msgid "Add option"
-msgstr ""
+msgstr "Přidat možnost"
 
 #: templates/web/base/auth/change_phone.html:2
 #: templates/web/base/auth/change_phone.html:7
 msgid "Add phone number"
-msgstr ""
+msgstr "Přidat telefonní číslo"
 
 #: templates/web/base/report/_item.html:21
 #: templates/web/base/report/_item.html:27
@@ -404,7 +405,7 @@ msgstr "Upozorněte mě na budoucí aktualizace"
 
 #: templates/web/base/admin/reports/edit.html:96
 msgid "Alerts:"
-msgstr ""
+msgstr "Upozornění:"
 
 #: templates/web/base/dashboard/index.html:40
 #: templates/web/base/dashboard/index.html:52
@@ -413,7 +414,7 @@ msgstr ""
 #: templates/web/zurich/header.html:58
 #: templates/web/zurich/reports/_list-filter-status.html:2
 msgid "All"
-msgstr ""
+msgstr "Vše"
 
 #: templates/web/zurich/admin/reports/index.html:1
 #: templates/web/zurich/reports/index.html:14
@@ -428,7 +429,7 @@ msgstr ""
 #: templates/web/base/admin/responsepriorities/index.html:26
 #: templates/web/base/admin/templates/view.html:19
 msgid "All categories"
-msgstr ""
+msgstr "Všechyn kategorie"
 
 #: templates/web/base/admin/reportextrafields/edit.html:26
 msgid "All cobrands"
@@ -436,7 +437,7 @@ msgstr ""
 
 #: templates/web/base/admin/reportextrafields/edit.html:47
 msgid "All languages"
-msgstr ""
+msgstr "Všechny jazyky"
 
 #: templates/web/base/navigation/_all_reports.html:0
 #: templates/web/base/navigation/_all_reports.html:12
@@ -452,12 +453,11 @@ msgstr "Všechna hlášení od  %s do  %s"
 
 #: templates/web/base/reports/index.html:25
 msgid "All time"
-msgstr ""
+msgstr "Kdykoli"
 
 #: templates/web/base/admin/bodies/contact-form.html:112
-#, fuzzy
 msgid "Allow anonymous reports on this category"
-msgstr "Nahlášeno v kategorii  %s"
+msgstr ""
 
 #: templates/web/base/report/new/duplicate_suggestions.html:6
 msgid "Already been reported?"
@@ -477,9 +477,8 @@ msgid "An email address or service ID (Open311 or similar)."
 msgstr ""
 
 #: templates/web/base/admin/bodies/contact-form.html:33
-#, fuzzy
 msgid "An email address."
-msgstr "Vaše e-mailová adresa"
+msgstr "Emailová adresa."
 
 #: templates/web/base/questionnaire/index.html:33
 msgid "An update marked this problem as fixed."
@@ -493,7 +492,7 @@ msgstr "Anonimní"
 #: templates/web/base/report/new/form_user_loggedin.html:23
 #: templates/web/base/report/update/form_user_loggedin.html:19
 msgid "Anonymous user"
-msgstr ""
+msgstr "Anonymní uživatel"
 
 #: templates/web/base/admin/reports/edit.html:187
 #: templates/web/base/admin/update_edit.html:101
@@ -531,7 +530,7 @@ msgstr "Oblast pokrytí"
 
 #: templates/web/base/admin/users/form.html:79
 msgid "Area:"
-msgstr ""
+msgstr "Oblast:"
 
 #: templates/web/base/admin/bodies/body.html:65
 #: templates/web/base/admin/bodies/index.html:19
@@ -539,9 +538,8 @@ msgid "As this is a staging site and %s is false, reports made on this site will
 msgstr "Vzhledem k tomu, že je ve stavu 'staging site' a  %s je 'nepravda', budou reporty vypracované na těchto stránkách zaslány uživateli, který nahlásil problém a ne kontaktu uvedenému v nastavení dané oblasti a kategorie."
 
 #: templates/web/base/admin/users/index.html:73
-#, fuzzy
 msgid "Assign selected to role:"
-msgstr "Přířazeno: %s"
+msgstr ""
 
 #: templates/web/zurich/admin/reports/edit.html:203
 msgid "Assign to competent body:"
@@ -567,7 +565,7 @@ msgstr ""
 #: templates/web/base/admin/users/form.html:107
 #, fuzzy
 msgid "Assigned categories only"
-msgstr "Přířazeno: %s"
+msgstr "Všechyn kategorie"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:185
 msgid "Assigned to %s"
@@ -587,7 +585,7 @@ msgstr ""
 
 #: templates/web/base/admin/templates/view.html:9
 msgid "Auto Response"
-msgstr ""
+msgstr "Automatická odpověď"
 
 #: templates/web/base/admin/templates/edit.html:66
 msgid "Auto-response:"
@@ -675,13 +673,13 @@ msgstr "Nevidíte mapu? <em>vynechte tento krok</em>"
 #: templates/web/base/admin/responsepriorities/index.html:8
 #: templates/web/base/admin/templates/view.html:7
 msgid "Categories"
-msgstr ""
+msgstr "Kategorie"
 
 #: templates/web/base/admin/category-checkboxes.html:26
 #: templates/web/base/admin/category-multiselect.html:2
 #: templates/web/base/admin/responsepriorities/edit.html:31
 msgid "Categories:"
-msgstr ""
+msgstr "Kategorie:"
 
 #: templates/web/base/admin/bodies/_category_field.html:12
 #: templates/web/base/admin/bodies/body.html:73
@@ -725,7 +723,7 @@ msgstr "Kategorie:"
 #: templates/web/base/my/my.html:44 templates/web/base/my/my.html:47
 #: templates/web/base/my/my.html:55 templates/web/base/my/my.html:60
 msgid "Change"
-msgstr ""
+msgstr "Změnit"
 
 #: templates/web/base/report/inspect/information.html:68
 #, fuzzy
@@ -735,7 +733,7 @@ msgstr "Změnit heslo"
 #: templates/web/base/auth/change_email.html:2
 #: templates/web/base/auth/change_email.html:3
 msgid "Change email address"
-msgstr ""
+msgstr "Změnit emailovou adresu"
 
 #: templates/web/base/auth/change_password.html:2
 #: templates/web/base/auth/change_password.html:5
@@ -746,7 +744,7 @@ msgstr "Změnit heslo"
 #: templates/web/base/auth/change_phone.html:2
 #: templates/web/base/auth/change_phone.html:3
 msgid "Change phone number"
-msgstr ""
+msgstr "Změnit telefonní číslo"
 
 #: templates/web/base/auth/generate_token.html:60
 msgid "Change two-factor authentication"
@@ -909,7 +907,7 @@ msgstr "Kontaktujte nás!"
 #: templates/web/base/report/new/form_report.html:43
 #: templates/web/base/report/new/form_report.html:61
 msgid "Continue"
-msgstr ""
+msgstr "Pokračovat"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:20
 msgid "Continue – report a new problem"
@@ -954,7 +952,7 @@ msgstr "Počet"
 #: templates/web/base/admin/roles/index.html:32
 #: templates/web/base/admin/states/index.html:114
 msgid "Create"
-msgstr ""
+msgstr "Vytvořit"
 
 #: templates/web/base/email_sent.html:1
 msgid "Create a report"
@@ -962,7 +960,7 @@ msgstr "Vytvořit report"
 
 #: templates/web/base/auth/create.html:2 templates/web/base/auth/create.html:7
 msgid "Create an account"
-msgstr ""
+msgstr "Vytvořit účet"
 
 #: templates/web/base/admin/bodies/contact-form.html:176
 #: templates/web/zurich/admin/bodies/contact-form.html:51
@@ -1031,7 +1029,7 @@ msgstr "editace uživatele"
 
 #: templates/web/base/auth/change_password.html:40
 msgid "Current password:"
-msgstr ""
+msgstr "Současné heslo:"
 
 #: templates/web/base/dashboard/index.html:93
 msgid "Currently grouped by %s"
@@ -1066,7 +1064,7 @@ msgstr "Odbavované úřadem  do 5 pracovních dnů"
 
 #: templates/web/base/admin/responsepriorities/index.html:9
 msgid "Default"
-msgstr ""
+msgstr "Výchozí"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:794
 msgid "Default to creating reports/updates as the council"
@@ -1075,7 +1073,7 @@ msgstr ""
 #: templates/web/base/admin/roles/form.html:25
 #: templates/web/base/admin/users/alerts.html:15
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:79
 #: templates/web/base/admin/templates/edit.html:77
@@ -1084,9 +1082,8 @@ msgid "Delete template"
 msgstr ""
 
 #: templates/web/base/admin/manifesttheme/form.html:62
-#, fuzzy
 msgid "Delete theme"
-msgstr "Smazána"
+msgstr ""
 
 #: templates/web/base/admin/bodies/contact-form.html:59
 #: templates/web/base/admin/bodies/index.html:31
@@ -1105,9 +1102,8 @@ msgid "Description"
 msgstr "Popis"
 
 #: templates/web/base/admin/bodies/contact-form.html:26
-#, fuzzy
 msgid "Destination"
-msgstr "Popis"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:465
 msgid "Detailed information is limited to %d characters."
@@ -1121,9 +1117,8 @@ msgid "Details"
 msgstr "Podrobnosti"
 
 #: templates/web/base/admin/bodies/contact-form.html:75
-#, fuzzy
 msgid "Details hint text"
-msgstr "Dotazník"
+msgstr ""
 
 #: templates/web/base/admin/reports/edit.html:124
 #: templates/web/base/report/update/moderation_diff.html:3
@@ -1163,14 +1158,13 @@ msgid "Disable form when this option is selected"
 msgstr ""
 
 #: templates/web/base/admin/bodies/contact-form.html:105
-#, fuzzy
 msgid "Disable reopening of reports in this category"
-msgstr "Nahlášeno v kategorii  %s"
+msgstr ""
 
 #: templates/web/base/admin/bodies/contact-form.html:99
 #, fuzzy
 msgid "Disable updates on reports in this category"
-msgstr "Nahlášeno v kategorii  %s"
+msgstr "Získat aktualizace hlášení %s "
 
 #: templates/web/base/admin/users/alerts.html:23
 msgid "Disabled:"
@@ -1388,7 +1382,7 @@ msgstr ""
 
 #: templates/web/base/admin/users/alerts.html:13
 msgid "Enable"
-msgstr ""
+msgstr "Povolit"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:156
 #: templates/web/base/admin/bodies/open311-form-fields.html:157
@@ -1445,9 +1439,8 @@ msgid "Endpoint"
 msgstr "Endpoint"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:85
-#, fuzzy
 msgid "Enter a Zürich street name"
-msgstr "Zadejte název ulice"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:26
 msgid "Enter a nearby UK postcode, or street name and area"
@@ -1854,9 +1847,8 @@ msgid "Hide pins"
 msgstr "Schovat značky"
 
 #: templates/web/base/admin/bodies/contact-form.html:83
-#, fuzzy
 msgid "Hide reports made in this category"
-msgstr "Nahlášeno v kategorii  %s"
+msgstr ""
 
 #: templates/web/base/report/update.html:18
 msgid "Hide update completely?"
@@ -2073,9 +2065,8 @@ msgid "Internal data set by Open311"
 msgstr ""
 
 #: templates/web/base/admin/extra-metadata-option.html:6
-#, fuzzy
 msgid "Internal key"
-msgstr "Interní poznámky"
+msgstr ""
 
 #: templates/web/zurich/admin/list_updates.html:35
 msgid "Internal notes"
@@ -2101,20 +2092,20 @@ msgstr ""
 #: templates/web/base/admin/states/index.html:9
 #: templates/web/base/admin/states/index.html:95
 msgid "Label"
-msgstr ""
+msgstr "Štítek"
 
 #: templates/web/base/admin/bodies/_translations.html:6
 #: templates/web/base/admin/reportextrafields/edit.html:45
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 #: templates/web/base/admin/reportextrafields/index.html:8
 msgid "Languages"
-msgstr ""
+msgstr "Jazyky"
 
 #: templates/web/base/reports/index.html:40
 msgid "Last 7 days"
-msgstr ""
+msgstr "Posledních 7 dní"
 
 #: templates/web/base/admin/bodies/body.html:75
 #: templates/web/zurich/admin/bodies/body.html:16
@@ -2122,9 +2113,8 @@ msgid "Last editor"
 msgstr "Poslední úpravy"
 
 #: templates/web/base/admin/reports/edit.html:92
-#, fuzzy
 msgid "Last failure:"
-msgstr "Poslední úpravy:"
+msgstr ""
 
 #: templates/web/base/questionnaire/index.html:55
 msgid "Last update"
@@ -2142,7 +2132,7 @@ msgstr "Poslední úpravy:"
 #: templates/web/base/report/inspect/information.html:32
 #: templates/web/base/report/update/moderation_diff.html:6
 msgid "Latitude/Longitude:"
-msgstr ""
+msgstr "Zeměpisná šířka/délka:"
 
 #: templates/web/base/admin/triage/_list-filters.html:37
 #: templates/web/base/reports/_list-filters-sort.html:10
@@ -2190,7 +2180,7 @@ msgstr "Lokalizujte vaše hlášení v mapě"
 #: templates/web/base/auth/general.html:29
 #: templates/web/base/report/form/user.html:15
 msgid "Log in with Facebook"
-msgstr ""
+msgstr "Přihlásit se pomocí Facebooku"
 
 #: templates/web/base/auth/general.html:44
 #: templates/web/base/report/form/user.html:26
@@ -2399,7 +2389,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:18
 msgid "Nearly done!"
-msgstr ""
+msgstr "Téměř hotovo!"
 
 #: templates/web/base/auth/token.html:22 templates/web/base/email_sent.html:5
 msgid "Nearly done! Now check your email&hellip;"
@@ -2425,7 +2415,7 @@ msgstr ""
 #: templates/web/base/admin/extra-metadata-item.html:14
 #: templates/web/base/admin/extra-metadata-item.html:20
 msgid "New field"
-msgstr ""
+msgstr "Nové pole"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:102
 #: templates/web/zurich/admin/reports/edit.html:129
@@ -2522,7 +2512,7 @@ msgstr ""
 #: templates/web/base/admin/triage/_list-filters.html:34
 #: templates/web/base/reports/_list-filters-sort.html:7
 msgid "Newest"
-msgstr ""
+msgstr "Nejnovější"
 
 #: templates/web/base/pagination.html:10
 msgid "Next"
@@ -2530,7 +2520,7 @@ msgstr "Další"
 
 #: templates/web/base/report/form/user.html:6
 msgid "Next:"
-msgstr ""
+msgstr "Další:"
 
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:126
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:127
@@ -2757,7 +2747,7 @@ msgstr "Specifikace systému Open311"
 
 #: templates/web/base/admin/extra-metadata-item.html:76
 msgid "Options"
-msgstr ""
+msgstr "Možnosti"
 
 #: templates/web/base/report/new/fill_in_details_form.html:11
 msgid "Or <a href=\"/\">search for a different location</a>"
@@ -2823,9 +2813,8 @@ msgid "Parent"
 msgstr "Nadřazený subjekt"
 
 #: templates/web/base/admin/bodies/contact-form.html:10
-#, fuzzy
 msgid "Parent categories"
-msgstr "Vytvořit kategorii"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:66
 msgid "Partial"
@@ -2838,19 +2827,16 @@ msgid "Password (optional)"
 msgstr "Heslo (volitelně)"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Social.pm:259
-#, fuzzy
 msgid "Password change cancelled."
-msgstr "Vaše heslo bylo změněno"
+msgstr ""
 
 #: templates/web/base/auth/create.html:2 templates/web/base/auth/create.html:5
-#, fuzzy
 msgid "Password expired"
-msgstr "Heslo (volitelně)"
+msgstr ""
 
 #: templates/web/base/admin/roles/index.html:6
-#, fuzzy
 msgid "Permissions"
-msgstr "Trvalý odkaz"
+msgstr ""
 
 #: templates/web/base/admin/users/form.html:150
 msgid "Permissions:"
@@ -3091,9 +3077,8 @@ msgid "Please enter your full name, councils need this information – if you do
 msgstr "Zadejte své celé jméno, úřad potřebuje tyto informace - jestliže si přejete, aby Vaše jméno nebylo na webu zobrazeno,  odškrtněnte čvereček níže"
 
 #: perllib/FixMyStreet/App/Controller/Contact/Enquiry.pm:35
-#, fuzzy
 msgid "Please enter your full name."
-msgstr "Zadejte vaše jméno"
+msgstr ""
 
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Contact.pm:145
@@ -3146,9 +3131,8 @@ msgstr "Uveďte, zda chcete dostat další dotazník"
 #. ("JS")
 #: perllib/FixMyStreet/DB/Result/Problem.pm:389
 #: templates/web/base/js/translation_strings.html:11
-#, fuzzy
 msgid "Please make sure you are not including an email address"
-msgstr "Prosím zadejte platnou emailovou adresu"
+msgstr ""
 
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Auth.pm:495
@@ -3321,23 +3305,20 @@ msgid "Problem %d created"
 msgstr "Hlášení %d vytvořeno"
 
 #: templates/web/base/admin/users/log.html:54
-#, fuzzy
 msgid "Problem %s added to shortlist"
-msgstr "Hlášení  %s bylo odesláno na úřad  %s"
+msgstr ""
 
 #: templates/web/base/admin/timeline.html:24
 msgid "Problem %s confirmed"
 msgstr "Hlášení %s potvrzeno"
 
 #: templates/web/base/admin/users/log.html:47
-#, fuzzy
 msgid "Problem %s created"
-msgstr "Hlášení %d vytvořeno"
+msgstr ""
 
 #: templates/web/base/admin/users/log.html:49
-#, fuzzy
 msgid "Problem %s created on behalf of %s"
-msgstr "Hlášení %d vytvořeno"
+msgstr ""
 
 #: templates/web/base/admin/users/log.html:56
 msgid "Problem %s removed from shortlist"
@@ -3462,9 +3443,8 @@ msgid "Publish photo"
 msgstr "Publikovaná fotografie"
 
 #: templates/web/base/admin/extra-metadata-item.html:60
-#, fuzzy
 msgid "Question text"
-msgstr "Dotazník"
+msgstr ""
 
 #: templates/web/base/questionnaire/completed.html:1
 #: templates/web/base/questionnaire/index.html:0
@@ -3672,9 +3652,8 @@ msgstr "Nevhodný obsah"
 
 #: templates/web/base/report/form/user.html:34
 #: templates/web/base/report/form/user.html:42
-#, fuzzy
 msgid "Report anonymously"
-msgstr "Nahlášeno anonymně v %s"
+msgstr ""
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:94
@@ -3688,9 +3667,8 @@ msgid "Report as"
 msgstr ""
 
 #: templates/web/base/report/new/form_public_councils_text.html:3
-#, fuzzy
 msgid "Report details"
-msgstr "Nevhodný obsah"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:306
 msgid "Report on %s"
@@ -4277,9 +4255,8 @@ msgstr "Omlouváme se,  nelze lokalizovat. Zkuste ještě jednou."
 #: perllib/FixMyStreet/App/Form/Claims.pm:1195
 #: perllib/FixMyStreet/App/Form/ManifestTheme.pm:54
 #: perllib/FixMyStreet/PhotoStorage.pm:63
-#, fuzzy
 msgid "Sorry, we couldn't save your file(s), please try again."
-msgstr "Omlouváme se,  nelze lokalizovat. Zkuste ještě jednou."
+msgstr ""
 
 #: templates/web/base/offline/fallback.html:6
 msgid "Sorry, we don’t have a good enough connection to fetch that page."
@@ -4455,9 +4432,8 @@ msgid "Subscribed:"
 msgstr ""
 
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:34
-#, fuzzy
 msgid "Summaries are limited to %d characters in length. Please shorten your summary"
-msgstr "Aktualizace je omezena na %s znaků její délky. Prosím, zkraťte ji"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Northamptonshire.pm:130
 #: perllib/FixMyStreet/Cobrand/Rutland.pm:16
@@ -4547,9 +4523,8 @@ msgid "Text"
 msgstr "Text"
 
 #: templates/web/base/tokens/confirm_alert.html:11
-#, fuzzy
 msgid "Text alert created"
-msgstr "Text"
+msgstr ""
 
 #: templates/web/base/tokens/confirm_alert.html:18
 #, fuzzy
@@ -5230,9 +5205,8 @@ msgid "Update"
 msgstr "Aktualizovat"
 
 #: templates/web/base/admin/users/log.html:51
-#, fuzzy
 msgid "Update %s created for problem %d"
-msgstr "Aktualizujte  %s pro hlášení  %d; vytvořené uživatelem  %s"
+msgstr ""
 
 #: templates/web/base/admin/timeline.html:33
 msgid "Update %s created for problem %d; by %s"
@@ -5340,9 +5314,8 @@ msgid "Use Open311 update-sending extension"
 msgstr ""
 
 #: templates/web/base/around/postcode_form.html:37
-#, fuzzy
 msgid "Use my current location"
-msgstr "Zobrazení oblastí"
+msgstr ""
 
 #: templates/web/base/admin/bodies/contact-form.html:84
 msgid "Use this for issues that you want to allow users to report, but for which there is no public interest in displaying the report, like requesting an extra rubbish bin at a specific address."
@@ -5975,15 +5948,13 @@ msgstr ""
 
 #: templates/web/base/contact/enquiry/index.html:26
 #: templates/web/base/contact/form.html:78
-#, fuzzy
 msgid "optional"
-msgstr "(volitelně)"
+msgstr ""
 
 #: templates/web/base/report/form/user.html:33
 #: templates/web/base/report/form/user.html:44
-#, fuzzy
 msgid "or"
-msgstr " nebo "
+msgstr ""
 
 #: templates/web/base/auth/general.html:6
 msgid "or <a href=\"%s\">create an account</a>"
@@ -5994,9 +5965,8 @@ msgid "or <a href=\"%s\">sign in</a>"
 msgstr ""
 
 #: templates/web/base/alert/index.html:18
-#, fuzzy
 msgid "or use my location"
-msgstr "Zobrazení oblastí"
+msgstr ""
 
 #: templates/web/base/admin/reports/edit.html:50
 #: templates/web/base/admin/reports/edit.html:51
@@ -6324,14 +6294,26 @@ msgstr[1] ""
 msgstr[2] ""
 msgstr[3] ""
 
+#~ msgid "Close"
+#~ msgstr "Uzavřít"
+
+#~ msgid "Closed by council"
+#~ msgstr "Uzavřena úřadem"
+
 #~ msgid "Could not find user"
 #~ msgstr "Uživatele nelze najít"
+
+#~ msgid "Filter report list"
+#~ msgstr "Filtrovat seznam hlášení"
 
 #~ msgid "Flag user"
 #~ msgstr "Sledovat uživatele"
 
 #~ msgid "Home"
 #~ msgstr "Úvodní stránka"
+
+#~ msgid "Invalid agency_responsible value %s"
+#~ msgstr "Chybná agency_responsible hodnota %s"
 
 #~ msgid "MAP"
 #~ msgstr "MAPA"
@@ -6344,6 +6326,9 @@ msgstr[3] ""
 
 #~ msgid "Please do not be abusive&nbsp;&mdash; abusing your council devalues the service for all users."
 #~ msgstr "Nezneužívejte tento nástroj - zneužívání vašeho úřadu znehodnocuje službu pro všechny uživatele."
+
+#~ msgid "Post"
+#~ msgstr "Odeslat"
 
 #~ msgid "Remove flag"
 #~ msgstr "Odstranit příznak"
@@ -6359,56 +6344,3 @@ msgstr[3] ""
 
 #~ msgid "Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation."
 #~ msgstr "Psaní zprávy pouze hůlkovým písmem je těžké číst, stejně jako chybějící interpunkce."
-
-#~ msgid "Closed by council"
-#~ msgstr "Uzavřena úřadem"
-
-#~ msgid "Filter report list"
-#~ msgstr "Filtrovat seznam hlášení"
-
-#~ msgid "Invalid agency_responsible value %s"
-#~ msgstr "Chybná agency_responsible hodnota %s"
-
-#~ msgid "Post"
-#~ msgstr "Odeslat"
-
-#~ msgid ""
-#~ "Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.\n"
-#~ "                <br>\n"
-#~ "                Normally, categories are not private.\n"
-#~ "                <br>\n"
-#~ "                This is suitable for issues that you want to allow users to report to the body, but for which there is no public\n"
-#~ "                interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin\n"
-#~ "                at a specific address."
-#~ msgstr ""
-#~ "Zaškrtněte <strong> soukromá kategorie </strong>, aby se <strong>hlášení v této kategorii nikdy nezveřejnili na webových stránkách </ strong>. \n"
-#~ "                 <br> \n"
-#~ "                 Za normálních okolností, kategorie nejsou soukromé. \n"
-#~ "                 <br> \n"
-#~ "                 Toto nastavení je vhodné pro hlášení , která chcete umožnit uživatelům úřadům nahlásit, ale pro které neexistuje žádný veřejný \n"
-#~ "                 zájem na veřejné zobrazení zpráv. Může to být například interní žádost o umístění nových odpadkových košů na specifickou adresu a pod."
-
-#~ msgid "If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here."
-#~ msgstr "Pokud používáte <strong>metodu zasílání mimo zaslání emailu</strong>, zadejte zde ID služby (Open311) nebo její ekvivalent."
-
-#~ msgid "OK"
-#~ msgstr "OK"
-
-#~ msgid "That report cannot be viewed on %s."
-#~ msgstr "Tento report nemůže být zobrazen na %s."
-
-#~ msgid ""
-#~ "The <strong>email address</strong> is the destination to which reports about this category will be sent. \n"
-#~ "        Other categories for this body may have the same email address."
-#~ msgstr ""
-#~ "<Strong>E-mailová adresa </strong> je cíl, kterému zprávy o této kategorii budou odeslány. \n"
-#~ "         Ostatní kategorie tohoto subjektu mohou mít stejnou e-mailovou adresu."
-
-#~ msgid "There was a problem with your email/password combination. Please try again."
-#~ msgstr "Nastal problém s kombinací Vaší e-mailové adresy a hesla. Prosím zkuste znovu."
-
-#~ msgid "This is a developer site; things might break at any time, and the database will be periodically deleted."
-#~ msgstr "Toto je vývojářský web; věci mohou kdykoli přestat fungovat,  databáze bude pravidelně mazána."
-
-#~ msgid "or locate me automatically"
-#~ msgstr "nebo mě lokalizujte automaticky"
