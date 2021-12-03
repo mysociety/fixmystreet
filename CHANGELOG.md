@@ -1,6 +1,6 @@
 ## Releases
 
-* Unreleased
+* v3.1.1 (3rd December 2021)
     - Bugfixes:
         - Fix non-JS form when all extra questions answered. #3248
         - Improve display of disabled fields in iOS.
