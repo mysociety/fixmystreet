@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
+use DateTime;
 
 sub council_name { 'National Highways' }
 
@@ -35,13 +36,20 @@ sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 sub contact_name { FixMyStreet::Cobrand::UKCouncils::contact_name($_[0]) }
 sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
 
+# Make sure any reports made when site was only fully anonymous remain anonymous
+my $non_anon = DateTime->new( year => 2021, month => 12, day => 1 );
+
 sub munge_problem_list {
     my ($self, $problem) = @_;
-    $problem->anonymous(1);
+    if ($problem->created < $non_anon) {
+        $problem->anonymous(1);
+    }
 }
 sub munge_update_list {
     my ($self, $update) = @_;
-    $update->anonymous(1);
+    if ($update->created < $non_anon) {
+        $update->anonymous(1);
+    }
 }
 
 sub admin_allow_user {
