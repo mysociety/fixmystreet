@@ -4,6 +4,8 @@
 
 [% INCLUDE 'about/_sidebar.html' %]
 
+[% contact_us_href = '/contact' %]
+
 <h1>Privacy policy</h1>
 
 [% IF c.cobrand.moniker == 'bathnes' %]
@@ -21,6 +23,23 @@ The Council’s Data Protection Officer may be contacted at
 <a href="mailto:data_protection@bathnes.gov.uk">data_protection@bathnes.gov.uk</a>.
 
 <hr>
+[% END %]
+
+[% IF c.cobrand.moniker == 'merton' %]
+
+[% contact_us_href = 'mailto:data.protection@merton.gov.uk' %]
+
+<p>Any questions regarding our privacy practices should be sent to:</p>
+<p>
+    <a href="mailto:data.protection@merton.gov.uk">data.protection@merton.gov.uk</a> or to:</p>
+    <p>
+        Data Protection Officer<br>
+        London Borough of Merton<br>
+        Civic Centre<br>
+        London Road<br>
+        Morden<br>
+        SM4 5DX
+    </p>
 [% END %]
 
 <h2>Who runs this service?</h2>
@@ -379,9 +398,9 @@ When you make a report
     Personal details will automatically be removed from the database after two
     years of inactivity of the associated account.
   [% IF c.cobrand.moniker == 'cheshireeast' %]
-    <a href="/contact">Contact us</a>
+    <a href="[% contact_us_href %]">Contact us</a>
   [% ELSE %]
-    Please <a href="/contact">contact us</a>
+    Please <a href="[% contact_us_href %]">contact us</a>
   [% END %]
     if you would like your details to be removed from our admin database sooner
     than that.
@@ -395,7 +414,7 @@ When you make a report
     processing of your personal information and to ask us to stop processing it.
     However, it also gives us the right to continue to process it if we can demonstrate
     compelling legitimate grounds for the processing that override your interests, rights
-    and freedoms. To exercise your right to object, you can <a href="/contact">
+    and freedoms. To exercise your right to object, you can <a href="[% contact_us_href %]">
     contact us</a>, giving specific reasons why you are objecting to the processing of
     your personal data. These reasons should be based upon your particular situation.
 </p>
@@ -405,7 +424,7 @@ When you make a report
 </h2>
 
 <p>
-    You may <a href="/contact">contact us</a> at any time to ask to see what
+    You may <a href="[% contact_us_href %]">contact us</a> at any time to ask to see what
     personal data we hold about you.
 </p>
 
