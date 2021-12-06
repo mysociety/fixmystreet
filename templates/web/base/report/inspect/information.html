@@ -10,6 +10,14 @@
             (<a href="[% c.uri_for_action( 'admin/reports/edit', [ problem.id ] ) %]">[% loc('admin') %]</a>)
           [% END %]
         </p>
+
+      [% IF c.cobrand.moniker == 'highwaysengland' AND problem.user.email != c.cobrand.anonymous_account.email %]
+        <p>
+            <strong>Name displayed publicly:</strong>
+            [% IF problem.anonymous %]No[% ELSE %]Yes[% END %]
+        </p>
+      [% END %]
+
         [% SET non_anon_email = problem.user.email AND problem.user.email != c.cobrand.anonymous_account.email ~%]
         [% IF permissions.report_inspect AND (problem.user.phone OR non_anon_email) %]
           <p>
