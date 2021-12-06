@@ -501,4 +501,6 @@ sub extra_reports_pins {
     return $self->pins_from_wfs(\@box);
 }
 
+sub report_sent_confirmation_email { 'id' }
+
 1;
