@@ -62,10 +62,6 @@ sub reopening_disallowed {
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
-    my $open311_only = [
-        { name => 'service', value => $row->service },
-    ];
-
     # Reports made via FMS.com or the app probably won't have a USRN
     # value because we don't access the USRN layer on those
     # frontends. Instead we'll look up the closest asset from the WFS
@@ -76,7 +72,18 @@ sub open311_extra_data_include {
         }
     }
 
-    return $open311_only;
+    return [];
+}
+
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    # Save the service attribute into extra data as well as in the
+    # problem to avoid having the field appear as blank and required
+    # in the inspector toolbar for users with 'inspect' permissions.
+    if (!$report->get_extra_field_value('service')) {
+        $report->update_extra_field({ name => 'service', value => $report->service });
+    }
 }
 
 sub lookup_site_code_config { {
