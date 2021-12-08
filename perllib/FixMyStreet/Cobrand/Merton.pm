@@ -78,6 +78,11 @@ sub open311_extra_data_include {
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
+    # Workaround for anonymous reports not having a service associated with them.
+    if (!$report->service) {
+        $report->service('unknown');
+    }
+
     # Save the service attribute into extra data as well as in the
     # problem to avoid having the field appear as blank and required
     # in the inspector toolbar for users with 'inspect' permissions.
