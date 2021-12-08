@@ -191,6 +191,26 @@ FixMyStreet::override_config {
         ok $report, "Found the report";
         is $report->get_extra_field_value("service"), 'desktop', 'origin service recorded in extra data too';
     };
+
+    subtest 'anonymous reports have service "unknown"' => sub {
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                button => 'report_anonymously',
+                with_fields => {
+                    title => 'Test Report 3',
+                    detail => 'Test report details.',
+                    category => 'Litter',
+                }
+            },
+            "submit report anonymously"
+        );
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 3'});
+        ok $report, "Found the report";
+        is $report->get_extra_field_value("service"), 'unknown', 'origin service recorded in extra data too';
+    };
 };
 
 done_testing;
