@@ -1,13 +1,19 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
+use FixMyStreet::Script::Reports;
 
 my $mech = FixMyStreet::TestMech->new;
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Merton');
 
 $cobrand->mock('area_types', sub { [ 'LBO' ] });
 
-my $merton = $mech->create_body_ok(2500, 'Merton Council');
+my $merton = $mech->create_body_ok(2500, 'Merton Council', {
+    api_key => 'aaa',
+    jurisdiction => 'merton',
+    endpoint => 'http://endpoint.example.org',
+    send_method => 'Open311',
+});
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
 for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org");
@@ -210,6 +216,22 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 3'});
         ok $report, "Found the report";
         is $report->get_extra_field_value("service"), 'unknown', 'origin service recorded in extra data too';
+    };
+
+    subtest 'ensure USRN is added to report when sending over open311' => sub {
+        my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $ukc->mock('lookup_site_code', sub { 'USRN1234' });
+
+        my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Test report', {
+            category => 'Litter', cobrand => 'merton',
+            latitude => 51.400975, longitude => -0.19655, areas => '2500',
+        });
+
+        FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+
+        ok $report->whensent, 'report was sent';
+        is $report->get_extra_field_value('usrn'), 'USRN1234', 'correct USRN recorded in extra data';
     };
 };
 
