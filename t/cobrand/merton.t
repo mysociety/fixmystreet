@@ -159,4 +159,38 @@ sub test_visit_problem {
     $mech->log_out_ok;
 }
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'merton' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        anonymous_account => {
+            merton => 'anonymous'
+        },
+    },
+    STAGING_FLAGS => { send_reports => 1 },
+}, sub {
+    subtest 'check open311 inclusion of service value into extra data' => sub {
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test Report 2',
+                    detail        => 'Test report details.',
+                    photo1        => '',
+                    name          => 'Joe Bloggs',
+                    username_register => 'test-1@example.com',
+                    category      => 'Litter',
+                }
+            },
+            "submit good details"
+        );
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 2'});
+        ok $report, "Found the report";
+        is $report->get_extra_field_value("service"), 'desktop', 'origin service recorded in extra data too';
+    };
+};
+
 done_testing;
