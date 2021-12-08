@@ -548,6 +548,8 @@ sub update_extra_fields : Private {
             my $desc = $c->get_param("metadata[$i].description");
             $meta->{description} = FixMyStreet::Template::sanitize($desc);
             $meta->{disable_form} = $c->get_param("metadata[$i].disable_form") ? 'true' : 'false';
+            $meta->{out_of_hours} = $c->get_param("metadata[$i].out_of_hours") ? 'true' : 'false';
+            $meta->{specific_hours} = $c->get_param("metadata[$i].specific_hours") ? 'true' : 'false';
         } elsif ($behaviour eq 'hidden') {
             $meta->{automated} = 'hidden_field';
         } elsif ($behaviour eq 'server') {

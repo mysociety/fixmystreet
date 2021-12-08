@@ -1,0 +1,4 @@
+[%# specifically show category-specific out-of-hours emergency message %]
+[% IF meta.out_of_hours AND meta.description %]
+    <p class="form-hint">[% meta.description %]</p>
+[% END %]

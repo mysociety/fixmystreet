@@ -101,6 +101,12 @@ DEFAULT behaviour = 'question';
             <span class="form-hint" id="metadata[[% i %]]-disable_form-hint">[% loc('If ticked, the form will be disabled and this item’s notice text will be displayed.') %]</span>
         </p>
 
+        <p class="form-check" nonclass="hidden-js" id="metadata-[% i %]-show_out_of_hours-group">
+            <input type="checkbox" name="metadata[[% i %]].show_out_of_hours" value="1" id="metadata-[% i %]-show_out_of_hours" aria-describedby="metadata-[% i %]-show_out_of_hours-hint" [% ' checked' IF meta.show_out_of_hours == 'true' %]>
+            <label for="metadata-[% i %]-show_out_of_hours">[% loc('Only show this notice out of hours') %]</label>
+            <span class="form-hint" id="metadata[[% i %]]-show_out_of_hours-hint">[% loc('If ticked, this notice will only be displayed out of hours (evenings, weekends and bank holidays).') %]</span>
+        </p>
+
         <p class="form-check hidden-js" id="metadata-[% i %]-protected-group">
             <input type="checkbox" name="metadata[[% i %]].protected" value="1" id="metadata-[% i %]-protected" aria-describedby="metadata-[% i %]-protected-hint" [% ' checked' IF meta.protected == 'true' %]>
             <label for="metadata-[% i %]-protected">[% loc('Protect from Open311 changes') %]</label>

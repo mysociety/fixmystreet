@@ -1,32 +1,34 @@
 [%- FOR meta IN metas %]
   [%- meta_name = meta.code -%]
   [%- x_meta_name = 'x' _ meta.code # For report_meta and field_errors lookup, as TT hides codes starting "_" -%]
-
   [% IF c.cobrand.category_extra_hidden(meta) AND NOT show_hidden %]
 
       <input type="hidden" value="[% report_meta.$x_meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]">
-
   [% ELSIF meta.variable != 'false' || NOT hide_notices %]
-
-      <label for="[% cat_prefix %]form_[% meta_name %]">[% (meta.description OR meta.code) | safe %]</label>
+    <label for="[% cat_prefix %]form_[% meta_name %]">[%# (meta.description OR meta.code) | safe %]</label>
+    [% TRY %][% INCLUDE 'report/new/_category_extra_field_notice.html' %][% CATCH file %][% END %]
+    [% IF field_errors.$x_meta_name %]
+    <p class='form-error'>[% field_errors.$x_meta_name %]</p>
+    [% END -%]
+    [% IF meta.variable != 'false' %]
+      [% IF meta.item('values').size %]
+        <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+          <option value="">[% loc('-- Pick an option --') %]</option>
+          [% FOR option IN meta.values %]
+            <option value="[% option.key %]"[% IF option.key == report_meta.$x_meta_name.value %] selected[% END %]>[% option.name %]</option>
+          [% END %]
+        </select>
+      [% ELSIF meta.datatype == 'text' %]
+        <textarea class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>[% report_meta.$x_meta_name.value %]</textarea>
+      [% ELSE %]
+        <input class="form-control" type="[% meta.fieldtype OR 'text' %]" value="[% report_meta.$x_meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+      [% END %]
+    [% END %]
+    [% IF (meta.out_of_hours AND c.cobrand.is_out_of_hours) %]
       [% TRY %][% INCLUDE 'report/new/_category_extra_field_notice.html' %][% CATCH file %][% END %]
       [% IF field_errors.$x_meta_name %]
-      <p class='form-error'>[% field_errors.$x_meta_name %]</p>
+        <p class='form-error'>[% field_errors.$x_meta_name %]</p>
       [% END -%]
-      [% IF meta.variable != 'false' %]
-        [% IF meta.item('values').size %]
-          <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-            <option value="">[% loc('-- Pick an option --') %]</option>
-            [% FOR option IN meta.values %]
-              <option value="[% option.key %]"[% IF option.key == report_meta.$x_meta_name.value %] selected[% END %]>[% option.name %]</option>
-            [% END %]
-          </select>
-        [% ELSIF meta.datatype == 'text' %]
-          <textarea class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>[% report_meta.$x_meta_name.value %]</textarea>
-        [% ELSE %]
-          <input class="form-control" type="[% meta.fieldtype OR 'text' %]" value="[% report_meta.$x_meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-        [% END %]
-      [% END %]
-
-    [% END %]
+    [% END %] [%# OOH %]
+  [% END %]
 [%- END %]
