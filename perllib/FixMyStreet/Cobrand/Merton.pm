@@ -102,4 +102,6 @@ sub lookup_site_code_config { {
 
 sub cut_off_date { '2020-12-06' } # 1 yr prior to FMS Pro go-live
 
+sub abuse_reports_only { 1 }
+
 1;
