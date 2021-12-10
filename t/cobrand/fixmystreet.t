@@ -307,4 +307,15 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet.com privacy policy page link deactivates correctly' => sub {
+        $mech->get_ok('/about/privacy');
+        $mech->content_contains('<strong>Privacy and cookies</strong>');
+        $mech->content_lacks('<a href="/privacy">Privacy and cookies</a>');
+    };
+};
+
 done_testing();

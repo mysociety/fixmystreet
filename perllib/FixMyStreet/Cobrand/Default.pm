@@ -1360,7 +1360,7 @@ The URL of the privacy policy to use on the report and update submissions forms.
 
 =cut
 
-sub privacy_policy_url { '/privacy' }
+sub privacy_policy_url { '/about/privacy' }
 
 =item emergency_message
 
