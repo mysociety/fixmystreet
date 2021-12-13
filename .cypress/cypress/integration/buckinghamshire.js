@@ -15,7 +15,6 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('sets the site_code correctly', function() {
-    cy.get('.olMapViewport #fms_pan_zoom_zoomin').click();
     cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
@@ -42,7 +41,6 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('shows gritting message', function() {
-    cy.get('.olMapViewport #fms_pan_zoom_zoomin').click();
     cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
@@ -64,7 +62,6 @@ describe('buckinghamshire roads handling', function() {
     cy.get('[name=pc]').type('SL9 0NX');
     cy.get('[name=pc]').parents('form').submit();
 
-    cy.get('.olMapViewport #fms_pan_zoom_zoomin').click({ force: true }); // Sometimes zoom appearing too high under, but not if I try manually
     cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
