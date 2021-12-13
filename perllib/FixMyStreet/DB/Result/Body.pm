@@ -258,6 +258,7 @@ sub calculate_average {
         'me.id' => \"= ($substmt)",
         'me.state' => 'confirmed',
         'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        'problem.cobrand_data' => { -not_in => ["waste", "noise", "claim"] },
         %cutoff,
     }, {
         select   => [
