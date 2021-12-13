@@ -404,6 +404,7 @@ sub report_new_munge_before_insert {
     $self->SUPER::report_new_munge_before_insert($report);
 
     FixMyStreet::Cobrand::Buckinghamshire::report_new_munge_before_insert($self, $report);
+    FixMyStreet::Cobrand::Merton::report_new_munge_before_insert($self, $report);
 }
 
 around 'munge_sendreport_params' => sub {

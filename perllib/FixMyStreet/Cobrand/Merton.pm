@@ -78,6 +78,8 @@ sub open311_extra_data_include {
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
+    return unless $report->to_body_named('Merton');
+
     # Workaround for anonymous reports not having a service associated with them.
     if (!$report->service) {
         $report->service('unknown');
