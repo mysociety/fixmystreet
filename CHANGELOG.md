@@ -1,5 +1,12 @@
 ## Releases
 
+* Unreleased
+    - Front end improvements:
+        - Highlight pin on sidebar focus as well as hover.
+    - Bugfixes:
+        - Add ID attributes to change password form inputs.
+        - Fix link deactivation for privacy policy link on privacy policy page. #3704
+
 * v4.0 (3rd December 2021)
     - Front end improvements:
         - Multi-page form reporting.
