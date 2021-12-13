@@ -6,7 +6,7 @@ if (!fixmystreet.maps) {
 
 var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
 var tilma_url = "https://" + wfs_host + "/mapserver/bucks";
-var proxy_base_url = "https://" + wfs_host + "/proxy/bcc/";
+var drains_proxy_url = "https://" + wfs_host + "/proxy/bcc/drains/wfs";
 
 var defaults = {
     http_options: {
@@ -170,7 +170,7 @@ fixmystreet.assets.add(labeled_defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: proxy_base_url + 'drains/wfs',
+        url: drains_proxy_url,
         params: {
             propertyName: 'id,msGeometry,asset_id,created,junction_cleaned',
             TYPENAME: "junction_inspections"
@@ -184,7 +184,7 @@ fixmystreet.assets.add(defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: proxy_base_url + 'drains/wfs',
+        url: drains_proxy_url,
         params: {
             propertyName: 'id,msGeometry,asset_id,created,last_inspected',
             TYPENAME: "junctions"
