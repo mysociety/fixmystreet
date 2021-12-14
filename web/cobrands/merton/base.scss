@@ -111,13 +111,19 @@ a.skiplink:focus {
 }
 
 .merton-header {
+    padding: 15px 0;
     background: $merton-lavender-l2;
-    padding-bottom: 0.75em;
-    border-top: 5px solid $primary;
+    border-top: 10px solid $merton-lavender-l1;
 }
 
-.map-fullscreen .merton-header {
-    display: none;
+.map-fullscreen {
+    .merton-header {
+        display: none;
+    }
+
+    #map_box {
+        top: 60px; // think this is fixing a bug in _base.scss, where calc() includes hard-coded 0.25em border-top
+    }
 }
 
 .merton-header__logo {
@@ -125,10 +131,11 @@ a.skiplink:focus {
     display: block;
     overflow: hidden;
     white-space: nowrap;
-    padding-top: 75px;
-    width: 88px;
+    padding-top: 70px;
+    width: 116px;
     height: 0;
-    background: $merton-lavender-l2 url(images/merton-logo.png) 0 15px no-repeat;
+    background: $merton-lavender-l2 url(images/merton-logo.png) center center no-repeat;
+    background-size: contain;
 }
 
 a {
@@ -184,7 +191,7 @@ p.form-error, div.form-error, input.form-error {
 
 .nav-menu {
     background-color: $merton-jade-j3;
-    padding-top: 2em;
+    padding: 0.5em 0;
 
     a, span {
         background: transparent;
@@ -240,10 +247,6 @@ ol.big-numbers {
     &:focus {
         color: $link-color;
     }
-}
-
-#site-header {
-    border-top: none;
 }
 
 .site-footer {

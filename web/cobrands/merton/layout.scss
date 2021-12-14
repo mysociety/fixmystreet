@@ -5,7 +5,7 @@
     background: $merton-jade-j3;
 }
 .nav-menu {
-    padding-top: 0;
+    padding: 0;
     background: transparent;
 
     a:hover {
@@ -37,6 +37,19 @@
 }
 
 body.mappage {
+    $merton-header-height: 110px;
+    $merton-nav-height: 60px;
+
+    #site-header,
+    .nav-wrapper {
+        top: $merton-header-height;
+    }
+
+    #map_box,
+    #map_sidebar {
+        top: ( $merton-header-height + $merton-nav-height );
+    }
+
     .nav-wrapper {
         background-color: $merton-jade-j3;
     }
