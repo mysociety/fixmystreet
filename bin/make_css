@@ -61,7 +61,7 @@ my $sass = CSS::Sass->new(
 # Get directories from the command line, defaulting to 'web' if none.
 # We need absolute paths so that the include files lookup works.
 my @dirs = map { m{/} ? $_ : "web/cobrands/$_" } @ARGV;
-@dirs = 'web' unless @dirs;
+@dirs = 'web/cobrands' unless @dirs;
 @dirs = map { path($_)->absolute->stringify } @dirs;
 
 # Initial compilation, to also discover all the included files.
@@ -164,8 +164,8 @@ make_css [options] [dirs ...]
    --style, -t      CSS output style (one of nested, expanded, compact, compressed)
    --help           this help message
 
-If no directories are specified, any .scss files under web/ that do not begin
-with a "_" will be processed. "web/cobrands/" may be omitted from a given
+If no directories are specified, any .scss files under web/cobrands that do not
+begin with a "_" will be processed. "web/cobrands/" may be omitted from a given
 directory.
 
 =cut

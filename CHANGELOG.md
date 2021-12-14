@@ -1,5 +1,9 @@
 ## Releases
 
+* Unreleased
+    - Development improvements:
+        - Default make_css to `web/cobrands` rather than `web`.
+
 * v4.0 (3rd December 2021)
     - Front end improvements:
         - Multi-page form reporting.
