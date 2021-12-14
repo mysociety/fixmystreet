@@ -27,7 +27,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile-development
-    command: script/server
+    command: script/server ${SERVER_ARGUMENTS}
     tty: true
     ports:
       - 3000:3000

@@ -40,6 +40,11 @@ _Inline/
 *.pyc
 docker-compose.override.yml
 
+# Optional Docker config
+docker/.env
+docker/ssl.crt
+docker/ssl.key
+
 # JS coverage
 /.nyc_output
 /coverage
