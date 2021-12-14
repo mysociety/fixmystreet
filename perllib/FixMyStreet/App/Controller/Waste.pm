@@ -1118,13 +1118,15 @@ sub process_garden_modification : Private {
         $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
         $c->set_param('pro_rata', $pro_rata);
     }
+
+    my $payment_method = $c->stash->{garden_form_data}->{payment_method};
     my $payment = $c->cobrand->garden_waste_cost($data->{bins_wanted});
+    $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
-    my $payment_method = $c->stash->{garden_form_data}->{payment_method};
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{message} = 'Payment skipped on staging';
