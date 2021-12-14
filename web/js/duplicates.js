@@ -75,11 +75,11 @@
             // the list item and another to activate the button- and b) the pins
             // might be scrolled off the top of the screen anyway e.g. on phones)
             var timeout;
-            $reports.on('mouseenter', function(){
+            $reports.on('mouseenter focusin', function(){
                 var id = parseInt( $(this).data('reportId'), 10 );
                 clearTimeout( timeout );
                 fixmystreet.maps.markers_highlight( id );
-            }).on('mouseleave', function(){
+            }).on('mouseleave focusout', function(){
                 timeout = setTimeout( fixmystreet.maps.markers_highlight, 50 );
             });
         }
