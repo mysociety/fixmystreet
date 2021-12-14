@@ -3,8 +3,6 @@ use base 'FixMyStreet::Map::WMSBase';
 
 use strict;
 
-sub default_zoom { 8; }
-
 sub urls { [ 'https://maps.northamptonshire.gov.uk/interactivemappingwms/getmap.ashx' ] }
 
 sub layer_names{ [ 'BaseMap' ] }
@@ -52,7 +50,7 @@ sub zoom_parameters {
     my $self = shift;
     my $params = {
         zoom_levels    => scalar $self->scales,
-        default_zoom   => 7,
+        default_zoom   => 9,
         min_zoom_level => 1,
         id_offset      => 0,
     };
