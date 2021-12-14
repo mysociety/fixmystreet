@@ -36,7 +36,7 @@ sub allow_anonymous_reports { 'button' }
 sub anonymous_account {
     my $self = shift;
     return {
-        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
+        email => $self->feature('anonymous_account') . '@fixmystreet.merton.gov.uk',
         name => 'Anonymous user',
     };
 }
