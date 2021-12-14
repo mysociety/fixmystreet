@@ -24,6 +24,7 @@ $mech->create_contact_ok(body_id => $body_fife_id, category => 'Flytipping', ema
 my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All reports', { category => 'Potholes' });
 my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports', { category => 'Graffiti' });
 my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports', { category => 'Flytipping' });
+$mech->create_problems_for_body(2, $body_edin_id, 'Waste reports', { cobrand_data => 'waste' });
 
 my $west_trans = FixMyStreet::DB->resultset('Translation')->find_or_create({
     tbl => 'body',
@@ -167,7 +168,7 @@ FixMyStreet::override_config {
     $mech->get_ok('/reports/City+of+Edinburgh?status=open');
 };
 $problems = $mech->extract_problem_list;
-is scalar @$problems, 3, 'correct number of open problems displayed';
+is scalar @$problems, 5, 'correct number of open problems displayed';
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',

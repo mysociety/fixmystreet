@@ -119,7 +119,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Where we send Birmingham');
     };
 
-    subtest 'check average fix time respects cobrand cut-off date' => sub {
+    subtest 'check average fix time respects cobrand cut-off date and non-standard reports' => sub {
         $mech->log_in_ok('someone@birmingham.gov.uk');
         my $user = FixMyStreet::DB->resultset('User')->find_or_create({ email => 'counciluser@example.org' });
 
@@ -142,6 +142,21 @@ FixMyStreet::override_config {
             confirmed => DateTime->now->subtract(days => 10),
         });
         $report2->comments->create({
+            user      => $user,
+            name      => 'A User',
+            anonymous => 'f',
+            text      => 'fixed the problem',
+            state     => 'confirmed',
+            mark_fixed => 1,
+            confirmed => DateTime->now,
+        });
+
+        # Another report, created 10 days ago, that was just fixed.
+        my ($report3) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            confirmed => DateTime->now->subtract(days => 1),
+            cobrand_data => 'waste',
+        });
+        $report3->comments->create({
             user      => $user,
             name      => 'A User',
             anonymous => 'f',
