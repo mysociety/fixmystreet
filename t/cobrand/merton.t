@@ -98,7 +98,7 @@ FixMyStreet::override_config {
 
         is $report->bodies_str, $merton->id;
         is $report->name, 'Anonymous user';
-        is $report->user->email, 'anonymous@merton.gov.uk';
+        is $report->user->email, 'anonymous@fixmystreet.merton.gov.uk';
         is $report->anonymous, 1; # Doesn't change behaviour here, but uses anon account's name always
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
 
