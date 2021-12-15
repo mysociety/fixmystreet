@@ -448,12 +448,12 @@ select.form-control {
 }
 
 /* On a reporting page MyW/anon */
-small#or {
+small.or {
   margin: 1em auto;
   width: 100%;
 }
-small#or:before,
-small#or:after {
+small.or:before,
+small.or:after {
   background-color: #fff;
   content: "";
   display: inline-block;
@@ -462,11 +462,11 @@ small#or:after {
   vertical-align: middle;
   width: 50%;
 }
-small#or:before {
+small.or:before {
   right: 1em;
   margin-left: -50%;
 }
-small#or:after {
+small.or:after {
   left: 1em;
   margin-right: -50%;
 }
