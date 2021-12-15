@@ -545,6 +545,10 @@ body.authpage {
 }
 
 // Openlayers map controls (overrides)
+#ns_fms_pan_zoom_panup,
+#ns_fms_pan_zoom_pandown,
+#ns_fms_pan_zoom_panleft,
+#ns_fms_pan_zoom_panright,
 #fms_pan_zoom_panup,
 #fms_pan_zoom_pandown,
 #fms_pan_zoom_panleft,
@@ -552,6 +556,12 @@ body.authpage {
     display: block;
 }
 
+#ns_fms_pan_zoom_panup,
+#ns_fms_pan_zoom_pandown,
+#ns_fms_pan_zoom_panleft,
+#ns_fms_pan_zoom_panright,
+#ns_fms_pan_zoom_zoomin,
+#ns_fms_pan_zoom_zoomout,
 #fms_pan_zoom_panup,
 #fms_pan_zoom_pandown,
 #fms_pan_zoom_panleft,
@@ -565,10 +575,12 @@ body.authpage {
 }
 
 // indent zoom to line up with pan
+#ns_fms_pan_zoom_zoomin,
 #fms_pan_zoom_zoomin {
   #{$right}: 30px;
   top: 130px;
 }
+#ns_fms_pan_zoom_zoomout,
 #fms_pan_zoom_zoomout {
   #{$right}: 30px;
   top: 174px;

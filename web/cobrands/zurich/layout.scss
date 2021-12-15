@@ -223,6 +223,10 @@ body.twothirdswidthpage {
 }
 
 // Zurich doesn't want pan controls, just zoom
+#ns_fms_pan_zoom_panup,
+#ns_fms_pan_zoom_pandown,
+#ns_fms_pan_zoom_panleft,
+#ns_fms_pan_zoom_panright,
 #fms_pan_zoom_panup,
 #fms_pan_zoom_pandown,
 #fms_pan_zoom_panleft,
@@ -230,14 +234,17 @@ body.twothirdswidthpage {
     display: none;
 }
 
+#ns_fms_pan_zoom,
 #fms_pan_zoom {
     top: 32px;
 }
 
+#ns_fms_pan_zoom_zoomin,
 #fms_pan_zoom_zoomin {
     top: 0;
 }
 
+#ns_fms_pan_zoom_zoomout,
 #fms_pan_zoom_zoomout {
     top: 44px;
 }
