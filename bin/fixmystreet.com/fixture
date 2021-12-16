@@ -208,6 +208,7 @@ if ($opt->test_fixtures) {
             variable => 'true',
             automated => 'hidden_field',
         });
+        $child_cat->set_extra_metadata(group => 'Roads & Pavements');
         $child_cat->update;
     }
 

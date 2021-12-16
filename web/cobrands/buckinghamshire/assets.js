@@ -252,30 +252,6 @@ var non_bucks_types = [
     "P", // HW: PRIVATE
 ];
 
-// Since Buckinghamshire went unitary, if the user selects an ex-district
-// category we shouldn't enforce the road asset selection.
-var ex_district_categories = [
-    "Abandoned vehicles",
-    "Car Parks",
-    "Dog fouling",
-    "Flyposting",
-    "Flytipping",
-    "Graffiti",
-    "Parks/landscapes",
-    "Public toilets",
-    "Rubbish (refuse and recycling)",
-    "Street cleaning",
-    "Street nameplates"
-];
-
-function category_unselected_or_ex_district() {
-    var cat = fixmystreet.reporting.selectedCategory().category;
-    if (OpenLayers.Util.indexOf(ex_district_categories, cat) != -1) {
-        return true;
-    }
-    return false;
-}
-
 // We show roads that Bucks are and aren't responsible for, and display a
 // message to the user if they click something Bucks don't maintain.
 var types_to_show = bucks_types.concat(non_bucks_types);
@@ -344,12 +320,21 @@ fixmystreet.assets.add(defaults, {
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
     }),
-    always_visible: true,
     non_interactive: true,
     road: true,
     asset_item: 'road',
     asset_type: 'road',
-    all_categories: true,
+    asset_group: [
+        'Drainage issues',
+        'Flytipping',
+        'Roads & Pavements',
+        'Salt & Gritting',
+        'Street Lights',
+        'Street Signs',
+        'Traffic Lights and crossings',
+        'Trees and vegetation',
+        'Trees'
+    ],
     actions: {
         found: function(layer, feature) {
             var map = {
@@ -357,32 +342,14 @@ fixmystreet.assets.add(defaults, {
                 "HWOA": '#js-not-council-road-other'
             };
             var msg_id = map[feature.attributes.feature_ty] || '#js-not-council-road';
-
-            fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
-            fixmystreet.body_overrides.remove_only_send();
             fixmystreet.message_controller.road_found(layer, feature, function(feature) {
-                // If an ex-district category is selected, always allow report
-                // regardless of road ownership.
-                if (category_unselected_or_ex_district()) {
-                    return true;
-                }
                 if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
                     return true;
                 }
                 return false;
             }, msg_id);
         },
-
-        not_found: function(layer) {
-            // If an ex-district category is selected, always allow report.
-            fixmystreet.body_overrides.remove_only_send();
-            if (category_unselected_or_ex_district()) {
-                fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
-            } else {
-                fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
-                fixmystreet.message_controller.road_not_found(layer);
-            }
-        }
+        not_found: fixmystreet.message_controller.road_not_found
     },
     no_asset_msg_id: '#js-not-a-road',
     no_asset_msgs_class: '.js-roads-bucks',

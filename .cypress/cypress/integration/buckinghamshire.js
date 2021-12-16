@@ -15,10 +15,12 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('sets the site_code correctly', function() {
-    cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.pickCategory('Parks');
+    cy.pickCategory('Roads & Pavements');
+    cy.wait('@roads-layer');
+    cy.nextPageReporting();
+    cy.get('#subcategory_RoadsPavements label').contains('Parks').click();
     cy.get('[name=site_code]').should('have.value', '7300268');
     cy.nextPageReporting();
     cy.contains('Photo').should('be.visible');
@@ -41,10 +43,12 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('shows gritting message', function() {
-    cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.pickCategory('Snow and ice problem/winter salting');
+    cy.pickCategory('Roads & Pavements');
+    cy.wait('@roads-layer');
+    cy.nextPageReporting();
+    cy.get('#subcategory_RoadsPavements label').contains('Snow and ice problem/winter salting').click();
     cy.wait('@winter-routes');
     cy.nextPageReporting();
     cy.contains('The road you have selected is on a regular gritting route').should('be.visible');
@@ -62,11 +66,13 @@ describe('buckinghamshire roads handling', function() {
     cy.get('[name=pc]').type('SL9 0NX');
     cy.get('[name=pc]').parents('form').submit();
 
-    cy.wait('@roads-layer');
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
-    cy.get('#mob_ok').click();
-    cy.pickCategory('Parks');
+    cy.get('#mob_ok').should('be.visible').click();
+    cy.pickCategory('Roads & Pavements');
+    cy.wait('@roads-layer');
+    cy.nextPageReporting();
+    cy.get('#subcategory_RoadsPavements label').contains('Parks').click();
     cy.nextPageReporting();
     cy.contains('Please select a road on which to make a report.').should('be.visible');
   });
