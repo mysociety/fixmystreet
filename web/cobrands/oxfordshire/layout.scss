@@ -24,6 +24,7 @@ $mappage-header-height: 10em;
     height: auto;
     min-height: 0;
     float: none;
+    overflow: visible; // Stop underlines causing a scrollbar
 
     .ie9 & {
         position: static;
