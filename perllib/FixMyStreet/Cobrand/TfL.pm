@@ -539,6 +539,15 @@ sub _cleaning_categories { [
     'Fly-Tipping',
     'Fly tipping - Enforcement Request',
     'Graffiti and Flyposting', # Bromley
+
+    # Merton want all of their street cleaning categories visible on Red Routes
+    'Abandoned Vehicles',
+    'Clinical Waste on Street',
+    'Dead Animal',
+    'Dog Fouling',
+    'Fly-Posting',
+    'Graffiti',
+    'Litter or Weeds on a Street',
 ] }
 
 sub _cleaning_groups { [ 'Street cleaning', 'Fly-tipping' ] }
