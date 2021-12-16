@@ -280,3 +280,11 @@ ol.big-numbers {
 }
 /* end of fixes for around page */
 
+table.googlecookies {
+    /* make all columns equal width */
+    /* otherwise, looks messy in comparison to first cookie table */
+    th, td {
+        width: 1%;
+    }
+}
+
