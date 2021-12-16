@@ -61,6 +61,9 @@ $ port install gettext p5-locale-gettext p5-perlmagick jhead postgresql91-server
 
 ##### ii. HomeBrew
 
+**Note:** perlmagick is no longer included in HomeBrew, so you will need to
+find an alternative way to install ImageMagick.
+
 {% highlight bash %}
 $ brew install gettext perlmagick jhead postgresql
 $ brew link gettext --force
