@@ -38,7 +38,7 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
           // Check both group and category because e.g. Isle of Wight has
           // layers attached with groups that should also apply to categories
           // with the same name
-          relevant = (layer.asset_group === group || layer.asset_group === category);
+          relevant = (OpenLayers.Util.indexOf(layer.asset_group, group) != -1 || OpenLayers.Util.indexOf(layer.asset_group, category) != -1);
       } else {
           relevant = (OpenLayers.Util.indexOf(layer.asset_category, category) != -1);
       }
@@ -261,7 +261,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
         this.getNearest(lonlat);
         this.updateUSRNField();
         if (this.fixmystreet.road) {
-            var valid_category = this.fixmystreet.all_categories || (this.fixmystreet.asset_category && this.relevant());
+            var valid_category = this.fixmystreet.all_categories || ((this.fixmystreet.asset_category || this.fixmystreet.asset_group) && this.relevant());
             if (!valid_category || !this.selected_feature) {
                 this.road_not_found();
             } else {
@@ -497,13 +497,10 @@ function get_asset_pick_message() {
  * can fire after a category change event, and that would then
  * update the new message using the text of the unselected layer. */
 function update_message_display(message) {
-    if (this.fixmystreet.asset_group) {
-        _update_message(message, this.fixmystreet.asset_group);
-    } else {
-        $.each(this.fixmystreet.asset_category, function(i, c) {
-            _update_message(message, c);
-        });
-    }
+    var list = this.fixmystreet.asset_group || this.fixmystreet.asset_category;
+    $.each(list, function(i, c) {
+        _update_message(message, c);
+    });
 }
 
 function _update_message(message, c) {
@@ -934,10 +931,13 @@ fixmystreet.assets = {
     },
 
     add_layer: function(options) {
-        // Upgrade `asset_category` to an array, in the case that this layer is
-        // only associated with a single category.
+        // Upgrade `asset_category` and `asset_group` to an array, in the case
+        // that this layer is only associated with a single category/group.
         if (options.asset_category && !OpenLayers.Util.isArray(options.asset_category)) {
             options.asset_category = [ options.asset_category ];
+        }
+        if (options.asset_group && !OpenLayers.Util.isArray(options.asset_group)) {
+            options.asset_group = [ options.asset_group ];
         }
 
         var asset_layer = construct_asset_layer(options);
