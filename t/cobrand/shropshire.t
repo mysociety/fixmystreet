@@ -42,6 +42,70 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'shropshire' ],
+    COBRAND_FEATURES => {
+        contact_us_url => {
+            shropshire => 'https://www.shropshire.gov.uk/customer-services/how-to-contact-us',
+        },
+    }
+}, sub {
+
+    subtest '_sidebar contains contact_us_url' => sub {
+        ok $mech->host("shropshire.fixmystreet.com"), "change host to shropshire";
+        $mech->get_ok('/faq');
+        $mech->content_contains('<li><a href="https://www.shropshire.gov.uk/customer-services/how-to-contact-us">Contact us</a></li>');
+    };
+
+    subtest 'faq contains contact_us_url substitutions' => sub {
+        my @links = $mech->find_all_links( url => 'https://www.shropshire.gov.uk/customer-services/how-to-contact-us');
+        my $link_count = @links;
+        ok $link_count == 2, "Two replacements in faq";
+        ok $mech->text =~ 'please contact us through the appropriate channel', "Url fits sentence structure";
+    };
+
+    subtest 'Privacy page contains contact_us_url substitutions' => sub {
+        $mech->get_ok('/about/privacy');
+        my @links = $mech->find_all_links( url => 'https://www.shropshire.gov.uk/customer-services/how-to-contact-us');
+        my $link_count = @links;
+        ok $link_count == 4, "Four replacements in privacy page";
+        ok $mech->text =~ "Please contact us if you would like your details", "First Url fits sentence structure";
+        ok $mech->text =~ "you can contact us, giving specific reasons", "Second Url fits sentence structure";
+        ok $mech->text =~ "You may contact us at any time to ask to see what personal data we hold about you", "Third Url fits sentence structure";
+
+    };
+
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'shropshire' ],
+}, sub {
+
+    subtest '_sidebar lacks contact_us_url' => sub {
+        ok $mech->host("shropshire.fixmystreet.com"), "change host to shropshire";
+        $mech->get_ok('/faq');
+        $mech->content_lacks('<li><a href="https://www.shropshire.gov.uk/customer-services/how-to-contact-us">Contact us</a></li>');
+    };
+
+    subtest 'faq page has no url substitutions for Shropshire' => sub {
+        my @links = $mech->find_all_links( url => 'https://www.shropshire.gov.uk/customer-services/how-to-contact-us');
+        my $link_count = @links;
+        ok $link_count == 0, 'No url contact us substitutions';
+        ok $mech->text =~ 'please contact us through the appropriate channel', "Url fits sentence structure";
+    };
+
+    subtest 'Privacy page contains contact_us_url substitutions' => sub {
+        $mech->get_ok('/about/privacy');
+        my @links = $mech->find_all_links( url => 'https://www.shropshire.gov.uk/customer-services/how-to-contact-us');
+        my $link_count = @links;
+        ok $link_count == 0, "No url contact us substitutions";
+        ok $mech->text =~ "Please contact us if you would like your details", "First Url fits sentence structure";
+        ok $mech->text =~ "you can contact us, giving specific reasons", "Second Url fits sentence structure";
+        ok $mech->text =~ "You may contact us at any time to ask to see what personal data we hold about you", "Third Url fits sentence structure";
+    };
+
+};
+
 subtest 'check open311_contact_meta_override' => sub {
 
     my $processor = Open311::PopulateServiceList->new();

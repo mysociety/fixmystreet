@@ -399,6 +399,8 @@ When you make a report
     years of inactivity of the associated account.
   [% IF c.cobrand.moniker == 'cheshireeast' %]
     <a href="[% contact_us_href %]">Contact us</a>
+  [% ELSIF c.cobrand.feature('contact_us_url') %]
+    Please <a href="[% c.cobrand.feature('contact_us_url') %]">contact us</a> 
   [% ELSE %]
     Please <a href="[% contact_us_href %]">contact us</a>
   [% END %]
@@ -414,8 +416,13 @@ When you make a report
     processing of your personal information and to ask us to stop processing it.
     However, it also gives us the right to continue to process it if we can demonstrate
     compelling legitimate grounds for the processing that override your interests, rights
-    and freedoms. To exercise your right to object, you can <a href="[% contact_us_href %]">
-    contact us</a>, giving specific reasons why you are objecting to the processing of
+    and freedoms. To exercise your right to object, you can
+    [%~ IF c.cobrand.feature('contact_us_url') ~%]
+     <a href="[% c.cobrand.feature('contact_us_url') %]">
+    [%~ ELSE ~%]
+     <a href="[% contact_us_href %]">
+    [%~ END %]
+     contact us</a>, giving specific reasons why you are objecting to the processing of
     your personal data. These reasons should be based upon your particular situation.
 </p>
 
@@ -424,7 +431,13 @@ When you make a report
 </h2>
 
 <p>
-    You may <a href="[% contact_us_href %]">contact us</a> at any time to ask to see what
+    You may
+    [%~ IF c.cobrand.feature('contact_us_url') ~%]
+        <a href="[% c.cobrand.feature('contact_us_url') %]">
+    [%~ ELSE ~%]
+        <a href="[% contact_us_href %]">
+    [%~ END %]
+     contact us</a> at any time to ask to see what
     personal data we hold about you.
 </p>
 

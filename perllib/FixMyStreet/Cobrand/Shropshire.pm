@@ -21,6 +21,8 @@ sub default_map_zoom { 6 }
 
 sub send_questionnaires { 0 }
 
+sub abuse_reports_only { 1 }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

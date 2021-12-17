@@ -27,8 +27,13 @@ cleaning</strong> or <strong>clearing</strong>.
 </ul>
 
 <p>
-    For these types of issue, please contact us through the appropriate
-    channel.
+    For these types of issue, please
+    [%~ IF c.cobrand.feature('contact_us_url') %]
+     <a href="[% c.cobrand.feature('contact_us_url') %]">contact us</a>
+    [%~ ELSE %]
+    contact us
+    [%~ END %]
+    through the appropriate channel.
 </p>
 
 <p>
