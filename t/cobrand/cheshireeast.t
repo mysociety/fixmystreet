@@ -141,7 +141,7 @@ FixMyStreet::override_config {
         }});
         my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
         my $report_id = $report->id;
-        $mech->content_contains('0300 123 5011');
+        $mech->content_contains('0300 123 5500');
         $mech->content_like(qr/quoting your reference number $report_id/);
     };
 
