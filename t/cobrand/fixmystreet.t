@@ -16,6 +16,7 @@ my $resolver = Test::MockModule->new('Email::Valid');
 $resolver->mock('address', sub { $_[1] });
 
 my $body = $mech->create_body_ok( 2514, 'Birmingham' );
+$mech->create_body_ok( 2482, 'Bromley' );
 
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -172,6 +173,27 @@ FixMyStreet::override_config {
         $mech->content_lacks('<td>Birmingham</td><td>55 days</td></tr>');
         # 10 days means the older problem was ignored.
         $mech->content_contains('<td>Birmingham</td><td>10 days</td></tr>');
+    };
+};
+
+subtest 'check heatmap page for cllr' => sub {
+    my $user = $mech->create_user_ok( 'cllr@bromley.gov.uk', name => 'Cllr Bromley' );
+    my $config = {
+        ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => { heatmap => { bromley => 1 } },
+    };
+    FixMyStreet::override_config $config, sub {
+        $mech->log_out_ok;
+        $mech->get('/dashboard/heatmap');
+        is $mech->res->previous->code, 302;
+        $mech->log_in_ok($user->email);
+        $mech->get('/dashboard/heatmap');
+        is $mech->res->code, 404;
+    };
+    $config->{COBRAND_FEATURES}{heatmap_dashboard_body}{bromley} = 1;
+    FixMyStreet::override_config $config, sub {
+        $mech->get_ok('/dashboard/heatmap');
     };
 };
 

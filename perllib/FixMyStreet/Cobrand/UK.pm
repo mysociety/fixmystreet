@@ -506,4 +506,45 @@ sub _fetch_url {
     $ua->get($url)->content;
 }
 
+# UK council dashboard summary/heatmap access
+
+sub dashboard_body {
+    my $self = shift;
+    my $c = $self->{c};
+    my $body = $c->user->from_body || $self->_user_to_body;
+    return $body;
+}
+
+sub _user_to_body {
+    my $self = shift;
+    my $c = $self->{c};
+    my $email = lc $c->user->email;
+    return $self->_email_to_body($email);
+}
+
+sub _email_to_body {
+    my ($self, $email) = @_;
+    my $c = $self->{c};
+    my ($domain) = $email =~ m{ @ (.*) \z }x;
+
+    my @data = eval { FixMyStreet->path_to('../data/fixmystreet-councils.csv')->slurp };
+    my $body;
+    foreach (@data) {
+        chomp;
+        my ($d, $b) = split /\|/;
+        if ($d eq $domain || $d eq $email) {
+            $body = $b;
+            last;
+        }
+    }
+    # If we didn't find a lookup entry, default to the first part of the domain
+    unless ($body) {
+        $domain =~ s/\.gov\.uk$//;
+        $body = ucfirst $domain;
+    }
+
+    $body = $c->forward('/reports/body_find', [ $body ]);
+    return $body;
+}
+
 1;

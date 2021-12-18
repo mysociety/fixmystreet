@@ -77,13 +77,16 @@ sub check_page_allowed : Private {
         if ($c->get_param('body')) {
             $body = $c->model('DB::Body')->find({ id => $c->get_param('body') });
         } else {
-            $body = $cobrand_body;
+            return $cobrand_body;
         }
     } elsif ($c->user->from_body && (!$cobrand_body || $cobrand_body->id == $c->user->from_body->id)) {
         $body = $c->user->from_body;
-    } else {
-        $c->detach( '/page_error_404_not_found' )
+    } elsif ($c->action eq 'dashboard/heatmap' && $c->cobrand->feature('heatmap_dashboard_body')) {
+        # Heatmap might be able to be seen by more people
+        $body = $c->cobrand->call_hook('dashboard_body');
+        $body = undef unless $body && $cobrand_body && $body->id == $cobrand_body->id;
     }
+    $c->detach('/page_error_404_not_found') unless $body;
     return $body;
 }
 
