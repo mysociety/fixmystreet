@@ -25,6 +25,20 @@ sub disambiguate_location {
     };
 }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    my @extra_fields = @{ $report->get_extra_fields() };
+
+    foreach my $extra ( @extra_fields ) {
+        if ( length($extra->{value}) > 255 ) {
+            $errors->{'x' . $extra->{name}} = qq+Your answer to the question: "$extra->{description}" is too long. Please use a maximum of 255 characters.+;
+        }
+    }
+
+    return $errors;
+}
+
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
 sub get_geocoder { 'OSM' }

@@ -126,6 +126,7 @@ if ($opt->test_fixtures) {
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Oxfordshire County Council' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council' },
         { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council' },
+        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
@@ -383,6 +384,21 @@ if ($opt->test_fixtures) {
     }, {
         code => 'UPRN',
         automated => 'hidden_field',
+    });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2500},
+        category => 'Flytipping',
+    });
+    $child_cat->set_extra_fields({
+        code => 'evidence',
+        datatype => 'string',
+        description => 'Is there any evidence of who dumped the rubbish? If so please include details below',
+        order => 1,
+        variable => 'true',
+        required => 'true',
+        disable_form => 'false',
     });
     $child_cat->update;
 

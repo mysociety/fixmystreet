@@ -26,6 +26,30 @@ body_validation_rules = {
     'Isle of Wight Council': confirm_validation_rules,
     'Island Roads': confirm_validation_rules,
     'Lincolnshire County Council': confirm_validation_rules,
+    'Merton Council': {
+        // additional category questions for:
+        // Abandoned Vehicles
+        vehicle_registration_number: {
+          maxlength: 255
+        },
+        vehicle_make_model: {
+          maxlength: 255
+        },
+        vehicle_colour: {
+          maxlength: 255
+        },
+        time_present: {
+          maxlength: 255
+        },
+        // Clinical Waste on Street
+        waste_type: {
+          maxlength: 255
+        },
+        // Fly-Tipping
+        evidence: {
+          maxlength: 255
+        },
+    },
     'Northamptonshire Highways': {
         title: {
           required: true,
