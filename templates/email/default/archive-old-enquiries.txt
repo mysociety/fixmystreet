@@ -2,13 +2,13 @@ Subject: Your reports on [% site_name %]
 
 Hello [% user.name %],
 
-FixMyStreet is being updated in [% council_name %] to improve how problems get reported.
+FixMyStreet is being updated in [% cobrand.council_area %] to improve how problems get reported.
 
 As part of this process we are closing all reports made before the update.
 
 We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
 
-All of your reports will have been received and reviewed by [% council_name %], so if your report is no longer an issue, you don't need to do anything.
+All of your reports will have been received and reviewed by [% cobrand.council_area %], so if your report is no longer an issue, you don't need to do anything.
 
 If you believe that the issue has not been resolved you can report it again here: [% cobrand.base_url %]
 
@@ -18,11 +18,11 @@ If you believe that the issue has not been resolved you can report it again here
 
 Reported [% report.time_ago %] ago.
 
-View report: [% cobrand.base_url_for_report( report ) %]report/[% report.id %]
+View report: [% cobrand.base_url_for_report( report ) %]/report/[% report.id %]
 
 ----
 
 [% END %]
 
-The FixMyStreet team and [% council_name %] Council
+The FixMyStreet team and [% cobrand.council_name %]
 

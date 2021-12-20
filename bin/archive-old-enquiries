@@ -38,7 +38,6 @@ my ($opts, $usage) = describe_options(
         ['email-cutoff=s',     "Anything before this will be closed with an email sent to the reporter" ],
         ['reports=s',          "csv file with a single column of report ids" ],
     ], required => 1 } ],
-    ['council_name=s', "Name of council for templates", { required => 1 }],
     ['closure-cutoff=s',  "Anything before this will be closed with no email/alert", { required => 1 } ],
     ['closure_file=s',    "path to text file with the message to add to reports" ],
     ['closure_text=s', "text of the message to add to reports" ],

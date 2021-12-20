@@ -14,7 +14,7 @@ INCLUDE '_email_top.html';
     Hello [% user.name %],
   </p>
   <p style="[% p_style %]">
-    FixMyStreet is being updated in [% council_name %] to
+    FixMyStreet is being updated in [% cobrand.council_area %] to
     improve how problems get reported.
   </p>
   <p style="[% p_style %]">
@@ -26,7 +26,7 @@ INCLUDE '_email_top.html';
     which we've listed below.
   </p>
   <p style="[% p_style %]">
-    All of your reports will have been received and reviewed by [% council_name %], so if
+    All of your reports will have been received and reviewed by [% cobrand.council_area %], so if
     your report is no longer an issue, you don't need to do anything.
   </p>
   <p style="[% p_style %]">
@@ -40,7 +40,7 @@ INCLUDE '_email_top.html';
       <img style="[% list_item_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="">
     </a>
   [% END %]
-    <h2 style="[% list_item_h2_style %]"><a href="[% cobrand.base_url_for_report( report ) %]report/[% report.id %]">
+    <h2 style="[% list_item_h2_style %]"><a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
       [%~ report.title | html ~%]
     </a></h2>
     <p style="[% list_item_p_style %]">[% report.detail | html %]</p>

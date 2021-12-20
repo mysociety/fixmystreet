@@ -161,6 +161,12 @@ subtest 'sends emails to a user' => sub {
         like $body, qr/Problem the first/, 'Email body matches report name';
         like $body, qr/Problem the second/, 'Email body matches report name';
         like $body, qr/Problem the third/, 'Email body matches report name';
+        like $body, qr/FixMyStreet is being updated in Oxfordshire to improve/, 'Cobrand inserted in body';
+        like $body, qr/All of your reports will have been received and reviewed by Oxfordshire/, 'Cobrand inserted in body';
+        like $body, qr/The FixMyStreet team and Oxfordshire County Council/, 'Cobrand inserted in body';
+        like $body, qr/you can report it again here: http:\/\/oxfordshire.example.org/, 'Cobrand base url inserted in body';
+        my $urls = my @urls = $body =~ /(http:\/\/oxfordshire.example.org\/report\/\d+)/g;
+        ok $urls == 3, 'Three well formed urls in email body';
 
         unlike  $body, qr/Shiny new report/, 'Email body does not have new report';
         unlike  $body, qr/Really old report/, 'Email body does not have old report';
@@ -168,6 +174,7 @@ subtest 'sends emails to a user' => sub {
 };
 
 subtest 'user with old reports does not get email' => sub {
+
   $mech->clear_emails_ok;
   $mech->email_count_is(0);
 
@@ -176,7 +183,7 @@ subtest 'user with old reports does not get email' => sub {
       lastupdate => '2014-12-01 07:00:00',
       user       => $user,
   });
-
+ 
   FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
 
   my @emails = $mech->get_email;
@@ -195,6 +202,21 @@ subtest 'user with new reports does not get email' => sub {
   FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
 
   $mech->email_count_is(0);
+};
+
+subtest 'default update message uses cobrand' => sub {
+    FixMyStreet::override_config {
+          ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        my ($p) = $mech->create_problems_for_body(4, $oxfordshire->id, 'An old report', {
+        areas      => ',2237,',
+        lastupdate => '2014-12-01 07:00:00',
+         user       => $user,
+     });
+
+    FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
+    is $p->comments->first->text, "FixMyStreet is being updated in Oxfordshire to improve how problems get reported.\n\nAs part of this process we are closing all reports made before the update.\n\nAll of your reports will have been received and reviewed by Oxfordshire but, if you believe that this issue has not been resolved, please open a new report on it.\n\nThank you.", "Default update message used";   
+    }
 };
 
 subtest 'can configure comment message' => sub {
