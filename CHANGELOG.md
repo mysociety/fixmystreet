@@ -3,6 +3,7 @@
 * Unreleased
     - Front end improvements:
         - Highlight pin on sidebar focus as well as hover.
+        - Map page pagination links now styled as links rather than buttons. #3727
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704

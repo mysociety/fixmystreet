@@ -20,10 +20,6 @@ a:focus,
     outline: solid 3px $shropshire-yellow;
 }
 
-.pagination a {
-    color: #fff;
-}
-
 .olButton:focus {
     z-index: 1; // pull forward, so entire outline is visible
 }

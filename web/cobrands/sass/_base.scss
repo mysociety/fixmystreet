@@ -2401,26 +2401,18 @@ label .muted {
 .pagination {
   text-align: center;
   padding: 0.5em 1em;
+  margin-bottom: 1em;
   background: #eee;
   position: relative;
+
   .prev {
     position: absolute;
     #{$left}: 0.5em;
   }
+
   .next {
     position: absolute;
     #{$right}: 0.5em;
-  }
-  a {
-    @include inline-block;
-    color: $primary_text;
-    background: $primary;
-    padding-#{$left}: 0.5em;
-    padding-#{$right}: 0.5em;
-    &:hover {
-      text-decoration: none;
-      background: $primary/1.1;
-    }
   }
 }
 

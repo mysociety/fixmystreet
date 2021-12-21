@@ -254,17 +254,6 @@ body.mappage {
             text-decoration: underline;
         }
     }
-    // Around page
-    .pagination {
-        .next,
-        .prev {
-            color: $contrast_text;
-            border-radius: 0.25em;
-            &:hover {
-                text-decoration: underline;
-            }
-        }
-    }
 
     .site-footer {
         display: none;

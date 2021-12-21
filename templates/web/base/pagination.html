@@ -1,5 +1,5 @@
 [% IF pager AND pager.total_entries > 1 %]
-    <p class="pagination" data-page="[% pager.current_page | html %]">
+    <nav aria-label="Pagination" class="pagination" data-page="[% pager.current_page | html %]">
         [% IF pager.previous_page %]
             <a class="prev" href="[% c.uri_with({ $param => pager.previous_page, ajax => undefined }) %][% '#' _ hash IF hash %]">[% loc('Previous') %]</a>
         [% END %]
@@ -11,5 +11,5 @@
         [% ELSIF page == 'around' AND num_old_reports > 0 AND NOT show_old_reports %]
             <a class="next show_old" href="[% c.uri_with({ $param => pager.current_page, show_old_reports = 1, ajax => undefined }) %][% '#' _ hash IF hash %]">[% loc('Show older') %]</a>
         [% END %]
-    </p>
+    </nav>
 [% END %]
