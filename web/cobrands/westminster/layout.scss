@@ -1,16 +1,15 @@
 @import "colours";
 @import "../sass/layout";
 
-body.frontpage, body.mappage {
+body.frontpage {
     h1 {
         font-size: 3.3em;
     }
-}
 
-body.frontpage {
     .container {
         max-width: $container-max-width;
     }
+
     #front-main {
         #front-main-container {
             padding: 0 1em;

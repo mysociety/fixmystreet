@@ -8,10 +8,7 @@
 
 body.frontpage {
     background-color: #fff; // instead of $westminster_grey
-}
 
-body.frontpage,
-body.mappage {
     h1 {
         font-size: 2.2em;
         font-weight: 600;
@@ -251,11 +248,18 @@ ol.big-numbers > li:before {
 }
 
 body.mappage {
+    h1 {
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        color: $westminster_navy;
+    }
+
     #report-a-problem-main {
         button.btn {
             @include btn-primary
         }
     }
+
     .form-section-preview {
         button.btn {
             @include btn-primary
@@ -267,6 +271,7 @@ body.authpage, body.twothirdswidthpage {
     .form-control {
         outline-color: $westminster_yellow;
     }
+
     #form_sign_in {
         input.btn {
             @include btn-medium-primary
