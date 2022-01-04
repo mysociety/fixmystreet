@@ -1625,6 +1625,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
 
     $ad_hoc_orig->discard_changes;
     is $ad_hoc_orig->get_extra_metadata('dd_date'), "01/01/2021", "dd date unchanged ad hoc orig";

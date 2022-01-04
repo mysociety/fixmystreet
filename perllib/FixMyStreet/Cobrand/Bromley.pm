@@ -1471,6 +1471,7 @@ sub waste_reconcile_direct_debits {
                     Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
                     LastPayMethod => $self->bin_payment_types->{direct_debit},
                     PaymentCode => $payer,
+                    payment_method => 'direct_debit',
                 } );
                 $renew->set_extra_metadata('dd_date', $date);
                 $renew->confirm;
