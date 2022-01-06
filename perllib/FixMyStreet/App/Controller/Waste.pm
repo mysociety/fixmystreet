@@ -859,15 +859,10 @@ sub enquiry : Chained('property') : Args(0) {
 
     my $category = $c->get_param('category');
     my $service = $c->get_param('service_id');
-    if (!$category || !$service || !$c->stash->{services}{$service}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') unless $category && $service && $c->stash->{services}{$service};
+
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
-    if (!$contact) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') unless $contact;
 
     my $field_list = [];
     foreach (@{$contact->get_metadata_for_input}) {
@@ -940,11 +935,7 @@ sub check_if_staff_can_pay : Private {
 
 sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
-
-    unless ($c->stash->{waste_features}->{bulky_enabled}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') unless $c->stash->{waste_features}->{bulky_enabled};
 }
 
 sub bulky : Chained('bulky_setup') : Args(0) {
@@ -975,10 +966,7 @@ sub process_bulky_data : Private {
 sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    if ($c->stash->{waste_features}->{garden_disabled}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_disabled};
 
     $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
     $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
@@ -1003,10 +991,7 @@ sub garden_check : Chained('garden_setup') : Args(0) {
 sub garden : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
-    if ($c->cobrand->garden_current_subscription) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') if $c->cobrand->garden_current_subscription;
 
     $c->stash->{first_page} = 'intro';
     my $service = $c->cobrand->garden_service_id;
@@ -1024,14 +1009,9 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
     my $service = $c->cobrand->garden_current_subscription;
-    if (!$service || $service->{garden_due}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') unless $service && !$service->{garden_due};
 
-    unless ( $c->user_exists ) {
-        $c->detach( '/auth/redirect' );
-    }
+    $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
@@ -1087,20 +1067,12 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 sub garden_cancel : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
-    if (!$c->cobrand->garden_current_subscription) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') unless $c->cobrand->garden_current_subscription;
 
     my $allowed = $c->cobrand->call_hook('waste_garden_allow_cancellation') || 'all';
-    if ($allowed eq 'staff' && !$c->stash->{is_staff}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->detach('property_redirect') if $allowed eq 'staff' && !$c->stash->{is_staff};
 
-    unless ( $c->user_exists ) {
-        $c->detach( '/auth/redirect' );
-    }
+    $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     $c->forward('get_original_sub', ['user']);
 
@@ -1636,6 +1608,18 @@ sub uprn_redirect : Path('/property') : Args(1) {
     my $result = $echo->GetPointAddress($uprn, 'Uprn');
     $c->detach( '/page_error_404_not_found', [] ) unless $result;
     $c->res->redirect('/waste/' . $result->{Id});
+}
+
+sub property_redirect : Private {
+    my ($self, $c) = @_;
+    $c->res->redirect('/waste/' . $c->stash->{property}{id});
+}
+
+sub label_for_field {
+    my ($form, $field, $key) = @_;
+    foreach ($form->field($field)->options) {
+        return $_->{label} if $_->{value} eq $key;
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
