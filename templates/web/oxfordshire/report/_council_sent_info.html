@@ -1,11 +1,12 @@
 [% reference = problem.get_extra_metadata('customer_reference') ~%]
 [% feature_id = problem.get_extra_field_value('feature_id') ~%]
+[% unit_number = problem.get_extra_field_value('unit_number') ~%]
 [% column_no = problem.get_extra_field_value('column_no') ~%]
 
 <div class="council_info_box">
     <p><strong>Council ref:</strong> [% reference OR problem.id %]</p>
-  [% IF feature_id %]
-    <p><strong>Asset ID:</strong> [% feature_id %]</p>
+  [% IF feature_id OR unit_number %]
+    <p><strong>Asset ID:</strong> [% feature_id OR unit_number %]</p>
   [% END %]
   [% IF column_no %]
     <p><strong>Column number:</strong> [% column_no %]</p>
