@@ -100,7 +100,8 @@ subtest 'Anonymization of inactive users' => sub {
     stdout_is { $in->users } "Anonymizing user #" . $user->id . "\nEmailing user #" . $user_inactive->id . "\n", 'users dealt with first time';
 
     my $email = $mech->get_email;
-    like $email->as_string, qr/inactive\@example.com/, 'Inactive email sent';
+    my $user_email = $user_inactive->email;
+    like $email->as_string, qr/Your $user_email/, 'Inactive email sent';
     $mech->clear_emails_ok;
 
     $user->discard_changes;

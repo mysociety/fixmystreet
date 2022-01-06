@@ -2,7 +2,7 @@ Subject: Your inactive account on [% site_name %]
 
 Hello [% user.name %],
 
-Your account on [% site_name %] has been inactive for [% email_from %]
+Your [% user.username %] account on [% site_name %] has been inactive for [% email_from %]
 [% nget('month', 'months', email_from) %], and we automatically remove
 accounts that have been inactive after [% anonymize_from %]
 [% nget('month', 'months', anonymize_from) %]. If you wish to keep your

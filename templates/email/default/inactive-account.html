@@ -12,7 +12,7 @@ INCLUDE '_email_top.html';
 <th style="[% td_style %][% only_column_style %]">
   <h1 style="[% h1_style %]">Your inactive account</h1>
   <p style="[% p_style %]">
-Your account on [% site_name %] has been inactive for [% email_from %]
+Your [% user.username %] account on [% site_name %] has been inactive for [% email_from %]
 [% nget('month', 'months', email_from) %], and we automatically remove
 accounts that have been inactive after [% anonymize_from %]
 [% nget('month', 'months', anonymize_from) %]. If you wish to keep your
