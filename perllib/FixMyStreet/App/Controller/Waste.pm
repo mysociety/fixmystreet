@@ -897,8 +897,9 @@ sub enquiry : Chained('property') : Args(0) {
     $c->detach('property_redirect') unless $contact;
 
     my $field_list = [];
+    my $staff_form;
     foreach (@{$contact->get_metadata_for_input}) {
-        next if $_->{code} eq 'service_id' || $_->{code} eq 'uprn' || $_->{code} eq 'property_id';
+        $staff_form = 1 if $_->{code} eq 'staff_form';
         next if ($_->{automated} || '') eq 'hidden_field';
         my $type = 'Text';
         $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
@@ -907,6 +908,10 @@ sub enquiry : Chained('property') : Args(0) {
             type => $type, label => $_->{description}, required => $required
         };
     }
+
+    my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
+    $c->detach('/auth/redirect') if $staff_form && !$staff;
+    $c->stash->{staff_form} = $staff_form;
 
     # If the contact has no extra fields (e.g. Peterborough) then skip to the
     # "about you" page instead of showing an empty first page.

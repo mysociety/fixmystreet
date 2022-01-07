@@ -852,7 +852,7 @@ sub waste_munge_enquiry_data {
     $data->{title} = $data->{category};
 
     my $detail;
-    foreach (grep { /^extra_/ } keys %$data) {
+    foreach (sort grep { /^extra_/ } keys %$data) {
         $detail .= "$data->{$_}\n\n";
     }
     $detail .= $address;
