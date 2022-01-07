@@ -92,7 +92,8 @@ subtest 'Send comments' => sub {
     $c1->discard_changes;
     is $c1->extra->{title}, "MRS", 'Title set on Bromley update';
     $c2->discard_changes;
-    is $c2->send_fail_count, 0, 'Oxfordshire update skipped entirely';
+    is $c2->send_fail_count, 1, 'Oxfordshire update skipped entirely, still logs as failure';
+    $c2->update({ send_fail_count => 0 });
 
     Open311->_inject_response('/servicerequestupdates.xml', "", 500);
     $oxon_other->update({ email => 'Alloy-OTHER' });

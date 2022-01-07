@@ -254,6 +254,17 @@ sub moderation_filter {
     { problem_id => $self->problem_id };
 }
 
+sub update_send_failed {
+    my $self = shift;
+    my $msg  = shift;
+
+    $self->update( {
+        send_fail_count => $self->send_fail_count + 1,
+        send_fail_timestamp => \'current_timestamp',
+        send_fail_reason => $msg
+    } );
+}
+
 =head2 meta_line
 
 Returns a string to be used on a report update, describing some of the metadata

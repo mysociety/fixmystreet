@@ -114,7 +114,10 @@ sub process_update {
     # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
     # from anyone except the original problem reporter.
     if (my $skip = $cobrand->call_hook(should_skip_sending_update => $comment)) {
-        if ($skip ne 'WAIT' && !defined $comment->get_extra_metadata('cobrand_skipped_sending')) {
+        if ($skip eq 'WAIT') {
+            # Mark this as a failure, so that it is not constantly retried
+            $comment->update_send_failed("Skipping posting due to wait");
+        } elsif (!defined $comment->get_extra_metadata('cobrand_skipped_sending')) {
             $comment->set_extra_metadata(cobrand_skipped_sending => 1);
             $comment->update;
         }
@@ -137,11 +140,7 @@ sub process_update {
         } );
         $self->log($comment, 'Send successful');
     } else {
-        $comment->update( {
-            send_fail_count => $comment->send_fail_count + 1,
-            send_fail_timestamp => \'current_timestamp',
-            send_fail_reason => "Failed to post over Open311\n\n" . $o->error,
-        } );
+        $comment->update_send_failed("Failed to post over Open311\n\n" . $o->error);
         $self->log($comment, 'Send failed');
     }
 }
