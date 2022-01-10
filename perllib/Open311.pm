@@ -578,7 +578,7 @@ sub _request {
 
 sub _make_request {
     my ($self, $req) = @_;
-    my $ua = LWP::UserAgent->new;
+    my $ua = LWP::UserAgent->new( timeout => 300 );
     my $res = $ua->request( $req );
     return $res;
 }

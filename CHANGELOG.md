@@ -11,6 +11,9 @@
     - Development improvements:
         - Default make_css to `web/cobrands` rather than `web`.
         - Ability to pass custom arguments (eg: SSL config) to server when running via Docker
+        - Allow bin/fetch start/end times to be fractional.
+    - Open311 improvements:
+        - Increase default timeout.
 
 * v4.0 (3rd December 2021)
     - Front end improvements:
