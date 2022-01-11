@@ -102,13 +102,15 @@ fixmystreet.staff_set_up = {
         var $phoneInput = $('input[name=phone]');
         var $showNameCheckbox = $('input[name=may_show_name]');
         var $addAlertCheckbox = $('#form_add_alert');
+        var $extraTitle = $('select#form_fms_extra_title'); // May not be present
         if (val === 'myself') {
             $emailInput.val($emailInput.prop('defaultValue')).prop('disabled', true);
             $emailOptionalLabel.addClass('hidden');
-            $nameInput.val($nameInput.prop('defaultValue')).prop('disabled', false);
-            $phoneInput.val($phoneInput.prop('defaultValue')).prop('disabled', false);
+            $nameInput.val($nameInput.prop('defaultValue')).prop('disabled', false).prop('readonly', true);
+            $phoneInput.val($phoneInput.prop('defaultValue')).prop('disabled', true);
             $showNameCheckbox.prop('checked', false).prop('disabled', false);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+            $extraTitle.prop('disabled', true);
         } else if (val === 'another_user') {
             $emailInput.val('').prop('disabled', false);
             if (!$phoneInput.length) {
@@ -119,10 +121,11 @@ fixmystreet.staff_set_up = {
                 $emailOptionalLabel.removeClass('hidden');
                 $emailInput.removeClass('required');
             }
-            $nameInput.val('').prop('disabled', false);
+            $nameInput.val('').prop('disabled', false).prop('readonly', false);
             $phoneInput.val('').prop('disabled', false);
             $showNameCheckbox.prop('checked', false).prop('disabled', true);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+            $extraTitle.prop('disabled', false);
         } else if (val === 'anonymous_user') {
             $emailInput.val('-').prop('disabled', true);
             $emailOptionalLabel.addClass('hidden');
@@ -130,6 +133,7 @@ fixmystreet.staff_set_up = {
             $phoneInput.val('-').prop('disabled', true);
             $showNameCheckbox.prop('checked', false).prop('disabled', true);
             $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+            $extraTitle.prop('disabled', true);
         } else if (val === 'body') {
             $emailInput.val('-').prop('disabled', true);
             $emailOptionalLabel.addClass('hidden');
@@ -137,6 +141,7 @@ fixmystreet.staff_set_up = {
             $phoneInput.val('-').prop('disabled', true);
             $showNameCheckbox.prop('checked', true).prop('disabled', true);
             $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+            $extraTitle.prop('disabled', true);
         }
     });
     $('.js-contribute-as').trigger('change');
@@ -454,6 +459,7 @@ $(function() {
 });
 
 $(fixmystreet).on('display:report', function() {
+    fixmystreet.staff_set_up.contribute_as();
     fixmystreet.staff_set_up.moderation();
     fixmystreet.staff_set_up.response_templates();
     if ($("#report_inspect_form").length) {

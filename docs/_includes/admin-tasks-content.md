@@ -165,6 +165,14 @@ citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appro
 the report-making interface, labeled ‘Report As’. Select either the council, ‘yourself’, ‘anonymous’ or
 ‘another user’.
 
+In order to reduce confusion for customer service staff, the email,
+name and phone number fields in the reporting and update pages are
+disabled for staff users. This avoids accidental overwriting of their
+own details with those of e.g. citizens making reports over the
+telephone in case staff forget to switch the ‘Report As’ control to
+‘another user’.
+
+
 If a user has the ‘Default to creating reports/update as the council’
 permission then the dropdown will default to reporting as the council.
 Staff with the ’Markup problem details’ permission will also default to

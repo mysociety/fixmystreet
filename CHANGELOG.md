@@ -7,6 +7,7 @@
         - Map page pagination links now styled as links rather than buttons. #3727
         - Include username in inactive email.
         - Update document title on client-side new report page transition.
+        - Disable staff phone and name fields to avoid accidental overwriting.
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
