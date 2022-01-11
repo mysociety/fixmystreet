@@ -215,6 +215,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
+        $mech->content_contains('If your bin is not received two working days before scheduled collection please call 01733 747474 to discuss alternative arrangements.');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin";
