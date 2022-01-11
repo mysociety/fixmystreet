@@ -21,7 +21,7 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
 };
-my $body = $mech->create_body_ok(2566, 'Peterborough Council', $params);
+my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 
@@ -219,6 +219,23 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
+        is $report->category, 'All bins';
+        is $report->title, 'Request new All bins';
+    };
+    subtest 'Staff-only request reason shown correctly' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->content_lacks("(Other - PD STAFF)");
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->content_contains("(Other - PD STAFF)");
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'other_staff' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Request sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: (Other - PD STAFF)";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
     };
