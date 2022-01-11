@@ -189,7 +189,7 @@
           [% item.label %]
         </label>
 [% IF hint %]
-        <span id="[% field.id %]-item-hint" class="govuk-hint govuk-checkboxes__hint">
+        <span id="[% field.id %]-item-hint" class="govuk-hint govuk-checkboxes__hint[% IF item.hint_class %] [% item.hint_class %][% END %]">
           [% hint %]
         </span>
 [% END %]
