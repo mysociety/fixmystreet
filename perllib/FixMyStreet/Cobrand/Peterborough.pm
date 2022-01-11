@@ -867,7 +867,7 @@ sub waste_munge_request_data {
 
     $reason = {
         large_family => 'Additional black/green due to a large family',
-        cracked => 'Cracked bin',
+        cracked => "Cracked bin\n\nPlease remove cracked bin.",
         lost_stolen => 'Lost/stolen bin',
         new_build => 'New build',
     }->{$reason} || $reason;

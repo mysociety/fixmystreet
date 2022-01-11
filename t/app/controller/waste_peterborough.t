@@ -218,7 +218,7 @@ FixMyStreet::override_config {
         $mech->content_contains('If your bin is not received two working days before scheduled collection please call 01733 747474 to discuss alternative arrangements.');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
     };
