@@ -42,6 +42,7 @@ create_contact({ category => 'Refuse', email => 'Bartec-255' }, 'Missed Collecti
 create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collection');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
+create_contact({ category => 'Food bag request', email => 'Bartec-428' }, 'Request new container');
 create_contact({ category => 'Application for additional bin', email => 'Bartec-486' }, 'Request new container');
 create_contact({ category => '240L Black - Lid', email => 'Bartec-538' }, 'Bin repairs');
 create_contact({ category => '240L Black - Wheels', email => 'Bartec-541' }, 'Bin repairs');
@@ -215,7 +216,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
-        $mech->content_contains('If your bin is not received two working days before scheduled collection please call 01733 747474 to discuss alternative arrangements.');
+        $mech->content_like(qr/If your bin is not received two working days before scheduled collection\s+please call 01733 747474 to discuss alternative arrangements./);
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
@@ -267,6 +268,15 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('About you');
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_contains('Request food bags');
+        $mech->content_contains('Submit food bags request');
+        $mech->content_lacks('Request new bins');
+        $mech->content_lacks('Submit bin request');
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Request sent');
+        $mech->content_contains('Food bags will be supplied by the crew on your next collection day.');
+        $mech->content_lacks('Bins arrive typically within two weeks');
     },
     subtest 'Request food bins from front page' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480');

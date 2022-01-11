@@ -24,4 +24,8 @@ has_field submit => (
     order => 999,
 );
 
+sub default_submit {
+    return shift->{c}->get_param("bags_only") ? "Request food bags" : "Request new bins";
+}
+
 1;
