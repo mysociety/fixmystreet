@@ -59,7 +59,7 @@ sub one_off_payment {
     my $obj = [
         reference => $args->{payer_reference},
         amountString => $args->{amount},
-        dueDateString => $args->{date}->strftime('%d/%m/%Y'),
+        dueDateString => $args->{date}->strftime('%d-%m-%Y'),
         clientSUN => $self->config->{dd_sun},
         yourRef => $args->{reference},
         comments => $args->{comment}

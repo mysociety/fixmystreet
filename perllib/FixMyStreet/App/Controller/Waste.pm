@@ -395,14 +395,13 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
 
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
-        my $dt = $c->cobrand->waste_get_next_dd_day;
-
         my $one_off_ref = $i->one_off_payment( {
                 # this will be set when the initial payment is confirmed
                 payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
                 amount => sprintf('%.2f', $ad_hoc / 100),
                 reference => $p->id,
                 comments => '',
+                date => $c->cobrand->waste_get_next_dd_day('ad-hoc'),
         } );
     }
 

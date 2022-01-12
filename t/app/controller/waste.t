@@ -1328,11 +1328,14 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('payment'), '4000', 'payment correctly set to future value';
         is $new_report->get_extra_field_value('pro_rata'), '750', 'pro rata payment correctly set';
 
+        my $ad_hoc_payment_date = '2021-01-15T17:00:00';
+
         is_deeply $dd_sent_params->{one_off_payment}, {
             payer_reference => 'GGW1000000002',
             amount => '7.50',
             reference => $new_report->id,
             comments => '',
+            date => $ad_hoc_payment_date,
         }, "correct direct debit ad hoc payment params sent";
         is_deeply $dd_sent_params->{amend_plan}, {
             payer_reference => 'GGW1000000002',
