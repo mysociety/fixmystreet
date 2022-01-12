@@ -40,6 +40,7 @@ create_contact({ category => 'Food', email => 'Bartec-252' }, 'Missed Collection
 create_contact({ category => 'Recycling (green)', email => 'Bartec-254' }, 'Missed Collection');
 create_contact({ category => 'Refuse', email => 'Bartec-255' }, 'Missed Collection');
 create_contact({ category => 'Assisted', email => 'Bartec-492' }, 'Missed Collection');
+create_contact({ category => 'Green 240L bin', email => 'Bartec-420' }, 'Request new container');
 create_contact({ category => 'All bins', email => 'Bartec-425' }, 'Request new container');
 create_contact({ category => 'Both food bins', email => 'Bartec-493' }, 'Request new container');
 create_contact({ category => 'Food bag request', email => 'Bartec-428' }, 'Request new container');
@@ -222,6 +223,20 @@ FixMyStreet::override_config {
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
+    };
+    subtest 'Report a cracked bin raises a bin delivery request' => sub {
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+        $mech->submit_form_ok({ with_fields => { 'service-420' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->content_contains('The bin is cracked', "Cracked category found");
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Damaged bin reported');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
+        is $report->category, 'Green 240L bin';
+        is $report->title, 'Request new 240L Green';
     };
     subtest 'Staff-only request reason shown correctly' => sub {
         $mech->log_in_ok($user->email);

@@ -953,10 +953,17 @@ sub waste_munge_problem_data {
     }
 
     my $bin = $c->stash->{containers}{$container_id};
-    $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
-                     $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
     $data->{category} = $category;
-    $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
+    if ($category_verbose =~ /cracked/) {
+        my $address = $c->stash->{property}->{address};
+        $data->{title} = "Request new $bin";
+        $data->{detail} = "Quantity: 1\n\n$address";
+        $data->{detail} .= "\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
+    } else {
+        $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
+                         $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
+        $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
+    }
 
     if ( $data->{extra_detail} ) {
         $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
@@ -977,6 +984,11 @@ sub waste_munge_problem_form_fields {
             container_name => "Black bin",
             label => "The bin’s wheels are damaged",
         },
+        419 => {
+            container => 6533,
+            container_name => "Black bin",
+            label => "The bin is cracked",
+        },
         537 => {
             container => 6534,
             container_name => "Green bin",
@@ -986,6 +998,11 @@ sub waste_munge_problem_form_fields {
             container => 6534,
             container_name => "Green bin",
             label => "The bin’s wheels are damaged",
+        },
+        420 => {
+            container => 6534,
+            container_name => "Green bin",
+            label => "The bin is cracked",
         },
         539 => {
             container => 6579,
@@ -1022,7 +1039,7 @@ sub waste_munge_problem_form_fields {
         next unless $services{$id};
 
         my $categories = $services{$id};
-        foreach (keys %$categories) {
+        foreach (sort keys %$categories) {
             my $cat_name = $categories->{$_};
             push @$field_list, "service-$_" => {
                 type => 'Checkbox',
