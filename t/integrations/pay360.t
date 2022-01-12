@@ -170,7 +170,7 @@ subtest "check create payment" => sub {
         {
             reference => 'payer1',
             amountString => 9.99,
-            dueDateString => '19/02/2021',
+            dueDateString => '19-02-2021',
             clientSUN => 1234,
             yourRef => 12,
             comments => 'more of a question',

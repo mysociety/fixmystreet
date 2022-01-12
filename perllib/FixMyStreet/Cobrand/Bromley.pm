@@ -1269,10 +1269,15 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
     $self->_set_user_source;
 }
-sub waste_get_next_dd_day {
-    my $self = shift;
 
-    my $dd_delay = 10; # No days to set up a DD
+sub waste_get_next_dd_day {
+    my ($self, $payment_type) = @_;
+
+    # new DD mandates must have a 10-day wait
+    my $dd_delay = 10;
+
+    # ad-hoc payments on an existing mandate only need a 5-day wait
+    if ($payment_type && ($payment_type eq 'ad-hoc')) { $dd_delay = 5; }
 
     my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
