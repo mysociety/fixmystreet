@@ -4,6 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use utf8;
+use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
 use Integrations::Echo;
 use BromleyParks;
@@ -602,6 +603,9 @@ sub bin_services_for_address {
 
         my $request_max = $quantity_max{$service_id};
 
+        my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+        $self->{c}->stash->{assisted_collection} = $self->assisted_collection($data);
+
         my $garden = 0;
         my $garden_bins;
         my $garden_cost = 0;
@@ -609,7 +613,6 @@ sub bin_services_for_address {
         my $garden_overdue = $expired{$_->{Id}};
         if ($service_name eq 'Garden Waste') {
             $garden = 1;
-            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
             foreach (@$data) {
                 next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
@@ -669,6 +672,18 @@ sub bin_services_for_address {
     $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
 
     return \@out;
+}
+
+sub assisted_collection {
+    my ($self, $data) = @_;
+    my $strp = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    my ($ac_end, $ac_flag);
+    foreach (@$data) {
+        $ac_end = $strp->parse_datetime($_->{Value})->ymd if $_->{DatatypeName} eq "Indicator End Date";
+        $ac_flag = 1 if $_->{DatatypeName} eq "Task Indicator" && $_->{Value} eq 'LBB - Assisted Collection';
+    }
+    return ($ac_flag && $ac_end gt $today);
 }
 
 sub _closed_event {
