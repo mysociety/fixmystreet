@@ -595,6 +595,9 @@ sub bin_services_for_address {
             }
         }
 
+        my $task_indicator = $servicetask->{TaskIndicatorId} || 0;
+        $self->{c}->stash->{assisted_collection} = 1 if $task_indicator == 84;
+
         my $row = {
             id => $_->{Id},
             service_id => $service_id,

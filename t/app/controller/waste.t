@@ -391,6 +391,33 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection&service_id=531');
         is $mech->res->previous->code, 302;
     };
+    subtest 'test assisted collection display' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Set up for assisted collection');
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1003,
+                ServiceId => 531,
+                ServiceName => 'Domestic Refuse Collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 403,
+                    TaskIndicatorId => 84,
+                    ServiceTaskSchedules => { ServiceTaskSchedule => {
+                        StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                        },
+                    } },
+                } },
+            } ];
+        });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('This property is set up for assisted collections');
+    };
     subtest 'Ignores expired services' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', sub {
