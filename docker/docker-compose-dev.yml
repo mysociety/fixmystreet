@@ -43,6 +43,7 @@ services:
       - fixmystreet-local:/var/www/fixmystreet/local
     environment:
       POSTGRES_PASSWORD: 'password'
+      LANG: "C.UTF-8"
     networks:
       default:
         aliases:
