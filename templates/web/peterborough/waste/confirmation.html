@@ -68,7 +68,7 @@ END ~%]
       Please leave your bin at the collection point.
 [% END %]
 
-[% IF report.category == 'Wheels' OR report.category == 'Lid' OR report.category == 'Black 360L bin' %]
+[% IF first_page == 'problem' AND NOT report.category.match('Not returned')  %]
     <p>Please leave your bin accessible on your property for us to repair.
     Due to ongoing staff issues caused by Covid-19, staff sickness and the current national driver and worker shortage, there will be unavoidable service disruption so we are currently unable to provide a repair date.
     We would like to apologise for any inconvenience caused.

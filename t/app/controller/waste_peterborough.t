@@ -232,6 +232,7 @@ FixMyStreet::override_config {
         $mech->content_contains('The bin is cracked', "Cracked category found");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
+        $mech->content_contains('Please leave your bin accessible');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
@@ -370,6 +371,7 @@ FixMyStreet::override_config {
         $mech->content_contains('The bin’s lid is damaged', "Damaged lid category found");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
+        $mech->content_contains('Please leave your bin accessible');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, 'Damaged 240L Black bin';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
@@ -380,6 +382,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
+        $mech->content_lacks('Please leave your bin accessible');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, 'Bin not returned';
         is $report->detail, "The bin wasn’t returned to the collection point\n\n1 Pope Way, Peterborough, PE1 3NA";
@@ -398,6 +401,7 @@ FixMyStreet::override_config {
         $mech->content_contains('The bin’s wheels are damaged', "Damaged wheel category found");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
+        $mech->content_contains('Please leave your bin accessible');
 
         FixMyStreet::Script::Reports::send();
 
@@ -424,6 +428,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Black bin');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bins reported');
+        $mech->content_contains('Please leave your bin accessible');
 
         is $problems->count, 2;
 
