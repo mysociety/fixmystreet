@@ -1,7 +1,7 @@
 [% IF user.id ~%]
     [% title = tprintf(loc('Editing user %d'), user.id ) ~%]
 [% ELSE ~%]
-    [% title = loc('Add user') ~%]
+    [% title = c.user.is_superuser ? loc("Add user") : loc("Add staff user") %]
 [% END ~%]
 [% INCLUDE 'admin/header.html' title=title -%]
 [% PROCESS 'admin/report_blocks.html' %]

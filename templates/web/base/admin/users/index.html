@@ -98,7 +98,7 @@
 [% END %]
 
 [% IF NOT ( searched || role_selected )%]
-<h2>[% loc('Add user') %]</h2>
+<h2>[% c.user.is_superuser ? loc("Add user") : loc("Add staff user") %]</h2>
 [% INCLUDE 'admin/users/form.html', user = '' %]
 [% ELSE %]
 <a href="[% c.uri_for_action('admin/users/add') %]">[% loc('Add user') %]</a>
