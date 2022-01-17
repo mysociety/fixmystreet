@@ -103,10 +103,6 @@
   }
 }
 
-a.platform-logo {
-  color: #fff;
-}
-
 #front_stats {
   background-color: $dark_green;
   color: #fff;
@@ -244,3 +240,5 @@ select.form-error {
     margin-left: auto;
     margin-right: auto;
 }
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
