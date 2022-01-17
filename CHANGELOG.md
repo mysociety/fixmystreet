@@ -8,6 +8,7 @@
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
+        - Make map pan/zoom controls keyboard-accessible. #3751
     - Admin improvements:
         - Admin 'add user' form now always creates staff users
     - Development improvements:

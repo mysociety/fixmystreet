@@ -830,6 +830,7 @@ $.extend(fixmystreet.utils, {
             });
         }
         fixmystreet.markers = new OpenLayers.Layer.Vector("Pins", pin_layer_options);
+        fixmystreet.markers.div.setAttribute('aria-hidden', 'true');
         fixmystreet.markers.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
         fixmystreet.markers.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
         OpenLayers.Request.XMLHttpRequest.onabort = function() {
@@ -989,6 +990,7 @@ $.extend(fixmystreet.utils, {
             } else {
                 layer = new fixmystreet.map_type(fixmystreet.layer_name, layer_options);
             }
+            layer.div.setAttribute('aria-hidden', 'true');
             fixmystreet.map.addLayer(layer);
         }
 
@@ -1035,6 +1037,13 @@ $.extend(fixmystreet.utils, {
 // End maps closure
 })();
 
+OpenLayers.Control.AttributionFMS = OpenLayers.Class(OpenLayers.Control.Attribution, {
+    draw: function(){
+        OpenLayers.Control.Attribution.prototype.draw.apply(this, arguments);
+        this.div.setAttribute('aria-hidden', 'true');
+        return this.div;
+    }
+});
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()

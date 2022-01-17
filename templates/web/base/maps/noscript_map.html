@@ -1,6 +1,6 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin -%]
 <div class="noscript">
-    <div id="[% nsm_prefix %]drag">
+    <div id="[% nsm_prefix %]drag" aria-hidden="true">
         <[% map.img_type | safe %]
             alt="NW map tile" id="[% nsm_prefix %]t2.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile - 1 %]"
@@ -23,6 +23,6 @@
             src="[% map.tiles.3 %]"
             style="top:256px; left:256px;">
     </div>
-    <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE 'maps/pin.html' %][% END %]</div>
+    <div id="[% nsm_prefix %]pins" aria-hidden="true">[% FOR pin IN map.pins %][% INCLUDE 'maps/pin.html' %][% END %]</div>
     [% INCLUDE 'maps/_compass.html' %]
 </div>
