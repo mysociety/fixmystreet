@@ -80,12 +80,6 @@ h1.main {
   padding-left: 3em;
 }
 
-// Because we've changed the page background, the footer looks a bit rubbish
-footer,
-.content footer .tablewrapper {
-  background-color: $bromley_blue;
-}
-
 // This is our custom wrapper for Bromley's header elements
 .bromley-header {
   // Bromley's logo has a bottom margin to space it out from the A-Z nav, we
@@ -95,9 +89,9 @@ footer,
 }
 
 // Center the mobile app buttons
-#footer-mobileapps p,
-#footer-help p {
+#footer-mobileapps p {
   text-align: center;
+  margin: 1em 0 3em 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -175,8 +169,4 @@ footer,
       padding: 0 0 0 1em;
     }
   }
-}
-
-.bromley-waste-credits {
-  margin-bottom: 0;
 }

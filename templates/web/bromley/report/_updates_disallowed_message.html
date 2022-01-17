@@ -5,13 +5,6 @@
    <a href="/waste[% IF property_id %]/[% property_id %][% END %]">See your bin collections</a>.
 </p>
 
-<div class="bromley-waste-credits">
-    <p>Powered by</p>
-    <p>
-        <a href="https://www.societyworks.org/services/waste/">SocietyWorks</a>
-    </p>
-</div>
-
 [% ELSE %]
 <p>[% loc('This report is now closed to updates.') %]
    [% tprintf(loc('You can <a href="%s">make a new report in the same location</a>.'),
