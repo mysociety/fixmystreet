@@ -86,14 +86,4 @@ p.form-error {
     padding-top: 2em;
     padding-bottom: 2em;
     margin-top: 2em;
-
-    .powered-by-fms {
-        margin: 0;
-    }
-
-    .container {
-        @include flex-container();
-        @include justify-content(space-between);
-        @include flex-align(center);
-    }
 }
