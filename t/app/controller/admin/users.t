@@ -310,6 +310,111 @@ for my $test (
     };
 }
 
+{
+    note 'Staff user for a council:';
+
+    my $config = {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    };
+
+    my $oxfordshireuser = $mech->create_user_ok(
+        'counciluser@example.com',
+        name => 'Council User',
+        from_body => $oxfordshire,
+    );
+    $mech->log_in_ok( $oxfordshireuser->email );
+
+    $oxfordshireuser->user_body_permissions->create({
+        body => $oxfordshire,
+        permission_type => 'user_edit',
+    });
+
+    subtest 'add user - body not explicitly provided' => sub {
+        FixMyStreet::override_config $config, sub {
+            $mech->get_ok('/admin/users');
+            $mech->submit_form_ok( { with_fields => {
+                name => 'No Body',
+                email => 'nobody@email.com',
+                email_verified => 1,
+            } } );
+
+            $mech->base_like(qr{/admin/users/\d+},
+                'should redirect to /admin/users/<id>');
+
+            # Check if user appears in list
+            $mech->get_ok('/admin/users');
+            $mech->content_contains(
+                'No Body',
+                'user should appear in /admin/users list',
+            );
+        };
+    };
+
+    my $test_body_user = $mech->create_user_ok(
+        'bod@gmail.com',
+        name => 'Bod Acious',
+    );
+
+    subtest 'add existing user who does not have a body' => sub {
+        FixMyStreet::override_config $config, sub {
+            is $test_body_user->from_body, undef,
+                'check user does not have body initially';
+
+            $mech->get_ok('/admin/users');
+            $mech->content_lacks(
+                $test_body_user->email,
+                'check user is not in /admin/users list initially',
+            );
+
+            $mech->submit_form_ok( { with_fields => {
+                name => $test_body_user->name,
+                email => $test_body_user->email,
+                email_verified => 1,
+            } }, "should submit 'add user' form" );
+
+            $mech->base_like(qr{/admin/users/\d+},
+                'should redirect to /admin/users/<id>');
+
+            # Check if user appears in list
+            $mech->get_ok('/admin/users');
+            $mech->content_contains(
+                $test_body_user->email,
+                'user should appear in /admin/users list',
+            );
+
+            # Refresh user object by fetching data from DB
+            $test_body_user = $mech->create_user_ok($test_body_user->email);
+            is $test_body_user->from_body->id, $oxfordshire->id,
+                'user should be assigned to a body';
+        };
+    };
+
+    subtest 'add existing user who has a body' => sub {
+        FixMyStreet::override_config $config, sub {
+            $mech->get_ok('/admin/users');
+            $mech->content_contains(
+                $test_body_user->email,
+                'check user is in /admin/users list initially',
+            );
+
+            $mech->submit_form_ok( { with_fields => {
+                name => $test_body_user->name,
+                email => $test_body_user->email,
+                email_verified => 1,
+            } }, "should submit 'add user' form" );
+
+            $mech->base_like(qr{/admin/users/add},
+                'should redirect to /admin/users/add');
+            $mech->content_contains('User already exists',
+                'should display existence error');
+        };
+    };
+
+    # Revert changes
+    $mech->log_in_ok( $superuser->email );
+}
+
 my %default_perms = (
     "permissions[moderate]" => 'on',
     "permissions[planned_reports]" => undef,

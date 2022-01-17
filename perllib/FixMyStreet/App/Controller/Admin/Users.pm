@@ -142,31 +142,59 @@ sub add : Local : Args(0) {
         $phone = $parsed_phone if $parsed_phone;
     }
 
-    my $existing_email = $email_v && $c->model('DB::User')->find( { email => $email } );
-    my $existing_phone = $phone_v && $c->model('DB::User')->find( { phone => $phone } );
-    if ($existing_email || $existing_phone) {
-        $c->stash->{field_errors}->{username} = _('User already exists');
+    # A user without a body does not appear in the /admin/users list for
+    # a given cobrand. For non-superusers, a 'body' parameter is guaranteed to
+    # be passed through to this code path so a staff user is always created.
+    # Additionally, if an existing user is submitted, we check if they have a
+    # body; if not, we assign a body to that user so they
+    # will be visible to admin on /admin/users. (If the user already has a
+    # body, we simply return an existence error.)
+    my $from_body = $c->get_param('body') || undef;
+
+    my $user_from_email = $email_v && $c->model('DB::User')->find( { email => $email } );
+    my $user_from_phone = $phone_v && $c->model('DB::User')->find( { phone => $phone } );
+    my $user = $user_from_email || $user_from_phone;
+
+    my $log_string;
+    if ($user) {
+        if ($user->from_body) {
+            $c->stash->{field_errors}->{username} = _('User already exists');
+        }
+
+        $c->stash->{user} = $user;
+
+        return if %{$c->stash->{field_errors}};
+
+        # Assign body to user
+        $user->from_body($from_body);
+        $user->update;
+
+        $log_string =  'edit';
+    }
+    else {
+        $user = $c->model('DB::User')->new( {
+            name => $c->get_param('name'),
+            email => $email ? $email : undef,
+            email_verified => $email && $email_v ? 1 : 0,
+            phone => $phone || undef,
+            phone_verified => $phone && $phone_v ? 1 : 0,
+            from_body => $from_body,
+            flagged => $c->get_param('flagged') || 0,
+            # Only superusers can create superusers
+            is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
+        } );
+
+        $c->stash->{user} = $user;
+
+        return if %{$c->stash->{field_errors}};
+
+        $c->forward('user_cobrand_extra_fields');
+        $user->insert;
+
+        $log_string = 'add';
     }
 
-    my $user = $c->model('DB::User')->new( {
-        name => $c->get_param('name'),
-        email => $email ? $email : undef,
-        email_verified => $email && $email_v ? 1 : 0,
-        phone => $phone || undef,
-        phone_verified => $phone && $phone_v ? 1 : 0,
-        from_body => $c->get_param('body') || undef,
-        flagged => $c->get_param('flagged') || 0,
-        # Only superusers can create superusers
-        is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
-    } );
-    $c->stash->{user} = $user;
-
-    return if %{$c->stash->{field_errors}};
-
-    $c->forward('user_cobrand_extra_fields');
-    $user->insert;
-
-    $c->forward( '/admin/log_edit', [ $user->id, 'user', 'add' ] );
+    $c->forward( '/admin/log_edit', [ $user->id, 'user', $log_string ] );
 
     $c->flash->{status_message} = _("Updated!");
     $c->detach('post_edit_redirect', [ $user ]);
