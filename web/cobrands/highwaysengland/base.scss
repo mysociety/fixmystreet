@@ -208,11 +208,6 @@ p.form-error {
     border-top: 8px solid $color-he-darkblue;
     padding-top: 1em;
     padding-bottom: 1em;
-
-    .powered-by-fms {
-        display: block;
-        margin-top: 1em;
-    }
 }
 
 .olMapViewport {
@@ -222,3 +217,5 @@ p.form-error {
 .olLayerGrid, .olBackBuffer {
     opacity: 0.3;
 }
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
