@@ -188,6 +188,7 @@ FixMyStreet::override_config {
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
     };
     subtest 'No reporting/requesting if open request' => sub {
+        $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->content_contains('Report a recycling bin collection as missed');
         $mech->content_contains('Request a new recycling bin');
@@ -281,6 +282,7 @@ FixMyStreet::override_config {
         is $report->title, 'Request new Both food bins';
     };
     subtest 'Request food bags from front page' => sub {
+        $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('About you');
@@ -295,11 +297,13 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bins arrive typically within two weeks');
     },
     subtest 'Request food bins from front page' => sub {
+        $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
         $mech->content_contains('name="service-FOOD_BINS" value="1"');
     };
     subtest 'Request bins from front page' => sub {
+        $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-420' => 1 } });
         $mech->content_contains('name="container-420" value="1"');
@@ -471,6 +475,18 @@ FixMyStreet::override_config {
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 360L Black bin';
         $b->mock('Premises_Attributes_Get', sub { [] });
+    };
+    subtest 'Only staff see "Request new bin" link' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_lacks("Request a new bin");
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_lacks("Request a new bin");
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_contains("Request a new bin") or diag $mech->content;
+        $mech->log_out_ok;
     };
 };
 
