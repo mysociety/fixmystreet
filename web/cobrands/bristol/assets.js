@@ -78,4 +78,10 @@ fixmystreet.assets.add(options, {
     filter_value: 'S180'
 });
 
+fixmystreet.assets.add(options, {
+    asset_group: "Bus Stops",
+    asset_item: 'bus stop',
+    filter_value: ['PT01', 'PT02', 'PT03']
+});
+
 })();
