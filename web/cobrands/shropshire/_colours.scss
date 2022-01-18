@@ -46,6 +46,7 @@ $mappage-header-height: 64px;
     box-shadow: none;
 
     &:focus {
+        outline: none; // hide browser default outline, to match screenshot in branding guidelines
         border: 1px solid #52A8EC;
         box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
     }

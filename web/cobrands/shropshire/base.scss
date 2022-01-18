@@ -119,9 +119,10 @@ label {
 }
 
 .multi-select-button {
+    // Focus style, copied from shropshire-form-input() mixin
     &:focus {
         outline: none;
-        border-color: #52A8EC;
+        border: 1px solid #52A8EC;
         box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
     }
 }
