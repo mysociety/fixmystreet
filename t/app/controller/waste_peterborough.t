@@ -281,8 +281,14 @@ FixMyStreet::override_config {
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->title, 'Request new Both food bins';
     };
-    subtest 'Request food bags from front page' => sub {
-        $mech->log_in_ok($staff->email);
+    subtest 'Food bags link appears on front page when logged out' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
+        $mech->content_contains('About you');
+    };
+    subtest 'Request food bags from front page as non-staff' => sub {
+        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('About you');
@@ -295,7 +301,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Request sent');
         $mech->content_contains('Food bags will be supplied by the crew on your next collection day.');
         $mech->content_lacks('Bins arrive typically within two weeks');
-    },
+    };
     subtest 'Request food bins from front page' => sub {
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');

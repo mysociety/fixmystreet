@@ -9,7 +9,8 @@
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
   [% END %]
-  [% IF any_request_allowed %]
+  [% UNLESS waste_features.request_disabled %]
+    [% SET food_bags_link_shown = 1 %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?bags_only=1">
             <input type="hidden" name="token" value="[% csrf_token %]">
