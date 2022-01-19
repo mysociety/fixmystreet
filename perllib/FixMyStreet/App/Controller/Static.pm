@@ -27,6 +27,7 @@ sub fun : Global : Args(0) { $_[1]->detach('about_redirect') }
 sub posters : Global : Args(0) { $_[1]->detach('about_redirect') }
 sub iphone : Global : Args(0) { $_[1]->detach('about_redirect') }
 sub council : Global : Args(0) { $_[1]->detach('about_redirect') }
+sub noise : Global : Args(0) { $_[1]->detach('about_redirect') }
 
 sub unresponsive : Global : Args(0) {
     my ( $self, $c ) = @_;

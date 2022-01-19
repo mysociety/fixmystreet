@@ -223,4 +223,24 @@ select.form-error {
   }
 }
 
-@import "../sass/noise";
+.lbh-announcement {
+    padding: 1rem;
+	margin: 1rem 0;
+    border-top: 1px solid #84bd00;
+    border-bottom: 1px solid #84bd00;
+    background: rgba(164, 214, 94, 0.2);
+}
+.lbh-announcement--site {
+    background: rgba(164, 214, 94, 0.5);
+}
+.lbh-announcement__title {
+	margin-top: 0;
+	margin-bottom: 0.75rem;
+}
+.lbh-announcement__content p:last-child {
+	margin-bottom: 0;
+}
+.lbh-container {
+    margin-left: auto;
+    margin-right: auto;
+}
