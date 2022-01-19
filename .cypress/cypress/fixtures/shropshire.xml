@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/shropshire?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Street_Gazetteer&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:27700">
+      		<gml:lowerCorner>350835.000000 328722.000000</gml:lowerCorner>
+      		<gml:upperCorner>351443.000000 328974.000000</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+<!-- WARNING: FeatureId item 'fid' not found in typename 'Street_Gazetteer'. -->
+    <gml:featureMember>
+      <ms:Street_Gazetteer>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>351314.000000 328722.000000</gml:lowerCorner>
+        		<gml:upperCorner>351362.000000 328906.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:27700">
+            <gml:posList srsDimension="2">351362.000000 328722.000000 351355.000000 328729.000000 351351.000000 328735.000000 351348.000000 328744.000000 351345.000000 328754.000000 351330.000000 328847.000000 351325.000000 328869.000000 351314.000000 328906.000000 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:SITE_CLASS>PUB</ms:SITE_CLASS>
+        <ms:USRN>28200125</ms:USRN>
+      </ms:Street_Gazetteer>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Street_Gazetteer>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>351269.000000 328899.000000</gml:lowerCorner>
+        		<gml:upperCorner>351277.000000 328965.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:27700">
+            <gml:posList srsDimension="2">351277.000000 328899.000000 351271.000000 328942.000000 351269.000000 328965.000000 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:SITE_CLASS>PUB</ms:SITE_CLASS>
+        <ms:USRN>28200190</ms:USRN>
+      </ms:Street_Gazetteer>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Street_Gazetteer>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>350835.000000 328855.000000</gml:lowerCorner>
+        		<gml:upperCorner>351425.000000 328966.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:27700">
+            <gml:posList srsDimension="2">350835.000000 328900.000000 350840.000000 328890.000000 350845.000000 328883.000000 350856.000000 328872.000000 350862.000000 328869.000000 350867.000000 328867.000000 350869.000000 328866.000000 350877.000000 328864.000000 350920.000000 328857.000000 350921.000000 328857.000000 350953.000000 328857.000000 351000.000000 328861.000000 351007.000000 328860.000000 351021.000000 328859.000000 351039.000000 328857.000000 351046.000000 328856.000000 351105.000000 328855.000000 351111.000000 328855.000000 351117.000000 328857.000000 351119.000000 328858.000000 351137.000000 328881.000000 351143.000000 328885.000000 351147.000000 328886.000000 351153.000000 328888.000000 351179.000000 328888.000000 351189.000000 328887.000000 351207.000000 328887.000000 351247.000000 328894.000000 351248.000000 328894.000000 351277.000000 328899.000000 351293.000000 328901.000000 351305.000000 328902.000000 351314.000000 328906.000000 351319.000000 328909.000000 351337.000000 328924.000000 351343.000000 328928.000000 351348.000000 328931.000000 351360.000000 328936.000000 351381.000000 328945.000000 351406.000000 328957.000000 351425.000000 328966.000000 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:SITE_CLASS>PUB</ms:SITE_CLASS>
+        <ms:USRN>28200299</ms:USRN>
+      </ms:Street_Gazetteer>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Street_Gazetteer>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>351360.000000 328760.000000</gml:lowerCorner>
+        		<gml:upperCorner>351391.000000 328936.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:27700">
+            <gml:posList srsDimension="2">351360.000000 328936.000000 351365.000000 328915.000000 351377.000000 328844.000000 351391.000000 328760.000000 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:SITE_CLASS>PUB</ms:SITE_CLASS>
+        <ms:USRN>28200342</ms:USRN>
+      </ms:Street_Gazetteer>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Street_Gazetteer>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>351007.000000 328860.000000</gml:lowerCorner>
+        		<gml:upperCorner>351343.000000 328974.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:27700">
+            <gml:posList srsDimension="2">351007.000000 328860.000000 351013.000000 328897.000000 351015.000000 328902.000000 351020.000000 328909.000000 351034.000000 328920.000000 351046.000000 328928.000000 351073.000000 328945.000000 351108.000000 328964.000000 351122.000000 328970.000000 351140.000000 328974.000000 351155.000000 328974.000000 351185.000000 328970.000000 351186.000000 328970.000000 351269.000000 328965.000000 351287.000000 328964.000000 351298.000000 328962.000000 351303.000000 328960.000000 351320.000000 328950.000000 351343.000000 328928.000000 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:SITE_CLASS>PUB</ms:SITE_CLASS>
+        <ms:USRN>28200439</ms:USRN>
+      </ms:Street_Gazetteer>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Street_Gazetteer>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>351412.000000 328894.000000</gml:lowerCorner>
+        		<gml:upperCorner>351443.000000 328966.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:27700">
+            <gml:posList srsDimension="2">351425.000000 328966.000000 351423.000000 328958.000000 351443.000000 328902.000000 351412.000000 328894.000000 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:SITE_CLASS>PUB</ms:SITE_CLASS>
+        <ms:USRN>34800122</ms:USRN>
+      </ms:Street_Gazetteer>
+    </gml:featureMember>
+</wfs:FeatureCollection>
+

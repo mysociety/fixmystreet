@@ -124,7 +124,8 @@ if ($opt->test_fixtures) {
         { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council' },
         { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks' ], name => 'TfL' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Oxfordshire County Council' },
-        { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council' }
+        { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council' },
+        { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});

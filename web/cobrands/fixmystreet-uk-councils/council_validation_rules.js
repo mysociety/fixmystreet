@@ -63,5 +63,11 @@ body_validation_rules = {
           required: true,
           maxlength: 40
         }
+    },
+    'Shropshire Council': {
+        phone: {
+            validUkPhone: true,
+            maxlength: 20
+        }
     }
 };
