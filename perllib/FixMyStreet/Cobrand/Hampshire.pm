@@ -12,6 +12,7 @@ sub council_area_id { return 2227; } # https://mapit.mysociety.org/area/2227.htm
 sub council_area { return 'Hampshire'; }
 sub council_name { return 'Hampshire County Council'; }
 sub council_url { return 'hampshire'; }
+sub base_url { return FixMyStreet->config('BASE_URL'); }
 
 # Created with bin/fixmystreet.com/generate_council_location
 sub disambiguate_location {
