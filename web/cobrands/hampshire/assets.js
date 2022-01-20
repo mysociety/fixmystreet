@@ -29,10 +29,16 @@ fixmystreet.assets.add(defaults, {
             TYPENAME: "Road_Sections"
         }
     },
-    usrn: {
+    usrn: [
+        {
         attribute: 'SITE_CODE',
         field: 'site_code'
-    },
+        },
+        {
+        attribute: 'CENTRAL_ASSET_ID',
+        field: 'central_asset_id'
+        }
+    ],
     road: true,
     asset_item: 'road',
     asset_type: 'road',
