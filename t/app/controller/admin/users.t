@@ -383,8 +383,7 @@ for my $test (
                 'user should appear in /admin/users list',
             );
 
-            # Refresh user object by fetching data from DB
-            $test_body_user = $mech->create_user_ok($test_body_user->email);
+            $test_body_user->discard_changes;
             is $test_body_user->from_body->id, $oxfordshire->id,
                 'user should be assigned to a body';
         };
@@ -410,6 +409,34 @@ for my $test (
                 'should display existence error');
         };
     };
+
+    subtest 'remove staff status from user' => sub {
+        FixMyStreet::override_config $config, sub {
+            $oxfordshireuser->user_body_permissions->create(
+                {   body            => $oxfordshire,
+                    permission_type => 'user_assign_body',
+                }
+            );
+
+            $mech->get_ok( '/admin/users/' . $test_body_user->id );
+
+            $mech->submit_form_ok(
+                { with_fields => { body => undef } },
+                'should submit "edit user" form',
+            );
+            $mech->base_like( qr{/admin/users},
+                'should redirect to /admin/users' );
+
+            $mech->content_lacks( $test_body_user->email,
+                'user should no longer be in /admin/users list' );
+
+            # Refresh user object by fetching data from DB
+            $test_body_user = $mech->create_user_ok( $test_body_user->email );
+            is $test_body_user->from_body, undef,
+                'user should no longer have body';
+        };
+    };
+
 
     # Revert changes
     $mech->log_in_ok( $superuser->email );
