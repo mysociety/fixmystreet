@@ -323,7 +323,7 @@ priority’ must be ticked</span>
 
 - You can click and drag a pin at any time to change the report’s specified location.
 - When viewing a report on the ground, staff with the appropriate permissions may click
-‘set to my current location’. This will reset the co-ordinates of the issue to reflect a more accurate placement. 
+‘set to my current location’. This will reset the co-ordinates of the issue to reflect a more accurate placement.
 
 </div>
 
@@ -507,8 +507,7 @@ First create the basic user account by inputting a name and email address, plus 
 details desired. Once this is done and you have saved the input, you can edit the account to assign
 any roles or permissions required.
 
-You can use the same form to create a user account for a resident or a member of staff, so tick
-‘staff user’ if you wish to create an admin account.
+The 'Staff' checkbox cannot be unchecked; this guarantees a new user will be a staff user, and will be automatically assigned to the correct body.
 
 The new staff user can then log in via the normal method.
 
