@@ -101,6 +101,14 @@ sub geocode_postcode {
         return $parks_lookup;
     }
 
+    # split postcode with Lewisham
+    if ($s =~ /BR1\s*4EY/i) {
+        return {
+            latitude => 51.4190772,
+            longitude => 0.0117805,
+        };
+    }
+
     return $self->next::method($s);
 }
 
