@@ -546,6 +546,23 @@ FixMyStreet::override_config {
         restore_time();
     };
 
+    subtest 'test reporting with an existing closed event' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetEventsForObject', sub { [
+            {
+                ServiceId => '542',
+                EventDate => { DateTime => '2020-05-18T17:00:00Z' },
+                ResolvedDate => { DateTime => '2020-05-18T19:00:00Z' },
+                EventTypeId => '2100',
+            },
+        ] } );
+        set_fixed_time('2020-05-18T20:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A food waste collection has been reported as missed');
+        $mech->content_lacks('Report a food waste collection');
+        restore_time();
+    };
+
     subtest 'test requesting garden waste' => sub {
 		my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', sub {

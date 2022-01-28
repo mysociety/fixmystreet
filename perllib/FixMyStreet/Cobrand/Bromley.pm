@@ -835,7 +835,12 @@ sub bin_services_for_address {
             $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-            $row->{report_open} = $events->{missed}->{$service_id} || $events_unit->{missed}->{$service_id};
+            my $missed_events = [
+                @{$events->{missed}->{$service_id} || []},
+                @{$events_unit->{missed}->{$service_id} || []},
+            ];
+            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
+            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
         }
         push @out, $row;
     }
@@ -935,8 +940,9 @@ sub _parse_events {
         $type = 'request' if $event_type == 2104;
         $type = 'missed' if 2095 <= $event_type && $event_type <= 2103;
 
+        # Only care about open requests/enquiries
         my $closed = _closed_event($_);
-        next if $closed;
+        next if $type ne 'missed' && $closed;
 
         if ($type eq 'request') {
             my $data = $_->{Data} ? $_->{Data}{ExtensibleDatum} : [];
@@ -956,12 +962,28 @@ sub _parse_events {
         } elsif ($type eq 'missed') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
             my $service_id = $_->{ServiceId};
-            $events->{missed}->{$service_id} = $report ? { report => $report } : 1;
+            my $data = {
+                closed => $closed,
+                date => construct_bin_date($_->{EventDate}),
+            };
+            $data->{report} = $report if $report;
+            push @{$events->{missed}->{$service_id}}, $data;
         } else { # General enquiry of some sort
             $events->{enquiry}->{$event_type} = 1;
         }
     }
     return $events;
+}
+
+sub _events_since_date {
+    my ($self, $last_date, $events) = @_;
+    my @since_events = grep { $_->{date} >= $last_date } @$events;
+    my @closed = grep { $_->{closed} } @since_events;
+    my @open = grep { !$_->{closed} } @since_events;
+    return {
+        @open ? (open => $open[0]) : (),
+        @closed ? (closed => $closed[0]) : (),
+    };
 }
 
 sub _schedule_object {

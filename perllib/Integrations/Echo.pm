@@ -401,6 +401,7 @@ sub GetEventsForObject {
         return [ {
             # Missed collection for service 542 (food waste)
             EventTypeId => 2100,
+            EventDate => { DateTime => "2020-05-18T17:00:00Z" },
             ServiceId => 542,
         }, { # And a gate not closed
             EventTypeId => 2118,
@@ -423,6 +424,7 @@ sub GetEventsForObject {
         return [ {
             # Missed collection for service 537 (paper)
             EventTypeId => 2099,
+            EventDate => { DateTime => "2020-05-27T16:00:00Z" },
             ServiceId => 537,
         } ] if $type eq 'ServiceUnit' && $id == 1002;
         return [];
