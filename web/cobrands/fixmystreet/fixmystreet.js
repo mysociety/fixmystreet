@@ -1382,14 +1382,13 @@ fixmystreet.back_to_reports_list = function(e, report_list_url, map_state, set_m
 };
 
 // TODO: Work out when to actually call this function!
-fixmystreet.update_send_report_button = function() {
+fixmystreet.update_submit_report_button = function() {
     // TODO: Work out how to set these variables properly,
     // based on the current cobrand/user/body etc.
     var report_will_be_sent = True; // might get this from fixmystreet.bodies ?
     var report_will_be_published = True;
 
-    // TODO: Work out how to find the submit button.
-    var submit_button = $('#');
+    var submit_button = $('.js-submit-report');
 
     if ( report_will_be_published && report_will_be_sent ) {
         submit_button.text( translation_strings.submit_report_button.send_and_publish );
@@ -1397,6 +1396,24 @@ fixmystreet.update_send_report_button = function() {
         submit_button.text( translation_strings.submit_report_button.publish );
     } else if ( report_will_be_sent ) {
         submit_button.text( translation_strings.submit_report_button.send );
+    }
+};
+
+// TODO: Work out when to actually call this function!
+fixmystreet.update_submit_update_button = function() {
+    // TODO: Work out how to set these variables properly,
+    // based on the current cobrand/user/body etc.
+    var update_will_be_sent = True; // might get this from fixmystreet.bodies ?
+    var update_will_be_published = True;
+
+    var submit_button = $('.js-submit-update');
+
+    if ( update_will_be_published && update_will_be_sent ) {
+        submit_button.text( translation_strings.submit_update_button.send_and_publish );
+    } else if ( update_will_be_published ) {
+        submit_button.text( translation_strings.submit_update_button.publish );
+    } else if ( update_will_be_sent ) {
+        submit_button.text( translation_strings.submit_update_button.send );
     }
 };
 
