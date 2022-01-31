@@ -276,7 +276,7 @@ sub update_contact : Private {
     $contact->send_method( $c->get_param('send_method') );
 
     # Set flags in extra to the appropriate values
-    foreach (qw(photo_required open311_protect updates_disallowed reopening_disallowed assigned_users_only anonymous_allowed)) {
+    foreach (qw(photo_required open311_protect updates_disallowed reopening_disallowed assigned_users_only anonymous_allowed prefer_if_multiple)) {
         if ( $c->get_param($_) ) {
             $contact->set_extra_metadata( $_ => 1 );
         } else {
