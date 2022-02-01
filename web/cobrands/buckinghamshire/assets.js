@@ -4,9 +4,33 @@ if (!fixmystreet.maps) {
     return;
 }
 
+// ArcGIS wants to receive the bounding box as a 'geometry' parameter, not 'bbox'
+var format = new OpenLayers.Format.QueryStringFilter();
+OpenLayers.Protocol.BuckinghamshireHTTP = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    filterToParams: function(filter, params) {
+        params = format.write(filter, params);
+        params.geometry = params.bbox;
+        delete params.bbox;
+        return params;
+    },
+    CLASS_NAME: "OpenLayers.Protocol.BuckinghamshireHTTP"
+});
+
+// This is required so that the found/not found actions are fired on category
+// select and pin move rather than just on asset select/not select.
+OpenLayers.Layer.BuckinghamshireVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.BuckinghamshireVectorAsset'
+});
+
 var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
 var tilma_url = "https://" + wfs_host + "/mapserver/bucks";
-var proxy_base_url = "https://" + wfs_host + "/proxy/bcc/";
+var drains_proxy_url = "https://" + wfs_host + "/proxy/bcc/drains/wfs";
 
 var defaults = {
     http_options: {
@@ -170,7 +194,7 @@ fixmystreet.assets.add(labeled_defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: proxy_base_url + 'drains/wfs',
+        url: drains_proxy_url,
         params: {
             propertyName: 'id,msGeometry,asset_id,created,junction_cleaned',
             TYPENAME: "junction_inspections"
@@ -184,7 +208,7 @@ fixmystreet.assets.add(defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: proxy_base_url + 'drains/wfs',
+        url: drains_proxy_url,
         params: {
             propertyName: 'id,msGeometry,asset_id,created,last_inspected',
             TYPENAME: "junctions"
@@ -195,7 +219,7 @@ fixmystreet.assets.add(defaults, {
     select_action: true,
     construct_selected_asset_message: function(asset) {
         var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
-            return elem.fixmystreet.body == "Buckinghamshire Council" && 
+            return elem.fixmystreet.body == "Buckinghamshire Council" &&
             elem.fixmystreet.http_options.format.featureType == 'junction_inspections';
         });
         var inspection;
@@ -394,6 +418,35 @@ fixmystreet.assets.add(defaults, {
             $('.js-reporting-page.js-gritting-notice').addClass('js-reporting-page--skip');
         }
     }
+});
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer',
+        params: {
+            TYPENAME: "BC_CAR_PARKS"
+        }
+    },
+    class: OpenLayers.Layer.BuckinghamshireVectorAsset,
+    select_action: true,
+    actions: {
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+    },
+    asset_group: "Car park issue",
+    asset_item: "car park",
+    asset_type: "area",
+    asset_item_message: "Pick a <b class=\"asset-ITEM\">ITEM</b> on the map &raquo;<br>Only car parks marked on the map with a grey box are maintained by Buckinghamshire",
+    no_asset_msg_id: '#js-not-council-car-park',
+    stylemap: new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fillColor: "#BBB",
+            fillOpacity: 0.5,
+            strokeWidth: 2,
+            strokeColor: '#666666'
+        })
+    }),
+    protocol_class: OpenLayers.Protocol.BuckinghamshireHTTP
 });
 
 })();
