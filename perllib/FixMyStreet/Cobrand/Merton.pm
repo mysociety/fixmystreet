@@ -36,7 +36,8 @@ sub allow_anonymous_reports { 'button' }
 sub anonymous_account {
     my $self = shift;
     return {
-        email => $self->feature('anonymous_account') . '@fixmystreet.merton.gov.uk',
+        # Merton requested something other than @merton.gov.uk due to their CRM misattributing reports to staff.
+        email => $self->feature('anonymous_account') . '@anonymous-fms.merton.gov.uk',
         name => 'Anonymous user',
     };
 }
