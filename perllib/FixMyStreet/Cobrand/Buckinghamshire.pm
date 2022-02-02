@@ -31,6 +31,16 @@ sub disambiguate_location {
     };
 }
 
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+
+    if ($result->{display_name} =~ /Stoke Road, Stoke Poges/) {
+        # Tweak the location of this one particular result to be on the correct
+        # side of the Slough/Bucks boundary
+        $result->{lat} = "51.523";
+    }
+}
+
 sub on_map_default_status { ('open', 'fixed') }
 
 sub pin_colour {
