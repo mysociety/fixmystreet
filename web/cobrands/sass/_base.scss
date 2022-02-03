@@ -1827,12 +1827,17 @@ html.js #map .noscript {
 #fms_pan_zoom_zoomout {
   position: absolute;
   cursor: pointer;
-  width: 36px;
+  width: 44px;
   height: 0;
   padding-top: 36px;
   overflow: hidden;
-  @include svg-background-image("/cobrands/fixmystreet/images/fms-pan-zoom");
-  background-size: 156px 72px;
+  @include svg-background-image("/cobrands/fixmystreet/images/fms-pan-zoom-mobile");
+  @media (min-width: 48em) {
+    @include svg-background-image("/cobrands/fixmystreet/images/fms-pan-zoom");
+    width: 36px;
+    background-size: 156px 72px;
+  }
+  background-size: 172px 72px;
   background-repeat: no-repeat;
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
@@ -1873,13 +1878,20 @@ html.js #map .noscript {
   padding-top: 44px;
   #{$right}: 0;
   top: 0;
+
+  @media (min-width: 48em) {
+    background-position: -84px 0;
+  }
 }
 #ns_fms_pan_zoom_zoomout,
 #fms_pan_zoom_zoomout {
-  background-position: -120px 100%;
+  background-position: -128px 100%;
   padding-top: 44px;
   #{$right}: 0;
   top: 44px;
+  @media (min-width: 48em) {
+    background-position: -120px 100%;
+  }
 }
 
 .map-links {
