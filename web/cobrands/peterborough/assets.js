@@ -194,6 +194,50 @@ fixmystreet.assets.add(light_defaults, {
 
 var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/';
 
+var bin_defaults = $.extend(true, {}, arcgis_defaults, {
+    http_options: {
+        url: url_base + '0/query?',
+        params: {
+            outFields: 'OBJECTID,Reference,Location',
+        }
+    },
+    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    select_action: true,
+    actions: {
+        asset_found: fixmystreet.message_controller.asset_found,
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+    },
+    attributes: {
+        asset_details: function() {
+            var a = this.attributes;
+            return a.Reference + ", " + a.Location;
+        },
+        central_asset_id: 'OBJECTID'
+    },
+    asset_id_field: 'OBJECTID',
+    asset_type: 'spot'
+});
+
+fixmystreet.assets.add(bin_defaults, {
+    http_options: {
+      params: {
+        where: "Type='Litter Bin'"
+      }
+    },
+    asset_category: 'Litter bin',
+    asset_item: 'litter bin'
+});
+
+fixmystreet.assets.add(bin_defaults, {
+    http_options: {
+      params: {
+        where: "Type='Dog Waste Bin'"
+      }
+    },
+    asset_category: 'Dog bin',
+    asset_item: 'dog waste bin'
+});
+
 var flytipping_defaults = $.extend(true, {}, arcgis_defaults, {
     http_options: {
       params: {
