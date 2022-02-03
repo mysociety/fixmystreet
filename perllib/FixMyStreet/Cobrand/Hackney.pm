@@ -17,6 +17,8 @@ sub council_name { return 'Hackney Council'; }
 sub council_url { return 'hackney'; }
 sub send_questionnaires { 0 }
 
+sub include_time_in_update_alerts { 1 }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

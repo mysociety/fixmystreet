@@ -118,6 +118,7 @@ subtest "check moderation label uses correct name" => sub {
 $_->delete for @reports;
 
 my $system_user = $mech->create_user_ok('system_user@example.org');
+my $dt = DateTime->now->set(hour => 13, minute => 0);
 
 my ($p) = $mech->create_problems_for_body(1, $hackney->id, '', { cobrand => 'hackney' });
 my $alert = FixMyStreet::DB->resultset('Alert')->create( {
@@ -125,6 +126,7 @@ my $alert = FixMyStreet::DB->resultset('Alert')->create( {
     alert_type => 'new_updates',
     user       => $user,
     cobrand    => 'hackney',
+    whensubscribed => $dt,
 } )->confirm;
 
 FixMyStreet::DB->resultset('Alert')->create( {
@@ -132,10 +134,11 @@ FixMyStreet::DB->resultset('Alert')->create( {
     alert_type => 'new_updates',
     user       => $phone_user,
     cobrand    => 'hackney',
+    whensubscribed => $dt,
 } )->confirm;
 
 subtest "sends branded alert emails" => sub {
-    $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef);
+    $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef, { confirmed => $dt });
     $mech->clear_emails_ok;
 
     my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
@@ -163,7 +166,9 @@ subtest "sends branded alert emails" => sub {
     like $text_content, qr{Your report \($id\) has had an update; to view: http://hackney.example.org/report/$id\n\nTo stop: http://hackney.example.org/A/[A-Za-z0-9]+};
     my $email = $mech->get_email;
     ok $email, "got an email";
-    like $mech->get_text_body_from_email($email), qr/Hackney Council/, "emails are branded";
+    my $text = $mech->get_text_body_from_email($email);
+    like $text, qr/Hackney Council/, "emails are branded";
+    like $text, qr/13:00 today/, "date is included";
 };
 
 
