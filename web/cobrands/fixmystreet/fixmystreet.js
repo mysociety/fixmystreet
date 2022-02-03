@@ -1486,6 +1486,7 @@ fixmystreet.fetch_reporting_data = function() {
             $('body').removeClass('with-notes');
             return;
         }
+        $('#side-form-error').hide();
         $('#side-form').show();
         var selected = fixmystreet.reporting.selectedCategory(),
             old_category_group = selected.group || $('#filter_group').val() || '',
