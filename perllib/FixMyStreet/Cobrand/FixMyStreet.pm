@@ -162,6 +162,18 @@ sub munge_report_new_contacts {
 
 }
 
+sub munge_unmixed_category_groups {
+    my ($self, $groups, $opts) = @_;
+    return unless $opts->{reporting};
+    my $bodies = $self->{c}->stash->{bodies};
+    my %bodies = map { $_->name => 1 } values %$bodies;
+    if ($bodies{"Buckinghamshire Council"}) {
+        my @category_groups = grep { $_->{name} ne 'Car park issue' } @$groups;
+        my ($car_park_group) = grep { $_->{name} eq 'Car park issue' } @$groups;
+        @$groups = (@category_groups, $car_park_group);
+    }
+}
+
 sub munge_load_and_group_problems {
     my ($self, $where, $filter) = @_;
 

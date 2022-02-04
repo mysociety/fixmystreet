@@ -776,6 +776,9 @@ sub stash_category_groups : Private {
     push @category_groups, { name => _('Other'), categories => $category_groups{_('Other')} } if ($category_groups{_('Other')});
     push @category_groups, { name => _('Multiple Groups'), categories => $category_groups{_('Multiple Groups')} } if ($category_groups{_('Multiple Groups')});
     unshift @category_groups, { name => _('No Group'), categories => $category_groups{_('No Group')} } if $category_groups{_('No Group')};
+
+    $c->cobrand->call_hook(munge_unmixed_category_groups => \@category_groups, $opts);
+
     $c->stash->{category_groups}  = \@category_groups;
 }
 
