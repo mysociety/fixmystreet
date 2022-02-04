@@ -1202,6 +1202,16 @@ sub contacts_to_bodies : Private {
 
     my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
 
+    # If there are multiple contacts for different bodies then the default
+    # behaviour is to send to all bodies. However if a contact has the
+    # "prefer_if_multiple" checkbox checked then only send reports to that contact.
+    # This is useful for e.g. routing reports to parishes when the parent council
+    # has a contact of the same name.
+    my @preferred_contacts = grep { $_->get_extra_metadata('prefer_if_multiple') } @contacts;
+    if (scalar @preferred_contacts) {
+        @contacts = @preferred_contacts;
+    }
+
     # check that the front end has not indicated that we should not send to a
     # body. This is usually because the asset code thinks it's not near enough
     # to a road.

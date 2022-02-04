@@ -510,8 +510,23 @@ foreach my $test (
         extra_fields => { single_body_only => 'National Highways' },
         email_count => 1,
     },
+    {
+        desc => "test prefer_if_multiple only sends to one body",
+        category => 'Street lighting',
+        councils => [ 2326 ],
+        extra_fields => {},
+        email_count => 1,
+        setup => sub {
+            # $contact10 is Cheltenham Borough Council (2326)
+            $contact10->set_extra_metadata(prefer_if_multiple => 1);
+            $contact10->update;
+        },
+    },
 ) {
     subtest $test->{desc} => sub {
+        if ($test->{setup}) {
+            $test->{setup}->();
+        }
 
         # check that the user does not exist
         my $test_email = 'test-2@example.com';

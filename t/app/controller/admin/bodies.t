@@ -292,6 +292,16 @@ subtest 'test assigned_users_only setting' => sub {
     is $contact->get_extra_metadata('assigned_users_only'), 1;
 };
 
+subtest 'test prefer_if_multiple setting' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        prefer_if_multiple => 1,
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is $contact->get_extra_metadata('prefer_if_multiple'), 1;
+};
+
 subtest 'updates disabling' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
