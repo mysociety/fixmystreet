@@ -237,6 +237,7 @@ body.twothirdswidthpage {
 #ns_fms_pan_zoom,
 #fms_pan_zoom {
     top: 32px;
+    right: 0;
 }
 
 #ns_fms_pan_zoom_zoomin,
@@ -251,6 +252,7 @@ body.twothirdswidthpage {
 
 .map-links {
     top: 32px + 44px + 44px;
+    right: 30px;
 }
 
 // Admin specific changes

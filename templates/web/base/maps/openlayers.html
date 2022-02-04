@@ -59,18 +59,18 @@
       [% aerial = c.req.params.aerial %]
       [% SET aerial = 1 IF c.cobrand.moniker == 'zurich' AND NOT c.req.params.aerial.defined %]
       [% IF aerial %]
-        <a class="map-layer-toggle roads" rel="nofollow" href="[% c.uri_with( { aerial => 0 } ) %]">[% loc('Road map') %]</a>
+        <a class="map-layer-toggle roads" rel="nofollow" href="[% c.uri_with( { aerial => 0 } ) %]"><span class="map-link-label">[% loc('Road map') %]</span></a>
       [% ELSE %]
-        <a class="map-layer-toggle aerial" rel="nofollow" href="[% c.uri_with( { aerial => 1 } ) %]">[% loc('Aerial map') %]</a>
+        <a class="map-layer-toggle aerial" rel="nofollow" href="[% c.uri_with( { aerial => 1 } ) %]"><span class="map-link-label">[% loc('Aerial map') %]</span></a>
       [% END %]
     [% END %]
   [% END %]
 
   [% IF page == "around" %]
     [% IF c.req.params.no_pins %]
-      <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 0 } ) %]">[% loc('Show pins') %]</a>
+      <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 0 } ) %]"><span class="map-link-label">[% loc('Show pins') %]</span></a>
     [% ELSE %]
-      <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 1 } ) %]">[% loc('Hide pins') %]</a>
+      <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 1 } ) %]"><span class="map-link-label">[% loc('Hide pins') %]</span></a>
     [% END %]
   [% END %]
 </div>

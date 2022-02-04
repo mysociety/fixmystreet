@@ -560,14 +560,28 @@ body.authpage {
 .map-links {
   $panzoom-height: 36px + 36px + 36px + 22px + 44px + 44px;
   $panzoom-gutter: 22px;
-  $panzoom-indent: (0.5 * 16px); // 0.5em
+  $panzoom-indent: 10px;
   $zoom-indent: 30px;
+  $maplink-button-height: 36px;
 
   #{$right}: $panzoom-indent + $zoom-indent;
   top: $panzoom-indent + $panzoom-height;
 
   & > * {
     margin-top: $panzoom-gutter;
+
+    &:hover,
+    &:focus {
+      width: auto;
+
+      .map-link-label {
+        line-height: $maplink-button-height;
+        position: static;
+        width: auto;
+        height: auto;
+        padding: flip(0 40px 0 10px, 0 10px 0 40px);
+      }
+    }
   }
 
   display: block; // Always shown on desktop

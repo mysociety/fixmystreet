@@ -483,13 +483,14 @@ $.extend(fixmystreet.utils, {
       toggle_base: function(e) {
           e.preventDefault();
           var $this = $(this);
+          var $label = $this.children('.map-link-label');
           var aerial = fixmystreet.maps.base_layer_aerial ? 0 : 1;
-          if ($this.text() == translation_strings.map_aerial) {
-              $this.text(translation_strings.map_roads);
+          if ($label.text() == translation_strings.map_aerial) {
+              $label.text(translation_strings.map_roads);
               $(this).toggleClass('roads aerial');
               fixmystreet.map.setBaseLayer(fixmystreet.map.layers[aerial]);
           } else {
-              $this.text(translation_strings.map_aerial);
+              $label.text(translation_strings.map_aerial);
               $(this).toggleClass('roads aerial');
               fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1-aerial]);
           }
@@ -917,15 +918,16 @@ $.extend(fixmystreet.utils, {
         }
 
         $('.map-pins-toggle').on('click', function(e) {
+            var $label = $(this).children('.map-link-label');
             e.preventDefault();
-            if (this.innerHTML == translation_strings.show_pins) {
+            if ($label.html() == translation_strings.show_pins) {
                 fixmystreet.markers.setVisibility(true);
                 fixmystreet.select_feature.activate();
-                $('.map-pins-toggle').html(translation_strings.hide_pins);
-            } else if (this.innerHTML == translation_strings.hide_pins) {
+                $label.html(translation_strings.hide_pins);
+            } else if ($label.html() == translation_strings.hide_pins) {
                 fixmystreet.markers.setVisibility(false);
                 fixmystreet.select_feature.deactivate();
-                $('.map-pins-toggle').html(translation_strings.show_pins);
+                $label.html(translation_strings.show_pins);
             }
             if (typeof ga !== 'undefined') {
                 ga('send', 'event', 'toggle-pins-on-map', 'click');
