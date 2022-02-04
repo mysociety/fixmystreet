@@ -127,6 +127,13 @@ sub open311_contact_meta_override {
     } if $service->{service_name} eq 'Flytipping';
 }
 
+sub munge_category_groups {
+    my ($self, $groups) = @_;
+    my @category_groups = grep { $_->{name} ne 'Car park issue' } @$groups;
+    my ($car_park_group) = grep { $_->{name} eq 'Car park issue' } @$groups;
+    @$groups = (@category_groups, $car_park_group);
+}
+
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
