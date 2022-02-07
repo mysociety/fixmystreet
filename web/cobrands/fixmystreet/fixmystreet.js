@@ -137,8 +137,14 @@ function isR2L() {
             settings.presets = [];
             settings.presets.push({
                 name: settings.allText,
-                all: true
             });
+
+            if ($select.data('all-options')) {
+                settings.presets[0].options = $select.data('all-options');
+            }
+            else {
+                settings.presets[0].all = true;
+            }
         }
 
         if ( $select.data('extra') && $select.data('extra-options') ) {
