@@ -322,10 +322,13 @@ FixMyStreet::override_config {
     }
 
     subtest 'extra data sent with defect update' => sub {
+        my $wh = $mech->create_body_ok(2417, 'Vale of White Horse');
         my $comment = FixMyStreet::DB->resultset('Comment')->first;
+        $mech->create_contact_ok(body_id => $wh->id, category => $comment->problem->category, email => 'whemail@example.org');
         $comment->set_extra_metadata(defect_raised => 1);
         $comment->update;
         $comment->problem->external_id('hey');
+        $comment->problem->bodies_str($wh->id . ',' . $comment->problem->bodies_str);
         $comment->problem->set_extra_metadata(defect_location_description => 'Location');
         $comment->problem->set_extra_metadata(defect_item_category => 'Kerbing');
         $comment->problem->set_extra_metadata(defect_item_type => 'Damaged');
@@ -358,6 +361,7 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[raise_defect]'), 1, 'Defect flag sent with update';
         is $cgi->param('attribute[defect_item_category]'), 'Kerbing';
         is $cgi->param('attribute[extra_details]'), $user2->email . ' TM1 Damaged 100x100';
+        is $cgi->param('service_code'), $comment->problem->category;
 
         # Now set a USRN on the problem (found at submission)
         $comment->problem->push_extra_fields({ name => 'usrn', value => '12345' });

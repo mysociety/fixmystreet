@@ -214,6 +214,26 @@ __PACKAGE__->belongs_to(
   },
 );
 
+# Add a possible join for the Contact objects associated with this report
+# (based on bodies_str and category). Returns all contacts.
+__PACKAGE__->has_many(
+  contacts => "FixMyStreet::DB::Result::Contact",
+  sub {
+    my $args = shift;
+    return {
+        "$args->{foreign_alias}.category" => { -ident => "$args->{self_alias}.category" },
+        -and => [
+            \[ "CAST($args->{foreign_alias}.body_id AS text) = ANY(regexp_split_to_array($args->{self_alias}.bodies_str, ','))" ],
+        ]
+    };
+  },
+  {
+    cascade_copy => 0,
+    cascade_delete => 0,
+    join_type => "LEFT",
+  },
+);
+
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');

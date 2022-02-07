@@ -4,7 +4,6 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use Moo;
-with 'FixMyStreet::Roles::Open311Multi';
 
 use LWP::Simple;
 use URI;
@@ -187,6 +186,11 @@ sub open311_post_send {
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
+
+    my @contacts = $comment->problem->contacts;
+    foreach my $contact (@contacts) {
+        $params->{service_code} = $contact->email if $contact->sent_by_open311;
+    }
 
     if ($comment->get_extra_metadata('defect_raised')) {
         my $p = $comment->problem;
