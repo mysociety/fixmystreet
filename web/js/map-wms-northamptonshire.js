@@ -13,6 +13,7 @@ fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
 fixmystreet.maps.config = function() {
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParserFMS(),
+        new OpenLayers.Control.KeyboardDefaultsFMS(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.PermalinkFMS('map'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })

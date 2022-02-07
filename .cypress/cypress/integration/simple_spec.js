@@ -4,11 +4,11 @@ describe('Clicking the map', function() {
         cy.contains('Go');
         cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
+        cy.server();
+        cy.route('/report/new/ajax*').as('report-ajax');
     });
 
     it('allows me to report a new problem', function() {
-        cy.server();
-        cy.route('/report/new/ajax*').as('report-ajax');
         cy.url().should('include', '/around');
         cy.get('#map_box').click(200, 200);
         cy.wait('@report-ajax');
@@ -41,6 +41,24 @@ describe('Clicking the map', function() {
         cy.get('.map-pins-toggle').should('contain', 'Show pins');
         cy.get('.map-pins-toggle').click();
         cy.get('.map-pins-toggle').should('contain', 'Hide pins');
+    });
+
+    it('lets you navigate by keyboard', function() {
+        cy.get('#keyboard-instructions-first').should('be.visible');
+        cy.get('body').type('{leftArrow}{rightArrow}{upArrow}{downArrow}');
+        cy.get('#keyboard-instructions-drop-pin').should('be.visible');
+        cy.get('body').type('{pageUp}{pageDown}{home}{end}+-');
+        cy.get('body').type(' ');
+        cy.get('#keyboard-instructions-remove-pin').should('be.visible');
+        cy.wait('@report-ajax');
+        cy.get('body').type('{leftArrow}{rightArrow}');
+        cy.get('body').type(' ');
+        cy.get('#keyboard-instructions-drop-pin').should('be.visible');
+
+        cy.visit('/report/15');
+        cy.get('#keyboard-instructions-first').should('be.visible');
+        cy.get('body').type('{leftArrow}');
+        cy.get('#keyboard-instructions-first').should('not.be.visible');
     });
 });
 
@@ -95,7 +113,7 @@ describe('Clicking the "big green banner" on a map page', function() {
     });
 });
 
-describe.only('Clicking on drawers', function() {
+describe('Clicking on drawers', function() {
     it('works on a direct report page', function() {
         cy.visit('/report/15');
         cy.contains('Get updates').click();

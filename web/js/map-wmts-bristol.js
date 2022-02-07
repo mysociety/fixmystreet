@@ -55,6 +55,7 @@ fixmystreet.maps.matrix_ids = [
 fixmystreet.maps.config = function() {
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParserFMS(),
+        new OpenLayers.Control.KeyboardDefaultsFMS(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.PermalinkFMS('map')
     ];

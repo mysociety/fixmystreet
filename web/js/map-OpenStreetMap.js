@@ -3,6 +3,7 @@ fixmystreet.maps.config = function() {
         new OpenLayers.Control.ArgParserFMS(),
         new OpenLayers.Control.AttributionFMS(),
         //new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.KeyboardDefaultsFMS(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.PermalinkFMS('map'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
