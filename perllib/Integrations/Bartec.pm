@@ -198,7 +198,7 @@ sub Jobs_Get {
         },
     });
     my $jobs = force_arrayref($res, 'Jobs');
-    @$jobs = sort { $a->{ScheduledDate} cmp $b->{ScheduledDate} } map { $_->{Job} } @$jobs;
+    @$jobs = sort { $a->{ScheduledStart} cmp $b->{ScheduledStart} } map { $_->{Job} } @$jobs;
     return $jobs;
 }
 
