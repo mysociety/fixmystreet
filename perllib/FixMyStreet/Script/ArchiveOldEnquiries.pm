@@ -16,14 +16,22 @@ my $opts = {
     closed_state => 'closed',
 };
 
+sub filter {
+    my $rs = shift;
+    $rs ||= FixMyStreet::DB->resultset('Problem');
+    my $params = {
+        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
+    };
+    return $rs->to_body($opts->{body})->search($params);
+}
+
 sub query {
     my $rs = shift;
-    return $rs->to_body($opts->{body})->search({
+    return filter($rs)->search({
         -and => [
           lastupdate => { '<', $opts->{email_cutoff} },
           lastupdate => { '>', $opts->{closure_cutoff} },
         ],
-        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
     });
 }
 
@@ -57,10 +65,7 @@ sub close_list {
     my $reports = get_ids_from_csv();
     my $max_reports = scalar @$reports;
 
-    my $rs  = FixMyStreet::DB->resultset("Problem")->search({
-        id => $reports,
-        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
-    })->to_body( $opts->{body});
+    my $rs = filter()->search({ id => $reports });
 
     my $no_message = $rs->search({
         lastupdate => { '<', $opts->{closure_cutoff} },
@@ -117,8 +122,7 @@ sub get_closure_message {
 sub close_with_emails {
     die "Please provide the name of an cobrand for the archive email template" unless $opts->{cobrand};
     die "Please provide an email_cutoff option" unless $opts->{email_cutoff};
-    my $rs = FixMyStreet::DB->resultset('Problem');
-    my @user_ids = query($rs)->search(undef,
+    my @user_ids = query()->search(undef,
     {
         distinct => 1,
         columns  => ['user_id'],
@@ -132,7 +136,7 @@ sub close_with_emails {
     });
 
     my $user_count = $users->count;
-    my $problem_count = query($rs)->search(undef,
+    my $problem_count = query()->search(undef,
     {
         columns  => ['id'],
         rows => $opts->{limit},
@@ -148,9 +152,8 @@ sub close_with_emails {
         }
     }
 
-    my $problems_to_close = $rs->to_body($opts->{body})->search({
+    my $problems_to_close = filter()->search({
         lastupdate => { '<', $opts->{closure_cutoff} },
-        state      => [ FixMyStreet::DB::Result::Problem->open_states() ],
     }, {
         rows => $opts->{limit},
     });
