@@ -9,7 +9,7 @@
       [%~ IF unit.report_locked_out.join(', ').match('NO ACCESS - street') %]
         There is no need to report this as there was no access to your property, your collection has been rescheduled.
       [%~ ELSIF unit.report_locked_out.join(', ').match('ON DAY PRE 5PM') %]
-        [%~ IF c.user.from_body %]
+        [%~ IF c.user.from_body OR c.user.is_superuser %]
           Please call through to Aragon to see if they can return to collect, if not
           <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]" style="display: inline">
             <input type="hidden" name="token" value="[% csrf_token %]">
@@ -42,14 +42,14 @@
   [% END %]
 [% END %]
 
-[% UNLESS waste_features.problem_disabled %]
+[% UNLESS waste_features.problem_disabled OR (open_service_requests.422 AND unit.service_id == 6533) %]
   <form method="post" action="[% c.uri_for_action('waste/problem', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Report a problem with a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
 
-[% IF ( NOT waste_features.request_disabled ) AND c.user_exists AND c.user.from_body AND c.user.from_body.name == "Peterborough City Council" %]
+[% IF ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
   [% IF unit.request_open %]
     <span class="waste-service-descriptor">
       A new [% unit.service_name FILTER lower %] request has been made
