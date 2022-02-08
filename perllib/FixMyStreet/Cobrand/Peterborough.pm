@@ -711,20 +711,30 @@ sub bin_services_for_address {
     my $skip_bags = $self->{c}->get_param('skip_bags');
 
     @out = () if $bags_only;
-    my $food_containers = $bags_only ? [ 428 ] : $skip_bags ? [ 424, 423 ] : [ 424, 423, 428 ];
 
-    push @out, {
+    my @food_containers;
+    if ($bags_only) {
+        push(@food_containers, 428) unless $open_requests->{428};
+    } else {
+        unless ( $open_requests->{493} ) { # Both food bins
+            push(@food_containers, 424) unless $open_requests->{424}; # Large food caddy
+            push(@food_containers, 423) unless $open_requests->{423}; # Small food caddy
+        }
+        push(@food_containers, 428) unless $skip_bags || $open_requests->{428};
+    }
+
+    push(@out, {
         id => "FOOD_BINS",
         service_name => "Food bins",
         service_id => "FOOD_BINS",
-        request_containers => $food_containers,
+        request_containers => \@food_containers,
         request_allowed => 1,
         request_max => 1,
         request_only => 1,
         report_only => 1,
-    };
+    }) if @food_containers;
 
-    unless ( $bags_only ) {
+    unless ( $bags_only || $open_requests->{425} ) {
         # We want this one to always appear first
         unshift @out, {
             id => "_ALL_BINS",
