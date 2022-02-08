@@ -651,7 +651,7 @@ sub bin_services_for_address {
         my $report_service_ids = $container_removal_ids{$container_id};
         my @report_service_ids_open = grep { $open_requests->{$_} } @$report_service_ids;
         my $request_service_ids = $container_request_ids{$container_id};
-        my @request_service_ids_open = grep { $open_requests->{$_} } @$request_service_ids;
+        my @request_service_ids_open = grep { $open_requests->{$_} || ($_ == 419 && $open_requests->{422}) } @$request_service_ids;
 
         my $row = {
             id => $_->{JobID},
@@ -1040,11 +1040,12 @@ sub waste_munge_problem_form_fields {
         my $categories = $services{$id};
         foreach (sort keys %$categories) {
             my $cat_name = $categories->{$_};
+            my $disabled = $open_requests->{$_} || ($open_requests->{422} && $id == 6533);
             push @$field_list, "service-$_" => {
                 type => 'Checkbox',
                 label => $name,
                 option_label => $cat_name,
-                $open_requests->{$_} ? ( disabled => 1 ) : (),
+                disabled => $disabled,
             };
 
             # Set this to empty so the heading isn't shown multiple times
