@@ -558,10 +558,10 @@ sub bin_services_for_address {
         # small food caddy?
     );
 
-    my %container_removal_ids = (
-        6533 => [ 487 ], # 240L Black
-        6534 => [ 488 ], # 240L Green
-        6579 => [ 489 ], # 240L Brown
+    my %container_service_ids = (
+        6533 => 255, # 240L Black
+        6534 => 254, # 240L Green
+        6579 => 253, # 240L Brown
         6836 => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
         6839 => undef, # Refuse 240l
@@ -646,8 +646,8 @@ sub bin_services_for_address {
         next if $seen_containers{$container_id};
         $seen_containers{$container_id} = 1;
 
-        my $report_service_ids = $container_removal_ids{$container_id};
-        my @report_service_ids_open = grep { $open_requests->{$_} } @$report_service_ids;
+        my $report_service_id = $container_service_ids{$container_id};
+        my @report_service_ids_open = grep { $open_requests->{$_} } $report_service_id;
         my $request_service_ids = $container_request_ids{$container_id};
         my @request_service_ids_open = grep { $open_requests->{$_} } @$request_service_ids;
 

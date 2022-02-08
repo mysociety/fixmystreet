@@ -199,7 +199,7 @@ FixMyStreet::override_config {
         $mech->content_contains('A new recycling bin request has been made');
         $mech->content_contains('Report a recycling bin collection as missed');
         $b->mock('ServiceRequests_Get', sub { [
-            { ServiceType => { ID => 488 }, ServiceStatus => { Status => "OPEN" } },
+            { ServiceType => { ID => 254 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->content_contains('A recycling bin collection has been reported as missed');
