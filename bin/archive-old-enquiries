@@ -32,6 +32,7 @@ my ($opts, $usage) = describe_options(
     '%c %o',
     ['commit|c',     "actually close reports and send emails. Omitting this flag will do a dry-run"],
     ['body|b=s',     "which body ID to close reports for", { required => 1 } ],
+    ['category=s@',  "which category or categories to close reports for" ],
     ['user|u=s',     "which user ID to assign closure updates to", { required => 1 } ],
     ['cobrand=s',    "which cobrand template to use for sent emails" ],
     [ "mode" => hidden => { one_of => [

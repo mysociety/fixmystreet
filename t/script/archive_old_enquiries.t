@@ -505,4 +505,36 @@ subtest 'date based updates do not happen without commit' => sub {
     };
 };
 
+subtest 'category based closure' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+
+        $opts->{category} = ["Something"];
+        $opts->{commit} = 1;
+
+        $mech->clear_emails_ok;
+
+        my ($report1) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Test', {
+            lastupdate => '2015-12-01 07:00:00',
+        });
+
+        my ($report2) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Test 2', {
+            lastupdate => '2015-12-01 07:00:00',
+            category => 'Something',
+        });
+
+        FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
+
+        $report1->discard_changes;
+        $report2->discard_changes;
+        is $report1->state, 'confirmed', 'Report 1 has not been updated';
+        is $report2->state, 'fixed', 'Report 2 has been updated';
+        is $report1->comments->count, 0, 'Report 1 has no comments';
+        is $report2->comments->count, 1, 'Report 1 has no comments';
+        $mech->email_count_is(1);
+        $mech->clear_emails_ok;
+    };
+};
+
 done_testing();

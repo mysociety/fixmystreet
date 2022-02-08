@@ -22,6 +22,9 @@ sub filter {
     my $params = {
         state => [ FixMyStreet::DB::Result::Problem->open_states() ],
     };
+    if ($opts->{category}) {
+        $params->{category} = $opts->{category};
+    }
     return $rs->to_body($opts->{body})->search($params);
 }
 
