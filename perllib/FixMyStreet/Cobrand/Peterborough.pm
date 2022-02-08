@@ -489,6 +489,8 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
+    my $attributes = $self->property_attributes($uprn);
+    $premises{$uprn}{attributes} = $attributes;
     return $premises{$uprn};
 }
 
@@ -815,8 +817,7 @@ sub waste_munge_request_form_data {
 sub waste_munge_report_form_data {
     my ($self, $data) = @_;
 
-    my $uprn = $self->{c}->stash->{property}->{uprn};
-    my $attributes = $self->property_attributes($uprn);
+    my $attributes = $self->{c}->stash->{property}->{attributes};
 
     if ( $attributes->{"ASSISTED COLLECTION"} ) {
         # For assisted collections we just raise a single "missed assisted collection"
@@ -905,8 +906,7 @@ sub waste_munge_report_data {
     my $service_id = $container_service_ids{$id};
 
     if ($service_id == 255) {
-        my $uprn = $c->stash->{property}->{uprn};
-        my $attributes = $self->property_attributes($uprn);
+        my $attributes = $c->stash->{property}->{attributes};
         if ($attributes->{"LARGE BIN"}) {
             # For large bins, we need different text to show
             $id = "LARGE BIN";
@@ -942,8 +942,7 @@ sub waste_munge_problem_data {
     my $category_verbose = $service_details->{label};
 
     if ($container_id == 6533 && $category =~ /Lid|Wheels/) { # 240L Black repair
-        my $uprn = $c->stash->{property}->{uprn};
-        my $attributes = $self->property_attributes($uprn);
+        my $attributes = $c->stash->{property}->{attributes};
         if ($attributes->{"LARGE BIN"}) {
             # For large bins, we need to raise a new bin request instead
             $container_id = "LARGE BIN";
