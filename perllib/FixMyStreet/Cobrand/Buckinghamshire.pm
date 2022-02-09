@@ -11,6 +11,11 @@ with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::BoroughEmails';
 use SUPER;
 
+
+use LWP::Simple;
+use URI;
+use Try::Tiny;
+
 sub council_area_id { return 2217; }
 sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire Council'; }
@@ -592,5 +597,77 @@ sub council_rss_alert_options {
 
     return ($options);
 }
+
+sub car_park_wfs_query {
+    my ($self, $row) = @_;
+
+    my ($x, $y) = $row->local_coords;
+    my $buffer = 50; # metres
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $filter = "
+    <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
+        <ogc:BBOX>
+            <ogc:PropertyName>Shape</ogc:PropertyName>
+            <gml:Envelope xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:27700'>
+                <gml:lowerCorner>$w $s</gml:lowerCorner>
+                <gml:upperCorner>$e $n</gml:upperCorner>
+            </gml:Envelope>
+        </ogc:BBOX>
+    </ogc:Filter>";
+    $filter =~ s/\n\s+//g;
+
+    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer");
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => "BC_CAR_PARKS",
+        VERSION => "1.1.0",
+        propertyName => 'OBJECTID,Shape',
+    );
+
+    # URI encodes ' ' as '+' but arcgis wants it to be '%20'
+    # Putting %20 into the filter string doesn't work because URI then escapes
+    # the '%' as '%25' so you get a double encoding issue.
+    #
+    # Avoid all of that and just put the filter on the end of the $uri
+    $filter = URI::Escape::uri_escape_utf8($filter);
+    $uri = "$uri&filter=$filter";
+
+    try {
+        return $self->_get($uri);
+    } catch {
+        # Ignore WFS errors.
+        return {};
+    };
+}
+
+# Wrapper around LWP::Simple::get to make mocking in tests easier.
+sub _get {
+    my ($self, $uri) = @_;
+
+    get($uri);
+}
+
+around 'report_validation' => sub {
+    my ($orig, $self, $report, $errors) = @_;
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $self->body->id,
+        category => $report->category,
+    });
+    my %groups = map { $_ => 1 } @{ $contact->groups };
+    return $self->$orig($report, $errors) unless $groups{'Car park issue'};
+
+    my $car_parks = $self->car_park_wfs_query($report);
+
+    if (index($car_parks, '<gml:featureMember>') == -1) {
+        # Car park not found
+        $errors->{category} = 'Please select a location in a Buckinghamshire maintained car park';
+    }
+
+    return $self->$orig($report, $errors);
+};
 
 1;
