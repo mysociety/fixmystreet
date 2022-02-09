@@ -15,6 +15,7 @@ $link-hover-text-decoration: underline !default;
 $primary_link_decoration: underline !default;
 $primary_link_hover_decoration: $primary_link_decoration !default;
 
+$pagination_background: #f6f6f6 !default;
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #666 !default;
@@ -2402,7 +2403,7 @@ label .muted {
   text-align: center;
   padding: 0.5em 1em;
   margin-bottom: 1em;
-  background: #eee;
+  background: $pagination_background;
   position: relative;
 
   .prev {
