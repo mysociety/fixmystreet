@@ -402,6 +402,11 @@ FixMyStreet::override_config {
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
         $mech->content_like(qr/name="service-538" value="1"\s+disabled/);
+        $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 497 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+        $mech->content_like(qr/name="service-497" value="1"\s+disabled/);
         $b->mock('ServiceRequests_Get', sub { [] }); # reset
     };
     subtest 'Report broken bin' => sub {

@@ -1066,6 +1066,7 @@ sub waste_munge_problem_form_fields {
         type => 'Checkbox',
         label => $self->{c}->stash->{services_problems}->{497}->{container_name},
         option_label => $self->{c}->stash->{services_problems}->{497}->{label},
+        disabled => $open_requests->{497},
     };
     push @$field_list, "extra_detail" => {
         type => 'Text',
