@@ -398,6 +398,13 @@ FixMyStreet::override_config {
     };
     subtest 'Report broken bin, already reported' => sub {
         $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 419 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+        $mech->content_like(qr/name="service-419" value="1"\s+disabled/);
+        $mech->content_like(qr/name="service-538" value="1"\s+disabled/);
+        $mech->content_like(qr/name="service-541" value="1"\s+disabled/);
+        $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 538 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');

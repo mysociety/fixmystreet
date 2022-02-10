@@ -1047,10 +1047,17 @@ sub waste_munge_problem_form_fields {
 
         next unless $services{$id};
 
+        # Don't allow any problem reports on a bin if a new one is currently
+        # requested. Check for large bin requests for black bins as well
+        # 419/420 are new black/green bin requests, 422 is large black bin request
+        # 6533/6534 are black/green containers
+        my $black_bin_request = (($open_requests->{419} || $open_requests->{422}) && $id == 6533);
+        my $green_bin_request = ($open_requests->{420} && $id == 6534);
+
         my $categories = $services{$id};
         foreach (sort keys %$categories) {
             my $cat_name = $categories->{$_};
-            my $disabled = $open_requests->{$_} || ($open_requests->{422} && $id == 6533);
+            my $disabled = $open_requests->{$_} || $black_bin_request || $green_bin_request;
             push @$field_list, "service-$_" => {
                 type => 'Checkbox',
                 label => $name,
