@@ -539,7 +539,7 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
         my $list = Memcached::get($key) || [];
 
         my $id = $c->stash->{property}->{id};
-        return if any { $_ == $id } @$list; # Already visited today
+        return if any { $_ eq $id } @$list; # Already visited today
 
         $c->detach('bin_day_deny') if @$list >= $cfg->{max_properties_per_day};
 
