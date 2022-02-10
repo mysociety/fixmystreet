@@ -374,6 +374,14 @@ FixMyStreet::override_config {
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed Food bins';
     };
+    subtest 'No missed food bin report if open request' => sub {
+        $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 252 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480/report');
+        $mech->content_lacks('service-FOOD_BINS');
+        $b->mock('ServiceRequests_Get', sub { [] }); # reset
+    };
     subtest 'Report assisted collection' => sub {
         $b->mock('Premises_Attributes_Get', sub { [
             { AttributeDefinition => { Name => 'ASSISTED COLLECTION' } },

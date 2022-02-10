@@ -731,7 +731,7 @@ sub bin_services_for_address {
         request_allowed => 1,
         request_max => 1,
         request_only => 1,
-        report_only => 1,
+        report_only => !$open_requests->{252}, # Can report if no open report
     }) if @food_containers;
 
     unless ( $bags_only || $open_requests->{425} ) {
