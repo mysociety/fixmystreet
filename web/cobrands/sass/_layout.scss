@@ -355,24 +355,6 @@ body.mappage.admin {
   text-align: center;
 }
 
-#skip-this-step {
-  display: block;
-  color: #666;
-  padding: 1em;
-  line-height: 20px;
-  margin: 0 -1em;
-
-  em {
-    font-style: normal;
-    text-decoration: underline;
-    color: #0BA7D1;
-  }
-
-  &:hover {
-    text-decoration: none;
-  }
-}
-
 // Only want to capture footers that are inside .content
 // (like the one in base)
 .content {

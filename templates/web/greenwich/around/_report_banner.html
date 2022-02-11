@@ -5,6 +5,6 @@
     <h2>[% loc( 'Have you found a problem here?' ) %]</h2>
     <p>Click on the map to report it</p>
 </div>
-<a id="skip-this-step" href="[% url_skip %]" rel="nofollow">
-    [% loc("Can't see the map? <em>Skip this step</em>") %]
-</a>
+<p class="map-alternatives">
+    [% tprintf( loc('Can’t use the map? <a href="%s" rel="nofollow">Skip this step.</a>'), url_skip) %]
+</p>

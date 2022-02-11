@@ -233,11 +233,16 @@ textarea {
 .extra-text {
   padding: 1em;
   margin: 0 -1em;
-  border-bottom: 1px solid $color-oxfordshire-pale-grey-green;
+  border-top: 1px solid $color-oxfordshire-pale-grey-green;
 
   p:last-child {
     margin-bottom: 0;
   }
+}
+
+.report-list-filters-wrapper {
+    border-top-color: $color-oxfordshire-pale-grey-green;
+    border-bottom-color: $color-oxfordshire-pale-grey-green;
 }
 
 .item-list--reports__item {

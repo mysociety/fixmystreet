@@ -865,11 +865,6 @@ $.extend(fixmystreet.set_up, {
     $('.js-multiple').make_multi();
   },
 
-  mobile_ui_tweaks: function() {
-    //move 'skip this step' link on mobile
-    $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
-  },
-
   // Very similar function in front.js for front page
   on_mobile_nav_click: function() {
     var html = document.documentElement;

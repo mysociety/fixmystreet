@@ -2401,20 +2401,25 @@ label .muted {
 
 .pagination {
   text-align: center;
-  padding: 0.5em 1em;
-  margin-bottom: 1em;
+  padding: 1em;
   background: $pagination_background;
   position: relative;
 
   .prev {
     position: absolute;
-    #{$left}: 0.5em;
+    #{$left}: 1em;
   }
 
   .next {
     position: absolute;
-    #{$right}: 0.5em;
+    #{$right}: 1em;
   }
+}
+
+.map-alternatives {
+  margin: 16px 0;
+  font-size: 14px;
+  color: #666;
 }
 
 // this is a bit of a hack to get some differentation between desk and mobile
@@ -2861,7 +2866,7 @@ a#geolocate_link {
   .olMapViewport,
   .big-green-banner,
   .click-the-map,
-  #skip-this-step,
+  .map-alternatives,
   .my-account-buttons {
     display: none !important;
   }
