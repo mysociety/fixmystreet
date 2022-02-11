@@ -81,6 +81,9 @@ my @PLACES = (
     # Norway
     [ '3290', 59, 10, 709, 'Larvik', 'NKO', 7, 'Vestfold', 'NFY' ],
     [ '0045', "59.9", "10.9", 301, 'Oslo', 'NKO', 3, 'Oslo', 'NFY' ],
+    ['?', 51.015143, -0.912160, 2227, 'Hampshire County Council', 'CTY'],
+    ['?', 51.020097, -0.926065, 2227, 'Hampshire County Council', 'CTY'],
+
 );
 
 sub dispatch_request {

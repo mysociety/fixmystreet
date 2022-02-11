@@ -54,6 +54,7 @@ fixmystreet.assets.add(defaults, {
     nearest_radius: 15,
     actions: {
         found: function(layer, feature) {
+            var category = fixmystreet.reporting.selectedCategory().category;
             if (fixmystreet.assets.selectedFeature()) {
                 $('.js-reporting-page--highways').remove();
                 return;
@@ -65,7 +66,11 @@ fixmystreet.assets.add(defaults, {
                 // received new data from the server (but the pin drop had
                 // already shown the HE message)
                 if ($('#js-highways:checked').length) {
-                    he_selected();
+                    if (category && !category.match('NH')) {
+                        he_council_litter_cat_selected();
+                    } else {
+                        he_selected();
+                    }
                 } else {
                     non_he_selected();
                 }
@@ -106,6 +111,13 @@ function he_selected() {
     fixmystreet.body_overrides.only_send('National Highways');
     fixmystreet.body_overrides.allow_send('National Highways');
     regenerate_category(true);
+    $(fixmystreet).trigger('report_new:highways_change');
+}
+
+function he_council_litter_cat_selected() {
+    fixmystreet.body_overrides.remove_only_send();
+    fixmystreet.body_overrides.do_not_send('National Highways');
+    regenerate_category(true); // DO want to keep NH top-level picked
     $(fixmystreet).trigger('report_new:highways_change');
 }
 

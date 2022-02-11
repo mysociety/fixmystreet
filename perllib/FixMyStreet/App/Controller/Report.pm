@@ -759,6 +759,8 @@ sub stash_category_groups : Private {
             $a->[0] cmp $b->[0];
         } @list;
         @list = map { $_->[1] } @list;
+
+        $c->cobrand->call_hook(munge_mixed_category_groups => \@list);
         $c->stash->{category_groups} = \@list;
         return;
     }

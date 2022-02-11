@@ -158,6 +158,65 @@ sub munge_report_new_contacts {
     }
 }
 
+sub munge_mixed_category_groups {
+    my ($self, $list) = @_;
+
+    for my $cat_item (@$list) {
+        my $clean_name = $cat_item->category_display;
+        $clean_name =~ s/ \(NH\)//;
+        $cat_item->set_extra_metadata('display_name', $clean_name);
+    }
+}
+
+sub national_highways_cleaning_groups {
+    my ($self, $category_groups) = @_;
+
+    # We only care if there is a National Highways group
+    my ($nh_group) = grep { ($_->{name} || '') eq $self->council_name } @$category_groups;
+    return unless $nh_group;
+
+    my $c = $self->{c};
+    my $not_he_litter = $c->stash->{report_new_is_on_he_road_not_litter};
+    if (!defined $not_he_litter) {
+        # We delayed working it out because every /around page calls
+        # report_new_is_on_he_road but do it now we need to know
+        my ($x, $y) = ($c->stash->{longitude}, $c->stash->{latitude});
+        $not_he_litter = $self->_report_new_is_on_he_road_not_litter($x, $y);
+    }
+
+    for my $cat_item (@{$nh_group->{categories}}) {
+        my $clean_name = $cat_item->category_display;
+        $clean_name =~ s/ \(NH\)//;
+        $cat_item->set_extra_metadata('display_name', $clean_name);
+    }
+
+    # Don't change anything else unless we're on a HE non-litter road
+    return unless $not_he_litter;
+
+    # NH do not want flytipping or litter reports on these roads, take them out
+    @{$nh_group->{categories}} = grep { $_->category_display !~ /Flytipping|Litter/ } @{$nh_group->{categories}};
+
+    # Put any council street cleaning categories we can find into the NH group,
+    # so they'll still appear if "on the HE road" is picked
+    my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
+    for my $cat (@$category_groups) {
+        if ($cat->{name}) {
+            next if $cat->{name} eq $self->council_name;
+            foreach my $c (@{$cat->{categories}}) {
+                if ($cleaning_cats{$cat->{name}}) {
+                    my $full_title = "$cat->{name}: " . $c->category_display;
+                    $c->set_extra_metadata(display_name => $full_title);
+                    push @{$nh_group->{categories}}, $c;
+                } elsif ($cleaning_cats{$c->category_display}) {
+                    push @{$nh_group->{categories}}, $c;
+                }
+            }
+        } elsif ($cleaning_cats{$cat->category_display}) {
+            push @{$nh_group->{categories}}, $cat;
+        }
+    }
+}
+
 sub report_new_is_on_he_road {
     my ( $self ) = @_;
 
@@ -171,11 +230,35 @@ sub report_new_is_on_he_road {
         srsname => "urn:ogc:def:crs:EPSG::4326",
         typename => "Highways",
         filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",
+        accept_feature => sub { 1 },
     };
 
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
     my $features = $ukc->_fetch_features($cfg, $x, $y);
+    my $nearest = $ukc->_nearest_feature($cfg, $x, $y, $features);
+    # National Highways responsible for litter on Motorways and AM roads
+    # And doesn't matter if we are not on a NH road
+    if ($nearest && $nearest->{properties}->{'ROA_NUMBER'} =~ /^(M|A\d+M)/) {
+        $self->{c}->stash->{report_new_is_on_he_road_not_litter} = 0;
+    } elsif (!scalar @$features) {
+        $self->{c}->stash->{report_new_is_on_he_road_not_litter} = 0;
+    }
     return scalar @$features ? 1 : 0;
+}
+
+sub _report_new_is_on_he_road_not_litter {
+    my ( $self, $x, $y ) = @_;
+
+    my $cfg = {
+        url => "https://tilma.mysociety.org/mapserver/highways",
+        srsname => "urn:ogc:def:crs:EPSG::4326",
+        typename => "highways_litter_pick",
+        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",
+    };
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features($cfg, $x, $y);
+    # If we've matched then litter is their responsibility, so return reverse of that
+    return scalar @$features ? 0 : 1;
 }
 
 sub dashboard_export_problems_add_columns {
@@ -222,5 +305,76 @@ sub dashboard_export_problems_add_columns {
         return $fields;
     });
 }
+
+# select distinct category from contacts where category ilike '%litter%' or category ilike '%clean%' or category ilike '%fly%tip%';
+# search to find categories in all contacts and then manually edited
+sub _cleaning_categories { [
+    'Accumulated Litter',
+    'Cleanliness Issue',
+    'Cleanliness Sub Standard',
+    'Cleansing',
+    'Excessive or dangerous littering',
+    'Fly Tipping on a road, footway, verge or open space',
+    'Fly Tipping',
+    'Fly tipping',
+    'Fly-Tipping',
+    'Fly-tipping',
+    'Flytipping and dumped rubbish',
+    'Flytipping',
+    'Flytipping/flyposting',
+    'General (Cleanliness)',
+    'General Litter / Rubbish Collection',
+    'General fly tipping',
+    'Hazardous fly tipping',
+    'Litter On Road/Street Cleaning',
+    'Litter and Bins',
+    'Litter in Parks & Open spaces',
+    'Litter in the street',
+    'Litter removal',
+    'Litter',
+    'Littering',
+    'Littering and cleanliness',
+    'Rubbish or fly tipping on the roads',
+    'Street Cleaning',
+    'Street Cleansing',
+    'Street cleaning and litter',
+    'Street cleaning',
+    'Street cleansing',
+    'Sweeping & Cleansing Hazard',
+    #Bench/cycle rack/litter bin/planter,
+    #Bus Station Cleaning - Floor,
+    #Bus Station Cleaning - General,
+    #Bus Station Cleaning - Toilets,
+    #Bus Station Cleaning - Windows,
+    #Car Park Cleansing,
+    #Damage Public Litter Bin,
+    #Damage to litter bin,
+    #Dog and litter bins,
+    #Fly Tipping on a public right of way,
+    #Fly tipping - Enforcement Request,
+    #Flytipping (TfL),
+    #'Flytipping (off-road)',
+    #'Litter bin damaged',
+    #'Litter bin full',
+    #'Litter bin',
+    #Litter Bin Overflowing,
+    #Litter Bin on a verge or open space,
+    #Litter Bin overflow in Parks & Open spaces,
+    #Litter Bin overflow,
+    #Litter Bin,
+    #Litter Bins Full/Damaged/Missing,
+    #Litter Bins,
+    #Litter bins,
+    #Litter or flytipping in a woodland,
+    #Overflowing Litter Bin / Dog Bin,
+    #Overflowing Street Litter Bin,
+    #Overflowing litter bin,
+    #Pavement cleaning,
+    #Planter not Clean and Tidy,
+    #River Piers - Cleaning,
+    #Shelter needs cleaning (hazardous waste),
+    #Shelter needs cleaning (not including litter),
+    #Street Cleaning Enquiry,
+] }
 
 1;

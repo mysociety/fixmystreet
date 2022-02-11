@@ -350,6 +350,12 @@ sub munge_report_new_contacts {
     }
 }
 
+sub munge_mixed_category_groups {
+    my ($self, $list) = @_;
+    my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
+    $nh->national_highways_cleaning_groups($list);
+}
+
 sub open311_extra_data {
     my $self = shift;
     my $include = $self->call_hook(open311_extra_data_include => @_);

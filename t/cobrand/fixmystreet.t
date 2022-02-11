@@ -352,6 +352,63 @@ FixMyStreet::override_config {
         $mech->get_ok('/about/privacy');
         $mech->content_contains('<strong>Privacy and cookies</strong>');
         $mech->content_lacks('<a href="/privacy">Privacy and cookies</a>');
+	};
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'fixmystreet changes litter options for National Highways' => sub {
+        my $hampshire = $mech->create_body_ok(2227, 'Hampshire County Council');
+        my $he = $mech->create_body_ok(2227, 'National Highways');
+        $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Litter (NH)', email => 'litter@he', group => 'National Highways');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he', group => 'National Highways');
+
+        our $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        sub mock_road {
+            my ($name, $litter) = @_;
+            $he_mod->mock('_fetch_features', sub {
+                my ($self, $cfg, $x, $y) = @_;
+                my $road = {
+                    properties => { area_name => 'Area 1', ROA_NUMBER => $name, sect_label => "$name/111" },
+                    geometry => {
+                        type => 'LineString',
+                        coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                    }
+                };
+                if ($cfg->{typename} eq 'highways_litter_pick') {
+                    return $litter ? [$road] : [];
+                }
+                return [$road];
+            });
+        }
+
+        # Motorway, NH responsible for litter (but not in dataset), council categories will also be present
+        mock_road("M1", 0);
+        $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
+        $mech->content_contains('Litter');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees');
+        $mech->content_contains('Flytipping');
+
+        # A-road where NH responsible for litter, council categories will also be present
+        mock_road("A5103", 1);
+        $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
+        $mech->content_contains('Litter');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees');
+        $mech->content_contains('Flytipping');
+
+        # A-road where NH not responsible for litter, no NH litter categories
+        mock_road("A34", 0);
+        $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
+        $mech->content_lacks('Litter');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees');
+        $mech->content_contains('Flytipping');
     };
 };
 
