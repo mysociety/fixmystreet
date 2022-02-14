@@ -5,6 +5,7 @@ use utf8;
 use strict;
 use warnings;
 use Integrations::Bartec;
+use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::WorkingDays;
 use Utils;
@@ -686,6 +687,8 @@ sub bin_services_for_address {
                 my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
                 $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = [ "ON DAY PRE 5PM" ];
+                # Set a global flag to show things in the sidebar
+                $self->{c}->stash->{on_day_pre_5pm} = 1;
             }
             # But if it has been marked as locked out, show that
             if (my $types = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {
@@ -734,7 +737,9 @@ sub bin_services_for_address {
         report_only => !$open_requests->{252}, # Can report if no open report
     }) if @food_containers;
 
-    unless ( $bags_only || $open_requests->{425} ) {
+    # All bins, black bin, green bin, large black bin, small food caddy, large food caddy, both food bins
+    my $any_open_bin_request = any { $open_requests->{$_} } (425, 419, 420, 422, 423, 424, 493);
+    unless ( $bags_only || $any_open_bin_request ) {
         # We want this one to always appear first
         unshift @out, {
             id => "_ALL_BINS",

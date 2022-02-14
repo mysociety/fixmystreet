@@ -1,9 +1,9 @@
 <h3>More services</h3>
 <ul>
-  [% IF any_report_allowed %]
+  [% IF any_report_allowed AND NOT on_day_pre_5pm %]
     <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
   [% END %]
-  [% IF any_request_allowed %]
+  [% IF ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
     <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?skip_bags=1">Request a new bin</a></li>
   [% END %]
   [% IF show_garden_subscribe %]
@@ -21,7 +21,7 @@
           </form>
     </li>
   [% END %]
-  [% IF any_report_allowed %]
+  [% IF any_report_allowed AND NOT on_day_pre_5pm %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
             <input type="hidden" name="token" value="[% csrf_token %]">

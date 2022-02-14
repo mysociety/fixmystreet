@@ -118,6 +118,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-08-05T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('to report a missed recycling bin please call');
+        $mech->content_lacks('Report a missed collection');
 
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1%203NA:100090215480');
@@ -220,12 +221,14 @@ FixMyStreet::override_config {
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
         $mech->content_lacks('Large food caddy');
+        $mech->content_lacks('All bins');
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 493 }, ServiceStatus => { Status => "OPEN" } },
         ] });
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
         $mech->content_lacks('Large food caddy');
         $mech->content_lacks('Small food caddy');
+        $mech->content_lacks('All bins');
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 425 }, ServiceStatus => { Status => "OPEN" } },
         ] });
