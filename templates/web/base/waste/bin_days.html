@@ -106,9 +106,8 @@
           </ul>
         </div>
        [% SET show_garden_subscribe = NOT waste_features.garden_disabled AND NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
-       [% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
-        <div class="aside-services">
-          [% TRY %][% PROCESS waste/_more_services_sidebar.html %][% CATCH file %]
+       [% TRY %][% PROCESS waste/_more_services_sidebar.html %][% CATCH file %]
+        [% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
             <h3>More services</h3>
             <ul>
               [% IF any_report_allowed %]
@@ -121,10 +120,8 @@
                 <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
               [% END %]
             </ul>
-          [% END %]
-        </div>
+        [% END %]
        [% END %]
-        [% TRY %][% PROCESS "waste/_bin_day_sidebar_extra.html" %][% CATCH file %][% END %]
       </div>
     </div>
     [% END %]

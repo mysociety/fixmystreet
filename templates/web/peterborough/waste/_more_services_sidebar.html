@@ -1,16 +1,16 @@
+[% SET pboro_staff_request = ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
 <h3>More services</h3>
 <ul>
   [% IF any_report_allowed AND NOT on_day_pre_5pm %]
     <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
   [% END %]
-  [% IF ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
+  [% IF pboro_staff_request %]
     <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?skip_bags=1">Request a new bin</a></li>
   [% END %]
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
   [% END %]
   [% UNLESS waste_features.request_disabled %]
-    [% SET food_bags_link_shown = 1 %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?bags_only=1">
             <input type="hidden" name="token" value="[% csrf_token %]">
@@ -30,4 +30,10 @@
           </form>
     </li>
   [% END %]
+</ul>
+
+<h3>Help</h3>
+<ul>
+    <li><a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice">Bin waste advice</a></li>
+    <li><a href="https://www.peterborough.gov.uk/asset-library/imported-assets/PCCBinAdvicePoster.pdf">Bin Advice Poster</a></li>
 </ul>

@@ -1,3 +1,5 @@
+[% SET pboro_staff_request = ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
+
 [% UNLESS waste_features.report_disabled %]
   [% IF unit.report_open %]
     <span class="waste-service-descriptor">
@@ -49,7 +51,7 @@
   </form>
 [% END %]
 
-[% IF ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
+[% IF pboro_staff_request %]
   [% IF unit.request_open %]
     <span class="waste-service-descriptor">
       A new [% unit.service_name FILTER lower %] request has been made
