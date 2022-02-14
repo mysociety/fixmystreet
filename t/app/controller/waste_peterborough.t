@@ -232,7 +232,13 @@ FixMyStreet::override_config {
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 425 }, ServiceStatus => { Status => "OPEN" } },
         ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_lacks('Request a new bin');
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->content_lacks('240L Green');
+        $mech->content_lacks('240L Black');
+        $mech->content_lacks('Large food caddy');
+        $mech->content_lacks('Small food caddy');
         $mech->content_lacks('All bins');
         $b->mock('ServiceRequests_Get', sub { [ ] }); # reset
     };
