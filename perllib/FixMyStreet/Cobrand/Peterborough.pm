@@ -652,7 +652,8 @@ sub bin_services_for_address {
         my $report_service_id = $container_service_ids{$container_id};
         my @report_service_ids_open = grep { $open_requests->{$_} } $report_service_id;
         my $request_service_ids = $container_request_ids{$container_id};
-        my @request_service_ids_open = grep { $open_requests->{$_} || ($_ == 419 && $open_requests->{422}) } @$request_service_ids;
+        # Open request for same thing, or for all bins, or for large black bin
+        my @request_service_ids_open = grep { $open_requests->{$_} || $open_requests->{425} || ($_ == 419 && $open_requests->{422}) } @$request_service_ids;
 
         my $row = {
             id => $_->{JobID},
@@ -719,7 +720,7 @@ sub bin_services_for_address {
     if ($bags_only) {
         push(@food_containers, 428) unless $open_requests->{428};
     } else {
-        unless ( $open_requests->{493} ) { # Both food bins
+        unless ( $open_requests->{493} || $open_requests->{425} ) { # Both food bins, or all bins
             push(@food_containers, 424) unless $open_requests->{424}; # Large food caddy
             push(@food_containers, 423) unless $open_requests->{423}; # Small food caddy
         }
