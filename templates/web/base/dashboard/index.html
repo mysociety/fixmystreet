@@ -23,7 +23,21 @@
 
 <div class="filters">
   [% IF body %]
+    [% IF extra_bodies %]
+    <p>
+      <label for="body">[% loc('Body:') %]</label>
+      <select class="form-control" name="body" id="body">
+        <option value="[% default_body.id %]">[% default_body.name %]</option>
+        <option disabled>---</option>
+        [% FOR b IN extra_bodies %]
+          <option value="[% b.id %]"[% ' selected' IF b.id == body.id %]>[% b.name %]</option>
+        [% END %]
+      </select>
+    </p>
+    [% ELSE %]
     <input type="hidden" name="body" value="[% body.id | html %]">
+    [% END %]
+
     [% IF NOT c.user.area_ids.size %]
     <p>
         <label for="ward">[% loc('Ward:') %]</label>

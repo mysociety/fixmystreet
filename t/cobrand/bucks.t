@@ -11,6 +11,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
+my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'triage' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
@@ -471,6 +472,20 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
     # Check that the report can be accessed via the cobrand
     my $report_id = $report->id;
     $mech->get_ok("/report/$report_id");
+};
+
+subtest 'body filter on dashboard' => sub {
+    $mech->get_ok('/dashboard');
+    $mech->content_contains('<h1>' . $body->name . '</h1>', 'defaults to Bucks');
+    $mech->content_contains('<select class="form-control" name="body" id="body">', 'extra bodies dropdown is shown');
+    $mech->content_contains('<option value="' . $body->id . '">' . $body->name . '</option>', 'Bucks is shown in the options');
+    $mech->content_contains('<option value="' . $parish->id . '">' . $parish->name . '</option>', 'parish is shown in the options');
+
+    $mech->get_ok('/dashboard?body=' . $parish->id);
+    $mech->content_contains('<h1>' . $parish->name . '</h1>', 'shows parish dashboard');
+
+    $mech->get_ok('/dashboard?body=' . $other_body->id);
+    $mech->content_contains('<h1>' . $body->name . '</h1>', 'defaults to Bucks when body is not permitted');
 };
 
 };

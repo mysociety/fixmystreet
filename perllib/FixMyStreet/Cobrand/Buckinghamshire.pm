@@ -206,6 +206,12 @@ sub dashboard_export_problems_add_columns {
     shift->_dashboard_export_add_columns(@_);
 }
 
+sub dashboard_extra_bodies {
+    my ($self) = @_;
+
+    return $self->parish_bodies->all;
+}
+
 sub _parish_ids {
     # This is a list of all Parish Councils within Buckinghamshire,
     # taken from https://mapit.mysociety.org/area/2217/covers.json?type=CPC
@@ -746,14 +752,20 @@ sub owns_problem {
     return $self->next::method($report);
 }
 
+sub parish_bodies {
+    my ($self) = @_;
+
+    return FixMyStreet::DB->resultset('Body')->search(
+        { 'body_areas.area_id' => { -in => $self->_parish_ids } },
+        { join => 'body_areas', order_by => 'name' }
+    )->active;
+}
+
 # Show parish problems on the cobrand.
 sub problems_restriction_bodies {
     my ($self) = @_;
 
-    my @parishes = FixMyStreet::DB->resultset('Body')->search(
-        { 'body_areas.area_id' => { -in => $self->_parish_ids } },
-        { join => 'body_areas' }
-    )->all;
+    my @parishes = $self->parish_bodies->all;
     my @parish_ids = map { $_->id } @parishes;
 
     return [$self->body->id, @parish_ids];
