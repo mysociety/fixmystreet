@@ -5,6 +5,7 @@ use utf8;
 use strict;
 use warnings;
 use Integrations::Bartec;
+use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::WorkingDays;
 use Utils;
@@ -734,7 +735,9 @@ sub bin_services_for_address {
         report_only => !$open_requests->{252}, # Can report if no open report
     }) if @food_containers;
 
-    unless ( $bags_only || $open_requests->{425} ) {
+    # All bins, black bin, green bin, large black bin, small food caddy, large food caddy, both food bins
+    my $any_open_bin_request = any { $open_requests->{$_} } (425, 419, 420, 422, 423, 424, 493);
+    unless ( $bags_only || $any_open_bin_request ) {
         # We want this one to always appear first
         unshift @out, {
             id => "_ALL_BINS",
