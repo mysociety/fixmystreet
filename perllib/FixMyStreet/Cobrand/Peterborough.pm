@@ -687,6 +687,8 @@ sub bin_services_for_address {
                 my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
                 $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = [ "ON DAY PRE 5PM" ];
+                # Set a global flag to show things in the sidebar
+                $self->{c}->stash->{on_day_pre_5pm} = 1;
             }
             # But if it has been marked as locked out, show that
             if (my $types = $premise_dates_to_lock_out{$last->ymd}{$container_id}) {

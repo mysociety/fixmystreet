@@ -1,6 +1,6 @@
 <h3>More services</h3>
 <ul>
-  [% IF any_report_allowed %]
+  [% IF any_report_allowed AND NOT on_day_pre_5pm %]
     <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
   [% END %]
   [% IF any_request_allowed %]
@@ -21,7 +21,7 @@
           </form>
     </li>
   [% END %]
-  [% IF any_report_allowed %]
+  [% IF any_report_allowed AND NOT on_day_pre_5pm %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
             <input type="hidden" name="token" value="[% csrf_token %]">
