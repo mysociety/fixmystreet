@@ -246,4 +246,51 @@ FixMyStreet::override_config {
     };
 };
 
+subtest "hides duplicate updates from endpoint" => sub {
+    my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
+    my ($p) = $mech->create_problems_for_body(1, $merton->id, '', { lastupdate => $dt });
+    $p->update({ external_id => $p->id });
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>UPDATE_1</update_id>
+    <service_request_id>SERVICE_ID</service_request_id>
+    <status>IN_PROGRESS</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    <request_update>
+    <update_id>UPDATE_2</update_id>
+    <service_request_id>SERVICE_ID</service_request_id>
+    <status>IN_PROGRESS</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+
+    $requests_xml =~ s/SERVICE_ID/@{[$p->id]}/g;
+    $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $counciluser,
+        current_open311 => $o,
+        current_body => $merton,
+    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'merton',
+    }, sub {
+        $update->process_body;
+    };
+
+    $p->discard_changes;
+    is $p->comments->search({ state => 'confirmed' })->count, 1;
+};
+
 done_testing;
