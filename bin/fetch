@@ -28,7 +28,8 @@ my ($opts, $usage) = describe_options(
     ['updates', 'fetch updates'],
     ['start|s:f', 'start time to use (hours before now), defaults to one (reports) or two (updates)' ],
     ['end|e:f', 'end time to use (hours before now), defaults to zero' ],
-    ['body|b:s', 'body name to only fetch this body' ],
+    ['body|b:s@', 'body name(s) to only fetch these bodies' ],
+    ['exclude|e:s@', 'body name(s) to exclude from fetching' ],
     ['verbose|v', 'more verbose output'],
     ['help|h', "print usage message and exit" ],
 );
@@ -36,7 +37,8 @@ $usage->die if $opts->help;
 
 my %params = (
     verbose => $opts->verbose,
-    body => $opts->body,
+    bodies => $opts->body || [],
+    bodies_exclude => $opts->exclude || [],
 );
 
 my $dt = DateTime->now();

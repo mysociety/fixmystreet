@@ -11,7 +11,8 @@ has send_comments_flag => ( is => 'ro' );
 has commit => ( is => 'ro', default => 1 );
 
 has system_user => ( is => 'rw' );
-has body => ( is => 'ro', default => sub { undef } );
+has bodies => ( is => 'ro', default => sub { [] } );
+has bodies_exclude => ( is => 'ro', default => sub { [] } );
 has verbose => ( is => 'ro', default => 0 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has suppress_alerts => ( is => 'rw', default => 0 );
@@ -35,8 +36,11 @@ sub fetch {
         }
     );
 
-    if ( $self->body ) {
-        $bodies = $bodies->search( { name => $self->body } );
+    if ( @{$self->bodies} ) {
+        $bodies = $bodies->search( { name => $self->bodies } );
+    }
+    if ( @{$self->bodies_exclude} ) {
+        $bodies = $bodies->search( { name => { -not_in => $self->bodies_exclude } } );
     }
 
     my $procs_min = FixMyStreet->config('FETCH_COMMENTS_PROCESSES_MIN') || 0;
