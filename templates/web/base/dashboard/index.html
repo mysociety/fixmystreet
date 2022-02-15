@@ -125,7 +125,7 @@
         <th scope="col">[% loc('Total') %]</th>
       [% END %]
     </tr>
-  [% FOR k IN rows %]
+  [% FOR k IN rows %][% k_safe = mark_safe(k) %]
     <tr>
       [% IF group_by == 'state' %]
         <th scope="row">[% prettify_state(k) %]</th>
@@ -133,15 +133,15 @@
         <th scope="row">[% k %]</th>
       [% END %]
       [% IF group_by == 'category+state' %]
-        <td>[% grouped.$k.open OR 0 %]</td>
-        <td>[% grouped.$k.closed OR 0 %]</td>
-        <td>[% grouped.$k.fixed OR 0 %]</td>
-        <td>[% grouped.$k.total OR 0 %]</td>
+        <td>[% grouped.$k_safe.open OR 0 %]</td>
+        <td>[% grouped.$k_safe.closed OR 0 %]</td>
+        <td>[% grouped.$k_safe.fixed OR 0 %]</td>
+        <td>[% grouped.$k_safe.total OR 0 %]</td>
       [% ELSE %]
         [% FOR k2 IN columns.sort %]
-          <td>[% grouped.$k.$k2 OR 0 %]</td>
+          <td>[% grouped.$k_safe.$k2 OR 0 %]</td>
         [% END %]
-        <td>[% grouped.$k.total OR 0 %]</td>
+        <td>[% grouped.$k_safe.total OR 0 %]</td>
       [% END %]
     </tr>
   [% END %]
