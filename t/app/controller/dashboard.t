@@ -30,7 +30,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
 my $body = $mech->create_body_ok(2651, 'City of Edinburgh Council');
-my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
+my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights & bells');
 for my $contact ( @cats ) {
     my $c = $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
     if ($contact eq 'Potholes') {
@@ -49,12 +49,12 @@ my $alt_area_id = '62883';
 
 my $last_month = DateTime->now->subtract(months => 2);
 $mech->create_problems_for_body(2, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fat' });
-$mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'no2fa', dt => $last_month });
+$mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights & bells', cobrand => 'no2fa', dt => $last_month });
 $mech->create_problems_for_body(1, $body->id, 'Title', { areas => ",$alt_area_id,2651,", category => 'Litter', cobrand => 'no2fa' });
 
-my @scheduled_problems = $mech->create_problems_for_body(7, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'no2fa' });
+my @scheduled_problems = $mech->create_problems_for_body(7, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights & bells', cobrand => 'no2fa' });
 my @fixed_problems = $mech->create_problems_for_body(4, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fa' });
-my @closed_problems = $mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights', cobrand => 'no2fa' });
+my @closed_problems = $mech->create_problems_for_body(3, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Traffic lights & bells', cobrand => 'no2fa' });
 
 my $first_problem_id;
 my $first_update_id;
@@ -148,7 +148,7 @@ FixMyStreet::override_config {
 
     subtest 'The correct categories and totals shown by default' => sub {
         $mech->get_ok("/dashboard");
-        my $expected_cats = [ 'All', 'Litter', 'Other', 'Traffic lights', 'Potholes' ];
+        my $expected_cats = [ 'All', 'Litter', 'Other', 'Traffic lights & bells', 'Potholes' ];
         my $res = $categories->scrape( $mech->content );
         $mech->content_contains('<optgroup label="Road">');
         is_deeply( $res->{cats}, $expected_cats, 'correct list of categories' );
