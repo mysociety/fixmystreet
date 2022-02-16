@@ -153,7 +153,7 @@ sub get_body_sender {
         my $features = $self->_fetch_features(
             {
                 type => 'arcgis',
-                url => 'https://peterborough.assets/2/query?',
+                url => 'https://peterborough.assets/4/query?',
                 buffer => 1,
             },
             $x,

@@ -3,7 +3,7 @@ describe('new report form', function() {
   beforeEach(function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
-    cy.route("**/peterborough.assets/2/*", 'fixture:peterborough_pcc.json').as('pcc');
+    cy.route("**/peterborough.assets/4/*", 'fixture:peterborough_pcc.json').as('pcc');
     cy.route("**/peterborough.assets/3/*", 'fixture:peterborough_non_pcc.json').as('non_pcc');
     cy.visit('http://peterborough.localhost:3001/');
     cy.contains('Peterborough');
@@ -82,7 +82,7 @@ describe('National site tests', function() {
   it('flytipping category handles land types correctly on .com', function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
-    cy.route("**/peterborough.assets/2/*", 'fixture:peterborough_pcc.json').as('pcc');
+    cy.route("**/peterborough.assets/4/*", 'fixture:peterborough_pcc.json').as('pcc');
     cy.route("**/peterborough.assets/3/*", 'fixture:peterborough_non_pcc.json').as('non_pcc');
     cy.visit('http://fixmystreet.localhost:3001/');
     cy.get('[name=pc]').type('PE1 1HF');

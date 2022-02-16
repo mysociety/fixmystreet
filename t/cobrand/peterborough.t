@@ -191,7 +191,7 @@ $mock->mock('_fetch_features', sub {
     my ($self, $args, $x, $y) = @_;
     if ( $args->{type} && $args->{type} eq 'arcgis' ) {
         # council land
-        if ( $x == 552617 && $args->{url} =~ m{2/query} ) {
+        if ( $x == 552617 && $args->{url} =~ m{4/query} ) {
             return [ { geometry => { type => 'Point' } } ];
         # leased out council land
         } elsif ( $x == 552651 && $args->{url} =~ m{3/query} ) {

@@ -258,7 +258,7 @@ var flytipping_defaults = $.extend(true, {}, arcgis_defaults, {
 // PCC Property Combined
 fixmystreet.assets.add(flytipping_defaults, {
     http_options: {
-      url: url_base + '2/query?',
+      url: url_base + '4/query?',
     },
     actions: {
         found: function(layer) {
