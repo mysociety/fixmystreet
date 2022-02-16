@@ -185,15 +185,111 @@ var owned_defaults = $.extend({}, owned_base, {
     owns_function: occ_owns_feature
 });
 
-fixmystreet.assets.add(owned_defaults, {
+// Drainage
+
+var drain_defaults = $.extend(true, {}, owned_defaults, {
     http_options: {
         url: proxy_base_url + 'drains/wfs',
+    },
+    asset_category: ['Drainage', "Gully and Catchpits"]
+});
+var drain_inspection_defaults = $.extend({}, drain_defaults, {
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    non_interactive: true
+});
+var drain_asset_defaults = $.extend(true, {}, drain_defaults, {
+    http_options: {
         params: {
-            TYPENAME: "junctions"
+            propertyName: 'id,msGeometry,maintained_by,asset_id,created,last_inspected',
         }
     },
-    asset_category: ["Gully and Catchpits", 'Drainage'],
+    select_action: true,
+    construct_selected_asset_message: function(asset) {
+        var type = this.fixmystreet.http_options.params.TYPENAME.slice(0, -1);
+        var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
+            return elem.fixmystreet.body == "Oxfordshire County Council" &&
+            elem.fixmystreet.http_options &&
+            elem.fixmystreet.http_options.format.featureType == type + '_inspections';
+        });
+        var inspection;
+        if (junctionInspectionLayer[0]) {
+            inspection = junctionInspectionLayer[0].features.filter(function(elem) {
+                return elem.attributes.asset_id == asset.attributes.asset_id &&
+                format_date(elem.attributes.created) == format_date(asset.attributes.last_inspected);
+            });
+        }
+        var last_clean = '';
+        var message = ' ';
+        if (inspection && inspection[0]) {
+            if (asset.attributes.last_inspected && (inspection[0].attributes.junction_cleaned === 'true' || inspection[0].attributes.channel_cleaned === 'true')) {
+                last_clean = format_date(asset.attributes.last_inspected);
+                message = 'This gully was last cleaned on ' + last_clean;
+            }
+        }
+        return message;
+    },
+    actions: {
+        asset_found: fixmystreet.assets.named_select_action_found,
+        asset_not_found: fixmystreet.assets.named_select_action_not_found
+    }
+});
+
+function format_date(date_field) {
+    var regExDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
+    var myMatch = regExDate.exec(date_field);
+    if (myMatch) {
+        return myMatch[3] + '/' + myMatch[2] + '/' + myMatch[1];
+    } else {
+        return '';
+    }
+}
+
+// Junction/channel inspection layers (not shown on the map, but used by the layers below)
+
+// When the auto-asset selection of a layer occurs, the data for inspections
+// may not have loaded. So make sure we poke for a check when the data comes
+// in.
+function inspection_layer_loadend() {
+    var type = this.fixmystreet.http_options.params.TYPENAME.replace('_inspections', 's');
+    var layer = fixmystreet.assets.layers.filter(function(elem) {
+        return elem.fixmystreet.body == "Oxfordshire County Council" &&
+        elem.fixmystreet.http_options &&
+        elem.fixmystreet.http_options.params &&
+        elem.fixmystreet.http_options.params.TYPENAME == type;
+    });
+    layer[0].checkSelected();
+}
+
+var layer;
+layer = fixmystreet.assets.add(drain_inspection_defaults, {
+    http_options: {
+        params: {
+            propertyName: 'id,msGeometry,asset_id,created,junction_cleaned',
+            TYPENAME: "junction_inspections"
+        }
+    },
     asset_item: 'drain'
+});
+layer.events.register( 'loadend', layer, inspection_layer_loadend);
+
+layer = fixmystreet.assets.add(drain_inspection_defaults, {
+    http_options: {
+        params: {
+            propertyName: 'id,msGeometry,asset_id,created,channel_cleaned',
+            TYPENAME: "channel_inspections"
+        }
+    },
+    asset_item: 'gully'
+});
+layer.events.register( 'loadend', layer, inspection_layer_loadend);
+
+fixmystreet.assets.add(drain_asset_defaults, {
+    http_options: { params: { TYPENAME: "channels" } },
+    asset_item: 'gully'
+});
+fixmystreet.assets.add(drain_asset_defaults, {
+    http_options: { params: { TYPENAME: "junctions" } },
+    asset_item: 'drain',
 });
 
 fixmystreet.assets.add(owned_defaults, {
