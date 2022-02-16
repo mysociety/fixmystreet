@@ -86,6 +86,20 @@ FixMyStreet::override_config {
         $contact->discard_changes;
         is_deeply $contact->get_extra_fields, $contact_extra_fields, 'new string field was added';
 
+        note 'attempt to add code with spaces';
+        $mech->submit_form_ok( { with_fields => {
+            "metadata[9999].code" => "space test",
+
+            "metadata[9999].order" => "1",
+            "metadata[9999].required" => 1,
+            "metadata[9999].behaviour" => "question",
+            "metadata[9999].description" => "<div style='foo'>this is a test description</div>",
+            "metadata[9999].datatype" => "string",
+            "note" => "Added extra field",
+        }});
+        $mech->content_lacks('Values updated');
+        $mech->content_contains('Codes for extra data must not contain spaces');
+
         $mech->get_ok("/admin/body/" . $body->id . "/" . $contact->category);
         $mech->submit_form_ok( { with_fields => {
             "metadata[9999].order" => "2",

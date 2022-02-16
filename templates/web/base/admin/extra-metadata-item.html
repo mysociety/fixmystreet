@@ -27,8 +27,8 @@ DEFAULT behaviour = 'question';
 
         <div class="form-group">
             <label for="metadata-[% i %]-code">[% loc('Code') %]</label>
-            <span class="form-hint" id="metadata-[% i %]-code-hint">[% loc('The code used to store this field value in the database.') %]</span>
-            <input class="form-control" name="metadata[[% i %]].code" id="metadata-[% i %]-code" aria-describedby="metadata-[% i %]-code-hint" type=text value="[% meta.code | html %]">
+            <span class="form-hint" id="metadata-[% i %]-code-hint">[% loc('The code used to store this field value in the database.') %] [% loc('Must not contain spaces.') %]</span>
+            <input class="form-control" name="metadata[[% i %]].code" id="metadata-[% i %]-code" pattern="\S+" aria-describedby="metadata-[% i %]-code-hint" type=text value="[% meta.code | html %]">
         </div>
 
         <fieldset>

@@ -316,6 +316,13 @@ sub update_contact : Private {
     $c->forward('/admin/update_extra_fields', [ $contact ]);
     $c->forward('contact_cobrand_extra_fields', [ $contact, \%errors ]);
 
+    for ( @{ $contact->extra->{_fields} } ) {
+        if ( $_->{code} =~ /\s/ ) {
+            $errors{code} = _('Codes for extra data must not contain spaces');
+            last;
+        }
+    }
+
     # Special form disabling form
     if ($c->get_param('disable')) {
         my $msg = $c->get_param('disable_message');
