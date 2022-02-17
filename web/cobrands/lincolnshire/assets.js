@@ -131,7 +131,7 @@ fixmystreet.assets.add(defaults, {
         "Road surface issue"
     ],
     asset_item: 'road',
-    asset_item_message: null,
+    asset_item_message: '',
     disable_pin_snapping: true,
     stylemap: fixmystreet.assets.stylemap_invisible
 });
