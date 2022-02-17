@@ -43,6 +43,7 @@ FixMyStreet::DB::Factories->setup($opt);
 my $categories = [
     'Abandoned vehicles',
     'Bus stops',
+    'Damaged/missing cats eye',
     'Dog fouling',
     'Flyposting',
     'Flytipping',
