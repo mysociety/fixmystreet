@@ -31,8 +31,8 @@ my $contacts = [
         },
         extra_fields => [
             {
-                code => 'speed_limit',
-                description => 'Is the speed limit on this road 40mph or greater?',
+                code => 'speed_limit_greater_than_30',
+                description => 'Is the speed limit greater than 30mph?',
                 datatype => 'singlevaluelist',
                 order => 1,
                 variable => 'true',
