@@ -80,26 +80,13 @@ $db->txn_do(sub {
     # Create categories for parishes.
     foreach my $parish (@parishes) {
         foreach my $contact (@$contacts) {
-            my $contact_rs = FixMyStreet::DB->resultset('Contact')->search({
+            my $new_contact = FixMyStreet::DB->resultset('Contact')->find_or_new({
                 body_id => $parish->{body}->id,
                 category => $contact->{category},
             });
 
-            if ($contact_rs->count > 0) {
-                print "Existing contact found...skipping\n";
-                next;
-            }
-
-            print "Creating category $contact->{category} for $parish->{name}...";
-
-            my $new_contact = $contact_rs->create_with_note(
-                "created automatically by script",
-                basename($0),
-                {
-                    email => $parish->{email},
-                    state => 'confirmed',
-                }
-            );
+            $new_contact->email($parish->{email});
+            $new_contact->state('confirmed');
 
             if ($contact->{extra_metadata}) {
                 $new_contact->set_extra_metadata(%{$contact->{extra_metadata}});
@@ -109,9 +96,12 @@ $db->txn_do(sub {
                 $new_contact->set_extra_fields(@{$contact->{extra_fields}});
             }
 
-            $new_contact->update;
+            my $action = $new_contact->in_storage ? 'Updated' : 'Created';
 
-            print "done\n";
+            $new_contact->add_note("$action by script", basename($0));
+            $new_contact->update_or_insert;
+
+            print "$action $contact->{category} for $parish->{name}\n";
         }
 
         # Make sure body has correct send method and isn't marked as deleted
