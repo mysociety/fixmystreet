@@ -32,6 +32,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', emai
 $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email => "car\@chiltern", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => "graffiti\@chiltern", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping (off-road)', email => "districts_flytipping", send_method => 'Email');
+$mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', email => 'parking@example.org', send_method => 'Email', group => 'Car park issue');
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 $cobrand->mock('lookup_site_code', sub {
@@ -333,6 +334,46 @@ subtest 'old district council names are now just "areas"' => sub {
         }
     }
 
+};
+
+my $bucks = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
+
+subtest 'Prevents car park reports being made outside a car park' => sub {
+    # Simulate no car parks found
+    $bucks->mock('_get', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Barrier+problem');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test Report",
+            detail => 'Test report details.',
+            category => 'Barrier problem',
+        }
+    }, "submit details");
+    $mech->content_contains('Please select a location in a Buckinghamshire maintained car park') or diag $mech->content;
+};
+
+subtest 'Allows car park reports to be made in a car park' => sub {
+    # Now simulate a car park being found
+    $bucks->mock('_get', sub {
+        "<wfs:FeatureCollection>
+            <gml:featureMember>
+                <Transport_BC_Car_Parks:BC_CAR_PARKS>
+                    <Transport_BC_Car_Parks:OBJECTID>1</Transport_BC_Car_Parks:OBJECTID>
+                </Transport_BC_Car_Parks:BC_CAR_PARKS>
+            </gml:featureMember>
+        </wfs:FeatureCollection>"
+    });
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Barrier+problem');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test Report",
+            detail => 'Test report details.',
+            category => 'Barrier problem',
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
 };
 
 };
