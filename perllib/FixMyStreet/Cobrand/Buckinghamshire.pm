@@ -688,4 +688,23 @@ around 'report_validation' => sub {
     return $self->$orig($report, $errors);
 };
 
+# Route grass cutting reports to the parish if the user answers 'no' to the
+# question 'Is the speed limit on this road 30mph or greater?'
+sub munge_contacts_to_bodies {
+    my ($self, $contacts, $report) = @_;
+
+    return unless $report->category eq 'Grass cutting';
+
+    my $greater_than_30 = $report->get_extra_field_value('speed_limit_greater_than_30');
+    return unless $greater_than_30;
+
+    if ($greater_than_30 eq 'no') {
+        # Route to the parish
+        @$contacts = grep { !$_->body->areas->{$self->council_area_id} } @$contacts;
+    } else {
+        # Route to council
+        @$contacts = grep { $_->body->areas->{$self->council_area_id} } @$contacts;
+    }
+}
+
 1;

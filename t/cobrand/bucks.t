@@ -10,6 +10,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
+my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'triage' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
@@ -34,6 +35,34 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email =>
 $mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => "graffiti\@chiltern", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping (off-road)', email => "districts_flytipping", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', email => 'parking@example.org', send_method => 'Email', group => 'Car park issue');
+$mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
+
+# Create another Grass cutting category for a parish.
+$contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
+$contact->set_extra_fields({
+    code => 'speed_limit_greater_than_30',
+    description => 'Is the speed limit on this road 30mph or greater?',
+    datatype => 'singlevaluelist',
+    order => 1,
+    variable => 'true',
+    required => 'true',
+    protected => 'false',
+    values => [
+        {
+            key => 'yes',
+            name => 'Yes',
+        },
+        {
+            key => 'no',
+            name => 'No',
+        },
+        {
+            key => 'dont_know',
+            name => "Don't know",
+        },
+    ],
+});
+$contact->update;
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 $cobrand->mock('lookup_site_code', sub {
@@ -70,14 +99,15 @@ subtest 'cobrand displays council name' => sub {
 
 subtest 'cobrand displays correct categories' => sub {
     my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.615559&longitude=-0.556903');
-    is @{$json->{bodies}}, 1, 'Bucks returned';
+    is @{$json->{bodies}}, 2, 'Bucks and parish returned';
     like $json->{category}, qr/Car Parks/, 'Car Parks displayed';
     like $json->{category}, qr/Flytipping/, 'Flytipping displayed';
     like $json->{category}, qr/Blocked drain/, 'Blocked drain displayed';
     like $json->{category}, qr/Graffiti/, 'Graffiti displayed';
+    like $json->{category}, qr/Grass cutting/, 'Grass cutting displayed';
     unlike $json->{category}, qr/Flytipping \(off-road\)/, 'Flytipping (off-road) not displayed';
     $json = $mech->get_ok_json('/report/new/category_extras?latitude=51.615559&longitude=-0.556903');
-    is @{$json->{bodies}}, 1, 'Still Bucks returned';
+    is @{$json->{bodies}}, 2, 'Still Bucks and parish returned';
 };
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
@@ -386,6 +416,40 @@ subtest 'Allows car park reports to be made in a car park' => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
+};
+
+subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub {
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 1",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+            speed_limit_greater_than_30 => 'no', # Is the speed limit greater than 30mph?
+        }
+    }, "submit details");
+    $mech->content_contains('Thank you for your report');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 1', 'Got the correct report';
+    is $report->bodies_str, $parish->id, 'Report was sent to parish';
+};
+
+subtest 'sends grass cutting reports on roads 30mph or more to the council' => sub {
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 2",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+            speed_limit_greater_than_30 => 'yes', # Is the speed limit greater than 30mph?
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 2', 'Got the correct report';
+    is $report->bodies_str, $body->id, 'Report was sent to council';
 };
 
 };
