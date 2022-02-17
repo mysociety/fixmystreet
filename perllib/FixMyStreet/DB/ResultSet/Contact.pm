@@ -90,4 +90,17 @@ sub summary_count {
     );
 }
 
+sub create_with_note {
+    my ( $rs, $note, $editor, $params ) = @_;
+
+    my $new_contact_params = {
+        %$params,
+        note => $note,
+        editor => $editor,
+        whenedited => \'current_timestamp',
+    };
+
+    return $rs->create($new_contact_params);
+}
+
 1;

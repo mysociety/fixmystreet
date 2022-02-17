@@ -1,0 +1,121 @@
+#!/usr/bin/env perl
+#
+# This script adds relevant categories for parishes listed in a CSV file by
+# attempting to match them to the existing parish bodies in FMS.
+#
+# The CSV file needs to have 'name' and 'email' columns with the name of
+# the parish council (which should match the existing body) and the email
+# address that reports should be sent to.
+
+use strict;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use Text::CSV;
+
+my $contacts = [
+    { category => 'Hedge problem', extra_metadata => { prefer_if_multiple => 1, group => 'Grass, hedges and weeds' } },
+    { category => 'Fly posting', extra_metadata => { prefer_if_multiple => 1 } },
+    { category => 'Dirty signs', extra_metadata => { prefer_if_multiple => 1 } },
+    {
+        category => 'Grass cutting',
+        extra_metadata => {
+            group => 'Grass, hedges and weeds',
+        },
+        extra_fields => [
+            {
+                code => 'speed_limit',
+                description => 'Is the speed limit on this road 40mph or greater?',
+                datatype => 'singlevaluelist',
+                order => 1,
+                variable => 'true',
+                required => 'true',
+                protected => 'false',
+                values => [
+                    {
+                        key => 'yes',
+                        name => 'Yes',
+                    },
+                    {
+                        key => 'no',
+                        name => 'No',
+                    },
+                    {
+                        key => 'dont_know',
+                        name => "Don't know",
+                    },
+                ],
+            }
+        ],
+    },
+];
+
+my @parishes;
+
+my $csv = Text::CSV->new ({ binary => 1, auto_diag => 1 });
+die "Usage: $0 <csv_file>\n" unless @ARGV;
+open my $fh, "<:encoding(utf8)", $ARGV[0] or die "$ARGV[0]: $!";
+$csv->header($fh);
+
+# Load parishes from supplied CSV file.
+while (my $row = $csv->getline_hr($fh)) {
+    my $name = $row->{name};
+    my $body = FixMyStreet::DB->resultset('Body')->find({ name => $name });
+    if (!$body) {
+        die "Error: Couldn't find body called $name\n";
+    }
+
+    push @parishes, { name => $name, email => $row->{email}, body => $body };
+}
+
+my $db = FixMyStreet::DB->schema->storage;
+$db->txn_do(sub {
+    # Create categories for parishes.
+    foreach my $parish (@parishes) {
+        foreach my $contact (@$contacts) {
+            my $contact_rs = FixMyStreet::DB->resultset('Contact')->search({
+                body_id => $parish->{body}->id,
+                category => $contact->{category},
+            });
+
+            if ($contact_rs->count > 0) {
+                print "Existing contact found...skipping\n";
+                next;
+            }
+
+            print "Creating category $contact->{category} for $parish->{name}...";
+
+            my $new_contact = $contact_rs->create_with_note(
+                "created automatically by script",
+                basename($0),
+                {
+                    email => $parish->{email},
+                    state => 'confirmed',
+                }
+            );
+
+            if ($contact->{extra_metadata}) {
+                $new_contact->set_extra_metadata(%{$contact->{extra_metadata}});
+            }
+
+            if ($contact->{extra_fields}) {
+                $new_contact->set_extra_fields(@{$contact->{extra_fields}});
+            }
+
+            $new_contact->update;
+
+            print "done\n";
+        }
+
+        # Make sure body has correct send method and isn't marked as deleted
+        $parish->{body}->update({ send_method => 'Email', deleted => 0 });
+        print "\n";
+    }
+});

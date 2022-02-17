@@ -1,0 +1,95 @@
+#!/usr/bin/env perl
+#
+# This script creates parish bodies for all parishes covered by Buckinghamshire council.
+
+use strict;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use mySociety::MaPit;
+use FixMyStreet::DB;
+
+# Mapping for parishes that aren't called "$name Parish Council"
+# The key is the mapit name, value is the desired display name.
+# Anything not in this list will default to "$mapit_name Parish Council"
+my $name_mappings = {
+    'Addington' => 'Addington',
+    'Amersham' => 'Amersham Town Council',
+    'Aston Sandford' => 'Aston Sandford',
+    'Aylesbury' => 'Aylesbury Town Council',
+    'Barton Hartshorn' => 'Barton Hartshorn',
+    'Beaconsfield' => 'Beaconsfield Town Council',
+    'Biddlesden' => 'Biddlesden',
+    'Bledlow-cum-Saunderton' => 'Bledlow-Cum-Saunderton Parish Council',
+    'Buckingham' => 'Buckingham Town Council',
+    'Chesham' => 'Chesham Town Council',
+    'Chetwode' => 'Chetwode',
+    'Cholesbury-cum-St Leonards' => 'Cholesbury-Cum-St Leonards Parish Council',
+    'Coldharbour' => 'Coldharbour',
+    'Creslow' => 'Creslow',
+    'Dinton-with-Ford and Upton' => 'Dinton-with-Ford and Upton',
+    'Dorton' => 'Dorton Parish Council',
+    'Drayton Beauchamp' => 'Drayton Beauchamp',
+    'Dunton' => 'Dunton',
+    'Edlesborough' => 'Edlesborough Northall and Dagnall Parish Council',
+    'Gerrards Cross' => 'Gerrards Cross Town Council',
+    'Hedsor' => 'Hedsor',
+    'Hoggeston' => 'Hoggeston',
+    'Kingsey' => 'Kingsey',
+    'Kingswood' => 'Kingswood',
+    'Longwick-cum-Ilmer' => 'Longwick cum Ilmer Parish Council',
+    'Marlow' => 'Marlow Town Council',
+    'Nether Winchendon' => 'Nether Winchendon',
+    'Poundon' => 'Poundon',
+    'Princes Risborough' => 'Princes Risborough Town Council',
+    'Shalstone' => 'Shalstone',
+    'Thornton' => 'Thornton',
+    'Water Stratford' => 'Water Stratford',
+    'Wingrave with Rowsham' => 'Wingrave-with-Rowsham Parish Council',
+    'Winslow' => 'Winslow Town Council',
+    'Wooburn' => 'Wooburn and Bourne End Parish Council',
+    'Woodham' => 'Woodham',
+    'Wotton Underwood' => 'Wotton Underwood',
+};
+
+my $parent_id = "163793"; # Buckinghamshire Council Unitary Authority on Mapit
+
+# Fetch the list of parishes from MapIt
+my $mapit_areas = mySociety::MaPit::call('area', "$parent_id/children", type => 'CPC');
+my @areas = values %$mapit_areas;
+
+my $db = FixMyStreet::DB->schema->storage;
+$db->txn_do(sub {
+    foreach my $area (@areas) {
+        my $id = $area->{id};
+        my $mapped_name = delete $name_mappings->{$area->{name}};
+        my $name = $mapped_name || "$area->{name} Parish Council";
+
+        my $body_rs = FixMyStreet::DB->resultset("Body")->search({
+            name => $name,
+        })->for_areas($id);
+
+        if ($body_rs->count > 0) {
+            print "Existing body found for $name, skipping...\n";
+            next;
+        }
+
+        print "Creating body $name ($id)...";
+
+        my $body = $body_rs->create({ send_method => 'Noop', deleted => 1 });
+        $body->body_areas->find_or_create({ area_id => $id });
+
+        print "done\n";
+    }
+
+    if (%$name_mappings) {
+        my $unused_names = join ', ', keys %$name_mappings;
+        warn "[WARNING] The following name mappings weren't used: $unused_names\n";
+    }
+});
