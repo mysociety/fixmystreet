@@ -204,4 +204,12 @@ sub category_uneditable {
     return 0;
 }
 
+sub add_note {
+  my ( $self, $note, $editor ) = @_;
+
+    $self->note($note);
+    $self->editor($editor);
+    $self->whenedited(\'current_timestamp');
+}
+
 1;
