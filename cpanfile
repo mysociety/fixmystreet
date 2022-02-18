@@ -86,6 +86,7 @@ requires 'File::Path';
 requires 'Geo::OLC';
 requires 'Geography::NationalGrid',
     mirror => 'https://cpan.metacpan.org/';
+requires 'Getopt::Long', '2.52';
 requires 'Getopt::Long::Descriptive', '0.105';
 requires 'HTML::Entities';
 requires 'HTML::FormHandler::Model::DBIC';
@@ -107,7 +108,7 @@ requires 'Moo', '2.003004';
 requires 'MooX::Types::MooseLike';
 requires 'namespace::autoclean', '0.28';
 requires 'Net::Amazon::S3';
-requires 'Net::DNS::Resolver';
+requires 'Net::DNS', '1.33';
 requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.11';
 requires 'Net::OAuth';
