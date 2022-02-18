@@ -33,7 +33,7 @@ sub string {
     $s = FixMyStreet::Geocode::escape($s);
     $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
 
-    my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s";
+    my $url = "https://dev.virtualearth.net/REST/v1/Locations?q=$s";
     $url .= '&userMapView=' . join(',', @{$params->{bounds}})
         if $params->{bounds};
     $url .= '&userLocation=' . $params->{centre} if $params->{centre};
@@ -105,7 +105,7 @@ sub reverse {
     # Get nearest road-type thing from Bing
     my $key = FixMyStreet->config('BING_MAPS_API_KEY', '');
     if ($key) {
-        my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?key=$key";
+        my $url = "https://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?key=$key";
         $url .= '&c=' . $bing_culture if $bing_culture;
         my $j = FixMyStreet::Geocode::cache('bing', $url);
         return $j if $j;

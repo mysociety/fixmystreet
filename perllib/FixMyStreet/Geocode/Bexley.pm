@@ -6,7 +6,7 @@ use strict;
 
 use URI::Escape;
 
-my $base = 'http://tilma.mysociety.org/mapserver/bexley?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=Streets&outputFormat=geojson&Filter=%3CFilter%3E%3CPropertyIsLike%20wildcard=%27*%27%20singleChar=%27.%27%20escape=%27!%27%3E%3CPropertyName%3EADDRESS%3C/PropertyName%3E%3CLiteral%3E{{str}}%3C/Literal%3E%3C/PropertyIsLike%3E%3C/Filter%3E';
+my $base = 'https://tilma.mysociety.org/mapserver/bexley?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=Streets&outputFormat=geojson&Filter=%3CFilter%3E%3CPropertyIsLike%20wildcard=%27*%27%20singleChar=%27.%27%20escape=%27!%27%3E%3CPropertyName%3EADDRESS%3C/PropertyName%3E%3CLiteral%3E{{str}}%3C/Literal%3E%3C/PropertyIsLike%3E%3C/Filter%3E';
 
 # Data is ALL CAPS
 sub recase {

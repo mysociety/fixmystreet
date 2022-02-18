@@ -9,6 +9,7 @@
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
         - Fix dashboard rows for categories with &s.
+        - Make calls from Geocoder files to https rather than http
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording,
           and is no longer visible only on focus. #3788 #3794
