@@ -53,19 +53,10 @@ fixmystreet.maps.matrix_ids = [
  * to setup the way the map should operate.
  */
 fixmystreet.maps.config = function() {
-    fixmystreet.controls = [
-        new OpenLayers.Control.ArgParserFMS(),
-        new OpenLayers.Control.KeyboardDefaultsFMS(),
-        new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.PermalinkFMS('map')
-    ];
+    // Remove default PanZoom, not on report mobile pages
+    fixmystreet.maps.controls = fixmystreet.maps.controls.slice(0, 4);
     if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {
-        fixmystreet.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );
-    }
-
-    /* Linking back to around from report page, keeping track of map moves */
-    if ( fixmystreet.page == 'report' ) {
-        fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
+        fixmystreet.maps.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );
     }
 
     this.setup_wmts_base_map();

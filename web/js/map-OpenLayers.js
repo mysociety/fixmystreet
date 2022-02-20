@@ -961,7 +961,7 @@ $.extend(fixmystreet.utils, {
         fixmystreet.map = new OpenLayers.Map(
             "map", OpenLayers.Util.extend({
                 theme: null,
-                controls: fixmystreet.controls,
+                controls: fixmystreet.maps.controls,
                 displayProjection: new OpenLayers.Projection("EPSG:4326")
             }, fixmystreet.map_options)
         );
@@ -1543,3 +1543,15 @@ OpenLayers.Control.KeyboardDefaultsFMS = OpenLayers.Class(OpenLayers.Control, {
 
     CLASS_NAME: "OpenLayers.Control.KeyboardDefaultsFMS"
 });
+
+fixmystreet.maps.controls = [
+    new OpenLayers.Control.ArgParserFMS(),
+    new OpenLayers.Control.KeyboardDefaultsFMS(),
+    new OpenLayers.Control.Navigation(),
+    new OpenLayers.Control.PermalinkFMS('map'),
+    new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
+];
+/* Linking back to around from report page, keeping track of map moves */
+if ( fixmystreet.page == 'report' ) {
+    fixmystreet.maps.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
+}

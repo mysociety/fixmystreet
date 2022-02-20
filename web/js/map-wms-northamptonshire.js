@@ -11,19 +11,6 @@ fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
  * to setup the way the map should operate.
  */
 fixmystreet.maps.config = function() {
-    fixmystreet.controls = [
-        new OpenLayers.Control.ArgParserFMS(),
-        new OpenLayers.Control.KeyboardDefaultsFMS(),
-        new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.PermalinkFMS('map'),
-        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
-    ];
-
-    /* Linking back to around from report page, keeping track of map moves */
-    if ( fixmystreet.page == 'report' ) {
-        fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
-    }
-
     this.setup_wms_base_map();
 };
 
