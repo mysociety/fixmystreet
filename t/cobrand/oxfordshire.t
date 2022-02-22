@@ -245,6 +245,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Investigation complete/, 'state correct in email';
+        like $body, qr/fix every issue reported on FixMyStreet/;
     };
 
     subtest 'extra CSV columns are present' => sub {

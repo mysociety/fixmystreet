@@ -9,6 +9,8 @@ The following updates have been left on this report:
 
 [% state_message %]
 
+[% TRY %][% INCLUDE '_alert_update_after_updates.txt' %][% CATCH file %][% END %]
+
 If you would like to view or reply to these updates, please visit the following URL:
 
     [% problem_url %]

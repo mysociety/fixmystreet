@@ -1532,6 +1532,8 @@ fixmystreet.fetch_reporting_data = function() {
         re_select(old_category_group, old_category);
         fixmystreet.reporting.topLevelPoke();
 
+        fixmystreet.set_up.fancybox_images(); // In case e.g. top_message has pulled in a fancybox
+
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
             var lb = $('#form_first_name').prev();

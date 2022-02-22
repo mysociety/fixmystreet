@@ -1,0 +1,4 @@
+[% IF report.is_closed ~%]
+Unfortunately we can't fix every issue reported on FixMyStreet. Councillor Tim
+Bearder explains why: https://youtu.be/hae9g170sA4
+[% END %]

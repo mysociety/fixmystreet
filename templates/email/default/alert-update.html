@@ -14,6 +14,7 @@ INCLUDE '_email_top.html';
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% title %]</a></h1>
   [%~ INCLUDE '_email_comment_list.html' %]
+  [% TRY %][% INCLUDE '_alert_update_after_updates.html' %][% CATCH file %][% END %]
  [% IF unsubscribe_url %]
   <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about this report</a></p>
  [% END %]
