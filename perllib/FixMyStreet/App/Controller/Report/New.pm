@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Encode;
-use List::Util qw(uniq any);
+use List::Util qw(uniq any none);
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -769,6 +769,9 @@ sub setup_categories_and_bodies : Private {
         }
         $c->stash->{unresponsive}{$k} = { map { $_ => 1 } keys %bodies };
     }
+    $c->stash->{refused_bodies} = \@refused_bodies;
+    my @refused_details_bodies_names = map { $_->name } @refused_bodies;
+    $c->stash->{refused_details_bodies_names} = \@refused_details_bodies_names;
 
     my %seen;
     foreach my $contact (@contacts) {
@@ -847,7 +850,16 @@ sub setup_categories_and_bodies : Private {
     $csv->combine(@list_of_names);
     $c->stash->{list_of_names_as_string} = $csv->string;
 
-    my @missing_details_bodies = grep { !$bodies_to_list{$_->id} } values %bodies;
+    # get bodies missing from bodies_to_list
+    my @missing_details_bodies = map { $bodies{$_} } grep {
+        my $body_id = $_;
+        none { $body_id == $_ } keys %bodies_to_list;
+    } keys %bodies;
+    # exclude any refused bodies from @missing_details_bodies
+    @missing_details_bodies = grep {
+        my $missing_body_id = $_->{id};
+        none { $missing_body_id == $_->{id} } @refused_bodies;
+    } @missing_details_bodies;
     my @missing_details_body_names = map { $_->name } @missing_details_bodies;
 
     $c->stash->{missing_details_bodies} = \@missing_details_bodies;
