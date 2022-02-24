@@ -33,7 +33,9 @@ logo_font_size = "24px"
 primary_column_background_color = color_white
 primary_column_text_color = color_black
 secondary_column_background_color = color_blue_pale
+secondary_column_background_color_dark_mode = color_blue_darker
 secondary_column_text_color = color_gunmetal
+secondary_column_text_color_dark_mode = color_white
 column_divider_color = color_grey
 column_padding = "20" # a single CSS pixel measurement without the "px" suffix
 
@@ -71,6 +73,8 @@ wrapper_table = table_reset
 
 link_style = "color: $link_text_color;"
 link_hover_style = "text-decoration: none; color: $link_hover_text_color;"
+link_style_dark_mode = "color: $link_text_color !important;"
+link_hover_style_dark_mode = "text-decoration: none; color: $link_hover_text_color;"
 
 td_style = "font-family: $body_font_family; font-size: 16px; line-height: 21px; font-weight: normal; text-align: left;"
 
@@ -90,6 +94,7 @@ header_style = "padding: $header_padding; background: $header_background_color; 
 only_column_style = "padding: ${ column_padding }px; vertical-align: top; background-color: $primary_column_background_color; color: $primary_column_text_color;"
 primary_column_style = "vertical-align: top; width: 50%; background-color: $primary_column_background_color; color: $primary_column_text_color;"
 secondary_column_style = "vertical-align: top; width: 50%; background-color: $secondary_column_background_color; color: $secondary_column_text_color; border-left: 1px solid $column_divider_color;"
+secondary_column_style_dark_mode = "vertical-align: top; width: 50%; background-color: $secondary_column_background_color_dark_mode !important; color: $secondary_column_text_color_dark_mode !important; border-left: 1px solid $column_divider_color;"
 
 # Use these to add padding inside primary and secondary columns.
 start_padded_box = '<table cellspacing="0" cellpadding="' _ column_padding _ '" border="0" width="100%"><tr><th style="' _ td_style _ '">'

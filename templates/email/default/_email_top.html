@@ -15,6 +15,8 @@
 <head>
   <title>[% rss_title | safe %]</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <style type="text/css">
   [%~ # Styles here will be applied by everything except Gmail.com %]
   a { [% link_style %] }
@@ -44,6 +46,16 @@
       background-color: [% body_background_color %];
     }
   }
+
+  @media (prefers-color-scheme: dark ) {
+    a { [% link_style_dark_mode %] }
+    a:hover { [% link_hover_style_dark_mode %] }
+    #secondary_column { [% secondary_column_style_dark_mode %] }
+  }
+
+  [data-ogsc] a { [% link_style_dark_mode %] }
+  [data-ogsc] a:hover { [% link_hover_style_dark_mode %] }
+  [data-ogsc] #secondary_column { [% secondary_column_style_dark_mode %] }
   </style>
 </head>
 <body style="[% body_style %]">
