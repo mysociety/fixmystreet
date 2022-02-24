@@ -47,7 +47,9 @@ A similar list of packages should work for other Debian-based distributions.
 (Please let us know if you would like to contribute such a package list or
 instructions for other distributions.)
 
-#### b. Mac OS X
+<a name="pre-req-pkg-mac"> </a>
+
+#### b. macOS
 
 Install either MacPorts or HomeBrew (you might well have one already), and then
 use the command below to install a few packages that FixMyStreet needs, for
@@ -56,7 +58,7 @@ which it's much simpler to install via a packaging system.
 ##### i. MacPorts
 
 {% highlight bash %}
-$ port install gettext p5-locale-gettext p5-perlmagick jhead postgresql91-server
+$ port install gettext jhead libpng openssl p5-locale-gettext p5-perlmagick postgresql91-server
 {% endhighlight %}
 
 ##### ii. HomeBrew
@@ -65,7 +67,7 @@ $ port install gettext p5-locale-gettext p5-perlmagick jhead postgresql91-server
 find an alternative way to install ImageMagick.
 
 {% highlight bash %}
-$ brew install gettext perlmagick jhead postgresql
+$ brew install gettext jhead libpng openssl@1.1 perlmagick postgresql
 $ brew link gettext --force
 {% endhighlight %}
 
@@ -128,11 +130,41 @@ As well as installing dependencies, this script compiles our CSS (using
 `bin/make_css`), installs the database schema (using `bin/update-schema`),
 and compiles any translation `.mo` files (using `commonlib/bin/gettext-makemo`).
 
+#### macOS troubleshooting
+
+Some Perl modules may fail to install without certain packages and paths in place.
+
+First make sure you have installed any [prerequisite packages](#pre-req-pkg-mac).
+
+For any **SSL-related modules**, you may need to create symlinks to folders Perl modules will recognise:
+
+{% highlight bash %}
+$ sudo mkdir /usr/local/lib
+$ sudo ln -s $HOMEBREW_PREFIX/opt/openssl@1.1/lib/libssl.1.1.dylib /usr/local/lib/libssl.dylib
+$ sudo ln -s $HOMEBREW_PREFIX/opt/openssl@1.1/lib/libcrypto.1.1.dylib /usr/local/lib/libcrypto.dylib
+{% endhighlight %}
+
+You may also need to set one or more of the following env variables:
+
+{% highlight bash %}
+$ export OPENSSL_PREFIX=$HOMEBREW_PREFIX/opt/openssl@1.1
+$ export PKG_CONFIG_PATH="$HOMEBREW_PREFIX/opt/openssl@1.1/lib/pkgconfig"
+$ export LDFLAGS="-L$HOMEBREW_PREFIX/opt/openssl@1.1/lib"
+$ export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/openssl@1.1/include"
+{% endhighlight %}
+
+For **Locale::gettext** you may need to set one or more of the following:
+
+{% highlight bash %}
+$ export CPATH=$HOMEBREW_PREFIX/include
+$ export LIBRARY_PATH=$HOMEBREW_PREFIX/lib
+{% endhighlight %}
+
 ### 5. Set up config
 
 The settings for FixMyStreet are defined in `conf/general.yml` using the YAML
 markup language. There are some defaults in `conf/general.yml-example` which
-you should copy to `conf/general.yml`; note that if you are using the Vagrant 
+you should copy to `conf/general.yml`; note that if you are using the Vagrant
 environment, a simple `conf/general.yml` file should already have been
 configured for you.
 
