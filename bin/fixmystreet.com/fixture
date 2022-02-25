@@ -136,6 +136,7 @@ if ($opt->test_fixtures) {
         { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council', cobrand => 'bromley' },
         { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
         { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
+        { area_id => 53822, categories => [ 'Grass cutting' ], name => 'Adstock Parish Council' }, # Buckinghamshire parish council
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council', cobrand => 'hounslow' },
@@ -243,6 +244,35 @@ if ($opt->test_fixtures) {
         $child_cat->set_extra_metadata(group => 'Roads & Pavements');
         $child_cat->update;
     }
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{53822},
+        category => 'Grass cutting',
+    });
+    $child_cat->set_extra_fields({
+        code => 'speed_limit_greater_than_30',
+        description => 'Is the speed limit greater than 30mph?',
+        datatype => 'singlevaluelist',
+        order => 1,
+        variable => 'true',
+        required => 'true',
+        protected => 'false',
+        values => [
+            {
+                key => 'yes',
+                name => 'Yes',
+            },
+            {
+                key => 'no',
+                name => 'No',
+            },
+            {
+                key => 'dont_know',
+                name => "Don't know",
+            },
+        ],
+    });
+    $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2483},
