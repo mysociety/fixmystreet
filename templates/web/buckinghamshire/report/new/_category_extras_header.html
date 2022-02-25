@@ -1,0 +1,7 @@
+[% IF category == 'Grass cutting' %]
+  <p class="form-section-description">
+    Help us to direct your enquiry/report to the right team first time. Some services are provided by the Parish/Town Council, and are dependent on the location/road speed limit.
+  </p>
+[% ELSE %]
+  [% THROW file 'Not found' %]
+[% END %]
