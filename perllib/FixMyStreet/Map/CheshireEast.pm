@@ -6,6 +6,8 @@ extends 'FixMyStreet::Map::OSM';
 
 has '+min_zoom_level' => ( default => 7 );
 
+has '+map_type' => ( default => 'OpenLayers.Layer.CheshireEast' );
+
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wfs.js',
     '/js/map-OpenLayers.js',

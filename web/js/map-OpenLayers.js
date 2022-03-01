@@ -165,11 +165,21 @@ $.extend(fixmystreet.utils, {
         // Should not be able to drag normal pins!!
         drag.deactivate();
 
+        fixmystreet.maps.show_keyboard_instructions('move');
+
         // Force a redraw to return (de)selected marker to normal size
         // Redraw for all pages, kick off a refresh too for around
         // TODO Put 'new report' pin in different layer to simplify this and elsewhere
         fixmystreet.maps.markers_resize();
         fixmystreet.markers.refresh({force: true});
+      },
+
+      hide_keyboard_instructions: function() {
+        $('html').removeClass(['map-keyboard-drop-pin', 'map-keyboard-move', 'map-keyboard-remove-pin']);
+      },
+      show_keyboard_instructions: function(cls) {
+        $('html').removeClass(['map-keyboard-drop-pin', 'map-keyboard-move', 'map-keyboard-remove-pin']);
+        $('html').addClass('map-keyboard-' + cls);
       },
 
       begin_report: function(lonlat) {
@@ -188,6 +198,8 @@ $.extend(fixmystreet.utils, {
             fixmystreet.markers.addFeatures( markers );
             drag.activate();
         }
+
+        fixmystreet.maps.hide_keyboard_instructions();
 
         // check to see if markers are visible. We click the
         // link so that it updates the text in case they go
@@ -949,7 +961,7 @@ $.extend(fixmystreet.utils, {
         fixmystreet.map = new OpenLayers.Map(
             "map", OpenLayers.Util.extend({
                 theme: null,
-                controls: fixmystreet.controls,
+                controls: fixmystreet.maps.controls,
                 displayProjection: new OpenLayers.Projection("EPSG:4326")
             }, fixmystreet.map_options)
         );
@@ -1011,6 +1023,7 @@ $.extend(fixmystreet.utils, {
             fixmystreet.map.addControl(click);
             click.activate();
         }
+        fixmystreet.maps.show_keyboard_instructions('move');
 
         onload();
 
@@ -1064,6 +1077,10 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         return btn;
     },
     moveTo: function(){},
+    onButtonClick: function(evt) {
+        OpenLayers.Control.PanZoom.prototype.onButtonClick.apply(this, arguments);
+        fixmystreet.maps.hide_keyboard_instructions();
+    },
     draw: function(px) {
         // A customised version of .draw() that doesn't specify
         // and dimensions/positions for the buttons, since we
@@ -1421,3 +1438,120 @@ OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, s
     this._headers[sName] = sValue;
     return this._object.setRequestHeader(sName, sValue);
 };
+
+/* This is similar to OpenLayers' own KeyboardDefaults, but switches to using
+ * key rather than keyCode (OL zoom out does not work in Firefox), works better
+ * with modifier keys, and adds FMS specific handling for showing help and
+ * starting a new report.
+ */
+OpenLayers.Control.KeyboardDefaultsFMS = OpenLayers.Class(OpenLayers.Control, {
+    autoActivate: true,
+    slideFactor: 75,
+    observeElement: null,
+    draw: function() {
+        var observeElement = this.observeElement || document;
+        this.handler = new OpenLayers.Handler.Keyboard( this,
+                {"keydown": this.defaultKeyPress},
+                {observeElement: observeElement}
+        );
+    },
+    defaultKeyPress: function (evt) {
+        var size, handled = true;
+
+        var target = OpenLayers.Event.element(evt);
+        if (target  &&
+            (target.tagName == 'INPUT' ||
+             target.tagName == 'TEXTAREA' ||
+             target.tagName == 'SELECT')) {
+            return;
+        }
+        if (evt.altKey || evt.ctrlKey || evt.metaKey) {
+            return;
+        }
+
+        switch (evt.key) {
+            case "Spacebar":
+            case " ":
+                if ($('html').hasClass('map-keyboard-drop-pin')) {
+                    fixmystreet.display.begin_report( fixmystreet.map.getCenter() );
+                    fixmystreet.maps.show_keyboard_instructions('remove-pin');
+                } else if (fixmystreet.page === 'new') {
+                    fixmystreet.maps.show_keyboard_instructions('drop-pin');
+                }
+                break;
+            case "ArrowLeft":
+            case "Left":
+                this.map.pan(-this.slideFactor, 0);
+                break;
+            case "ArrowRight":
+            case "Right":
+                this.map.pan(this.slideFactor, 0);
+                break;
+            case "ArrowUp":
+            case "Up":
+                this.map.pan(0, -this.slideFactor);
+                break;
+            case "ArrowDown":
+            case "Down":
+                this.map.pan(0, this.slideFactor);
+                break;
+
+            case "PageUp":
+                size = this.map.getSize();
+                this.map.pan(0, -0.75*size.h);
+                break;
+            case "PageDown":
+                size = this.map.getSize();
+                this.map.pan(0, 0.75*size.h);
+                break;
+            case "End":
+                size = this.map.getSize();
+                this.map.pan(0.75*size.w, 0);
+                break;
+            case "Home":
+                size = this.map.getSize();
+                this.map.pan(-0.75*size.w, 0);
+                break;
+
+            case "+":
+            case "Add":
+            case "=":
+                this.map.zoomIn();
+                break;
+            case "-":
+            case "Subtract":
+                this.map.zoomOut();
+                break;
+            default:
+                handled = false;
+        }
+        if (handled) {
+            // prevent browser default not to move the page
+            // when moving the page with the keyboard
+            OpenLayers.Event.stop(evt);
+            if ($('html').hasClass('map-keyboard-move')) {
+                if (fixmystreet.page === 'around') {
+                    fixmystreet.maps.show_keyboard_instructions('drop-pin');
+                } else if (fixmystreet.page === 'new') {
+                    fixmystreet.maps.show_keyboard_instructions('remove-pin');
+                } else {
+                    fixmystreet.maps.hide_keyboard_instructions();
+                }
+            }
+        }
+    },
+
+    CLASS_NAME: "OpenLayers.Control.KeyboardDefaultsFMS"
+});
+
+fixmystreet.maps.controls = [
+    new OpenLayers.Control.ArgParserFMS(),
+    new OpenLayers.Control.KeyboardDefaultsFMS(),
+    new OpenLayers.Control.Navigation(),
+    new OpenLayers.Control.PermalinkFMS('map'),
+    new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
+];
+/* Linking back to around from report page, keeping track of map moves */
+if ( fixmystreet.page == 'report' ) {
+    fixmystreet.maps.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
+}

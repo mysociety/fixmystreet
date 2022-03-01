@@ -1,11 +1,5 @@
 fixmystreet.maps.config = function() {
-    fixmystreet.controls = [
-        new OpenLayers.Control.ArgParserFMS(),
-        new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.PermalinkFMS('map'),
-        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
-    ];
-
+    fixmystreet.maps.controls.unshift( new OpenLayers.Control.AttributionFMS() );
     if (OpenLayers.Layer.BingAerial) {
         fixmystreet.layer_options = [
           { map_type: OpenLayers.Layer.OSMaps },

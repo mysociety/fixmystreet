@@ -880,3 +880,186 @@ textarea.form-error {
   padding: 2em;
   font-size: 1.2em;
 }
+
+// Map instructions for keyboard
+.map-instructions {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  pointer-events: none;
+  display: block; // fallback for non-flex browsers
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (min-width: 1180px) {
+    bottom: 25px;
+    left: 25px;
+    right: 25px;
+  }
+}
+
+.keyboard-instructions-wrapper {
+  display: none;
+  float: right; // fallback for non-flex browsers
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  pointer-events: auto;
+
+  @media (min-width: 1180px) {
+    padding: 10px;
+  }
+
+  & > * {
+    margin: 5px 10px;
+    float: right; // fallback for non-flex browsers
+  }
+
+  span {
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .keyboard-key-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    order: flip(-1, 1);
+
+    .keyboard-key-icon {
+      margin-right: 5px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.keyboard-key-icon {
+  display: inline-block;
+  border-radius: 4px;
+  width: 30px;
+  height: 0;
+  padding-top: 22px;
+  overflow: hidden;
+  background-color: #ECEBEB;
+  box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.3);
+  margin-bottom: 3px; // compensate for box-shadow when vertically centering
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &.zoom-in {
+    background-image: inline-image("../fixmystreet/images/keyboard-plus-black.svg");
+    background-size: 13px;
+  }
+
+  &.zoom-out {
+    background-image: inline-image("../fixmystreet/images/keyboard-hyphen-black.svg");
+    background-size: auto 4px;
+  }
+
+  &.left {
+    background-image: inline-image("../fixmystreet/images/keyboard-arrow-left-black.svg");
+    background-size: 14px auto;
+  }
+
+  &.right {
+    background-image: inline-image("../fixmystreet/images/keyboard-arrow-right-black.svg");
+    background-size: 14px auto;
+  }
+
+  &.space {
+    height: auto;
+    width: auto;
+    padding: 4px 12px;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: bold;
+  }
+}
+
+// Animation for shrinking circle keyboard-pin
+@-webkit-keyframes shrink {
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.5); }
+}
+@-moz-keyframes shrink{
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.5); }
+}
+@keyframes shrink {
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1); }
+  100%{ transform: scale(0.5); }
+    }
+@-o-keyframes shrink {
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1); }
+  100%{ transform: scale(0.5); }
+}
+
+.keyboard-pin {
+  display: none;
+  background-image: url('/i/pin-green-big.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 78px;
+  height: 105px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -125px; // place bottom centre of pin 20px above centre of map
+  margin-left: -39px; // place bottom centre of pin 20px above centre of map
+  pointer-events: none;
+
+  &::after {
+    content: "";
+    background-image: url('/i/pin-shadow-big.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 88px;
+    height: 40px;
+    bottom: -20px;
+    left: 45px;
+    position: absolute;
+  }
+}
+
+.keyboard-pulsating-dot {
+  display: none;
+  border-radius: 50%;
+  background-color: transparentize($color: white, $amount: 0.7);
+  width: 20px;
+  height: 20px;
+  border: 3px solid #222;
+  top: 50%;
+  left: 50%;
+  margin-top: -13px; // place in dead centre of map
+  margin-left: -13px; // place in dead centre of map
+  position: absolute;
+  -webkit-animation: shrink 2.5s infinite;
+  animation: shrink 2.5s infinite;
+  -moz-animation: shrink 2.5s infinite;
+  -o-animation: shrink 2.5s infinite;
+  transform-origin: center;
+  box-shadow: 0px 0px 0px 3px white, inset 0px 0px 0px 3px #75C701;
+  pointer-events: none;
+}
+
+.map-keyboard-move #keyboard-instructions-first { display: block; display: flex; }
+.map-keyboard-drop-pin #keyboard-instructions-drop-pin { display: block; display: flex; }
+.map-keyboard-drop-pin .keyboard-pin { display: block; }
+.map-keyboard-drop-pin .keyboard-pulsating-dot { display: block; }
+.map-keyboard-remove-pin #keyboard-instructions-remove-pin { display: block; display: flex; }

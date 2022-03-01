@@ -3026,6 +3026,10 @@ $emergency-message-border: 1px solid #525252 !default;
   }
 }
 
+.keyboard-instructions-wrapper, .keyboard-pin {
+  display: none;
+}
+
 @import "_admin";
 @import "_dropzone";
 @import "_multiselect";
