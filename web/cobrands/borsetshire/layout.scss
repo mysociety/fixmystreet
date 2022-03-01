@@ -27,6 +27,10 @@
         color: $nav_colour;
     }
 
+    span, span:hover, span.report-a-problem-btn:hover {
+        color: $color-societyworks-pink;
+    }
+
     a {
         &:hover,
         &:focus {
@@ -45,11 +49,6 @@
         &:hover, &:focus {
             background-color: transparent;
         }
-    }
-
-    span.report-a-problem-btn,
-    span.report-a-problem-btn:hover {
-        color: $nav_colour;
     }
 }
 
