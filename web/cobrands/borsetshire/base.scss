@@ -281,3 +281,33 @@ body.authpage {
         font-size: 1em;
     }
 }
+
+//Secondary navbar
+.secondary-navbar {
+    border-bottom: 1px solid $color-societyworks-borders;
+    background-color: $color-societyworks-yellow;
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+
+        span {
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        a.btn {
+            margin: 5px 0px 5px 10px;
+            padding: 0.5em 0.75em;
+            background: lighten($color: $color-societyworks-yellow, $amount: 10%);
+            border: 2px solid transparentize($color: white, $amount: 0.3);
+            &:hover {
+                background: transparent;
+                border: 2px solid transparentize($color: #333333, $amount: 0.3);
+            }
+        }
+    }
+}
