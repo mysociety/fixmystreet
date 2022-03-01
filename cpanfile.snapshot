@@ -3694,24 +3694,27 @@ DISTRIBUTIONS
       HTTP::Date 0
       Module::Build::Tiny 0.035
       perl 5.008001
-  HTTP-Message-6.06
-    pathname: G/GA/GAAS/HTTP-Message-6.06.tar.gz
+  HTTP-Message-6.36
+    pathname: O/OA/OALDERS/HTTP-Message-6.36.tar.gz
     provides:
-      HTTP::Config 6.00
-      HTTP::Headers 6.05
-      HTTP::Headers::Auth 6.00
-      HTTP::Headers::ETag 6.00
-      HTTP::Headers::Util 6.03
-      HTTP::Message 6.06
-      HTTP::Request 6.00
-      HTTP::Request::Common 6.04
-      HTTP::Response 6.04
-      HTTP::Status 6.03
+      HTTP::Config 6.36
+      HTTP::Headers 6.36
+      HTTP::Headers::Auth 6.36
+      HTTP::Headers::ETag 6.36
+      HTTP::Headers::Util 6.36
+      HTTP::Message 6.36
+      HTTP::Request 6.36
+      HTTP::Request::Common 6.36
+      HTTP::Response 6.36
+      HTTP::Status 6.36
     requirements:
+      Carp 0
       Compress::Raw::Zlib 0
-      Encode 2.21
+      Encode 3.01
       Encode::Locale 1
+      Exporter 5.57
       ExtUtils::MakeMaker 0
+      File::Spec 0
       HTTP::Date 6
       IO::Compress::Bzip2 2.021
       IO::Compress::Deflate 0
@@ -3725,7 +3728,10 @@ DISTRIBUTIONS
       MIME::Base64 2.1
       MIME::QuotedPrint 0
       URI 1.10
+      base 0
       perl 5.008001
+      strict 0
+      warnings 0
   HTTP-MultiPartParser-0.02
     pathname: C/CH/CHANSEN/HTTP-MultiPartParser-0.02.tar.gz
     provides:
@@ -5558,20 +5564,24 @@ DISTRIBUTIONS
       Test::TCP 0
       URI 0
       URI::Escape 0
-  Net-HTTP-6.06
-    pathname: G/GA/GAAS/Net-HTTP-6.06.tar.gz
+  Net-HTTP-6.22
+    pathname: O/OA/OALDERS/Net-HTTP-6.22.tar.gz
     provides:
-      Net::HTTP 6.06
-      Net::HTTP::Methods 6.06
-      Net::HTTP::NB 6.04
-      Net::HTTPS 6.04
+      Net::HTTP 6.22
+      Net::HTTP::Methods 6.22
+      Net::HTTP::NB 6.22
+      Net::HTTPS 6.22
     requirements:
+      Carp 0
       Compress::Raw::Zlib 0
       ExtUtils::MakeMaker 0
-      IO::Compress::Gzip 0
-      IO::Select 0
       IO::Socket::INET 0
+      IO::Uncompress::Gunzip 0
+      URI 0
+      base 0
       perl 5.006002
+      strict 0
+      warnings 0
   Net-OAuth-0.28
     pathname: K/KG/KGRENNAN/Net-OAuth-0.28.tar.gz
     provides:
@@ -8983,6 +8993,68 @@ DISTRIBUTIONS
       URI::Escape 0
       WWW::RobotRules 6
       perl 5.008001
+  libwww-perl-6.61
+    pathname: O/OA/OALDERS/libwww-perl-6.61.tar.gz
+    provides:
+      LWP 6.61
+      LWP::Authen::Basic 6.61
+      LWP::Authen::Digest 6.61
+      LWP::Authen::Ntlm 6.61
+      LWP::ConnCache 6.61
+      LWP::Debug 6.61
+      LWP::Debug::TraceHTTP 6.61
+      LWP::DebugFile 6.61
+      LWP::MemberMixin 6.61
+      LWP::Protocol 6.61
+      LWP::Protocol::cpan 6.61
+      LWP::Protocol::data 6.61
+      LWP::Protocol::file 6.61
+      LWP::Protocol::ftp 6.61
+      LWP::Protocol::gopher 6.61
+      LWP::Protocol::http 6.61
+      LWP::Protocol::loopback 6.61
+      LWP::Protocol::mailto 6.61
+      LWP::Protocol::nntp 6.61
+      LWP::Protocol::nogo 6.61
+      LWP::RobotUA 6.61
+      LWP::Simple 6.61
+      LWP::UserAgent 6.61
+      libwww::perl undef
+    requirements:
+      CPAN::Meta::Requirements 2.120620
+      Digest::MD5 0
+      Encode 2.12
+      Encode::Locale 0
+      ExtUtils::MakeMaker 0
+      File::Copy 0
+      File::Listing 6
+      File::Temp 0
+      Getopt::Long 0
+      HTML::Entities 0
+      HTML::HeadParser 0
+      HTTP::Cookies 6
+      HTTP::Date 6
+      HTTP::Negotiate 6
+      HTTP::Request 6
+      HTTP::Request::Common 6
+      HTTP::Response 6
+      HTTP::Status 6.07
+      IO::Select 0
+      IO::Socket 0
+      LWP::MediaTypes 6
+      MIME::Base64 2.1
+      Module::Metadata 0
+      Net::FTP 2.58
+      Net::HTTP 6.18
+      Scalar::Util 0
+      Try::Tiny 0
+      URI 1.10
+      URI::Escape 0
+      WWW::RobotRules 6
+      parent 0.217
+      perl 5.008001
+      strict 0
+      warnings 0
   local-lib-2.000024
     pathname: H/HA/HAARG/local-lib-2.000024.tar.gz
     provides:

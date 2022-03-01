@@ -99,7 +99,7 @@ requires 'IO::String';
 requires 'JSON::MaybeXS';
 requires 'Locale::gettext';
 requires 'LWP::Simple';
-requires 'LWP::UserAgent';
+requires 'LWP::UserAgent', '6.61';
 requires 'Math::Trig';
 requires 'MIME::Parser'; # HandleMail
 requires 'Module::Pluggable';
