@@ -2,11 +2,19 @@
 
 $menu-image: 'menu-black';
 
-$bromley_blue: #647890;
-$bromley_green: #235e1c;
-$bromley_dark_green: #505050;
+// Primary colours
+$bromley_blue: #336699;
+$bromley_green: #00753b;
+$bromley_dark_green: #303030;
 
-$primary: $bromley_blue;
+// Secondary
+$bromley_green_light: #cbe3d7;
+$bromley_green_pale: #edfaf4;
+$bromley_cream_light: #f5f3ed;
+$bromley_grey-light:#eaeaea;
+$bromley_teal: #0A7F79;
+
+$primary: $bromley_green;
 $primary_b: #ffffff;
 $primary_text: #ffffff;
 $primary_link_color: $primary_text;
@@ -16,8 +24,8 @@ $link-color: $bromley_green;
 $link-hover-color: $bromley_green;
 $link-visited-color: $bromley_dark_green;
 
-$base_bg: #f4f4f4;
-$base_fg: #1a1a1a;
+$base_bg: $bromley_cream_light;
+$base_fg: $bromley_dark_green;
 
 $nav_background_colour: #f4f4f4;
 $nav_colour: #fff;
@@ -26,7 +34,7 @@ $nav_hover_background_colour: #444;
 $col_click_map: $bromley_blue;
 $col_fixed_label: $bromley_blue;
 
-$header-top-border-width: 4px;
+$header-top-border-width: 0px;
 
 // Override the container width to match Bromley' site, which is wider
 $container-max-width: 1200px;
