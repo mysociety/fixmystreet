@@ -1446,7 +1446,7 @@ OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, s
  */
 OpenLayers.Control.KeyboardDefaultsFMS = OpenLayers.Class(OpenLayers.Control, {
     autoActivate: true,
-    slideFactor: 75,
+    slideFactor: 50,
     observeElement: null,
     draw: function() {
         var observeElement = this.observeElement || document;
@@ -1465,9 +1465,10 @@ OpenLayers.Control.KeyboardDefaultsFMS = OpenLayers.Class(OpenLayers.Control, {
              target.tagName == 'SELECT')) {
             return;
         }
-        if (evt.altKey || evt.ctrlKey || evt.metaKey) {
+        if (evt.altKey || evt.metaKey) {
             return;
         }
+        var slide = evt.ctrlKey ? this.slideFactor / 5 : this.slideFactor;
 
         switch (evt.key) {
             case "Spacebar":
@@ -1481,19 +1482,19 @@ OpenLayers.Control.KeyboardDefaultsFMS = OpenLayers.Class(OpenLayers.Control, {
                 break;
             case "ArrowLeft":
             case "Left":
-                this.map.pan(-this.slideFactor, 0);
+                this.map.pan(-slide, 0);
                 break;
             case "ArrowRight":
             case "Right":
-                this.map.pan(this.slideFactor, 0);
+                this.map.pan(slide, 0);
                 break;
             case "ArrowUp":
             case "Up":
-                this.map.pan(0, -this.slideFactor);
+                this.map.pan(0, -slide);
                 break;
             case "ArrowDown":
             case "Down":
-                this.map.pan(0, this.slideFactor);
+                this.map.pan(0, slide);
                 break;
 
             case "PageUp":
