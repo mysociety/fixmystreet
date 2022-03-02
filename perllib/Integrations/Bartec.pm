@@ -224,7 +224,31 @@ sub Jobs_FeatureScheduleDates_Get {
             value => $end,
         },
     });
-    return force_arrayref($res, 'Jobs_FeatureScheduleDates');
+    my $data = force_arrayref($res, 'Jobs_FeatureScheduleDates');
+
+    # The data may contain multiple schedules for the same JobName because one
+    # is ending and another starting, so one will lack a NextDate (represented
+    # as a 1900 timestamp), the other a PreviousDate; or an old ended schedule
+    # may still be present. Loop through and work out the closest previous and
+    # next dates to use.
+    my ($min_next, $max_last);
+    my $out;
+    foreach (@$data) {
+        my $name = $_->{JobName};
+        my $last = $_->{PreviousDate};
+        my $next = $_->{NextDate};
+        $last = undef if $last lt '2000';
+        $next = undef if $next lt '2000';
+        $min_next = $next if $next && (!defined($min_next) || $min_next gt $next);
+        $max_last = $last if $last && (!defined($max_last) || $max_last lt $last);
+        $out->{$name} = {
+            %$_,
+            PreviousDate => $max_last,
+            NextDate => $min_next,
+        };
+    }
+
+    return [ values %$out ];
 }
 
 sub Features_Schedules_Get {
