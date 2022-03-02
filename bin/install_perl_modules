@@ -4,7 +4,7 @@ set -e
 
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd | sed -e 's/\/bin$//' )"
 
-NETDNS_VERSION="$(bin/cron-wrapper perl -MNet::DNS -e'print $Net::DNS::VERSION' 2>/dev/null)"
+NETDNS_VERSION="$(bin/cron-wrapper perl -MNet::DNS -e'print $Net::DNS::VERSION' 2>/dev/null || true)"
 if [ "$NETDNS_VERSION" == "0.72" ]; then
     # Net::DNS 1.33 will not install with 0.72 installed
     bin/cpanm --uninstall --force --local-lib local Net::DNS
