@@ -24,9 +24,14 @@ our developers and on mySociety's servers.
 ## Client testing
 
 To run the front-end tests, you will need to install
-[Cypress](https://cypress.io) using `npm` (not direct download), and the
-`cypress` command needs to be on your `PATH`. Then you can run the front-end
-tests headlessly using:
+[Cypress](https://cypress.io) using `npm` (not direct download):
+
+{% highlight bash %}
+npm install cypress@3.8.3
+{% endhighlight %}
+
+Make sure the `cypress` command is on your `PATH`.
+Then you can run the front-end tests headlessly using:
 
 {% highlight bash %}
 $ bin/browser-tests run
