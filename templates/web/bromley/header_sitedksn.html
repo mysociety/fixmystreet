@@ -1,0 +1,27 @@
+<div class="bromley-header clearfix">
+    [% IF bodyclass == 'waste' %]
+        <a href="https://www.bromley.gov.uk/" id="site-logo">
+            <img src="/cobrands/bromley/images/waste.png" alt="Bromley Council">
+        </a>
+    [% ELSE %]
+        <a href="https://www.bromley.gov.uk/" id="site-logo">[% site_name %]</a>
+    [% END %]
+
+    {% comment %} <ul class="linear-links subtext float-right top-links">
+        <li class="first-child"><i class="fa fa-home"></i><a href="https://www.bromley.gov.uk">Home</a></li>
+        <li><i class="fa fa-sitemap"></i><a href="https://www.bromley.gov.uk/site_map">Sitemap</a></li>
+        <li><i class="fa fa-user"></i><a href="https://www.bromley.gov.uk/SiteLogin">Register/Sign in</a></li>
+    </ul>
+
+    <form action="https://www.bromley.gov.uk/site_search/results/" method="get" id="search" class="main-search" role="search">
+        <label for="SearchSite" class="hidden">Search this site</label>
+        <input type="text" size="18" class="main-search-input field" name="q" id="SearchSite" value="" placeholder="Search the website">
+        <input value="Search" type="submit" class="button__primary">
+    </form> {% endcomment %}
+</div>
+
+<div class="nav-wrapper">
+    <div class="container">
+        [% INCLUDE 'main_nav.html' %]
+    </div>
+</div>

@@ -5,9 +5,10 @@
 // page it stays small like in base.css
 body.fullwidthpage, body.twothirdswidthpage, body.authpage {
   #site-logo {
-    width: 159px;
-    height: 114px;
-    background: url(/cobrands/bromley/bromley-logo.png) 0 0 no-repeat;
+    width: 150px;
+    height: 90px;
+    @include svg-background-image("/cobrands/bromley/images/bromley-logo");
+    background-size: cover;
     float: left;
   }
 }

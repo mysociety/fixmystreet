@@ -10,7 +10,8 @@
 #site-logo {
   width: 80px;
   height: 44px;
-  background: url('/cobrands/bromley/bromley-logo.s.png') 0 0 no-repeat;
+  @include svg-background-image("/cobrands/bromley/images/bromley-logo");
+  background-size: 108px 65px;
   text-indent: -999999px;
   z-index:2;
 }
@@ -209,7 +210,7 @@ h1,h2,h3,h4,h5 {
     transition: opacity .25s ease-in-out;
     -moz-transition: opacity .25s ease-in-out;
     -webkit-transition: opacity .25s ease-in-out;
-    background: $bromley_blue url("search-icon.png") no-repeat center center !important;
+    background: $primary url("search-icon.png") no-repeat center center !important;
     text-indent: -10000px;
     border-radius: 0 5px 5px 0;
   }
