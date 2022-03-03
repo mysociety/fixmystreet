@@ -295,7 +295,7 @@ sub around_nearby_filter {
                 grep { $_->groups->[0] eq 'Street Lighting' }
                 @contacts;
             $params->{categories} = \@contacts;
-            $params->{distance} = 100; # Reduce the distance as searching more things
+            $params->{distance} = 0.1; # Reduce the distance as searching more things
         }
     }
 
