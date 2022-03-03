@@ -207,6 +207,7 @@ has_field location => (
 has_page 'choose_location' => (
     fields => ['location_matches', 'continue'],
     title => 'The location of the incident',
+    tags => { hide => 1 },
     next => 'map',
     update_field_list => sub {
         my $form = shift;
