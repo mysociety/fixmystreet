@@ -1,0 +1,14 @@
+//Mixin Placeholder
+//usage:
+/* 
+    input.random-input {
+            @include placeholder {color: $white !important;}
+    }
+*/
+@mixin placeholder {
+    &::-webkit-input-placeholder {@content;}
+    &:-moz-placeholder           {@content;}
+    &::-moz-placeholder          {@content;}
+    &:-ms-input-placeholder      {@content;}
+    &::placeholder               {@content;}
+}

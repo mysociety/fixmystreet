@@ -1,4 +1,5 @@
 @import "_colours";
+@import "_mixins";
 @import "../sass/layout";
 
 // Alter the logo and the header on every page *but* the map page. On the map
@@ -16,6 +17,34 @@ body.waste #site-logo {
     width: 334px;
     height: 114px;
     float: left;
+}
+
+header.bromley-header .container{
+  position: relative;
+  height: 90px;
+}
+
+.nav-wrapper {
+  top: 50%;
+  transform: translateY(-50%);
+  right: 15px;
+}
+
+.bromely-header__nav-link {
+  display: none;
+}
+
+.secondary-bar {
+  height: auto; // erase this
+  background-color: $bromley_green_light;
+  padding: 10px 0;
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 body.mappage {
@@ -107,13 +136,13 @@ h1.main {
 }
 
 // Bromley's search form floats to the right too
-.main-search {
-  width: 35%;
-  margin: 0;
-  float: right;
-  min-width: 287px;
-  clear: right;
-}
+// .main-search {
+//   width: 35%;
+//   margin: 0;
+//   float: right;
+//   min-width: 287px;
+//   clear: right;
+// }
 
 // Bromley's A-Z nav gets the background coloured in on bigger screens to
 // appear full-screen

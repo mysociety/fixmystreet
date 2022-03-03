@@ -1,17 +1,39 @@
 @import "../sass/h5bp";
 @import "./_colours";
+@import "./_mixins";
 @import "./_fonts";
 @import "../sass/mixins";
 
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
+//Helper classes
+.ml-1 {
+  margin:5px
+}
+
+.d-flex {
+  display: flex;
+  
+  &.row {
+    flex-direction: row;
+  }
+
+  &.justify-content-between {
+    justify-content: space-between;
+  }
+
+  &.align-item-center {
+    align-items: center;
+  }
+}
+
 // Override the site logo
 #site-logo {
-  width: 80px;
-  height: 44px;
+  width: 108px;
+  height: 65px;
   @include svg-background-image("/cobrands/bromley/images/bromley-logo");
-  background-size: 108px 65px;
+  background-size: cover;
   text-indent: -999999px;
   z-index:2;
 }
@@ -181,40 +203,91 @@ h1,h2,h3,h4,h5 {
   content: "\f015";
 }
 
+input {
+  text-decoration: none !important;
+}
+
 // Bromley's site search
-.main-search {
-  margin: 1em 0;
-  text-align: center;
-  .main-search-input {
-    border-radius: 5px 0 0 5px;
-    border-right: 0px;
-    padding: 7px 2%;
-    font-size: 0.9em;
-    font-weight: 300;
-    width: 74%;
-    text-align: left;
+form.main-search {
+  $max-height-header-search-button: 40px;
 
-    // Undo some FMS' specific styling that breaks Bromley's look and feel
-    display: inline-block;
-    box-sizing: content-box;
+  display: flex;
+  flex-direction: row;
+  max-width: 300px;
 
+  input[type=text] {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 3px solid #171717;
+    font-weight: 400;
+    margin: 0;
+    padding: 5px 7px;
+    position: relative;
+    border-radius: 0;
+    height: $max-height-header-search-button;
+    text-decoration: none;
+
+    &::placeholder {
+      text-decoration: none !important;
+      color:$bromley_dark_green;
+    }
+
+    // -webkit-transition: padding 0.2s ease-out;
+    // -o-transition: padding 0.2s ease-out;
+    // transition: padding 0.2s ease-out;
   }
-  .button__primary {
-    height: 42px;
-    line-height: 0;
-    padding: 1.3em 1em;
-    margin: 0 0 0 -3px;
-    border: 1px solid #647890;
-    width: 20%;
+
+  input.is--search {
+    @include svg-background-image("/cobrands/bromley/images/search-icon");
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 3px solid #171717;
+    border-radius: 0;
+    margin: 0;
     opacity: 1;
-    transition: opacity .25s ease-in-out;
-    -moz-transition: opacity .25s ease-in-out;
-    -webkit-transition: opacity .25s ease-in-out;
-    background: $primary url("search-icon.png") no-repeat center center !important;
+    height: $max-height-header-search-button;
+    width: $max-height-header-search-button;
     text-indent: -10000px;
-    border-radius: 0 5px 5px 0;
+    margin-left: -5px;
   }
 }
+
+// .main-search {
+//   margin: 1em 0;
+//   text-align: center;
+//   .main-search-input {
+//     border-radius: 5px 0 0 5px;
+//     border-right: 0px;
+//     padding: 7px 2%;
+//     font-size: 0.9em;
+//     font-weight: 300;
+//     width: 74%;
+//     text-align: left;
+
+//     // Undo some FMS' specific styling that breaks Bromley's look and feel
+//     display: inline-block;
+//     box-sizing: content-box;
+
+//   }
+//   .button__primary {
+//     height: 42px;
+//     line-height: 0;
+//     padding: 1.3em 1em;
+//     margin: 0 0 0 -3px;
+//     border: 1px solid #647890;
+//     width: 20%;
+//     opacity: 1;
+//     transition: opacity .25s ease-in-out;
+//     -moz-transition: opacity .25s ease-in-out;
+//     -webkit-transition: opacity .25s ease-in-out;
+//     background: $primary url("search-icon.png") no-repeat center center !important;
+//     text-indent: -10000px;
+//     border-radius: 0 5px 5px 0;
+//   }
+// }
 
 // Bromley's field definitions, with extra tag-level selectors to override
 // FMS' input[type=text]
