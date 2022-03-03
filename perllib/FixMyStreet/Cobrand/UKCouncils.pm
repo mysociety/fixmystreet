@@ -55,7 +55,13 @@ sub cut_off_date { '' }
 sub problems_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
-    $rs = $rs->to_body($self->body);
+
+    my $bodies = $self->body;
+    if ($self->can('problems_restriction_bodies')) {
+        $bodies = $self->problems_restriction_bodies;
+    }
+    $rs = $rs->to_body($bodies);
+
     if (my $date = $self->cut_off_date) {
         my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
         $rs = $rs->search({
