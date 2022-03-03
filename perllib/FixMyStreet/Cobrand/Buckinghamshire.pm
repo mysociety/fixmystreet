@@ -187,13 +187,10 @@ sub dashboard_export_problems_add_columns {
     shift->_dashboard_export_add_columns(@_);
 }
 
-# Enable adding/editing of parish councils in the admin
-sub add_extra_areas {
-    my ($self, $areas) = @_;
-
+sub _parish_ids {
     # This is a list of all Parish Councils within Buckinghamshire,
     # taken from https://mapit.mysociety.org/area/2217/covers.json?type=CPC
-    my $parish_ids = [
+    return [
         "135493",
         "135494",
         "148713",
@@ -364,7 +361,13 @@ sub add_extra_areas {
         "63715",
         "63723"
     ];
-    my $ids_string = join ",", @{ $parish_ids };
+}
+
+# Enable adding/editing of parish councils in the admin
+sub add_extra_areas {
+    my ($self, $areas) = @_;
+
+    my $ids_string = join ",", @{ $self->_parish_ids };
 
     my $extra_areas = mySociety::MaPit::call('areas', [ $ids_string ]);
 
@@ -657,6 +660,11 @@ around 'report_validation' => sub {
         body_id => $self->body->id,
         category => $report->category,
     });
+
+    # Reports to parishes are considered "owned" by Bucks, but this method only searches for
+    # contacts owned by the Bucks body, so just call the original method if contact isn't found.
+    return $self->$orig($report, $errors) unless $contact;
+
     my %groups = map { $_ => 1 } @{ $contact->groups };
     return $self->$orig($report, $errors) unless $groups{'Car park issue'};
 
@@ -687,6 +695,25 @@ sub munge_contacts_to_bodies {
         # Route to council
         @$contacts = grep { $_->body->areas->{$self->council_area_id} } @$contacts;
     }
+}
+
+sub area_ids_for_problems {
+    my ($self) = @_;
+
+    return ($self->council_area_id, @{$self->_parish_ids});
+}
+
+# Show parish problems on the cobrand.
+sub problems_restriction_bodies {
+    my ($self) = @_;
+
+    my @parishes = FixMyStreet::DB->resultset('Body')->search(
+        { 'body_areas.area_id' => $self->_parish_ids, },
+        { join => 'body_areas' }
+    )->all;
+    my @parish_ids = map { $_->id } @parishes;
+
+    return [$self->body->id, @parish_ids];
 }
 
 1;
