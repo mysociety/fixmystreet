@@ -282,6 +282,25 @@ sub report_inspect_update_extra {
 
 sub on_map_default_status { return 'open'; }
 
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+    # If the category is a streetlighting one, search all
+    my $cat = $params->{categories}[0];
+    if ($cat) {
+        $cat = $self->body->contacts->not_deleted->search({ category => $cat })->first;
+        if ($cat && $cat->groups->[0] eq 'Street Lighting') {
+            my @contacts = $self->body->contacts->not_deleted->all;
+            @contacts =
+                map { $_->category }
+                grep { $_->groups->[0] eq 'Street Lighting' }
+                @contacts;
+            $params->{categories} = \@contacts;
+            $params->{distance} = 100; # Reduce the distance as searching more things
+        }
+    }
+
+}
+
 sub admin_user_domain { 'oxfordshire.gov.uk' }
 
 sub admin_pages {

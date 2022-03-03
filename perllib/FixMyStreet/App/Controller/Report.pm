@@ -675,7 +675,7 @@ sub _nearby_json :Private {
     my $dist = $c->get_param('distance') || '';
     $dist = 1000 unless $dist =~ /^\d+$/;
     $dist = 1000 if $dist > 1000;
-    $params->{distance} = $dist / 1000;
+    $params->{distance} = $dist / 1000 unless $params->{distance};
 
     my $pin_size = $c->get_param('pin_size') || '';
     $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
