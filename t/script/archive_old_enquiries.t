@@ -4,6 +4,7 @@ use FixMyStreet::Script::ArchiveOldEnquiries;
 use File::Temp;
 use Path::Tiny;
 use Test::Exception;
+use Test::Output;
 
 my $mech = FixMyStreet::TestMech->new();
 
@@ -536,5 +537,115 @@ subtest 'category based closure' => sub {
         $mech->clear_emails_ok;
     };
 };
+
+my $archive_reports = sub {
+    my $opts = shift;
+
+    my ($report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Test', {
+        areas      => ',2237,',
+        user_id    => $user->id,
+        lastupdate => '2015-12-01 07:00:00',
+        state      => 'confirmed',
+    });
+
+    my ($report1) = $mech->create_problems_for_body(1, $oxfordshire->id . "," .$west_oxon->id, 'Test', {
+        areas      => ',2237,',
+        lastupdate => '2015-12-01 07:30:00',
+        user       => $user,
+        state      => 'confirmed',
+    });
+
+    my ($report2) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Test 2', {
+        areas      => ',2237,',
+        lastupdate => '2015-12-01 08:00:00',
+        user       => $user,
+        state      => 'investigating',
+    });
+
+    my ($report3, $report4) = $mech->create_problems_for_body(2, $oxfordshire->id, 'Test', {
+        areas      => ',2237,',
+        lastupdate => '2014-12-01 07:00:00',
+        user       => $user,
+        state      => 'confirmed',
+    });
+
+    my ($report5) = $mech->create_problems_for_body(1, $oxfordshire->id . "," .$west_oxon->id, 'Test', {
+        areas      => ',2237,',
+        lastupdate => '2014-12-01 07:00:00',
+        user       => $user,
+        state      => 'in progress'
+    });
+
+
+    FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
+
+    $report->discard_changes;
+    $report1->discard_changes;
+    $report2->discard_changes;
+    $report3->discard_changes;
+    $report4->discard_changes;
+    $report5->discard_changes;
+
+    is $report->state, 'confirmed', 'Report has not changed';
+    is $report1->state, 'confirmed', 'Report 1 has not changed';
+    is $report2->state, 'investigating', 'Report 2 has not changed';
+    is $report3->state, 'confirmed', 'Report 3 has not changed';
+    is $report4->state, 'confirmed', 'Report 4 has not changed';
+    is $report5->state, 'in progress', 'Report 5 has not changed';
+
+};
+
+
+FixMyStreet::override_config {
+      ALLOWED_COBRANDS => [ 'oxfordshire' ],
+}, sub {
+
+    my $opts = {
+        commit => 1,
+        body => $oxfordshire->id,
+        cobrand => 'oxfordshire',
+        closure_cutoff => "2015-01-01 00:00:00",
+        email_cutoff => "2016-01-01 00:00:00",
+        user => $user->id,
+        show_emails => 1,
+        category => 0,
+    };
+
+    subtest 'aborts if both --show_emails and --commit are specified' => sub {
+        throws_ok { $archive_reports->($opts) }
+            qr/Aborting: the show_emails flag was specified/,
+            "archive script / module die()s when both --commit and --show_emails are specified";
+    };
+
+    $opts->{commit} = 0;
+
+    subtest 'aborts if both --show_emails and --reports are specified' => sub {
+        my $fh = File::Temp->new;
+        my $name = $fh->filename;
+        $opts->{reports} = $name;
+        throws_ok { $archive_reports->($opts) }
+            qr/Aborting: the show_emails flag was specified/,
+            "archive script / module die()s when both --reports and --show_emails are specified";
+    };
+
+    @{$opts}{qw(show_emails reports)} = (0, 0);
+    @{$opts}{qw(commit show-emails)} = (1, 1);
+
+    subtest 'running --show-emails is equivalent to --show_emails re. other flags' => sub {
+        throws_ok { $archive_reports->($opts) }
+            qr/Aborting: the show_emails flag was specified/,
+            "archive script / module die()s when both --commit and --show_emails are specified";
+    };
+
+    @{$opts}{qw(show-emails show_emails commit)} = (0, 1, 0);
+
+    subtest 'using --show_emails does not change report state, but does output demo emails' => sub {
+        stdout_like { $archive_reports->($opts) }
+            qr/As part of this process we are closing all reports made before the update./,
+            "closure emails output to STDOUT";
+    };
+
+};
+
 
 done_testing();

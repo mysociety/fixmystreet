@@ -44,6 +44,8 @@ my ($opts, $usage) = describe_options(
     ['closure_text=s', "text of the message to add to reports" ],
     ['closed_state=s', "state to set reports to" ],
     ['limit|l=s',      "limit to a certain number of reports/users to be closed"],
+    ['show_emails|s',  "output emails that would be sent to STDOUT and prevent closure. Overrides --commit / -c and exits."],
+    ['show-emails|e',  "alternative to --show_emails with same effects."],
     ['help|h',         "print usage message and exit" ],
 );
 print($usage->text), exit if $opts->help;
