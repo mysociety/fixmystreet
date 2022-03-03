@@ -160,6 +160,8 @@ FixMyStreet::override_config {
     subtest 'Check multiple schedules' => sub {
         my $alt_jobs_fsd_get = {
             Jobs_FeatureScheduleDates => [
+                { JobID => 454, PreviousDate => '2021-08-03T10:10:10Z', NextDate => '2021-08-12T10:10:10Z', JobName => 'Empty Bin 240L Black' },
+                { JobID => 455, PreviousDate => '2021-07-21T10:10:10Z', NextDate => '1900-01-01T00:00:00Z', JobName => 'Empty Bin 240L Black' },
                 { JobID => 456, PreviousDate => '1900-01-01T00:00:00Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
                 { JobID => 457, PreviousDate => '2021-08-02T10:10:10Z', NextDate => '1900-01-01T00:00:00Z', JobName => 'Empty Bin Recycling 240l' },
             ],
