@@ -159,8 +159,11 @@ sub html_paragraph_email_factory : FilterFactory('html_para_email') {
 sub sanitize {
     my $text = shift;
 
+    # In case of markdown variant style of <https://www.google.com>
+    $text =~ s/<\s*(https?[^\s>]+)\s*>/$1/g;
+
     $text = $$text if UNIVERSAL::isa($text, 'FixMyStreet::Template::SafeString');
- 
+
     my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
     my $scrubber = HTML::Scrubber->new(
         rules => [
