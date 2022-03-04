@@ -192,7 +192,21 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_item: 'sign'
 });
 
-fixmystreet.assets.add(defaults, {
+// When the auto-asset selection of a layer occurs, the data for inspections
+// may not have loaded. So make sure we poke for a check when the data comes
+// in.
+function inspection_layer_loadend() {
+    var type = 'junctions';
+    var layer = fixmystreet.assets.layers.filter(function(elem) {
+        return elem.fixmystreet.body == "Buckinghamshire Council" &&
+        elem.fixmystreet.http_options &&
+        elem.fixmystreet.http_options.params &&
+        elem.fixmystreet.http_options.params.TYPENAME == type;
+    });
+    layer[0].checkSelected();
+}
+
+var layer = fixmystreet.assets.add(defaults, {
     http_options: {
         url: drains_proxy_url,
         params: {
@@ -205,6 +219,7 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'drain',
     non_interactive: true
 });
+layer.events.register( 'loadend', layer, inspection_layer_loadend);
 
 fixmystreet.assets.add(defaults, {
     http_options: {
