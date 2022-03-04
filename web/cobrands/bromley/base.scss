@@ -43,6 +43,64 @@ body.waste #site-logo {
   text-indent: 0;
 }
 
+// ERASE THIS
+#plDebugToolbarHandle {
+  display: none !important;
+}
+
+.bromely-header__nav-link {
+  text-indent: -9999999px;
+  position: absolute;
+  top: 35px;
+  right: 15px;
+  height: 46px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  outline: none;
+
+  span, span::before, span::after {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: $bromley_dark_green;
+    transition-duration: .25s;
+  }
+
+  span::before {
+    content: '';
+    top: 12px;
+  }
+
+  span::after {
+    content: '';
+    top: -12px;
+  }
+  
+  &[aria-expanded="true"] {
+    span {
+      transform: rotate(45deg);
+    }
+
+    span::before {
+      top: 0;
+      transform: rotate(0);
+    }
+  
+    span::after {
+      top: 0;
+      transform: rotate(90deg);
+    }
+  }
+
+  &.focussed, &:focus, &:hover {
+    span, span::before, span::after {
+      background-color: $bromley_blue;
+    }
+  }
+}
+
 #nav-link {
   top: 7px;
   right: 0.5em;
