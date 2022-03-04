@@ -19,10 +19,14 @@ body.waste #site-logo {
     float: left;
 }
 
-header.bromley-header .container{
-  position: relative;
-  height: 90px;
+header.bromley-header {
+  background-color: $nav_background_colour;
+  .container{
+    position: relative;
+    height: 90px;
+  }
 }
+
 
 .nav-wrapper {
   top: 50%;
@@ -34,41 +38,35 @@ header.bromley-header .container{
   display: none;
 }
 
-.secondary-bar {
-  height: auto; // erase this
-  background-color: $bromley_green_light;
-  padding: 10px 0;
-
-  .container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
-body.mappage {
-  .bromley-header {
-    margin-bottom: 0;
-    padding-top: 0.5em;
-  }
-}
+// body.mappage {
+//   .bromley-header {
+//     margin-bottom: 0;
+//     padding-top: 0.5em;
+//   }
+// }
 
 #main-nav {
   display: block; // remove flex so nav touches top of parent
   min-height: 0; // no vertical align, so no need for a height
   margin-top: 0; // don't bother overlapping the border
   height: auto;
+  padding-top: 0;
+  background-color: transparent;
 
   .ie9 & > * {
     position: static;
     -ms-transform: none;
   }
+
+  form {
+    padding: 0;
+    margin-left: 10px;
+  }
 }
 
 // Override the FMS main menu to give it a background colour
 .nav-menu--main {
-  background-color: $bromley_blue;
+  background-color: transparent;
 
   // Bromley doesn't have a special styling for the report button in the nav
   a.report-a-problem-btn {
@@ -81,8 +79,14 @@ body.mappage {
       background: $nav_hover_background_colour;
     }
   }
+
+  a:hover, a:focus {
+    background-color: transparent;
+    color: $bromley_green;
+  }
 }
-.nav-menu--main span {
+
+.nav-menu--main span  {
   color: $nav_colour;
   background-color: $nav_hover_background_colour;
 }
@@ -111,12 +115,12 @@ h1.main {
 }
 
 // This is our custom wrapper for Bromley's header elements
-.bromley-header {
+// .bromley-header {
   // Bromley's logo has a bottom margin to space it out from the A-Z nav, we
   // can't do that because they're in separate divs, so add a margin here
   // instead.
-  margin-bottom: 20px;
-}
+  // margin-bottom: 20px;
+// }
 
 // Center the mobile app buttons
 #footer-mobileapps p {

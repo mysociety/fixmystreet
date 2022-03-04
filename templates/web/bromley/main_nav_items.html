@@ -41,3 +41,11 @@
 [%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
   [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]
 [%~ END ~%]
+
+<li>
+  <form action="https://www.bromley.gov.uk/site_search/results/" method="get" id="search" class="main-search" role="search">
+    <label for="SearchSite" class="hidden">Search this site</label>
+    <input type="text" size="18" class="main-search-input field" name="q" id="SearchSite" value="" placeholder="Search the website">
+    <input value="Search" type="submit" class="btn is--search">
+  </form>
+</li>

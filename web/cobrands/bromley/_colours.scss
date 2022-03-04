@@ -24,12 +24,12 @@ $link-color: $bromley_green;
 $link-hover-color: $bromley_green;
 $link-visited-color: $bromley_dark_green;
 
-$base_bg: $bromley_cream_light;
+$base_bg: white;
 $base_fg: $bromley_dark_green;
 
-$nav_background_colour: #f4f4f4;
-$nav_colour: #fff;
-$nav_hover_background_colour: #444;
+$nav_background_colour: white;
+$nav_colour: $bromley_dark_green;
+$nav_hover_background_colour: $bromley_green_light;
 
 $col_click_map: $bromley_blue;
 $col_fixed_label: $bromley_blue;

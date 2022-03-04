@@ -23,6 +23,14 @@
     justify-content: space-between;
   }
 
+  &.justify-content-center {
+    justify-content: center;
+  }
+
+  &.justify-content-end {
+    justify-content: flex-end;
+  }
+
   &.align-item-center {
     align-items: center;
   }
@@ -101,10 +109,31 @@ body.waste #site-logo {
   }
 }
 
+#main-nav {
+ padding-top: 25px;
+ background-color: white;
+
+ form {
+   padding: 20px 1em;
+ }
+}
+
 #nav-link {
   top: 7px;
   right: 0.5em;
   transform: none;
+}
+
+// Nav menu overrides
+
+.nav-menu a, .nav-menu span {
+  padding: 20px 1em;
+  color: $bromley_dark_green;
+  text-decoration: none;
+
+  &:hover, &:focus {
+    text-decoration: underline;
+  }
 }
 
 // Reset form placeholders so that they match Bromley's
@@ -144,7 +173,16 @@ body.frontpage.fullwidthpage {
 .bromley-header {
   // These are from Bromley's styles, applied here because it's the closest
   // analog to their site header.
-  padding-top: 1em;
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
+}
+
+.secondary-bar {
+  height: auto; // erase this
+  background-color: $bromley_green_light;
+  padding: 5px 0;
+
+  border-top: 1px solid transparentize($color: $bromley_green, $amount: 0.7);
 }
 
 // Override the links to match Bromley's
@@ -226,7 +264,7 @@ h1,h2,h3,h4,h5 {
     font-size: 0.9em;
     list-style-type: none;
     a {
-      font-family: "Helvetica", sans-serif;
+      font-family: $body-font;
       color: #235e1c;
       opacity: 1;
       transition: opacity .25s ease-in-out;
