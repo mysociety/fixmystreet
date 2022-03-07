@@ -215,6 +215,7 @@ sub national_highways_cleaning_groups {
             push @{$nh_group->{categories}}, $cat;
         }
     }
+    @{$nh_group->{categories}} = sort {$a->category_display cmp $b->category_display } @{$nh_group->{categories}};
 }
 
 sub report_new_is_on_he_road {
