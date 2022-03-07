@@ -68,11 +68,19 @@ sub construct_query {
     @noop_bodies = map { $_->id } @noop_bodies;
     push @noop_params, \[ "NOT regexp_split_to_array(bodies_str, ',') && ?", [ {} => \@noop_bodies ] ];
 
+    my @and = (
+        @noop_params,
+        {   -or => {
+                whensent       => undef,
+                send_fail_body_ids => { '!=', '{}' },
+            }
+        },
+    );
+
     my $params = {
         state => $states,
-        whensent => undef,
         bodies_str => { '!=', undef },
-        -and => \@noop_params,
+        -and => \@and,
     };
     if (!$debug) {
         $params->{'-or'} = [
@@ -116,7 +124,10 @@ sub end_summary_failures {
     my $sending_errors = '';
     my $unsent = FixMyStreet::DB->resultset('Problem')->search( {
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
-        whensent => undef,
+        -or => {
+            whensent           => undef,
+            send_fail_body_ids => { '!=', '{}' },
+        },
         bodies_str => { '!=', undef },
         send_fail_count => { '>', 0 }
     },

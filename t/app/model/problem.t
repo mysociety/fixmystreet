@@ -588,6 +588,7 @@ subtest 'check can set multiple emails as a single contact' => sub {
         name => 'Test User',
         cobrand => 'fixmystreet',
         send_fail_count => 0,
+        send_fail_body_ids => [],
     } );
 
     FixMyStreet::override_config $override, sub {

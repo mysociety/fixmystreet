@@ -59,9 +59,8 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "confirmed",
   { data_type => "timestamp", is_nullable => 1 },
@@ -78,9 +77,8 @@ __PACKAGE__->add_columns(
   "lastupdate",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "whensent",
   { data_type => "timestamp", is_nullable => 1 },
@@ -114,6 +112,12 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "defect_type_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "send_fail_body_ids",
+  {
+    data_type     => "integer[]",
+    default_value => \"'{}'::integer[]",
+    is_nullable   => 0,
+  },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -170,8 +174,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hUXle+TtlkDkxkBrVa/u+g
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2022-03-10 11:09:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:W+bK8MqpeFwkTj0Ze/tN0g
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -244,6 +248,7 @@ use Utils;
 use FixMyStreet::Map::FMS;
 use FixMyStreet::Template;
 use FixMyStreet::Template::SafeString;
+use List::Util qw/any uniq/;
 use LWP::Simple qw($ua);
 use RABX;
 use URI;
@@ -254,6 +259,8 @@ my $IM = eval {
     Image::Magick->import;
     1;
 };
+
+use constant SENDER_REGEX => qr/^.*::/;
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
@@ -932,7 +939,7 @@ sub updates_sent_to_body {
 sub add_send_method {
     my $self = shift;
     my $sender = shift;
-    ($sender = ref $sender) =~ s/^.*:://;
+    $sender =~ s/${\SENDER_REGEX}//;
     if (my $send_method = $self->send_method_used) {
         $self->send_method_used("$send_method,$sender");
     } else {
@@ -940,10 +947,37 @@ sub add_send_method {
     }
 }
 
+sub add_send_fail_body_ids {
+    my $self    = shift;
+    my @new_ids = @_;
+
+    $self->send_fail_body_ids(
+        [ uniq( @new_ids, @{ $self->send_fail_body_ids } ) ] );
+}
+
+sub remove_send_fail_body_ids {
+    my $self       = shift;
+    my @remove_ids = @_;
+
+    my %existing_ids = map { $_ => 1 } @{ $self->send_fail_body_ids };
+
+    delete @existing_ids{@remove_ids};
+
+    $self->send_fail_body_ids( [ keys %existing_ids ] );
+}
+
+sub has_given_send_fail_body_id {
+    my $self = shift;
+    my $id   = shift;
+
+    return any { $_ == $id } @{ $self->send_fail_body_ids };
+}
+
 sub resend {
     my $self = shift;
     $self->whensent(undef);
     $self->send_method_used(undef);
+    $self->send_fail_body_ids([]);
 }
 
 sub as_hashref {
