@@ -31,6 +31,6 @@ describe('National Highways tests', function() {
         cy.get('#js-councils_text').should('contain', 'National Highways');
         cy.get('#single_body_only').should('have.value', 'National Highways');
         cy.nextPageReporting();
-        cy.get('#subcategory_NationalHighways label').contains('Sign issue').click();
+        cy.pickSubcategory('National Highways', 'Sign issue');
     });
 });

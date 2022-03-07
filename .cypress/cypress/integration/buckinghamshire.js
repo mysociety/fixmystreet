@@ -20,7 +20,7 @@ describe('buckinghamshire cobrand', function() {
     cy.pickCategory('Roads & Pavements');
     cy.wait('@roads-layer');
     cy.nextPageReporting();
-    cy.get('#subcategory_RoadsPavements label').contains('Parks').click();
+    cy.pickSubcategory('Roads & Pavements', 'Parks');
     cy.get('[name=site_code]').should('have.value', '7300268');
     cy.nextPageReporting();
     cy.contains('Photo').should('be.visible');
@@ -48,7 +48,7 @@ describe('buckinghamshire cobrand', function() {
     cy.pickCategory('Roads & Pavements');
     cy.wait('@roads-layer');
     cy.nextPageReporting();
-    cy.get('#subcategory_RoadsPavements label').contains('Snow and ice problem/winter salting').click();
+    cy.pickSubcategory('Roads & Pavements', 'Snow and ice problem/winter salting');
     cy.wait('@winter-routes');
     cy.nextPageReporting();
     cy.contains('The road you have selected is on a regular gritting route').should('be.visible');
@@ -72,7 +72,7 @@ describe('buckinghamshire roads handling', function() {
     cy.pickCategory('Roads & Pavements');
     cy.wait('@roads-layer');
     cy.nextPageReporting();
-    cy.get('#subcategory_RoadsPavements label').contains('Parks').click();
+    cy.pickSubcategory('Roads & Pavements', 'Parks');
     cy.nextPageReporting();
     cy.contains('Please select a road on which to make a report.').should('be.visible');
   });

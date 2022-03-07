@@ -19,7 +19,7 @@ describe('Westminster cobrand', function() {
     cy.pickCategory('Signs and bollards');
     cy.get('#form_USRN').should('have.value', 'USRN123');
     cy.nextPageReporting();
-    cy.pickSubcategory('Nameplates', '#form_featuretypecode');
+    cy.pickSubcatExtraInfo('Nameplates', '#form_featuretypecode');
     cy.wait('@nameplates');
     cy.nextPageReporting();
     cy.get('.mobile-map-banner').should('be.visible');
@@ -28,7 +28,7 @@ describe('Westminster cobrand', function() {
   it('checks UPRN fetching', function() {
     cy.pickCategory('Damaged, dirty, or missing bin');
     cy.nextPageReporting();
-    cy.pickSubcategory('Request new bin', '#form_bin_type');
+    cy.pickSubcatExtraInfo('Request new bin', '#form_bin_type');
     cy.wait('@uprn');
     cy.nextPageReporting();
     cy.get('.mobile-map-banner').should('be.visible');
