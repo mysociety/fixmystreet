@@ -24,20 +24,7 @@ var defaults = {
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
 
-OpenLayers.Layer.VectorAssetBromley = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
-    relevant: function() {
-        var relevant = OpenLayers.Layer.VectorAsset.prototype.relevant.apply(this, arguments),
-            subcategories = this.fixmystreet.subcategories,
-            subcategory = $('#form_service_sub_code').val(),
-            relevant_sub = OpenLayers.Util.indexOf(subcategories, subcategory) > -1;
-        return relevant && relevant_sub;
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.VectorAssetBromley'
-});
-
 fixmystreet.assets.add(defaults, {
-    class: OpenLayers.Layer.VectorAssetBromley,
     http_options: {
         params: {
             TYPENAME: "Streetlights"
@@ -47,28 +34,19 @@ fixmystreet.assets.add(defaults, {
     attributes: {
         feature_id: 'FEATURE_ID'
     },
-    asset_category: ["Street Lighting and Road Signs"],
-    subcategories: [ 'SL_LAMP', 'SL_NOT_WORK', 'SL_ON_DAY', 'SL_BLOCK_VEG' ],
+    asset_category: ["Lamp Column Damaged", "Light Not Working", "Light On All Day", "Light blocked by vegetation"],
     asset_item: 'street light'
 });
 
 fixmystreet.assets.add(defaults, {
-    class: OpenLayers.Layer.VectorAssetBromley,
     http_options: {
         params: {
             TYPENAME: "Bins"
         }
     },
-    asset_category: ["Parks and Greenspace", "Street Cleansing"],
-    subcategories: ['PG_OFLOW_DOG', 'SC_LIT_BIN'],
+    asset_category: ["Overflowing litter/dog bin", "Public Litter Bin"],
     asset_item: 'park bin',
     asset_item_message: 'For our parks, pick a <b class="asset-spot">bin</b> from the map &raquo;'
-});
-
-$(function(){
-    $("#problem_form").on("change.category", "#form_service_sub_code", function() {
-        $(fixmystreet).trigger('report_new:category_change');
-    });
 });
 
 var parks_stylemap = new OpenLayers.StyleMap({
@@ -88,7 +66,7 @@ fixmystreet.assets.add(defaults, {
     },
     stylemap: parks_stylemap,
     asset_type: 'area',
-    asset_category: ["Parks and Greenspace"],
+    asset_group: ["Parks and Greenspace"],
     asset_item: 'park',
     non_interactive: true
 });
