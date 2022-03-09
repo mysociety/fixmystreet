@@ -1656,6 +1656,7 @@ fixmystreet.display = {
     }
 
     fixmystreet.page = 'new';
+    document.title = translation_strings.reporting_a_problem;
 
     fixmystreet.update_report_a_problem_btn();
   },
@@ -1811,6 +1812,7 @@ fixmystreet.display = {
         $('body').removeClass('with-notes');
 
         fixmystreet.page = fixmystreet.original.page;
+        document.title = translation_strings.viewing_a_location;
         if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
             $('#mob_sub_map_links').remove();
             $('html').removeClass('map-page');
