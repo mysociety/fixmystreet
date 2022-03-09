@@ -179,6 +179,14 @@ FixMyStreet::override_config {
         $b->unmock('call');
         $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
     };
+    subtest 'Check no next schedule' => sub {
+        my $alt_jobs_fsd_get = [
+            { JobID => 454, PreviousDate => '2021-08-03T10:10:10Z', NextDate => undef, JobName => 'Empty Bin 240L Black' },
+        ];
+        $b->mock('Jobs_FeatureScheduleDates_Get', sub { $alt_jobs_fsd_get });
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
+    };
     subtest 'Future collection calendar' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');

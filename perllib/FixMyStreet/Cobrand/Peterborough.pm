@@ -655,10 +655,12 @@ sub bin_services_for_address {
         # Open request for same thing, or for all bins, or for large black bin
         my @request_service_ids_open = grep { $open_requests->{$_} || $open_requests->{425} || ($_ == 419 && $open_requests->{422}) } @$request_service_ids;
 
+        my $last_obj = { date => $last, ordinal => ordinal($last->day) } if $last;
+        my $next_obj = { date => $next, ordinal => ordinal($next->day) } if $next;
         my $row = {
             id => $_->{JobID},
-            last => { date => $last, ordinal => ordinal($last->day) },
-            next => { date => $next, ordinal => ordinal($next->day) },
+            last => $last_obj,
+            next => $next_obj,
             service_name => $service_name_override{$name} || $name,
             schedule => $schedules{$name}->{Frequency},
             service_id => $container_id,
@@ -671,7 +673,7 @@ sub bin_services_for_address {
             # is there already an open bin request for this container?
             request_open => @request_service_ids_open ? 1 : 0,
             # can this collection be reported as having been missed?
-            report_allowed => $self->_waste_report_allowed($last),
+            report_allowed => $last ? $self->_waste_report_allowed($last) : 0,
             # is there already a missed collection report open for this container
             # (or a missed assisted collection for any container)?
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
