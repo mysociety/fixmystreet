@@ -142,7 +142,14 @@ sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
     if ($contact->email =~ /^Alloy/) {
-        return [
+        # Add contributing user's role to extra data
+        my $contributed_by = $row->get_extra_metadata('contributed_by');
+        my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
+        my $roles;
+        if ($contributing_user) {
+            $roles = join(',', map { $_->name } $contributing_user->roles->all);
+        }
+        my $extra = [
             { name => 'report_url',
             value => $h->{url} },
             { name => 'title',
@@ -152,6 +159,8 @@ sub open311_extra_data_include {
             { name => 'category',
             value => $row->category },
         ];
+        push @$extra, { name => 'staff_role', value => $roles } if $roles;
+        return $extra;
     } else { # WDM
         return [
             { name => 'external_id', value => $row->id },

@@ -9,6 +9,8 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
+my $role = FixMyStreet::DB->resultset("Role")->create({ body => $oxon, name => 'Role', permissions => [] });
+$counciluser->add_to_roles($role);
 
 my $oxfordshire_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
 
@@ -282,7 +284,7 @@ FixMyStreet::override_config {
         api_key => 'key',
         jurisdiction => 'home',
     });
-    my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Gullies and Catchpits', email => 'GC' );
+    my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Gullies and Catchpits', email => 'Alloy-GC' );
     $contact->set_extra_fields( (
         { code => 'feature_id', datatype => 'hidden', variable => 'true' },
         { code => 'usrn', datatype => 'hidden', variable => 'true' },
@@ -304,6 +306,7 @@ FixMyStreet::override_config {
                 user => $user,
                 latitude => 51.754926,
                 longitude => -1.256179,
+                extra => { contributed_by => $counciluser->id },
             });
             $p->set_extra_fields({ name => $test->{field}, value => $test->{value}});
             $p->update;
@@ -319,6 +322,7 @@ FixMyStreet::override_config {
             my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             like $c->param('description'), qr/$test->{text}: $test->{value}/, $test->{text} . ' included in body';
+            is $c->param('attribute[staff_role]'), 'Role';
         };
     }
 
