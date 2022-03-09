@@ -77,13 +77,11 @@ h4 {
 
 // Set the default font colour everywhere
 body, .content {
-  color: $primary_text;
+  color: $bucks_charcoal;
 }
 
 // Make sure the numbers on the front page have the correct font weight
 #front_stats {
-  color: white;
-
   div {
     @extend %bold-font;
   }
@@ -104,6 +102,7 @@ dl dt {
   #postcodeForm {
     margin: 1em 0 0 0;
     padding: 0;
+    color: $bucks_charcoal;
     background: #fff;
 
     div input#sub {
@@ -127,11 +126,6 @@ dl dt {
 
 label {
   @extend %bold-font;
-}
-
-// uses important because btn also uses it
-#highways .segmented-control--radio input:checked + label.btn {
-    color: $g7 !important;
 }
 
 .description_tips  {
