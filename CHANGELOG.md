@@ -12,8 +12,7 @@
         - Fix dashboard rows for categories with &s.
         - Make calls from Geocoder files to https rather than http
     - Accessibility improvements:
-        - The "skip map" link on /around now has new wording,
-          and is no longer visible only on focus. #3788 #3794
+        - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
         - Make map pan/zoom controls keyboard-accessible. #3751
     - Admin improvements:

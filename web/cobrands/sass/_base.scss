@@ -2465,7 +2465,7 @@ label .muted {
   }
 }
 
-.map-alternatives {
+.map-alternatives, .map-alternatives__display {
   margin: 16px 0;
   font-size: 14px;
   color: #666;
@@ -2916,6 +2916,7 @@ a#geolocate_link {
   .big-green-banner,
   .click-the-map,
   .map-alternatives,
+  .map-alternatives__display,
   .my-account-buttons {
     display: none !important;
   }
