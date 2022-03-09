@@ -4,3 +4,10 @@
     version('/cobrands/peterborough/waste.js')
 ] ~%]
 [% INCLUDE header.html %]
+
+[% emergency_message = c.cobrand.emergency_message('waste') %]
+[% IF emergency_message %]
+<div class="emergency-message">
+  [% emergency_message | html_para %]
+</div>
+[% END %]
