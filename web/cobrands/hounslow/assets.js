@@ -15,10 +15,7 @@ var defaults = {
         }
     },
     asset_type: 'spot',
-    max_resolution: {
-        'hounslow': 0.5291677250021167,
-        'fixmystreet': 1.194328566789627
-    },
+    max_resolution: 1.194328566789627,
     asset_id_field: 'CentralAssetId',
     attributes: {
         central_asset_id: 'CentralAssetId',
@@ -182,10 +179,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
             TYPENAME: "streets"
         }
     },
-    max_resolution: {
-        'hounslow': 6.614596562526458,
-        'fixmystreet': 4.777314267158508
-    },
+    max_resolution: 4.777314267158508,
     always_visible: true,
     non_interactive: true,
     usrn: {

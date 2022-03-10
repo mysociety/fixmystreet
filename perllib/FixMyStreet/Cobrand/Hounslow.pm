@@ -13,7 +13,7 @@ sub council_area { 'Hounslow' }
 sub council_name { 'Hounslow Highways' }
 sub council_url { 'hounslow' }
 
-sub map_type { 'Hounslow' }
+# sub map_type { 'Hounslow' }
 
 sub enter_postcode_text {
     my ($self) = @_;
