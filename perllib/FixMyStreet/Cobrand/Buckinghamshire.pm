@@ -732,7 +732,7 @@ sub parish_bodies {
     my ($self) = @_;
 
     return FixMyStreet::DB->resultset('Body')->search(
-        { 'body_areas.area_id' => $self->_parish_ids, },
+        { 'body_areas.area_id' => { -in => $self->_parish_ids } },
         { join => 'body_areas', order_by => 'name' }
     )->active;
 }
