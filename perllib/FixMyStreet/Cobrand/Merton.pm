@@ -148,7 +148,9 @@ sub lookup_site_code {
     return $self->_nearest_feature($cfg, $x, $y, $features);
 }
 
-sub cut_off_date { '2020-12-06' } # 1 yr prior to FMS Pro go-live
+sub cut_off_date { '2021-12-13' } # Merton cobrand go-live
+
+sub report_age { '3 months' }
 
 sub abuse_reports_only { 1 }
 
