@@ -6,6 +6,7 @@ package FixMyStreet::DB::Result::Body;
 
 use strict;
 use warnings;
+use File::Slurp;
 
 use base 'DBIx::Class::Core';
 __PACKAGE__->load_components(
@@ -194,6 +195,17 @@ sub first_area_children {
     my $cobrand = $self->result_source->schema->cobrand;
 
     return $cobrand->fetch_area_children($body_area->area_id);
+}
+
+sub body_covers_filter {  
+    my ($self, $filter) = @_;
+
+    my $body_area = $self->body_areas->first;
+    return unless $body_area;
+
+    my $cobrand = $self->result_source->schema->cobrand;
+
+    return $cobrand->fetch_area_covers($body_area->area_id, $filter);
 }
 
 =head2 get_cobrand_handler
