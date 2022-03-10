@@ -594,8 +594,8 @@ sub bin_services_for_address {
 
     # TODO parallelize these calls if performance is an issue
     my $jobs = $bartec->Jobs_Get($property->{uprn});
-    my $job_dates = $bartec->Jobs_FeatureScheduleDates_Get($property->{uprn});
     my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
+    my $job_dates = relevant_jobs($bartec, $property->{uprn}, $schedules);
     my $events_uprn = $bartec->Premises_Events_Get($property->{uprn});
     my $events_usrn = $bartec->Streets_Events_Get($property->{usrn});
     my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
@@ -757,6 +757,18 @@ sub bin_services_for_address {
     return \@out;
 }
 
+sub relevant_jobs {
+    my ($bartec, $uprn, $schedules) = @_;
+    my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($uprn);
+    my %schedules = map { $_->{JobName} => $_ } @$schedules;
+    my @jobs = grep {
+        my $name = $_->{JobName};
+        $schedules{$name}->{Feature}->{Status}->{Name} eq 'IN SERVICE'
+        && $schedules{$name}->{Feature}->{FeatureType}->{ID} != 6815;
+    } @$jobs;
+    return \@jobs;
+}
+
 sub _waste_report_allowed {
     my ($self, $dt) = @_;
 
@@ -778,7 +790,9 @@ sub bin_future_collections {
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
-    my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($self->{c}->stash->{property}{uprn});
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    my $schedules = $bartec->Features_Schedules_Get($uprn);
+    my $jobs = relevant_jobs($bartec, $uprn, $schedules);
 
     my $events = [];
     foreach (@$jobs) {

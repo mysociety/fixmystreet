@@ -187,6 +187,11 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
     };
+    subtest 'No planned services or clinical collection' => sub {
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_lacks('Clinical');
+        $mech->content_lacks('Brown');
+    };
     subtest 'Future collection calendar' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');
@@ -635,11 +640,15 @@ sub shared_bartec_mocks {
     my $jobs_fsd_get = [
         { JobID => 123, PreviousDate => '2021-08-01T11:11:11Z', NextDate => '2021-08-08T11:11:11Z', JobName => 'Empty Bin 240L Black' },
         { JobID => 456, PreviousDate => '2021-08-05T10:10:10Z', NextDate => '2021-08-19T10:10:10Z', JobName => 'Empty Bin Recycling 240l' },
+        { JobID => 789, PreviousDate => '2021-08-06T10:10:10Z', JobName => 'Empty Brown Bin' },
+        { JobID => 890, NextDate => '2022-08-06T10:10:10Z', JobName => 'Empty Clinical Waste' },
     ];
     $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
     $b->mock('Features_Schedules_Get', sub { [
-        { JobName => 'Empty Bin 240L Black', Feature => { FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
-        { JobName => 'Empty Bin Recycling 240l', Feature => { FeatureType => { ID => 6534 } } },
+        { JobName => 'Empty Bin 240L Black', Feature => { Status => { Name => "IN SERVICE" }, FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
+        { JobName => 'Empty Bin Recycling 240l', Feature => { Status => { Name => "IN SERVICE" }, FeatureType => { ID => 6534 } } },
+        { JobName => 'Empty Clinical Waste', Feature => { Status => { Name => "IN SERVICE" }, FeatureType => { ID => 6815 } } },
+        { JobName => 'Empty Brown Bin', Feature => { Status => { Name => "PLANNED" }, FeatureType => { ID => 6579 } } },
     ] });
     $b->mock('ServiceRequests_Get', sub { [
         # No open requests at present
