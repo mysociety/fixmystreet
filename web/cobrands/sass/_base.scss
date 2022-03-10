@@ -1897,10 +1897,10 @@ html.js #map .noscript {
   &:before {
     content: "";
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -10px;
+    right: -10px;
     bottom: 0;
-    left: -5px;
+    left: -10px;
   }
 }
 #ns_fms_pan_zoom_zoomout,
@@ -1918,9 +1918,9 @@ html.js #map .noscript {
     content: "";
     position: absolute;
     top: 0;
-    right: -5px;
+    right: -10px;
     bottom: -5px;
-    left: -5px;
+    left: -10px;
   }
 }
 
@@ -1967,9 +1967,9 @@ html.js #map .noscript {
       content: "";
       position: absolute;
       top: -5px;
-      right: -5px;
+      right: -10px;
       bottom: -5px;
-      left: -5px;
+      left: -10px;
     }
 
     .map-link-label {
