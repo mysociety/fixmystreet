@@ -65,6 +65,12 @@ sub index : Path : Args(0) {
         unless ($children->{error}) {
             $c->stash->{children} = $children;
         }
+        if ($c->cobrand->feature('sub_ward_reporting')) {
+            my $covered = $c->stash->{body}->body_covers_filter([$c->cobrand->feature('sub_ward_reporting')]);
+            unless ($covered->{error}) {
+                $c->stash->{covered} = $covered;
+            }
+        }
     } else {
         my @bodies = $c->model('DB::Body')->search(undef, {
             columns => [ "id", "name" ],
@@ -86,6 +92,7 @@ Show the stats for a body if body param is set.
 
 sub display_body_stats : Private {
     my ( $self, $c ) = @_;
+
     if (my $body = $c->get_param('body')) {
         $body = $c->model('DB::Body')->find( { id => $body } );
         if ($body) {
@@ -126,6 +133,7 @@ sub ward : Path : Args(2) {
     # to
     # /reports/Borsetshire/North|East
     my @ward_params = $c->get_param_list('ward');
+
     if ( @ward_params ) {
         $c->stash->{wards} = [ map { { name => $_ } } (@wards, @ward_params) ];
         delete $c->req->params->{ward};
@@ -133,6 +141,7 @@ sub ward : Path : Args(2) {
     }
 
     my $body_short = $c->cobrand->short_name( $c->stash->{body} );
+
     $c->stash->{body_url} = '/reports/' . $body_short;
 
     if ($ward && $ward eq 'summary') {
@@ -146,7 +155,7 @@ sub ward : Path : Args(2) {
     }
 
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
-
+    
     $c->forward( 'ward_check', [ @wards ] )
         if @wards;
     $c->forward( 'check_canonical_url', [ $body ] );
@@ -179,6 +188,18 @@ sub ward : Path : Args(2) {
                 );
             }
             $c->stash->{children} = $children;
+        };
+        $c->stash->{body}->body_areas->first;
+
+    # List of parishes and non-division wards to be made optional
+        my $covered = $c->stash->{body}->body_covers_filter(['CPC,DIW']);
+        unless ($covered->{error}) {
+            foreach (values %$covered) {
+                $_->{url} = $c->uri_for( $c->stash->{body_url}
+                    . '/' . $c->cobrand->short_name( $_ )
+                );
+            }
+            $c->stash->{covered} = $covered;
         }
     }
 }
@@ -421,12 +442,18 @@ sub ward_check : Private {
     }
 
     my $qw = $c->cobrand->fetch_area_children($parent_id);
+    if ($c->cobrand->feature('sub_ward_reporting')) {
+        $qw = {%$qw, %{ $c->cobrand->fetch_area_covers($parent_id, $c->cobrand->feature('sub_ward_reporting') ) }};
+    }
     my %names = map { $c->cobrand->short_name({ name => $_ }) => 1 } @wards;
+
     my @areas;
     foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {
         my $name = $c->cobrand->short_name($area);
+
         push @areas, $area if $names{$name};
     }
+
     if (@areas) {
         $c->stash->{ward} = $areas[0] if @areas == 1;
         $c->stash->{wards} = \@areas;

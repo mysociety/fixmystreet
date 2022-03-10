@@ -431,4 +431,23 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'oxfordshire',
+    COBRAND_FEATURES => { sub_ward_reporting => { oxfordshire => ['DIW', 'CPC'] }},
+    MAPIT_URL => 'http://mapit.uk/',
+
+}, sub {
+    subtest 'Shows choice of wards, parishes, divisions' => sub {
+        $mech->get_ok('/reports');
+        $mech->content_contains('id="key-tool-parish"', "Tabs available for districts and wards");
+        $mech->content_contains('<a class="js-district-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Faringdon">Faringdon</a>', "District list populated");
+        $mech->content_contains('<a class="js-parish-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Aston+Upthorpe">Aston Upthorpe</a>', "Parish list populated");
+    };
+
+    subtest 'Shows list for district' => sub {
+        $mech->get_ok('/reports/Oxfordshire/Faringdon');
+        $mech->content_contains('Faringdon', "Link leads to Faringdon reports list");
+    }
+};
+
 done_testing();
