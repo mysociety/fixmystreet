@@ -61,8 +61,9 @@ sub categories_restriction {
 
         # District categories:
         'me.category' => { -in => [
+            'Litter',
             'Street nameplates',
-            'Bench/cycle rack/litter bin/planter',
+            'Bench', 'Cycle rack', 'Litter bin', 'Planter',
         ] },
     ] } );
 }
