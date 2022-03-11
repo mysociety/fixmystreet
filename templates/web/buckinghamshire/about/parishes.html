@@ -1,0 +1,15 @@
+[% INCLUDE 'header.html', title = loc('All reports for parishes'), bodyclass = 'twothirdswidthpage' %]
+
+<h1>All reports for parishes</h1>
+
+<p><a href="/reports">&larr; Back to All reports for Buckinghamshire Council</a></p>
+
+<p>Choose a parish from the list below to view all reports for that parish.</p>
+
+[% FOREACH parish IN parishes %]
+
+<p><a href="/reports/[% c.cobrand.short_name(parish) %]">[% parish.name %]</a></p>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]
