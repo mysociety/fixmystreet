@@ -118,7 +118,7 @@ dl dt {
   @include bucks-button();
     &:hover,
     &:active,
-    &:focus { 
+    &:focus {
       background-image: none;
       color: $bucks_charcoal !important;
     }
@@ -146,5 +146,9 @@ label {
 }
 
 input[type="text"], input[type="email"], textarea { @extend %normal-font;}
+
+.parish-all-reports {
+  margin-top: 1em;
+}
 
 @import "../sass/claims";

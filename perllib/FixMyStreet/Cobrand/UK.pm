@@ -117,7 +117,7 @@ sub short_name {
     return 'Durham+City' if $name eq 'Durham City Council';
 
     $name =~ s/^(Royal|London) Borough of //;
-    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ (Borough|City|District|County|Parish|Town) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
     $name =~ tr{/}{_};
