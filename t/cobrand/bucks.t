@@ -488,6 +488,18 @@ subtest 'body filter on dashboard' => sub {
     $mech->content_contains('<h1>' . $body->name . '</h1>', 'defaults to Bucks when body is not permitted');
 };
 
+subtest 'All reports pages for parishes' => sub {
+    $mech->get_ok('/reports/Buckinghamshire');
+    $mech->content_contains('View reports sent to Parish/Town Councils');
+
+    $mech->get_ok('/about/parishes');
+    $mech->content_contains('Adstock Parish Council');
+
+    $mech->get_ok('/reports/Adstock');
+    $mech->content_contains('Adstock Parish Council');
+    is $mech->uri->path, '/reports/Adstock';
+};
+
 };
 
 done_testing();

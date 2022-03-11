@@ -771,4 +771,36 @@ sub problems_restriction_bodies {
     return [$self->body->id, @parish_ids];
 }
 
+# Redirect to .com if not Bucks or a parish
+sub reports_body_check {
+    my ( $self, $c, $code ) = @_;
+
+    my @parishes = $self->parish_bodies->all;
+    my @bodies = ($self->body, @parishes);
+    my $matched = 0;
+    foreach my $body (@bodies) {
+        if ( $body->name =~ /^\Q$code\E/ ) {
+            $matched = 1;
+            last;
+        }
+    }
+
+    if (!$matched) {
+        $c->res->redirect( 'https://www.fixmystreet.com' . $c->req->uri->path_query, 301 );
+        $c->detach();
+    }
+
+    return;
+}
+
+sub about_hook {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+    if ($c->stash->{template} eq 'about/parishes.html') {
+        my @parishes = $self->parish_bodies->all;
+        $c->stash->{parishes} = \@parishes;
+    }
+}
+
 1;
