@@ -11,6 +11,7 @@ color_gunmetal_light = "#81959D"
 color_yellow = "#FDD008"
 color_red_dark = "#ce2626"
 color_green_dark = "#39a515"
+color_dark_grey = "#3B3F44"
 color_black = "#000000"
 color_white = "#ffffff"
 
@@ -31,7 +32,9 @@ logo_height = "35" # pixel measurement, but without 'px' suffix
 logo_font_size = "24px"
 
 primary_column_background_color = color_white
+primary_column_background_color_dark_mode = color_dark_grey
 primary_column_text_color = color_black
+primary_column_text_color_dark_mode = color_white
 secondary_column_background_color = color_blue_pale
 secondary_column_background_color_dark_mode = color_blue_darker
 secondary_column_text_color = color_gunmetal
@@ -93,6 +96,7 @@ header_style = "padding: $header_padding; background: $header_background_color; 
 
 only_column_style = "padding: ${ column_padding }px; vertical-align: top; background-color: $primary_column_background_color; color: $primary_column_text_color;"
 primary_column_style = "vertical-align: top; width: 50%; background-color: $primary_column_background_color; color: $primary_column_text_color;"
+primary_column_style_dark_mode = "vertical-align: top; width: 50%; background-color: $primary_column_background_color_dark_mode !important; color: $primary_column_text_color_dark_mode !important;"
 secondary_column_style = "vertical-align: top; width: 50%; background-color: $secondary_column_background_color; color: $secondary_column_text_color; border-left: 1px solid $column_divider_color;"
 secondary_column_style_dark_mode = "vertical-align: top; width: 50%; background-color: $secondary_column_background_color_dark_mode !important; color: $secondary_column_text_color_dark_mode !important; border-left: 1px solid $column_divider_color;"
 
@@ -111,7 +115,8 @@ map_image_style = "display: block; width: 100%; height: auto;"
 list_item_style = "padding-bottom: 20px; margin-bottom: 20px; border-bottom: $list_item_border_bottom;"
 list_item_h2_style = "margin: 0 0 16px 0; font-size: 21px; line-height: 24px;"
 list_item_p_style = "margin: 0 0 16px 0;"
-list_item_date_style = "font-size: 14px; line-height: 20px; margin: 0; color: $color_gunmetal_light;"
+list_item_p_style_dark_mode = "margin: 0 0 16px 0; color: $color_white !important;"
+list_item_date_style = "font-size: 14px; line-height: 20px; margin: 0; color: $color_gunmetal_light; opacity: 0.7"
 list_item_photo_style = "float: right; margin: 0 0 1em 1em; border: none;"
 
 contact_meta_style = "padding: 15px ${ column_padding }px; vertical-align: top; background-color: $secondary_column_background_color; border-bottom: 1px solid $column_divider_color;"
