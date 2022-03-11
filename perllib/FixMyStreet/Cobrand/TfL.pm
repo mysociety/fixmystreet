@@ -558,7 +558,6 @@ sub _tfl_council_categories { [
 ] }
 
 sub _tfl_no_resend_categories { [
-    'Countdown - not working',
     'General Litter / Rubbish Collection',
     'Flytipping (TfL)',
     'Other (TfL)',
