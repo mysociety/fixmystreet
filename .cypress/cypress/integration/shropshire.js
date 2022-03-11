@@ -4,8 +4,10 @@ it('loads the Shropshire FMS Pro front page', function() {
 });
 it('does not allow typing alphabetic characters in the phone field', function() {
     cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
     cy.route('**mapserver/shropshire*Street_Gazetteer*', 'fixture:shropshire.xml').as('salop-roads-layer');
     cy.visit('http://shropshire.localhost:3001/report/new?latitude=52.855684&longitude=-2.723877');
+    cy.wait('@report-ajax');
     cy.wait('@salop-roads-layer');
     cy.pickCategory('Flytipping');
     cy.nextPageReporting();
