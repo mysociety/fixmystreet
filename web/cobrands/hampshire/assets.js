@@ -31,11 +31,11 @@ fixmystreet.assets.add(defaults, {
     },
     usrn: [
         {
-        attribute: 'SITE_CODE',
+        attribute: 'site_code',
         field: 'site_code'
         },
         {
-        attribute: 'CENTRAL_ASSET_ID',
+        attribute: 'c_asset_id',
         field: 'central_asset_id'
         }
     ],
