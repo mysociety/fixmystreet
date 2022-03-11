@@ -411,4 +411,17 @@ sub reopening_disallowed {
     return $self->next::method($problem);
 }
 
+# Make sure CPC areas are included in point lookups for new reports
+# This is so that parish bodies (e.g. in Buckinghamshire) are available
+# for reporting to on .com
+sub add_extra_area_types {
+    my ($self, $types) = @_;
+
+    my @types = (
+        @$types,
+        'CPC',
+    );
+    return \@types;
+}
+
 1;
