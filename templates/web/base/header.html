@@ -30,6 +30,8 @@
         <div class="table-cell">
             [% INCLUDE 'header_site.html' %]
 
+            [% TRY %][% INCLUDE 'secondary_navbar.html' %][% CATCH file %][% END %]
+
             [% pre_container_extra | safe %]
 
             <div class="container">
