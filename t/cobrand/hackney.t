@@ -3,6 +3,7 @@ use CGI::Simple;
 use DateTime;
 use JSON::MaybeXS;
 use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use Open311;
 use Open311::GetServiceRequests;
@@ -39,6 +40,30 @@ $contact->set_extra_fields( ( {
     variable => 'true',
     required => 'false',
     order => 1,
+    datatype_description => 'datatype',
+} ) );
+$contact->update;
+
+$contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Flytipping',
+    email => 'Environment-Flytipping',
+);
+$contact->set_extra_fields( ( {
+    code => 'flytip_size',
+    datatype => 'string',
+    description => 'Size of flytip?',
+    variable => 'true',
+    required => 'true',
+    order => 1,
+    datatype_description => 'datatype',
+}, {
+    code => 'flytip_type',
+    datatype => 'string',
+    description => 'Type of flytip?',
+    variable => 'true',
+    required => 'true',
+    order => 2,
     datatype_description => 'datatype',
 } ) );
 $contact->update;
@@ -280,6 +305,9 @@ FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1 },
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => ['hackney', 'fixmystreet'],
+    COBRAND_FEATURES => { environment_extra_fields => {
+        hackney => [ 'flytip_size', 'flytip_type' ],
+    } },
 }, sub {
     subtest "special send handling" => sub {
         my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Hackney');
@@ -334,6 +362,54 @@ FixMyStreet::override_config {
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), 'OTHER';
         };
+    };
+
+    subtest "Environment extra fields put in description" => sub {
+        $mech->log_in_ok( $user->email );
+        set_fixed_time('2021-08-06T10:00:00Z');
+        $mech->get_ok("/");
+        $mech->submit_form_ok( { with_fields => { pc => 'E8 1DY', } },
+            "submit location" );
+
+
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    name          => 'Joe Bloggs',
+                    category      => 'Flytipping',
+                }
+            },
+            "submit good details"
+        );
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    flytip_type   => 'Rubble',
+                    flytip_size   => 'Lots',
+                }
+            },
+            "submit extra details"
+        );
+
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), 'Environment-Flytipping';
+        my $expected_title = "Test Report
+
+Size of flytip?
+Lots
+
+Type of flytip?
+Rubble";
+        (my $c_title = $c->param('attribute[title]')) =~ s/\r\n/\n/g;
+        is $c_title, $expected_title;
     };
 };
 
