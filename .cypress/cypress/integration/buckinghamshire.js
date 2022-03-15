@@ -60,7 +60,9 @@ describe('buckinghamshire cobrand', function() {
     beforeEach(function() {
       cy.get('#map_box').click(290, 307);
       cy.wait('@report-ajax');
-      cy.pickCategory('Grass cutting');
+      cy.pickCategory('Grass, hedges and weeds');
+      cy.nextPageReporting();
+      cy.pickSubcategory('Grass hedges and weeds', 'Grass cutting');
       cy.wait('@around-ajax');
       cy.nextPageReporting();
     });
@@ -89,7 +91,7 @@ describe('buckinghamshire cobrand', function() {
 });
 
 describe('buckinghamshire roads handling', function() {
-  it('makes you move the pin if not on a road', function() {
+  beforeEach(function() {
     cy.server();
     cy.route('**mapserver/bucks*Whole_Street*', 'fixture:roads.xml').as('roads-layer');
     cy.route('/report/new/ajax*').as('report-ajax');
@@ -101,10 +103,22 @@ describe('buckinghamshire roads handling', function() {
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
     cy.get('#mob_ok').should('be.visible').click();
+  });
+
+  it('makes you move the pin if not on a road', function() {
     cy.pickCategory('Roads & Pavements');
     cy.wait('@roads-layer');
     cy.nextPageReporting();
     cy.pickSubcategory('Roads & Pavements', 'Parks');
+    cy.nextPageReporting();
+    cy.contains('Please select a road on which to make a report.').should('be.visible');
+  });
+
+  it('asks you to move the pin for grass cutting reports', function() {
+    cy.pickCategory('Grass, hedges and weeds');
+    cy.wait('@roads-layer');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Grass hedges and weeds', 'Grass cutting');
     cy.nextPageReporting();
     cy.contains('Please select a road on which to make a report.').should('be.visible');
   });

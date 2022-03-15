@@ -398,7 +398,8 @@ fixmystreet.assets.add(defaults, {
         'Street Signs',
         'Traffic Lights and crossings',
         'Trees and vegetation',
-        'Trees'
+        'Trees',
+        'Grass, hedges and weeds'
     ],
     actions: {
         found: function(layer, feature) {
@@ -414,7 +415,17 @@ fixmystreet.assets.add(defaults, {
                 return false;
             }, msg_id);
         },
-        not_found: fixmystreet.message_controller.road_not_found
+        not_found: function(layer) {
+            fixmystreet.message_controller.road_not_found(layer, function() {
+                var selected = fixmystreet.reporting.selectedCategory();
+                if (selected.group == 'Grass, hedges and weeds') {
+                    // Want to always show the road not found message.
+                    // This skips the is_only_body check in road_not_found
+                    return true;
+                }
+                return false;
+            });
+        }
     },
     no_asset_msg_id: '#js-not-a-road',
     no_asset_msgs_class: '.js-roads-bucks',
