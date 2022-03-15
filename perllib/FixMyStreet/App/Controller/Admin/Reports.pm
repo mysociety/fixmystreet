@@ -285,7 +285,8 @@ sub edit : Path('/admin/report_edit') : Args(1) {
     }
     elsif ( $c->get_param('mark_sent') ) {
         $c->forward('/auth/check_csrf_token');
-        $problem->update({ whensent => \'current_timestamp' })->discard_changes;
+        $problem->mark_as_sent;
+        $problem->update->discard_changes;
         $c->stash->{status_message} = _('That problem has been marked as sent.');
         $c->forward( '/admin/log_edit', [ $id, 'problem', 'marked sent' ] );
     }

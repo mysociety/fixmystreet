@@ -224,34 +224,44 @@ sub _send {
     for my $sender_key ( keys %{ $self->reporters } ) {
         my $sender = $self->reporters->{$sender_key};
 
-        # Skip if no body ID.
-        # (Lack of body at this stage shouldn't actually be possible,
-        # presumably).
-        my $body_id;
-        $body_id = $sender->bodies->[0]->id
-            if $sender->bodies && $sender->bodies->[0];
-        next unless $body_id;
+        # If on staging with send_reports set to 0, bypass the body_id
+        # logic below, as we may only have a special Email reporter with
+        # no bodies attached
+        if ( FixMyStreet->staging_flag( 'send_reports', 0 ) ) {
+            $self->log( "Sending using " . $sender_key );
+            my $res = $sender->send( $self->report, $self->h );
 
-        # If a report has send_fail_body_ids, we only want to attempt sending
-        # for those bodies. Assume success and skip otherwise.
-        if ( @{ $report->send_fail_body_ids }
-            && !$report->has_given_send_fail_body_id($body_id) )
-        {
-            $sender->success(1);
-            next;
-        }
-
-        $self->log("Sending using " . $sender_key);
-        my $res = $sender->send( $self->report, $self->h );
-
-        $result *= $res;
-
-        if ($res) {
-            push @add_send_fail_body_ids, $body_id;
+            $result *= $res;
+            $self->report->add_send_method($sender_key) if !$res;
         }
         else {
-            $self->report->add_send_method($sender_key);
-            push @remove_send_fail_body_ids, $body_id;
+            # Skip if no body ID
+            my $body_id;
+            $body_id = $sender->bodies->[0]->id
+                if $sender->bodies && $sender->bodies->[0];
+            next unless $body_id;
+
+            # If a report has send_fail_body_ids, we only want to attempt
+            # sending for those bodies. Assume success and skip otherwise.
+            if ( @{ $report->send_fail_body_ids }
+                && !$report->has_given_send_fail_body_id($body_id) )
+            {
+                $sender->success(1);
+                next;
+            }
+
+            $self->log( "Sending using " . $sender_key );
+            my $res = $sender->send( $self->report, $self->h );
+
+            $result *= $res;
+
+            if ($res) {
+                push @add_send_fail_body_ids, $body_id;
+            }
+            else {
+                $self->report->add_send_method($sender_key);
+                push @remove_send_fail_body_ids, $body_id;
+            }
         }
 
         if ( $self->manager ) {
@@ -287,9 +297,6 @@ sub _post_send {
     }
     if (@errors) {
         $self->report->update_send_failed( join( '|', @errors ) );
-    }
-    else {
-        $self->report->send_fail_reason(undef);
     }
 
     my $send_confirmation_email = $self->cobrand_handler->report_sent_confirmation_email($self->report);

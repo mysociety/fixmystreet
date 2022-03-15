@@ -407,7 +407,7 @@ sub link_to_council_cobrand {
         my $url = sprintf("%s%s", $handler->base_url, $problem->url);
         return sprintf("<a href='%s'>%s</a>", $url, $problem->body);
     } else {
-        return $problem->body;
+        return $problem->body( 0, 1 );
     }
 }
 

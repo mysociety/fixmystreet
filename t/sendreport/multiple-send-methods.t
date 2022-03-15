@@ -1,7 +1,9 @@
-use FixMyStreet::TestMech;
+use FixMyStreet::Cobrand;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::TestMech;
 use Test::Deep;
 use Test::MockModule;
+use Test::MockObject;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -40,10 +42,20 @@ $body_oxf->update(
     },
 );
 
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet')->new;
+$report->result_source->schema->cobrand($cobrand);
+
 my $mock_email   = Test::MockModule->new('FixMyStreet::SendReport::Email');
 my $mock_open311 = Test::MockModule->new('FixMyStreet::SendReport::Open311');
+my $mock_log     = Test::MockObject->new;
+$mock_log->mock( debug => sub { } );
+my $mock_catalyst = Test::MockObject->new;
+$mock_catalyst->mock( log => sub {$mock_log} );
 
 subtest '1st attempt - email and Open311 both fail' => sub {
+    is $report->duration_string, undef,
+        'duration string is undef before any sending attempt';
+
     $mock_email->mock(
         'send',
         sub {
@@ -73,6 +85,12 @@ subtest '1st attempt - email and Open311 both fail' => sub {
     cmp_bag $report->send_fail_body_ids,
         [ $body_oxf->id, $body_cherwell->id ],
         'Failed body ID saved for each body';
+
+    # I have to assign the $mock_catalyst object to the cobrand anew
+    # after each sending attempt, because the sending logic always resets the
+    # cobrand to one without a catalyst object.
+    $report->result_source->schema->cobrand->{c} = $mock_catalyst;
+    is $report->duration_string, undef, 'duration string is undef';
 };
 
 subtest '2nd attempt - email and Open311 both fail again' => sub {
@@ -104,6 +122,9 @@ subtest '2nd attempt - email and Open311 both fail again' => sub {
     cmp_bag $report->send_fail_body_ids,
         [ $body_oxf->id, $body_cherwell->id ],
         'send_fail_body_ids remain the same';
+
+    $report->result_source->schema->cobrand->{c} = $mock_catalyst;
+    is $report->duration_string, undef, 'duration string is undef';
 };
 
 subtest '3rd attempt - email succeeds, Open311 fails' => sub {
@@ -129,6 +150,12 @@ subtest '3rd attempt - email succeeds, Open311 fails' => sub {
     cmp_bag $report->send_fail_body_ids,
         [ $body_oxf->id ],
         'Failed body ID removed for Cherwell (email)';
+
+    $report->result_source->schema->cobrand->{c} = $mock_catalyst;
+    like $report->duration_string, qr/Cherwell District Council/;
+    unlike $report->duration_string,
+        qr/Oxfordshire County Council/,
+        'duration string mentions Cherwell only';
 };
 
 subtest '4th attempt - Open311 fails, email set to fail again' => sub {
@@ -160,6 +187,12 @@ subtest '4th attempt - Open311 fails, email set to fail again' => sub {
     cmp_bag $report->send_fail_body_ids,
         [ $body_oxf->id ],
         'Failed body ID not added again for Cherwell (email)';
+
+    $report->result_source->schema->cobrand->{c} = $mock_catalyst;
+    like $report->duration_string, qr/Cherwell District Council/;
+    unlike $report->duration_string,
+        qr/Oxfordshire County Council/,
+        'duration string mentions Cherwell only';
 };
 
 subtest '5th attempt - both methods set to succeed' => sub {
@@ -172,9 +205,15 @@ subtest '5th attempt - both methods set to succeed' => sub {
         'send_method_used includes Open311';
     is $report->external_id, 248, 'Report has external ID';
 
-    is $report->send_fail_count,  4,     'send_fail_count unchanged';
-    is $report->send_fail_reason, undef, 'send_fail_reason unset';
+    is $report->send_fail_count, 4, 'send_fail_count unchanged';
+    is $report->send_fail_reason, 'Open311 fail',
+        'send_fail_reason unchanged';
     cmp_bag $report->send_fail_body_ids, [], 'No send_fail_body_ids';
+
+    $report->result_source->schema->cobrand->{c} = $mock_catalyst;
+    like $report->duration_string,
+        qr/Cherwell District Council and Oxfordshire County Council/,
+        'duration string mentions Cherwell and Oxford';
 };
 
 subtest 'Test resend' => sub {
@@ -217,16 +256,97 @@ subtest 'Test resend' => sub {
     is $report_for_resend->whensent,         undef, 'whensent unset';
     is $report_for_resend->send_method_used, undef, 'send_method_used unset';
 
-    is $report_for_resend->send_fail_count,  1, 'send_fail_count unmodified';
+    is $report_for_resend->send_fail_count, 1, 'send_fail_count unmodified';
     is $report_for_resend->send_fail_reason, 'Open311 fail',
         'send_fail_reason unmodified';
     cmp_bag $report_for_resend->send_fail_body_ids, [],
         'send_fail_body_ids unset';
+
+    $report->result_source->schema->cobrand->{c} = $mock_catalyst;
+    like $report->duration_string,
+        qr/Cherwell District Council and Oxfordshire County Council/,
+        'duration string mentions Cherwell and Oxford';
+};
+
+subtest 'Test staging send' => sub {
+    # Will send with send_reports flag set to 0, so email will be used
+    # instead of Open311
+
+    note 'Testing for report with 1 body (Open311)';
+
+    my ($report_for_staging) = $mech->create_problems_for_body(
+        1,
+        $body_oxf->id,
+        'Test staging send',
+        {   cobrand  => 'fixmystreet',
+            category => 'Other',
+            user     => $user,
+        },
+    );
+
+    test_send(0);
+    $report_for_staging->discard_changes;
+
+    like $report_for_staging->send_fail_reason, qr/No recipients/,
+        'send_fail_reason should be for no recipients';
+    is $report_for_staging->send_method_used, undef,
+        'send_method should be undef';
+    cmp_bag $report_for_staging->send_fail_body_ids, [],
+        'there should be no send_fail_body_ids';
+
+    note 'Testing for report with 1 body (email)';
+
+    ($report_for_staging) = $mech->create_problems_for_body(
+        1,
+        $body_cherwell->id,
+        'Test staging send',
+        {   cobrand  => 'fixmystreet',
+            category => 'Other',
+            user     => $user,
+        },
+    );
+
+    test_send(0);
+    $report_for_staging->discard_changes;
+
+    is $report_for_staging->send_fail_reason, undef,
+        'send_fail_reason should be undef';
+    is $report_for_staging->send_method_used, 'Email',
+        'send_method should be email';
+    cmp_bag $report_for_staging->send_fail_body_ids, [],
+        'there should be no send_fail_body_ids';
+
+    note 'Testing for report with multiple bodies (email & Open311)';
+
+    ($report_for_staging) = $mech->create_problems_for_body(
+        1,
+        ( join ',', $body_oxf->id, $body_cherwell->id ),
+        'Test staging send',
+        {   cobrand  => 'fixmystreet',
+            category => 'Other',
+            user     => $user,
+        },
+    );
+
+    test_send(0);
+    $report_for_staging->discard_changes;
+
+    # No failure if one of the bodies already has email sending
+    # (for staging, FixMyStreet::Queue::Item::Report->_create_reporters
+    # only preserves bodies with email sending)
+    is $report_for_staging->send_fail_reason, undef,
+        'send_fail_reason should be undef';
+    is $report_for_staging->send_method_used, 'Email',
+        'send_method should be email';
+    cmp_bag $report_for_staging->send_fail_body_ids, [],
+        'there should be no send_fail_body_ids';
 };
 
 sub test_send {
+    my $send_reports = shift // 1;
+
     FixMyStreet::override_config {
-        STAGING_FLAGS    => { send_reports => 1 },
+        STAGING_FLAGS    => { send_reports => $send_reports },
         ALLOWED_COBRANDS => ['fixmystreet'],
         MAPIT_URL        => 'http://mapit.uk/',
         },
