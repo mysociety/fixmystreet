@@ -39,6 +39,23 @@ it('shows TfL roadworks', function() {
     cy.contains('Major works, with road closure').should('be.visible');
 });
 
+it('shows A13 DBFO message', function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route('**/mapserver/tfl*RedRoutes*', 'fixture:tfl-tlrn.xml').as('tfl-tlrn');
+    cy.route('**/mapserver/tfl*A13TLRN_DBFO*', 'fixture:tfl-a13-dbfo-tlrn.xml').as('tfl-a13-dbfo-tlrn');
+    cy.viewport(480, 800);
+    cy.visit('http://tfl.localhost:3001/report/new?longitude=-0.015110&latitude=51.511074');
+    cy.wait('@report-ajax');
+    cy.get('#mob_ok').click();
+    cy.pickCategory('Road, Cycleway and Footway Defects');
+    cy.wait('@Road, Cycleway and Footway Defects');
+    cy.pickCategory('Blocked drain');
+    cy.wait('@Blocked drain');
+    cy.get('.js-reporting-page--active .js-reporting-page--next').click();
+    cy.contains('This issue is within the A13 BDFO').should('be.visible');
+});
+
 it('does not show TfL categories outside London on .com', function() {
     cy.visit('http://fixmystreet.localhost:3001/report/new?latitude=51.345714&longitude=-0.227959');
     cy.contains('We do not yet have details').should('be.visible');

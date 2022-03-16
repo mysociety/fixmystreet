@@ -316,4 +316,40 @@ if (red_routes_layer) {
     });
 }
 
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: "https://tilma.staging.mysociety.org/mapserver/tfl",
+        params: {
+            TYPENAME: "A13TLRN_DBFO"
+        }
+    },
+    max_resolution: 9.554628534317017,
+    road: true,
+    non_interactive: true,
+    always_visible: true,
+    all_categories: true,
+    nearest_radius: 0.1,
+    stylemap: tlrn_stylemap,
+    no_asset_msg_id: '#js-tlrn-dbfo-road',
+    actions: {
+        found: function(layer) {
+            // Only care about this on TfL cobrand
+            if (fixmystreet.cobrand !== 'tfl') {
+                return;
+            }
+            var category = fixmystreet.reporting.selectedCategory().category;
+            if (is_tlrn_category_only(category, fixmystreet.bodies)) {
+                fixmystreet.message_controller.road_not_found(layer);
+                var body = new RegExp('&body=.*');
+                ($('#a13dbfolink').attr('href', $('#a13dbfolink').attr('href').replace(body, '&body=' +  encodeURIComponent(window.location.href))));
+            } else {
+                fixmystreet.message_controller.road_found(layer);
+            }
+        },
+        not_found: function(layer) {
+            fixmystreet.message_controller.road_found(layer); 
+       }
+    }
+});
+
 })();
