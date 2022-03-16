@@ -381,6 +381,13 @@ sub report_new_munge_before_insert {
     FixMyStreet::Cobrand::Merton::report_new_munge_before_insert($self, $report);
 }
 
+sub munge_contacts_to_bodies {
+    my ($self, $contacts, $report) = @_;
+
+    # Make sure Bucks grass cutting reports are routed correctly
+    FixMyStreet::Cobrand::Buckinghamshire::munge_contacts_to_bodies($self, $contacts, $report);
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
