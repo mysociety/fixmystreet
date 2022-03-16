@@ -14,6 +14,7 @@ BEGIN {    # set all the paths to the perl code
 
 use mySociety::MaPit;
 use FixMyStreet::DB;
+use FixMyStreet::Cobrand::Buckinghamshire;
 
 # Mapping for parishes that aren't called "$name Parish Council"
 # The key is the mapit name, value is the desired display name.
@@ -58,10 +59,8 @@ my $name_mappings = {
     'Wotton Underwood' => 'Wotton Underwood',
 };
 
-my $parent_id = "163793"; # Buckinghamshire Council Unitary Authority on Mapit
-
 # Fetch the list of parishes from MapIt
-my $mapit_areas = mySociety::MaPit::call('area', "$parent_id/children", type => 'CPC');
+my $mapit_areas = mySociety::MaPit::call('areas', FixMyStreet::Cobrand::Buckinghamshire::_parish_ids);
 my @areas = values %$mapit_areas;
 
 my $db = FixMyStreet::DB->schema->storage;
