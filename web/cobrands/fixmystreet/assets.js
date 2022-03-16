@@ -1301,6 +1301,7 @@ fixmystreet.message_controller = (function() {
     }
 
     function check_for_stopper() {
+        console.log(stoppers);
         var only_send = fixmystreet.body_overrides.get_only_send();
         if (only_send == 'National Highways') {
             // If we're sending to National Highways, this message doesn't matter
