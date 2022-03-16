@@ -67,6 +67,7 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
     categories => $categories,
     $opt->name ? (name => $opt->name) : (),
 });
+
 say "Created body " . $body->name . " for MapIt area ID " . $opt->area_id . ', categories ' . join(', ', @$categories);
 
 for my $cat (qw/Overflowing Broken Missing/) {
@@ -122,7 +123,7 @@ if ($opt->test_fixtures) {
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
         { area_id => 2232, categories => ['Damaged/missing cats eye'], name => 'Lincolnshire County Council' },
         { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council' },
-        { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks' ], name => 'TfL' },
+        { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks', 'Other (TfL)' ], name => 'TfL' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council' },
         { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council' },
@@ -131,6 +132,9 @@ if ($opt->test_fixtures) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         my $cats = join(', ', @{$_->{categories}});
         say "Created body $_->{name} for MapIt area ID $_->{area_id}, categories $cats";
+        if ($_->{name} eq 'TfL') {
+            $bodies->{$_->{area_id}}->body_areas->find_or_create({ area_id => '2506' });
+        }
     }
 
     for my $cat_name ('Fallen Tree', 'Damaged Tree') {
