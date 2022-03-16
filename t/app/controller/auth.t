@@ -381,7 +381,8 @@ subtest "Test two-factor authentication login" => sub {
     $mech->content_contains('Please generate a two-factor code');
     $mech->submit_form_ok({ with_fields => { '2fa_code' => $wrong_code } }, "provide wrong 2FA code" );
     $mech->content_contains('Try again');
-    $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+    $code =~ s/(...)/$1 /;
+    $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code with space" );
     $mech->logged_in_ok;
 };
 

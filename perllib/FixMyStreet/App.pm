@@ -526,6 +526,7 @@ sub check_2fa {
     my ($c, $secret32) = @_;
 
     if (my $code = $c->get_param('2fa_code')) {
+        $code =~ s/\s+//g;
         my $auth = FixMyStreet::Auth::GoogleAuth->new;
         return 1 if $auth->verify($code, 2, $secret32);
         $c->stash->{incorrect_code} = 1;
