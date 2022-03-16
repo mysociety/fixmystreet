@@ -26,7 +26,7 @@ Subject: [% report.title %]
 Details: [% report.detail %]
 
 [% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description %]: [% field.value %]
+[% field.description OR field.code %]: [% field.value %]
 
 [% END %][% END ~%]
 
