@@ -712,12 +712,15 @@ sub munge_contacts_to_bodies {
     my $greater_than_30 = $report->get_extra_field_value('speed_limit_greater_than_30');
     return unless $greater_than_30;
 
+    # This is called from FixMyStreet.pm as well, so avoid $self.
+    my $area_id = FixMyStreet::Cobrand::Buckinghamshire::council_area_id;
+
     if ($greater_than_30 eq 'no') {
         # Route to the parish
-        @$contacts = grep { !$_->body->areas->{$self->council_area_id} } @$contacts;
+        @$contacts = grep { !$_->body->areas->{$area_id} } @$contacts;
     } else {
         # Route to council
-        @$contacts = grep { $_->body->areas->{$self->council_area_id} } @$contacts;
+        @$contacts = grep { $_->body->areas->{$area_id} } @$contacts;
     }
 }
 
