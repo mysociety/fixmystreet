@@ -85,6 +85,8 @@ my @PLACES = (
     [ '0045', "59.9", "10.9", 301, 'Oslo', 'NKO', 3, 'Oslo', 'NFY' ],
     ['?', 51.015143, -0.912160, 2227, 'Hampshire County Council', 'CTY'],
     ['?', 51.020097, -0.926065, 2227, 'Hampshire County Council', 'CTY'],
+    ['?', 51.511258, -0.011937, 2506, 'Tower Hamlets Borough Council', 'LBO'],
+    ['?', 51.512139, -0.013074, 2506, 'Tower Hamlets Borough Council', 'LBO']
 
 );
 
