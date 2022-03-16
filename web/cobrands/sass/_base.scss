@@ -224,6 +224,22 @@ a,
   margin: 0;
 }
 
+// Visible for screen readers only
+.screen-reader-only {
+  html.js & {
+    // If javascript is enabled, hide the skip link off-screen,
+    // but keep it visible for screen readers.
+    position: absolute;
+    top: -999px;
+
+    &:focus,
+    &:focus-within {
+      // And show it again if it receives focus (eg: via tab key)
+      position: static;
+    }
+  }
+}
+
 // custom type
 .small-print {
   @extend small;
@@ -2917,7 +2933,8 @@ a#geolocate_link {
   .click-the-map,
   .map-alternatives,
   .map-alternatives__display,
-  .my-account-buttons {
+  .my-account-buttons, 
+  .screen-reader-only {
     display: none !important;
   }
 
