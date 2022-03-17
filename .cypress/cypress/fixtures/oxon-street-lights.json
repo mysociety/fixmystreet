@@ -1,0 +1,4 @@
+{"results":[
+    {"type":"Feature","id":"private-light","geometry":{"type":"Point","coordinates":[-1.257263,51.754730]},"properties":{"designCode":"designs_streetLights","itemId":"private-light","title":"002","subtitle":"BEAUMONT STREET","type":"Item","styleId":"5e0e0edfca31500efc379151"}},
+    {"type":"Feature","id":"public-light","geometry":{"type":"Point","coordinates":[-1.254822,51.754770]},"properties":{"designCode":"designs_streetLights","itemId":"public-light","title":"FP2","subtitle":"MAGDALEN STREET EAST","type":"Item","styleId":"5e0e0edfca31500efc379151"}}
+]}

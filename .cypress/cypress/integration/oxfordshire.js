@@ -1,4 +1,25 @@
 describe("Oxfordshire cobrand", function() {
+  it("looks up private street light information", function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route('**/oxfordshire.staging/**', 'fixture:oxon-street-lights-none.json').as('empty-street-lights-layer');
+    cy.route('**/32538/21719/**', 'fixture:oxon-street-lights.json').as('street-lights-layer');
+    cy.route('**id=private-light**', 'fixture:oxon-street-light-private.json').as('street-light-private');
+    cy.route('**id=public-light**', 'fixture:oxon-street-light-public.json').as('street-light-public');
+    cy.visit('http://oxfordshire.localhost:3001/report/new?latitude=51.754926&longitude=-1.256179');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Lamp Out of Light');
+    cy.wait('@street-lights-layer');
+    cy.wait('@empty-street-lights-layer');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+    cy.get('circle').eq(1).click(); // Click a public light
+    cy.get("#category_meta_message_LampOutofLight").should('not.contain', 'private street light asset');
+    cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
+    cy.get('circle').eq(0).click(); // Click a private light
+    cy.get("#category_meta_message_LampOutofLight").should('contain', 'private street light asset');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+  });
+
   it("allows inspectors to instruct defects", function() {
     cy.server();
     cy.route('/report/*').as('show-report');

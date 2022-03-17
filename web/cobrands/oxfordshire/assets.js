@@ -487,10 +487,10 @@ var streetlight_stylemap = new OpenLayers.StyleMap({
 });
 
 var street_lighting_layer = 'layers_streetLightingAssets';
-var base_url = fixmystreet.staging ?
-      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://oxfordshire.staging/${layerid}/${x}/${y}/${z}/cluster" :
-      "https://tilma.mysociety.org/resource-proxy/proxy.php?https://oxfordshire.assets/${layerid}/${x}/${y}/${z}/cluster";
-
+var base_host = fixmystreet.staging ?  "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
+var base_proxy_url = fixmystreet.staging ? "https://oxfordshire.staging" : "https://oxfordshire.assets";
+var base_url = base_host + "/resource-proxy/proxy.php?" + base_proxy_url + "/${layerid}/${x}/${y}/${z}/cluster";
+var base_light_url = base_host + "/resource-proxy/alloy-light.php?url=" + base_proxy_url + "&id=";
 var url_with_style = base_url + '?styleIds=${styleid}';
 
 var layers = [
@@ -519,16 +519,45 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   attributes: {
     // feature_id
     unit_number: "title",
+    unit_type: "unit_type",
     asset_resource_id: "itemId"
   },
   select_action: true,
   feature_code: 'title',
   asset_id_field: 'itemId',
+  construct_selected_asset_message: function(asset) {
+      var out = 'You have selected ';
+      out += asset.attributes.unit_type || "street light";
+      out += " <b>" + asset.attributes.title + '</b>.';
+      if (asset.attributes.private) {
+          out += " This private street light asset is not under the responsibility of Oxfordshire County Council and therefore we are unable to accept reports for the asset.";
+      }
+      return out;
+  },
   actions: {
     asset_found: function(asset) {
       if (fixmystreet.message_controller.asset_found.call(this)) {
           return;
       }
+
+      var layer = this;
+
+      // Fetch item info
+      fixmystreet.maps.loading_spinner.show();
+      $.get(base_light_url + asset.attributes.itemId)
+        .then(function(data) {
+            asset.attributes.private = data.private;
+            asset.attributes.unit_type = data.unit_type;
+            var controller_fn = data.private ? 'asset_not_found' : 'asset_found';
+            // Prevent/allow report creation
+            fixmystreet.message_controller[controller_fn].call(layer);
+            // Update message now we have attribute information
+            fixmystreet.assets.named_select_action_found.call(layer, asset);
+            // Update hidden fields with any new attribute information
+            layer.setAttributeFields(asset);
+        })
+        .always(fixmystreet.maps.loading_spinner.hide);
+
       fixmystreet.assets.named_select_action_found.call(this, asset);
       var lonlat = asset.geometry.getBounds().getCenterLonLat();
       // Features considered overlapping if within 1M of each other
