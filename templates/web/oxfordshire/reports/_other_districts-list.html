@@ -1,4 +1,5 @@
-[% IF parish_ward.size %]
+[% district_text = 'View reports by ward' %]
+[% parish_text = 'View reports by parish' %]
 <section id="council_parishes"[% UNLESS c.req.params.show_parishes %] class="hidden-js"[% END %]>
 [% SET show_parish_hidden_class = c.req.params.show_parishes ? 'hidden' : 'js-parish-single' %]
 [% SET show_parish_shown_class = c.req.params.show_parishes ? '' : 'js-parish-multi hidden' %]
@@ -10,20 +11,20 @@
     <section class="full-width">
     <ul class="item-list item-list--wards">
       [% FOR child IN parish_ward.values.sort('name') %]
-        [% IF child.type == 'CPC' %]
-        <li class="item-list__item item-list--wards__item">
-          <label class="[% show_parish_shown_class %]">
-            <input type="checkbox" name="ward" value="[% child.name | html %]">
-            [% child.name %]
-          </label>
-          <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
-        </li>
-        [% END %]
+      [% IF child.type == 'CPC' %]
+      <li class="item-list__item item-list--wards__item">
+        <label class="[% show_parish_shown_class %]">
+          <input type="checkbox" name="ward" value="[% child.name | html %]">
+          [% child.name %]
+        </label>
+        <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
+      </li>
       [% END %]
+    [% END %]
     </ul>
     </section>
     <p>
-      <input class="btn [% show_parishes_shown_class %]" type="submit" value="[% loc('View parishes') %]" />
+      <input class="btn [% show_parish_shown_class %]" type="submit" value="[% loc('View parishes') %]" />
     </p>
     </form>
 </section>
@@ -31,23 +32,23 @@
   [% SET show_district_hidden_class = c.req.params.show_districts ? 'hidden' : 'js-district-single' %]
   [% SET show_district_shown_class = c.req.params.show_districts ? '' : 'js-district-multi hidden' %]
   <h2>[% district_text %]</h2>
-      <p class="[% show_district_hidden_class %]">[% loc('Follow a district link to view only reports within that district.') %]</p>
-      <p class="[% show_district_shown_class %]">[% loc('Select multiple districts to view only reports within those districts.') %]</p>
-      <p class="[% show_district_hidden_class %]"><a href="?show_districts=1" class="js-district-select-multiple">[% loc('Select multiple districts?') %]</a></p>
+      <p class="[% show_district_hidden_class %]">[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+      <p class="[% show_district_shown_class %]">[% loc('Select multiple wards to view only reports within those wards.') %]</p>
+      <p class="[% show_district_hidden_class %]"><a href="?show_districts=1" class="js-district-select-multiple">[% loc('Select multiple wards?') %]</a></p>
       <form method="get" action="">
       <section class="full-width">
       <ul class="item-list item-list--wards">
         [% FOR child IN parish_ward.values.sort('name') %]
-          [% IF child.type == 'DIW' %]
-          <li class="item-list__item item-list--wards__item">
-            <label class="[% show_district_shown_class %]">
-              <input type="checkbox" name="ward" value="[% child.name | html %]">
-              [% child.name %]
-            </label>
-            <a class="[% show_district_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
-          </li>
-          [% END %]
+        [% IF child.type == 'DIW' %]
+        <li class="item-list__item item-list--wards__item">
+          <label class="[% show_district_shown_class %]">
+            <input type="checkbox" name="ward" value="[% child.name | html %]">
+            [% child.name %]
+          </label>
+          <a class="[% show_district_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
+        </li>
         [% END %]
+      [% END %]
       </ul>
       </section>
       <p>
@@ -55,4 +56,3 @@
       </p>
       </form>
   </section>
-[% END %]

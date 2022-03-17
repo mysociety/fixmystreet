@@ -220,16 +220,6 @@ sub dispatch_request {
         return $self->output($response);
     },
 
-    sub (GET + /area/*/covers) {
-        my ($self, $area, $type) = @_;
-        if ($area eq '2237') {
-            return $self->output({
-                61327 => {parent_area => 2237, id => 61327, name => "Aston Upthorpe", type => "CPC"},
-                152680 => {parent_area => 2237, id => 152680, name => "Faringdon", type => "DIW"},
-            });
-        }
-    },
-
     sub (GET + /area/*/example_postcode) {
         my ($self, $area) = @_;
         return [ 200, [ 'Content-Type' => 'application/json' ], [ '"AB12 1AA"' ] ];

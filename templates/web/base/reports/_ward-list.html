@@ -3,9 +3,9 @@
 [% SET show_wards_shown_class = c.req.params.show_wards ? '' : 'js-ward-multi hidden' %]
 <section id="council_wards"[% UNLESS c.req.params.show_wards %] class="hidden-js"[% END %]>
 <h2>[% ward_text %]</h2>
-    <p class="[% show_wards_hidden_class %]">[% loc('Follow a ward link to view only reports within that ward.') %]</p>
-    <p class="[% show_wards_shown_class %]">[% loc('Select multiple wards to view only reports within those wards.') %]</p>
-    <p class="[% show_wards_hidden_class %]"><a href="?show_wards=1" class="js-ward-select-multiple">[% loc('Select multiple wards?') %]</a></p>
+    <p class="[% show_wards_hidden_class %]">[% ward_link_text %]</p>
+    <p class="[% show_wards_shown_class %]">[% ward_link_instruction %]</p>
+    <p class="[% show_wards_hidden_class %]"><a href="?show_wards=1" class="js-ward-select-multiple">[% ward_link_multiple %]</a></p>
     <form method="get" action="">
     <section class="full-width">
     <ul class="item-list item-list--wards">
@@ -21,12 +21,15 @@
     </ul>
     </section>
     <p>
-      <input class="btn [% show_wards_shown_class %]" type="submit" value="[% loc('View wards') %]" />
+      <input class="btn [% show_wards_shown_class %]" type="submit" value="[% ward_link_button | html %]" />
     </p>
     </form>
 </section>
+  [% TRY %]
+    [% INCLUDE 'reports/_other_districts-list.html' %]
+  [% CATCH file %]
+  [% END %]
 [% END %]
 
-[% INCLUDE 'reports/_other_districts-list.html' %]
 
 

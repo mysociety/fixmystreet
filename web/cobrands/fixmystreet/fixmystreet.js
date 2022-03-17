@@ -78,7 +78,6 @@ function isR2L() {
                         $ajax_result.html('<p style="text-align:center">Loading</p>');
                         $ajax_result.load(href);
                     }
-
                     // Style up the $drawer
                     drawer_top = $(window).height() - $sw.height();
                     var drawer_css = {
@@ -99,6 +98,8 @@ function isR2L() {
 
                 // Insert the .shadow-wrap controls into the top of the drawer.
                 $sw.addClass('static').prependTo($drawer);
+                $('#key-tools').addClass('area-js');
+                $('#key-tool-wards').addClass('hover');
 
                 // Animate the drawer into place, enitrely covering the sidebar.
                 var sidebar_top_px = $sidebar.position().top;

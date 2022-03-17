@@ -831,24 +831,6 @@ sub fetch_area_children {
     return \%all_children;
 }
 
-=item fetch_area_covers
-
-Fetches the areas covered by a particular MapIt area ID that match
-the types passed in by the filter array ref. If no filter will
-get all children - but prone to error due to timeout in that case
-
-=cut
-
-sub fetch_area_covers {
-    my ($self, $area_id, $filter) = @_;
-
-    my $type = $filter ? join(',', @$filter) : '';
-
-    return FixMyStreet::MapIt::call('area/covers', $area_id,
-        type => $type
-    );
-}
-
 =item contact_name, contact_email, do_not_reply_email
 
 Return the contact name or email for the cobranded version of the site (to be

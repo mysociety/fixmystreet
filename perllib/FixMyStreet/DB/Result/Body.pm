@@ -196,17 +196,6 @@ sub area_children {
     return $cobrand->fetch_area_children(\@body_area_ids, $all_generations);
 }
 
-sub body_covers_filter {  
-    my ($self, $filter) = @_;
-
-    my $body_area = $self->body_areas->first;
-    return unless $body_area;
-
-    my $cobrand = $self->result_source->schema->cobrand;
-
-    return $cobrand->fetch_area_covers($body_area->area_id, $filter);
-}
-
 =head2 get_cobrand_handler
 
 Get a cobrand object for this body, if there is one.

@@ -9,6 +9,7 @@ use LWP::Simple;
 use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
+use Path::Tiny;
 
 sub council_area_id { return 2237; }
 sub council_area { return 'Oxfordshire'; }
@@ -246,7 +247,6 @@ sub open311_filter_contacts_for_deletion {
         extra => { -not_like => '%T15:open311_protect,I1:1%' },
     });
 }
-
 
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
@@ -497,5 +497,16 @@ sub extra_reports_pins {
 }
 
 sub report_sent_confirmation_email { 'id' }
+
+sub add_parish_wards {
+    my ($self, $areas) = @_;
+
+    my $extra_areas = decode_json(path(FixMyStreet->path_to('data/oxfordshire_cover.json'))->slurp_utf8);
+
+    %$areas = (
+        %$areas,
+        %$extra_areas
+    );
+}
 
 1;
