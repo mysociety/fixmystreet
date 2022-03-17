@@ -862,6 +862,11 @@ html.mobile.js-nav-open #js-menu-open-modal {
     &:last-child {
       border-#{$right}: none;
     }
+
+    &.hidden-js {
+      display: none;
+      visibility: hidden;
+    }
   }
 
   button {
@@ -917,6 +922,20 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
     &.chevron:after {
       background-position: flip(-16px 0, 0 0);
+    }
+  }
+
+  .sub-area-item {
+    display: none;
+  }
+
+  &.area-js {
+    .feed-list-wrapper, .area-report {
+      display: none;
+    }
+
+    .sub-area-item {
+      display: table-cell;
     }
   }
 }

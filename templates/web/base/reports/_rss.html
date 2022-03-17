@@ -1,6 +1,6 @@
-<div class="shadow-wrap">
+<div id="key-tools-wrapper" class="shadow-wrap">
     <ul id="key-tools">
-        <li><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[%
+        <li class="feed-list-wrapper"><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[%
             SET monikers = ['bromley','hounslow'];
             IF monikers.grep(c.cobrand.moniker).size AND thing == 'council';
                 'Get updates of reports in ' _ c.cobrand.moniker.ucfirst;
@@ -15,7 +15,10 @@
             END
         %]</a></li>
         [% IF children.size %]
-        <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% ward_text %]</a></li>
+        <li class="area-report"><a href="#council_wards" id="key-tool-area" class="chevron">[% area_text %]</a></li>
+        <li class="sub-area-item"><a href="#council_wards" id="key-tool-wards" class="chevron">[% ward_text %]</a></li>
+        <li class="sub-area-item"><a href="#council_parish" id="key-tool-parish" class="chevron">[% parish_text %]</a></li>
+        <li class="sub-area-item"><a href="#council_district" id="key-tool-district" class="chevron">[% district_text %]</a></li>
         [% END %]
     </ul>
 </div>
