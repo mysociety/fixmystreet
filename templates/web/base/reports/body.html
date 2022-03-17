@@ -11,7 +11,10 @@
 [% END %]
 
 [% IF c.cobrand.moniker.match('oxfordshire|lincolnshire') %]
-    [% ward_text = 'View reports by division' %]
+    [% area_text = 'View area reports' %]
+    [% ward_text = 'Division reports' %]
+    [% parish_text = 'Parish reports' %]
+    [% district_text = 'District reports' %]
 [% ELSIF c.cobrand.is_council %]
     [% ward_text = loc( 'View reports by ward' ) %]
 [% ELSE %]
