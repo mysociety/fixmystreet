@@ -488,6 +488,10 @@ subtest 'All reports pages for parishes' => sub {
     is $mech->uri->path, '/reports/Adstock';
 };
 
+subtest 'hides "reference number" text unless report is sent via Open311' => sub {
+
+};
+
 };
 
 done_testing();

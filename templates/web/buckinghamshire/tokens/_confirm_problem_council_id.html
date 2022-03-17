@@ -1,2 +1,5 @@
 <h2>Your issue is on its way to the council.</h2>
-<p>You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+
+[% IF c.cobrand.report_sent_via_open311(report) %]
+  <p>You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+[% END %]

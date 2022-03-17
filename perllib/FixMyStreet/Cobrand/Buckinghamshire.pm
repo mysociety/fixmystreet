@@ -763,4 +763,14 @@ sub about_hook {
     }
 }
 
+sub parish_problem {
+    my ($self, $report) = @_;
+
+    my @contacts = $report->contacts;
+    foreach my $contact (@contacts) {
+        return 1 if $contact->sent_by_open311;
+    }
+    return 0;
+}
+
 1;
