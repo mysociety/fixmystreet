@@ -35,6 +35,8 @@ var tilma_defaults = $.extend(true, {}, defaults, {
     geometryName: 'msGeometry'
 });
 
+var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/';
+
 var arcgis_defaults = $.extend(true, {}, defaults, {
     protocol_class: OpenLayers.Protocol.Peterborough,
     format_class: OpenLayers.Format.GeoJSON,
@@ -50,10 +52,11 @@ var arcgis_defaults = $.extend(true, {}, defaults, {
 
 var waste_categories = ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ];
 
-fixmystreet.assets.add(tilma_defaults, {
+fixmystreet.assets.add(arcgis_defaults, {
     http_options: {
+        url: url_base + '7/query?',
         params: {
-            TYPENAME: "highways"
+            outFields: 'USRN',
         }
     },
     nearest_radius: 2,
@@ -61,7 +64,7 @@ fixmystreet.assets.add(tilma_defaults, {
     non_interactive: true,
     always_visible: true,
     usrn: {
-        attribute: 'Usrn',
+        attribute: 'USRN',
         field: 'site_code'
     },
     name: "Adopted Highways"
@@ -191,8 +194,6 @@ fixmystreet.assets.add(light_defaults, {
     disable_pin_snapping: true,
     asset_item_message: ''
 });
-
-var url_base = 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/';
 
 var bin_defaults = $.extend(true, {}, arcgis_defaults, {
     http_options: {

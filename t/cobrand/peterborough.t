@@ -196,16 +196,13 @@ $mock->mock('_fetch_features', sub {
         # leased out council land
         } elsif ( $x == 552651 && $args->{url} =~ m{3/query} ) {
             return [ { geometry => { type => 'Point' } } ];
-        }
-
-        return [];
-    } else {
         # adopted roads
-        if ( $x == 552721 && $args->{url} =~ m{tilma} ) {
+        } elsif ( $x == 552721 && $args->{url} =~ m{7/query} ) {
             return [ { geometry => { type => 'Point' } } ];
         }
         return [];
     }
+    return [];
 });
 
 for my $test (

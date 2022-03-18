@@ -89,10 +89,10 @@ sub open311_extra_data_exclude {
 
 sub lookup_site_code_config { {
     buffer => 50, # metres
-    url => "https://tilma.mysociety.org/mapserver/peterborough",
-    srsname => "urn:ogc:def:crs:EPSG::27700",
-    typename => "highways",
-    property => "Usrn",
+    url => 'https://peterborough.assets/7/query?',
+    type => 'arcgis',
+    outFields => 'USRN',
+    property => "USRN",
     accept_feature => sub { 1 },
     accept_types => { Polygon => 1 },
 } }
@@ -181,12 +181,8 @@ sub get_body_sender {
                 my $road_features = $self->_fetch_features(
                     {
                         buffer => 1, # metres
-                        url => "https://tilma.mysociety.org/mapserver/peterborough",
-                        srsname => "urn:ogc:def:crs:EPSG::27700",
-                        typename => "highways",
-                        property => "Usrn",
-                        accept_feature => sub { 1 },
-                        accept_types => { Polygon => 1 },
+                        type => 'arcgis',
+                        url => 'https://peterborough.assets/7/query?',
                     },
                     $x,
                     $y,
@@ -290,6 +286,7 @@ sub _fetch_features_url {
             outSR => 3857,
             f => "geojson",
             geometry => $cfg->{bbox},
+            outFields => $cfg->{outFields},
         );
         return URI->new(
             'https://tilma.mysociety.org/resource-proxy/proxy.php?' .
