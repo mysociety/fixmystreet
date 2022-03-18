@@ -226,20 +226,22 @@
 
     [%# Public response field shown for Ruckmeldung ausstehend states
       # (e.g. various pstates) %]
-    <ul class="no-bullets screen-only">
-        <li id="status_update_container"><label for="status_update">
-          [% IF c.cobrand.zurich_user_response_states.$pstate %]
-            [% loc('Reply to user:') %]
-          [% ELSE %]
-            [% loc('Public response:') %]
-          [% END %]
-        </label>
-        [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
-        <textarea class="form-control" name='status_update' id='status_update' cols=60 rows=5>
-        [%- problem.extra.public_response || default_public_response | html -%]
-        </textarea>
-        </li>
-    </ul>
+    [% UNLESS problem.non_public %]
+      <ul class="no-bullets screen-only">
+          <li id="status_update_container"><label for="status_update">
+            [% IF c.cobrand.zurich_user_response_states.$pstate %]
+              [% loc('Reply to user:') %]
+            [% ELSE %]
+              [% loc('Public response:') %]
+            [% END %]
+          </label>
+          [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
+          <textarea class="form-control" name='status_update' id='status_update' cols=60 rows=5>
+          [%- problem.extra.public_response || default_public_response | html -%]
+          </textarea>
+          </li>
+      </ul>
+    [% END %]
 [% END %]
 
 <p align="right" class="screen-only">

@@ -805,11 +805,8 @@ subtest 'test no email sent if closed' => sub {
     $internal->update;
 
     $mech->get_ok( '/admin/report_edit/' . $internal->id );
-    $mech->submit_form_ok( {
-        button => 'publish_response',
-        with_fields => {
-            status_update => 'Testing no email sent',
-        } });
+    $mech->content_lacks("status_update");
+    $mech->submit_form_ok( { form_number => 2, button => 'publish_response' } );
 
     $internal->discard_changes;
     is $internal->state, 'fixed - council';
