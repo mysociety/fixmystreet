@@ -2,7 +2,7 @@ $dropzone-link-color: $link-color;
 $dropzone-link-color--awakened: $link-hover-color;
 $dropzone-border-color--awakened: $dropzone-link-color--awakened;
 $dropzone-border-color--full: #bf002a;
-$dropzone-background-color: #fff;
+$dropzone-background-color: transparentize($primary, 0.85);
 $dropzone-background-color--awakened: mix($dropzone-link-color, $dropzone-background-color, 10%);
 $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%);
 
@@ -12,11 +12,15 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
 }
 
 .dropzone {
-  @extend .form-control;
+  //@extend .form-control;
   @include clearfix;
   background-color: $dropzone-background-color;
   padding: 1.5em;
+  margin-bottom: 0.5em;
   text-align: center;
+  border-color: $primary;
+  border-style: dashed;
+  border-radius: 4px;
 }
 
 .dz-clickable {
@@ -31,10 +35,16 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   .dz-remove,
   .dz-cancel {
     cursor: pointer;
+    font-weight: 600;
   }
 
   .dz-message u {
-    color: $dropzone-link-color;
+    //color: $dropzone-link-color;
+    @extend .btn-primary;
+    display: inline;
+    vertical-align: baseline;
+    margin-left: 3px;
+    font-weight: 400;
   }
 }
 
