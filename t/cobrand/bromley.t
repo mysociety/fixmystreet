@@ -27,6 +27,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
 });
+$mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
@@ -41,7 +42,6 @@ $contact->set_extra_fields(
     { code => 'easting', datatype => 'number', },
     { code => 'northing', datatype => 'number', },
     { code => 'service_request_id_ext', datatype => 'number', },
-    { code => 'service_sub_code', values => [ { key => 'RED', name => 'Red' }, { key => 'BLUE', name => 'Blue' } ], },
 );
 $contact->update;
 my $tfl = $mech->create_body_ok( 2482, 'TfL');
@@ -430,26 +430,6 @@ subtest 'check geolocation overrides' => sub {
     }
 };
 
-subtest 'check special subcategories in admin' => sub {
-    $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
-    $mech->log_in_ok('superuser@example.com');
-    $user->update({ from_body => $body->id });
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok('/admin/templates/' . $body->id . '/new');
-        $mech->get_ok('/admin/users/' . $user->id);
-        $mech->submit_form_ok({ with_fields => { 'contacts['.$contact->id.']' => 1, 'contacts[BLUE]' => 1 } });
-    };
-    $user->discard_changes;
-    is_deeply $user->get_extra_metadata('categories'), [ $contact->id ];
-    is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
-    $user->unset_extra_metadata('categories');
-    $user->unset_extra_metadata('subcategories');
-    $user->update;
-};
-
 subtest 'check title field on report page for staff' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => ['bromley', 'tfl'],
@@ -466,6 +446,7 @@ subtest 'check heatmap page' => sub {
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => { category_groups => { bromley => 1 }, heatmap => { bromley => 1 } },
     }, sub {
+        $user->update({ from_body => $body->id });
         $mech->log_in_ok($user->email);
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->content_contains('Report missed collection');

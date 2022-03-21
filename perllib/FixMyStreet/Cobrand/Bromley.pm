@@ -34,18 +34,6 @@ sub report_validation {
     return $errors;
 }
 
-# This makes sure that the subcategory Open311 attribute question is
-# also stored in the report's subcategory column. This could be done
-# in process_open311_extras, but seemed easier to keep that separate
-sub report_new_munge_before_insert {
-    my ($self, $report) = @_;
-
-    # Make sure TfL reports are marked safety critical
-    $self->SUPER::report_new_munge_before_insert($report);
-
-    $report->subcategory($report->get_extra_field_value('service_sub_code'));
-}
-
 sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
@@ -151,35 +139,6 @@ sub tweak_all_reports_map {
         $c->stash->{map}->{latitude} = 51.36690161822;
         $c->stash->{map}->{any_zoom} = 0;
         $c->stash->{map}->{zoom} = 11;
-    }
-
-    # A place where this can happen
-    return unless $c->action eq 'dashboard/heatmap';
-
-    # Bromley uses an extra attribute question to store 'subcategory',
-    # rather than group/category, but wants this extra question to act
-    # like a subcategory e.g. in the dashboard filter here.
-    my %subcats = $self->subcategories;
-    my $groups = $c->stash->{category_groups};
-    foreach (@$groups) {
-        my $filter = $_->{categories};
-        my @new_contacts;
-        foreach (@$filter) {
-            push @new_contacts, $_;
-            foreach (@{$subcats{$_->id}}) {
-                push @new_contacts, {
-                    category => $_->{key},
-                    category_display => (" " x 4) . $_->{name},
-                };
-            }
-        }
-        $_->{categories} = \@new_contacts;
-    }
-
-    if (!%{$c->stash->{filter_category}}) {
-        my $cats = $c->user->categories;
-        my $subcats = $c->user->get_extra_metadata('subcategories') || [];
-        $c->stash->{filter_category} = { map { $_ => 1 } @$cats, @$subcats } if @$cats || @$subcats;
     }
 }
 
@@ -401,92 +360,6 @@ sub should_skip_sending_update {
     my $private_comments = $update->get_extra_metadata('private_comments');
 
     return $update->user->from_body && !$update->text && !$private_comments;
-}
-
-# If any subcategories ticked in user edit admin, make sure they're saved.
-sub admin_user_edit_extra_data {
-    my $self = shift;
-    my $c = $self->{c};
-    my $user = $c->stash->{user};
-
-    return unless $c->get_param('submit') && $user && $user->from_body;
-
-    $c->stash->{body} = $user->from_body;
-    my %subcats = $self->subcategories;
-    my @subcat_ids = map { $_->{key} } map { @$_ } values %subcats;
-    my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @subcat_ids;
-    $user->set_extra_metadata('subcategories', \@new_contact_ids);
-}
-
-# Returns a hash of contact ID => list of subcategories
-# (which are stored as Open311 attribute questions)
-sub subcategories {
-    my $self = shift;
-
-    my @c = $self->body->contacts->not_deleted->all;
-    my %subcategories;
-    foreach my $contact (@c) {
-        my @fields = @{$contact->get_extra_fields};
-        my ($field) = grep { $_->{code} eq 'service_sub_code' } @fields;
-        $subcategories{$contact->id} = $field->{values} || [];
-    }
-    return %subcategories;
-}
-
-# Returns the list of categories, with Bromley subcategories added,
-# for the user edit admin interface
-sub add_admin_subcategories {
-    my $self = shift;
-    my $c = $self->{c};
-
-    my $user = $c->stash->{user};
-    return $c->stash->{contacts} unless $user; # e.g. admin templates, not user
-
-    my @subcategories = @{$user->get_extra_metadata('subcategories') || []};
-    my %active_contacts = map { $_ => 1 } @subcategories;
-
-    my %subcats = $self->subcategories;
-    my $contacts = $c->stash->{contacts};
-    my @new_contacts;
-    foreach (@$contacts) {
-        push @new_contacts, $_;
-        foreach (@{$subcats{$_->{id}}}) {
-            push @new_contacts, {
-                id => $_->{key},
-                category => (" " x 4) . $_->{name}, # nbsp
-                active => $active_contacts{$_->{key}},
-            };
-        }
-    }
-    return \@new_contacts;
-}
-
-# On heatmap page, include querying on subcategories
-sub munge_load_and_group_problems {
-    my ($self, $where, $filter) = @_;
-    my $c = $self->{c};
-
-    return unless $c->action eq 'dashboard/heatmap';
-
-    # Bromley subcategory stuff
-    if (!$where->{'me.category'}) {
-        my $cats = $c->user->categories;
-        my $subcats = $c->user->get_extra_metadata('subcategories') || [];
-        $where->{'me.category'} = [ @$cats, @$subcats ] if @$cats || @$subcats;
-    }
-
-    my %subcats = $self->subcategories;
-    my $subcat;
-    my %chosen = map { $_ => 1 } @{$where->{'me.category'} || []};
-    my @subcat = grep { $chosen{$_} } map { $_->{key} } map { @$_ } values %subcats;
-    if (@subcat) {
-        my %chosen = map { $_ => 1 } @subcat;
-        $where->{'-or'} = {
-            'me.category' => [ grep { !$chosen{$_} } @{$where->{'me.category'}} ],
-            'me.subcategory' => \@subcat,
-        };
-        delete $where->{'me.category'};
-    }
 }
 
 # We want to send confirmation emails only for Waste reports
