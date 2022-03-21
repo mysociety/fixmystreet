@@ -58,7 +58,7 @@ var parks_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-fixmystreet.assets.add(defaults, {
+var parks_defaults = $.extend(true, {}, defaults, {
     http_options: {
         params: {
             TYPENAME: 'Parks_Open_Spaces'
@@ -66,9 +66,14 @@ fixmystreet.assets.add(defaults, {
     },
     stylemap: parks_stylemap,
     asset_type: 'area',
-    asset_group: ["Parks and Greenspace"],
     asset_item: 'park',
     non_interactive: true
+});
+fixmystreet.assets.add(parks_defaults, {
+    asset_group: ["Parks and Greenspace"],
+});
+fixmystreet.assets.add(parks_defaults, {
+    asset_category: ["Park Security OOH"]
 });
 
 var prow_stylemap = new OpenLayers.StyleMap({
