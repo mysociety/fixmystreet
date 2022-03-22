@@ -1103,6 +1103,16 @@ $.extend(fixmystreet.set_up, {
         $(".js-ward-single").addClass("hidden");
         $(".js-ward-multi").removeClass("hidden");
     });
+    $(".js-parish-select-multiple").on('click', function(e) {
+        e.preventDefault();
+        $(".js-parish-single").addClass("hidden");
+        $(".js-parish-multi").removeClass("hidden");
+    });
+    $(".js-district-select-multiple").on('click', function(e) {
+        e.preventDefault();
+        $(".js-district-single").addClass("hidden");
+        $(".js-district-multi").removeClass("hidden");
+    });
   },
 
   page_controller: function() {

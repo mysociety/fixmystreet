@@ -21,7 +21,11 @@
     </ul>
     </section>
     <p>
-      <input class="btn [% show_wards_shown_class %]" type="submit" value="[% loc('View wards') %]" />
+      [% IF c.cobrand.moniker.match('oxfordshire') %]
+        <input class="btn [% show_wards_shown_class %]" type="submit" value="[% loc('View divisions') %]" />
+      [% ELSE %]
+        <input class="btn [% show_wards_shown_class %]" type="submit" value="[% loc('View wards') %]" />
+      [% END %]
     </p>
     </form>
 </section>
