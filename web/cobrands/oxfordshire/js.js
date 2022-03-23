@@ -119,7 +119,6 @@
                         $('#council_wards').removeClass('hidden-js').find('h2').hide();
                     });
                 });
-        
                 $('#key-tool-parish').on('click', function(e) {
                     e.preventDefault();
                     $('[id^=key-tool-]').removeClass('hover');
@@ -129,7 +128,6 @@
                         $('#council_wards,#council_district_wards').addClass('hidden-js').hide();
                     });
                 });
-        
                 $('#key-tool-district').on('click', function(e) {
                     e.preventDefault();
                     $('[id^=key-tool-]').removeClass('hover');
@@ -147,7 +145,7 @@
                     $('#key-tools-wrapper').addClass('static').prependTo('#council_wards');
                     $('#council_parishes,#council_district_wards').addClass('hidden-js');
                 });
-            
+
                 $('#key-tool-parish').on('click', function(e) {
                     $('[id^=key-tool-]').removeClass('hover');
                     $('#key-tool-parish').addClass('hover');
@@ -155,7 +153,7 @@
                     $('#key-tools-wrapper').addClass('static').prependTo('#council_parishes');
                     $('#council_wards,#council_district_wards').addClass('hidden-js');
                 });
-            
+                
                 $('#key-tool-district').on('click', function(e) {
                     $('[id^=key-tool-]').removeClass('hover');
                     $('#key-tool-district').addClass('hover');
