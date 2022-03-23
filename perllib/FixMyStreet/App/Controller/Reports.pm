@@ -193,15 +193,17 @@ sub ward : Path : Args(2) {
         };
         $c->stash->{body}->body_areas->first;
 
-    # List of parishes and non-division wards to be made optional
-        my $covered = $c->stash->{body}->body_covers_filter(['CPC,DIW']);
-        unless ($covered->{error}) {
-            foreach (values %$covered) {
-                $_->{url} = $c->uri_for( $c->stash->{body_url}
+        if (my $filter = $c->cobrand->feature('sub_ward_reporting')) {
+
+            my $covered = $c->stash->{body}->body_covers_filter($filter);
+            unless ($covered->{error}) {
+                foreach (values %$covered) {
+                    $_->{url} = $c->uri_for( $c->stash->{body_url}
                     . '/' . $c->cobrand->short_name( $_ )
                 );
             }
             $c->stash->{covered} = $covered;
+        }
         }
     }
 }
