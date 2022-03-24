@@ -6,13 +6,9 @@ use warnings;
 use utf8;
 use DateTime::Format::W3CDTF;
 use DateTime::Format::Flexible;
-use File::Temp;
 use Integrations::Echo;
 use Integrations::Pay360;
-use JSON::MaybeXS;
-use Parallel::ForkManager;
 use Sort::Key::Natural qw(natkeysort_inplace);
-use Storable;
 use Try::Tiny;
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
@@ -438,7 +434,9 @@ sub bin_addresses_for_postcode {
 sub look_up_property {
     my ($self, $id) = @_;
 
-    my $calls = $self->call_api(
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $calls = $echo->call_api($self->{c}, 'bromley',
         "look_up_property:$id",
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
@@ -637,7 +635,9 @@ sub bin_services_for_address {
     }
     push @to_fetch, GetTasks => \@task_refs if @task_refs;
 
-    my $calls = $self->call_api('bin_services_for_address:' . $property->{id}, @to_fetch);
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $calls = $echo->call_api($self->{c}, 'bromley', 'bin_services_for_address:' . $property->{id}, @to_fetch);
 
     my @out;
     my %task_ref_to_row;
@@ -1602,65 +1602,6 @@ sub admin_templates_external_status_code_hook {
     my $code = "$res_code,$task_type,$task_state";
     $code = '' if $code eq ',,';
     return $code;
-}
-
-sub call_api {
-    my ($self, $key) = (shift, shift);
-
-    $key = "bromley:echo:$key";
-    return $self->{c}->session->{$key} if !FixMyStreet->test_mode && $self->{c}->session->{$key};
-
-    my $tmp = File::Temp->new;
-    my @cmd = (
-        FixMyStreet->path_to('bin/fixmystreet.com/bromley-echo'),
-        '--out', $tmp,
-        '--calls', encode_json(\@_),
-    );
-    my $start = time();
-
-    # We cannot fork directly under mod_fcgid, so
-    # call an external script that calls back in.
-    my $data;
-    my $echo = $self->feature('echo');
-    # uncoverable branch false
-    if (FixMyStreet->test_mode || $echo->{sample_data}) {
-        $data = $self->_parallel_api_calls(@_);
-    } else {
-        # uncoverable statement
-        system(@cmd);
-        $data = Storable::fd_retrieve($tmp);
-    }
-    $self->{c}->session->{$key} = $data;
-    my $time = time() - $start;
-    $self->{c}->log->info("[Bromley] call_api $key took $time seconds");
-    return $data;
-}
-
-sub _parallel_api_calls {
-    my $self = shift;
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
-
-    my %calls;
-    # uncoverable branch false
-    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode || $echo->sample_data ? 0 : 10);
-    $pm->run_on_finish(sub {
-        my ($pid, $exit_code, $ident, $exit_signal, $core_dump, $data) = @_;
-        %calls = ( %calls, %$data );
-    });
-
-    while (@_) {
-        my $call = shift;
-        my $args = shift;
-        $pm->start and next;
-        my $result = $echo->$call(@$args);
-        my $key = "$call @$args";
-        $key = $call if $call eq 'GetTasks';
-        $pm->finish(0, { $key => $result });
-    }
-    $pm->wait_all_children;
-
-    return \%calls;
 }
 
 sub dashboard_export_problems_add_columns {
