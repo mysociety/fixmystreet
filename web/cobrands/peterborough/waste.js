@@ -4,6 +4,16 @@ $(function() {
         $(selector).on('change', function() {
             var checked = this.checked;
             $other_checkboxes.each(function() {
+                // If this checkbox was disabled in the original page HTML,
+                // we never want to enable it as a result of another checkbox
+                // changing state.
+                if ($(this).data("defaultDisabled") === undefined) {
+                    $(this).data("defaultDisabled", this.disabled);
+                }
+                if ($(this).data("defaultDisabled")) {
+                    return;
+                }
+
                 this.disabled = checked;
                 if (checked) {
                     this.checked = false;
