@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# bromley-echo
+# call-echo
 # Call the Echo API in parallel
 
 use v5.14;
@@ -16,18 +16,23 @@ BEGIN {
 use Getopt::Long::Descriptive;
 use JSON::MaybeXS;
 use Storable;
-use FixMyStreet::Cobrand::Bromley;
+use Integrations::Echo;
+use FixMyStreet::Cobrand;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
-    ['out=s', 'where to output CSV data'],
+    ['cobrand=s', 'which cobrand configuration to use'],
+    ['out=s', 'where to output data'],
     ['calls=s', 'JSON of what API calls to make'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
+$usage->die unless $opts->cobrand && $opts->out && $opts->calls;
 
-my $cobrand = FixMyStreet::Cobrand::Bromley->new;
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
+my $cfg = $cobrand->feature('echo');
+my $echo = Integrations::Echo->new(%$cfg);
 
 my $calls = decode_json($opts->calls);
-$calls = $cobrand->_parallel_api_calls(@$calls);
+$calls = $echo->_parallel_api_calls(@$calls);
 Storable::store($calls, $opts->out);
