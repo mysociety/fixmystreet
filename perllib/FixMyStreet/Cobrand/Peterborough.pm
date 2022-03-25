@@ -891,12 +891,7 @@ sub waste_munge_request_data {
     my $quantity = $data->{"quantity-$id"};
     my $reason = $data->{request_reason} || '';
 
-    # For "large family" requests we want to use a different
-    # non container-specific category
-    $id = '486' if $reason eq 'large_family';
-
     $reason = {
-        large_family => 'Additional black/green due to a large family',
         cracked => "Cracked bin\n\nPlease remove cracked bin.",
         lost_stolen => 'Lost/stolen bin',
         new_build => 'New build',
@@ -1111,13 +1106,6 @@ sub waste_munge_request_form_fields {
 
     unless ($self->{c}->get_param('bags_only')) {
         my $reasons = [
-            {
-                label => 'Additional black/green due to a large family',
-                value => 'large_family',
-                hint => 'Only families with 5 or more people living at the address or those with medical needs may qualify. An assessment form will be sent to you to complete.',
-                hint_class => 'hidden-js',
-                data_show => '#request_reason-item-hint',
-            },
             { label => 'Cracked bin', value => 'cracked', data_hide => '#request_reason-item-hint' },
             { label => 'Lost/stolen bin', value => 'lost_stolen', data_hide => '#request_reason-item-hint' },
             { label => 'New build', value => 'new_build', data_hide => '#request_reason-item-hint' },
