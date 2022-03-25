@@ -920,9 +920,9 @@ subtest 'check_within_days' => sub {
             my $date = DateTime::Format::W3CDTF->parse_datetime($test->{check});
 
             if ( $test->{is_true} ) {
-                ok FixMyStreet::Cobrand::Bromley::within_working_days($date, $test->{days}, $test->{future});
+                ok(FixMyStreet::Cobrand::Bromley->within_working_days($date, $test->{days}, $test->{future}));
             } else {
-                ok !FixMyStreet::Cobrand::Bromley::within_working_days($date, $test->{days}, $test->{future});
+                ok(!FixMyStreet::Cobrand::Bromley->within_working_days($date, $test->{days}, $test->{future}));
             }
 
         };
