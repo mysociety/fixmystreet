@@ -16,7 +16,6 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
-
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
@@ -222,6 +221,44 @@ around open311_extra_data_include => sub {
     }
 
     return $open311_only;
+};
+
+sub get_list_of_report_assignees {
+    my ($self, $problems) = @_;
+
+    my $planned_reports = $problems->search(
+        {},
+        {
+            prefetch => ['user_planned_reports'],
+        });
+
+    my %assignees = map { $_->shortlisted_user->id => $_->shortlisted_user->name } grep { $_->shortlisted_user } $planned_reports->search;
+    return %assignees ? \%assignees : {};
+}
+
+sub filter_problems_by_assignee {
+    my ($self, $problems, $selected_assignee, $order, $p_page) = @_;
+
+    my $query = {};
+    if ($selected_assignee =~ 'Unassigned') {
+        $query = {"user_planned_reports.user_id" => undef };
+    } elsif ($selected_assignee =~ /^\d+$/) {
+        $query = {
+            "user_planned_reports.user_id" => $selected_assignee,
+            "user_planned_reports.removed" => { -is => undef },
+        };
+    };
+
+    $problems = $problems->search(
+        $query,
+            {
+                prefetch => 'user_planned_reports',
+                order_by => $order,
+                rows => 50
+            }
+            )->page( $p_page );
+
+    return $problems;
 };
 
 1;
