@@ -46,7 +46,3 @@ Replies to this email will go to FixMyStreet and updated according to the SC
 code used in the Subject line.
 
 [% signature %]
-
-If there is a more appropriate email address for messages about
-[% category_footer %], please let us know. This will help improve the
-service for local people. We also welcome any other feedback you may have.

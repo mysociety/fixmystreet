@@ -217,6 +217,7 @@ subtest 'Ex-district reports are sent to correct emails' => sub {
     $mech->email_count_is(4); # (one for council, one confirmation for user) x 2
     my @email = $mech->get_email;
     is $email[0]->header('To'), 'Buckinghamshire <flytipping@chiltern>';
+    unlike $mech->get_text_body_from_email($email[0]), qr/If there is a/;
 };
 
 my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Drainage problem', {
