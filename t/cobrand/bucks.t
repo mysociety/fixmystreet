@@ -8,7 +8,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(163793, 'Buckinghamshire', {
+my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
@@ -39,7 +39,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', em
 $mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
 
 # Create another Grass cutting category for a parish.
-$contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
+$contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grassparish@example.org', send_method => 'Email');
 $contact->set_extra_fields({
     code => 'speed_limit_greater_than_30',
     description => 'Is the speed limit on this road 30mph or greater?',
@@ -216,10 +216,11 @@ subtest 'Ex-district reports are sent to correct emails' => sub {
     FixMyStreet::Script::Reports::send();
     $mech->email_count_is(4); # (one for council, one confirmation for user) x 2
     my @email = $mech->get_email;
-    is $email[0]->header('To'), 'Buckinghamshire <flytipping@chiltern>';
+    is $email[0]->header('To'), '"Buckinghamshire Council" <flytipping@chiltern>';
     unlike $mech->get_text_body_from_email($email[0]), qr/If there is a/;
 
     like $mech->get_text_body_from_email($email[1]), qr/reference number is/;
+    unlike $mech->get_text_body_from_email($email[1]), qr/please contact Buckinghamshire/;
 };
 
 my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Drainage problem', {
@@ -424,6 +425,8 @@ subtest 'Allows car park reports to be made in a car park' => sub {
 };
 
 subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub {
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
         with_fields => {
@@ -438,6 +441,9 @@ subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub 
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 1', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    like $mech->get_text_body_from_email($email[1]), qr/please contact Adstock Parish Council at grassparish\@example.org/;
 };
 
 subtest 'sends grass cutting reports on roads 30mph or more to the council' => sub {
