@@ -1,0 +1,5 @@
+[% IF c.req.uri.path == '/admin/reports' %]
+<td>
+    [%- problem.shortlisted_user.name OR problem.shortlisted_user.username OR loc('Unassigned') -%]
+</td>
+[% END %]

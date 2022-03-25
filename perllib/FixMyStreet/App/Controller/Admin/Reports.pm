@@ -53,6 +53,8 @@ sub index : Path {
 
     my $problems = $c->cobrand->problems;
 
+    $c->stash->{assignees} = $c->cobrand->call_hook('get_list_of_report_assignees' => $problems);
+
     if (my $search = $c->get_param('search')) {
         $search = $self->trim($search);
 
@@ -152,7 +154,11 @@ sub index : Path {
             $c->stash->{updates} = [ $updates->all ];
             $c->stash->{updates_pager} = $updates->pager;
         }
-
+    } elsif (my $assignee = $c->get_param('assignee')) {
+        my $problems = $c->cobrand->call_hook('filter_problems_by_assignee' => $problems, $assignee, $order, $p_page);
+        $c->stash->{selected_assignee} = $assignee;
+        $c->stash->{problems} = [ $problems->all ] if $problems;
+        $c->stash->{problems_pager} = $problems->pager if $problems;
     } else {
 
         $problems = $problems->search(
