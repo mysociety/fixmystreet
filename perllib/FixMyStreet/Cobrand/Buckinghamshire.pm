@@ -426,7 +426,10 @@ sub should_skip_sending_update {
 
 sub disable_phone_number_entry { 1 }
 
-sub report_sent_confirmation_email { 'external_id' }
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    return $report->external_id ? 'external_id' : 'id';
+}
 
 sub handle_email_status_codes { 1 }
 
