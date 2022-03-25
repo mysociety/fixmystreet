@@ -5,15 +5,11 @@ use strict;
 use warnings;
 use utf8;
 use DateTime::Format::W3CDTF;
-use DateTime::Format::Flexible;
 use Integrations::Echo;
-use Integrations::Pay360;
-use Sort::Key::Natural qw(natkeysort_inplace);
-use Try::Tiny;
-use FixMyStreet::DateRange;
-use FixMyStreet::WorkingDays;
-use Open311::GetServiceRequestUpdates;
 use BromleyParks;
+use Moo;
+with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::CobrandPay360';
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -416,61 +412,6 @@ sub clear_cached_lookups_property {
     delete $self->{c}->session->{$key};
 }
 
-sub bin_addresses_for_postcode {
-    my $self = shift;
-    my $pc = shift;
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $points = $echo->FindPoints($pc, $cfg);
-    my $data = [ map { {
-        value => $_->{Id},
-        label => FixMyStreet::Template::title($_->{Description}),
-    } } @$points ];
-    natkeysort_inplace { $_->{label} } @$data;
-    return $data;
-}
-
-sub look_up_property {
-    my ($self, $id) = @_;
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'bromley',
-        "look_up_property:$id",
-        GetPointAddress => [ $id ],
-        GetServiceUnitsForObject => [ $id ],
-        GetEventsForObject => [ 'PointAddress', $id ],
-    );
-
-    $self->{api_serviceunits} = $calls->{"GetServiceUnitsForObject $id"};
-    $self->{api_events} = $calls->{"GetEventsForObject PointAddress $id"};
-    my $result = $calls->{"GetPointAddress $id"};
-    return {
-        id => $result->{Id},
-        uprn => $result->{SharedRef}{Value}{anyType},
-        address => FixMyStreet::Template::title($result->{Description}),
-        latitude => $result->{Coordinates}{GeoPoint}{Latitude},
-        longitude => $result->{Coordinates}{GeoPoint}{Longitude},
-    };
-}
-
-my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
-sub ordinal {
-    my $n = shift;
-    $irregulars{$n % 100} || $irregulars{$n % 10} || 'th';
-}
-
-sub construct_bin_date {
-    my $str = shift;
-    return unless $str;
-    my $offset = ($str->{OffsetMinutes} || 0) * 60;
-    my $zone = DateTime::TimeZone->offset_as_string($offset);
-    my $date = DateTime::Format::W3CDTF->parse_datetime($str->{DateTime});
-    $date->set_time_zone($zone);
-    return $date;
-}
-
 sub image_for_service {
     my ($self, $service_id) = @_;
     my $base = '/cobrands/bromley/images/container-images';
@@ -489,25 +430,6 @@ sub image_for_service {
     return $images->{$service_id};
 }
 
-sub available_bin_services_for_address {
-    my ($self, $property) = @_;
-
-    my $services = $self->{c}->stash->{services};
-    return {} unless keys %$services;
-
-    my $available_services = {};
-    for my $service ( values %$services ) {
-        my $name = $service->{service_name};
-        $name =~ s/ /_/g;
-        $available_services->{$name} = {
-            service_id => $service->{service_id},
-            is_active => 1,
-        };
-    }
-
-    return $available_services;
-}
-
 sub garden_waste_service_id {
     return 545;
 }
@@ -522,7 +444,7 @@ sub get_current_garden_bins {
 }
 
 sub service_name_override {
-    my $service = shift;
+    my ($self, $service) = @_;
 
     my %service_name_override = (
         531 => 'Non-Recyclable Refuse',
@@ -624,7 +546,7 @@ sub bin_services_for_address {
     my @task_refs;
     my %expired;
     foreach (@$result) {
-        my $servicetask = _get_current_service_task($_) or next;
+        my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
@@ -643,11 +565,11 @@ sub bin_services_for_address {
     my %task_ref_to_row;
     foreach (@$result) {
         my $service_id = $_->{ServiceId};
-        my $service_name = service_name_override($_);
+        my $service_name = $self->service_name_override($_);
         next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden Waste' && $expired{$_->{Id}} );
 
         my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
-        my $servicetask = _get_current_service_task($_);
+        my $servicetask = $self->_get_current_service_task($_);
 
         my $containers = $service_to_containers{$service_id};
         my ($open_request) = grep { $_ } map { $events->{request}->{$_} } @$containers;
@@ -705,7 +627,7 @@ sub bin_services_for_address {
             my $ref = join(',', @{$row->{last}{ref}});
             $task_ref_to_row{$ref} = $row;
 
-            $row->{report_allowed} = within_working_days($row->{last}{date}, 2);
+            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
             my $missed_events = [
@@ -772,30 +694,6 @@ sub bin_services_for_address {
     return \@out;
 }
 
-sub _get_current_service_task {
-    my $service = shift;
-
-    my $servicetasks = Integrations::Echo::force_arrayref($service->{ServiceTasks}, 'ServiceTask');
-    @$servicetasks = grep { $_->{ServiceTaskSchedules} } @$servicetasks;
-    return unless @$servicetasks;
-
-    my $service_name = service_name_override($service);
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my ($current, $last_date);
-    foreach my $task ( @$servicetasks ) {
-        my $schedules = Integrations::Echo::force_arrayref($task->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
-        foreach my $schedule ( @$schedules ) {
-            my $end = construct_bin_date($schedule->{EndDate});
-
-            next if $last_date && $end && $end < $last_date;
-            next if $end && $end < $today && $service_name ne 'Garden Waste';
-            $last_date = $end;
-            $current = $task;
-        }
-    }
-    return $current;
-}
-
 sub _closed_event {
     my $event = shift;
     return 1 if $event->{ResolvedDate};
@@ -848,102 +746,7 @@ sub _parse_events {
     return $events;
 }
 
-sub _events_since_date {
-    my ($self, $last_date, $events) = @_;
-    my @since_events = grep { $_->{date} >= $last_date } @$events;
-    my @closed = grep { $_->{closed} } @since_events;
-    my @open = grep { !$_->{closed} } @since_events;
-    return {
-        @open ? (open => $open[0]) : (),
-        @closed ? (closed => $closed[0]) : (),
-    };
-}
-
-sub _schedule_object {
-    my ($instance, $current) = @_;
-    my $original = construct_bin_date($instance->{OriginalScheduledDate});
-    my $changed = $current->strftime("%F") ne $original->strftime("%F");
-    return {
-        date => $current,
-        ordinal => ordinal($current->day),
-        changed => $changed,
-        ref => $instance->{Ref}{Value}{anyType},
-    };
-}
-
-sub _parse_schedules {
-    my $servicetask = shift;
-    my $schedules = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
-
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($min_next, $max_last, $description, $max_end_date);
-    foreach my $schedule (@$schedules) {
-        my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
-        my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
-        $max_end_date = $end_date if !defined($max_end_date) || $max_end_date lt $end_date;
-
-        next if $end_date lt $today;
-
-        my $next = $schedule->{NextInstance};
-        my $d = construct_bin_date($next->{CurrentScheduledDate});
-        $d = undef if $d && $d->strftime('%F') lt $start_date; # Shouldn't happen
-        if ($d && (!$min_next || $d < $min_next->{date})) {
-            $min_next = _schedule_object($next, $d);
-            $description = $schedule->{ScheduleDescription};
-        }
-
-        next if $start_date gt $today; # Shouldn't have a LastInstance in this case, but some bad data
-
-        my $last = $schedule->{LastInstance};
-        $d = construct_bin_date($last->{CurrentScheduledDate});
-        # It is possible the last instance for this schedule has been rescheduled to
-        # be in the future. If so, we should treat it like it is a next instance.
-        if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
-            $min_next = _schedule_object($last, $d);
-            $description = $schedule->{ScheduleDescription};
-        } elsif ($d && (!$max_last || $d > $max_last->{date})) {
-            $max_last = _schedule_object($last, $d);
-        }
-    }
-
-    return {
-        next => $min_next,
-        last => $max_last,
-        description => $description,
-        end_date => $max_end_date,
-    };
-}
-
 sub bin_day_format { '%A, %-d~~~ %B' }
-
-sub bin_future_collections {
-    my $self = shift;
-
-    my $services = $self->{c}->stash->{service_data};
-    my @tasks;
-    my %names;
-    foreach (@$services) {
-        push @tasks, $_->{service_task_id};
-        $names{$_->{service_task_id}} = $_->{service_name};
-    }
-
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->GetServiceTaskInstances(@tasks);
-
-    my $events = [];
-    foreach (@$result) {
-        my $task_id = $_->{ServiceTaskRef}{Value}{anyType};
-        my $tasks = Integrations::Echo::force_arrayref($_->{Instances}, 'ScheduledTaskInfo');
-        foreach (@$tasks) {
-            my $dt = construct_bin_date($_->{CurrentScheduledDate});
-            my $summary = $names{$task_id} . ' collection';
-            my $desc = '';
-            push @$events, { date => $dt, summary => $summary, desc => $desc };
-        }
-    }
-    return $events;
-}
 
 =over
 
@@ -956,7 +759,7 @@ after the date.
 =cut
 
 sub within_working_days {
-    my ($dt, $days, $future) = @_;
+    my ($self, $dt, $days, $future) = @_;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
     $dt = $wd->add_days($dt, $days)->ymd;
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
@@ -965,157 +768,6 @@ sub within_working_days {
     } else {
         return $today le $dt;
     }
-}
-
-=item waste_fetch_events
-
-Loop through all open waste events to see if there have been any updates
-
-=back
-
-=cut
-
-sub waste_fetch_events {
-    my ($self, $verbose) = @_;
-
-    my $body = $self->body;
-    my @contacts = $body->contacts->search({
-        send_method => 'Open311',
-        endpoint => { '!=', '' },
-    })->all;
-    die "Could not find any devolved contacts\n" unless @contacts;
-
-    my %open311_conf = (
-        endpoint => $contacts[0]->endpoint || '',
-        api_key => $contacts[0]->api_key || '',
-        jurisdiction => $contacts[0]->jurisdiction || '',
-        extended_statuses => $body->send_extended_statuses,
-    );
-    my $cobrand = $body->get_cobrand_handler;
-    $cobrand->call_hook(open311_config_updates => \%open311_conf)
-        if $cobrand;
-    my $open311 = Open311->new(%open311_conf);
-
-    my $updates = Open311::GetServiceRequestUpdates->new(
-        current_open311 => $open311,
-        current_body => $body,
-        system_user => $body->comment_user,
-        suppress_alerts => 0,
-        blank_updates_permitted => $body->blank_updates_permitted,
-    );
-
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
-
-    my $cfg = {
-        verbose => $verbose,
-        updates => $updates,
-        echo => $echo,
-        event_types => {},
-    };
-
-    my $reports = $self->problems->search({
-        external_id => { '!=', '' },
-        state => [ FixMyStreet::DB::Result::Problem->open_states() ],
-        category => [ map { $_->category } @contacts ],
-    });
-
-    while (my $report = $reports->next) {
-        print 'Fetching data for report ' . $report->id . "\n" if $verbose;
-
-        my $event = $cfg->{echo}->GetEvent($report->external_id);
-        my $request = $self->construct_waste_open311_update($cfg, $event) or next;
-
-        next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
-        next unless $self->waste_check_last_update(
-            $cfg, $report, $request->{status}, $request->{external_status_code});
-
-        my $last_updated = construct_bin_date($event->{LastUpdatedDate});
-        $request->{comment_time} = $last_updated;
-
-        print "  Updating report to state $request->{status}, $request->{description} ($request->{external_status_code})\n" if $cfg->{verbose};
-        $cfg->{updates}->process_update($request, $report);
-    }
-}
-
-sub construct_waste_open311_update {
-    my ($self, $cfg, $event) = @_;
-
-    return undef unless $event;
-    my $event_type = $cfg->{event_types}{$event->{EventTypeId}} ||= $self->waste_get_event_type($cfg, $event->{EventTypeId});
-    my $state_id = $event->{EventStateId};
-    my $resolution_id = $event->{ResolutionCodeId} || '';
-    my $status = $event_type->{states}{$state_id}{state};
-    my $description = $event_type->{resolution}{$resolution_id} || $event_type->{states}{$state_id}{name};
-    return {
-        description => $description,
-        status => $status,
-        update_id => 'waste',
-        external_status_code => $resolution_id ? "$resolution_id,," : "",
-        prefer_template => 1,
-    };
-}
-
-sub waste_get_event_type {
-    my ($self, $cfg, $id) = @_;
-
-    my $event_type = $cfg->{echo}->GetEventType($id);
-
-    my $state_map = {
-        New => { New => 'confirmed' },
-        Pending => {
-            Unallocated => 'investigating',
-            'Allocated to Crew' => 'action scheduled',
-            Accepted => 'action scheduled',
-        },
-        Closed => {
-            Closed => 'fixed - council',
-            Completed => 'fixed - council',
-            'Not Completed' => 'unable to fix',
-            'Partially Completed' => 'closed',
-            Rejected => 'closed',
-        },
-    };
-
-    my $states = $event_type->{Workflow}->{States}->{State};
-    my $data;
-    foreach (@$states) {
-        my $core = $_->{CoreState}; # New/Pending/Closed
-        my $name = $_->{Name}; # New : Unallocated/Allocated to Crew : Completed/Not Completed/Rejected/Closed
-        $data->{states}{$_->{Id}} = {
-            core => $core,
-            name => $name,
-            state => $state_map->{$core}{$name},
-        };
-        my $codes = Integrations::Echo::force_arrayref($_->{ResolutionCodes}, 'StateResolutionCode');
-        foreach (@$codes) {
-            my $name = $_->{Name};
-            my $id = $_->{ResolutionCodeId};
-            $data->{resolution}{$id} = $name;
-        }
-    }
-    return $data;
-}
-
-# We only have the report's current state, no history, so must check current
-# against latest received update to see if state the same, and skip if so
-sub waste_check_last_update {
-    my ($self, $cfg, $report, $status, $resolution_id) = @_;
-
-    my $latest = $report->comments->search(
-        { external_id => 'waste', },
-        { order_by => { -desc => 'id' } }
-    )->first;
-
-    if ($latest) {
-        my $state = $cfg->{updates}->current_open311->map_state($status);
-        my $code = $latest->get_extra_metadata('external_status_code') || '';
-        if ($latest->problem_state eq $state && $code eq $resolution_id) {
-            print "  Latest update matches fetched state, skipping\n" if $cfg->{verbose};
-            return;
-        }
-    }
-    return 1;
 }
 
 sub _set_user_source {
@@ -1185,29 +837,12 @@ sub waste_munge_enquiry_data {
     $self->_set_user_source;
 }
 
-sub waste_get_next_dd_day {
-    my ($self, $payment_type) = @_;
-
-    # new DD mandates must have a 10-day wait
-    my $dd_delay = 10;
-
-    # ad-hoc payments on an existing mandate only need a 5-day wait
-    if ($payment_type && ($payment_type eq 'ad-hoc')) { $dd_delay = 5; }
-
-    my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-
-    my $next_day = $wd->add_days( $dt, $dd_delay );
-
-    return $next_day;
-}
-
 sub waste_get_pro_rata_cost {
     my ($self, $bins, $end) = @_;
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $sub_end = DateTime::Format::W3CDTF->parse_datetime($end);
-    my $cost = $bins * $self->{c}->cobrand->waste_get_pro_rata_bin_cost( $sub_end, $now );
+    my $cost = $bins * $self->waste_get_pro_rata_bin_cost( $sub_end, $now );
 
     return $cost;
 }
@@ -1224,33 +859,6 @@ sub waste_get_pro_rata_bin_cost {
     my $cost = $base + ( $weeks * $weekly_cost );
 
     return $cost;
-}
-
-sub waste_sub_due {
-    my ($self, $date) = @_;
-
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
-
-    my $diff = $now->delta_days($sub_end)->in_units('weeks');
-    return $diff < 7;
-}
-
-sub waste_sub_overdue {
-    my ($self, $date, $interval, $count) = @_;
-
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date)->truncate( to => 'day' );
-
-    if ( $now > $sub_end ) {
-        my $diff = 1;
-        if ( $interval ) {
-            $diff = $now->delta_days($sub_end)->in_units($interval) < $count;
-        }
-        return $diff;
-    };
-
-    return 0;
 }
 
 sub waste_display_payment_method {
@@ -1270,325 +878,6 @@ sub garden_waste_cost {
     $bin_count ||= 1;
 
     return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
-}
-
-sub waste_payment_type {
-    my ($self, $type, $ref) = @_;
-
-    my ($sub_type, $category);
-    if ( $type eq 'Payment: 01' || $type eq 'First Time' ) {
-        $category = 'Garden Subscription';
-        $sub_type = $self->waste_subscription_types->{New};
-    } elsif ( $type eq 'Payment: 17' || $type eq 'Regular' ) {
-        $category = 'Garden Subscription';
-        if ( $ref ) {
-            $sub_type = $self->waste_subscription_types->{Amend};
-        } else {
-            $sub_type = $self->waste_subscription_types->{Renew};
-        }
-    }
-
-    return ($category, $sub_type);
-}
-
-sub waste_is_dd_payment {
-    my ($self, $row) = @_;
-
-    return $row->get_extra_field_value('payment_method') && $row->get_extra_field_value('payment_method') eq 'direct_debit';
-}
-
-sub waste_dd_paid {
-    my ($self, $date) = @_;
-
-    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
-    my $dt = DateTime->new(day => $day, month => $month, year => $year);
-    return within_working_days($dt, 3, 1);
-}
-
-sub waste_reconcile_direct_debits {
-    my $self = shift;
-
-    my $today = DateTime->now;
-    my $start = $today->clone->add( days => -14 );
-
-    my $config = $self->feature('payment_gateway');
-    my $i = Integrations::Pay360->new({
-        config => $config
-    });
-
-    my $recent = $i->get_recent_payments({
-        start => $start,
-        end => $today
-    });
-
-    RECORD: for my $payment ( @$recent ) {
-
-        my $date = $payment->{DueDate};
-        next unless $self->waste_dd_paid($date);
-
-        my ($category, $type) = $self->waste_payment_type ( $payment->{Type}, $payment->{YourRef} );
-
-        next unless $category && $date;
-
-        my $payer = $payment->{PayerReference};
-
-        (my $uprn = $payer) =~ s/^GGW//;
-
-        my $len = length($uprn);
-        my $rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-        },
-        {
-                order_by => { -desc => 'created' }
-        })->to_body( $self->body );
-
-        my $handled;
-
-        # Work out what to do with the payment.
-        # Processed payments are indicated by a matching record with a dd_date the
-        # same as the CollectionDate of the payment
-        #
-        # Renewal is an automatic event so there is never a record in the database
-        # and we have to generate one.
-        #
-        # If we're a renew payment then find the initial subscription payment, also
-        # checking if we've already processed this payment. If we've not processed it
-        # create a renewal record using the original subscription as a basis.
-        if ( $type && $type eq $self->waste_subscription_types->{Renew} ) {
-            next unless $payment->{Status} eq 'Paid';
-            $rs = $rs->search({ category => 'Garden Subscription' });
-            my $p;
-            # loop over all matching records and pick the most recent new sub or renewal
-            # record. This is where we get the details of the renewal from. There should
-            # always be one of these for an automatic DD renewal. If there isn't then
-            # something has gone wrong and we need to error.
-            while ( my $cur = $rs->next ) {
-                # only match direct debit payments
-                next unless $self->waste_is_dd_payment($cur);
-                # only confirmed records are valid.
-                next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
-                my $sub_type = $cur->get_extra_field_value('Subscription_Type');
-                if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    $p = $cur if !$p;
-                } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
-                    # already processed
-                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
-                    # if it's a renewal of a DD where the initial setup was as a renewal
-                    $p = $cur if !$p;
-                }
-            }
-            if ( $p ) {
-                my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
-                unless ($service) {
-                    warn "no matching service to renew for $payer\n";
-                    next;
-                }
-                my $renew = _duplicate_waste_report($p, 'Garden Subscription', {
-                    Subscription_Type => $self->waste_subscription_types->{Renew},
-                    service_id => 545,
-                    uprn => $uprn,
-                    Subscription_Details_Container_Type => 44,
-                    Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
-                    LastPayMethod => $self->bin_payment_types->{direct_debit},
-                    PaymentCode => $payer,
-                    payment_method => 'direct_debit',
-                } );
-                $renew->set_extra_metadata('dd_date', $date);
-                $renew->confirm;
-                $renew->insert;
-                $handled = 1;
-            }
-        # this covers new subscriptions and ad-hoc payments, both of which already have
-        # a record in the database as they are the result of user action
-        } else {
-            next unless $payment->{Status} eq 'Paid';
-            # we fetch the confirmed ones as well as we explicitly want to check for
-            # processed reports so we can warn on those we are missing.
-            $rs = $rs->search({ category => 'Garden Subscription' });
-            while ( my $cur = $rs->next ) {
-                next unless $self->waste_is_dd_payment($cur);
-                if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
-                    if ( $cur->state eq 'unconfirmed' && !$handled) {
-                        if ( $type eq 'New' ) {
-                            if ( !$cur->get_extra_metadata('payerReference') ) {
-                                $cur->set_extra_metadata('payerReference', $payer);
-                            }
-                        }
-                        $cur->set_extra_metadata('dd_date', $date);
-                        $cur->update_extra_field( {
-                            name => 'PaymentCode',
-                            description => 'PaymentCode',
-                            value => $payer,
-                        } );
-                        $cur->update_extra_field( {
-                            name => 'LastPayMethod',
-                            description => 'LastPayMethod',
-                            value => $self->bin_payment_types->{direct_debit},
-                        } );
-                        $cur->confirm;
-                        $cur->update;
-                        $handled = 1;
-                    } elsif ( $cur->state eq 'unconfirmed' ) {
-                        # if we've pulled out more that one record, e.g. because they
-                        # failed to make a payment then skip remaining ones.
-                        $cur->state('hidden');
-                        $cur->update;
-                    } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date)  {
-                        next RECORD;
-                    }
-                }
-            }
-        }
-
-        unless ( $handled ) {
-            warn "no matching record found for $category payment with id $payer\n";
-        }
-    }
-
-    # There's two options with a cancel payment. If the user has cancelled it outside of
-    # WasteWorks then we need to find the original sub and generate a new cancel subscription
-    # report.
-    #
-    # If it's been cancelled inside WasteWorks then we'll have an unconfirmed cancel report
-    # which we need to confirm.
-
-    my $cancelled = $i->get_cancelled_payers({
-        start => $start,
-        end => $today
-    });
-
-    if ( ref $cancelled eq 'HASH' && $cancelled->{error} ) {
-        if ( $cancelled->{error} ne 'No cancelled payers found.' ) {
-            warn $cancelled->{error} . "\n";
-        }
-        return;
-    }
-
-    CANCELLED: for my $payment ( @$cancelled ) {
-
-        my $date = $payment->{CancelledDate};
-        next unless $date;
-
-        my $payer = $payment->{Reference};
-        (my $uprn = $payer) =~ s/^GGW//;
-        my $len = length($uprn);
-        my $rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-        }, {
-            order_by => { -desc => 'created' }
-        })->to_body( $self->body );
-
-        $rs = $rs->search({ category => 'Cancel Garden Subscription' });
-        my $r;
-        while ( my $cur = $rs->next ) {
-            if ( $cur->state eq 'unconfirmed' ) {
-                $r = $cur;
-            # already processed
-            } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
-                next CANCELLED;
-            }
-        }
-
-        if ( $r ) {
-            my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
-            # if there's not a service then it's fine as it's already been cancelled
-            if ( $service ) {
-                $r->set_extra_metadata('dd_date', $date);
-                $r->confirm;
-                $r->update;
-            # there's no service but we don't want to be processing the report all the time.
-            } else {
-                $r->state('hidden');
-                $r->update;
-            }
-        } else {
-            # We don't do anything with DD cancellations that don't have
-            # associated Cancel reports, so no need to warn on them
-            # warn "no matching record found for Cancel payment with id $payer\n";
-        }
-    }
-}
-
-sub _report_matches_payment {
-    my ($self, $r, $p) = @_;
-
-    my $match = 0;
-    if ( $p->{YourRef} && $r->id eq $p->{YourRef} ) {
-        $match = 'Ad-Hoc';
-    } elsif ( !$p->{YourRef}
-            && ( $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{New} ||
-                 # if we're renewing a previously non DD sub
-                 $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{Renew} )
-    ) {
-        $match = 'New';
-    }
-
-    return $match;
-}
-
-sub _duplicate_waste_report {
-    my ( $report, $category, $extra ) = @_;
-    my $new = FixMyStreet::DB->resultset('Problem')->new({
-        category => $category,
-        user => $report->user,
-        latitude => $report->latitude,
-        longitude => $report->longitude,
-        cobrand => $report->cobrand,
-        bodies_str => $report->bodies_str,
-        title => $report->title,
-        detail => $report->detail,
-        postcode => $report->postcode,
-        used_map => $report->used_map,
-        name => $report->user->name || $report->name,
-        areas => $report->areas,
-        anonymous => $report->anonymous,
-        state => 'unconfirmed',
-        non_public => 1,
-    });
-
-    my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
-    $new->set_extra_fields(@extra);
-
-    return $new;
-}
-
-sub waste_get_current_garden_sub {
-    my ( $self, $id ) = @_;
-
-    my $echo = $self->feature('echo');
-    $echo = Integrations::Echo->new(%$echo);
-    my $services = $echo->GetServiceUnitsForObject( $id );
-    return undef unless $services;
-
-    my $garden;
-    for my $service ( @$services ) {
-        if ( $service->{ServiceId} == $self->garden_waste_service_id ) {
-            $garden = _get_current_service_task($service);
-            last;
-        }
-    }
-
-    return $garden;
-}
-
-sub waste_get_sub_quantity {
-    my ($self, $service) = @_;
-
-    my $quantity = 0;
-    my $tasks = Integrations::Echo::force_arrayref($service->{Data}, 'ExtensibleDatum');
-    return 0 unless scalar @$tasks;
-    for my $data ( @$tasks ) {
-        next unless $data->{DatatypeName} eq 'LBB - GW Container';
-        next unless $data->{ChildData};
-        my $kids = $data->{ChildData}->{ExtensibleDatum};
-        $kids = [ $kids ] if ref $kids eq 'HASH';
-        for my $child ( @$kids ) {
-            next unless $child->{DatatypeName} eq 'Quantity';
-            $quantity = $child->{Value}
-        }
-    }
-
-    return $quantity;
 }
 
 sub admin_templates_external_status_code_hook {
