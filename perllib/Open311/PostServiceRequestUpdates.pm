@@ -1,5 +1,35 @@
 package Open311::PostServiceRequestUpdates;
 
+=head1 NAME
+
+Open31::PostServiceRequestUpdates - send updates via Open311 extension
+
+=head1 DESCRIPTION
+
+This package contains the code needed to find the relevant updates in the
+database that need sending via Open311, and show updates waiting to be sent.
+
+=head1 STATE
+
+Comments have a send_state column that this code uses for processing. The main
+query looks for all B<unprocessed> confirmed updates, on reports that have been
+sent somewhere. (It also has a backoff unless running with debug set.)
+
+If a report doesn't have an external_id, or does not contain Open311 in its
+send_method_used, then we know we don't need to worry about this comment again,
+so mark it as B<processed> and move on.
+
+Some cobrands can ask for certain updates to be skipped; if that's the case,
+mark the comment as B<skipped> and move on.
+
+Otherwise, try and send the update via Open311. If it succeeds, mark the
+comment as B<sent>; if not, leave as B<unprocessed> so it will be looked at
+again.
+
+=head1 FUNCTIONS
+
+=cut
+
 use strict;
 use warnings;
 use v5.14;
@@ -15,6 +45,13 @@ use constant SEND_METHOD_OPEN311 => 'Open311';
 
 has verbose => ( is => 'ro', default => 0 );
 
+=head2 send
+
+Used by the send-comments command line script (and tests) to send updates on
+all relevant bodies.
+
+=cut
+
 sub send {
     my $self = shift;
 
@@ -23,6 +60,13 @@ sub send {
         $self->process_body($body);
     }
 }
+
+=head2 fetch_bodies
+
+Returns all bodies from the database who send reports via Open311 and have the
+send_comments flag set.
+
+=cut
 
 sub fetch_bodies {
     my $bodies = FixMyStreet::DB->resultset('Body')->search( {
@@ -67,6 +111,13 @@ sub open311_params {
     return %open311_conf;
 }
 
+=head2 process_body
+
+Given a body, queries the database for all relevant updates and processes them.
+Used by the command line script.
+
+=cut
+
 sub process_body {
     my ($self, $body) = @_;
 
@@ -85,17 +136,19 @@ sub process_body {
     });
 }
 
+=head2 construct_query
+
+Returns the database search parameters needed to locate relevant updates.
+
+=cut
+
 sub construct_query {
     my ($self, $debug) = @_;
     my $params = {
-        'me.whensent' => undef,
-        'me.external_id' => undef,
+        'me.send_state' => 'unprocessed',
         'me.state' => 'confirmed',
         'me.confirmed' => { '!=' => undef },
-        'me.extra' => [ undef, { -not_like => '%cobrand_skipped_sending%' } ],
         'problem.whensent' => { '!=' => undef },
-        'problem.external_id' => { '!=' => undef },
-        'problem.send_method_used' => { -like => '%Open311%' },
     };
     if (!$debug) {
         $params->{'-or'} = [
@@ -106,10 +159,28 @@ sub construct_query {
     return $params;
 }
 
+=head2 process_update
+
+Given a body and an update from the database, process it and either mark it as
+processed, skipped, sent, or left as unprocessed if sending failed.
+
+=cut
+
 sub process_update {
     my ($self, $body, $comment) = @_;
 
     my $cobrand = $body->get_cobrand_handler || $comment->get_cobrand_logged;
+
+    # We only care about updates on reports sent by Open311 with an external_id
+    # We know the report has been sent to get here, so if it lacks either of
+    # those it is one that will not be sent, so we can mark as done and finish.
+    my $problem = $comment->problem;
+    if (!$problem->external_id || $problem->send_method_used !~ /Open311/) {
+        $comment->send_state('processed');
+        $comment->update;
+        $self->log($comment, 'Marking as processed');
+        return;
+    }
 
     # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
     # from anyone except the original problem reporter.
@@ -117,8 +188,8 @@ sub process_update {
         if ($skip eq 'WAIT') {
             # Mark this as a failure, so that it is not constantly retried
             $comment->update_send_failed("Skipping posting due to wait");
-        } elsif (!defined $comment->get_extra_metadata('cobrand_skipped_sending')) {
-            $comment->set_extra_metadata(cobrand_skipped_sending => 1);
+        } elsif ($comment->send_state eq 'unprocessed') {
+            $comment->send_state('skipped');
             $comment->update;
         }
         $self->log($comment, 'Skipping');
@@ -137,6 +208,7 @@ sub process_update {
         $comment->update( {
             external_id => $id,
             whensent => \'current_timestamp',
+            send_state => 'sent',
         } );
         $self->log($comment, 'Send successful');
     } else {
@@ -144,6 +216,13 @@ sub process_update {
         $self->log($comment, 'Send failed');
     }
 }
+
+=head2 summary_failures
+
+Provides a textual output of all updates waiting to be sent and their reasons
+for failure.
+
+=cut
 
 sub summary_failures {
     my $self = shift;

@@ -136,6 +136,7 @@ sub update : Private {
             problem_state => $problem->state,
             extra => $extra,
             whensent => \'current_timestamp',
+            send_state => 'processed',
         } );
 
         my @alerts = FixMyStreet::DB->resultset('Alert')->search( {

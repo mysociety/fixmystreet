@@ -79,11 +79,11 @@ subtest 'Check updates not sent for defects' => sub {
 
     $comment->discard_changes;
     is $comment->send_fail_count, 0, "comment sending not attempted";
-    is $comment->get_extra_metadata('cobrand_skipped_sending'), 1, "skipped sending comment";
+    is $comment->send_state, 'skipped', "skipped sending comment";
 };
 
 $report->update({ user => $user });
-$comment->update({ extra => undef });
+$comment->update({ send_state => 'unprocessed' });
 subtest 'check updates sent for non defects' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS=> 'northamptonshire',

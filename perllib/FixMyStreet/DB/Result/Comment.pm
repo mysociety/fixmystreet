@@ -35,9 +35,8 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
   "confirmed",
   { data_type => "timestamp", is_nullable => 1 },
@@ -71,6 +70,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "whensent",
   { data_type => "timestamp", is_nullable => 1 },
+  "send_state",
+  { data_type => "text", default_value => "unprocessed", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -93,8 +94,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CozqNY621I8G7kUPXi5RoQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2022-03-29 14:20:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:x+v4WPYnfPF/ac+UBsPW9g
 #
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
