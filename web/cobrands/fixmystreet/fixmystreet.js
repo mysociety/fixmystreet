@@ -1975,3 +1975,25 @@ function setup_popstate() {
         });
     }, 0);
 }
+
+$( document ).ready(function() {
+    var idCnt = 1;
+    setTimeout(function() {
+        //This will replace the label elements with span elements
+        $('#select-label-statuses').replaceWith( "<span>Show</span>" );
+        $('#select-label-categories').replaceWith( "<span>about</span>" );
+
+        // add ID to each one of the multi-select-button. This will allow us to 
+        // add personalised aria-label attributes.
+        $('.multi-select-button').each(function () {
+            $(this).attr('id', function (index) {
+                return "multiselect" + idCnt;
+            });
+            idCnt++;
+        });
+        var select_status_aria_label_var = translation_strings.select_status_aria_label;
+        var select_category_aria_label_var = translation_strings.select_category_aria_label;    
+        $('#multiselect1').attr('aria-label', select_status_aria_label_var);
+        $('#multiselect2').attr('aria-label', select_category_aria_label_var);
+    }, 100);
+});

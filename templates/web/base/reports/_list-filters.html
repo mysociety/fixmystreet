@@ -34,8 +34,8 @@
 [% END %]
 
         <p class="report-list-filters">
-            [% tprintf(loc('<label for="statuses">Show</label> %s reports <label for="filter_categories">about</label> %s', "The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories"), mark_safe(select_status), mark_safe(select_category)) %]
-            <input type="submit" name="filter_update" value="[% loc('Go') %]">
+          [% tprintf(loc('<label id="select-label-statuses" for="statuses">Show</label> %s reports <label id="select-label-categories" for="filter_categories">about</label> %s', "The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories"), mark_safe(select_status), mark_safe(select_category)) %]
+          <input type="submit" name="filter_update" value="[% loc('Go') %]">
         </p>
 
         [% PROCESS 'reports/_list-filters-sort.html' %]
