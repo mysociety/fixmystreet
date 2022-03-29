@@ -358,6 +358,12 @@ create table comment (
     -- and should be highlighted in the display?
     external_id text,
     extra text,
+    send_state text not null default 'unprocessed' check (
+        send_state = 'unprocessed'
+        or send_state = 'processed'
+        or send_state = 'skipped'
+        or send_state = 'sent'
+    ),
     send_fail_count integer not null default 0,
     send_fail_reason text,
     send_fail_timestamp timestamp,
@@ -367,6 +373,7 @@ create table comment (
 create index comment_user_id_idx on comment(user_id);
 create index comment_problem_id_idx on comment(problem_id);
 create index comment_problem_id_created_idx on comment(problem_id, created);
+create index comment_state_send_state_idx on comment(state, send_state);
 create index comment_fulltext_idx on comment USING GIN(
     to_tsvector(
         'english',

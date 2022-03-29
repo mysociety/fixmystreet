@@ -163,6 +163,7 @@ sub process_update {
             problem => $p,
             user => $self->system_user,
             external_id => $request->{update_id},
+            send_state => 'processed',
             text => $self->comment_text_for_request(
                 $request, $p, $state, $old_state,
                 $external_status_code, $old_external_status_code

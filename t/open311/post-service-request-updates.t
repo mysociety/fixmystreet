@@ -88,7 +88,7 @@ subtest 'Send comments' => sub {
     $c3a->discard_changes;
     is $c3a->extra, undef, 'Bucks update by owner was sent';
     $c3b->discard_changes;
-    is $c3b->extra->{cobrand_skipped_sending}, 1, 'Bucks update by other was not';
+    is $c3b->send_state, 'skipped', 'Bucks update by other was not';
     $c1->discard_changes;
     is $c1->extra->{title}, "MRS", 'Title set on Bromley update';
     $c2->discard_changes;
@@ -113,6 +113,18 @@ subtest 'Send comments' => sub {
     is $c2->send_fail_count, 1, 'Oxfordshire update attempted';
     like $c2->send_fail_reason, qr/service_request_id: ENQ12345/;
   };
+};
+
+subtest 'Processing things that do not need sending' => sub {
+    my ($p1) = $mech->create_problems_for_body(1, $bromley->id, 'Title', { send_method_used => 'Email', whensent => \'current_timestamp', });
+    my $c1 = c($p1);
+    my ($p2) = $mech->create_problems_for_body(1, $bromley->id, 'Title', { send_method_used => 'Other', whensent => \'current_timestamp', external_id => 1 });
+    my $c2 = c($p2);
+    $o->send;
+    $c1->discard_changes;
+    $c2->discard_changes;
+    is $c1->send_state, 'processed', 'Comment 1 marked as processed';
+    is $c2->send_state, 'processed', 'Comment 2 marked as processed';
 };
 
 subtest 'Check Bexley munging' => sub {

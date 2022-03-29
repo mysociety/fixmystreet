@@ -117,7 +117,7 @@ subtest 'Check updates not sent for staff with no text' => sub {
 
     $comment->discard_changes;
     is $comment->send_fail_count, 0, "comment sending not attempted";
-    is $comment->get_extra_metadata('cobrand_skipped_sending'), 1, "skipped sending comment";
+    is $comment->send_state, 'skipped', "skipped sending comment";
 };
 
 subtest 'Updates from staff with no text but with private comments are sent' => sub {
@@ -132,7 +132,7 @@ subtest 'Updates from staff with no text but with private comments are sent' => 
         confirmed  => 'now()',
         anonymous  => 'f',
     } );
-    $comment->unset_extra_metadata('cobrand_skipped_sending');
+    $comment->send_state('unprocessed');
     $comment->set_extra_metadata(private_comments => 'This comment has secret notes');
     $comment->update;
     FixMyStreet::override_config {
@@ -145,7 +145,7 @@ subtest 'Updates from staff with no text but with private comments are sent' => 
 
         $comment->discard_changes;
         ok $comment->whensent, "comment was sent";
-        ok !$comment->get_extra_metadata('cobrand_skipped_sending'), "didn't skip sending comment";
+        is $comment->send_state, 'sent', "didn't skip sending comment";
 
         my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);

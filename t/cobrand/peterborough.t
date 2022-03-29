@@ -133,9 +133,10 @@ subtest "no update sent to Bartec" => sub {
             problem_state => 'fixed - council', state => 'confirmed', mark_fixed => 0,
             confirmed => DateTime->now(),
         });
+        $c->discard_changes; # to get defaults
         $o->process_update($peterborough, $c);
         $c->discard_changes;
-        is $c->get_extra_metadata("cobrand_skipped_sending"), 1;
+        is $c->send_state, 'skipped';
     };
 };
 

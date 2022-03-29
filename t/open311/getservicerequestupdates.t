@@ -453,6 +453,7 @@ for my $test (
         is $c->problem_state, $test->{problem_state}, 'problem_state correct';
         is $c->mark_open, $test->{mark_open}, 'mark_open correct';
         is $c->state, $test->{comment_state} || 'confirmed', 'comment state correct';
+        is $c->send_state, 'processed', 'marked as processed so not resent';
         is $problem->state, $test->{end_state}, 'correct problem state';
         $problem->comments->delete;
     };

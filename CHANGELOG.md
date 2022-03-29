@@ -26,6 +26,7 @@
         - Add an --exclude option to bin/fetch.
         - Add an index on problem(external_id) to speed up bin/fetch --updates
         - Upgrade Net::DNS and libwww to deal with IPv6 issues.
+        - Add send_state column to updates. #3865
     - Open311 improvements:
         - Increase default timeout.
 
