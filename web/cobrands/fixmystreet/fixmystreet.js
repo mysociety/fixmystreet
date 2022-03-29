@@ -1977,4 +1977,6 @@ function setup_popstate() {
 }
 
 // Move the message "Not maintained..." message right above the "continue" button
-$('#js-roads-responsibility').insertBefore('.js-reporting-page--category .js-reporting-page--next');
+if (!$("html").hasClass("mobile")) { 
+    $('#js-roads-responsibility').insertBefore('.js-reporting-page--category .js-reporting-page--next');
+}
