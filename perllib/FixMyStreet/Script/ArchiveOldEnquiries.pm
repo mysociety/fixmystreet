@@ -248,14 +248,14 @@ sub close_problems {
             $cobrand->set_lang_and_domain($problem->lang, 1);
         }
 
-        my $whensent = \'current_timestamp' if $problem->send_method_used && $problem->send_method_used eq 'Open311';
+        my $processed = 1 if $problem->send_method_used && $problem->send_method_used eq 'Open311';
 
         my $comment = $problem->add_to_comments( {
             text => get_closure_message() || '',
             user => FixMyStreet::DB->resultset("User")->find($opts->{user}),
             problem_state => $opts->{closed_state},
             extra => $extra,
-            $whensent ? ( whensent => $whensent ) : (),
+            $processed ? ( send_state => 'processed' ) : (),
         } );
         $problem->update({ state => $opts->{closed_state}, send_questionnaire => 0 });
 
