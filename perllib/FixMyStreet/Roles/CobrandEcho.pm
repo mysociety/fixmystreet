@@ -88,11 +88,18 @@ sub available_bin_services_for_address {
     return $available_services;
 }
 
-sub _get_current_service_task {
+sub _get_service_tasks {
     my ($self, $service) = @_;
 
     my $servicetasks = Integrations::Echo::force_arrayref($service->{ServiceTasks}, 'ServiceTask');
     @$servicetasks = grep { $_->{ServiceTaskSchedules} } @$servicetasks;
+    return $servicetasks;
+}
+
+sub _get_current_service_task {
+    my ($self, $service) = @_;
+
+    my $servicetasks = $self->_get_service_tasks($service);
     return unless @$servicetasks;
 
     my $service_name = $self->service_name_override($service);
