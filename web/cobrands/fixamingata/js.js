@@ -17,4 +17,7 @@ fixmystreet.fixChromeAutocomplete = function() {
     }
 };
 
-$(fixmystreet).on('report_new:category_change', fixmystreet.fixChromeAutocomplete);
+// jQuery is not imported on every page
+if (window.$) {
+    $(fixmystreet).on('report_new:category_change', fixmystreet.fixChromeAutocomplete);
+}
