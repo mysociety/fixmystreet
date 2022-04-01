@@ -1,0 +1,13 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+@import "../sass/waste";
+@import "../fixmystreet-uk-councils/societyworks-footer";
+
+#site-logo {
+    width: 5.9375rem;
+    height: 9rem;
+    @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo');
+    background-size: inherit;
+}
