@@ -261,6 +261,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Report ref:&nbsp;' . $report->id);
     };
+
+    subtest 'phishing warning is shown for new reports' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/report/new?longitude=0.15356&latitude=51.45556&category=Lamp+post');
+        $mech->content_contains('if asked for personal information, please do not respond');
+    };
 };
 
 subtest 'nearest road returns correct road' => sub {
