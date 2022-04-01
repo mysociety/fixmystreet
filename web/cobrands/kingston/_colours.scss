@@ -1,0 +1,131 @@
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+$red: #a0505c;
+$black: #3c3c3c;
+$green: #029A81;
+$blue: #09509d;
+$blue-l1: #0c69cd;
+$white: #fff;
+$yellow: #fdb945;
+
+$primary: $red;
+$primary_b: $black;
+$primary_text: $primary_b;
+$primary_link_color: $blue;
+$primary_link_hover_color: $blue-l1;
+
+$link-color: $blue;
+$link-hover-color: $blue-l1;
+$link-visited-color: $primary;
+
+$base_bg: #eef1e6;
+$base_fg: #1a1a1a;
+
+$nav_background_colour: $white;
+$nav_colour: $primary_b;
+$nav_hover_background_colour: $white;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+
+// $header-top-border-width: 4px;
+
+$mappage-header-height: 70px;
+$body-font: 'Noto Sans', sans-serif;
+$border-radius: 25px;
+//The orginal website uses a width of 1280px, however that looks
+//way to spacious for page with no much elements.
+$container-max-width: 1024px;
+
+@mixin kingston-form-input($margin: 0.5em 0, $padding: 5px) {
+    margin-right: 5px;
+    padding: $padding;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    box-shadow: none;
+
+    &:focus {
+        outline: none; // hide browser default outline, to match screenshot in branding guidelines
+        border: 1px solid $green;
+        background-color: mix($green, $white, 5%);
+        box-shadow: 0 1px 3px #e1e1e1, 0 0 4px $green;
+    }
+}
+
+@mixin kingston-form-label() {
+    color: #555;
+    font-weight: 700;
+}
+
+@mixin kingston-button-primary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
+    font-weight: bold;
+    text-align: center;
+    font-size: $font-size;
+    line-height: $line-height;
+    padding: $padding;
+    border-radius: 25px;
+    border: 4px solid $primary;
+    background: $primary !important;
+    color: $white !important;
+
+    // This gets rid of the .govuk-button box-shadow
+    box-shadow: none;
+
+    &:hover, &:focus {
+        background: $white !important;
+        color: $primary !important;
+        border-color: $primary;
+        outline:none;
+        text-decoration: none;
+    }
+
+    &:focus {
+        text-decoration: underline !important;
+    }
+
+    &.govuk-button:focus:not(:active):not(:hover) {
+        border-color: $primary;
+        box-shadow: none;
+    }
+}
+
+@mixin kingston-button-secondary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
+    font-weight: bold;
+    text-align: center;
+    font-size: $font-size;
+    line-height: $line-height;
+    padding: $padding;
+    border: 4px solid $blue;
+    border-radius: $border-radius;
+    background: $white;
+    color: $blue;
+
+    // This gets rid of the .govuk-button box-shadow
+    box-shadow: none;
+
+    &:hover, &:focus {
+        background: $blue;
+        color: $white;
+        text-decoration: none;
+    }
+
+    &:focus { text-decoration: underline !important;}
+
+    &.govuk-button:focus:not(:active):not(:hover) {
+        border-color: $blue;
+        box-shadow: none;
+    }
+}
+
+@mixin visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}

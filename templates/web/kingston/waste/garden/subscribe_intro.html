@@ -1,0 +1,63 @@
+[% SET bodyclass = 'waste' %]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+
+<p>
+You can subscribe to our garden waste collection service if you are a frequent gardener, or if you can’t home compost your own garden waste.
+</p>
+
+<h2>Costs</h2>
+
+<p>
+A 12 month subscription is £82 per bin.
+</p>
+
+<p>
+If you need new bins to be delivered, there is an admin fee of £15 per bin.
+</p>
+
+<h2>Delivery time</h2>
+
+<p>
+We will deliver your garden waste bin within 20 working days.
+</p>
+
+<h2>We can collect</h2>
+
+<ul>
+<li>grass cuttings
+<li>garden or house plants
+<li>twigs and leaves
+<li>hedge trimmings
+<li>flowers and weeds
+<li>garden prunings
+</ul>
+
+<p>We can’t accept:</p>
+
+<ul>
+<li>rubble
+<li>soil
+<li>food or household waste
+<li>flower pots or anything made of plastic
+</ul>
+
+<h2>How often we collect your garden waste</h2>
+
+<p>
+We collect garden waste every 2 weeks.
+</p>
+
+<p>
+You can check your garden waste collection day on our website.
+</p>
+
+<form method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]
