@@ -1,0 +1,49 @@
+/* LAYOUT */
+
+$container-max-width: 1024px;
+
+/* COLOURS */
+
+$peabody-teal: #009baa; // Primary colour
+$peabody-teal-l1: #93D2D7; 
+$peabody-teal-l2: #e2fafc;
+$peabody-blue: #5cb4e6;
+$peabody-blue-d1: #1c78ad; // FILL IT UP
+$peabody-green: #008A0E; // FILL IT UP
+$peabody-red: #fc1429; // FILL IT UP
+$peabody-orange: #ff8026;
+$peabody-brick: #a45248;
+$peabody-brick-d1: #b3460f;// Links
+$peabody-brick-d2: #8d370c; // Links hover
+$peabody-purple: #963683;
+$peabody-white: #fff;
+
+$peabody-mid-grey: #555555; // headings and paragraphs
+$peabody-dark-grey: #37424a; // focussed button bg, hovered primary button bg
+
+
+$primary: $peabody-teal;
+$primary_b: #333; 
+$primary_text: $peabody-mid-grey;
+
+$base_bg: #f4f4f4;
+$base_fg: $peabody-mid-grey;
+
+$nav_background_colour: $peabody-white;
+$nav_colour: $peabody-brick-d1;
+$nav_colour_hover: $peabody-brick-d2;
+$nav_hover_background_colour: $peabody-brick;
+
+$header-top-border: false;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: $peabody-blue-d1;
+$col_click_map: $peabody-blue;
+
+
+$mappage-header-height: 64px;
+
+/* VARIABLES */
+
+$border-radius: 5px;
+$box-background-colour: mix($primary, $peabody-white, 15%);

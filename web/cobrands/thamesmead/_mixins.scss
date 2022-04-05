@@ -1,0 +1,113 @@
+@import "./_colours";
+
+// Usage:   @include transition(width, height 0.3s ease-in-out);
+// Output:  -webkit-transition(width 0.2s, height 0.3s ease-in-out);
+//          transition(width 0.2s, height 0.3s ease-in-out);
+//
+// Pass in any number of transitions
+@mixin transition($transitions...) {
+    $unfoldedTransitions: ();
+    @each $transition in $transitions {
+        $unfoldedTransitions: append($unfoldedTransitions, unfoldTransition($transition), comma);
+    }
+
+    -webkit-transition: $unfoldedTransitions;
+    transition: $unfoldedTransitions;
+}
+
+@function unfoldTransition ($transition) {
+// Default values
+$property: all;
+$duration: .3s;
+$easing: null; // Browser default is ease, which is what we want
+$delay: null; // Browser default is 0, which is what we want
+$defaultProperties: ($property, $duration, $easing, $delay);
+
+// Grab transition properties if they exist
+$unfoldedTransition: ();
+@for $i from 1 through length($defaultProperties) {
+    $p: null;
+    @if $i <= length($transition) {
+    $p: nth($transition, $i)
+    } @else {
+    $p: nth($defaultProperties, $i)
+    }
+    $unfoldedTransition: append($unfoldedTransition, $p);
+}
+
+@return $unfoldedTransition;
+}
+
+@mixin peabody-form-input($margin: 0.5em 0, $padding: 5px) {
+    margin: $margin;
+    padding: $padding;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    box-shadow: none;
+
+    &:focus {
+        outline: none; // hide browser default outline, to match screenshot in branding guidelines
+        border: 1px solid $peabody-blue;
+        box-shadow: 0 1px 3px #b9b9b9;
+    }
+}
+
+@mixin peabody-form-label() {
+    color: #555;
+    font-weight: 700;
+    font-family: $body-font;
+}
+
+@mixin peabody-button-primary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
+    border: none;
+    font-weight: normal;
+
+    text-align: center;
+    font-size: $font-size;
+    line-height: $line-height;
+    padding: $padding;
+    border-radius: $border-radius;
+    border: 2px solid $peabody-brick-d1;
+    background: $peabody-brick-d1;
+    color: $peabody-white !important;
+    @include transition(border, background, color, 0.3s ease-in-out);
+
+    &:focus {
+        border: 2px solid $peabody-brick-d2;
+        background: $peabody-brick-d2;
+        color: $peabody-white !important;
+        outline: solid 3px $peabody-orange;
+    }
+
+    &:hover {
+        border: 2px solid $peabody-brick-d2;
+        background: $peabody-brick-d2;
+        color: $peabody-white !important;
+    }
+}
+
+@mixin peabody-button-secondary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
+    font-weight: normal;
+
+    text-align: center;
+    font-size: $font-size;
+    line-height: $line-height;
+    padding: $padding;
+    border: 2px solid $peabody-blue-d1;
+    border-radius: 4px;
+    background: $peabody-blue-d1;
+    color: $peabody-white !important;
+    @include transition(background, color, 0.3s ease-in-out);
+
+    &:focus {
+        background: $peabody-dark-grey;
+        border: 2px solid $peabody-dark-grey;
+        color: $peabody-white !important;
+        outline: solid 3px $peabody-orange;
+    }
+
+    &:hover {
+        background: $peabody-white !important;
+        color: $peabody-blue-d1 !important;
+    }
+}

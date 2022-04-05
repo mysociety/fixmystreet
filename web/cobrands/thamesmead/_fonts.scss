@@ -1,0 +1,16 @@
+@font-face {
+    // Family Name
+    font-family: 'AvantGardeGothicITCW02Dm';
+    // IE9 Compatibility Mode
+    src: url('fonts/344B63_4_0.eot');
+    // Various Browsers
+    src: url('fonts/344B63_4_0.eot?#iefix') format('embedded-opentype'),
+         url('fonts/344B63_4_0.woff2') format('woff2'),
+         url('fonts/344B63_4_0.woff') format('woff'),
+         url('fonts/344B63_4_0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+$heading-font: AvantGardeGothicITCW02Dm, Myriad Pro, Myriad, Sans-serif;
+$body-font: Arial, Helvetica, sans-serif;
