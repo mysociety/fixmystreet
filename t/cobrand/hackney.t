@@ -168,7 +168,7 @@ subtest "sends branded alert emails" => sub {
     ok $email, "got an email";
     my $text = $mech->get_text_body_from_email($email);
     like $text, qr/Hackney Council/, "emails are branded";
-    like $text, qr/13:00 today/, "date is included";
+    like $text, qr/\d\d:\d\d today/, "date is included";
 };
 
 
