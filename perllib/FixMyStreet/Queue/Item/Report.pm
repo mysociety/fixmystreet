@@ -12,6 +12,8 @@ use FixMyStreet::Email;
 use FixMyStreet::Map;
 use FixMyStreet::SendReport;
 
+use constant EMAIL_SENDER_PREFIX => 'FixMyStreet::SendReport::Email';
+
 # The row from the database being processed
 has report => ( is => 'ro' );
 # The thing dealing with the reports (for feeding back debug/test data)
@@ -164,32 +166,53 @@ sub _create_reporters {
     my $self = shift;
 
     my $row = $self->report;
+    my @failed_body_ids = @{ $row->send_fail_body_ids };
     my $bodies = FixMyStreet::DB->resultset('Body')->search(
-        { id => $row->bodies_str_ids },
+        {   id => (
+                @failed_body_ids ? \@failed_body_ids : $row->bodies_str_ids
+            )
+        },
         { order_by => 'name' },
     );
 
     my @dear;
-    my %reporters = ();
+    my %email_reporters;
+    my @other_reporters;
     while (my $body = $bodies->next) {
+        # NOTE
+        # Non-email senders only have one body each (or put another way, we
+        # assign each body in this loop to its own, unshared sender object).
+        #
+        # An email sender may have multiple bodies. This is so we can
+        # combine bodies into a single 'To' line and send one email for all.
         my $sender_info = $self->cobrand_handler->get_body_sender( $body, $row );
-        my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
+        my $sender_name = "FixMyStreet::SendReport::" . $sender_info->{method};
 
-        if ( ! exists $self->senders->{ $sender } ) {
-            $self->log(sprintf "No such sender [ $sender ] for body %s ( %d )", $body->name, $body->id);
+        if ( ! exists $self->senders->{ $sender_name } ) {
+            $self->log(sprintf "No such sender [ $sender_name ] for body %s ( %d )", $body->name, $body->id);
             next;
         }
-        $reporters{ $sender } ||= $sender->new();
 
         $self->log("Adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method});
         push @dear, $body->name;
-        $reporters{ $sender }->add_body( $body, $sender_info->{config} );
+
+        my $reporter = $email_reporters{$sender_name} || $sender_name->new;
+        $reporter->add_body( $body, $sender_info->{config} );
+
+        if ( $sender_name =~ /${\EMAIL_SENDER_PREFIX}/ ) {
+            $email_reporters{$sender_name} = $reporter;
+        } else {
+            push @other_reporters, $reporter;
+        }
     }
 
-    unless ( keys %reporters ) {
+    unless ( @other_reporters
+        || keys %email_reporters )
+    {
         die 'Report not going anywhere for ID ' . $row->id . '!';
     }
 
+    # For email senders
     my $h = $self->h;
     $h->{bodies_name} = join(_(' and '), @dear);
     if ($h->{category} eq _('Other')) {
@@ -202,13 +225,15 @@ sub _create_reporters {
 
     if (FixMyStreet->staging_flag('send_reports', 0)) {
         # on a staging server send emails to ourselves rather than the bodies
-        %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::Email/ } keys %reporters;
-        unless (%reporters) {
-            %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
+        unless (%email_reporters) {
+            %email_reporters
+                = ( EMAIL_SENDER_PREFIX => ${ \EMAIL_SENDER_PREFIX }->new() );
         }
+
+        @other_reporters = ();
     }
 
-    $self->_set_reporters(\%reporters);
+    $self->_set_reporters([@other_reporters, values %email_reporters]);
 }
 
 sub _send {
@@ -221,47 +246,23 @@ sub _send {
     my @add_send_fail_body_ids;
     my @remove_send_fail_body_ids;
 
-    for my $sender_key ( keys %{ $self->reporters } ) {
-        my $sender = $self->reporters->{$sender_key};
+    for my $sender ( @{ $self->reporters } ) {
+        my $sender_name = ref $sender;
+        $self->log( 'Sending using ' . $sender_name );
 
-        # If on staging with send_reports set to 0, bypass the body_id
-        # logic below, as we may only have a special Email reporter with
-        # no bodies attached
-        if ( FixMyStreet->staging_flag( 'send_reports', 0 ) ) {
-            $self->log( "Sending using " . $sender_key );
-            my $res = $sender->send( $self->report, $self->h );
+        # NOTE
+        # Non-email senders should only have one body each (see
+        # _create_reporters()).
+        my $res = $sender->send( $self->report, $self->h );
 
-            $result *= $res;
-            $self->report->add_send_method($sender_key) if !$res;
-        }
-        else {
-            # Skip if no body ID
-            my $body_id;
-            $body_id = $sender->bodies->[0]->id
-                if $sender->bodies && $sender->bodies->[0];
-            next unless $body_id;
+        $result *= $res;
 
-            # If a report has send_fail_body_ids, we only want to attempt
-            # sending for those bodies. Assume success and skip otherwise.
-            if ( @{ $report->send_fail_body_ids }
-                && !$report->has_given_send_fail_body_id($body_id) )
-            {
-                $sender->success(1);
-                next;
-            }
-
-            $self->log( "Sending using " . $sender_key );
-            my $res = $sender->send( $self->report, $self->h );
-
-            $result *= $res;
-
-            if ($res) {
-                push @add_send_fail_body_ids, $body_id;
-            }
-            else {
-                $self->report->add_send_method($sender_key);
-                push @remove_send_fail_body_ids, $body_id;
-            }
+        my @body_ids = map { $_->id } @{ $sender->bodies };
+        if ($res) {
+            push @add_send_fail_body_ids, @body_ids;
+        } else {
+            $report->add_send_method($sender_name);
+            push @remove_send_fail_body_ids, @body_ids;
         }
 
         if ( $self->manager ) {
@@ -290,10 +291,8 @@ sub _post_send {
 
     # Record any errors, whether overall successful or not (if multiple senders, perhaps one failed)
     my @errors;
-    for my $sender ( keys %{$self->reporters} ) {
-        unless ( $self->reporters->{ $sender }->success ) {
-            push @errors, $self->reporters->{ $sender }->error;
-        }
+    for my $sender ( @{ $self->reporters } ) {
+        push @errors, $sender->error unless $sender->success;
     }
     if (@errors) {
         $self->report->update_send_failed( join( '|', @errors ) );

@@ -1,1 +1,1 @@
-ALTER TABLE problem DROP COLUMN send_fail_bodies;
+ALTER TABLE problem DROP COLUMN send_fail_body_ids;

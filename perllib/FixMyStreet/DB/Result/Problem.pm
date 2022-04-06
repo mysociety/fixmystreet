@@ -743,8 +743,9 @@ sub nearest_address {
     return $address->{name};
 }
 
+# Does not return bodies whose send methods have failed
 sub body {
-    my ( $problem, $link, $successful_send_only ) = @_;
+    my ( $problem, $link ) = @_;
     my $body;
     if ($problem->external_body) {
         if ($problem->cobrand eq 'zurich') {
@@ -756,11 +757,9 @@ sub body {
     } else {
         my %bodies = %{$problem->bodies};
 
-        # If we only want bodies with successful send methods (in the case of
-        # a problem that has multiple send methods), remove failed
-        if ($successful_send_only) {
-            delete $bodies{$_} for @{ $problem->send_fail_body_ids // [] };
-        }
+        # We only want bodies with successful send methods (in the case of
+        # a problem that has multiple send methods), so remove failed
+        delete $bodies{$_} for @{ $problem->send_fail_body_ids // [] };
 
         my @body_names = sort map {
             my $name = $_->name;
@@ -876,7 +875,7 @@ sub duration_string {
     my $problem = shift;
     my $cobrand = $problem->result_source->schema->cobrand;
     my $body = $cobrand->call_hook( link_to_council_cobrand => $problem )
-        || $problem->body( 1, 1 );
+        || $problem->body(1);
     my $handler = $cobrand->call_hook(get_body_handler_for_problem => $problem);
     if ( $handler && $handler->call_hook('is_council_with_case_management') ) {
         my $s = sprintf(_('Received by %s moments later'), $body);
@@ -945,12 +944,14 @@ sub updates_sent_to_body {
 }
 
 sub add_send_method {
-    my $self = shift;
+    my $self   = shift;
     my $sender = shift;
     $sender =~ s/${\SENDER_REGEX}//;
-    if (my $send_method = $self->send_method_used) {
-        $self->send_method_used("$send_method,$sender");
-    } else {
+
+    if ( my $existing_send_method = $self->send_method_used ) {
+        $self->send_method_used("$existing_send_method,$sender");
+    }
+    else {
         $self->send_method_used($sender);
     }
 }
@@ -960,7 +961,10 @@ sub add_send_fail_body_ids {
     my @new_ids = @_;
 
     $self->send_fail_body_ids(
-        [ uniq( @new_ids, @{ $self->send_fail_body_ids } ) ] );
+        [   sort { $a <=> $b }
+                uniq( @new_ids, @{ $self->send_fail_body_ids } )
+        ]
+    );
 }
 
 sub remove_send_fail_body_ids {
@@ -971,7 +975,7 @@ sub remove_send_fail_body_ids {
 
     delete @existing_ids{@remove_ids};
 
-    $self->send_fail_body_ids( [ keys %existing_ids ] );
+    $self->send_fail_body_ids( [ sort { $a <=> $b } keys %existing_ids ] );
 }
 
 sub has_given_send_fail_body_id {
@@ -981,20 +985,19 @@ sub has_given_send_fail_body_id {
     return any { $_ == $id } @{ $self->send_fail_body_ids };
 }
 
-sub send_fail_methods {
-    # Deduce from send_fail_body_ids
+sub send_fail_bodies {
     my $self = shift;
 
     my $bodies = $self->bodies;
 
-    my @send_fail_methods;
+    my @send_fail_bodies;
 
     for (@{$self->send_fail_body_ids}) {
         my $body = $bodies->{$_};
-        push @send_fail_methods, $body->send_method;
+        push @send_fail_bodies, $body->name;
     }
 
-    return \@send_fail_methods;
+    return \@send_fail_bodies;
 }
 
 sub mark_as_sent {
