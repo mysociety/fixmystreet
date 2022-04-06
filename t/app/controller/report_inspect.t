@@ -647,8 +647,26 @@ FixMyStreet::override_config {
     $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     $ian->update;
 
+    my $role_a = FixMyStreet::DB->resultset("Role")->create({
+    body => $oxon,
+    name => 'Role A',
+    permissions => ['report_inspect', 'planned_reports'],
+    });
+
+    my $role_b = FixMyStreet::DB->resultset("Role")->create({
+    body => $oxon,
+    name => 'Role Z',
+    permissions => ['report_inspect', 'planned_reports'],
+    });
+
+    $ian->add_to_roles($role_a);
+    $ian->add_to_roles($role_b);
+
     subtest "assign report by dropdown in report page" => sub {
         $mech->get_ok("/report/$report_id");
+        my @ians = $mech->content =~ /Inspector Ian/g;
+        is @ians, 1, "Inspector should only be in dropdown once regardless of multiple permission assignment";
+
         $mech->content_contains('Assign to:');
         $mech->content_contains('<select class="form-control" name="assignment" id="assignment">');
 
@@ -659,6 +677,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => $ian->id } });
         $mech->content_contains('Shortlisted by Inspector Ian');
     };
+
+    $ian->remove_from_roles($role_a);
+    $ian->remove_from_roles($role_b);
 
     subtest "reports list shows assignees' names" => sub {
         $mech->get_ok("/reports");

@@ -295,6 +295,7 @@ sub staff_with_permission {
         { permissions => \"@> ARRAY['$permission']" }
     ], {
         join => [ 'user_body_permissions', { "user_roles" => "role" } ],
+        distinct => 1,
         order_by => { '-asc' => ['name'] },
     });
 }
