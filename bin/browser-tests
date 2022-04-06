@@ -163,7 +163,7 @@ sub run {
             '--cobrand', $body_cobrand,
             '--area-id', $area_id,
             '--commit'
-        );
+        ) == 0 or die("Failed to run fixture script");
     }
 
     my $pid;
