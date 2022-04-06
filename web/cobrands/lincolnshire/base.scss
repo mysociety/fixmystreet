@@ -151,3 +151,9 @@ body.mappage .big-green-banner {
 .admin-hint {
   background-color: $lincs-link-focus;
 }
+
+.dz-clickable {
+  .dz-message u {
+      color: $lincs-text;
+  }
+}

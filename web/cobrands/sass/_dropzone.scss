@@ -39,12 +39,22 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   }
 
   .dz-message u {
-    //color: $dropzone-link-color;
-    @extend .btn-primary;
+    padding: 0.75em 1em;
+    text-decoration: none;
     display: inline;
     vertical-align: baseline;
     margin-left: 3px;
     font-weight: 400;
+    border-radius: 4px;
+    background: $primary;
+    color: #fff;
+    border: 1px solid $primary;
+
+    &:hover, &:focus {
+      background: #fff;
+      color: $primary;
+      border-color: $primary;
+    }
   }
 }
 
@@ -56,10 +66,6 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   .dz-remove,
   .dz-cancel {
     border-color: $dropzone-background-color--awakened;
-  }
-
-  .dz-message u {
-    color: $dropzone-link-color--awakened;
   }
 }
 

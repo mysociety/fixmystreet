@@ -290,3 +290,10 @@ body.alertpage, body.authpage, body.twothirdswidthpage {
         @include btn-medium-primary
     }
 }
+
+.dz-clickable {
+    .dz-message u {
+        @include btn-primary;
+        padding: 0.5em 1em;
+    }
+}

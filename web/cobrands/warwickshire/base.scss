@@ -157,3 +157,22 @@ a#geolocate_link {
         font-size: 0.875em;
     }
 }
+
+.dropzone {
+    border-color: $warwickshire-green;
+    background: mix($warwickshire-green, $warwickshire-light-grey, 15%);
+}
+
+.dz-clickable {
+    .dz-message u {
+        background-color: $warwickshire-green;
+        color: $warwickshire-light-grey;
+        border: 1px solid $warwickshire-green;
+
+        &:hover {
+            background-color: $warwickshire-light-grey;
+            color: $warwickshire-green;
+            border-color: $warwickshire-green;
+        }
+    }
+}

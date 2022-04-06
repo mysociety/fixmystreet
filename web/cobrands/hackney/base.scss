@@ -188,14 +188,6 @@ select.form-error {
   background-color: rgba(164, 214, 94, 0.5);
 }
 
-.dz-clickable:hover, .dz-drag-hover {
-  border-color: $light-green;
-}
-
-.dz-clickable:hover .dz-message u, .dz-drag-hover .dz-message u {
-  color: $green;
-}
-
 .sso-staff-sign-in {
   font-size: 0.9em;
   margin: 1em 0;
@@ -239,6 +231,29 @@ select.form-error {
 .lbh-container {
     margin-left: auto;
     margin-right: auto;
+}
+
+.dropzone {
+  border-color: $dark_green;
+  background: mix($dark_green, $pale_green, 15%);
+
+  &:hover {
+    border-color: $alt_green;
+    background: mix($dark_green, $pale_green, 30%);
+  }
+}
+
+.dz-clickable {
+  .dz-message u {
+      background-color: $dark_green;
+      color: $pale_green;
+      border: 1px solid $dark_green;
+
+      &:hover {
+          background-color: $pale_green;
+          color: $dark_green;
+      }
+  }
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";

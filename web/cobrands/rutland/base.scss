@@ -16,4 +16,14 @@
     margin-top: 2em;
 }
 
+.dz-clickable {
+    .dz-message u {
+        color: $primary_text;
+
+        &:hover {
+            color: $primary_text;
+        }
+    }
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";

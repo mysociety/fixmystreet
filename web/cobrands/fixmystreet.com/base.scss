@@ -432,3 +432,12 @@ html.lazyload .js-lazyload {
         margin-bottom: 0;
     }
 }
+
+.dz-clickable {
+  .dz-message u {
+    color: $primary_text;
+    &:hover {
+      color: $primary_text;
+    }
+  }
+}

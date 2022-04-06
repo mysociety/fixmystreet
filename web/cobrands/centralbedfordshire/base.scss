@@ -123,4 +123,23 @@ html.js .form-section-preview {
     text-transform: none;
 }
 
+.dropzone {
+    border-color: $central-beds-fuschia;
+    background: mix($central-beds-fuschia, #fff, 15%);
+}
+
+.dz-clickable {
+    .dz-message u {
+        background-color: $central-beds-fuschia;
+        color: #fff;
+        border: 1px solid $central-beds-fuschia;
+
+        &:hover {
+            background-color: #fff;
+            color: $central-beds-fuschia;
+            border-color: $central-beds-fuschia; 
+        }
+    }
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";

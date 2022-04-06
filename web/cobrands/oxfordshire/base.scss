@@ -343,5 +343,19 @@ textarea {
     }
 }
 
+.dz-clickable {
+    .dz-message u {
+        background-color: $primary_b;
+        color: $primary_text;
+        border: 1px solid $primary_b;
+
+        &:hover {
+            background-color: $primary_text;
+            color: $primary_b;
+            border-color: $primary_b;
+        }
+    }
+}
+
 @import "oxfordshire-footer";
 @import "oxfordshire-cookiepopup";

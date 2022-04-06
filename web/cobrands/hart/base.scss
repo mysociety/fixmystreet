@@ -110,4 +110,16 @@ a#geolocate_link {
     color: #000;
 }
 
+  .dz-clickable {
+    .dz-message u {
+        color: $primary_b;
+
+        &:hover {
+            color: #fff;
+            background-color: #4a725d;
+            border-color: #4a725d;
+        }
+    }
+  }
+
 @import "../fixmystreet-uk-councils/societyworks-footer";

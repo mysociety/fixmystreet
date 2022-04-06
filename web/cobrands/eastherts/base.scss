@@ -157,3 +157,21 @@ button:focus {
         display: none;
     }
 }
+
+.dropzone {
+    border-color: $eh_green;
+    background: mix($eh_green, $eh_light_grey, 15%);
+}
+
+.dz-clickable {
+    .dz-message u {
+        background-color: $eh_green;
+        color: $eh_light_grey;
+        border: 1px solid $eh_green;
+
+        &:hover {
+            background-color: $eh_light_grey;
+            color: $eh_green;
+        }
+    }
+}

@@ -105,3 +105,21 @@ ol.big-numbers > li:before {
 #postcodeForm .form-hint {
 //    color: $white;
 }
+
+.dropzone {
+    border-color: $primary_b;
+    background: mix($primary_b, $white, 15%);
+}
+
+.dz-clickable {
+    .dz-message u {
+        background-color: $primary_b;
+        color: $white;
+        border: 1px solid $primary_b;
+
+        &:hover {
+            background-color: $white ;
+            color: $primary_b;
+        }
+    }
+}
