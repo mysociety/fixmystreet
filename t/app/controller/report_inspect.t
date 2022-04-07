@@ -639,13 +639,20 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'oxfordshire',
 }, sub {
+    my $ex_employee = $mech->create_user_ok('exemployee@example.com', name => 'Ex Employee', from_body => $oxon);
+    $ex_employee->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+    $ex_employee->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    my $ex_employee_id = $ex_employee->id;
+
     my $ian = $mech->create_user_ok('inspector@example.com', name => 'Inspector Ian', from_body => $oxon);
+
     $user->user_body_permissions->create({ body => $oxon, permission_type => 'assign_report_to_user' });
     $user->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     $user->update;
     $ian->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
     $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     $ian->update;
+
 
     my $role_a = FixMyStreet::DB->resultset("Role")->create({
     body => $oxon,
@@ -661,11 +668,19 @@ FixMyStreet::override_config {
 
     $ian->add_to_roles($role_a);
     $ian->add_to_roles($role_b);
+    $ex_employee->add_to_roles($role_a);
+    $ex_employee->add_to_roles($role_b);
+
+    $ex_employee->anonymize_account;
+    $ex_employee->update;
 
     subtest "assign report by dropdown in report page" => sub {
         $mech->get_ok("/report/$report_id");
+
         my @ians = $mech->content =~ /Inspector Ian/g;
         is @ians, 1, "Inspector should only be in dropdown once regardless of multiple permission assignment";
+
+        $mech->content_lacks("option value='$ex_employee_id'", "Anonymised ex-staff do not appear in dropdown");
 
         $mech->content_contains('Assign to:');
         $mech->content_contains('<select class="form-control" name="assignment" id="assignment">');

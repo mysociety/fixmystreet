@@ -607,6 +607,7 @@ sub anonymize_account {
         twitter_id => undef,
         facebook_id => undef,
         oidc_ids => undef,
+        from_body => undef,
     });
 }
 

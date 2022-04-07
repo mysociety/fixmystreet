@@ -14,6 +14,7 @@
         - Fix dashboard rows for categories with &s.
         - Make calls from Geocoder files to https rather than http
         - Inspector dropdown list only shows name once even if permissions repeated #3870
+        - Inspector dropdown list doesn't show anonymised users, removing blank options #3873
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
