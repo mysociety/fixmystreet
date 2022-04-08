@@ -344,6 +344,7 @@ the map. Used via /around?ajax=1 but also available at /ajax for mobile app.
 sub ajax : Path('/ajax') {
     my ( $self, $c ) = @_;
 
+    $c->forward('/set_app_cors_header');
     my $ret = $c->forward('/location/determine_location_from_bbox');
     unless ($ret) {
         $c->res->status(404);
@@ -411,6 +412,7 @@ sub location_autocomplete : Path('/ajax/geocode') {
 sub location_lookup : Path('/ajax/lookup_location') {
     my ( $self, $c ) = @_;
     $c->res->content_type('application/json; charset=utf-8');
+    $c->forward('/set_app_cors_header');
     unless ( $c->get_param('term') ) {
         $c->res->status(404);
         $c->res->body('');

@@ -68,6 +68,7 @@ sub ajax : Path('ajax') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
     $c->stash->{ajax} = 1;
+    $c->forward('/set_app_cors_header');
     $c->forward('load_problem_or_display_error', [ $id ]);
     $c->forward('display');
 }

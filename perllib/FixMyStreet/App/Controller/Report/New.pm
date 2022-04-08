@@ -134,6 +134,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     # create the report - loading a partial if available
     $c->forward('initialize_report');
+    $c->forward('/set_app_cors_header');
 
     unless ( $c->forward('determine_location') ) {
         $c->stash->{ json_response } = { errors => 'Unable to determine location' };
@@ -180,6 +181,7 @@ sub send_json_response : Private {
 sub report_form_ajax : Path('ajax') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('/set_app_cors_header');
     $c->forward('initialize_report');
 
     # work out the location for this report and do some checks

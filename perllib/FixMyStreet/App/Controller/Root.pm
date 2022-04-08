@@ -185,6 +185,12 @@ sub check_password_expiry : Private {
     $c->detach;
 }
 
+sub set_app_cors_header : Private {
+    my ($self, $c) = @_;
+    my $origin = $c->req->header('Origin') || '';
+    $c->response->header('Access-Control-Allow-Origin' => 'app://localhost') if $origin eq 'app://localhost';
+}
+
 =head2 end
 
 Attempt to render a view, if needed.
