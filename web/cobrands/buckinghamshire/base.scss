@@ -145,4 +145,6 @@ label {
   border: none;
 }
 
+input[type="text"], input[type="email"], textarea { @extend %normal-font;}
+
 @import "../sass/claims";
