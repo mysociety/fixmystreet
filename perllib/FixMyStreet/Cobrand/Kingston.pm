@@ -161,16 +161,9 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        531 => 'Non-Recyclable Refuse',
-        532 => 'Non-Recyclable Refuse',
-        533 => 'Non-Recyclable Refuse',
-        535 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        536 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        537 => 'Paper & Cardboard',
-        541 => 'Paper & Cardboard',
-        542 => 'Food Waste',
-        544 => 'Food Waste',
-        545 => 'Garden Waste',
+        355 => 'Domestic Refuse Collection',
+        536 => 'Domestic Recycling Collection',
+        359 => 'Garden Waste Collection',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
