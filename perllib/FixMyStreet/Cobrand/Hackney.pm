@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use DateTime::Format::W3CDTF;
 
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
@@ -277,6 +278,9 @@ sub open311_extra_data_include {
                 $title .= "\n\n" . $_->{description} . "\n" . $_->{value};
             }
         }
+        push @$open311_only,
+            { name => 'requested_datetime',
+              value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) };
     }
     push @$open311_only, { name => 'title', value => $title };
 

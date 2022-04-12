@@ -1,6 +1,7 @@
 use utf8;
 use CGI::Simple;
 use DateTime;
+use DateTime::Format::W3CDTF;
 use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
@@ -410,6 +411,9 @@ Type of flytip?
 Rubble";
         (my $c_title = $c->param('attribute[title]')) =~ s/\r\n/\n/g;
         is $c_title, $expected_title;
+
+        my $p = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $c->param('attribute[requested_datetime]'), DateTime::Format::W3CDTF->format_datetime($p->confirmed->set_nanosecond(0));
     };
 };
 
