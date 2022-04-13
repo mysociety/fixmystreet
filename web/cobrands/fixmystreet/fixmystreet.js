@@ -862,7 +862,15 @@ $.extend(fixmystreet.set_up, {
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
+    // There are also other uses of this besides report list filters activated here
     $('.js-multiple').make_multi();
+
+    function update_label(id, str) {
+        $(id).prev('label').replaceWith(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).next('.multi-select-container').children('.multi-select-button').attr('aria-label', str);
+    }
+    update_label('#statuses', translation_strings.select_status_aria_label);
+    update_label('#filter_categories', translation_strings.select_category_aria_label);
   },
 
   // Very similar function in front.js for front page
@@ -1975,25 +1983,3 @@ function setup_popstate() {
         });
     }, 0);
 }
-
-$( document ).ready(function() {
-    var idCnt = 1;
-    setTimeout(function() {
-        //This will replace the label elements with span elements
-        $('#select-label-statuses').replaceWith( "<span>Show</span>" );
-        $('#select-label-categories').replaceWith( "<span>about</span>" );
-
-        // add ID to each one of the multi-select-button. This will allow us to 
-        // add personalised aria-label attributes.
-        $('.multi-select-button').each(function () {
-            $(this).attr('id', function (index) {
-                return "multiselect" + idCnt;
-            });
-            idCnt++;
-        });
-        var select_status_aria_label_var = translation_strings.select_status_aria_label;
-        var select_category_aria_label_var = translation_strings.select_category_aria_label;    
-        $('#multiselect1').attr('aria-label', select_status_aria_label_var);
-        $('#multiselect2').attr('aria-label', select_category_aria_label_var);
-    }, 100);
-});
