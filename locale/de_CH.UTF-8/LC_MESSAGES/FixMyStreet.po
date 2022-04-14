@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2022-10-06 10:55+0100\n"
-"PO-Revision-Date: 2021-09-14 16:44+0200\n"
+"PO-Revision-Date: 2022-06-21 10:27+0200\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
 "Language-Team: German (Switzerland) (https://www.transifex.com/mysociety/teams/12067/de_CH/)\n"
 "Language: de_CH\n"
@@ -569,9 +569,8 @@ msgid "Assign problem reports to users"
 msgstr "User an Gegenden zuweisen"
 
 #: templates/web/base/admin/users/index.html:73
-#, fuzzy
 msgid "Assign selected to role:"
-msgstr "User an Gegenden zuweisen"
+msgstr "User an Kategorie zuweisen:"
 
 #: templates/web/base/reports/_bulk-assign.html:7
 #, fuzzy
@@ -1285,7 +1284,6 @@ msgstr ""
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:77
-#, fuzzy
 msgid "Drag photos here or <u>browse photos</u>"
 msgstr "Fotos hierhin ziehen oder <u>hochladen</u>"
 
@@ -2653,7 +2651,7 @@ msgstr ""
 #: templates/web/base/admin/users/form.html:49
 #: templates/web/zurich/admin/users/form.html:15
 msgid "No body"
-msgstr ""
+msgstr "Keine DA/kein Fachbereich"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:463
 msgid "No council selected"
@@ -3740,7 +3738,7 @@ msgstr ""
 
 #: templates/web/base/admin/users/index.html:85
 msgid "Remove staff permissions"
-msgstr ""
+msgstr "Keiner DA mehr zuweisen"
 
 #: templates/web/base/admin/emergencymessage/_ooh.html:73
 msgid "Remove time period"
@@ -3949,7 +3947,7 @@ msgstr "Ausstehender Meldungsversand"
 
 #: templates/web/base/report/new/after_photo.html:3
 msgid "Reports with photos in them tend to get fixed more quickly"
-msgstr ""
+msgstr "Meldungen mit Fotos können einfacher lokalisiert werden"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:43
@@ -4018,9 +4016,8 @@ msgstr "Richtiger Ort?"
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:66
 #: templates/web/base/maps/openlayers.html:62
-#, fuzzy
 msgid "Road map"
-msgstr "Karte verwendet"
+msgstr "Karte"
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:162
 msgid "Road operator for this named road (derived from road reference number and type): %s"
@@ -4032,19 +4029,19 @@ msgstr ""
 
 #: templates/web/base/admin/roles/index.html:5
 msgid "Role"
-msgstr ""
+msgstr "Rolle"
 
 #: templates/web/base/admin/users/form.html:142
 #: templates/web/base/admin/users/index.html:29
 #: templates/web/base/dashboard/index.html:90
 msgid "Role:"
-msgstr ""
+msgstr "Rolle:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:721
 #: templates/web/base/admin/roles/form.html:1
 #: templates/web/base/admin/roles/index.html:1
 msgid "Roles"
-msgstr ""
+msgstr "Rollen"
 
 #: templates/web/base/admin/roles/form.html:20
 msgid "Roles can be associated with the categories in which they operate."
@@ -5843,7 +5840,7 @@ msgstr ""
 
 #: templates/web/base/maps/_map_instructions.html:3
 msgid "You can move around with your keyboard"
-msgstr ""
+msgstr "Kartensteuerung über Tastatur"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:246
 msgid "You cannot rename a category to an existing category"
