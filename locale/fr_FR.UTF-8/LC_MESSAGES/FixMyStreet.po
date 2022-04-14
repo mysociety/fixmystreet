@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2021-12-03 16:08+0000\n"
+"POT-Creation-Date: 2022-10-06 10:55+0100\n"
 "PO-Revision-Date: 2019-04-29 18:03+0000\n"
 "Last-Translator: fixmystreetfr <fixmystreet@fixmystreet.fr>, 2019\n"
 "Language-Team: French (France) (https://www.transifex.com/mysociety/teams/12067/fr_FR/)\n"
@@ -22,19 +22,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: perllib/FixMyStreet/Script/Reports.pm:138
+#: templates/web/base/admin/bodies/form.html:95
+msgid " -- Select a cobrand -- "
+msgstr ""
+
+#: perllib/FixMyStreet/Script/Reports.pm:149
 msgid " . scalar @{ $bodies{$_} } . "
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:717
-#: perllib/FixMyStreet/DB/Result/Problem.pm:719
-#: perllib/FixMyStreet/Queue/Item/Report.pm:194
+#: perllib/FixMyStreet/DB/Result/Problem.pm:792
+#: perllib/FixMyStreet/DB/Result/Problem.pm:794
+#: perllib/FixMyStreet/Queue/Item/Report.pm:219
 msgid " and "
 msgstr " et "
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:51
-#: templates/web/base/report/new/category_extras.html:19
+#: templates/web/base/js/translation_strings.html:52
+#: templates/web/base/report/new/category_extras.html:22
 #: templates/web/base/report/new/councils_text_all.html:8
 #: templates/web/base/report/new/top_message_none.html:13
 #: templates/web/base/report/new/top_message_none.html:15
@@ -110,8 +114,8 @@ msgstr ""
 msgid "%s live updates"
 msgstr "%s mises à jour en temps réel"
 
-#: templates/web/base/dashboard/index.html:166
-#: templates/web/base/dashboard/index.html:169
+#: templates/web/base/dashboard/index.html:191
+#: templates/web/base/dashboard/index.html:194
 msgid "%s opened, %s closed, %s fixed"
 msgstr "%s ouvert, %s fermé, %s fixé"
 
@@ -126,6 +130,10 @@ msgstr "%s réf&nbsp;:&nbsp;%s"
 #: perllib/FixMyStreet/Map/OSM.pm:42
 msgid "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
 msgstr "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributeurs"
+
+#: templates/web/base/admin/waste/edit.html:28
+msgid "&larr; Back"
+msgstr ""
 
 #: templates/web/base/report/form/photo_upload.html:5
 msgid "(Defect &amp; location of defect)"
@@ -157,14 +165,14 @@ msgstr "(couvre environ 200 000 personnes)"
 msgid "(fixed)"
 msgstr "(résolu)"
 
-#: templates/web/base/admin/reports/edit.html:196
-#: templates/web/base/admin/reports/edit.html:200
+#: templates/web/base/admin/reports/_edit_main.html:173
+#: templates/web/base/admin/reports/_edit_main.html:177
 #, fuzzy
 msgid "(for this report)"
 msgstr "Modérer ce rapport"
 
-#: templates/web/base/admin/update_edit.html:35
-#: templates/web/base/admin/update_edit.html:38
+#: templates/web/base/admin/update_edit.html:33
+#: templates/web/base/admin/update_edit.html:36
 #, fuzzy
 msgid "(for this update)"
 msgstr "Modifiez cette mise à jour"
@@ -197,11 +205,7 @@ msgstr "(Envoyé à tous)"
 msgid "(sent to both)"
 msgstr "(envoyé aux deux)"
 
-#: templates/web/base/admin/_report-assignment.html:8
-msgid "(unassigned)"
-msgstr ""
-
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:821
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:832
 #: templates/web/zurich/admin/bodies/form.html:27
 msgid "-- Pick a category --"
 msgstr "-- Choisissez une catégorie --"
@@ -242,7 +246,7 @@ msgid "<label for=\"statuses\">Show</label> %s reports <label for=\"filter_categ
 msgstr "<label for=\"statuses\">Afficher </label> %s les rapports <label for=\"filter_categories\"> sur </label> %s"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:107
+#: templates/web/base/js/translation_strings.html:110
 msgid "<span>%s</span> saved."
 msgstr "<span>%s</span>enregistré."
 
@@ -272,7 +276,7 @@ msgid "<strong>Yes</strong> I have a password"
 msgstr "<strong>Oui</strong>, j'ai un mot de passe :"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:76
+#: templates/web/base/js/translation_strings.html:78
 msgid "<u>Take or choose existing photo</u>"
 msgstr ""
 
@@ -313,7 +317,7 @@ msgstr "Ajouter un contact en utilisant le formulaire ci-dessous."
 msgid "Add another parent category"
 msgstr "Ajouter une nouvelle catégorie"
 
-#: templates/web/base/admin/bodies/form.html:139
+#: templates/web/base/admin/bodies/form.html:154
 #: templates/web/base/admin/bodies/index.html:78
 #: templates/web/zurich/admin/bodies/form.html:63
 msgid "Add body"
@@ -350,11 +354,21 @@ msgstr "Ajouter une option"
 msgid "Add phone number"
 msgstr "Ajouter un téléphone"
 
+#: templates/web/base/admin/users/edit.html:4
+#: templates/web/base/admin/users/index.html:101
+#, fuzzy
+msgid "Add staff user"
+msgstr "Ajouter un utilisateur"
+
+#: templates/web/base/admin/emergencymessage/edit.html:86
+msgid "Add time period"
+msgstr ""
+
 #: templates/web/base/report/_item.html:21
 #: templates/web/base/report/_item.html:27
-#: templates/web/base/report/_main.html:138
-#: templates/web/base/report/_main.html:25
-#: templates/web/base/report/_main.html:36
+#: templates/web/base/report/_main.html:136
+#: templates/web/base/report/_main.html:23
+#: templates/web/base/report/_main.html:34
 msgid "Add to shortlist"
 msgstr "Ajouter à la liste"
 
@@ -364,20 +378,22 @@ msgstr "Ajouter à la liste"
 msgid "Add user"
 msgstr "Ajouter un utilisateur"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:808
+#: perllib/FixMyStreet/Cobrand/Default.pm:794
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:143
 #, fuzzy
 msgid "Add/edit emergency message"
 msgstr "Ajouter/modifier des modèles de réponse"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:805
+#: perllib/FixMyStreet/Cobrand/Default.pm:791
 msgid "Add/edit problem categories"
 msgstr "Ajouter/modifier des catégories de problèmes"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:807
+#: perllib/FixMyStreet/Cobrand/Default.pm:793
 msgid "Add/edit response priorities"
 msgstr "Ajouter/modifier les priorités de réponse"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:806
+#: perllib/FixMyStreet/Cobrand/Default.pm:792
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:142
 msgid "Add/edit response templates"
 msgstr "Ajouter/modifier des modèles de réponse"
 
@@ -385,7 +401,7 @@ msgstr "Ajouter/modifier des modèles de réponse"
 msgid "Added %s"
 msgstr "Ajouté %s"
 
-#: templates/web/base/report/_main.html:147
+#: templates/web/base/report/_main.html:145
 msgid "Adding this report to your shortlist will remove it from %s’s shortlist."
 msgstr "L'ajout de ce rapport à votre liste va le supprimer de la liste %s’s."
 
@@ -394,7 +410,7 @@ msgid "Admin"
 msgstr "Admin"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:63
+#: templates/web/base/js/translation_strings.html:65
 #: templates/web/base/maps/openlayers.html:64
 msgid "Aerial map"
 msgstr ""
@@ -412,17 +428,18 @@ msgid "Alert %d disabled (created %s)"
 msgstr "Alerte %d désactivée (création %s)"
 
 #: templates/web/base/report/form/user_loggedout_by_email.html:69
-#: templates/web/base/report/update/form_user_loggedin.html:38
+#: templates/web/base/report/update/form_user_loggedin.html:39
 msgid "Alert me to future updates"
 msgstr "M'alerter de futures mises à jour"
 
-#: templates/web/base/admin/reports/edit.html:96
+#: templates/web/base/admin/reports/_edit_main.html:73
 msgid "Alerts:"
 msgstr "Alertes:"
 
-#: templates/web/base/dashboard/index.html:40
-#: templates/web/base/dashboard/index.html:52
-#: templates/web/base/dashboard/index.html:65
+#: templates/web/base/dashboard/index.html:54
+#: templates/web/base/dashboard/index.html:66
+#: templates/web/base/dashboard/index.html:79
+#: templates/web/base/dashboard/index.html:92
 #: templates/web/base/reports/_list-filter-status.html:4
 #: templates/web/zurich/header.html:58
 #: templates/web/zurich/reports/_list-filter-status.html:2
@@ -468,7 +485,7 @@ msgstr "Tous les rapports entre %s et %s"
 msgid "All time"
 msgstr "Tout le temps"
 
-#: templates/web/base/admin/bodies/contact-form.html:112
+#: templates/web/base/admin/bodies/contact-form.html:114
 #, fuzzy
 msgid "Allow anonymous reports on this category"
 msgstr "Rapporté dans la catégorie %s"
@@ -499,40 +516,41 @@ msgstr "Ajouter une adresse email"
 msgid "An update marked this problem as fixed."
 msgstr "Une mise à jour a marqué ce problème comme résolu"
 
-#: templates/web/base/admin/list_updates.html:33
-#: templates/web/base/admin/problem_row.html:20
+#: templates/web/base/admin/list_updates.html:26
+#: templates/web/base/admin/problem_row.html:13
 msgid "Anonymous"
 msgstr "Anonyme"
 
 #: templates/web/base/report/new/form_user_loggedin.html:23
-#: templates/web/base/report/update/form_user_loggedin.html:19
+#: templates/web/base/report/update/form_user_loggedin.html:20
 msgid "Anonymous user"
 msgstr "Utilisateur anonyme"
 
-#: templates/web/base/admin/reports/edit.html:190
-#: templates/web/base/admin/update_edit.html:101
-#: templates/web/base/admin/update_edit.html:23
+#: templates/web/base/admin/reports/_edit_main.html:167
+#: templates/web/base/admin/update_edit.html:21
+#: templates/web/base/admin/update_edit.html:99
 #: templates/web/base/report/update/moderation_diff.html:5
 msgid "Anonymous:"
 msgstr "Anonyme :"
 
 #: templates/web/base/report/new/form_user_loggedin.html:26
-#: templates/web/base/report/update/form_user_loggedin.html:16
+#: templates/web/base/report/update/form_user_loggedin.html:17
 msgid "Another user"
 msgstr "un autre utilisateur"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:77
+#: templates/web/base/js/translation_strings.html:79
 msgid "Are you sure you want to cancel this upload?"
 msgstr "Êtes-vous sûr de vouloir annuler cet envoi ?"
 
 #. ("JS")
 #: templates/web/base/admin/manifesttheme/form.html:62
-#: templates/web/base/admin/reports/edit.html:85
-#: templates/web/base/admin/roles/form.html:25
+#: templates/web/base/admin/reports/_edit_main.html:62
+#: templates/web/base/admin/reports/_edit_waste.html:24
+#: templates/web/base/admin/roles/form.html:31
 #: templates/web/base/admin/states/index.html:48
-#: templates/web/base/admin/templates/edit.html:77
-#: templates/web/base/js/translation_strings.html:102
+#: templates/web/base/admin/templates/edit.html:89
+#: templates/web/base/js/translation_strings.html:105
 #: templates/web/base/report/display_tools.html:7
 msgid "Are you sure?"
 msgstr "Êtes-vous sûr ?"
@@ -543,7 +561,7 @@ msgstr "Êtes-vous sûr ?"
 msgid "Area covered"
 msgstr "Zone couverte"
 
-#: templates/web/base/admin/users/form.html:79
+#: templates/web/base/admin/users/form.html:87
 msgid "Area:"
 msgstr "Région:"
 
@@ -552,12 +570,12 @@ msgstr "Région:"
 msgid "As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."
 msgstr "Comme ceci est un site de développement et %s est un test, les rapports produits sur ce site seront envoyés au gestionnaire du problème FixMyStreet et non au contact de l'administration indiqué pour la catégorie choisie."
 
-#: templates/web/base/reports/_bulk-assign.html:8
+#: templates/web/base/reports/_bulk-assign.html:12
 #, fuzzy
 msgid "Assign"
 msgstr "Affecté à %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:796
+#: perllib/FixMyStreet/Cobrand/Default.pm:782
 #, fuzzy
 msgid "Assign problem reports to users"
 msgstr "%s problème signalé "
@@ -567,7 +585,7 @@ msgstr "%s problème signalé "
 msgid "Assign selected to role:"
 msgstr "Affecter des utilisateurs aux zones"
 
-#: templates/web/base/reports/_bulk-assign.html:3
+#: templates/web/base/reports/_bulk-assign.html:7
 #, fuzzy
 msgid "Assign to"
 msgstr "Affecté à %s"
@@ -589,26 +607,26 @@ msgstr "Affecté à un \"interlocuteur\" externe:"
 msgid "Assign to subdivision:"
 msgstr "Affecté à la subdivision:"
 
-#: templates/web/base/report/inspect/assignment.html:3
+#: templates/web/base/report/inspect/assignment.html:7
 #, fuzzy
 msgid "Assign to:"
 msgstr "Affecté à %s"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:802
+#: perllib/FixMyStreet/Cobrand/Default.pm:788
 msgid "Assign users to areas"
 msgstr "Affecter des utilisateurs aux zones"
 
-#: templates/web/base/admin/users/form.html:107
+#: templates/web/base/admin/users/form.html:115
 #, fuzzy
 msgid "Assigned categories only"
 msgstr "Catégories disponibles"
 
-#: templates/web/base/admin/problem_row.html:34
+#: templates/web/base/admin/problem_row.html:31
 #, fuzzy
 msgid "Assigned to"
 msgstr "Affecté à %s"
 
-#: templates/web/base/admin/_report-assignment.html:3
+#: templates/web/base/admin/_report-assignment.html:4
 #, fuzzy
 msgid "Assigned to:"
 msgstr "Affecté à %s"
@@ -621,7 +639,7 @@ msgstr "Un maximum de %d requètes sont renvoyées pour chaque tentative. Les re
 msgid "At the moment only searching for and looking at reports work."
 msgstr "Pour le moment, seul la recherche et la consultation de rapports sont supportés."
 
-#: templates/web/base/admin/users/form.html:93
+#: templates/web/base/admin/users/form.html:101
 msgid "Authorised staff users can be associated with the categories in which they operate."
 msgstr "Les utilisateurs autorisés peuvent être associés aux catégories sur lesquelles ils interviennent."
 
@@ -629,11 +647,11 @@ msgstr "Les utilisateurs autorisés peuvent être associés aux catégories sur 
 msgid "Auto Response"
 msgstr "Réponse auto"
 
-#: templates/web/base/admin/templates/edit.html:66
+#: templates/web/base/admin/templates/edit.html:78
 msgid "Auto-response:"
 msgstr "Réponse automatique:"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:789
+#: perllib/FixMyStreet/Cobrand/Default.pm:775
 msgid "Automatically populate report subject/detail"
 msgstr "Remplir automatiquement le sujet/le détail du rapport"
 
@@ -645,7 +663,7 @@ msgstr "Temps moyen entre un problème signalé et corrigé sur les 100 derniers
 msgid "Avoid personal information and vehicle number plates"
 msgstr "Évitez les renseignements personnels et les plaques d'immatriculation"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:363
+#: perllib/FixMyStreet/DB/Result/Problem.pm:431
 #: templates/web/zurich/report/_item.html:11
 msgid "Awaiting moderation"
 msgstr "En attente de modération"
@@ -653,12 +671,12 @@ msgstr "En attente de modération"
 #. ("JS")
 #: templates/web/base/around/display_location.html:83
 #: templates/web/base/dashboard/status.html:17
-#: templates/web/base/js/translation_strings.html:44
+#: templates/web/base/js/translation_strings.html:45
 #: templates/web/base/report/new/fill_in_details.html:45
 msgid "Back"
 msgstr "Retour"
 
-#: templates/web/base/report/_main.html:8
+#: templates/web/base/report/_back_to_all.html:2
 msgid "Back to all reports"
 msgstr "Retour vers tous les rapports"
 
@@ -674,18 +692,19 @@ msgstr "Bannir un utilisateur"
 msgid "Behaviour"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:718
-#: perllib/FixMyStreet/Cobrand/Default.pm:804
+#: perllib/FixMyStreet/Cobrand/Default.pm:701
+#: perllib/FixMyStreet/Cobrand/Default.pm:790
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:395
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:141
 #: templates/web/base/admin/bodies/index.html:1
-#: templates/web/base/admin/reports/edit.html:56
+#: templates/web/base/admin/reports/_edit_main.html:33
 #: templates/web/zurich/header.html:62
 msgid "Bodies"
 msgstr "Interlocuteurs"
 
 #: templates/web/base/admin/emergencymessage/index.html:6
 #: templates/web/base/admin/flagged.html:17
-#: templates/web/base/admin/index.html:69
+#: templates/web/base/admin/index.html:62
 #: templates/web/base/admin/reports/index.html:15
 #: templates/web/base/admin/users/import.html:25
 #: templates/web/base/admin/users/import.html:48
@@ -694,6 +713,7 @@ msgid "Body"
 msgstr "Interlocuteur"
 
 #: templates/web/base/admin/users/form.html:47
+#: templates/web/base/dashboard/index.html:28
 #: templates/web/zurich/admin/users/form.html:13
 msgid "Body:"
 msgstr "Interlocuteur:"
@@ -708,10 +728,12 @@ msgid "Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsqu
 msgstr "Si vous ne trouvez pas notre e-mail? Vérifiez dans votre dossier spam."
 
 #: templates/web/base/around/_report_banner.html:5
-msgid "Can't see the map? <em>Skip this step</em>"
+#: templates/web/base/report/new/fill_in_details_form.html:18
+#, fuzzy
+msgid "Can’t use the map? <a href=\"%s\" rel=\"nofollow\">Skip this step.</a>"
 msgstr "Vous ne pouvez pas voir le plan ? <em>Sautez cette étape</em>"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:718
+#: perllib/FixMyStreet/Cobrand/Default.pm:701
 #: templates/web/base/admin/responsepriorities/index.html:8
 #: templates/web/base/admin/templates/view.html:7
 msgid "Categories"
@@ -726,7 +748,7 @@ msgstr "Catégories:"
 #: templates/web/base/admin/bodies/_category_field.html:12
 #: templates/web/base/admin/bodies/body.html:73
 #: templates/web/base/admin/stats/fix_rate.html:4
-#: templates/web/base/dashboard/index.html:101
+#: templates/web/base/dashboard/index.html:126
 #: templates/web/base/report/_inspect.html:15
 #: templates/web/base/report/_item.html:91
 #: templates/web/base/report/new/category-app.html:10
@@ -740,11 +762,11 @@ msgstr "Catégories:"
 msgid "Category"
 msgstr "Catégorie"
 
-#: templates/web/base/dashboard/index.html:104
+#: templates/web/base/dashboard/index.html:129
 msgid "Category and State"
 msgstr "Catégorie et Statistique"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:406
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:404
 msgid "Category changed from ‘%s’ to ‘%s’"
 msgstr "Changement de catégorie de ‘%s’ à ‘%s’"
 
@@ -753,8 +775,9 @@ msgstr "Changement de catégorie de ‘%s’ à ‘%s’"
 msgid "Category fix rate for problems > 4 weeks old"
 msgstr "Taux de résolution pour les problèmes > 4 semaines"
 
-#: templates/web/base/admin/reports/edit.html:131
-#: templates/web/base/dashboard/index.html:39
+#: templates/web/base/admin/reports/_edit_main.html:108
+#: templates/web/base/admin/reports/_edit_waste.html:42
+#: templates/web/base/dashboard/index.html:53
 #: templates/web/base/report/update/moderation_diff.html:7
 #: templates/web/zurich/admin/bodies/contact-form.html:8
 #: templates/web/zurich/admin/report_edit-sdm.html:60
@@ -767,7 +790,7 @@ msgstr "Catégorie :"
 msgid "Change"
 msgstr "Changer"
 
-#: templates/web/base/report/inspect/information.html:68
+#: templates/web/base/report/inspect/information.html:77
 #, fuzzy
 msgid "Change asset"
 msgstr "Changer le mot de passe"
@@ -807,7 +830,7 @@ msgid "Choose another"
 msgstr "Choisissez un autre"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:101
+#: templates/web/base/js/translation_strings.html:104
 msgid "Clear offline data"
 msgstr "Effacer les données hors ligne"
 
@@ -835,7 +858,7 @@ msgstr "Cliquez sur le lien dans notre courriel de confirmation pour vous connec
 msgid "Click the link in that email to sign in."
 msgstr "Cliquez sur le lien dans ce courrier électronique pour vous connecter."
 
-#: templates/web/base/report/new/fill_in_details_form.html:10
+#: templates/web/base/report/new/fill_in_details_form.html:17
 msgid "Click the map or drag the pin to adjust the location"
 msgstr "Cliquez sur la carte ou glissez le marqueur pour ajuster la localisation"
 
@@ -846,19 +869,20 @@ msgstr "Cliquez sur la carte ou glissez le marqueur pour ajuster la localisation
 #: templates/web/base/admin/states/index.html:103
 #: templates/web/base/admin/states/index.html:27
 #: templates/web/base/admin/states/index.html:33
-#: templates/web/base/dashboard/index.html:118
+#: templates/web/base/dashboard/index.html:143
 #: templates/web/zurich/admin/stats/index.html:52
 msgid "Closed"
 msgstr "Clos"
 
-#: templates/web/base/admin/reports/edit.html:156
+#: templates/web/base/admin/reports/_edit_main.html:133
 msgid "Closed to updates"
 msgstr "Fermé aux mises à jour"
 
-#: templates/web/base/admin/reports/edit.html:38
+#: templates/web/base/admin/reports/_edit_main.html:15
 msgid "Co-ordinates:"
 msgstr "Coordonnées"
 
+#: templates/web/base/admin/bodies/form.html:93
 #: templates/web/base/admin/list_updates.html:10
 #: templates/web/base/admin/manifesttheme/index.html:6
 #: templates/web/base/admin/reportextrafields/edit.html:24
@@ -866,13 +890,13 @@ msgstr "Coordonnées"
 msgid "Cobrand"
 msgstr "Collaboration"
 
-#: templates/web/base/admin/reports/edit.html:99
-#: templates/web/base/admin/update_edit.html:59
+#: templates/web/base/admin/reports/_edit_main.html:76
+#: templates/web/base/admin/update_edit.html:57
 msgid "Cobrand data:"
 msgstr "Données de collaboration :"
 
-#: templates/web/base/admin/reports/edit.html:98
-#: templates/web/base/admin/update_edit.html:58
+#: templates/web/base/admin/reports/_edit_main.html:75
+#: templates/web/base/admin/update_edit.html:56
 msgid "Cobrand:"
 msgstr "Collaboration :"
 
@@ -883,12 +907,20 @@ msgstr "Collaboration :"
 msgid "Code"
 msgstr "Code"
 
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:334
+msgid "Codes for extra data must not contain spaces"
+msgstr ""
+
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:67
+#: templates/web/base/js/translation_strings.html:69
 msgid "Collapse map"
 msgstr "Réduire la carte"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:712
+#: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:63
+msgid "Config must be a JSON object literal, not array."
+msgstr ""
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:695
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:409
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
@@ -915,16 +947,17 @@ msgstr "Confirmez par email à la place, Si vous fournissez un nouveau mot de pa
 msgid "Confirmation"
 msgstr "Confirmation"
 
-#: templates/web/base/admin/bodies/contact-form.html:49
+#: templates/web/base/admin/bodies/contact-form.html:51
 #: templates/web/base/admin/users/alerts.html:10
 #: templates/web/zurich/admin/bodies/contact-form.html:39
 #: templates/web/zurich/admin/stats/index.html:61
 msgid "Confirmed"
 msgstr "Confirmé"
 
-#: templates/web/base/admin/list_updates.html:40
-#: templates/web/base/admin/problem_row.html:43
-#: templates/web/base/admin/reports/edit.html:79
+#: templates/web/base/admin/list_updates.html:33
+#: templates/web/base/admin/problem_row.html:42
+#: templates/web/base/admin/reports/_edit_main.html:56
+#: templates/web/base/admin/reports/_edit_waste.html:18
 msgid "Confirmed:"
 msgstr "Confirmé :"
 
@@ -944,8 +977,8 @@ msgid "Contact the team"
 msgstr "Contacter l'équipe"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:61
-#: templates/web/base/report/form/user.html:10
+#: templates/web/base/js/translation_strings.html:63
+#: templates/web/base/report/form/user.html:13
 #: templates/web/base/report/new/form_report.html:21
 #: templates/web/base/report/new/form_report.html:32
 #: templates/web/base/report/new/form_report.html:43
@@ -962,7 +995,7 @@ msgid "Convert location from Easting/Northing"
 msgstr "Convertir l’emplacement Est/Nord"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:54
+#: templates/web/base/js/translation_strings.html:55
 msgid "Could not look up location"
 msgstr "Le lieu n'a pas pu être trouvé"
 
@@ -982,7 +1015,7 @@ msgstr "Contacts de l'administration pour %s"
 msgid "Council ref:&nbsp;%s"
 msgstr "Ref. de la mairie :&nbsp;%s"
 
-#: templates/web/base/dashboard/index.html:51
+#: templates/web/base/dashboard/index.html:65
 msgid "Council:"
 msgstr "Administration :"
 
@@ -991,7 +1024,7 @@ msgstr "Administration :"
 msgid "Count"
 msgstr "Nombre"
 
-#: templates/web/base/admin/emergencymessage/index.html:33
+#: templates/web/base/admin/emergencymessage/index.html:59
 #: templates/web/base/admin/manifesttheme/index.html:31
 #: templates/web/base/admin/roles/index.html:32
 #: templates/web/base/admin/states/index.html:114
@@ -1006,12 +1039,12 @@ msgstr "Créer un rapport"
 msgid "Create an account"
 msgstr "Créer un compte"
 
-#: templates/web/base/admin/bodies/contact-form.html:176
+#: templates/web/base/admin/bodies/contact-form.html:184
 #: templates/web/zurich/admin/bodies/contact-form.html:51
 msgid "Create category"
 msgstr "Créer une catégorie"
 
-#: templates/web/base/admin/emergencymessage/edit.html:31
+#: templates/web/base/admin/emergencymessage/edit.html:90
 #, fuzzy
 msgid "Create message"
 msgstr "Créer un modèle"
@@ -1021,24 +1054,27 @@ msgstr "Créer un modèle"
 msgid "Create priority"
 msgstr "Créer une priorité"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:792
+#: perllib/FixMyStreet/Cobrand/Default.pm:778
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:133
 msgid "Create reports/updates as anonymous user"
 msgstr "Créer un rapports / une mises à jour en tant qu’utilisateur anonyme"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:793
+#: perllib/FixMyStreet/Cobrand/Default.pm:779
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:134
 msgid "Create reports/updates as the council"
 msgstr "Créer des rapports/mises à jour de l'administration"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:791
+#: perllib/FixMyStreet/Cobrand/Default.pm:777
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:132
 msgid "Create reports/updates on a user's behalf"
 msgstr "Créer des rapports/mises à jour pour le compte d'un utilisateur"
 
-#: templates/web/base/admin/templates/edit.html:73
+#: templates/web/base/admin/templates/edit.html:85
 #: templates/web/zurich/admin/templates/edit.html:32
 msgid "Create template"
 msgstr "Créer un modèle"
 
-#: templates/web/base/admin/problem_row.html:41
+#: templates/web/base/admin/problem_row.html:38
 #: templates/web/base/dashboard/status.html:23
 #: templates/web/zurich/admin/templates/view.html:10
 msgid "Created"
@@ -1048,8 +1084,8 @@ msgstr "Créé"
 msgid "Created %d new users"
 msgstr "Création %d de nouveaux utilisateurs"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:237
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:239
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:238
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:240
 #, fuzzy
 msgid "Created Body"
 msgstr "Créé"
@@ -1059,14 +1095,16 @@ msgstr "Créé"
 msgid "Created By"
 msgstr "Créé"
 
-#: templates/web/base/admin/list_updates.html:39
-#: templates/web/base/admin/reports/edit.html:78
-#: templates/web/base/admin/update_edit.html:60
+#: templates/web/base/admin/list_updates.html:32
+#: templates/web/base/admin/reports/_edit_main.html:55
+#: templates/web/base/admin/reports/_edit_waste.html:17
+#: templates/web/base/admin/update_edit.html:58
 #: templates/web/zurich/admin/update_edit.html:29
 msgid "Created:"
 msgstr "Créé :"
 
-#: perllib/FixMyStreet/Cobrand/Bromley.pm:1341
+#: perllib/FixMyStreet/Cobrand/Bromley.pm:877
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:678
 #, fuzzy
 msgid "Credit Card"
 msgstr "saisissez l'utilisateur"
@@ -1075,16 +1113,16 @@ msgstr "saisissez l'utilisateur"
 msgid "Current password:"
 msgstr "Mot de passe actuel:"
 
-#: templates/web/base/dashboard/index.html:93
+#: templates/web/base/dashboard/index.html:118
 msgid "Currently grouped by %s"
 msgstr "Actuellement regroupé par %s"
 
 #: templates/web/base/admin/bodies/index.html:9
-#: templates/web/base/admin/index.html:17
+#: templates/web/base/admin/index.html:8
 msgid "Currently no bodies have been created."
 msgstr "Pour l'instant, aucun intelocuteur n'a été créé."
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:898
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:899
 #: templates/web/zurich/admin/report_edit-sdm.html:98
 msgid "Customer not contactable"
 msgstr "Le client est injoignable"
@@ -1098,6 +1136,11 @@ msgstr "Le client est injoignable"
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
+#: templates/web/base/admin/emergencymessage/_ooh.html:40
+#, fuzzy
+msgid "Date"
+msgstr "Date de fin"
+
 #: templates/web/base/auth/generate_token.html:62
 msgid "Deactivate two-factor authentication"
 msgstr "Désactiver l’authentification à deux facteurs"
@@ -1110,17 +1153,17 @@ msgstr "Traité par la subdivision dans les 5 jours ouvrables"
 msgid "Default"
 msgstr "Défaut"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:794
+#: perllib/FixMyStreet/Cobrand/Default.pm:780
 msgid "Default to creating reports/updates as the council"
 msgstr "Par défaut pour créer des rapports/mises à jour en tant que conseil"
 
-#: templates/web/base/admin/roles/form.html:25
+#: templates/web/base/admin/roles/form.html:31
 #: templates/web/base/admin/users/alerts.html:15
 msgid "Delete"
 msgstr "Effacer"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:79
-#: templates/web/base/admin/templates/edit.html:77
+#: templates/web/base/admin/templates/edit.html:89
 #: templates/web/zurich/admin/templates/edit.html:36
 msgid "Delete template"
 msgstr "Supprimer le modèle"
@@ -1130,13 +1173,13 @@ msgstr "Supprimer le modèle"
 msgid "Delete theme"
 msgstr "Supprimer le modèle"
 
-#: templates/web/base/admin/bodies/contact-form.html:59
+#: templates/web/base/admin/bodies/contact-form.html:61
 #: templates/web/base/admin/bodies/index.html:31
 #: templates/web/zurich/admin/bodies/contact-form.html:41
 msgid "Deleted"
 msgstr "Effacé"
 
-#: templates/web/base/report/_main.html:114
+#: templates/web/base/report/_main.html:112
 #: templates/web/base/report/update.html:52
 msgid "Describe why you are moderating this"
 msgstr "Décrivez pourquoi vous modérez ceci"
@@ -1151,23 +1194,24 @@ msgstr "Description"
 msgid "Destination"
 msgstr "Description"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:465
+#: perllib/FixMyStreet/App/Controller/Report.pm:466
 msgid "Detailed information is limited to %d characters."
 msgstr "Les informations détaillées se à %d caractàre."
 
 #. ("JS")
 #: templates/web/base/admin/users/alerts.html:12
-#: templates/web/base/js/translation_strings.html:46
+#: templates/web/base/js/translation_strings.html:47
 #: templates/web/zurich/report/new/fill_in_details_form.html:20
 msgid "Details"
 msgstr "Détails :"
 
-#: templates/web/base/admin/bodies/contact-form.html:75
+#: templates/web/base/admin/bodies/contact-form.html:77
 #, fuzzy
 msgid "Details hint text"
 msgstr "Questionnaire"
 
-#: templates/web/base/admin/reports/edit.html:124
+#: templates/web/base/admin/reports/_edit_main.html:101
+#: templates/web/base/admin/reports/_edit_waste.html:77
 #: templates/web/base/report/update/moderation_diff.html:3
 #: templates/web/zurich/admin/report_edit-sdm.html:29
 #: templates/web/zurich/admin/reports/edit.html:31
@@ -1175,7 +1219,7 @@ msgstr "Questionnaire"
 msgid "Details:"
 msgstr "Détails :"
 
-#: templates/web/base/dashboard/index.html:105
+#: templates/web/base/dashboard/index.html:130
 msgid "Device and Site"
 msgstr "Dispositif et site"
 
@@ -1187,7 +1231,8 @@ msgstr "Transféré(e)"
 msgid "Diligency prize league table"
 msgstr "Tableau d'honneur de la réactivité"
 
-#: perllib/FixMyStreet/Cobrand/Bromley.pm:1340
+#: perllib/FixMyStreet/Cobrand/Bromley.pm:876
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:677
 msgid "Direct Debit"
 msgstr ""
 
@@ -1195,7 +1240,7 @@ msgstr ""
 msgid "Disable"
 msgstr "Désactiver"
 
-#: templates/web/base/admin/bodies/contact-form.html:89
+#: templates/web/base/admin/bodies/contact-form.html:91
 #: templates/web/base/admin/extra-metadata-item.html:100
 msgid "Disable form when this category is selected"
 msgstr ""
@@ -1204,12 +1249,12 @@ msgstr ""
 msgid "Disable form when this option is selected"
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:105
+#: templates/web/base/admin/bodies/contact-form.html:107
 #, fuzzy
 msgid "Disable reopening of reports in this category"
 msgstr "Rapporté dans la catégorie %s"
 
-#: templates/web/base/admin/bodies/contact-form.html:99
+#: templates/web/base/admin/bodies/contact-form.html:101
 #, fuzzy
 msgid "Disable updates on reports in this category"
 msgstr "Rapporté dans la catégorie %s"
@@ -1218,7 +1263,7 @@ msgstr "Rapporté dans la catégorie %s"
 msgid "Disabled:"
 msgstr "Désactivé:"
 
-#: templates/web/base/report/_main.html:119
+#: templates/web/base/report/_main.html:117
 #: templates/web/base/report/update.html:55
 msgid "Discard changes"
 msgstr "Annuler les modifications"
@@ -1249,7 +1294,7 @@ msgid "Don't like forms?"
 msgstr "Vous n'aimez pas les formulaires ?"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:88
+#: templates/web/base/js/translation_strings.html:91
 msgid "Done"
 msgstr ""
 
@@ -1258,14 +1303,18 @@ msgid "Down one"
 msgstr "En bas d’un"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:75
+#: templates/web/base/js/translation_strings.html:77
 #, fuzzy
 msgid "Drag photos here or <u>browse photos</u>"
 msgstr "Glissez et déposez les photos ici ou <u> cliquer pour les envoyer </ u>"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:87
+#: templates/web/base/js/translation_strings.html:90
 msgid "Draw rectangles on the picture then click Done."
+msgstr ""
+
+#: templates/web/base/maps/_map_instructions.html:13
+msgid "Drop pin on the map to start a new report"
 msgstr ""
 
 #: templates/web/base/admin/extra-metadata-item.html:71
@@ -1292,14 +1341,14 @@ msgstr ""
 "Cela signifie que vous pouvez ajouter plusieurs catégories même si vous n'avez qu'un contact pour l'interlocuteur."
 
 #: templates/web/base/report/_item.html:82
-#: templates/web/base/report/inspect/information.html:28
+#: templates/web/base/report/inspect/information.html:37
 msgid "Easting/Northing:"
 msgstr "Abscisse/Ordonnée :"
 
-#: templates/web/base/admin/emergencymessage/index.html:31
-#: templates/web/base/admin/list_updates.html:44
+#: templates/web/base/admin/emergencymessage/index.html:57
+#: templates/web/base/admin/list_updates.html:37
 #: templates/web/base/admin/manifesttheme/index.html:22
-#: templates/web/base/admin/problem_row.html:50
+#: templates/web/base/admin/problem_row.html:49
 #: templates/web/base/admin/responsepriorities/index.html:34
 #: templates/web/base/admin/roles/index.html:24
 #: templates/web/base/admin/templates/view.html:31
@@ -1310,35 +1359,38 @@ msgid "Edit"
 msgstr "Éditer"
 
 #: templates/web/base/admin/bodies/body.html:155
-#: templates/web/base/admin/index.html:43
+#: templates/web/base/admin/index.html:36
 #: templates/web/zurich/admin/bodies/body.html:47
 msgid "Edit body details"
 msgstr "Editer les détails de l'intelocuteur"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:800
+#: perllib/FixMyStreet/Cobrand/Default.pm:786
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:138
 msgid "Edit other users' permissions"
 msgstr "Modifier les autorisations des autres utilisateurs"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:784
+#: perllib/FixMyStreet/Cobrand/Default.pm:770
 msgid "Edit report category"
 msgstr "Éditer la catégorie des rapports"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:785
+#: perllib/FixMyStreet/Cobrand/Default.pm:771
 msgid "Edit report priority"
 msgstr "Éditer la priorité des rapports"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:783
+#: perllib/FixMyStreet/Cobrand/Default.pm:769
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:130
 msgid "Edit reports"
 msgstr "Éditer les rapports"
 
 #: templates/web/base/admin/flagged.html:51
-#: templates/web/base/admin/reports/edit.html:186
-#: templates/web/base/admin/update_edit.html:40
+#: templates/web/base/admin/reports/_edit_main.html:163
+#: templates/web/base/admin/update_edit.html:38
 #, fuzzy
 msgid "Edit user"
 msgstr "saisissez l'utilisateur"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:799
+#: perllib/FixMyStreet/Cobrand/Default.pm:785
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:137
 msgid "Edit users' details/search for their reports"
 msgstr "Modifier les détails des utilisateurs/rechercher leurs rapports"
 
@@ -1346,15 +1398,19 @@ msgstr "Modifier les détails des utilisateurs/rechercher leurs rapports"
 msgid "Edit your update"
 msgstr "Éditer votre mise à jour"
 
-#: templates/web/base/admin/reports/edit.html:0
-#: templates/web/base/admin/reports/edit.html:15
-#: templates/web/base/admin/reports/edit.html:6
 #: templates/web/zurich/admin/report_edit-sdm.html:2
 #: templates/web/zurich/admin/report_edit-sdm.html:6
 #: templates/web/zurich/admin/reports/edit.html:2
 #: templates/web/zurich/admin/reports/edit.html:6
 msgid "Editing problem %d"
 msgstr "Édition du problème %d"
+
+#: templates/web/base/admin/reports/edit.html:0
+#: templates/web/base/admin/reports/edit.html:15
+#: templates/web/base/admin/reports/edit.html:6
+#, fuzzy
+msgid "Editing report %d"
+msgstr "Édition de l'utilisateur %d'"
 
 #: templates/web/base/admin/update_edit.html:1
 #: templates/web/zurich/admin/update_edit.html:1
@@ -1389,7 +1445,7 @@ msgstr "Email"
 #: templates/web/base/alert/_list.html:70
 #: templates/web/base/auth/change_email.html:37
 #: templates/web/base/report/new/form_user_loggedin.html:40
-#: templates/web/base/report/update/form_user_loggedin.html:25
+#: templates/web/base/report/update/form_user_loggedin.html:26
 msgid "Email address"
 msgstr "Adresse e-mail"
 
@@ -1417,15 +1473,16 @@ msgstr "Envoyez-moi un courriel électronique pour me connecter"
 msgid "Email verified:"
 msgstr "Email verifié:"
 
-#: templates/web/base/admin/reports/edit.html:208
+#: templates/web/base/admin/reports/_edit_main.html:185
+#: templates/web/base/admin/reports/_edit_waste.html:60
 #: templates/web/base/admin/users/_form_details.html:14
 #: templates/web/base/my/my.html:39
-#: templates/web/base/report/inspect/information.html:20
+#: templates/web/base/report/inspect/information.html:29
 #: templates/web/zurich/admin/bodies/contact-form.html:23
 msgid "Email:"
 msgstr "Email :"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:746
+#: perllib/FixMyStreet/Cobrand/Default.pm:729
 #: templates/web/base/admin/emergencymessage/edit.html:1
 #: templates/web/base/admin/emergencymessage/index.html:1
 #: templates/web/base/admin/emergencymessage/index.html:7
@@ -1477,8 +1534,8 @@ msgstr ""
 "Pour plus d' information, lire \n"
 "<a href='https://www.mysociety.org/2013/02/20/open311-extended/' class='admin-offsite-link'>cet article</a>. %s"
 
-#: templates/web/base/admin/bodies/form.html:121
-#: templates/web/base/admin/bodies/form.html:122
+#: templates/web/base/admin/bodies/form.html:136
+#: templates/web/base/admin/bodies/form.html:137
 msgid ""
 "Enable this <strong>can be devolved</strong> setting if one or more contacts have a \n"
 "          different endpoint (and send method) from the body's. For example, if reports for some categories of\n"
@@ -1493,8 +1550,13 @@ msgstr ""
 msgid "Enabling this will suppress the error message that is normally emitted when an update has no description"
 msgstr "Activer cela supprimera le message d’erreur qui est normalement émis lorsqu’une mise à jour n’a pas de description"
 
-#: templates/web/base/dashboard/index.html:79
+#: templates/web/base/dashboard/index.html:104
 msgid "End Date"
+msgstr "Date de fin"
+
+#: templates/web/base/admin/emergencymessage/_ooh.html:57
+#, fuzzy
+msgid "End time"
 msgstr "Date de fin"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:21
@@ -1522,6 +1584,10 @@ msgstr "Saisissez un nom de rue proche,  la localité ou le code postal"
 #: templates/web/base/index-steps.html:6
 msgid "Enter details of the problem"
 msgstr "Saisissez les détails du problème"
+
+#: perllib/FixMyStreet/Cobrand/Thamesmead.pm:74
+msgid "Enter the road name, postcode or the area closest to the problem"
+msgstr ""
 
 #. ("JS")
 #: templates/web/base/errors/generic.html:1
@@ -1558,7 +1624,7 @@ msgid "Existing users won't be modified."
 msgstr "Les utilisateurs existants ne seront pas modifiés."
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:66
+#: templates/web/base/js/translation_strings.html:68
 msgid "Expand map"
 msgstr "Agrandir la carte"
 
@@ -1566,44 +1632,45 @@ msgstr "Agrandir la carte"
 msgid "Explain what’s wrong"
 msgstr "Expliquez le problème"
 
-#: templates/web/base/dashboard/index.html:107
+#: templates/web/base/dashboard/index.html:132
 msgid "Export as CSV"
 msgstr "Exporter en tant que CSV"
 
-#: templates/web/base/admin/reports/edit.html:103
+#: templates/web/base/admin/reports/_edit_main.html:80
+#: templates/web/base/admin/reports/_edit_waste.html:46
 msgid "External ID"
 msgstr "ID externe"
 
-#: templates/web/base/admin/bodies/form.html:88
+#: templates/web/base/admin/bodies/form.html:103
 msgid "External URL"
 msgstr "URL externe"
 
-#: templates/web/base/admin/reports/edit.html:105
+#: templates/web/base/admin/reports/_edit_main.html:82
 msgid "External body"
 msgstr "Body extérieur"
 
-#: templates/web/base/admin/reports/edit.html:112
+#: templates/web/base/admin/reports/_edit_main.html:89
 #: templates/web/base/admin/templates/_external.html:10
 msgid "External status code"
 msgstr "Code de’état externe"
 
-#: templates/web/base/admin/update_edit.html:62
+#: templates/web/base/admin/update_edit.html:60
 msgid "External status code:"
 msgstr "Code de’état externe:"
 
-#: templates/web/base/admin/reports/edit.html:107
+#: templates/web/base/admin/reports/_edit_main.html:84
 msgid "External team"
 msgstr "Équipe externe"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:742
+#: perllib/FixMyStreet/Cobrand/Default.pm:725
 #: templates/web/base/admin/reportextrafields/edit.html:1
 #: templates/web/base/admin/reportextrafields/index.html:1
 msgid "Extra Fields"
 msgstr "Champs supplémentaires"
 
-#: templates/web/base/admin/bodies/contact-form.html:158
-#: templates/web/base/admin/reports/edit.html:138
-#: templates/web/base/admin/update_edit.html:102
+#: templates/web/base/admin/bodies/contact-form.html:166
+#: templates/web/base/admin/reports/_edit_main.html:115
+#: templates/web/base/admin/update_edit.html:100
 #: templates/web/base/report/update/moderation_diff.html:8
 msgid "Extra data:"
 msgstr "Donnée supplémentaire:"
@@ -1621,6 +1688,11 @@ msgstr "Champs supplémentaires:"
 #: templates/web/base/admin/extra-metadata-item.html:38
 msgid "Extra question shown to user"
 msgstr ""
+
+#: templates/web/base/admin/problem_row.html:41
+#, fuzzy
+msgid "Failed bodies:"
+msgstr "Accrédité par les organismes:"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1641,7 +1713,7 @@ msgid "Fill in your details manually."
 msgstr "Introduisez vos informations manuellement"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:69
+#: templates/web/base/js/translation_strings.html:71
 msgid "Filter"
 msgstr ""
 
@@ -1668,7 +1740,7 @@ msgstr "Résoudre ceci en chosissant une <strong>zone couverte</strong> dans le 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:179
 #: templates/web/base/admin/states/index.html:29
 #: templates/web/base/admin/stats/fix_rate.html:4
-#: templates/web/base/dashboard/index.html:119
+#: templates/web/base/dashboard/index.html:144
 msgid "Fixed"
 msgstr "Résolu"
 
@@ -1680,12 +1752,12 @@ msgstr "Résolu - Administration"
 msgid "Fixed - User"
 msgstr "Résolu - Usager"
 
-#: templates/web/base/admin/bodies/form.html:96
+#: templates/web/base/admin/bodies/form.html:111
 #: templates/web/zurich/admin/bodies/form.html:47
 msgid "Flag as deleted"
 msgstr "Signaler comme supprimé"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:710
+#: perllib/FixMyStreet/Cobrand/Default.pm:693
 #: templates/web/base/admin/users/index.html:47
 msgid "Flagged"
 msgstr "Signalé"
@@ -1702,7 +1774,7 @@ msgstr "Les utilisateurs signalés sont listés dans la page <a href='%s'>signal
 msgid "Flagged users are not restricted in any way. This is just a list of users that have been marked for attention."
 msgstr "Les utilisateurs signalés ne sont pas restreints en aucune façon. il s'agit juste d'une liste d'utilisateurs qui ont été marqués pour attention."
 
-#: templates/web/base/admin/reports/edit.html:159
+#: templates/web/base/admin/reports/_edit_main.html:136
 #: templates/web/base/admin/users/form.html:24
 msgid "Flagged:"
 msgstr "Signalé :"
@@ -1729,11 +1801,11 @@ msgstr "Mot de passe oublié ?"
 msgid "Forgotten your password?"
 msgstr "Vous avez oublié votre mot de passe? "
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:819
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:820
 msgid "Forwarded to external body"
 msgstr "Transmis à l'administration"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:820
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:821
 msgid "Forwarded wish to external body"
 msgstr "Souhait transmis à l'administration"
 
@@ -1747,7 +1819,7 @@ msgstr "Foire Aux Questions"
 msgid "From"
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:132
+#: templates/web/base/admin/bodies/contact-form.html:134
 msgid "Frontend staff access only to users assigned to this category"
 msgstr ""
 
@@ -1790,9 +1862,9 @@ msgstr "Donnez à cette collection un nom de champs. Il n'est pas affiché publi
 msgid "Glad to hear it’s been fixed!"
 msgstr "Heureux d'entendre qu'il a été résolu!"
 
-#: templates/web/base/admin/index.html:29
-#: templates/web/base/admin/index.html:37
-#: templates/web/base/admin/index.html:54
+#: templates/web/base/admin/index.html:20
+#: templates/web/base/admin/index.html:28
+#: templates/web/base/admin/index.html:47
 #: templates/web/base/admin/responsepriorities/index.html:48
 #: templates/web/base/admin/triage/_list-filters.html:25
 #: templates/web/base/admin/triage/_list-filters.html:40
@@ -1808,11 +1880,12 @@ msgstr "Heureux d'entendre qu'il a été résolu!"
 msgid "Go"
 msgstr "Ok"
 
-#: templates/web/base/admin/reports/edit.html:101
+#: templates/web/base/admin/reports/_edit_main.html:78
 msgid "Going to send questionnaire?"
 msgstr "Envoi du questionnaire ?"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:801
+#: perllib/FixMyStreet/Cobrand/Default.pm:787
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:139
 msgid "Grant access to the admin"
 msgstr "Accorder l'accès à l'admin"
 
@@ -1820,11 +1893,11 @@ msgstr "Accorder l'accès à l'admin"
 msgid "Graph of problem creation by status over time"
 msgstr "Graphique historique des problèmes créés, par statut"
 
-#: templates/web/base/dashboard/index.html:95
+#: templates/web/base/dashboard/index.html:120
 msgid "Group by %s"
 msgstr "Groupé par %s"
 
-#: templates/web/base/dashboard/index.html:100
+#: templates/web/base/dashboard/index.html:125
 msgid "Group by:"
 msgstr "Groupé par:"
 
@@ -1849,8 +1922,8 @@ msgstr ""
 msgid "Help"
 msgstr "Aide"
 
-#: templates/web/base/report/new/category_extras.html:19
-#: templates/web/base/report/new/category_extras.html:20
+#: templates/web/base/report/new/category_extras.html:22
+#: templates/web/base/report/new/category_extras.html:23
 msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online."
 msgstr "Aide <strong>%s </ strong> résoud votre problème plus rapidement, en fournissant quelques détails supplémentaires. Cette information supplémentaire ne sera pas publié en ligne."
 
@@ -1863,7 +1936,7 @@ msgid "Hi %s"
 msgstr "Bienvenue %s"
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:65
-#: templates/web/base/admin/update_edit.html:30
+#: templates/web/base/admin/update_edit.html:28
 #: templates/web/zurich/admin/stats/index.html:53
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Hidden"
@@ -1873,12 +1946,12 @@ msgstr "Caché(s)"
 msgid "Hidden data in reporting form"
 msgstr ""
 
-#: templates/web/base/admin/users/form.html:187
+#: templates/web/base/admin/users/form.html:195
 #: templates/web/zurich/admin/users/form.html:38
 msgid "Hide all reports and updates"
 msgstr "Masquer tous les rapports et mises à jour"
 
-#: templates/web/base/report/_main.html:110
+#: templates/web/base/report/_main.html:108
 msgid "Hide entire report"
 msgstr "Masquer tout le rapport"
 
@@ -1900,12 +1973,12 @@ msgid "Hide my name on this report"
 msgstr "Cacher mon nom sur ce rapport"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:72
+#: templates/web/base/js/translation_strings.html:74
 #: templates/web/base/maps/openlayers.html:73
 msgid "Hide pins"
 msgstr "Cacher les épingles"
 
-#: templates/web/base/admin/bodies/contact-form.html:83
+#: templates/web/base/admin/bodies/contact-form.html:85
 #, fuzzy
 msgid "Hide reports made in this category"
 msgstr "Rapporté dans la catégorie %s"
@@ -1928,12 +2001,12 @@ msgid "How to report a problem"
 msgstr "Comment signaler un problème"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:45
+#: templates/web/base/js/translation_strings.html:46
 msgid "How to send successful reports"
 msgstr "Comment envoyer des rapports réussis"
 
-#: templates/web/base/tokens/confirm_problem.html:46
-#: templates/web/base/tokens/confirm_problem.html:51
+#: templates/web/base/tokens/confirm_problem.html:50
+#: templates/web/base/tokens/confirm_problem.html:55
 msgid "I just reported a problem on @fixmystreet"
 msgstr "Je viens de signaler un problème sur @fixmystreet"
 
@@ -1947,7 +2020,7 @@ msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr "Je suis désolé, nous n'avons pas trouvé votre problème dans notre base de données.\n"
 
 #: templates/web/base/admin/flagged.html:14
-#: templates/web/base/admin/index.html:66
+#: templates/web/base/admin/index.html:59
 #: templates/web/base/admin/list_updates.html:6
 #: templates/web/base/admin/reports/index.html:12
 #: templates/web/base/admin/users/alerts.html:8
@@ -1980,7 +2053,7 @@ msgstr ""
 msgid "If ticked, this extra data will not be edited or deleted by the Open311 population script."
 msgstr ""
 
-#: templates/web/base/admin/templates/edit.html:61
+#: templates/web/base/admin/templates/edit.html:73
 msgid "If ticked, this template will be used for Open311 updates that put problems in this state."
 msgstr "Si cette option est cochée, ce modèle sera utilisé pour les mises à jour Open311 qui posent des problèmes dans cet état."
 
@@ -2010,7 +2083,7 @@ msgstr "Si vous nous indiquez votre adresse électronique, nous vous informerons
 msgid "If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories."
 msgstr "Si vous voulez que seulement cette priorité soit une option pour des catégories spécifiques, choisissez-les ici. Par défaut, elles seront visibles pour toutes les catégories."
 
-#: templates/web/base/admin/templates/edit.html:39
+#: templates/web/base/admin/templates/edit.html:51
 msgid "If you only want this template to be an option for specific categories, pick them here. By default they will show for all categories."
 msgstr "Si vous voulez que seulement ce modèle soit une option pour des catégories spécifiques, choisissez-les ici. Par défaut, ils seront visibles pour toutes les catégories."
 
@@ -2022,11 +2095,11 @@ msgstr "Si vous soumettez un problème ici, le problème <strong>ne sera pas </s
 msgid "If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here."
 msgstr "Si vous souhaitez utiliser ce modèle pour pré-remplir le champ de mise à jour lorsqu’un rapport <strong>externe</strong> (exemple: Confirmer) d’un rapport change, entrez le code d’état ici."
 
-#: templates/web/base/admin/templates/edit.html:46
+#: templates/web/base/admin/templates/edit.html:58
 msgid "If you want to use this template to prefill the update field when changing a report&rsquo;s state, select the state here."
 msgstr "Si vous souhaitez utiliser ce modèle pour prétraiter le champ de mise à jour lorsque vous modifiez l'état d'un rapport, sélectionnez le ici."
 
-#: templates/web/base/questionnaire/index.html:72
+#: templates/web/base/questionnaire/index.html:73
 msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council)."
@@ -2057,7 +2130,7 @@ msgid ""
 "              when they are shown on the site. Enter the ID (number) of that user."
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:169
+#: templates/web/base/admin/bodies/contact-form.html:177
 msgid "If you’ve made changes, leave a note explaining what, for other admins to see."
 msgstr ""
 
@@ -2092,7 +2165,7 @@ msgstr ""
 msgid "In wards"
 msgstr "Voir les quartiers"
 
-#: templates/web/base/admin/bodies/contact-form.html:54
+#: templates/web/base/admin/bodies/contact-form.html:56
 #: templates/web/zurich/admin/bodies/contact-form.html:40
 msgid "Inactive"
 msgstr "Inactif"
@@ -2105,7 +2178,7 @@ msgstr "Boîte de réception zéro, nous voilà!"
 msgid "Include reporter personal details"
 msgstr "Inclure les détails personnels du reporter"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:364
+#: perllib/FixMyStreet/App/Controller/Open311.pm:368
 msgid "Incorrect has_photo value \"%s\""
 msgstr "Valeur has_photo invalide \"%s\""
 
@@ -2114,7 +2187,7 @@ msgstr "Valeur has_photo invalide \"%s\""
 msgid "Inspect report"
 msgstr "Inspecter le rapport"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:788
+#: perllib/FixMyStreet/Cobrand/Default.pm:774
 msgid "Instruct contractors to fix problems"
 msgstr "Instruire entrepreneurs pour résoudre les problèmes"
 
@@ -2131,12 +2204,12 @@ msgstr "Notes internes"
 msgid "Internal notes"
 msgstr "Notes internes"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:467
+#: perllib/FixMyStreet/App/Controller/Open311.pm:471
 msgid "Invalid format %s specified."
 msgstr "Format spécifié %s invalide"
 
-#: perllib/FixMyStreet/App/Controller/Moderate.pm:337
-#: perllib/FixMyStreet/App/Controller/Report.pm:542
+#: perllib/FixMyStreet/App/Controller/Moderate.pm:339
+#: perllib/FixMyStreet/App/Controller/Report.pm:545
 msgid "Invalid location. New location must be covered by the same council."
 msgstr "Location invalide. Le nouvel emplacement doit être couvert par la même administration."
 
@@ -2144,7 +2217,7 @@ msgstr "Location invalide. Le nouvel emplacement doit être couvert par la même
 msgid "It's often quickest to <a href=\"%s\">check our FAQs</a> and see if the answer is there."
 msgstr "Il est souvent plus rapide <a href=\"%s\">de parcourir notre FAQs</a> et d'y chercher la réponse."
 
-#: templates/web/base/tokens/confirm_problem.html:31
+#: templates/web/base/tokens/confirm_problem.html:34
 msgid "It’s on its way to the council right now."
 msgstr "Il est sur le chemin de l’administration en ce moment."
 
@@ -2171,7 +2244,8 @@ msgstr "Les 7 dernièrs jours"
 msgid "Last editor"
 msgstr "Dernier auteur"
 
-#: templates/web/base/admin/reports/edit.html:92
+#: templates/web/base/admin/reports/_edit_main.html:69
+#: templates/web/base/admin/reports/_edit_waste.html:31
 #, fuzzy
 msgid "Last failure:"
 msgstr "Dernière actualisation :"
@@ -2180,16 +2254,17 @@ msgstr "Dernière actualisation :"
 msgid "Last update"
 msgstr "dernières mise à jour"
 
-#: templates/web/base/admin/reports/edit.html:95
+#: templates/web/base/admin/reports/_edit_main.html:72
+#: templates/web/base/admin/reports/_edit_waste.html:34
 msgid "Last update:"
 msgstr "Dernière actualisation :"
 
-#: templates/web/base/admin/problem_row.html:46
+#: templates/web/base/admin/problem_row.html:45
 msgid "Last&nbsp;update:"
 msgstr "Dernière&nbsp;actualisation :"
 
 #: templates/web/base/report/_item.html:87
-#: templates/web/base/report/inspect/information.html:32
+#: templates/web/base/report/inspect/information.html:41
 #: templates/web/base/report/update/moderation_diff.html:6
 msgid "Latitude/Longitude:"
 msgstr "Latitude/Longitude:"
@@ -2199,7 +2274,7 @@ msgstr "Latitude/Longitude:"
 msgid "Least recently updated"
 msgstr "Moins récemment mis à jour"
 
-#: templates/web/base/admin/bodies/form.html:128
+#: templates/web/base/admin/bodies/form.html:143
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
 msgstr "Laisser ce champ vide si tous les rapports pour cet interlocuteur doivent être envoyés en utilisant la même méthode (cead, \"%s\")."
 
@@ -2238,38 +2313,38 @@ msgid "Locate the problem on a map of the area"
 msgstr "Localisez le problème sur un plan des alentours"
 
 #: templates/web/base/auth/general.html:29
-#: templates/web/base/report/form/user.html:15
+#: templates/web/base/report/form/user.html:18
 msgid "Log in with Facebook"
 msgstr "Se connecter avec Facebook"
 
 #: templates/web/base/auth/general.html:44
-#: templates/web/base/report/form/user.html:26
+#: templates/web/base/report/form/user.html:29
 msgid "Log in with Twitter"
 msgstr "Se connecter avec Twitter"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:83
-#: templates/web/base/report/form/user.html:29
+#: templates/web/base/js/translation_strings.html:86
+#: templates/web/base/report/form/user.html:32
 msgid "Log in with email"
 msgstr "Se connecter par email"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:81
+#: templates/web/base/js/translation_strings.html:84
 msgid "Log in with email/text"
 msgstr "Connectez-vous avec email/texte"
 
-#: templates/web/base/admin/users/form.html:185
+#: templates/web/base/admin/users/form.html:193
 #: templates/web/zurich/admin/users/form.html:36
 msgid "Log out of all sessions"
 msgstr "Se déconnecter de toutes les sessions"
 
 #: templates/web/base/auth/general.html:36
-#: templates/web/base/report/form/user.html:20
+#: templates/web/base/report/form/user.html:23
 #, fuzzy
 msgid "Login with %s"
 msgstr "Se connecter par email"
 
-#: templates/web/base/dashboard/index.html:83
+#: templates/web/base/dashboard/index.html:108
 msgid "Look up"
 msgstr "Chercher"
 
@@ -2277,16 +2352,16 @@ msgstr "Chercher"
 msgid "Main Navigation"
 msgstr ""
 
-#: templates/web/base/admin/users/form.html:186
+#: templates/web/base/admin/users/form.html:194
 #: templates/web/zurich/admin/users/form.html:37
 msgid "Make anonymous on all reports and updates"
 msgstr "Rendre anonyme tous les rapports et mises à jour"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:790
+#: perllib/FixMyStreet/Cobrand/Default.pm:776
 msgid "Manage shortlist"
 msgstr "Gérer la liste"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:713
+#: perllib/FixMyStreet/Cobrand/Default.pm:696
 msgid "Manifest Theme"
 msgstr ""
 
@@ -2295,7 +2370,8 @@ msgstr ""
 msgid "Manual order"
 msgstr "Commande manuelle"
 
-#: templates/web/base/admin/reports/edit.html:87
+#: templates/web/base/admin/reports/_edit_main.html:64
+#: templates/web/base/admin/reports/_edit_waste.html:26
 msgid "Mark as sent"
 msgstr "Marqué comme envoyé"
 
@@ -2303,46 +2379,46 @@ msgstr "Marqué comme envoyé"
 msgid "Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>."
 msgstr "Marquer les utilisateurs dont vous voulez surveiller le comportement comme <strong>cochés</strong>."
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:787
+#: perllib/FixMyStreet/Cobrand/Default.pm:773
 msgid "Markup problem details"
 msgstr "Marquer les détails du problème"
 
-#: templates/web/base/admin/emergencymessage/edit.html:16
+#: templates/web/base/admin/emergencymessage/edit.html:27
 #: templates/web/base/contact/enquiry/index.html:42
 #: templates/web/base/contact/form.html:88
 msgid "Message"
 msgstr "Message"
 
-#: templates/web/zurich/admin/reports/edit.html:273
+#: templates/web/zurich/admin/reports/edit.html:275
 msgid "Message to competent body:"
 msgstr "Message à l'organisme compétent:"
 
-#: templates/web/zurich/admin/reports/edit.html:271
+#: templates/web/zurich/admin/reports/edit.html:273
 msgid "Message to external body:"
 msgstr "Message à l'organisme externe compétent:"
 
-#: templates/web/base/admin/bodies/contact-form.html:93
+#: templates/web/base/admin/bodies/contact-form.html:95
 #: templates/web/base/admin/extra-metadata-option.html:21
 msgid "Message to show when form is disabled (HTML permitted)"
 msgstr ""
 
-#: templates/web/base/admin/reports/edit.html:72
+#: templates/web/base/admin/reports/_edit_main.html:49
 msgid "Missing bodies:"
 msgstr "Organismes disparus :"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:475
+#: perllib/FixMyStreet/App/Controller/Open311.pm:479
 msgid "Missing jurisdiction_id"
 msgstr "jurisdiction_id manquant"
 
-#: templates/web/base/report/_main.html:132
+#: templates/web/base/report/_main.html:130
 msgid "Moderate"
 msgstr "Modérer"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:782
+#: perllib/FixMyStreet/Cobrand/Default.pm:768
 msgid "Moderate report details"
 msgstr "Modérer les détails du rapport"
 
-#: templates/web/base/report/_main.html:132
+#: templates/web/base/report/_main.html:130
 msgid "Moderate this report"
 msgstr "Modérer ce rapport"
 
@@ -2350,8 +2426,8 @@ msgstr "Modérer ce rapport"
 msgid "Moderate this update"
 msgstr "Modifiez cette mise à jour"
 
-#: templates/web/base/admin/update_edit.html:97
-#: templates/web/base/report/_main.html:84
+#: templates/web/base/admin/update_edit.html:95
+#: templates/web/base/report/_main.html:82
 #: templates/web/base/report/_update_state.html:19
 #: templates/web/base/report/update/moderation_meta.html:2
 msgid "Moderated by %s at %s"
@@ -2361,12 +2437,12 @@ msgstr "Modifiez par %s à %s"
 msgid "Moderated by division within one working day"
 msgstr "Modéré par division dans le délai d'un jour ouvrable"
 
-#: templates/web/base/admin/reports/edit.html:223
-#: templates/web/base/admin/update_edit.html:91
+#: templates/web/base/admin/reports/_edit_main.html:200
+#: templates/web/base/admin/update_edit.html:89
 msgid "Moderation history"
 msgstr "Historique de la modération"
 
-#: templates/web/base/dashboard/index.html:103
+#: templates/web/base/dashboard/index.html:128
 #: templates/web/zurich/admin/stats/index.html:9
 msgid "Month"
 msgstr "Mois"
@@ -2376,18 +2452,23 @@ msgstr "Mois"
 msgid "Most commented"
 msgstr "Les plus commentés"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:736
-#: perllib/FixMyStreet/App/Controller/Report.pm:773
-#: perllib/FixMyStreet/App/Controller/Report.pm:777
+#: perllib/FixMyStreet/App/Controller/Report.pm:739
+#: perllib/FixMyStreet/App/Controller/Report.pm:778
+#: perllib/FixMyStreet/App/Controller/Report.pm:782
 #: templates/web/base/admin/category-checkboxes.html:31
 msgid "Multiple Groups"
 msgstr ""
+
+#: templates/web/base/admin/extra-metadata-item.html:30
+#, fuzzy
+msgid "Must not contain spaces."
+msgstr "Le client est injoignable"
 
 #: templates/web/base/admin/bodies/form.html:24
 #: templates/web/base/admin/bodies/index.html:25
 #: templates/web/base/admin/flagged.html:16
 #: templates/web/base/admin/flagged.html:37
-#: templates/web/base/admin/index.html:68
+#: templates/web/base/admin/index.html:61
 #: templates/web/base/admin/list_updates.html:7
 #: templates/web/base/admin/manifesttheme/index.html:7
 #: templates/web/base/admin/reportextrafields/edit.html:11
@@ -2406,8 +2487,9 @@ msgstr ""
 msgid "Name"
 msgstr "Nom"
 
-#: templates/web/base/admin/reports/edit.html:195
-#: templates/web/base/admin/update_edit.html:34
+#: templates/web/base/admin/reports/_edit_main.html:172
+#: templates/web/base/admin/reports/_edit_waste.html:49
+#: templates/web/base/admin/update_edit.html:32
 #: templates/web/base/admin/users/_form_details.html:10
 #: templates/web/base/my/my.html:38
 #: templates/web/zurich/admin/stats/index.html:62
@@ -2419,11 +2501,11 @@ msgstr "Nom :"
 msgid "Names are limited to %d characters in length."
 msgstr "Les noms sont limités à %d caractères.."
 
-#: templates/web/base/report/inspect/information.html:46
+#: templates/web/base/report/inspect/information.html:55
 msgid "Navigate to this problem"
 msgstr "Accédez à ce problème"
 
-#: templates/web/base/report/inspect/information.html:41
+#: templates/web/base/report/inspect/information.html:50
 msgid "Nearest calculated address:"
 msgstr "Adresse calculée la plus proche:"
 
@@ -2435,12 +2517,12 @@ msgstr "Route la plus proche de l'épingle placée sur le plan (génerée automa
 msgid "Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"
 msgstr "Code postal le plus proche de l'épingle placée sur le plan (géneré automatiquement): %s (à %sm d'ici)"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:632
+#: perllib/FixMyStreet/Cobrand/Default.pm:615
 #: perllib/FixMyStreet/Geocode/Address.pm:17
 msgid "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"
 msgstr "Route la plus proche de l'épingle placée sur le plan (génerée automatiquement à partir de Bing Maps): %s"
 
-#: perllib/FixMyStreet/Script/Alerts.pm:425
+#: perllib/FixMyStreet/Script/Alerts.pm:445
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s\n"
 "\n"
@@ -2461,11 +2543,11 @@ msgstr "Presque fini! Maintenant, veuillez vérifier votre email"
 msgid "Nearly done! Now check your phone&hellip;"
 msgstr "Presque fini! Maintenant, vérifiez votre téléphone&hellip;"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:54
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:56
 msgid "New body added"
 msgstr "Nouveau body ajouté"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:346
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:366
 msgid "New category contact added"
 msgstr "Nouveau contact de catégorie rajouté"
 
@@ -2494,7 +2576,7 @@ msgstr "Nouvelle note à DM:"
 
 #: templates/web/base/auth/change_password.html:47
 #: templates/web/base/auth/create.html:64
-#: templates/web/base/report/form/user_loggedout_by_email.html:73
+#: templates/web/base/report/form/user_loggedout_by_email_password.html:1
 msgid "New password:"
 msgstr "Nouveau mot de passe :"
 
@@ -2580,29 +2662,29 @@ msgstr "Plus récents"
 msgid "Next"
 msgstr "Suivant"
 
-#: templates/web/base/report/form/user.html:6
+#: templates/web/base/report/form/user.html:9
 msgid "Next:"
 msgstr "Suivant:"
 
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:126
 #: perllib/FixMyStreet/DB/Result/ModerationOriginalData.pm:127
 #: templates/web/base/admin/bodies/category.html:5
-#: templates/web/base/admin/list_updates.html:33
-#: templates/web/base/admin/list_updates.html:35
-#: templates/web/base/admin/list_updates.html:36
-#: templates/web/base/admin/problem_row.html:20
-#: templates/web/base/admin/reports/edit.html:101
-#: templates/web/base/admin/reports/edit.html:193
-#: templates/web/base/admin/update_edit.html:26
+#: templates/web/base/admin/list_updates.html:26
+#: templates/web/base/admin/list_updates.html:28
+#: templates/web/base/admin/list_updates.html:29
+#: templates/web/base/admin/problem_row.html:13
+#: templates/web/base/admin/reports/_edit_main.html:170
+#: templates/web/base/admin/reports/_edit_main.html:78
+#: templates/web/base/admin/update_edit.html:24
 #: templates/web/base/admin/users/alerts.html:21
 #: templates/web/base/questionnaire/index.html:41
-#: templates/web/base/questionnaire/index.html:85
+#: templates/web/base/questionnaire/index.html:88
 msgid "No"
 msgstr "Non"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:768
 #: perllib/FixMyStreet/App/Controller/Report.pm:773
 #: perllib/FixMyStreet/App/Controller/Report.pm:778
+#: perllib/FixMyStreet/App/Controller/Report.pm:783
 #, fuzzy
 msgid "No Group"
 msgstr "Groupe"
@@ -2616,7 +2698,7 @@ msgstr "Vous n'avez pas de compte ?"
 msgid "No body"
 msgstr "Aucun intelocuteur"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:395
+#: perllib/FixMyStreet/DB/Result/Problem.pm:463
 msgid "No council selected"
 msgstr "Aucune administration sélectionnée"
 
@@ -2633,12 +2715,12 @@ msgid "No flagged users found."
 msgstr "Aucun utilisateur coché trouvé."
 
 #: templates/web/zurich/admin/report_edit-sdm.html:118
-#: templates/web/zurich/admin/reports/edit.html:252
+#: templates/web/zurich/admin/reports/edit.html:254
 msgid "No further updates"
 msgstr "Pas d'autres mises à jour"
 
-#: templates/web/base/report/form/user.html:35
-#: templates/web/base/report/form/user.html:43
+#: templates/web/base/report/form/user.html:38
+#: templates/web/base/report/form/user.html:46
 msgid "No personal details will be stored, and you will not receive updates about this report."
 msgstr ""
 
@@ -2647,7 +2729,7 @@ msgid "No reports to show on map, here are some nearby:"
 msgstr "Aucun rapport à afficher sur la carte, en voici quelques-uns à proximité:"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:55
+#: templates/web/base/js/translation_strings.html:56
 msgid "No result returned"
 msgstr "Aucun résultat retourné"
 
@@ -2665,18 +2747,21 @@ msgstr ""
 msgid "No supporters"
 msgstr "Aucun supporter"
 
-#: templates/web/base/admin/reports/edit.html:205
-#: templates/web/base/admin/reports/edit.html:209
-#: templates/web/base/admin/reports/edit.html:67
-#: templates/web/base/admin/reports/edit.html:97
-#: templates/web/base/admin/reports/edit.html:99
-#: templates/web/base/admin/update_edit.html:59
+#: templates/web/base/admin/reports/_edit_main.html:182
+#: templates/web/base/admin/reports/_edit_main.html:186
+#: templates/web/base/admin/reports/_edit_main.html:44
+#: templates/web/base/admin/reports/_edit_main.html:74
+#: templates/web/base/admin/reports/_edit_main.html:76
+#: templates/web/base/admin/reports/_edit_waste.html:35
+#: templates/web/base/admin/reports/_edit_waste.html:57
+#: templates/web/base/admin/reports/_edit_waste.html:61
+#: templates/web/base/admin/update_edit.html:57
 #: templates/web/base/my/my.html:75 templates/web/base/my/my.html:86
 msgid "None"
 msgstr "Aucun"
 
-#: templates/web/base/admin/users/form.html:73
-#: templates/web/base/admin/users/form.html:74
+#: templates/web/base/admin/users/form.html:81
+#: templates/web/base/admin/users/form.html:82
 msgid ""
 "Normal (public) users should not be associated with any <strong>area</strong>.<br>\n"
 "                  Authorised staff users can be associated with the area in which they operate."
@@ -2696,6 +2781,10 @@ msgstr ""
 "Les membres de l'équipe autorisée peuvent être associés avec l'interlocuteur qu'ils représentent.<br>\n"
 "Suivant l'implémentation, les utilisateurs autorisés peuvent avoir accès au tableau de bord (résumé de \n"
 "l'activité concernant leur interloculteur), et la faculté de cacher des rapports ou de définir des statuts spéciaux pour les rapports."
+
+#: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:58
+msgid "Not a valid JSON string: %s"
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:94
 msgid "Not for my subdivision"
@@ -2753,12 +2842,12 @@ msgid "Offline"
 msgstr ""
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:103
+#: templates/web/base/js/translation_strings.html:106
 msgid "Offline data cleared"
 msgstr "Données hors ligne effacées"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:100
+#: templates/web/base/js/translation_strings.html:103
 msgid "Offline update data saved"
 msgstr "Données de mise à jour hors ligne enregistrées"
 
@@ -2771,11 +2860,11 @@ msgstr "Ancien état"
 msgid "Oldest"
 msgstr "Plus anciens"
 
-#: perllib/FixMyStreet/SendReport/Email.pm:105
+#: perllib/FixMyStreet/SendReport/Email.pm:101
 msgid "On behalf of %s"
 msgstr "De la part de %s"
 
-#: templates/web/base/admin/bodies/contact-form.html:65
+#: templates/web/base/admin/bodies/contact-form.html:67
 msgid "Only staff users will be able to add reports in this category."
 msgstr ""
 
@@ -2785,8 +2874,8 @@ msgstr ""
 #: templates/web/base/admin/states/index.html:102
 #: templates/web/base/admin/states/index.html:25
 #: templates/web/base/admin/states/index.html:32
-#: templates/web/base/admin/update_edit.html:30
-#: templates/web/base/dashboard/index.html:117
+#: templates/web/base/admin/update_edit.html:28
+#: templates/web/base/dashboard/index.html:142
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Open"
 msgstr "Ouvert"
@@ -2815,7 +2904,7 @@ msgstr "Spécification Open311"
 msgid "Options"
 msgstr "Options"
 
-#: templates/web/base/report/new/fill_in_details_form.html:11
+#: templates/web/base/report/new/fill_in_details_form.html:19
 msgid "Or <a href=\"/\">search for a different location</a>"
 msgstr "Ou <a href=\"/\">rechercher un lieu différent</a>"
 
@@ -2835,20 +2924,20 @@ msgstr "Ou abonnez-vous par RSS"
 msgid "Order"
 msgstr "Commander"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Triage.pm:97
-#: perllib/FixMyStreet/App/Controller/Report.pm:757
-#: perllib/FixMyStreet/App/Controller/Report.pm:758
-#: perllib/FixMyStreet/App/Controller/Report.pm:773
-#: perllib/FixMyStreet/App/Controller/Report.pm:776
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1547
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:826
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:827
-#: perllib/FixMyStreet/DB/Result/Problem.pm:644
-#: perllib/FixMyStreet/DB/Result/Problem.pm:651
-#: perllib/FixMyStreet/DB/Result/Problem.pm:666
-#: perllib/FixMyStreet/DB/Result/Problem.pm:675
-#: perllib/FixMyStreet/Queue/Item/Report.pm:132
-#: perllib/FixMyStreet/Queue/Item/Report.pm:195
+#: perllib/FixMyStreet/App/Controller/Admin/Triage.pm:100
+#: perllib/FixMyStreet/App/Controller/Report.pm:760
+#: perllib/FixMyStreet/App/Controller/Report.pm:761
+#: perllib/FixMyStreet/App/Controller/Report.pm:778
+#: perllib/FixMyStreet/App/Controller/Report.pm:781
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1574
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:837
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:838
+#: perllib/FixMyStreet/DB/Result/Problem.pm:712
+#: perllib/FixMyStreet/DB/Result/Problem.pm:719
+#: perllib/FixMyStreet/DB/Result/Problem.pm:734
+#: perllib/FixMyStreet/DB/Result/Problem.pm:743
+#: perllib/FixMyStreet/Queue/Item/Report.pm:136
+#: perllib/FixMyStreet/Queue/Item/Report.pm:220
 msgid "Other"
 msgstr "Autres"
 
@@ -2859,6 +2948,12 @@ msgstr "Autres catégories"
 #: templates/web/base/reports/index.html:107
 msgid "Other wards"
 msgstr "Autres quartiers"
+
+#: templates/web/base/admin/emergencymessage/edit.html:31
+#: templates/web/base/admin/emergencymessage/edit.html:45
+#: templates/web/base/admin/emergencymessage/edit.html:64
+msgid "Out of hours"
+msgstr ""
 
 #: templates/web/base/reports/index.html:120
 msgid "Overall average"
@@ -2887,7 +2982,7 @@ msgstr "Autres catégories"
 msgid "Partial"
 msgstr "Partiel"
 
-#: templates/web/base/report/form/user_loggedout_by_email.html:74
+#: templates/web/base/report/form/user_loggedout_by_email_password.html:2
 #: templates/web/zurich/auth/general.html:20
 #: templates/web/zurich/auth/general.html:46
 msgid "Password (optional)"
@@ -2908,7 +3003,7 @@ msgstr "Mot de passe (facultatif)"
 msgid "Permissions"
 msgstr "Autorisations :"
 
-#: templates/web/base/admin/users/form.html:150
+#: templates/web/base/admin/users/form.html:158
 msgid "Permissions:"
 msgstr "Autorisations :"
 
@@ -2922,7 +3017,7 @@ msgstr "Autoriser les mises à jour vierges"
 msgid "Phone"
 msgstr "Téléphone"
 
-#: templates/web/base/report/inspect/information.html:16
+#: templates/web/base/report/inspect/information.html:25
 msgid "Phone Reporter:"
 msgstr "Téléphone Reporter:"
 
@@ -2946,14 +3041,15 @@ msgstr "Les numéros de téléphone sont limités à %s caractères."
 msgid "Phone verified:"
 msgstr "Téléphone vérifié:"
 
-#: templates/web/base/admin/reports/edit.html:205
+#: templates/web/base/admin/reports/_edit_main.html:182
+#: templates/web/base/admin/reports/_edit_waste.html:57
 #: templates/web/base/admin/users/_form_details.html:24
 #: templates/web/base/my/my.html:50
 #: templates/web/zurich/admin/stats/index.html:60
 msgid "Phone:"
 msgstr "Téléphone"
 
-#: templates/web/base/admin/update_edit.html:100
+#: templates/web/base/admin/update_edit.html:98
 #: templates/web/base/report/form/photo_upload.html:25
 #: templates/web/base/report/form/photo_upload.html:27
 #: templates/web/base/report/form/photo_upload.html:4
@@ -3004,7 +3100,7 @@ msgstr "Placer l'épingle sur la carte"
 
 #. ("JS")
 #: templates/web/base/around/display_location.html:62
-#: templates/web/base/js/translation_strings.html:43
+#: templates/web/base/js/translation_strings.html:44
 msgid "Place pin on map"
 msgstr "Placer l'épingle sur la carte"
 
@@ -3024,7 +3120,7 @@ msgstr "Merci de vérifier les mots de passe et de réessayer"
 msgid "Please check your email address is correct"
 msgstr "Merci de vérifier que votre adresse email est correcte"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:525
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:542
 #: perllib/FixMyStreet/DB/Result/User.pm:302
 #: perllib/FixMyStreet/DB/Result/User.pm:303
 #: templates/web/base/auth/_username_error.html:1
@@ -3033,21 +3129,22 @@ msgid "Please check your phone number is correct"
 msgstr "Veuillez vérifier que votre numéro de téléphone est correct"
 
 #. ("JS")
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:231
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1119
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1162
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:236
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1132
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1175
 #: templates/web/base/js/translation_strings.html:21
 msgid "Please choose a category"
 msgstr "Merci de sélectionner une catégorie"
 
-#: perllib/FixMyStreet/App/Controller/Auth.pm:519
+#: perllib/FixMyStreet/App/Controller/Auth.pm:520
 msgid "Please choose a less commonly-used password"
 msgstr "Veuillez choisir un mot de passe moins utilisé"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:337
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:357
 #: templates/web/base/admin/bodies/body.html:12
 #: templates/web/base/admin/bodies/index.html:4
 #: templates/web/base/admin/templates/edit.html:13
+#: templates/web/base/admin/waste/edit.html:8
 msgid "Please correct the errors below"
 msgstr "Merci de corriger les erreurs ci-dessous"
 
@@ -3062,14 +3159,14 @@ msgstr ""
 "c'est ici <a href=\"/\"> Signaler un problème </a> et suivez les instructions."
 
 #. ("JS")
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:232
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:323
-#: perllib/FixMyStreet/DB/Result/Comment.pm:198
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:237
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:343
+#: perllib/FixMyStreet/DB/Result/Comment.pm:201
 #: templates/web/base/js/translation_strings.html:6
 msgid "Please enter a message"
 msgstr "Merci d'entrer un message"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:523
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:540
 #: perllib/FixMyStreet/DB/Result/User.pm:305
 #: perllib/FixMyStreet/DB/Result/User.pm:306
 #: templates/web/base/auth/_username_error.html:1
@@ -3077,12 +3174,12 @@ msgstr "Merci d'entrer un message"
 msgid "Please enter a mobile number"
 msgstr "Merci d’entrer un numéro de téléphone portable"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:130
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:268
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:128
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:294
 msgid "Please enter a name"
 msgstr "Merci d'entrer un nom"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:461
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:487
 msgid "Please enter a name for this body"
 msgstr "S'il vous plaît entrez un nom pour cet organisme"
 
@@ -3095,15 +3192,21 @@ msgstr "Merci d'entrer un mot de passe :"
 
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Contact.pm:147
-#: perllib/FixMyStreet/DB/Result/Problem.pm:386
+#: perllib/FixMyStreet/DB/Result/Problem.pm:454
 #: templates/web/base/js/translation_strings.html:9
 msgid "Please enter a subject"
 msgstr "Merci d'enter un sujet"
 
 #. ("JS")
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:264
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:127
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:259
+#: templates/web/base/js/translation_strings.html:38
+#, fuzzy
+msgid "Please enter a valid UK phone number"
+msgstr "Veuillez entrer un email ou un numéro de téléphone valide"
+
+#. ("JS")
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:269
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:125
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:285
 #: perllib/FixMyStreet/DB/Result/User.pm:295
 #: templates/web/base/js/translation_strings.html:24
 #: templates/web/base/js/translation_strings.html:28
@@ -3115,13 +3218,13 @@ msgstr "Merci d'entrer un email valide"
 msgid "Please enter a valid email address"
 msgstr "Merci d'entrer une adresse email valide"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:134
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:253
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:132
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:279
 msgid "Please enter a valid email or phone number"
 msgstr "Veuillez entrer un email ou un numéro de téléphone valide"
 
 #. ("JS")
-#: perllib/FixMyStreet/DB/Result/Problem.pm:392
+#: perllib/FixMyStreet/DB/Result/Problem.pm:460
 #: templates/web/base/js/translation_strings.html:14
 msgid "Please enter some details"
 msgstr "Merci d'entrer quelques détails"
@@ -3139,12 +3242,12 @@ msgid "Please enter your email"
 msgstr "Merci d'entrer votre email"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:40
+#: templates/web/base/js/translation_strings.html:41
 msgid "Please enter your first name"
 msgstr "Saisissez votre prénom"
 
 #. ("JS")
-#: perllib/FixMyStreet/Cobrand/UK.pm:347
+#: perllib/FixMyStreet/Cobrand/UK.pm:350
 #: templates/web/base/js/translation_strings.html:19
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Merci de saisir votre nom complet, les administrations ont besoin de cette information. Si vous ne souhaitez pas que votre nom soit affiché sur ce site, décochez la case ci-dessous"
@@ -3156,8 +3259,8 @@ msgstr "Merci de saisir votre nom"
 
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Contact.pm:145
-#: perllib/FixMyStreet/DB/Result/Comment.pm:195
-#: perllib/FixMyStreet/DB/Result/Problem.pm:400
+#: perllib/FixMyStreet/DB/Result/Comment.pm:198
+#: perllib/FixMyStreet/DB/Result/Problem.pm:468
 #: perllib/FixMyStreet/DB/Result/User.pm:288
 #: templates/web/base/js/translation_strings.html:18
 msgid "Please enter your name"
@@ -3171,12 +3274,12 @@ msgid "Please enter your phone number"
 msgstr "Saisissez votre numéro de téléphone"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:41
+#: templates/web/base/js/translation_strings.html:42
 msgid "Please enter your second name"
 msgstr "Saisissez votre nom de famille"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:39
+#: templates/web/base/js/translation_strings.html:40
 msgid "Please enter your title"
 msgstr "Saisissez votre profession"
 
@@ -3203,14 +3306,14 @@ msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr "Merci d'indiquer si vous souhaitez recevoir un autre questionnaire"
 
 #. ("JS")
-#: perllib/FixMyStreet/DB/Result/Problem.pm:389
+#: perllib/FixMyStreet/DB/Result/Problem.pm:457
 #: templates/web/base/js/translation_strings.html:11
 #, fuzzy
 msgid "Please make sure you are not including an email address"
 msgstr "Merci d'entrer une adresse email valide"
 
 #. ("JS")
-#: perllib/FixMyStreet/App/Controller/Auth.pm:517
+#: perllib/FixMyStreet/App/Controller/Auth.pm:518
 #: templates/web/base/js/translation_strings.html:34
 msgid "Please make sure your password is at least %d characters long"
 msgstr "Veuillez vous assurer que votre mot de passe comporte au moins %d caractères"
@@ -3223,7 +3326,7 @@ msgstr "Nous vous informons que les mises à jour ne sont pas envoyées à l'adm
 msgid "Please note your report has <strong>not yet been sent</strong>."
 msgstr "Veuillez noter que votre rapport n'a <strong> pas encore été envoyé </ strong>."
 
-#: templates/web/base/report/new/fill_in_details_form.html:20
+#: templates/web/base/report/new/fill_in_details_form.html:28
 #: templates/web/zurich/report/new/sidebar.html:5
 msgid "Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit."
 msgstr "Merci de noter que votre rapport n'a <strong>pas</strong> été envoyé. Choisissez une catégorie et rajoutez des informations supplémentaires ci-dessous, puis envoyez."
@@ -3236,15 +3339,15 @@ msgstr "Veuillez noter que votre mise à jour n'a <strong> pas encore été post
 msgid "Please note:"
 msgstr "Quelques remarques :"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:961
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:974
 msgid "Please pick your update preference"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:494
+#: perllib/FixMyStreet/App/Controller/Report.pm:495
 msgid "Please provide a duplicate ID or public update for this report."
 msgstr "Veuillez fournir un ID en double ou une mise à jour publique pour ce rapport."
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:476
+#: perllib/FixMyStreet/App/Controller/Report.pm:477
 msgid "Please provide a public update for this report."
 msgstr "Veuillez fournir une mise à jour publique de ce rapport."
 
@@ -3285,12 +3388,12 @@ msgstr "Merci de préciser si le problème a été réglé ou non."
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:120
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:139
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:141
-#: templates/web/base/js/translation_strings.html:78
+#: templates/web/base/js/translation_strings.html:80
 msgid "Please upload an image only"
 msgstr "Veuillez uniquement envoyer une image"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:137
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:256
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:135
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:282
 msgid "Please verify at least one of email/phone"
 msgstr "Merci de vérifier au moins l’un des e-mail/téléphone"
 
@@ -3302,19 +3405,19 @@ msgstr "Merci de saisir un message"
 msgid "Postcode or street name and area"
 msgstr "Code postal ou nom de rue et zone"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:276
+#: perllib/FixMyStreet/DB/Result/Comment.pm:290
 msgid "Posted anonymously at %s"
 msgstr "Signalé anonymement à %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:318
+#: perllib/FixMyStreet/DB/Result/Comment.pm:334
 msgid "Posted by %s at %s"
 msgstr "Signalé par %s à %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:306
+#: perllib/FixMyStreet/DB/Result/Comment.pm:322
 msgid "Posted by <strong>%s</strong> (%s) at %s"
 msgstr "Envoyé par <strong>%s</strong> (%s) à %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:308
+#: perllib/FixMyStreet/DB/Result/Comment.pm:324
 msgid "Posted by <strong>%s</strong> at %s"
 msgstr "Envoyé par <strong>%s</strong> à %s"
 
@@ -3322,11 +3425,20 @@ msgstr "Envoyé par <strong>%s</strong> à %s"
 msgid "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
 msgstr "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
 
-#: templates/web/base/admin/bodies/contact-form.html:60
+#: templates/web/base/admin/bodies/contact-form.html:140
+msgid "Prefer this contact if multiple bodies have the same contact"
+msgstr ""
+
+#: templates/web/base/maps/_map_instructions.html:19
+#, fuzzy
+msgid "Press space again to adjust the location"
+msgstr "Cliquez sur la carte ou glissez le marqueur pour ajuster la localisation"
+
+#: templates/web/base/admin/bodies/contact-form.html:62
 msgid "Prevent new reports from using this category, <em>and</em> also remove it from map filters."
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:55
+#: templates/web/base/admin/bodies/contact-form.html:57
 msgid "Prevent new reports from using this category, but keep it available in map filters."
 msgstr ""
 
@@ -3338,7 +3450,7 @@ msgstr ""
 msgid "Previous"
 msgstr "Précédent"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:732
+#: perllib/FixMyStreet/Cobrand/Default.pm:715
 msgid "Priorities"
 msgstr "Priorités"
 
@@ -3358,7 +3470,7 @@ msgid "Privacy and cookies"
 msgstr "Vie privée et cookies"
 
 #: templates/web/base/admin/bodies/body.html:90
-#: templates/web/base/admin/reports/edit.html:153
+#: templates/web/base/admin/reports/_edit_main.html:130
 #: templates/web/base/report/inspect/information.html:3
 msgid "Private"
 msgstr "Privé"
@@ -3413,7 +3525,7 @@ msgstr "Problème %d signalé à l’administration %s"
 msgid "Problem breakdown by state"
 msgstr "Répartition des problèmes par état"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:236
+#: perllib/FixMyStreet/App/Controller/Admin.pm:254
 msgid "Problem marked as open."
 msgstr "Problème signalé comme ouvert."
 
@@ -3421,7 +3533,8 @@ msgstr "Problème signalé comme ouvert."
 msgid "Problem state change based on survey results"
 msgstr "Changement état des problèmes d'après résultats sondage"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:781
+#: perllib/FixMyStreet/Cobrand/Default.pm:767
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:129
 #: templates/web/base/admin/flagged.html:10
 msgid "Problems"
 msgstr "Problèmes"
@@ -3446,18 +3559,18 @@ msgstr "Problèmes récemment signalés sur FixMyStreet.fr"
 msgid "Problems within %.1fkm of %s"
 msgstr "Problèmes entre %.1fkm de %s "
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:934
+#: perllib/FixMyStreet/Cobrand/Default.pm:921
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:141
-#: perllib/FixMyStreet/Cobrand/UK.pm:230 perllib/FixMyStreet/Cobrand/UK.pm:275
-#: perllib/FixMyStreet/Cobrand/UK.pm:287
+#: perllib/FixMyStreet/Cobrand/UK.pm:233 perllib/FixMyStreet/Cobrand/UK.pm:278
+#: perllib/FixMyStreet/Cobrand/UK.pm:290
 msgid "Problems within %s"
 msgstr "Problèmes à l'intérieur de %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:244
+#: perllib/FixMyStreet/Cobrand/UK.pm:247
 msgid "Problems within %s ward"
 msgstr "Problèmes dans la localité %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:281 perllib/FixMyStreet/Cobrand/UK.pm:293
+#: perllib/FixMyStreet/Cobrand/UK.pm:284 perllib/FixMyStreet/Cobrand/UK.pm:296
 msgid "Problems within %s ward, %s"
 msgstr "Problèmes entre%squartier,%s"
 
@@ -3469,7 +3582,8 @@ msgstr "Problèmes entre%squartier,%s"
 msgid "Problems within %s, %s"
 msgstr "Problèmes dans %s, %s"
 
-#: templates/web/base/admin/reports/edit.html:75
+#: templates/web/base/admin/reports/_edit_main.html:52
+#: templates/web/base/admin/reports/_edit_waste.html:14
 msgid "Property address:"
 msgstr "Adresse de propriété:"
 
@@ -3477,16 +3591,16 @@ msgstr "Adresse de propriété:"
 msgid "Protect from Open311 changes"
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:126
+#: templates/web/base/admin/bodies/contact-form.html:128
 msgid "Protect this category from being re-named"
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:119
+#: templates/web/base/admin/bodies/contact-form.html:121
 msgid "Protect this category's name and group(s) from Open311 changes"
 msgstr ""
 
 #: templates/web/base/report/duplicate-no-updates.html:3
-#: templates/web/base/report/update-form-wrapper.html:9
+#: templates/web/base/report/update-form-wrapper.html:10
 #: templates/web/base/report/update-form.html:9
 msgid "Provide an update"
 msgstr "Apporter une mise à jour"
@@ -3495,11 +3609,7 @@ msgstr "Apporter une mise à jour"
 msgid "Provide update as"
 msgstr "Fournir la mise à jour comme"
 
-#: templates/web/base/report/form/user_loggedout_by_email.html:80
-msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-msgstr ""
-
-#: templates/web/base/report/form/user_loggedout_by_email.html:82
+#: templates/web/base/report/form/user_loggedout_by_email_password.html:7
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
 msgstr "Un mot de passe n'est pas obligatoire, mais vous permettra de créer, mettre à jour et administrer vos rapports plus facilement."
 
@@ -3507,8 +3617,8 @@ msgstr "Un mot de passe n'est pas obligatoire, mais vous permettra de créer, me
 msgid "Public details"
 msgstr "Détails public"
 
-#: templates/web/zurich/admin/reports/edit.html:234
-#: templates/web/zurich/admin/reports/edit.html:261
+#: templates/web/zurich/admin/reports/edit.html:235
+#: templates/web/zurich/admin/reports/edit.html:263
 msgid "Public response:"
 msgstr "Réponse publique:"
 
@@ -3554,11 +3664,11 @@ msgstr "Questionnaire rempli par le requérant"
 msgid "RSS feed"
 msgstr "Flux RSS"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:276 perllib/FixMyStreet/Cobrand/UK.pm:288
+#: perllib/FixMyStreet/Cobrand/UK.pm:279 perllib/FixMyStreet/Cobrand/UK.pm:291
 msgid "RSS feed for %s"
 msgstr "Flux RSS pour %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:282 perllib/FixMyStreet/Cobrand/UK.pm:294
+#: perllib/FixMyStreet/Cobrand/UK.pm:285 perllib/FixMyStreet/Cobrand/UK.pm:297
 msgid "RSS feed for %s ward, %s"
 msgstr "Flux RSS pour la localité %s, %s"
 
@@ -3566,11 +3676,11 @@ msgstr "Flux RSS pour la localité %s, %s"
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:165
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:175
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:183
-#: perllib/FixMyStreet/Cobrand/UK.pm:302 perllib/FixMyStreet/Cobrand/UK.pm:316
+#: perllib/FixMyStreet/Cobrand/UK.pm:305 perllib/FixMyStreet/Cobrand/UK.pm:319
 msgid "RSS feed of %s"
 msgstr "Flux RSS de %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:307 perllib/FixMyStreet/Cobrand/UK.pm:321
+#: perllib/FixMyStreet/Cobrand/UK.pm:310 perllib/FixMyStreet/Cobrand/UK.pm:324
 msgid "RSS feed of %s, within %s ward"
 msgstr "Flux RSS de %s, dans la localité %s"
 
@@ -3578,13 +3688,13 @@ msgstr "Flux RSS de %s, dans la localité %s"
 msgid "RSS feed of nearby problems"
 msgstr "Flux RSS de problèmes à proximité"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:935
+#: perllib/FixMyStreet/Cobrand/Default.pm:922
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:140
-#: perllib/FixMyStreet/Cobrand/UK.pm:237
+#: perllib/FixMyStreet/Cobrand/UK.pm:240
 msgid "RSS feed of problems within %s"
 msgstr "Flux RSS des problèmes à l'intérieur de %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:243
+#: perllib/FixMyStreet/Cobrand/UK.pm:246
 msgid "RSS feed of problems within %s ward"
 msgstr "Flux RSS de problèmes à l'intérieur de la localité %s"
 
@@ -3605,7 +3715,8 @@ msgstr ""
 msgid "Read more"
 msgstr ""
 
-#: templates/web/base/admin/reports/edit.html:93
+#: templates/web/base/admin/reports/_edit_main.html:70
+#: templates/web/base/admin/reports/_edit_waste.html:32
 msgid "Reason:"
 msgstr ""
 
@@ -3614,21 +3725,17 @@ msgstr ""
 msgid "Receive a text when updates are left on this problem."
 msgstr "Etre informé par courriel lorsque ce problème est mis à jour."
 
-#: templates/web/base/my/my.html:79
-msgid "Receive alert notifications by"
-msgstr ""
-
 #: templates/web/base/alert/_updates.html:8
 msgid "Receive email when updates are left on this problem."
 msgstr "Etre informé par courriel lorsque ce problème est mis à jour."
 
+#: templates/web/base/my/my.html:79
+msgid "Receive local alert notifications by"
+msgstr ""
+
 #: templates/web/base/my/my.html:64
 msgid "Receive update notifications by"
 msgstr ""
-
-#: perllib/FixMyStreet/DB/Result/Problem.pm:823
-msgid "Received by %s moments later"
-msgstr "Reçu par %s un peu plus tard"
 
 #. ("%s is the site name")
 #: templates/web/base/around/display_location.html:0
@@ -3646,12 +3753,12 @@ msgid "Recently updated"
 msgstr "Récemment mis à jour"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:86
+#: templates/web/base/js/translation_strings.html:89
 #: templates/web/base/report/photo.html:22
 msgid "Redact"
 msgstr ""
 
-#: templates/web/base/report/inspect/information.html:58
+#: templates/web/base/report/inspect/information.html:67
 msgid "Reject report"
 msgstr "Rejeter le rapport"
 
@@ -3659,7 +3766,7 @@ msgstr "Rejeter le rapport"
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
 msgstr "Rappelez-vous que FixMyStreet est principalement destiné au signalement de problèmes physiques qui peuvent être résolus. Si votre problème ne convient pas pour être soumis via ce site, n'oubliez pas que vous pouvez contacter votre administration directement à l'aide de leur propre site web."
 
-#: templates/web/base/admin/users/form.html:188
+#: templates/web/base/admin/users/form.html:196
 #: templates/web/zurich/admin/users/form.html:39
 msgid "Remove account details"
 msgstr "Supprimer les détails du compte"
@@ -3670,9 +3777,9 @@ msgstr "Retirer le champ"
 
 #: templates/web/base/report/_item.html:20
 #: templates/web/base/report/_item.html:23
-#: templates/web/base/report/_main.html:136
-#: templates/web/base/report/_main.html:24
-#: templates/web/base/report/_main.html:32
+#: templates/web/base/report/_main.html:134
+#: templates/web/base/report/_main.html:22
+#: templates/web/base/report/_main.html:30
 msgid "Remove from shortlist"
 msgstr "Supprimer de votre liste"
 
@@ -3685,8 +3792,9 @@ msgstr "Retirer du site"
 msgid "Remove option"
 msgstr "Retirer le champ"
 
-#: templates/web/base/admin/reports/edit.html:176
-#: templates/web/base/admin/update_edit.html:79
+#: templates/web/base/admin/reports/_edit_main.html:153
+#: templates/web/base/admin/reports/_edit_waste.html:203
+#: templates/web/base/admin/update_edit.html:77
 #: templates/web/zurich/admin/update_edit.html:35
 msgid "Remove photo (can't be undone!)"
 msgstr "Effacer la photo (ne peut pas être annulé !)"
@@ -3696,11 +3804,16 @@ msgstr "Effacer la photo (ne peut pas être annulé !)"
 msgid "Remove staff permissions"
 msgstr "Modifier les autorisations des autres utilisateurs"
 
+#: templates/web/base/admin/emergencymessage/_ooh.html:73
+#, fuzzy
+msgid "Remove time period"
+msgstr "Modifier les autorisations des autres utilisateurs"
+
 #: templates/web/base/auth/generate_token.html:75
 msgid "Replace token"
 msgstr "Remplacer le jeton"
 
-#: templates/web/zurich/admin/reports/edit.html:232
+#: templates/web/zurich/admin/reports/edit.html:233
 msgid "Reply to user:"
 msgstr "Répondre à l'utilisateur:"
 
@@ -3715,7 +3828,7 @@ msgstr "Rapport ID :"
 
 #. ("JS")
 #: templates/web/base/header_logo.html:2
-#: templates/web/base/js/translation_strings.html:92
+#: templates/web/base/js/translation_strings.html:95
 #: templates/web/base/navigation/_report.html:11
 #: templates/web/base/navigation/_report.html:13
 #: templates/web/zurich/nav_over_content.html:4
@@ -3723,7 +3836,7 @@ msgid "Report a problem"
 msgstr "Signaler un problème"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:93
+#: templates/web/base/js/translation_strings.html:96
 #: templates/web/base/navigation/_report.html:8
 msgid "Report a problem here"
 msgstr "Signaler un problème ici"
@@ -3732,16 +3845,16 @@ msgstr "Signaler un problème ici"
 msgid "Report abuse"
 msgstr "Signaler un abus"
 
-#: templates/web/base/report/form/user.html:34
-#: templates/web/base/report/form/user.html:42
+#: templates/web/base/report/form/user.html:37
+#: templates/web/base/report/form/user.html:45
 #, fuzzy
 msgid "Report anonymously"
 msgstr "Signalé anonymement à %s"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:94
+#: templates/web/base/js/translation_strings.html:97
 #: templates/web/base/navigation/_report.html:2
-#: templates/web/base/tokens/confirm_problem.html:40
+#: templates/web/base/tokens/confirm_problem.html:44
 msgid "Report another problem here"
 msgstr "Signaler un autre problème ici"
 
@@ -3758,7 +3871,7 @@ msgstr "Éditer les détails du rapport"
 msgid "Report on %s"
 msgstr "Signaler sur %s"
 
-#: templates/web/base/dashboard/index.html:63
+#: templates/web/base/dashboard/index.html:77
 msgid "Report state:"
 msgstr "État du rapport:"
 
@@ -3775,7 +3888,7 @@ msgstr "Signalez des incidents sur l’espace public et participez à l’améli
 msgid "Report, view, or discuss local problems"
 msgstr "Signalez et suivez les problèmes locaux"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:655
+#: perllib/FixMyStreet/DB/Result/Problem.pm:723
 #: templates/web/base/contact/form.html:43
 msgid "Reported anonymously at %s"
 msgstr "Signalé anonymement à %s"
@@ -3786,7 +3899,7 @@ msgstr "Signalé anonymement à %s"
 msgid "Reported before"
 msgstr "Signalé avant"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:679
+#: perllib/FixMyStreet/DB/Result/Problem.pm:747
 #: templates/web/base/contact/form.html:45
 msgid "Reported by %s at %s"
 msgstr "Signalé par %s à %s"
@@ -3800,27 +3913,27 @@ msgstr "Rapporté par:"
 msgid "Reported in the %s category"
 msgstr "Rapporté dans la catégorie %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:652
+#: perllib/FixMyStreet/DB/Result/Problem.pm:720
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Signalé dans la catégorie %s anonymement à %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:676
+#: perllib/FixMyStreet/DB/Result/Problem.pm:744
 msgid "Reported in the %s category by %s at %s"
 msgstr "Signalé dans la catégorie %s par %s à %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:649
+#: perllib/FixMyStreet/DB/Result/Problem.pm:717
 msgid "Reported via %s anonymously at %s"
 msgstr "Signalé par %s anonymement à %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:673
+#: perllib/FixMyStreet/DB/Result/Problem.pm:741
 msgid "Reported via %s by %s at %s"
 msgstr "Signalé par %s par %s à %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:646
+#: perllib/FixMyStreet/DB/Result/Problem.pm:714
 msgid "Reported via %s in the %s category anonymously at %s"
 msgstr "Signalé par %s dans la catégorie %s anonymement à %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:668
+#: perllib/FixMyStreet/DB/Result/Problem.pm:736
 msgid "Reported via %s in the %s category by %s at %s"
 msgstr "Signalé par %s dans la catégorie %s par %s"
 
@@ -3832,23 +3945,29 @@ msgstr "Remis:"
 #. ("JS")
 #: templates/web/base/around/index.html:3
 #: templates/web/base/around/lookup_by_ref.html:3
-#: templates/web/base/js/translation_strings.html:60
+#: templates/web/base/js/translation_strings.html:62
 #: templates/web/base/report/new/fill_in_details.html:0
 #: templates/web/base/report/new/fill_in_details.html:11
 #: templates/web/zurich/report/new/fill_in_details_form.html:4
 msgid "Reporting a problem"
 msgstr "Signalisation d'un problème"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:723
-#: perllib/FixMyStreet/Cobrand/Default.pm:736
+#: templates/web/base/admin/emergencymessage/edit.html:60
+#, fuzzy
+msgid "Reporting message"
+msgstr "Signalisation d'un problème"
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:706
+#: perllib/FixMyStreet/Cobrand/Default.pm:719
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:387
 #: templates/web/base/around/tabbed_lists.html:3
-#: templates/web/base/dashboard/index.html:108
+#: templates/web/base/dashboard/index.html:133
 msgid "Reports"
 msgstr "Rapports"
 
-#: perllib/FixMyStreet/Cobrand/Bromley.pm:31
-#: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:22
+#: perllib/FixMyStreet/Cobrand/Bromley.pm:24
+#: perllib/FixMyStreet/Cobrand/Hackney.pm:317
+#: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:23
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:38
 msgid "Reports are limited to %s characters in length. Please shorten your report"
 msgstr "Les rapports sont limités à %s caractères de long. Merci de raccourcir votre texte"
@@ -3875,19 +3994,19 @@ msgid "Reports published"
 msgstr "Rapports publiés"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:104
+#: templates/web/base/js/translation_strings.html:107
 msgid "Reports saved offline."
 msgstr "Rapports enregistrés hors ligne."
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:301 perllib/FixMyStreet/Cobrand/UK.pm:315
+#: perllib/FixMyStreet/Cobrand/UK.pm:304 perllib/FixMyStreet/Cobrand/UK.pm:318
 msgid "Reports sent to %s"
 msgstr "Rapports envoyés à %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:308 perllib/FixMyStreet/Cobrand/UK.pm:322
+#: perllib/FixMyStreet/Cobrand/UK.pm:311 perllib/FixMyStreet/Cobrand/UK.pm:325
 msgid "Reports sent to %s, within %s ward"
 msgstr "Rapports envoyés à %s, entre %s quartier"
 
-#: templates/web/base/admin/index.html:62
+#: templates/web/base/admin/index.html:55
 msgid "Reports waiting to be sent"
 msgstr "Rapports en attente d'être envoyés"
 
@@ -3896,7 +4015,7 @@ msgid "Reports with photos in them tend to get fixed more quickly"
 msgstr ""
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:42
+#: templates/web/base/js/translation_strings.html:43
 #: templates/web/base/report/new/fill_in_details.html:34
 msgid "Reposition if needed, then hit Continue"
 msgstr ""
@@ -3905,7 +4024,8 @@ msgstr ""
 msgid "Required"
 msgstr "Obligatoire"
 
-#: templates/web/base/admin/reports/edit.html:85
+#: templates/web/base/admin/reports/_edit_main.html:62
+#: templates/web/base/admin/reports/_edit_waste.html:24
 msgid "Resend report"
 msgstr "Renvoyer le rapport"
 
@@ -3946,21 +4066,21 @@ msgstr "Afficher la photo"
 msgid "Revert to original"
 msgstr "Revenir à l’original"
 
-#: templates/web/base/report/_main.html:100
+#: templates/web/base/report/_main.html:98
 msgid "Revert to original text"
 msgstr "Revenir au texte original"
 
-#: templates/web/base/report/_main.html:59
+#: templates/web/base/report/_main.html:57
 msgid "Revert to original title"
 msgstr "Revenir au titre original"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:58
+#: templates/web/base/js/translation_strings.html:59
 msgid "Right place?"
 msgstr "Lieu correct?"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:64
+#: templates/web/base/js/translation_strings.html:66
 #: templates/web/base/maps/openlayers.html:62
 #, fuzzy
 msgid "Road map"
@@ -3978,28 +4098,36 @@ msgstr "L'opérateur pour cette route (selon OpenStreetMAp): %s"
 msgid "Role"
 msgstr ""
 
-#: templates/web/base/admin/users/form.html:134
+#: templates/web/base/admin/users/form.html:142
 #: templates/web/base/admin/users/index.html:29
+#: templates/web/base/dashboard/index.html:90
 msgid "Role:"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:738
+#: perllib/FixMyStreet/Cobrand/Default.pm:721
 #: templates/web/base/admin/roles/form.html:1
 #: templates/web/base/admin/roles/index.html:1
 msgid "Roles"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:411
-#: perllib/FixMyStreet/App/Controller/Admin.pm:415
-#: templates/web/base/admin/reports/edit.html:173
-#: templates/web/base/admin/update_edit.html:76
+#: templates/web/base/admin/roles/form.html:20
+#, fuzzy
+msgid "Roles can be associated with the categories in which they operate."
+msgstr "Les utilisateurs autorisés peuvent être associés aux catégories sur lesquelles ils interviennent."
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:429
+#: perllib/FixMyStreet/App/Controller/Admin.pm:433
+#: templates/web/base/admin/reports/_edit_main.html:150
+#: templates/web/base/admin/reports/_edit_waste.html:200
+#: templates/web/base/admin/update_edit.html:74
 #: templates/web/zurich/admin/reports/edit.html:106
 msgid "Rotate Left"
 msgstr "Pivoter à gauche"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:411
-#: templates/web/base/admin/reports/edit.html:174
-#: templates/web/base/admin/update_edit.html:77
+#: perllib/FixMyStreet/App/Controller/Admin.pm:429
+#: templates/web/base/admin/reports/_edit_main.html:151
+#: templates/web/base/admin/reports/_edit_waste.html:201
+#: templates/web/base/admin/update_edit.html:75
 #: templates/web/zurich/admin/reports/edit.html:107
 msgid "Rotate Right"
 msgstr "Pivoter à droite"
@@ -4008,21 +4136,21 @@ msgstr "Pivoter à droite"
 msgid "Rotating this photo will discard unsaved changes to the report."
 msgstr "La rotation de cette photo annulera les modifications non enregistrées dans le rapport."
 
-#: templates/web/base/admin/triage/_inspect.html:68
+#: templates/web/base/admin/triage/_inspect.html:81
 #: templates/web/base/report/_inspect.html:80
 msgid "Save + close as duplicate"
 msgstr "Enregistrer + fermer en double"
 
-#: templates/web/base/admin/bodies/contact-form.html:176
+#: templates/web/base/admin/bodies/contact-form.html:184
 #: templates/web/base/admin/manifesttheme/form.html:58
 #: templates/web/base/admin/reportextrafields/edit.html:64
 #: templates/web/base/admin/responsepriorities/edit.html:41
-#: templates/web/base/admin/roles/form.html:21
-#: templates/web/base/admin/templates/edit.html:73
-#: templates/web/base/admin/triage/_inspect.html:68
+#: templates/web/base/admin/roles/form.html:27
+#: templates/web/base/admin/templates/edit.html:85
+#: templates/web/base/admin/triage/_inspect.html:81
 #: templates/web/base/admin/users/index.html:89
 #: templates/web/base/report/_inspect.html:80
-#: templates/web/base/report/_main.html:118
+#: templates/web/base/report/_main.html:116
 #: templates/web/base/report/update.html:54
 #: templates/web/zurich/admin/bodies/contact-form.html:51
 #: templates/web/zurich/admin/templates/edit.html:32
@@ -4038,16 +4166,16 @@ msgid "Save with a public update"
 msgstr "Sauvegardez avec une mise à jour publique"
 
 #. ("This is followed by a progress count, e.g. 3/5", "JS")
-#: templates/web/base/js/translation_strings.html:105
+#: templates/web/base/js/translation_strings.html:108
 msgid "Saving reports offline"
 msgstr "Enregistrement des rapports hors ligne"
 
-#: templates/web/base/admin/index.html:26
+#: templates/web/base/admin/index.html:17
 #: templates/web/base/admin/reports/index.html:1
 msgid "Search Reports"
 msgstr "Rechercher rapports"
 
-#: templates/web/base/admin/index.html:34
+#: templates/web/base/admin/index.html:25
 #: templates/web/base/admin/users/index.html:1
 msgid "Search Users"
 msgstr "Rechercher les utilisateurs"
@@ -4086,7 +4214,7 @@ msgstr "Sécurité"
 msgid "See our privacy policy"
 msgstr "Voir notre politique de confidentialité"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:795
+#: perllib/FixMyStreet/Cobrand/Default.pm:781
 msgid "See user detail for reports created as the council"
 msgstr "Voir les détails des utilisateurs pour les rapports créés en tant que conseil"
 
@@ -4095,8 +4223,13 @@ msgstr "Voir les détails des utilisateurs pour les rapports créés en tant que
 msgid "Select a body"
 msgstr "Sélectionnez un interlocuteur"
 
+#. ("JS")
+#: templates/web/base/js/translation_strings.html:117
+msgid "Select a category to display"
+msgstr ""
+
 #: templates/web/base/admin/bodies/form.html:78
-#: templates/web/base/admin/users/form.html:81
+#: templates/web/base/admin/users/form.html:89
 #: templates/web/zurich/admin/bodies/form.html:37
 msgid "Select an area"
 msgstr "Sélectionnez une zone"
@@ -4113,6 +4246,12 @@ msgstr "Sélectionnez plusieurs services pour afficher uniquement les rapports d
 msgid "Select multiple wards?"
 msgstr "Sélectionnez plusieurs quartiers?"
 
+#. ("JS")
+#: templates/web/base/js/translation_strings.html:116
+#, fuzzy
+msgid "Select report status"
+msgstr "Rejeter le rapport"
+
 #: templates/web/base/admin/category-checkboxes.html:4
 msgid "Select:"
 msgstr "Sélectionner :"
@@ -4122,7 +4261,8 @@ msgstr "Sélectionner :"
 msgid "Send"
 msgstr "Envoyé"
 
-#: templates/web/base/admin/reports/edit.html:91
+#: templates/web/base/admin/reports/_edit_main.html:68
+#: templates/web/base/admin/reports/_edit_waste.html:30
 msgid "Send Fail Count:"
 msgstr ""
 
@@ -4139,19 +4279,21 @@ msgstr "Envoyer un e-mail de connexion"
 msgid "Sending a confirmation text failed: \"%s\""
 msgstr "L’envoi d’un texte de confirmation a échoué: \"%s\""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:899
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:900
 msgid "Sent report back"
 msgstr "Envoyé le rapport en retour"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:827
+#: perllib/FixMyStreet/DB/Result/Problem.pm:927
 msgid "Sent to %s %s later"
 msgstr "Envoyé à %s %s plus tard)"
 
-#: templates/web/base/admin/reports/edit.html:80
+#: templates/web/base/admin/reports/_edit_main.html:57
+#: templates/web/base/admin/reports/_edit_waste.html:19
 msgid "Sent:"
 msgstr "Envoyé :"
 
-#: templates/web/base/admin/reports/edit.html:97
+#: templates/web/base/admin/reports/_edit_main.html:74
+#: templates/web/base/admin/reports/_edit_waste.html:35
 #: templates/web/zurich/admin/stats/index.html:66
 msgid "Service:"
 msgstr "Service:"
@@ -4162,7 +4304,7 @@ msgstr "Service:"
 msgid "Set password"
 msgstr "Définir un mot de passe"
 
-#: templates/web/base/report/inspect/information.html:50
+#: templates/web/base/report/inspect/information.html:59
 msgid "Set to my current location"
 msgstr "Situé à mon emplacement actuel"
 
@@ -4175,9 +4317,9 @@ msgid "Short Name"
 msgstr ""
 
 #: templates/web/base/main_nav_items.html:10
-#: templates/web/base/report/_main.html:138
-#: templates/web/base/report/_main.html:27
-#: templates/web/base/report/_main.html:35
+#: templates/web/base/report/_main.html:136
+#: templates/web/base/report/_main.html:25
+#: templates/web/base/report/_main.html:33
 msgid "Shortlist"
 msgstr "Liste"
 
@@ -4185,15 +4327,15 @@ msgstr "Liste"
 msgid "Shortlist all visible"
 msgstr "Liste abrégée visible"
 
-#: templates/web/base/report/_main.html:136
-#: templates/web/base/report/_main.html:26
-#: templates/web/base/report/_main.html:31
+#: templates/web/base/report/_main.html:134
+#: templates/web/base/report/_main.html:24
+#: templates/web/base/report/_main.html:29
 #: templates/web/base/reports/_list-filter-status.html:24
 msgid "Shortlisted"
 msgstr "Shortlisté"
 
 #: templates/web/base/report/_item.html:26
-#: templates/web/base/report/_main.html:146
+#: templates/web/base/report/_main.html:144
 msgid "Shortlisted by %s"
 msgstr "Shortlisté par %s"
 
@@ -4223,12 +4365,12 @@ msgid "Show photo"
 msgstr "Afficher la photo"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:71
+#: templates/web/base/js/translation_strings.html:73
 #: templates/web/base/maps/openlayers.html:71
 msgid "Show pins"
 msgstr "Montrer les épingles"
 
-#: templates/web/base/report/_main.html:71
+#: templates/web/base/report/_main.html:69
 msgid "Show reporter&rsquo;s name"
 msgstr "Afficher le nom du déclarant"
 
@@ -4299,7 +4441,7 @@ msgid "Someone has moderated this report since you started."
 msgstr ""
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:74
+#: templates/web/base/js/translation_strings.html:76
 msgid "Sorry! You’ve hit the limit of images that can be attached to one report."
 msgstr ""
 
@@ -4328,7 +4470,7 @@ msgstr "Désolé, nous n'avons pas pu trouver cet emplacement."
 
 #: templates/web/base/auth/general.html:16
 #: templates/web/base/report/display.html:29
-#: templates/web/base/report/new/fill_in_details_form.html:23
+#: templates/web/base/report/new/fill_in_details_form.html:31
 msgid "Sorry, we could not log you in. Please fill in the form below."
 msgstr "Désolé, nous ne pouvons pas vous connecter pour le moment. Veuillez compléter le formulaire ci-dessous."
 
@@ -4339,7 +4481,7 @@ msgid "Sorry, we could not parse that location. Please try again."
 msgstr "Désolé, nous n'avons pas pu trouver cet emplacement. Merci de réessayer."
 
 #: perllib/FixMyStreet/App/Controller/Contact/Enquiry.pm:102
-#: perllib/FixMyStreet/App/Form/Claims.pm:1196
+#: perllib/FixMyStreet/App/Form/Claims.pm:1197
 #: perllib/FixMyStreet/App/Form/ManifestTheme.pm:54
 #: perllib/FixMyStreet/PhotoStorage.pm:63
 #, fuzzy
@@ -4357,7 +4499,7 @@ msgstr ""
 msgid "Sorry, you don't have permission to do that."
 msgstr "Désolé, vous n'êtes pas autorisé à faire cette action."
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:195
+#: perllib/FixMyStreet/App/Controller/Report.pm:196
 msgid "Sorry, you don’t have permission to do that. If you are the problem reporter, or a member of staff, please <a href=\"%s\">sign in</a> to view this report."
 msgstr ""
 
@@ -4366,7 +4508,7 @@ msgstr ""
 msgid "Sort by"
 msgstr "Trier par"
 
-#: templates/web/base/admin/bodies/contact-form.html:64
+#: templates/web/base/admin/bodies/contact-form.html:66
 #, fuzzy
 msgid "Staff only"
 msgstr "Personnel :"
@@ -4375,7 +4517,8 @@ msgstr "Personnel :"
 msgid "Staff users have permission to log in to the admin."
 msgstr "Les utilisateurs du personnel ont la permission de se connecter à l'administration du site."
 
-#: templates/web/base/admin/users/form.html:63
+#: templates/web/base/admin/users/form.html:64
+#: templates/web/base/admin/users/form.html:69
 msgid "Staff:"
 msgstr "Personnel :"
 
@@ -4383,21 +4526,26 @@ msgstr "Personnel :"
 msgid "Staging site"
 msgstr ""
 
-#: templates/web/base/dashboard/index.html:75
+#: templates/web/base/dashboard/index.html:100
 msgid "Start Date"
+msgstr "Date de début"
+
+#: templates/web/base/admin/emergencymessage/_ooh.html:45
+#, fuzzy
+msgid "Start time"
 msgstr "Date de début"
 
 #: templates/web/base/admin/bodies/body.html:74
 #: templates/web/base/admin/bodies/category.html:30
-#: templates/web/base/admin/bodies/contact-form.html:41
+#: templates/web/base/admin/bodies/contact-form.html:43
 #: templates/web/base/admin/flagged.html:18
-#: templates/web/base/admin/index.html:70
+#: templates/web/base/admin/index.html:63
 #: templates/web/base/admin/list_updates.html:11
 #: templates/web/base/admin/reports/index.html:16
-#: templates/web/base/admin/templates/edit.html:50
+#: templates/web/base/admin/templates/edit.html:62
 #: templates/web/base/admin/templates/view.html:8
 #: templates/web/base/admin/users/alerts.html:11
-#: templates/web/base/dashboard/index.html:102
+#: templates/web/base/dashboard/index.html:127
 #: templates/web/base/report/_inspect.html:34
 #: templates/web/base/report/_item.html:95
 #: templates/web/base/report/update/form_update.html:20
@@ -4405,8 +4553,8 @@ msgstr "Date de début"
 msgid "State"
 msgstr "État actuel"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:110
-#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:111
+#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:116
+#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:117
 msgid "State and external status code cannot be used simultaneously."
 msgstr "L’état et le code d’état externe ne peuvent pas etre utilisés simultanément."
 
@@ -4416,8 +4564,9 @@ msgstr "L’état et le code d’état externe ne peuvent pas etre utilisés sim
 msgid "State changed to:"
 msgstr "L’état a changé pour:"
 
-#: templates/web/base/admin/reports/edit.html:128
-#: templates/web/base/admin/update_edit.html:28
+#: templates/web/base/admin/reports/_edit_main.html:105
+#: templates/web/base/admin/reports/_edit_waste.html:38
+#: templates/web/base/admin/update_edit.html:26
 #: templates/web/zurich/admin/report_edit-sdm.html:63
 #: templates/web/zurich/admin/reports/edit.html:143
 #: templates/web/zurich/admin/reports/edit.html:91
@@ -4425,13 +4574,13 @@ msgstr "L’état a changé pour:"
 msgid "State:"
 msgstr "État actuel :"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:711
+#: perllib/FixMyStreet/Cobrand/Default.pm:694
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:408
 #: templates/web/base/admin/states/index.html:1
 msgid "States"
 msgstr "État"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:705
+#: perllib/FixMyStreet/Cobrand/Default.pm:688
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:390
 #: templates/web/base/admin/stats/index.html:1
 #: templates/web/base/admin/stats/state.html:1
@@ -4467,7 +4616,8 @@ msgstr "Subdivision/Interlocuteur"
 msgid "Subject"
 msgstr "Sujet"
 
-#: templates/web/base/admin/reports/edit.html:122
+#: templates/web/base/admin/reports/_edit_main.html:99
+#: templates/web/base/admin/reports/_edit_waste.html:75
 #: templates/web/base/report/update/moderation_diff.html:2
 #: templates/web/zurich/admin/reports/edit.html:41
 msgid "Subject:"
@@ -4487,18 +4637,20 @@ msgstr "Sujet :"
 msgid "Submit"
 msgstr "Envoyer"
 
-#: templates/web/base/admin/reports/edit.html:215
-#: templates/web/base/admin/reports/edit.html:25
-#: templates/web/base/admin/update_edit.html:87
-#: templates/web/base/admin/users/form.html:180
+#: templates/web/base/admin/reports/_edit_main.html:192
+#: templates/web/base/admin/reports/_edit_main.html:9
+#: templates/web/base/admin/reports/_edit_waste.html:214
+#: templates/web/base/admin/reports/_edit_waste.html:67
+#: templates/web/base/admin/update_edit.html:85
+#: templates/web/base/admin/users/form.html:188
 #: templates/web/zurich/admin/report_edit-sdm.html:117
-#: templates/web/zurich/admin/reports/edit.html:257
+#: templates/web/zurich/admin/reports/edit.html:259
 #: templates/web/zurich/admin/update_edit.html:38
 #: templates/web/zurich/admin/users/form.html:31
 msgid "Submit changes"
 msgstr "Envoyer les modifications"
 
-#: templates/web/base/questionnaire/index.html:89
+#: templates/web/base/questionnaire/index.html:92
 msgid "Submit questionnaire"
 msgstr "Envoi du questionnaire"
 
@@ -4542,11 +4694,11 @@ msgstr "Les résumés sont limités à  {0} caractères. Veuillez raccourcir vot
 msgid "Summarise the problem"
 msgstr "Résumer le problème"
 
-#: templates/web/base/admin/bodies/contact-form.html:168
+#: templates/web/base/admin/bodies/contact-form.html:176
 msgid "Summarise your changes"
 msgstr "Résumez vos modifications"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:703
+#: perllib/FixMyStreet/Cobrand/Default.pm:686
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:386
 #: templates/web/base/admin/bodies/index.html:29
 #: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
@@ -4558,7 +4710,7 @@ msgstr "Résumez vos modifications"
 msgid "Summary"
 msgstr "Résumé"
 
-#: templates/web/base/admin/bodies/contact-form.html:70
+#: templates/web/base/admin/bodies/contact-form.html:72
 #, fuzzy
 msgid "Summary hint text"
 msgstr "Statistiques récapitulatives"
@@ -4574,16 +4726,16 @@ msgstr "Rapports résumés"
 msgid "Summary statistics"
 msgstr "Statistiques récapitulatives"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:239
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:240
 #, fuzzy
 msgid "Superuser"
 msgstr "Superuser :"
 
-#: templates/web/base/admin/users/form.html:121
+#: templates/web/base/admin/users/form.html:129
 msgid "Superuser:"
 msgstr "Superuser :"
 
-#: templates/web/base/admin/users/form.html:117
+#: templates/web/base/admin/users/form.html:125
 msgid "Superusers have permission to perform <strong>all actions</strong> within the admin."
 msgstr "Supeusers ont l'autorisation d'effectuer des <strong> toutes les actions </strong> au sein de l'administration du site."
 
@@ -4593,7 +4745,7 @@ msgid "Survey Results"
 msgstr "Résultats de l'enquête"
 
 #: templates/web/base/report/form/private_details.html:2
-#: templates/web/base/report/form/user.html:6
+#: templates/web/base/report/form/user.html:9
 msgid "Tell us about you"
 msgstr "A propos de vous"
 
@@ -4601,7 +4753,13 @@ msgstr "A propos de vous"
 msgid "Template &laquo;%s&raquo;"
 msgstr "Modèle &laquo;%s&raquo;"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:728
+#: templates/web/base/admin/list_updates.html:45
+#: templates/web/base/admin/update_edit.html:17
+#, fuzzy
+msgid "Template email response:"
+msgstr "Nouvelle adresse émail :"
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:711
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:397
 #: templates/web/base/develop/email_list.html:3
 #: templates/web/zurich/header.html:75
@@ -4632,13 +4790,17 @@ msgstr "Alerte E-mail supprimé"
 msgid "Text field"
 msgstr "Champs supplémentaires:"
 
+#: templates/web/base/admin/templates/edit.html:47
+msgid "Text for email alert:"
+msgstr ""
+
 #: templates/web/base/admin/bodies/body.html:33
 msgid "Text only version"
 msgstr "Version texte seulement"
 
-#: templates/web/base/admin/templates/edit.html:35
-#: templates/web/base/admin/update_edit.html:20
-#: templates/web/base/admin/update_edit.html:99
+#: templates/web/base/admin/templates/edit.html:37
+#: templates/web/base/admin/update_edit.html:13
+#: templates/web/base/admin/update_edit.html:97
 #: templates/web/zurich/admin/templates/edit.html:27
 #: templates/web/zurich/admin/update_edit.html:12
 msgid "Text:"
@@ -4649,7 +4811,7 @@ msgstr "Texte :"
 msgid "Textarea"
 msgstr "Texte"
 
-#: templates/web/base/tokens/confirm_problem.html:29
+#: templates/web/base/tokens/confirm_problem.html:32
 msgid "Thank you for reporting this issue!"
 msgstr "Merci d’avoir signalé ce problème!"
 
@@ -4694,7 +4856,7 @@ msgstr "Ce lieu ne semble pas être couvert par une administration; peut-être e
 msgid "That location does not appear to be in the UK; please try again."
 msgstr "Ce lieu ne semble pas ce trouver au Royaume-Uni; Merci de le saisir à nouveau."
 
-#: perllib/FixMyStreet/App/Controller/Auth.pm:521
+#: perllib/FixMyStreet/App/Controller/Auth.pm:522
 msgid "That password has appeared in a known third-party data breach (<a href=\"https://haveibeenpwned.com/Passwords\" target=\"_blank\">more information</a>); please choose another"
 msgstr ""
 
@@ -4704,31 +4866,31 @@ msgstr ""
 msgid "That postcode was not recognised, sorry."
 msgstr "Ce code postal n'a pas été reconnu, désolé."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:289
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:291
 msgid "That problem has been marked as sent."
 msgstr "Ce problème a été marqué comme envoyé."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:282
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:283
 msgid "That problem will now be resent."
 msgstr "Ce problème va maintenant être renvoyé."
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:176
+#: perllib/FixMyStreet/App/Controller/Report.pm:177
 msgid "That report has been removed from FixMyStreet."
 msgstr "Ce rapport a été retiré de FixMyStreet.fr."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:585
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:602
 msgid "That user has been logged out."
 msgstr "Cet utilisateur a été déconnecté."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:592
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:609
 msgid "That user has been made anonymous on all reports and updates."
 msgstr "Cet utilisateur a été rendu anonyme sur tous les rapports et mises à jour."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:641
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:658
 msgid "That user’s personal details have been removed."
 msgstr "Les informations personnelles de cet utilisateur ont été supprimées."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:606
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:623
 msgid "That user’s reports and updates have been hidden."
 msgstr "Les rapports et mises à jour de cet utilisateur ont été masqués."
 
@@ -4762,10 +4924,10 @@ msgstr ""
 msgid "The <strong>name</strong> is a string that represents the name of the web application as it is usually displayed to the user (e.g., amongst a list of other applications, or as a label for an icon)."
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:139
-#: templates/web/base/admin/bodies/contact-form.html:140
-#: templates/web/base/admin/bodies/form.html:101
-#: templates/web/base/admin/bodies/form.html:102
+#: templates/web/base/admin/bodies/contact-form.html:147
+#: templates/web/base/admin/bodies/contact-form.html:148
+#: templates/web/base/admin/bodies/form.html:116
+#: templates/web/base/admin/bodies/form.html:117
 msgid ""
 "The <strong>send method</strong> determines how problem reports will be sent to the body.\n"
 "           If you leave this blank, <strong>send method defaults to email</strong>."
@@ -4798,7 +4960,7 @@ msgstr ""
 msgid "The code used to store this field value in the database."
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:50
+#: templates/web/base/admin/bodies/contact-form.html:52
 #, fuzzy
 msgid "The contact has been confirmed as correct."
 msgstr "Ce problème a été marqué comme envoyé."
@@ -4864,6 +5026,10 @@ msgstr "La liste des zones disponibles est donnée par le service Mapit de %s. "
 msgid "The passwords do not match"
 msgstr "Les mots de passe ne correspondent pas"
 
+#: templates/web/base/admin/emergencymessage/edit.html:57
+msgid "The reporting message will be shown on reporting pages."
+msgstr ""
+
 #: templates/web/base/errors/page_error_404_not_found.html:9
 msgid "The requested URL '%s' was not found on this server"
 msgstr "L'URL demandée « %s » n'a pas été trouvée sur ce serveur"
@@ -4877,11 +5043,11 @@ msgstr ""
 msgid "The uploaded CSV file must contain a header row, and records can have the following fields:"
 msgstr "Le fichier CSV téléchargé doit contenir une ligne d'en-tête et les enregistrements doivent avoir les champs suivants (dans cet ordre):"
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:117
+#: perllib/FixMyStreet/Queue/Item/Report.pm:121
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "L'utilisateur n'a pas pu localiser le problème sur une carte, mais pour voir la zone autour de l'endroit qu'il ou elle a entré"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:631
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:648
 msgid "The user has been sent a login email"
 msgstr "L’utilisateur a reçu un email de connexion"
 
@@ -4922,9 +5088,13 @@ msgstr "Nous connaissons déjà des problèmes similaires à proximité. L’un 
 msgid "There is already a template with that title."
 msgstr "Il existe déjà un modèle de réponse automatique pour cette catégorie/Emplacement."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:138
+#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:144
 msgid "There is already an auto-response template for this category/state."
 msgstr "Il existe déjà un modèle de réponse automatique pour cette catégorie/Emplacement."
+
+#: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:102
+msgid "There must be template text if there is alternative email text."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:55
 msgid "There was a problem showing the All Reports page. Please try again later."
@@ -4940,7 +5110,7 @@ msgstr "Il y a eu un problème pour afficher cette page. Merci de réessayer ult
 msgid "There was a problem with your login information."
 msgstr "Il y avait un problème avec vos informations de connexion."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:993
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1006
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:165
 msgid "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the ‘No’ section of the form."
 msgstr "Il y a un problème avec vos informations de connexion. Si vous ne vous souvenez plus de votre mot de passe ou n’en avez pas, veuillez remplir le champ ‘Non’ du formulaire."
@@ -5029,21 +5199,26 @@ msgstr ""
 "Cet intelocuteur recevra seulement des rapports pour des problèmes qui sont situés sur sa <strong>zone couverte</strong>.\n"
 "Un interlocuteur ne recevra aucun rapport tant qu'il ne couvre aucune zone."
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:196
+#. ($b->name)
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:501
+msgid "This cobrand is already assigned to another body: "
+msgstr ""
+
+#: perllib/FixMyStreet/Queue/Item/Report.pm:221
 msgid "This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system."
 msgstr "Cet email a été envoyé aux deux administrations couvrant l'emplacement du problème parce que l'utilisateur ne l'a pas classé ; ignorez-le s'il vous plaît si vous n'êtes pas l'administration responsable pour la question, ou faites-nous savoir la bonne catégorie de problèmes afin que nous puissions l'ajouter à notre système."
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:199
+#: perllib/FixMyStreet/Queue/Item/Report.pm:224
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr "Cet email a été envoyé à plus d'une administration couvrant l'emplacement du problème, la catégorie de problème choisie par l'utilisateur étant présente pour chacune d'entre elles ; ignorez-le s'il vous plaît si vous n'êtes pas l'administration responsable pour la question."
 
-#: templates/web/base/admin/emergencymessage/edit.html:6
+#: templates/web/base/admin/emergencymessage/edit.html:16
 msgid "This emergency message will be shown on the homepage."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1176
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1248
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1295
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1189
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1275
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1322
 #: perllib/FixMyStreet/Cobrand/UK.pm:61
 msgid "This information is required"
 msgstr "Ces renseignements sont nécessaires"
@@ -5052,16 +5227,20 @@ msgstr "Ces renseignements sont nécessaires"
 msgid "This is a <strong>private</strong> name for this template so you can identify it when updating reports or editing in the admin."
 msgstr "Ceci est un nom <strong>privé</strong>  pour ce modèle afin que vous puissiez l’identifier lors de la mise à jour de rapports ou de sa modification dans la section d’administration."
 
-#: templates/web/base/admin/templates/edit.html:31
+#: templates/web/base/admin/templates/edit.html:33
 msgid "This is the <strong>public</strong> text that will be shown on the site."
 msgstr "Ceci est le texte <strong>public</strong> qui sera affiché sur le site."
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:49
+#: templates/web/base/js/translation_strings.html:50
 msgid "This is the problem"
 msgstr "Voici le problème"
 
-#: templates/web/base/admin/users/form.html:102
+#: templates/web/base/admin/templates/edit.html:43
+msgid "This is the text that will be sent to the <strong>reporting citizen</strong> in the alert email."
+msgstr ""
+
+#: templates/web/base/admin/users/form.html:110
 msgid "This means the user will only see front end staff features (such as the inspector form) in their assigned categories."
 msgstr ""
 
@@ -5082,7 +5261,7 @@ msgid "This problem is still ongoing"
 msgstr "Ce problème est toujours en cours"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:48
+#: templates/web/base/js/translation_strings.html:49
 msgid "This report"
 msgstr "Ce rapport"
 
@@ -5113,7 +5292,7 @@ msgstr "Ce rapport est actuellement marqué comme ouvert."
 msgid "This report is now closed to updates."
 msgstr "Ce rapport est maintenant fermé aux mises à jour."
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:108
+#: perllib/FixMyStreet/Queue/Item/Report.pm:112
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr "Cette page Web contient également une photo du problème, fournie par l'utilisateur."
 
@@ -5128,7 +5307,7 @@ msgstr ""
 msgid "Time spent (in minutes):"
 msgstr "Le temps passé (en minutes):"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:704
+#: perllib/FixMyStreet/Cobrand/Default.pm:687
 #: templates/web/base/admin/timeline.html:1
 #: templates/web/base/admin/users/index.html:68
 #: templates/web/base/admin/users/log.html:1
@@ -5140,7 +5319,7 @@ msgid "Tips for perfect photos"
 msgstr "Conseils pour des photos adaptées"
 
 #: templates/web/base/admin/flagged.html:15
-#: templates/web/base/admin/index.html:67
+#: templates/web/base/admin/index.html:60
 #: templates/web/base/admin/reports/index.html:13
 #: templates/web/base/admin/templates/view.html:6
 #: templates/web/zurich/admin/templates/view.html:8
@@ -5172,12 +5351,12 @@ msgstr "Pour limiter cette collection de champs à un seul cobrand, sélectionne
 msgid "To limit this collection of fields to a single language, select it here."
 msgstr "Pour limiter cette collection de champs à une seule langue, sélectionnez-la ici."
 
-#: templates/web/base/report/update-form-wrapper.html:4
+#: templates/web/base/report/update-form-wrapper.html:5
 #, fuzzy
 msgid "To provide an update, please <a href=\"%s\">sign in</a>."
 msgstr "ou <a href=\"%s\">se connecter</a>"
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:116
+#: perllib/FixMyStreet/Queue/Item/Report.pm:120
 msgid "To view a map of the precise location of this issue"
 msgstr "Pour voir une carte de l'emplacement précis de ce problème"
 
@@ -5205,9 +5384,9 @@ msgstr "Les 5 meilleurs quartiers"
 
 #: templates/web/base/admin/stats/fix_rate.html:4
 #: templates/web/base/admin/stats/questionnaire.html:24
-#: templates/web/base/dashboard/index.html:120
-#: templates/web/base/dashboard/index.html:125
-#: templates/web/base/dashboard/index.html:149
+#: templates/web/base/dashboard/index.html:145
+#: templates/web/base/dashboard/index.html:150
+#: templates/web/base/dashboard/index.html:174
 #: templates/web/zurich/admin/stats/index.html:51
 msgid "Total"
 msgstr "Total"
@@ -5257,8 +5436,8 @@ msgid "Unban"
 msgstr "Débannir"
 
 #: perllib/FixMyStreet/DB/ResultSet/State.pm:64
-#: templates/web/base/admin/bodies/contact-form.html:44
-#: templates/web/base/admin/update_edit.html:30
+#: templates/web/base/admin/bodies/contact-form.html:46
+#: templates/web/base/admin/update_edit.html:28
 #: templates/web/zurich/admin/report_edit-sdm.html:54
 #: templates/web/zurich/admin/reports/edit.html:82
 #: templates/web/zurich/admin/update_edit.html:18
@@ -5266,7 +5445,7 @@ msgid "Unconfirmed"
 msgstr "Non confirmé"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:89
+#: templates/web/base/js/translation_strings.html:92
 msgid "Undo last"
 msgstr ""
 
@@ -5281,16 +5460,16 @@ msgstr "Type d'alerte inconnu"
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Photo.pm:136
 #: perllib/FixMyStreet/App/Controller/Root.pm:147
-#: templates/web/base/js/translation_strings.html:56
+#: templates/web/base/js/translation_strings.html:57
 msgid "Unknown error"
 msgstr "erreur inconnue"
 
 #: perllib/FixMyStreet/App/Controller/Develop.pm:194
 #: perllib/FixMyStreet/App/Controller/Develop.pm:213
 #: perllib/FixMyStreet/App/Controller/My.pm:242
-#: perllib/FixMyStreet/App/Controller/Report.pm:161
-#: perllib/FixMyStreet/App/Controller/Report.pm:167
-#: perllib/FixMyStreet/App/Controller/Report.pm:170
+#: perllib/FixMyStreet/App/Controller/Report.pm:162
+#: perllib/FixMyStreet/App/Controller/Report.pm:168
+#: perllib/FixMyStreet/App/Controller/Report.pm:171
 msgid "Unknown problem ID"
 msgstr "ID de problème inconnu"
 
@@ -5330,7 +5509,7 @@ msgstr "Mise à jour ci-dessous ajoutée anonymement à %s"
 msgid "Update below added by %s at %s"
 msgstr "Mise à jour ci-dessous ajoutée par %s à %s"
 
-#: templates/web/base/admin/bodies/form.html:139
+#: templates/web/base/admin/bodies/form.html:154
 #: templates/web/zurich/admin/bodies/form.html:63
 msgid "Update body"
 msgstr "Interlocuteur pour la mise à jour "
@@ -5343,21 +5522,21 @@ msgstr "Répartition des problèmes par état"
 msgid "Update by {{name}}"
 msgstr "Mise à jour par {{name}}"
 
-#: templates/web/base/admin/update_edit.html:51
+#: templates/web/base/admin/update_edit.html:49
 #: templates/web/zurich/admin/update_edit.html:25
 msgid "Update changed problem state to %s"
 msgstr "Mise à jour du statut du problème vers %s"
 
-#: templates/web/base/admin/update_edit.html:53
+#: templates/web/base/admin/update_edit.html:51
 msgid "Update marked problem as fixed"
 msgstr "Une mise à jour a marqué ce problème comme résolu"
 
-#: templates/web/base/admin/emergencymessage/edit.html:31
+#: templates/web/base/admin/emergencymessage/edit.html:90
 #, fuzzy
 msgid "Update message"
 msgstr "Mettre à jour les statuts"
 
-#: templates/web/base/admin/update_edit.html:55
+#: templates/web/base/admin/update_edit.html:53
 msgid "Update reopened problem"
 msgstr "Mettre a jour le problème réouvert"
 
@@ -5369,35 +5548,36 @@ msgstr "Mettre à jour les statuts"
 msgid "Updated"
 msgstr "Mis à jour"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:312
+#: perllib/FixMyStreet/DB/Result/Comment.pm:328
 msgid "Updated by <strong>%s</strong> (%s) at %s"
 msgstr "Mis à par <strong>%s</strong> (%s) à %s"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:314
+#: perllib/FixMyStreet/DB/Result/Comment.pm:330
 msgid "Updated by <strong>%s</strong> at %s"
 msgstr "Mis à par <strong>%s</strong> à %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:231
-#: perllib/FixMyStreet/App/Controller/Admin/EmergencyMessage.pm:48
-#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:358
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:171
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:386
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:57
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:576
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:838
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:863
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:932
+#: perllib/FixMyStreet/App/Controller/Admin.pm:249
+#: perllib/FixMyStreet/App/Controller/Admin/EmergencyMessage.pm:58
+#: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:360
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:197
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:410
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:55
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:593
+#: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:68
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:839
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:864
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:933
 msgid "Updated!"
 msgstr "Mis à jour !"
 
 #: templates/web/base/admin/list_updates.html:2
-#: templates/web/base/dashboard/index.html:109
+#: templates/web/base/dashboard/index.html:134
 #: templates/web/base/report/update.html:4
 #: templates/web/zurich/report/updates.html:2
 msgid "Updates"
 msgstr "Mises à jour"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:204
+#: perllib/FixMyStreet/DB/Result/Comment.pm:207
 msgid "Updates are limited to %s characters in length. Please shorten your update"
 msgstr "Les mises à jour sont limitées à %s caractères de long. Merci de raccourcir votre texte"
 
@@ -5423,20 +5603,24 @@ msgstr "Utiliser la récupération de problèmes Open311"
 msgid "Use Open311 update-sending extension"
 msgstr "Utiliser l'extension de mise à jour d'envoi Open311"
 
-#: templates/web/base/around/postcode_form.html:37
+#: templates/web/base/around/_postcode_form_geolocation.html:2
 #, fuzzy
 msgid "Use my current location"
 msgstr "Situé à mon emplacement actuel"
 
-#: templates/web/base/admin/bodies/contact-form.html:84
+#: templates/web/base/admin/bodies/contact-form.html:86
 msgid "Use this for issues that you want to allow users to report, but for which there is no public interest in displaying the report, like requesting an extra rubbish bin at a specific address."
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:133
+#: templates/web/base/admin/bodies/contact-form.html:141
+msgid "Use this if there is a chance that multiple bodies covering the same area that have the same contacts and you want to just send reports to one, rather than multiple bodies"
+msgstr ""
+
+#: templates/web/base/admin/bodies/contact-form.html:135
 msgid "Use this if you wish only users assigned to this category to see staff-related features (such as the inspector form) in the front end."
 msgstr ""
 
-#: templates/web/base/admin/bodies/contact-form.html:106
+#: templates/web/base/admin/bodies/contact-form.html:108
 msgid "Use this where you do not want problem reporters to be able to reopen their fixed or closed reports when leaving an update."
 msgstr ""
 
@@ -5448,18 +5632,18 @@ msgstr "ID utilisateur de récupération des commentaires à"
 msgid "User Import"
 msgstr "Import utilisateur"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:669
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:680
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:686
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:697
 msgid "User added to abuse list"
 msgstr "Utilisateur ajouté à la liste d’abus"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:148
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:281
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:159
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:307
 msgid "User already exists"
 msgstr "L’utilisateur existe déjà"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:665
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:676
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:682
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:693
 msgid "User already in abuse list"
 msgstr "Utilisateur déjà dans la liste d’abus"
 
@@ -5476,25 +5660,27 @@ msgstr "La recherche utilisateurs parcourt les noms et adresses courriel."
 msgid "User's alerts"
 msgstr "Alertes de l'utilisateur"
 
-#: templates/web/base/admin/reports/edit.html:199
-#: templates/web/base/admin/update_edit.html:37
+#: templates/web/base/admin/reports/_edit_main.html:176
+#: templates/web/base/admin/reports/_edit_waste.html:52
+#: templates/web/base/admin/update_edit.html:35
 msgid "User:"
 msgstr "Utilisateur:"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:737
-#: perllib/FixMyStreet/Cobrand/Default.pm:798
+#: perllib/FixMyStreet/Cobrand/Default.pm:720
+#: perllib/FixMyStreet/Cobrand/Default.pm:784
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:402
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:136
 #: templates/web/base/admin/flagged.html:29
 #: templates/web/base/admin/roles/index.html:25
 #: templates/web/zurich/header.html:67
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: templates/web/base/admin/users/form.html:131
+#: templates/web/base/admin/users/form.html:139
 msgid "Users can be assigned one or more roles to give them all the permissions of those roles. Selecting a role or roles will disable manual permission selection."
 msgstr ""
 
-#: templates/web/base/admin/users/form.html:147
+#: templates/web/base/admin/users/form.html:155
 msgid "Users can perform the following actions within their assigned body or area."
 msgstr "Les utilisateurs peuvent effectuer les actions suivantes concernant leur administration ou dans la zone affectée."
 
@@ -5503,9 +5689,9 @@ msgstr "Les utilisateurs peuvent effectuer les actions suivantes concernant leur
 msgid "Users with this role can perform the following actions within their assigned body or area."
 msgstr "Les utilisateurs peuvent effectuer les actions suivantes concernant leur administration ou dans la zone affectée."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:211
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:341
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:384
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:216
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:361
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:404
 msgid "Values updated"
 msgstr "Valeurs mises à jour"
 
@@ -5523,8 +5709,9 @@ msgstr "Vérifier votre email"
 msgid "Verify phone number"
 msgstr "Vérifier votre numéro de téléphone"
 
-#: templates/web/base/admin/reports/edit.html:36
-#: templates/web/base/admin/update_edit.html:18
+#: templates/web/base/admin/reports/_edit_main.html:13
+#: templates/web/base/admin/reports/_edit_waste.html:11
+#: templates/web/base/admin/update_edit.html:11
 #: templates/web/zurich/admin/report_edit-sdm.html:23
 #: templates/web/zurich/admin/reports/edit.html:24
 #: templates/web/zurich/admin/update_edit.html:10
@@ -5539,12 +5726,15 @@ msgstr "Afficher les rapports par quartier"
 msgid "View wards"
 msgstr "Voir les quartiers"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:786
+#: perllib/FixMyStreet/Cobrand/Default.pm:772
+#: perllib/FixMyStreet/Roles/CobrandSLWP.pm:131
 msgid "View/Mark private reports"
 msgstr "Voir / Marquer les rapports privés"
 
+#. ("JS")
 #: templates/web/base/around/display_location.html:0
 #: templates/web/base/around/display_location.html:40
+#: templates/web/base/js/translation_strings.html:61
 msgid "Viewing a location"
 msgstr "Consultation d'un lieu"
 
@@ -5553,13 +5743,26 @@ msgstr "Consultation d'un lieu"
 msgid "Viewing a problem"
 msgstr "Consultation d'un problème"
 
-#: templates/web/base/dashboard/index.html:29
+#: templates/web/base/dashboard/index.html:43
 msgid "Ward:"
 msgstr "Quartier:"
 
 #: templates/web/base/reports/body.html:18
 msgid "Wards of this council"
 msgstr "Localités de cette administration"
+
+#: templates/web/base/admin/waste/index.html:1
+#, fuzzy
+msgid "WasteWorks Configuration"
+msgstr "Configuration"
+
+#: templates/web/base/admin/waste/edit.html:1
+msgid "WasteWorks Configuration for %s"
+msgstr ""
+
+#: perllib/FixMyStreet/Cobrand/Default.pm:732
+msgid "WasteWorks config"
+msgstr ""
 
 #: templates/web/base/alert/choose.html:7
 #: templates/web/base/around/_error_multiple.html:6
@@ -5580,7 +5783,7 @@ msgstr "Nous avons envoyé un code de confirmation à votre téléphone. Veuille
 msgid "We need your email address, please give it below."
 msgstr "Nous avons besoin de votre adresse e-mail, veuillez l'indiquer ci-dessous."
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:149
+#: perllib/FixMyStreet/Queue/Item/Report.pm:153
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
 msgstr "Nous sommes conscients que ce problème pourrait être la responsabilité de %s, mais nous n'avons actuellement pas leurs coordonnées. Si vous connaissez une adresse de contact approprié, faites-le nous savoir s'il vous plaît."
 
@@ -5601,7 +5804,7 @@ msgstr ""
 msgid "We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?"
 msgstr "Nous sommes désolés d’apprendre que le problème n’est pas résolu. Pourquoi ne pas essayer d'écrire directement à vos élus locaux ?"
 
-#: templates/web/base/dashboard/index.html:123
+#: templates/web/base/dashboard/index.html:148
 msgid "Website"
 msgstr "Website"
 
@@ -5609,7 +5812,7 @@ msgstr "Website"
 msgid "We’ll get back to you as soon as we can."
 msgstr "Nous reviendrons vers vous dès que nous le pouvons."
 
-#: templates/web/base/report/new/duplicate_suggestions.html:15
+#: templates/web/base/report/new/duplicate_suggestions.html:14
 msgid "We’ve already reported these nearby problems to the council. Is one of them yours?"
 msgstr ""
 
@@ -5618,7 +5821,7 @@ msgstr ""
 msgid "When edited"
 msgstr "Édité le"
 
-#: templates/web/base/admin/problem_row.html:42
+#: templates/web/base/admin/problem_row.html:39
 msgid "When sent"
 msgstr "Envoyé le"
 
@@ -5638,7 +5841,7 @@ msgstr "Pourquoi arrêter là ? <a href=\"/alert\"> déclarer plus d’alertes <
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
 msgstr "Avec les recherches à requètes, il est également possible de rechercher des agency_responsible pour limiter les demandes à celles qui sont envoyées à une administration unique. Le terme de recherche est l'ID de l'administration fourni par <a href=\"%s\">MapIt</a>."
 
-#: templates/web/base/dashboard/index.html:164
+#: templates/web/base/dashboard/index.html:189
 msgid "Within the specified timeframe:"
 msgstr "Dans les délais spécifiés:"
 
@@ -5646,7 +5849,7 @@ msgstr "Dans les délais spécifiés:"
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
 msgstr "Aimeriez-vous contribuer à FixMyStreet? Notre code est open source et <a href=\"http://fixmystreetf.org\"> disponible sur fixmystreet.org </a>"
 
-#: templates/web/base/questionnaire/index.html:80
+#: templates/web/base/questionnaire/index.html:83
 msgid "Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?"
 msgstr "Aimeriez-vous recevoir un autre questionnaire dans 4 semaines, pour vous rappeler de vérifier l'état?"
 
@@ -5659,17 +5862,17 @@ msgstr ""
 #: templates/web/base/admin/bodies/category.html:6
 #: templates/web/base/admin/bodies/index.html:70
 #: templates/web/base/admin/flagged.html:47
-#: templates/web/base/admin/list_updates.html:33
-#: templates/web/base/admin/list_updates.html:35
-#: templates/web/base/admin/list_updates.html:36
-#: templates/web/base/admin/problem_row.html:20
-#: templates/web/base/admin/reports/edit.html:101
-#: templates/web/base/admin/reports/edit.html:192
-#: templates/web/base/admin/update_edit.html:25
+#: templates/web/base/admin/list_updates.html:26
+#: templates/web/base/admin/list_updates.html:28
+#: templates/web/base/admin/list_updates.html:29
+#: templates/web/base/admin/problem_row.html:13
+#: templates/web/base/admin/reports/_edit_main.html:169
+#: templates/web/base/admin/reports/_edit_main.html:78
+#: templates/web/base/admin/update_edit.html:23
 #: templates/web/base/admin/users/alerts.html:21
 #: templates/web/base/admin/users/index.html:65
 #: templates/web/base/questionnaire/index.html:39
-#: templates/web/base/questionnaire/index.html:83
+#: templates/web/base/questionnaire/index.html:86
 msgid "Yes"
 msgstr "Oui"
 
@@ -5677,12 +5880,12 @@ msgstr "Oui"
 msgid "You are complaining that this problem report was unnecessarily moderated:"
 msgstr "Vous ne comprenez pas les raisons pour lesquelles ce rapport a été inutilement retiré:"
 
-#: templates/web/base/admin/bodies/contact-form.html:45
+#: templates/web/base/admin/bodies/contact-form.html:47
 msgid "You are not sure of the origin or validity of the contact."
 msgstr ""
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:106
+#: templates/web/base/js/translation_strings.html:109
 msgid "You are offline"
 msgstr "vous êtes hors ligne"
 
@@ -5695,7 +5898,6 @@ msgid "You are reporting the following update for being abusive, containing pers
 msgstr "Vous signalez la mise à jour suivante comme étant violente, contenant des renseignements personnels, ou similaires :"
 
 #: templates/web/base/report/_updates_disallowed_message.html:2
-#: templates/web/base/report/display.html:56
 msgid "You can <a href=\"%s\">make a new report in the same location</a>."
 msgstr "Vous pouvez <a href=\"%s\"> créer un nouveau rapport au même endroit.</a>."
 
@@ -5707,6 +5909,11 @@ msgstr "Vous pouvez <a href=\"%s%s\">consulter le problème sur ce site</a>."
 #: templates/web/base/admin/users/form.html:19
 msgid "You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create."
 msgstr "Vous pouvez ajouter un courriel d'utilisateur abusif dans la liste des abus, qui cache automatiquement (et n'envoie jamais) les rapports qu'ils crèent."
+
+#. ("JS")
+#: templates/web/base/js/translation_strings.html:81
+msgid "You can add an optional photo"
+msgstr ""
 
 #: templates/web/base/alert/_list.html:18
 msgid "You can choose to subscribe to all problems reported in an area, or reports based on their destination."
@@ -5733,21 +5940,25 @@ msgstr ""
 msgid "You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr "Vous pouvez nous aider en trouvant une adresse e-mail de contact pour les problèmes locaux pour %s et en nous l'envoyant à <a href='mailto:%s'>%s</a>."
 
-#: templates/web/base/admin/bodies/form.html:92
+#: templates/web/base/admin/bodies/form.html:107
 msgid "You can mark a body as deleted if you do not want it to be active on the site."
 msgstr "Vous pouvez marqué un interlocuteur comme supprimé si vous ne voulez pas qu'il soit actif sur le site."
 
-#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:241
+#: templates/web/base/maps/_map_instructions.html:3
+msgid "You can move around with your keyboard"
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:246
 msgid "You cannot rename a category to an existing category"
 msgstr ""
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:53
+#: templates/web/base/js/translation_strings.html:54
 msgid "You declined; please fill in the box above"
 msgstr "Vous avez refusé; merci de remplir le champ ci-dessus"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:108
+#: templates/web/base/js/translation_strings.html:111
 msgid "You have <a id=\"oFN\" href=\"\"><span>%s</span> saved to submit</a>."
 msgstr "vous avez <a id=\"oFN\" href=\"\"><span>%s</span> sauvegradé à publié</a>."
 
@@ -5811,7 +6022,7 @@ msgstr "Vous n'avez encore créés aucun rapport. <a href=\"%s\">Rapportez un pr
 msgid "You haven&rsquo;t shortlisted any reports yet."
 msgstr "Vous n'avez pas encore short-listé de rapport."
 
-#: templates/web/base/admin/index.html:19
+#: templates/web/base/admin/index.html:10
 msgid "You need to <a href=\"%s\">add some bodies</a> (such as councils or departments) before any reports can be sent."
 msgstr "Vous devez <a href=\"%s\">ajouter des interlocuteurs</a> (comme des municipalités ou des services publics) pour que des rapports puissent être envoyés."
 
@@ -5875,16 +6086,16 @@ msgstr "Votre nom"
 msgid "Your name has already been sent to %s, but we can hide it on this page:"
 msgstr "Votre nom a déjà été envoyé, mais nous pouvons le cacher sur cette page:"
 
-#: perllib/FixMyStreet/App/Controller/My.pm:349
+#: perllib/FixMyStreet/App/Controller/My.pm:351
 msgid "Your name has been hidden from all your reports and updates."
 msgstr "Votre nom a été caché de tous vos rapports et mises à jour."
 
-#: perllib/FixMyStreet/App/Controller/My.pm:345
+#: perllib/FixMyStreet/App/Controller/My.pm:347
 msgid "Your name has been hidden."
 msgstr "Votre nom a été caché."
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:98
+#: templates/web/base/js/translation_strings.html:101
 msgid "Your offline reports"
 msgstr "Vos rapports hors ligne"
 
@@ -5905,8 +6116,7 @@ msgid "Your password has expired, please create a new one below. When you click 
 msgstr "Connectez-vous par e-mail à la place en fournissant un nouveau mot de passe. Lorsque vous cliquez sur le lien dans votre e-mail, votre mot de passe sera mis à jour."
 
 #: templates/web/base/auth/create.html:67
-#: templates/web/base/report/form/user_loggedout_by_email.html:80
-#: templates/web/base/report/form/user_loggedout_by_email.html:82
+#: templates/web/base/report/form/user_loggedout_by_email_password.html:7
 #: templates/web/zurich/auth/general.html:56
 msgid "Your password should include %d or more characters."
 msgstr "Votre mot de passe doit inclure %d ou plus de caractères."
@@ -5921,7 +6131,7 @@ msgstr "Votre numéro de téléphone"
 msgid "Your report"
 msgstr "Votre rapport"
 
-#: perllib/FixMyStreet/Script/Alerts.pm:407
+#: perllib/FixMyStreet/Script/Alerts.pm:427
 msgid ""
 "Your report (%d) has had an update; to view: %s\n"
 "\n"
@@ -5946,7 +6156,7 @@ msgid "Your update"
 msgstr "Votre mise à jour"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:99
+#: templates/web/base/js/translation_strings.html:102
 msgid "Your update has been saved offline for submission when back online."
 msgstr "Votre mise à jour a été sauvegardée en mode hors connexion pour la soumission en ligne."
 
@@ -5977,19 +6187,19 @@ msgstr "admin"
 
 #: perllib/FixMyStreet/App/Form/Widget/Field/CheckboxGroup.pm:18
 #: templates/web/base/admin/category-checkboxes.html:5
-#: templates/web/base/admin/users/form.html:158
+#: templates/web/base/admin/users/form.html:166
 msgid "all"
 msgstr "Tous"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:127
-#: perllib/FixMyStreet/DB/Result/Comment.pm:281
+#: perllib/FixMyStreet/DB/Result/Comment.pm:130
+#: perllib/FixMyStreet/DB/Result/Comment.pm:295
 #: perllib/FixMyStreet/DB/Result/User.pm:383
-#: templates/web/base/admin/update_edit.html:97
+#: templates/web/base/admin/update_edit.html:95
 #: templates/web/base/report/update/moderation_meta.html:2
 msgid "an administrator"
 msgstr "un administrateur"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:322
+#: perllib/FixMyStreet/DB/Result/Comment.pm:338
 msgid "and a defect raised"
 msgstr "et un défaut soulevé"
 
@@ -6002,7 +6212,7 @@ msgstr "par %s"
 msgid "council"
 msgstr "administration"
 
-#: templates/web/base/admin/reports/edit.html:53
+#: templates/web/base/admin/reports/_edit_main.html:30
 msgid "didn't use map"
 msgstr "n'a pas utilisé le plan"
 
@@ -6011,12 +6221,12 @@ msgstr "n'a pas utilisé le plan"
 msgid "e.g. ‘%s’ or ‘%s’"
 msgstr "Par exemple '%s' ou '%s'"
 
-#: templates/web/base/admin/bodies/contact-form.html:72
+#: templates/web/base/admin/bodies/contact-form.html:74
 #: templates/web/base/report/new/form_title.html:2
 msgid "e.g. ‘10 inch pothole on Example St, near post box’"
 msgstr "par exemple. 'Nid de poule de 10cm sur la route St, près de la boîte aux lettres'"
 
-#: templates/web/base/admin/bodies/contact-form.html:77
+#: templates/web/base/admin/bodies/contact-form.html:79
 #: templates/web/base/report/new/form_report.html:79
 msgid "e.g. ‘This pothole has been here for two months and…’"
 msgstr "par exemple. 'Ce nid de poule existe depuis deux mois et…'"
@@ -6039,9 +6249,17 @@ msgstr ""
 msgid "last updated %s"
 msgstr "dernière mise à jour %s"
 
+#: templates/web/base/maps/_map_instructions.html:7
+msgid "left"
+msgstr ""
+
 #: perllib/Utils.pm:226
 msgid "less than a minute"
 msgstr "moins d'une minute"
+
+#: templates/web/base/maps/_map_instructions.html:6
+msgid "minus"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin/Stats.pm:54
 #: templates/web/base/admin/stats/questionnaire.html:15
@@ -6051,7 +6269,7 @@ msgstr "s.o."
 
 #: perllib/FixMyStreet/App/Form/Widget/Field/CheckboxGroup.pm:19
 #: templates/web/base/admin/category-checkboxes.html:6
-#: templates/web/base/admin/users/form.html:159
+#: templates/web/base/admin/users/form.html:167
 msgid "none"
 msgstr "aucun"
 
@@ -6065,8 +6283,8 @@ msgstr "pas la responsabilité de l’administration"
 msgid "optional"
 msgstr "(facultatif)"
 
-#: templates/web/base/report/form/user.html:33
-#: templates/web/base/report/form/user.html:44
+#: templates/web/base/report/form/user.html:36
+#: templates/web/base/report/form/user.html:47
 #, fuzzy
 msgid "or"
 msgstr " ou "
@@ -6079,13 +6297,8 @@ msgstr "ou <a href=\"%s\">créez un compte</a>"
 msgid "or <a href=\"%s\">sign in</a>"
 msgstr "ou <a href=\"%s\">se connecter</a>"
 
-#: templates/web/base/alert/index.html:18
-#, fuzzy
-msgid "or use my location"
-msgstr "ce lieu"
-
-#: templates/web/base/admin/reports/edit.html:50
-#: templates/web/base/admin/reports/edit.html:51
+#: templates/web/base/admin/reports/_edit_main.html:27
+#: templates/web/base/admin/reports/_edit_main.html:28
 #: templates/web/zurich/admin/report_edit-sdm.html:33
 #: templates/web/zurich/admin/report_edit-sdm.html:34
 #: templates/web/zurich/admin/reports/edit.html:35
@@ -6095,9 +6308,17 @@ msgstr "ce lieu"
 msgid "originally entered: &ldquo;%s&rdquo;"
 msgstr "saisi initialement: &ldquo;%s&rdquo;"
 
-#: templates/web/base/admin/reports/edit.html:69
+#: templates/web/base/admin/reports/_edit_main.html:46
 msgid "other areas:"
 msgstr "autres lieux:"
+
+#: templates/web/base/maps/_map_instructions.html:5
+msgid "plus"
+msgstr ""
+
+#: templates/web/base/maps/_map_instructions.html:8
+msgid "right"
+msgstr ""
 
 #: templates/web/zurich/admin/bodies/contact-form.html:29
 msgid "show"
@@ -6106,6 +6327,11 @@ msgstr "montrer"
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
 msgstr "déconnexion"
+
+#: templates/web/base/maps/_map_instructions.html:15
+#: templates/web/base/maps/_map_instructions.html:21
+msgid "space"
+msgstr ""
 
 #: templates/web/base/admin/users/import.html:71
 msgid "the database id of the body to associate that user with, e.g. <code>2217</code> for Buckinghamshire."
@@ -6124,7 +6350,7 @@ msgstr "Il n'y a aucune épingle affichée parce que l'utilisateur n'a pas utili
 msgid "this location"
 msgstr "ce lieu"
 
-#: perllib/FixMyStreet/Queue/Item/Report.pm:133
+#: perllib/FixMyStreet/Queue/Item/Report.pm:137
 msgid "this type of local problem"
 msgstr "Ce type de problème local"
 
@@ -6132,38 +6358,37 @@ msgstr "Ce type de problème local"
 msgid "today"
 msgstr "aujourd'hui"
 
-#: templates/web/base/admin/problem_row.html:36
 #: templates/web/base/report/inspect/_assignment-options.html:11
 msgid "unassigned"
 msgstr ""
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:109
+#: templates/web/base/js/translation_strings.html:112
 msgid "update"
 msgstr "mettre à jour"
 
 #. ("JS")
-#: templates/web/base/js/translation_strings.html:110
+#: templates/web/base/js/translation_strings.html:113
 msgid "updates"
 msgstr "mises à jour"
 
-#: templates/web/base/admin/reports/edit.html:53
+#: templates/web/base/admin/reports/_edit_main.html:30
 msgid "used map"
 msgstr "plan utilisé"
 
-#: templates/web/base/admin/update_edit.html:44
+#: templates/web/base/admin/update_edit.html:42
 msgid "user is from same council as problem - %d"
 msgstr "l'utilisateur est de la même administration que le problème - %d"
 
-#: templates/web/base/admin/update_edit.html:47
+#: templates/web/base/admin/update_edit.html:45
 msgid "user is problem owner"
 msgstr "L'utilisateur est propriétaire du problème"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:704
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:721
 msgid "user not in abuse list"
 msgstr "utilisateur ne figurant pas dans la liste d’abus"
 
-#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:702
+#: perllib/FixMyStreet/App/Controller/Admin/Users.pm:719
 msgid "user removed from abuse list"
 msgstr "utilisateur supprimé de la liste d’abus"
 
@@ -6207,7 +6432,7 @@ msgid_plural "%d months"
 msgstr[0] "%d mois"
 msgstr[1] "%d mois"
 
-#: perllib/FixMyStreet/App/Form/Claims.pm:1109
+#: perllib/FixMyStreet/App/Form/Claims.pm:1110
 #, fuzzy, perl-format
 msgid "%d photo"
 msgid_plural "%d photos"
@@ -6333,7 +6558,7 @@ msgid_plural "We do not yet have details for the councils that cover this locati
 msgstr[0] "Nous n'avons pas encore de détails pour l'administration responsable de ce lieu."
 msgstr[1] "Nous n'avons pas encore de détails pour les administrations responsables de ce lieu."
 
-#: templates/web/base/waste/garden/renew_summary.html:11
+#: templates/web/base/waste/garden/subscribe_summary.html:13
 #, perl-format
 msgid "bin"
 msgid_plural "bins"
@@ -6347,19 +6572,26 @@ msgid_plural "last updated %d days ago"
 msgstr[0] "dernier enregistrement %d jours"
 msgstr[1] "dernière %d mise à jour"
 
-#: templates/email/default/inactive-account.txt:8
+#: templates/email/default/inactive-account.html:18
 #, perl-format
 msgid "month"
 msgid_plural "months"
 msgstr[0] "month"
 msgstr[1] "mois"
 
-#: templates/email/rutland/archive.html:28
+#: templates/email/westminster/archive.html:25
 #, perl-format
 msgid "report"
 msgid_plural "reports"
 msgstr[0] "rapport"
 msgstr[1] "rapports"
+
+#~ msgid "Received by %s moments later"
+#~ msgstr "Reçu par %s un peu plus tard"
+
+#, fuzzy
+#~ msgid "or use my location"
+#~ msgstr "ce lieu"
 
 #, fuzzy
 #~ msgid "Enter a street, area, or landmark"
@@ -6581,9 +6813,6 @@ msgstr[1] "rapports"
 
 #~ msgid "This is a developer site; things might break at any time, and the database will be periodically deleted."
 #~ msgstr "Ceci est un site en développement, le service peut être interrompu à tout moment, et la base de données sera régulièrement effacée."
-
-#~ msgid "Trusted by bodies:"
-#~ msgstr "Accrédité par les organismes:"
 
 #~ msgid "Trusted to make reports that don't need to be inspected"
 #~ msgstr "Accrédité pour faire des rapports sans être inspectés"
