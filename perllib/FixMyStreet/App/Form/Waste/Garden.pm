@@ -17,9 +17,10 @@ sub details_update_fields {
     my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
     my $cost = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($bin_count);
     $form->{c}->stash->{payment} = $cost / 100;
+    my $max_bins = $c->stash->{garden_form_data}->{max_bins};
     return {
-        current_bins => { default => $existing },
-        bins_wanted => { default => $bin_count },
+        current_bins => { default => $existing, range_end => $max_bins },
+        bins_wanted => { default => $bin_count, range_end => $max_bins },
     };
 }
 
@@ -99,7 +100,11 @@ has_field existing => (
 
 has_field existing_number => (
     type => 'Integer',
-    label => 'How many? (1-6)',
+    build_label_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        return "How many? (1-$max_bins)";
+    },
     validate_method => sub {
         my $self = shift;
         my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
@@ -116,18 +121,24 @@ has_field existing_number => (
 
 has_field current_bins => (
     type => 'Integer',
-    label => 'Number of bins currently on site (0-6)',
+    build_label_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        return "Number of bins currently on site (0-$max_bins)";
+    },
     required => 1,
     range_start => 0,
-    range_end => 6,
 );
 
 has_field bins_wanted => (
     type => 'Integer',
-    label => 'Number of bins to be emptied (including bins already on site) (0-6)',
+    build_label_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
+    },
     required => 1,
     range_start => 0,
-    range_end => 6,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     },
