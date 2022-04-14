@@ -13,9 +13,10 @@ my %intro_fields = (
         my $c = $form->{c};
         my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
         $c->stash->{payment} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
+        my $max_bins = $c->stash->{garden_form_data}->{max_bins};
         return {
-            current_bins => { default => $c->stash->{garden_form_data}->{bins} },
-            bins_wanted => { default => $c->stash->{garden_form_data}->{bins} },
+            current_bins => { default => $c->stash->{garden_form_data}->{bins}, range_end => $max_bins },
+            bins_wanted => { default => $c->stash->{garden_form_data}->{bins}, range_end => $max_bins },
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
             email => { default => $c->stash->{is_staff} ? '' : $c->user->email },
             phone => { default => $c->stash->{is_staff} ? '' : $c->user->phone },
@@ -77,7 +78,6 @@ has_field current_bins => (
     required => 1,
     disabled => 1,
     range_start => 1,
-    range_end => 6,
 );
 
 has_field bins_wanted => (
@@ -86,7 +86,6 @@ has_field bins_wanted => (
     tags => { number => 1 },
     required => 1,
     range_start => 1,
-    range_end => 6,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     }

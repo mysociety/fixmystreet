@@ -36,10 +36,11 @@ my %alter_fields = (
             $c->stash->{new_bin_count} = $bins_wanted - $current_bins;
             $c->stash->{pro_rata} = $c->cobrand->waste_get_pro_rata_cost( $c->stash->{new_bin_count}, $c->stash->{garden_form_data}->{end_date}) / 100;
         }
+        my $max_bins = $c->stash->{garden_form_data}->{max_bins};
         return {
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
-            current_bins => { default => $data->{bins} },
-            bins_wanted => { default => $data->{bins} },
+            current_bins => { default => $data->{bins}, range_end => $max_bins },
+            bins_wanted => { default => $data->{bins}, range_end => $max_bins },
         };
     },
     next => 'summary',
@@ -119,7 +120,6 @@ has_field current_bins => (
     required => 1,
     disabled => 1,
     range_start => 1,
-    range_end => 6,
 );
 
 has_field bins_wanted => (
@@ -128,7 +128,6 @@ has_field bins_wanted => (
     tags => { number => 1 },
     required => 1,
     range_start => 1,
-    range_end => 6,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     }
