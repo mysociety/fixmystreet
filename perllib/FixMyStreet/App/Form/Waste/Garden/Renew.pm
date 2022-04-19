@@ -11,7 +11,6 @@ my %intro_fields = (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
-        $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost;
         my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
         $c->stash->{payment} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
         return {
