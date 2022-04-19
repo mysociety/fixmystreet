@@ -34,7 +34,7 @@
     [% PROCESS form override_fields=['saved_data', 'token', 'process'] %]
     [% PROCESS form override_fields=['continue_review'] %]
 
-  <input type="hidden" name="per_bin_cost" id="per_bin_cost" value="[% garden_form_data.per_bin_cost %]">
+  <input type="hidden" name="per_bin_cost" id="per_bin_cost" value="[% per_bin_cost %]">
   <input type="hidden" name="pro_rata_bin_cost" id="pro_rata_bin_cost" value="[% garden_form_data.pro_rata_bin_cost %]">
   <input type="hidden" name="existing_bins" id="existing_bins" value="[% garden_form_data.bins %]">
 

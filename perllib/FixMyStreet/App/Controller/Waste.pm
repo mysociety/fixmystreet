@@ -903,13 +903,19 @@ sub check_if_staff_can_pay : Private {
     return 1;
 }
 
-sub garden : Chained('property') : Args(0) {
+sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
     if ($c->stash->{waste_features}->{garden_disabled}) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
+
+    $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
+}
+
+sub garden : Chained('garden_setup') : Args(0) {
+    my ($self, $c) = @_;
 
     if ( $c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
@@ -922,17 +928,11 @@ sub garden : Chained('property') : Args(0) {
     };
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
-    $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
     $c->forward('form');
 }
 
-sub garden_modify : Chained('property') : Args(0) {
+sub garden_modify : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
-
-    if ($c->stash->{waste_features}->{garden_disabled}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
 
     unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
@@ -968,7 +968,6 @@ sub garden_modify : Chained('property') : Args(0) {
 
     $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
     $c->stash->{garden_form_data} = {
-        per_bin_cost => $c->cobrand->garden_waste_cost,
         pro_rata_bin_cost =>  $c->cobrand->waste_get_pro_rata_cost(1, $service->{end_date}),
         max_bins => $max_bins,
         bins => $service->{garden_bins},
@@ -982,13 +981,8 @@ sub garden_modify : Chained('property') : Args(0) {
     $c->forward('form');
 }
 
-sub garden_cancel : Chained('property') : Args(0) {
+sub garden_cancel : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
-
-    if ($c->stash->{waste_features}->{garden_disabled}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
 
     if ( !$c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
@@ -1009,13 +1003,8 @@ sub garden_cancel : Chained('property') : Args(0) {
     $c->forward('form');
 }
 
-sub garden_renew : Chained('property') : Args(0) {
+sub garden_renew : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
-
-    if ($c->stash->{waste_features}->{garden_disabled}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
 
     unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
