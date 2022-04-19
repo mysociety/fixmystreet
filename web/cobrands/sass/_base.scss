@@ -1647,6 +1647,10 @@ input.final-submit {
     left: 0px;
 }
 
+.fancybox-bg {
+  pointer-events: none;
+}
+
 .problem-back {
   display: block;
   font-size: 1em;
