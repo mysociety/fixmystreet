@@ -269,9 +269,9 @@ input[type="submit"].waste-service-link {
   max-width: 50em;
   text-align: right;
   margin-top: 1em;
-  &-costs {
+  .cost-pa__total-costs {
     display: block;
-    &:nth-child(2) {
+    &:last-child {
       margin: 1em 0 3em 0;
       font-weight: 700;
     }

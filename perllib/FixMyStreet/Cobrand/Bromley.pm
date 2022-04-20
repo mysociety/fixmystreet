@@ -591,7 +591,7 @@ sub bin_services_for_address {
                     # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
                     if ( $_->{DatatypeName} eq 'Quantity' ) {
                         $garden_bins = $_->{Value};
-                        $garden_cost = $self->garden_waste_cost($garden_bins) / 100;
+                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
                     }
                 }
             }
@@ -872,13 +872,15 @@ sub waste_display_payment_method {
     return $display->{$method};
 }
 
-sub garden_waste_cost {
+sub garden_waste_cost_pa {
     my ($self, $bin_count) = @_;
 
     $bin_count ||= 1;
 
     return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
 }
+
+sub garden_waste_new_bin_admin_fee { 0 }
 
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;

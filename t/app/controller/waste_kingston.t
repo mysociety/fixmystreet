@@ -183,6 +183,8 @@ FixMyStreet::override_config {
         payment_gateway => { kingston => {
             cc_url => 'http://example.com',
             ggw_cost => 2000,
+            ggw_new_bin_first_cost => 1500,
+            ggw_new_bin_cost => 750,
         } },
     },
 }, sub {
@@ -352,10 +354,12 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
+        $mech->content_contains('£15.00');
         $mech->content_contains('1 bin');
         $mech->submit_form_ok({ with_fields => { goto => 'details' } });
         $mech->content_contains('<span id="cost_pa">20.00');
-        $mech->content_contains('<span id="cost_now">20.00');
+        $mech->content_contains('<span id="cost_now">35.00');
+        $mech->content_contains('<span id="cost_now_admin">15.00');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
@@ -373,7 +377,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{amount}, 3500, 'correct amount used';
         check_extra_data_pre_confirm($new_report);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
@@ -465,7 +469,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 2 } });
         $mech->content_contains('2 bins');
         $mech->content_contains('40.00');
-        $mech->content_contains('20.00');
+        $mech->content_contains('35.00');
     };
     subtest 'check modify sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden_modify');
@@ -473,13 +477,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('2 bins');
         $mech->content_contains('40.00');
-        $mech->content_contains('20.00');
+        $mech->content_contains('35.00');
         $mech->submit_form_ok({ with_fields => { goto => 'alter' } });
         $mech->content_contains('<span id="cost_per_year">40.00');
-        $mech->content_contains('<span id="pro_rata_cost">20.00');
+        $mech->content_contains('<span id="cost_now_admin">15.00');
+        $mech->content_contains('<span id="pro_rata_cost">35.00');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{amount}, 3500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -577,8 +582,9 @@ FixMyStreet::override_config {
             payment_method => 'credit_card',
         } });
         $mech->content_contains('40.00');
+        $mech->content_contains('15.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 4000, 'correct amount used';
+        is $sent_params->{amount}, 5500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -664,8 +670,9 @@ FixMyStreet::override_config {
             payment_method => 'credit_card',
         } });
         $mech->content_contains('40.00');
+        $mech->content_contains('15.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 4000, 'correct amount used';
+        is $sent_params->{amount}, 5500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report);
@@ -741,7 +748,8 @@ FixMyStreet::override_config {
             email => 'test@example.net'
         } });
         $mech->content_contains('40.00');
-        $mech->content_contains('20.00');
+        $mech->content_contains('15.00');
+        $mech->content_contains('35.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_contains('Enter paye.net code');
         $mech->submit_form_ok({ with_fields => {
@@ -886,9 +894,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('40.00');
-        $mech->content_contains('20.00');
+        $mech->content_contains('15.00');
+        $mech->content_contains('35.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{amount}, 3500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
