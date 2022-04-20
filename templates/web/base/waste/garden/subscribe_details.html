@@ -7,18 +7,7 @@
 [% PROCESS title title=form.title %]
 [% PROCESS errors %]
 
-<div class="waste-service-hint-banner">
-  <div class="waste-service-hint-banner__image">
-      <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt="">
-  </div>
-  <div class="waste-service-hint__content">
-      <p>
-        Each wheelie bin holds the equivalent of 5 or 6 bags of green garden waste,
-        and will be collected fortnightly during gardening season (March–November)
-        and monthly outside of gardening season (December–February).
-      </p>
-  </div>
-</div>
+[% PROCESS 'waste/garden/subscribe_details_bin_desc.html' %]
 
 <form method="post" id="subscribe_details">
   <fieldset class="govuk-fieldset" style="margin-top: 1.5em;">
