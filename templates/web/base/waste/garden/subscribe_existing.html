@@ -6,17 +6,7 @@
 [% PROCESS title title=form.title %]
 [% PROCESS errors %]
 
-<div class="waste-service-hint-banner">
-    <div class="waste-service-hint-banner__image">
-        <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt="">
-    </div>
-    <div class="waste-service-hint__content">
-        <p>
-            Our 240 litre wheelie bins have grey sides and a brown top, and hold the
-            equivalent of 5 or 6 bags of green garden waste.
-        </p>
-    </div>
-</div>
+[% PROCESS 'waste/garden/subscribe_existing_bin_desc.html' %]
 
 <form method="post">
   [% PROCESS form %]
