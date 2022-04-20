@@ -7,17 +7,7 @@
 [% PROCESS title title=form.title %]
 [% PROCESS errors %]
 
-<div class="waste-service-hint-banner">
-    <div class="waste-service-hint-banner__image">
-        <img src="/cobrands/bromley/images/container-images/garden-waste-bin.png" alt="">
-    </div>
-    <div class="waste-service-hint__content">
-        <p>
-            Our 240 litre wheelie bins have grey sides and a brown lid.
-            If you do not have one of these please request a replacement container(s).
-        </p>
-    </div>
-</div>
+[% PROCESS 'waste/garden/renew_bin_desc.html' %]
 
 <form method="post" id="renew">
   <fieldset class="govuk-fieldset">
