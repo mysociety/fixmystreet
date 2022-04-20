@@ -320,7 +320,7 @@ sub bin_services_for_address {
                         # $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type'; # should be 26 or 28
                         if ( $_->{DatatypeName} eq 'Quantity' ) {
                             $garden_bins = $_->{Value};
-                            $garden_cost = $self->garden_waste_cost($garden_bins) / 100;
+                            $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
                         }
                     }
                 }
@@ -551,19 +551,11 @@ sub within_working_days {
 #    $data->{detail} = $detail;
 #}
 
+# Same as full cost
 sub waste_get_pro_rata_cost {
     my ($self, $bins, $end) = @_;
-
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($end);
-    my $cost = $bins * $self->waste_get_pro_rata_bin_cost( $sub_end, $now );
-
+    my $cost = $bins * $self->feature('payment_gateway')->{ggw_cost};
     return $cost;
-}
-
-sub waste_get_pro_rata_bin_cost {
-    my ($self, $end, $start) = @_;
-    return $self->feature('payment_gateway')->{ggw_cost};
 }
 
 sub waste_display_payment_method {
@@ -577,12 +569,31 @@ sub waste_display_payment_method {
     return $display->{$method};
 }
 
-sub garden_waste_cost {
+sub garden_waste_cost_pa {
     my ($self, $bin_count) = @_;
 
     $bin_count ||= 1;
 
-    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
+    my $per_bin_cost = $self->feature('payment_gateway')->{ggw_cost};
+    my $cost = $per_bin_cost * $bin_count;
+    return $cost;
+}
+
+sub garden_waste_new_bin_admin_fee {
+    my ($self, $new_bins) = @_;
+    $new_bins ||= 0;
+
+    my $per_new_bin_first_cost = $self->feature('payment_gateway')->{ggw_new_bin_first_cost};
+    my $per_new_bin_cost = $self->feature('payment_gateway')->{ggw_new_bin_cost};
+
+    my $cost = 0;
+    if ($new_bins > 0) {
+        $cost += $per_new_bin_first_cost;
+        if ($new_bins > 1) {
+            $cost += $per_new_bin_cost * ($new_bins - 1);
+        }
+    }
+    return $cost;
 }
 
 sub admin_templates_external_status_code_hook {

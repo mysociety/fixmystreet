@@ -26,12 +26,19 @@ has_page alter => (
         my $data = $c->stash->{garden_form_data};
         my $current_bins = $form->saved_data->{current_bins} || $data->{bins};
         my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
-        $c->stash->{cost_per_year} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
+        my $new_bins = $bins_wanted - $current_bins;
+
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bins_wanted);
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        $c->stash->{cost_pa} = $cost_pa / 100;
+        $c->stash->{cost_now_admin} = $cost_now_admin / 100;
+
         $c->stash->{new_bin_count} = 0;
         $c->stash->{pro_rata} = 0;
-        if ( $bins_wanted > $current_bins ) {
-            $c->stash->{new_bin_count} = $bins_wanted - $current_bins;
-            $c->stash->{pro_rata} = $c->cobrand->waste_get_pro_rata_cost( $c->stash->{new_bin_count}, $c->stash->{garden_form_data}->{end_date}) / 100;
+        if ($new_bins > 0) {
+            $c->stash->{new_bin_count} = $new_bins;
+            my $cost_pro_rata = $c->cobrand->waste_get_pro_rata_cost($new_bins, $c->stash->{garden_form_data}->{end_date});
+            $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
         }
         my $max_bins = $c->stash->{garden_form_data}->{max_bins};
         return {
@@ -53,11 +60,17 @@ has_page summary => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        my $new_bins = $data->{bins_wanted} - $data->{current_bins};
+        my $current_bins = $data->{current_bins};
+        my $bin_count = $data->{bins_wanted};
+        my $new_bins = $bin_count - $current_bins;
         my $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-        my $total = $c->cobrand->garden_waste_cost($data->{bins_wanted});
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $total = $cost_pa;
+        $pro_rata += $cost_now_admin;
 
         $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
+        $data->{cost_now_admin} = $cost_now_admin / 100;
         $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
         $data->{display_total} = $total / 100;
 

@@ -939,6 +939,8 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     }
 
     $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
+    $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
+    $c->stash->{per_new_bin_first_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_first_cost} || $c->stash->{per_new_bin_cost};
 }
 
 sub garden : Chained('garden_setup') : Args(0) {
@@ -1181,25 +1183,32 @@ sub process_garden_modification : Private {
     $data->{title} = 'Garden Subscription - Amend';
     $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Amend});
 
-    my $new_bins = $data->{bins_wanted} - $data->{current_bins};
+    my $total_bins = $data->{bins_wanted};
+    my $current_bins = $data->{current_bins};
+    my $new_bins = $total_bins - $current_bins;
 
     $data->{new_bins} = $new_bins;
     $data->{bin_count} = $data->{bins_wanted};
 
+    my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
+
+    # One-off ad-hoc payment to be made now
     my $pro_rata;
     if ( $new_bins > 0 ) {
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
+        $pro_rata += $cost_now_admin;
         $c->set_param('pro_rata', $pro_rata);
     }
 
     my $payment_method = $c->stash->{garden_form_data}->{payment_method};
-    my $payment = $c->cobrand->garden_waste_cost($data->{bins_wanted});
+    my $payment = $cost_pa;
     $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
+
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
-
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{message} = 'Payment skipped on staging';
@@ -1231,11 +1240,14 @@ sub process_garden_renew : Private {
     my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
 
     my $total_bins = $data->{bins_wanted};
-    my $payment = $c->cobrand->garden_waste_cost($total_bins);
-    $data->{bin_count} = $total_bins;
-
     my $current_bins = $data->{current_bins};
+    $data->{bin_count} = $total_bins;
     $data->{new_bins} = $total_bins - $current_bins;
+
+    my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
+    my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
+    my $payment = $cost_now_admin + $cost_pa;
+
     if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
         $data->{category} = 'Garden Subscription';
         $data->{title} = 'Garden Subscription - New';
@@ -1286,7 +1298,10 @@ sub process_garden_data : Private {
     $data->{bin_count} = $bin_count;
     $data->{new_bins} = $data->{bins_wanted} - $data->{current_bins};
 
-    my $total = $c->cobrand->garden_waste_cost($bin_count);
+    my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+    my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
+    my $total = $cost_now_admin + $cost_pa;
+
     $c->set_param('payment', $total);
 
     $c->forward('setup_garden_sub_params', [ $data ]);

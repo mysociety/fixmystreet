@@ -15,8 +15,16 @@ has_page intro => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
-        my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
-        $c->stash->{payment} = $c->cobrand->garden_waste_cost( $bins_wanted ) / 100;
+        my $current_bins = $c->stash->{garden_form_data}->{bins};
+        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
+        my $new_bins = $bin_count - $current_bins;
+
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        $form->{c}->stash->{cost_pa} = $cost_pa / 100;
+        $form->{c}->stash->{cost_now_admin} = $cost_now_admin / 100;
+        $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
+
         my $max_bins = $c->stash->{garden_form_data}->{max_bins};
         return {
             current_bins => { default => $c->stash->{garden_form_data}->{bins}, range_end => $max_bins },
@@ -37,10 +45,16 @@ has_page summary => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        my $bins_wanted = $data->{bins_wanted};
 
-        my $total = $c->cobrand->garden_waste_cost( $bins_wanted);
+        my $current_bins = $data->{current_bins};
+        my $bin_count = $data->{bins_wanted};
+        my $new_bins = $bin_count - $current_bins;
+        my $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $total = $cost_now_admin + $cost_pa;
 
+        $data->{cost_now_admin} = $cost_now_admin / 100;
+        $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;
 
         unless ( $c->stash->{is_staff} ) {

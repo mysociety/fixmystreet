@@ -11,11 +11,21 @@ sub details_update_fields {
     my $data = $form->saved_data;
     my $c = $form->{c};
 
+    # From first question
     my $existing = $data->{existing_number} || 0;
     $existing = 0 if $data->{existing} eq 'no';
+
+    # From main form
+    my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $existing;
     my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
-    my $cost = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($bin_count);
-    $form->{c}->stash->{payment} = $cost / 100;
+    my $new_bins = $bin_count - $current_bins;
+
+    my $cost_pa = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+    my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+    $form->{c}->stash->{cost_pa} = $cost_pa / 100;
+    $form->{c}->stash->{cost_now_admin} = $cost_now_admin / 100;
+    $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
+
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
     return {
         current_bins => { default => $existing, range_end => $max_bins },
@@ -56,9 +66,19 @@ has_page summary => (
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
-        my $total = $form->{c}->cobrand->garden_waste_cost( $data->{bins_wanted} );
+
+        my $current_bins = $data->{current_bins};
+        my $bin_count = $data->{bins_wanted};
+        my $new_bins = $bin_count - $current_bins;
+        my $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $total = $cost_now_admin + $cost_pa;
+
         $data->{total_bins} = $data->{bins_wanted};
+        $data->{cost_now_admin} = $cost_now_admin / 100;
+        $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;
+
         return {};
     },
     finished => sub {
