@@ -48,4 +48,10 @@ sub reopening_disallowed {
 
 sub default_map_zoom { 6 }
 
+sub munge_report_new_bodies {
+    my ($self, $bodies) = @_;
+
+    %$bodies = map { $_->id => $_ } grep { $_->name eq 'Thamesmead' } values %$bodies;
+}
+
 1;
