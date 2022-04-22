@@ -134,6 +134,10 @@ sub munge_report_new_bodies {
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
         }
     }
+
+    if ( $bodies{'Thamesmead'} ) {
+            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+    }
 }
 
 sub munge_report_new_contacts {
