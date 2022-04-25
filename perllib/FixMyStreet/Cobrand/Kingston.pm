@@ -274,6 +274,11 @@ sub bin_services_for_address {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
             my $service_id = $task->{TaskTypeId};
+
+            # Only Garden for now XXX
+            next unless $service_id == 1914 || $service_id == 1915;
+            # Only Garden for now XXX
+
             my $schedules = _parse_schedules($task);
             $expired{$service_id} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
