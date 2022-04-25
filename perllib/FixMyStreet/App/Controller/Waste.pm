@@ -1080,7 +1080,7 @@ sub process_garden_cancellation : Private {
     my $bin_count = $c->cobrand->get_current_garden_bins;
 
     $data->{new_bins} = $bin_count * -1;
-    $c->forward('setup_garden_sub_params', [ $data ]);
+    $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
     $c->forward('add_report', [ $data, 1 ]) or return;
 
@@ -1147,32 +1147,18 @@ sub get_original_sub : Private {
 }
 
 sub setup_garden_sub_params : Private {
-    my ($self, $c, $data) = @_;
+    my ($self, $c, $data, $type) = @_;
 
     my $address = $c->stash->{property}->{address};
-
-    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
 
     $data->{detail} = "$data->{category}\n\n$address";
 
     $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
-    $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
-    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
-    if ( $data->{new_bins} ) {
-        if ( $data->{new_bins} > 0 ) {
-            $c->set_param('Container_Instruction_Action', $c->stash->{container_actions}->{deliver} );
-        } elsif ( $data->{new_bins} < 0 ) {
-            $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
-        }
-        $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste Container'});
-        $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
-    }
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
     $c->set_param('payment_method', $data->{payment_method});
-
-    $c->cobrand->call_hook('waste_staff_source');
+    $c->cobrand->call_hook(waste_garden_sub_params => $data, $type);
 }
 
 sub process_garden_modification : Private {
@@ -1181,7 +1167,6 @@ sub process_garden_modification : Private {
 
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - Amend';
-    $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Amend});
 
     my $total_bins = $data->{bins_wanted};
     my $current_bins = $data->{current_bins};
@@ -1207,7 +1192,7 @@ sub process_garden_modification : Private {
 
     $c->set_param('payment', $payment);
 
-    $c->forward('setup_garden_sub_params', [ $data ]);
+    $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{Amend} ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
@@ -1248,19 +1233,20 @@ sub process_garden_renew : Private {
     my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
     my $payment = $cost_now_admin + $cost_pa;
 
+    my $type;
     if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
         $data->{category} = 'Garden Subscription';
         $data->{title} = 'Garden Subscription - New';
-        $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
+        $type = $c->stash->{garden_subs}->{New};
     } else {
         $data->{category} = 'Garden Subscription';
         $data->{title} = 'Garden Subscription - Renew';
-        $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Renew});
+        $type = $c->stash->{garden_subs}->{Renew};
     }
 
     $c->set_param('payment', $payment);
 
-    $c->forward('setup_garden_sub_params', [ $data ]);
+    $c->forward('setup_garden_sub_params', [ $data, $type ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
     # it should not be possible to get to here if it's direct debit but
@@ -1292,7 +1278,6 @@ sub process_garden_data : Private {
 
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - New';
-    $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{New});
 
     my $bin_count = $data->{bins_wanted};
     $data->{bin_count} = $bin_count;
@@ -1304,7 +1289,7 @@ sub process_garden_data : Private {
 
     $c->set_param('payment', $total);
 
-    $c->forward('setup_garden_sub_params', [ $data ]);
+    $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{New} ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
