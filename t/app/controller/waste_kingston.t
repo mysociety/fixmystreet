@@ -203,9 +203,9 @@ FixMyStreet::override_config {
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Subscribe to Green Garden Waste', 'Subscribe link not present if in renew window');
-        #set_fixed_time('2021-05-05T17:00:00Z');
-        #$mech->get_ok('/waste/12345');
-        #$mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if expired');
+        set_fixed_time('2021-05-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if expired');
     };
 
     subtest 'check overdue, soon due messages and modify link' => sub {
