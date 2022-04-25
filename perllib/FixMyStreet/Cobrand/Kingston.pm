@@ -191,11 +191,6 @@ sub waste_container_actions {
     };
 }
 
-sub waste_staff_source {
-    my $self = shift;
-    $self->_set_user_source;
-}
-
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
@@ -480,17 +475,6 @@ sub within_working_days {
     }
 }
 
-sub _set_user_source {
-    my $self = shift;
-    my $c = $self->{c};
-    return if !$c->user_exists || !$c->user->from_body;
-
-    my %roles = map { $_->name => 1 } $c->user->obj->roles->all;
-    my $source = 9; # Client Officer
-    $source = 3 if $roles{'Contact Centre Agent'} || $roles{'CSC'}; # Council Contact Centre
-    $c->set_param('Source', $source);
-}
-
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 
@@ -516,7 +500,6 @@ sub waste_munge_request_data {
         $c->set_param('Action', '');
         $c->set_param('Reason', '');
     }
-    $self->_set_user_source;
 }
 
 sub waste_munge_report_data {
@@ -529,7 +512,6 @@ sub waste_munge_report_data {
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
-    $self->_set_user_source;
 }
 
 sub waste_munge_enquiry_data {
@@ -544,7 +526,6 @@ sub waste_munge_enquiry_data {
     }
     $detail .= $address;
     $data->{detail} = $detail;
-    $self->_set_user_source;
 }
 
 # Same as full cost
