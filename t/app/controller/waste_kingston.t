@@ -371,7 +371,7 @@ FixMyStreet::override_config {
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $sent_params->{amount}, 2000, 'correct amount used';
-        check_extra_data_pre_confirm($new_report);
+        check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -402,7 +402,7 @@ FixMyStreet::override_config {
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $sent_params->{amount}, 2000, 'correct amount used';
-        check_extra_data_pre_confirm($new_report);
+        check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -441,7 +441,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, 'Amend');
+        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -470,7 +470,7 @@ FixMyStreet::override_config {
         )->first;
 
         is $sent_params, undef, "no one off payment if reducing bin count";
-        check_extra_data_pre_confirm($new_report, 'Amend', 'confirmed');
+        check_extra_data_pre_confirm($new_report, type => 'Amend', state => 'confirmed', action => 2);
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
@@ -510,7 +510,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, 'Renew');
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -541,7 +541,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, 'Renew');
+        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -567,7 +567,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, 'Renew');
+        check_extra_data_pre_confirm($new_report, type => 'Renew', action => 2);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -598,7 +598,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report);
+        check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -628,7 +628,7 @@ FixMyStreet::override_config {
         is $sent_params->{amount}, 5500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        check_extra_data_pre_confirm($new_report);
+        check_extra_data_pre_confirm($new_report, quantity => 2);
     };
 
     subtest 'cancel credit card sub' => sub {
@@ -854,7 +854,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, 'Amend');
+        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -939,19 +939,27 @@ sub remove_test_subs {
 
 sub check_extra_data_pre_confirm {
     my $report = shift;
-    my $type = shift || 'New';
-    my $state = shift || 'unconfirmed';
+    my %params = (
+        type => 'New',
+        state => 'unconfirmed',
+        quantity => 1,
+        new_bins => 1,
+        action => 1,
+        @_
+    );
     $report->discard_changes;
     is $report->category, 'Garden Subscription', 'correct category on report';
-    is $report->title, "Garden Subscription - $type", 'correct title on report';
+    is $report->title, "Garden Subscription - $params{type}", 'correct title on report';
     is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-    #is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-    #is $report->get_extra_field_value('Subscription_Details_Container_Type'), 26, 'correct bin type';
-    #is $report->get_extra_field_value('Container_Instruction_Container_Type'), 26, 'correct container request bin type';
-    #is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
-    #is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
-    is $report->state, $state, 'report state correct';
-    if ($state eq 'unconfirmed') {
+    is $report->get_extra_field_value('Subscription_Details_Quantity'), $params{quantity}, 'correct bin count';
+    is $report->get_extra_field_value('Subscription_Details_Containers'), 26, 'correct bin type';
+    if ($params{new_bins}) {
+        is $report->get_extra_field_value('Bin_Delivery_Detail_Container'), 26, 'correct container request bin type';
+        is $report->get_extra_field_value('Bin_Delivery_Detail_Containers'), $params{action}, 'correct container request action';
+        is $report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), $params{new_bins}, 'correct container request count';
+    }
+    is $report->state, $params{state}, 'report state correct';
+    if ($params{state} eq 'unconfirmed') {
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
     }
 }
