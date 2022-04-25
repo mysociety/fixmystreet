@@ -485,11 +485,6 @@ sub waste_container_actions {
     };
 }
 
-sub waste_staff_source {
-    my $self = shift;
-    $self->_set_user_source;
-}
-
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
@@ -768,6 +763,28 @@ sub within_working_days {
     } else {
         return $today le $dt;
     }
+}
+
+sub waste_garden_sub_params {
+    my ($self, $data, $type) = @_;
+    my $c = $self->{c};
+
+    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+
+    $c->set_param('Subscription_Type', $type);
+    $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
+    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    if ( $data->{new_bins} ) {
+        if ( $data->{new_bins} > 0 ) {
+            $c->set_param('Container_Instruction_Action', $c->stash->{container_actions}->{deliver} );
+        } elsif ( $data->{new_bins} < 0 ) {
+            $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
+        }
+        $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste Container'});
+        $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
+    }
+
+    $self->_set_user_source;
 }
 
 sub _set_user_source {

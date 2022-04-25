@@ -54,7 +54,7 @@ sub open311_post_send {
     if ($error =~ /Cannot renew this property, a new request is required/ && $row->title eq "Garden Subscription - Renew") {
         # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
         $row->title("Garden Subscription - New");
-        $row->update_extra_field({ name => "Subscription_Type", value => $self->waste_subscription_types->{New} });
+        $row->update_extra_field({ name => "Request_Type", value => $self->waste_subscription_types->{New} });
     }
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
@@ -500,6 +500,26 @@ sub within_working_days {
         return $today ge $dt;
     } else {
         return $today le $dt;
+    }
+}
+
+sub waste_garden_sub_params {
+    my ($self, $data, $type) = @_;
+    my $c = $self->{c};
+
+    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+
+    # TODO This will need to sometimes be a sack!
+    my $container = $container_types{'Garden Waste Bin'};
+
+    $c->set_param('Request_Type', $type);
+    $c->set_param('Subscription_Details_Containers', $container);
+    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    if ( $data->{new_bins} ) {
+        my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
+        $c->set_param('Bin_Delivery_Detail_Containers', $c->stash->{container_actions}->{$action});
+        $c->set_param('Bin_Delivery_Detail_Container', $container);
+        $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
     }
 }
 
