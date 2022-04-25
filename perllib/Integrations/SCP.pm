@@ -120,13 +120,15 @@ sub pay {
                             'scpbase:amountInMinorUnits' => $args->{amount},
                             'scpbase:reference' => $self->config->{customer_ref},
                         ),
-                        'scpbase:tax' => {
-                            'scpbase:vat' =>ixhash(
-                                'scpbase:vatCode' => $self->config->{scp_vat_code},
-                                'scpbase:vatRate' => $self->config->{scp_vat_rate} || 0,
-                                'scpbase:vatAmountInMinorUnits' => $args->{vat} || 0,
-                            ),
-                        },
+                        $self->config->{scp_vat_code} ? (
+                            'scpbase:tax' => {
+                                'scpbase:vat' =>ixhash(
+                                    'scpbase:vatCode' => $self->config->{scp_vat_code},
+                                    'scpbase:vatRate' => $self->config->{scp_vat_rate} || 0,
+                                    'scpbase:vatAmountInMinorUnits' => $args->{vat} || 0,
+                                ),
+                            },
+                        ) : (),
                         'scpbase:lgItemDetails' => ixhash(
                             'scpbase:fundCode' => $self->config->{scp_fund_code},
                             'scpbase:additionalReference' => $args->{ref},
