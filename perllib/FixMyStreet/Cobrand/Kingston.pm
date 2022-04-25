@@ -480,6 +480,25 @@ sub within_working_days {
     }
 }
 
+sub waste_garden_sub_params {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+
+    # TODO This will need to sometimes be a sack!
+    my $container = $container_types{'Garden Waste Container'};
+
+    $c->set_param('Subscription_Details_Containers', $container);
+    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    if ( $data->{new_bins} ) {
+        my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
+        $c->set_param('Bin_Delivery_Detail_Containers', $c->stash->{container_actions}->{$action});
+        $c->set_param('Bin_Delivery_Detail_Container', $container);
+        $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
+    }
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data) = @_;
 

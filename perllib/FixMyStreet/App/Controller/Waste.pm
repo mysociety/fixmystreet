@@ -1124,28 +1124,14 @@ sub setup_garden_sub_params : Private {
 
     my $address = $c->stash->{property}->{address};
 
-    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
-
     $data->{detail} = "$data->{category}\n\n$address";
 
     $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
-    $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
-    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
-    if ( $data->{new_bins} ) {
-        if ( $data->{new_bins} > 0 ) {
-            $c->set_param('Container_Instruction_Action', $c->stash->{container_actions}->{deliver} );
-        } elsif ( $data->{new_bins} < 0 ) {
-            $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
-        }
-        $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste Container'});
-        $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
-    }
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
     $c->set_param('payment_method', $data->{payment_method});
-
-    $c->cobrand->call_hook('waste_staff_source');
+    $c->cobrand->call_hook(waste_garden_sub_params => $data);
 }
 
 sub process_garden_modification : Private {
