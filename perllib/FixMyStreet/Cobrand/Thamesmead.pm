@@ -54,4 +54,8 @@ sub munge_report_new_bodies {
     %$bodies = map { $_->id => $_ } grep { $_->name eq 'Thamesmead' } values %$bodies;
 }
 
+sub privacy_policy_url {
+    'https://www.thamesmeadnow.org.uk/terms-and-conditions/privacy-statement/'
+}
+
 1;
