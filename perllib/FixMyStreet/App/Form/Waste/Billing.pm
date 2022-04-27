@@ -15,21 +15,6 @@ has_field payment_method => (
     ],
 );
 
-has_field billing_differ => (
-    type => 'Checkbox',
-    option_label => 'Check if different to collection address',
-    label => "Billing address",
-    tags => {
-        toggle => 'form-billing_address-row'
-    },
-);
-
-has_field billing_address => (
-    type => 'Text',
-    widget => 'Textarea',
-    label => "Billing address",
-);
-
 has_field name => (
     type => 'Text',
     label => 'Your name',
