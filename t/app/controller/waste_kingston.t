@@ -45,6 +45,7 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'pro_rata', required => 0, automated => 'hidden_field' },
+    { code => 'admin_fee', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com'},
     { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
@@ -330,7 +331,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $sent_params->{amount}, 3500, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
         check_extra_data_pre_confirm($new_report);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
@@ -370,7 +372,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -401,7 +404,8 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -437,7 +441,8 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="pro_rata_cost">35.00');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 3500, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -506,7 +511,8 @@ FixMyStreet::override_config {
             payment_method => 'credit_card',
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -537,7 +543,8 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->content_contains('15.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 5500, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -563,7 +570,8 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -594,7 +602,8 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -625,7 +634,8 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->content_contains('15.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 5500, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, quantity => 2);
@@ -850,7 +860,8 @@ FixMyStreet::override_config {
         $mech->content_contains('15.00');
         $mech->content_contains('35.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 3500, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
