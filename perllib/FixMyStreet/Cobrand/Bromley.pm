@@ -146,7 +146,7 @@ sub waste_check_staff_payment_permissions {
     return unless $c->stash->{is_staff};
 
     if ( $c->user->has_permission_to('can_pay_with_csc', $self->body->id) ) {
-        $c->stash->{staff_payments_allowed} = 1;
+        $c->stash->{staff_payments_allowed} = 'paye';
     }
 }
 

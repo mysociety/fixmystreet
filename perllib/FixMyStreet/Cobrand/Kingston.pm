@@ -29,7 +29,7 @@ sub waste_check_staff_payment_permissions {
 
     return unless $c->stash->{is_staff};
 
-    $c->stash->{staff_payments_allowed} = 1;
+    $c->stash->{staff_payments_allowed} = 'cnp';
 }
 
 sub open311_extra_data_include {
