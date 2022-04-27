@@ -1045,7 +1045,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
@@ -1101,7 +1101,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
@@ -1150,7 +1150,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), '1', 'correct container request';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         $new_report->discard_changes;
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
@@ -1241,7 +1241,7 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="pro_rata_cost">7.50');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 750, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 750, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1467,7 +1467,7 @@ FixMyStreet::override_config {
             payment_method => 'credit_card',
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1567,7 +1567,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 4000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1611,7 +1611,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1658,7 +1658,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1705,7 +1705,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 4000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1801,7 +1801,7 @@ FixMyStreet::override_config {
             is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
             is $new_report->state, 'unconfirmed', 'report not confirmed';
 
-            is $sent_params->{amount}, 2000, 'correct amount used';
+            is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('scpReference'), '12345', 'scp reference on report';
@@ -2281,7 +2281,7 @@ FixMyStreet::override_config {
         $mech->content_contains('A New Name');
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -2370,7 +2370,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -2450,7 +2450,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -2498,7 +2498,7 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 750, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 750, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -2543,7 +2543,7 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->content_contains('7.50');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{amount}, 750, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 750, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
