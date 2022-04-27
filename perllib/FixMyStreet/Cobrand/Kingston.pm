@@ -285,10 +285,10 @@ sub bin_services_for_address {
                 $garden = 1;
                 my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
                 foreach (@$data) {
-                    next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
+                    next unless $_->{DatatypeName} eq 'SLWP - Containers'; # DatatypeId 3346
                     my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                     foreach (@$moredata) {
-                        # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
+                        # $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type'; # should be 26 or 28
                         if ( $_->{DatatypeName} eq 'Quantity' ) {
                             $garden_bins = $_->{Value};
                             $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
