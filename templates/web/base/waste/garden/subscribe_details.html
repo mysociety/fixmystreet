@@ -35,10 +35,6 @@
   </dl>
   [% END %]
 
-  [% IF NOT staff_payments_allowed %]
-  [% PROCESS form override_fields=['billing_differ', 'billing_address'] %]
-  [% END %]
-
   [% IF staff_payments_allowed %]
   [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
   [% ELSE %]

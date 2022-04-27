@@ -70,7 +70,6 @@ has_page summary => (
         my $total = $c->cobrand->garden_waste_cost($data->{bins_wanted});
 
         $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
-        $data->{billing_address} = $c->stash->{garden_form_data}->{billing_address} || $c->stash->{property}{address};
         $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
         $data->{display_total} = $total / 100;
 

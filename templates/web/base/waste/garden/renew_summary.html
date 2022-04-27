@@ -19,13 +19,6 @@ step1 = 'intro';
         <dd class="govuk-summary-list__value">[% label_for_field(form, 'payment_method', data.payment_method) %]</dd>
     </div>
 
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Billing address</dt>
-        <dd class="govuk-summary-list__value">
-        [% data.billing_address %]
-        </dd>
-    </div>
-
 [% END %]
 
 [% PROCESS waste/summary.html %]

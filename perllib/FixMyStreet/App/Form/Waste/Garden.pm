@@ -47,7 +47,7 @@ has_page existing => (
 has_page details => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'billing_differ', 'billing_address', 'name', 'email', 'phone', 'password', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'email', 'phone', 'password', 'continue_review'],
     update_field_list => \&details_update_fields,
     next => 'summary',
 );
