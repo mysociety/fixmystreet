@@ -7,7 +7,7 @@ extends 'FixMyStreet::App::Form::Waste';
 my %intro_fields = (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/renew.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'billing_differ', 'billing_address', 'name', 'phone', 'email', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'phone', 'email', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
@@ -57,12 +57,6 @@ has_page summary => (
         my $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
         my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         my $total = $cost_now_admin + $cost_pa;
-
-        my $orig_sub = $c->stash->{orig_sub};
-        if ( $orig_sub ) {
-            $data->{billing_address} = $orig_sub->get_extra_field_value('billing_address');
-        }
-        $data->{billing_address} ||= $c->stash->{property}{address};
 
         $data->{cost_now_admin} = $cost_now_admin / 100;
         $data->{cost_pa} = $cost_pa / 100;

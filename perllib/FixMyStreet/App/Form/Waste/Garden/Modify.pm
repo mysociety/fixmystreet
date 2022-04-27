@@ -82,7 +82,6 @@ has_page summary => (
         $pro_rata += $cost_now_admin;
 
         $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
-        $data->{billing_address} = $c->stash->{garden_form_data}->{billing_address} || $c->stash->{property}{address};
         $data->{cost_now_admin} = $cost_now_admin / 100;
         $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
         $data->{display_total} = $total / 100;
