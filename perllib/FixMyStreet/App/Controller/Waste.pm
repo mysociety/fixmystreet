@@ -40,6 +40,7 @@ sub auto : Private {
         $c->stash->{site_name} = $site_name;
     }
 
+    $c->stash->{staff_payments_allowed} = '';
     $c->cobrand->call_hook( 'waste_check_staff_payment_permissions' );
 
     return 1;
@@ -211,6 +212,7 @@ sub pay : Path('pay') : Args(0) {
         country => 'UK',
         postcode => pop @parts,
         items => \@items,
+        staff => $c->stash->{staff_payments_allowed} eq 'cnp',
     });
 
     if ( $result ) {
@@ -445,7 +447,7 @@ sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
 sub csc_code : Private {
     my ($self, $c) = @_;
 
-    unless ( $c->stash->{staff_payments_allowed} ) {
+    unless ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
@@ -457,7 +459,7 @@ sub csc_code : Private {
 sub csc_payment : Path('csc_payment') : Args(0) {
     my ($self, $c) = @_;
 
-    unless ( $c->stash->{staff_payments_allowed} ) {
+    unless ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
@@ -475,7 +477,7 @@ sub csc_payment : Path('csc_payment') : Args(0) {
 sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
     my ($self, $c) = @_;
 
-    unless ( $c->stash->{staff_payments_allowed} ) {
+    unless ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
@@ -1043,7 +1045,6 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         bins => $service->{garden_bins},
     };
 
-
     $c->stash->{first_page} = $c->stash->{staff_payments_allowed} ? 'intro_staff' : 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
     $c->forward('form');
@@ -1147,7 +1148,8 @@ sub setup_garden_sub_params : Private {
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
-    $c->set_param('payment_method', $data->{payment_method});
+    # Either the user picked in the form, or it was staff and so will be credit card (or overridden to csc if that used)
+    $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
     $c->cobrand->call_hook(waste_garden_sub_params => $data, $type);
 }
 
@@ -1190,7 +1192,7 @@ sub process_garden_modification : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $pro_rata && $c->stash->{staff_payments_allowed} ) {
+        if ( $pro_rata && $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->stash->{action} = 'add_containers';
             $c->forward('csc_code');
         } elsif ( $payment_method eq 'direct_debit' ) {
@@ -1252,7 +1254,7 @@ sub process_garden_renew : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $c->stash->{staff_payments_allowed} ) {
+        if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } elsif ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit');
@@ -1289,7 +1291,7 @@ sub process_garden_data : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $c->stash->{staff_payments_allowed} ) {
+        if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } elsif ( $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
