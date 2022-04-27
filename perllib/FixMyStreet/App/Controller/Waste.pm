@@ -169,11 +169,13 @@ sub pay : Path('pay') : Args(0) {
     });
 
     my $p = $c->stash->{report};
+    my $uprn = $p->get_extra_field_value('uprn');
 
     my $amount = $p->get_extra_field_value( 'pro_rata' );
     unless ($amount) {
         $amount = $p->get_extra_field_value( 'payment' );
     }
+    my $admin_fee = $p->get_extra_field_value('admin_fee');
 
     my $redirect_id = mySociety::AuthToken::random_token();
     $p->set_extra_metadata('redirect_id', $redirect_id);
@@ -182,19 +184,33 @@ sub pay : Path('pay') : Args(0) {
     my $address = $c->stash->{property}{address};
     my @parts = split ',', $address;
 
+    my @items = ({
+        amount => $amount,
+        reference => $payment->config->{customer_ref},
+        description => $p->title,
+        lineId => $c->cobrand->call_hook(waste_cc_payment_line_item_ref => $p) || "GGW$uprn",
+    });
+    if ($admin_fee) {
+        push @items, {
+            amount => $admin_fee,
+            reference => $payment->config->{customer_ref_admin_fee},
+            description => 'Admin fee',
+            lineId => $c->cobrand->call_hook(waste_cc_payment_admin_fee_line_item_ref => $p) || "GGW$uprn",
+        };
+    }
     my $result = $payment->pay({
         returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
         backUrl => $c->uri_for('pay') . '',
-        ref => 'GGW' . $p->get_extra_field_value('uprn'),
+        ref => 'GGW' . $uprn,
         request_id => $p->id,
         description => $p->title,
-        amount => $amount,
         email => $p->user->email,
-        uprn => $p->get_extra_field_value('uprn'),
+        uprn => $uprn,
         address1 => shift @parts,
         address2 => shift @parts,
         country => 'UK',
         postcode => pop @parts,
+        items => \@items,
     });
 
     if ( $result ) {
@@ -1156,8 +1172,8 @@ sub process_garden_modification : Private {
     if ( $new_bins > 0 ) {
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-        $pro_rata += $cost_now_admin;
         $c->set_param('pro_rata', $pro_rata);
+        $c->set_param('admin_fee', $cost_now_admin);
     }
 
     my $payment_method = $c->stash->{garden_form_data}->{payment_method};
@@ -1207,7 +1223,6 @@ sub process_garden_renew : Private {
 
     my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
     my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-    my $payment = $cost_now_admin + $cost_pa;
 
     if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
         $data->{category} = 'Garden Subscription';
@@ -1219,7 +1234,8 @@ sub process_garden_renew : Private {
         $c->set_param('Subscription_Type', $c->stash->{garden_subs}->{Renew});
     }
 
-    $c->set_param('payment', $payment);
+    $c->set_param('payment', $cost_pa);
+    $c->set_param('admin_fee', $cost_now_admin);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
@@ -1261,9 +1277,9 @@ sub process_garden_data : Private {
 
     my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
     my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-    my $total = $cost_now_admin + $cost_pa;
 
-    $c->set_param('payment', $total);
+    $c->set_param('payment', $cost_pa);
+    $c->set_param('admin_fee', $cost_now_admin);
 
     $c->forward('setup_garden_sub_params', [ $data ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
