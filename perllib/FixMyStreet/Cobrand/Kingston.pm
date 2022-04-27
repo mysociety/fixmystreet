@@ -25,18 +25,7 @@ sub waste_check_staff_payment_permissions {
 
     return unless $c->stash->{is_staff};
 
-    if ( $c->user->has_permission_to('can_pay_with_csc', $self->body->id) ) {
-        $c->stash->{staff_payments_allowed} = 1;
-    }
-}
-
-sub available_permissions {
-    my $self = shift;
-
-    my $perms = $self->next::method();
-    $perms->{Waste}->{can_pay_with_csc} = "Can use CSC to pay for subscriptions";
-
-    return $perms;
+    $c->stash->{staff_payments_allowed} = 'cnp';
 }
 
 sub open311_extra_data_include {
