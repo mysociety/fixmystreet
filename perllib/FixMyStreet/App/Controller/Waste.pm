@@ -956,12 +956,10 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
     }
 
     my $payment_method = 'credit_card';
-    my $billing_address;
     if ( $c->stash->{orig_sub} ) {
         my $orig_sub = $c->stash->{orig_sub};
         my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
         $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
-        $billing_address = $orig_sub->get_extra_field_value('billing_address');
     }
 
     $c->forward('check_if_staff_can_pay', [ $payment_method ]);
@@ -973,7 +971,6 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         bins => $service->{garden_bins},
         end_date => $service->{end_date},
         payment_method => $payment_method,
-        billing_address => $billing_address,
     };
 
     $c->stash->{first_page} = 'intro';

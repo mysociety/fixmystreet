@@ -23,13 +23,6 @@ step1 = 'alter';
         <dd class="govuk-summary-list__value">£[% tprintf('%.2f', data.display_pro_rata) %]</dd>
     </div>
 
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Billing address</dt>
-        <dd class="govuk-summary-list__value">
-        [% data.billing_address %]
-        </dd>
-    </div>
-
 [% END %]
 
 [% PROCESS waste/summary.html %]
