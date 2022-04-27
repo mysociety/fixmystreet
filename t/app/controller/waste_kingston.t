@@ -186,6 +186,9 @@ FixMyStreet::override_config {
             ggw_cost => 2000,
             ggw_new_bin_first_cost => 1500,
             ggw_new_bin_cost => 750,
+            hmac => '1234',
+            hmac_id => '1234',
+            scpID => '1234',
         } },
     },
 }, sub {
@@ -213,11 +216,18 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     my $sent_params;
+    my $call_params;
     my $pay = Test::MockModule->new('Integrations::SCP');
 
+    $pay->mock(call => sub {
+        my $self = shift;
+        my $method = shift;
+        $call_params = { @_ };
+    });
     $pay->mock(pay => sub {
         my $self = shift;
         $sent_params = shift;
+        $pay->original('pay')->($self, $sent_params);
         return {
             transactionState => 'IN_PROGRESS',
             scpReference => '12345',
@@ -724,26 +734,23 @@ FixMyStreet::override_config {
             current_bins => 1,
             bins_wanted => 1,
         }});
-
         $mech->content_contains('20.00');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_contains('Enter paye.net code');
-        $mech->submit_form_ok({ with_fields => {
-            payenet_code => 54321
-        }});
-        $mech->content_contains('Subscription completed');
-        my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
 
-        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
-        is $report->title, 'Garden Subscription - Renew', 'correct title on report';
-        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
-        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
-        is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        #is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
-        #is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
-        is $report->state, 'confirmed', 'report confirmed';
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, 'a_user@example.net', 'Correct name';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        check_extra_data_post_confirm($report);
         $report->delete; # Otherwise next test sees this as latest
     };
 
@@ -761,23 +768,16 @@ FixMyStreet::override_config {
         $mech->content_contains('15.00');
         $mech->content_contains('35.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_contains('Enter paye.net code');
-        $mech->submit_form_ok({ with_fields => {
-            payenet_code => 64321
-        }});
-        $mech->content_contains('Subscription completed');
-        my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
-        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
+        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
 
-        is $report->category, 'Garden Subscription', 'correct category on report';
-        is $report->title, 'Garden Subscription - Amend', 'correct title on report';
-        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $report->state, 'confirmed', 'report confirmed';
-        #is $report->get_extra_field_value('Subscription_Details_Quantity'), 2, 'correct bin count';
-        #is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
-        #is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
-        is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        check_extra_data_post_confirm($report);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
@@ -813,9 +813,9 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
         is $new_report->state, 'confirmed', 'report confirmed';
-        #is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        #is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
-        #is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $new_report->get_extra_metadata('contributed_as'), 'another_user';
         is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
@@ -863,31 +863,24 @@ FixMyStreet::override_config {
         # external redirects make Test::WWW::Mechanize unhappy so clone
         # the mech for the redirect
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_contains('Enter paye.net code');
-        $mech->submit_form_ok({ with_fields => {
-            payenet_code => 64321
-        }});
-        $mech->content_contains('Subscription completed');
-        my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
-        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
 
-        is $report->category, 'Garden Subscription', 'correct category on report';
-        is $report->title, 'Garden Subscription - New', 'correct title on report';
-        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        #is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        #is $report->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'correct bin type';
-        #is $report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
-        #is $report->get_extra_field_value('Container_Instruction_Action'), 1, 'correct container request action';
-        #is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
-        is $report->state, 'confirmed', 'report confirmed';
-        is $report->state, 'confirmed', 'report confirmed';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
-        is $report->get_extra_field_value('PaymentCode'), '64321', 'correct echo payment reference field';
-        is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
+        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        check_extra_data_pre_confirm($report);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        check_extra_data_post_confirm($report);
+        is $report->name, 'Test McTest', 'non staff user name';
+        is $report->user->email, 'test@example.net', 'non staff email';
+
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
         is $report->user->email, 'test@example.net';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
-
+        $report->delete; # Otherwise next test sees this as latest
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
@@ -954,23 +947,15 @@ FixMyStreet::override_config {
 
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_contains('Enter paye.net code');
-        $mech->submit_form_ok({ with_fields => {
-            payenet_code => 54321
-        }});
-        $mech->content_contains('Subscription completed');
-        my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
 
-        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
-        is $report->title, 'Garden Subscription - Renew', 'correct title on report';
-        is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
-        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
-        #is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        #is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
-        #is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
-        is $report->state, 'confirmed', 'report confirmed';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+        check_extra_data_post_confirm($new_report);
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 };
 

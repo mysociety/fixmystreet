@@ -78,6 +78,7 @@ sub pay {
     my ($self, $args) = @_;
 
     my $credentials = $self->credentials($args);
+    my $entry_method = $args->{staff} ? 'CNP' : 'ECOM';
 
     my @items;
     my $total = 0;
@@ -120,7 +121,7 @@ sub pay {
             'scpbase:siteId' => $self->config->{siteID},
             'scpbase:scpId' => $self->config->{scpID},
         ),
-        'scpbase:panEntryMethod' => 'ECOM',
+        'scpbase:panEntryMethod' => $entry_method,
         'scpbase:additionalInstructions' => {
             'scpbase:systemCode' => 'SCP'
         },
