@@ -621,6 +621,24 @@ sub garden_waste_new_bin_admin_fee {
     return $cost;
 }
 
+sub waste_cc_payment_line_item_ref {
+    my ($self, $p) = @_;
+    return _waste_cc_line_item_ref($p, "GW Sub");
+}
+
+sub waste_cc_payment_admin_fee_line_item_ref {
+    my ($self, $p) = @_;
+    return _waste_cc_line_item_ref($p, "GW admin charge");
+}
+
+sub _waste_cc_line_item_ref {
+    my ($p, $str) = @_;
+    my $id = 'RBK-GGW-' . $p->id;
+    my $len = 50 - length($id) - length($str) - 2;
+    my $name = substr($p->name, 0, $len);
+    return "$id-$name-$str";
+}
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};
