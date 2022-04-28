@@ -956,7 +956,8 @@ sub garden_modify : Chained('property') : Args(0) {
     my $billing_address;
     if ( $c->stash->{orig_sub} ) {
         my $orig_sub = $c->stash->{orig_sub};
-        $payment_method = $orig_sub->get_extra_field_value('payment_method') if $orig_sub->get_extra_field_value('payment_method');
+        my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
+        $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
         $billing_address = $orig_sub->get_extra_field_value('billing_address');
     }
 
