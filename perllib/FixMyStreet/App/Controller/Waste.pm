@@ -1144,7 +1144,8 @@ sub setup_garden_sub_params : Private {
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
-    $c->set_param('payment_method', $data->{payment_method});
+    # Either the user picked in the form, or it was staff and so will be credit card (or overridden to csc if that used)
+    $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
     $c->cobrand->call_hook(waste_garden_sub_params => $data);
 }
 
