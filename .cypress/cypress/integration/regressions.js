@@ -66,11 +66,11 @@ describe('Regression tests', function() {
       cy.get('#map_box').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Graffiti');
-      cy.contains(/These will be sent to Northampton Borough Council and also/);
+      cy.contains(/These will be sent to West Northamptonshire Council and also/);
 
       cy.get('#map_box').click(200, 200);
       cy.wait('@report-ajax');
-      cy.contains(/These will be sent to Northampton Borough Council and also/);
+      cy.contains(/These will be sent to West Northamptonshire Council and also/);
     });
 
     it('remembers extra fields when you sign in during reporting', function() {

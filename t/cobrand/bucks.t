@@ -8,7 +8,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire', {
+my $body = $mech->create_body_ok(163793, 'Buckinghamshire', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 });
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');

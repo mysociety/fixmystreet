@@ -377,6 +377,9 @@ sub get_body_handler_for_problem {
     if ($row->to_body_named('Thamesmead')) {
         return FixMyStreet::Cobrand::Thamesmead->new;
     }
+    if ($row->to_body_named('Northamptonshire Highways')) {
+        return FixMyStreet::Cobrand::Northamptonshire->new;
+    }
     # Do not do anything for National Highways here, as we don't want it to
     # treat this as a cobrand for e.g. submit report emails made on .com
 

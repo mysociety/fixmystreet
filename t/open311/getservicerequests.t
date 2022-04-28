@@ -14,7 +14,7 @@ my $user = $mech->create_user_ok('system_user@example.com', name => 'test users'
 my $body = $mech->create_body_ok(2482, 'Bromley');
 my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'Sidewalk and Curb Issues', email => 'sidewalks' );
 
-my $body2 = $mech->create_body_ok(2217, 'Buckinghamshire');
+my $body2 = $mech->create_body_ok(163793, 'Buckinghamshire');
 my $contact2 = $mech->create_contact_ok( body_id => $body2->id, category => 'Sidewalk and Curb Issues', email => 'sidewalks' );
 
 my $hounslow = $mech->create_body_ok(2483, 'Hounslow');

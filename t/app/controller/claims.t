@@ -12,7 +12,7 @@ ok $sample_pdf->exists, "sample file $sample_pdf exists";
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', {
+my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 });
 my $system_user = $mech->create_user_ok('system@bucks', from_body => $body);
 $body->update({ comment_user => $system_user });

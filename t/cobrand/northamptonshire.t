@@ -9,26 +9,26 @@ my $mech = FixMyStreet::TestMech->new;
 
 use open ':std', ':encoding(UTF-8)'; 
 
-my $ncc = $mech->create_body_ok(2234, 'Northamptonshire Highways', {
+my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1 });
-my $nbc = $mech->create_body_ok(2397, 'Northampton Borough Council');
+my $wnc = $mech->create_body_ok(164186, 'West Northamptonshire Council');
 
-my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $ncc);
+my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $nh);
 my $user = $mech->create_user_ok('user@example.com', name => 'User');
 
-my $ncc_contact = $mech->create_contact_ok(
-    body_id => $ncc->id,
+my $nh_contact = $mech->create_contact_ok(
+    body_id => $nh->id,
     category => 'Trees',
-    email => 'trees-2234@example.com',
+    email => 'trees-nh@example.com',
 );
 
-my $nbc_contact = $mech->create_contact_ok(
-    body_id => $nbc->id,
+my $wnc_contact = $mech->create_contact_ok(
+    body_id => $wnc->id,
     category => 'Flytipping',
-    email => 'flytipping-2397@example.com',
+    email => 'flytipping-west-northants@example.com',
 );
 
-my ($report) = $mech->create_problems_for_body(1, $ncc->id, 'Defect Problem', {
+my ($report) = $mech->create_problems_for_body(1, $nh->id, 'Defect Problem', {
     whensent => DateTime->now()->subtract( minutes => 5 ),
     external_id => 1,
     send_method_used => 'Open311',
@@ -47,7 +47,7 @@ my $comment = FixMyStreet::DB->resultset('Comment')->create( {
     cobrand => 'default',
 } );
 
-$ncc->update( { comment_user_id => $counciluser->id } );
+$nh->update( { comment_user_id => $counciluser->id } );
 
 
 subtest 'Check district categories hidden on cobrand' => sub {

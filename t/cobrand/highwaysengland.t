@@ -41,7 +41,7 @@ $r = $he->geocode_postcode('m1');
 ok $r->{error}, "searching for lowecase road only generates error";
 
 my $mech = FixMyStreet::TestMech->new;
-my $highways = $mech->create_body_ok(2234, 'National Highways', { send_method => 'Email::Highways' });
+my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways' });
 
 $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole', group => 'National Highways');
 

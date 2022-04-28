@@ -21,7 +21,7 @@ my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params,
     send_extended_statuses => 1,
     can_be_devolved => 1 });
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id });
-my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire', $params);
+my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire', $params);
 my $oxon_other = $mech->create_contact_ok(body_id => $oxon->id, category => 'Other', email => "OTHER");
 
 subtest 'Check Open311 params' => sub {
