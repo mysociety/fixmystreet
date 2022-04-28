@@ -1267,6 +1267,9 @@ FixMyStreet::override_config {
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
+    $p->update_extra_field({ name => 'payment_method', value => 'csc' }); # Originally done by staff
+    $p->update;
+
     subtest 'check modify sub credit card payment reducing bin count' => sub {
         set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
         $sent_params = undef;

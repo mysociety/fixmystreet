@@ -80,7 +80,7 @@ has_page summary => (
             $data->{phone} ||= $c->user->phone;
         }
         my $button_text = 'Continue to payment';
-        if ( $data->{payment_method} eq 'credit_card' ) {
+        if ( $data->{payment_method} eq 'credit_card' || $data->{payment_method} eq 'csc' ) {
             if ( $new_bins <= 0 ) {
                 $button_text = 'Confirm changes';
             }
