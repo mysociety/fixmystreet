@@ -203,6 +203,11 @@ FixMyStreet::override_config {
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetEventsForObject', sub { [] });
     $echo->mock('GetTasks', sub { [] });
+    $echo->mock('FindPoints', sub { [
+        { Description => '1 Example Street, Kingston, KT1 1AA', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
+        { Description => '2 Example Street, Kingston, KT1 1AA', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
+        { Description => '3 Example Street, Kingston, KT1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
+    ] });
     $echo->mock('GetPointAddress', sub {
         return {
             Id => 12345,
@@ -253,6 +258,14 @@ FixMyStreet::override_config {
         };
     });
 
+    subtest 'Garden type lookup' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z');
+        $mech->get_ok('/waste?type=garden');
+        $mech->submit_form_ok({ with_fields => { postcode => 'KT1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
+        is $mech->uri->path, '/waste/12345', 'redirect as subscription';
+    };
+
     subtest 'check subscription link present' => sub {
         set_fixed_time('2021-03-09T17:00:00Z');
         $mech->get_ok('/waste/12345');
@@ -290,6 +303,14 @@ FixMyStreet::override_config {
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
+
+    subtest 'Garden type lookup, no sub' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z');
+        $mech->get_ok('/waste?type=garden');
+        $mech->submit_form_ok({ with_fields => { postcode => 'KT1 1AA' } });
+        $mech->submit_form_ok({ with_fields => { address => '12345' } });
+        is $mech->uri->path, '/waste/12345/garden', 'redirect as no subscription';
+    };
 
     subtest 'check cannot cancel sub that does not exist' => sub {
         $mech->get_ok('/waste/12345/garden_cancel');

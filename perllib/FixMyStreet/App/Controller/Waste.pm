@@ -115,6 +115,7 @@ sub redirect_to_id : Private {
     my $type = $c->get_param('type') || '';
     $uri .= '/request' if $type eq 'request';
     $uri .= '/report' if $type eq 'report';
+    $uri .= '/garden_check' if $type eq 'garden';
     $c->res->redirect($uri);
     $c->detach;
 }
@@ -959,6 +960,22 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     $c->stash->{per_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_cost};
     $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
     $c->stash->{per_new_bin_first_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_first_cost} || $c->stash->{per_new_bin_cost};
+}
+
+sub garden_check : Chained('garden_setup') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $id = $c->stash->{property}->{id};
+    my $uri = '/waste/' . $id;
+
+    # TODO Sacks
+    my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
+    if (!$service) {
+        # If no subscription, go straight to /garden
+        $uri .= '/garden';
+    }
+    $c->res->redirect($uri);
+    $c->detach;
 }
 
 sub garden : Chained('garden_setup') : Args(0) {
