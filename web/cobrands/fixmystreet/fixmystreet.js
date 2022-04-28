@@ -873,6 +873,16 @@ $.extend(fixmystreet.set_up, {
     update_label('#filter_categories', translation_strings.select_category_aria_label);
   },
 
+  label_accessibility_update: function() {
+    // Replace unnecessary labels with a span and include a 
+    // proper aria-label to improve accessibility.
+    function replace_label(id, sibling_class, sibling_child, str) {
+        $(id).siblings(sibling_class).children(sibling_child).attr('aria-label', str);
+        $(id).replaceWith(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+    }
+    replace_label('#photo-upload-label','.dropzone.dz-clickable', '.dz-default.dz-message', translation_strings.upload_aria_label);
+  },
+
   // Very similar function in front.js for front page
   on_mobile_nav_click: function() {
     var html = document.documentElement;

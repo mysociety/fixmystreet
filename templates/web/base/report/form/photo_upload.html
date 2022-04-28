@@ -1,6 +1,6 @@
 [% IF c.cobrand.allow_photo_upload %]
     <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
-    <label for="form_photo">
+    <label id="photo-upload-label" for="form_photo">
         <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
         [% IF c.cobrand.moniker == 'zurich' %][% loc('(Defect &amp; location of defect)') %][% END %]
         [% loc('(optional)') %]
