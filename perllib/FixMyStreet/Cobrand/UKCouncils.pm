@@ -170,10 +170,15 @@ sub area_check {
     return 1 if FixMyStreet->staging_flag('skip_checks');
 
     my $councils = $params->{all_areas};
-    my $council_match = defined $councils->{$self->council_area_id};
-    if ($council_match) {
-        return 1;
+
+    # The majority of cobrands only cover a single area, but e.g. Northamptonshire
+    # covers multiple so we need to handle that situation.
+    my $council_area_ids = $self->council_area_id;
+    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+    foreach (@$council_area_ids) {
+        return 1 if defined $councils->{$_};
     }
+
     return ( 0, $self->area_check_error_message($params, $context) );
 }
 
@@ -243,7 +248,12 @@ sub owns_problem {
     }
     # Want to ignore the TfL body that covers London councils, and HE that is all England
     my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|National Highways/ } @bodies;
-    return $areas{$self->council_area_id} ? 1 : undef;
+
+    my $council_area_ids = $self->council_area_id;
+    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+    foreach (@$council_area_ids) {
+        return 1 if $areas{$_};
+    }
 }
 
 # If the council is two-tier, or e.g. TfL reports,

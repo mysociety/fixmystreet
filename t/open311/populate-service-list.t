@@ -38,7 +38,7 @@ my $bucks = FixMyStreet::DB->resultset('Body')->create({
     name => 'Buckinghamshire Council',
 });
 $bucks->body_areas->create({
-    area_id => 2217
+    area_id => 163793
 });
 
 for my $test (

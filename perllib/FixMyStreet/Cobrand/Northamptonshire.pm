@@ -8,7 +8,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
 
-sub council_area_id { 2234 }
+sub council_area_id { [ 164185, 164186 ] }
 sub council_area { 'Northamptonshire' }
 sub council_name { 'Northamptonshire Highways' }
 sub council_url { 'northamptonshire' }
@@ -30,6 +30,12 @@ sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( { 'body.name' => [ $self->council_name, 'National Highways' ] } );
 }
+
+sub body {
+    # Overridden because UKCouncils::body won't match because council_area_id is an arrayref
+    FixMyStreet::DB->resultset('Body')->search({ name => 'Northamptonshire Highways' })->first;
+}
+
 
 sub send_questionnaires { 0 }
 

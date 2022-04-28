@@ -69,16 +69,6 @@ sub get_geocoder { 'OSM' }
 
 sub category_change_force_resend { 1 }
 
-sub area_check {
-    my ( $self, $params, $context ) = @_;
-
-    my $councils = $params->{all_areas};
-    my $council_match = grep { $councils->{$_} } @{ $self->council_area_id };
-
-    return 1 if $council_match;
-    return ( 0, $self->area_check_error_message($params, $context) );
-}
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a London postcode, or street name and area, or a reference number of a problem previously reported';

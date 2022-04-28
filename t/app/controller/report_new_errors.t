@@ -35,11 +35,11 @@ for my $body (
     { area_id => 2226, name => 'Gloucestershire County Council' },
     { area_id => 2504, name => 'Westminster City Council' },
     { area_id => 2482, name => 'Bromley Council' },
-    { area_id => 2217, name => 'Buckinghamshire Council' },
+    { area_id => 163793, name => 'Buckinghamshire Council' },
     { area_id => 2232, name => 'Lincolnshire County Council' },
     { area_id => 2237, name => 'Oxfordshire County Council' },
     { area_id => 2600, name => 'Rutland County Council' },
-    { area_id => 2234, name => 'Northamptonshire Highways' },
+    { area_id => 164186, name => 'Northamptonshire Highways' },
     { area_id => 2566, name => 'Peterborough City Council' },
     { area_id => 2508, name => 'Hackney Council' },
 ) {
@@ -69,9 +69,9 @@ $mech->create_contact_ok(
     email => 'streetlights-2226@example.com',
 );
 $mech->create_contact_ok(
-    body_id => $body_ids{2217}, # Buckinghamshire
+    body_id => $body_ids{163793}, # Buckinghamshire
     category => 'Street lighting',
-    email => 'streetlights-2217@example.com',
+    email => 'streetlights-163793@example.com',
 );
 $mech->create_contact_ok(
     body_id => $body_ids{2232}, # Lincolnshire
@@ -89,9 +89,9 @@ $mech->create_contact_ok(
     email => 'trees-2600@example.com',
 );
 $mech->create_contact_ok(
-    body_id => $body_ids{2234}, # Northamptonshire
+    body_id => $body_ids{164186}, # Northamptonshire
     category => 'Trees',
-    email => 'trees-2234@example.com',
+    email => 'trees-164186@example.com',
 );
 $mech->create_contact_ok(
     body_id => $body_ids{2566}, # Peterborough

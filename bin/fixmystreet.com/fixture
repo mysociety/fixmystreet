@@ -114,10 +114,10 @@ if ($opt->test_fixtures) {
     foreach (
         { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council' },
         { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council' },
-        { area_id => 2234, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways' },
-        { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
+        { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways' },
+        { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
-        { area_id => 2397, categories => [ 'Graffiti' ], name => 'Northampton Borough Council' },
+        { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
         { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council' },
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
@@ -169,8 +169,9 @@ if ($opt->test_fixtures) {
     $ab_vehicle->set_extra_fields( { code => 'Extra Question' } );
     $ab_vehicle->update;
 
-    my $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2234},
+    my $child_cat = FixMyStreet::DB->resultset("Body")->find({
+        name => 'Northamptonshire Highways',
+    })->contacts->find({
         category => 'Very Urgent',
     });
     $child_cat->set_extra_fields({
@@ -184,7 +185,7 @@ if ($opt->test_fixtures) {
     $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2217},
+        body => $bodies->{163793},
         category => 'Flytipping',
     });
     $child_cat->set_extra_fields({
@@ -203,7 +204,7 @@ if ($opt->test_fixtures) {
 
     for my $cat ('Parks', 'Snow and ice problem/winter salting') {
         $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-            body => $bodies->{2217},
+            body => $bodies->{163793},
             category => $cat,
         });
         $child_cat->set_extra_fields({

@@ -233,8 +233,8 @@ FixMyStreet::override_config {
         );
 
         my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
-            latitude => 52.236251,
-            longitude => -0.892052,
+            latitude => 52.236252,
+            longitude => -0.892053,
             cobrand => 'fixmystreet',
             category => 'Graffiti',
         });
