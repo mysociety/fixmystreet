@@ -3,6 +3,9 @@ use FixMyStreet::App;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
 
+eval "use Net::Subnet";
+plan skip_all => 'Net::Subnet required' if $@;
+
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }

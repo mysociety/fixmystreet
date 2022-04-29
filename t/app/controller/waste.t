@@ -7,6 +7,9 @@ use FixMyStreet::Script::Reports;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+eval "use SOAP::Lite";
+plan skip_all => 'SOAP::Lite required' if $@;
+
 # Mock fetching bank holidays
 my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
 $uk->mock('_fetch_url', sub { '{}' });
