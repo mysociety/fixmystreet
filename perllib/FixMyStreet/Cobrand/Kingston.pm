@@ -203,7 +203,7 @@ sub service_name_override {
         1908 => 'Food',
         1909 => 'Mixed',
         1914 => 'Garden Waste',
-        1915 => 'Garden Waste bag',
+        1915 => 'Garden Waste',
     );
 
     return $service_name_override{$service} || 'Unknown';
@@ -271,6 +271,10 @@ sub bin_services_for_address {
     # that means a bin is being delivered and so a pending subscription
     $self->{c}->stash->{pending_subscription} = $events->{enquiry}{2106} ? { title => 'Garden Subscription' } : undef;
 
+    # Refuse currently in separate Echo
+    # This can be done within the loop below once this is not the case
+    $self->{c}->stash->{garden_sacks} = $self->property_has_refuse_sacks($property->{id});
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
@@ -283,6 +287,11 @@ sub bin_services_for_address {
             # Only Garden for now XXX
             next unless $service_id == 1914 || $service_id == 1915;
             # Only Garden for now XXX
+
+            # When this covers more than garden, this code can replace the property_has_refuse_sacks above
+            #if ($service_id == 1904) { # Collect Refuse Bag
+            #    $self->{c}->stash->{garden_sacks} = 1;
+            #}
 
             my $schedules = _parse_schedules($task);
             $expired{$service_id} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
@@ -430,6 +439,27 @@ sub bin_services_for_address {
     }
 
     return \@out;
+}
+
+# Refuse currently in separate Echo - when not, could do this in main loop
+sub property_has_refuse_sacks {
+    my ($self, $id) = @_;
+    my $cfg = $self->feature('echo_rbk');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $calls = $echo->call_api($self->{c}, $self->moniker,
+        "look_up_property_rbk:$id",
+        GetServiceUnitsForObject => [ $id ],
+    );
+    my $result = $calls->{"GetServiceUnitsForObject $id"};
+    foreach (@$result) {
+        next unless $_->{ServiceId} == 355;
+        my $servicetasks = $self->_get_service_tasks($_);
+        foreach (@$servicetasks) {
+            my $id = $_->{TaskTypeId};
+            return 1 if $id == 1904; # Collect Refuse Bag
+        }
+    }
+    return 0;
 }
 
 #sub _closed_event {
