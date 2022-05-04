@@ -50,6 +50,7 @@ my @PLACES = (
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3EF', 51.4039, 0.018697, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 1AA', 51.401546, 0.015415, 2482, 'Bromley Council', 'LBO' ],
+    [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],
     [ '?', 51.466707, 0.181108, 2494, 'London Borough of Bexley', 'LBO' ],
     [ 'DA6 7AT', 51.45556, 0.15356, 2494, 'London Borough of Bexley', 'LBO' ],
     [ 'NN1 1NS', 52.236251, -0.892052, 2234, 'Northamptonshire County Council', 'CTY', 2397, 'Northampton Borough Council', 'DIS' ],
