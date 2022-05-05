@@ -1610,7 +1610,9 @@ subtest 'check direct debit reconcilliation' => sub {
     $renewal_from_cc_sub->discard_changes;
     is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
     is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
-    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
+    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'From CC Renewal has correct type';
+    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'From CC Renewal has correct container type';
+    is $renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Renewal has correct service id';
     is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({
@@ -1624,7 +1626,9 @@ subtest 'check direct debit reconcilliation' => sub {
     $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
     is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
-    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Subsequent Renewal has correct type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'Subsequent Renewal has correct container type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Subsequent Renewal has correct service id';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
 
@@ -1663,6 +1667,8 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('Subscription_Details_Quantity'), 2, "renewal has correct number of bins";
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
+    is $p->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'renewal has correct container type';
+    is $p->get_extra_field_value('service_id'), 545, 'renewal has correct service id';
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->state, 'confirmed';
 
@@ -1782,6 +1788,10 @@ sub setup_dd_test_report {
         areas => '2482,8141',
         user => $user,
     });
+
+    $extras->{service_id} ||= 545;
+    $extras->{Subscription_Details_Container_Type} ||= 44;
+
     my @extras = map { { name => $_, value => $extras->{$_} } } keys %$extras;
     $report->set_extra_fields( @extras );
     $report->update;
