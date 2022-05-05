@@ -98,9 +98,9 @@ sub waste_reconcile_direct_debits {
                 }
                 my $renew = _duplicate_waste_report($p, 'Garden Subscription', {
                     Subscription_Type => $self->waste_subscription_types->{Renew},
-                    service_id => $self->garden_waste_service_id,
+                    #service_id => $self->garden_waste_service_id,
                     uprn => $uprn,
-                    Subscription_Details_Container_Type => $self->garden_waste_container_id,
+                    #Subscription_Details_Container_Type => $self->garden_waste_container_id,
                     Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
                     LastPayMethod => $self->bin_payment_types->{direct_debit},
                     PaymentCode => $payer,
@@ -258,6 +258,9 @@ sub _duplicate_waste_report {
         state => 'unconfirmed',
         non_public => 1,
     });
+
+    $extra->{Subscription_Details_Container_Type} ||= $report->get_extra_field_value('Subscription_Details_Container_Type');
+    $extra->{service_id} ||= $report->get_extra_field_value('service_id');
 
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
     $new->set_extra_fields(@extra);
