@@ -1007,6 +1007,15 @@ subtest 'check pro-rata calculation' => sub {
 };
 
 subtest 'check direct debit reconcilliation' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            payment_gateway => {
+                bromley => {
+                }
+            }
+        },
+    }, sub {
     set_fixed_time('2021-03-19T12:00:00Z'); # After sample food waste collection
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetServiceUnitsForObject' => sub {
@@ -1775,7 +1784,7 @@ subtest 'Garden Waste new subs alert update emails contain bin collection days l
         $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @uris;
         ok $found, 'Found bin day URL in HTML part of alert email';
     }
-};
+}; };
 
 sub setup_dd_test_report {
     my $extras = shift;
