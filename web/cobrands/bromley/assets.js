@@ -124,4 +124,14 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
+fixmystreet.assets.add(defaults, {
+    http_options: { params: { TYPENAME: "Drains" } },
+    asset_id_field: 'node_id',
+    attributes: {
+        feature_id: 'node_id'
+    },
+    asset_category: ["Blocked Drain"],
+    asset_item: 'drain'
+});
+
 })();
