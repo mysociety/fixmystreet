@@ -4,6 +4,20 @@ use Moo::Role;
 use strict;
 use warnings;
 
+sub log_level {
+    my $self = shift;
+    return $self->get_config->{debug_level} || 'INFO';
+}
+
+sub logging_levels {
+    return {
+        WARN => 5,
+        INFO => 4,
+        DEBUG => 3,
+        VERBOSE => 2
+    };
+}
+
 sub waste_is_dd_payment {
     my ($self, $row) = @_;
 
@@ -33,7 +47,12 @@ sub waste_reconcile_direct_debits {
 
     RECORD: for my $payment ( @$recent ) {
 
+        $self->log( "\nlooking at payment " . $payment->{$self->referenceField} );
+
         my $date = $payment->{$self->paymentDateField};
+
+        $self->log( "payment date: $date" );
+
         next unless $self->waste_dd_paid($date);
 
         my ($category, $type) = $self->waste_payment_type(
@@ -42,6 +61,8 @@ sub waste_reconcile_direct_debits {
         );
 
         next unless $category && $date;
+
+        $self->log( "category: $category" );
 
         my $payer = $payment->{$self->referenceField};
 
@@ -69,6 +90,7 @@ sub waste_reconcile_direct_debits {
         # create a renewal record using the original subscription as a basis.
         if ( $type && $type eq $self->waste_subscription_types->{Renew} ) {
             next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
+            $self->log("is a renewal");
             $rs = $rs->search({ category => 'Garden Subscription' });
             my $p;
             # loop over all matching records and pick the most recent new sub or renewal
@@ -76,17 +98,20 @@ sub waste_reconcile_direct_debits {
             # always be one of these for an automatic DD renewal. If there isn't then
             # something has gone wrong and we need to error.
             while ( my $cur = $rs->next ) {
+                $self->log("looking at potential match " . $cur->id . " with state " . $cur->state);
                 # only match direct debit payments
                 next unless $self->waste_is_dd_payment($cur);
                 # only confirmed records are valid.
                 next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 my $sub_type = $cur->get_extra_field_value('Subscription_Type');
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+                    $self->log("is a matching new report") if !$p;
                     $p = $cur if !$p;
                 } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
                     # already processed
                     next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
                     # if it's a renewal of a DD where the initial setup was as a renewal
+                    $self->log("is a matching renewal report") if !$p;
                     $p = $cur if !$p;
                 }
             }
@@ -109,20 +134,25 @@ sub waste_reconcile_direct_debits {
                 $renew->set_extra_metadata('dd_date', $date);
                 $renew->confirm;
                 $renew->insert;
+                $self->log("created new confirmed report: " . $renew->id);
                 $handled = 1;
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
         # a record in the database as they are the result of user action
         } else {
             next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
+            $self->log("is a new/ad hoc");
             # we fetch the confirmed ones as well as we explicitly want to check for
             # processed reports so we can warn on those we are missing.
             $rs = $rs->search({ category => 'Garden Subscription' });
             while ( my $cur = $rs->next ) {
+                $self->log("looking at potential match " . $cur->id);
                 next unless $self->waste_is_dd_payment($cur);
                 if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
+                    $self->log("found matching report " . $cur->id . " with state " . $cur->state);
                     if ( $cur->state eq 'unconfirmed' && !$handled) {
                         if ( $type eq 'New' ) {
+                            $self->log("matching report is New " . $cur->id);
                             if ( !$cur->get_extra_metadata('payerReference') ) {
                                 $cur->set_extra_metadata('payerReference', $payer);
                             }
@@ -138,15 +168,18 @@ sub waste_reconcile_direct_debits {
                             description => 'LastPayMethod',
                             value => $self->bin_payment_types->{direct_debit},
                         } );
+                        $self->log("confirming matching report " . $cur->id);
                         $cur->confirm;
                         $cur->update;
                         $handled = 1;
                     } elsif ( $cur->state eq 'unconfirmed' ) {
+                        $self->log("hiding matching report " . $cur->id);
                         # if we've pulled out more that one record, e.g. because they
                         # failed to make a payment then skip remaining ones.
                         $cur->state('hidden');
                         $cur->update;
                     } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date)  {
+                        $self->log("skipping matching report " . $cur->id);
                         next RECORD;
                     }
                 }
@@ -156,6 +189,8 @@ sub waste_reconcile_direct_debits {
         unless ( $handled ) {
             warn "no matching record found for $category payment with id $payer\n";
         }
+
+        $self->log( "done looking at payment " . $payment->{$self->referenceField} );
     }
 
     # There's two options with a cancel payment. If the user has cancelled it outside of
@@ -177,7 +212,10 @@ sub waste_reconcile_direct_debits {
         return;
     }
 
+    $self->log("\n\nProcessing Cancelled payments");
     CANCELLED: for my $payment ( @$cancelled ) {
+
+        $self->log("\nlooking at payment " . $payment->{$self->cancelReferenceField});
 
         my $date = $payment->{$self->cancelledDateField};
         next unless $date;
@@ -194,23 +232,29 @@ sub waste_reconcile_direct_debits {
         $rs = $rs->search({ category => 'Cancel Garden Subscription' });
         my $r;
         while ( my $cur = $rs->next ) {
+            $self->log("looking at report " . $cur->id);
             if ( $cur->state eq 'unconfirmed' ) {
+                $self->log("found matching report " . $cur->id);
                 $r = $cur;
             # already processed
             } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+                $self->log("skipping report " . $cur->id);
                 next CANCELLED;
             }
         }
 
         if ( $r ) {
+            $self->log("processing matched report " . $r->id);
             my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
             # if there's not a service then it's fine as it's already been cancelled
             if ( $service ) {
                 $r->set_extra_metadata('dd_date', $date);
+                $self->log("confirming report");
                 $r->confirm;
                 $r->update;
             # there's no service but we don't want to be processing the report all the time.
             } else {
+                $self->log("hiding report");
                 $r->state('hidden');
                 $r->update;
             }
@@ -219,6 +263,7 @@ sub waste_reconcile_direct_debits {
             # associated Cancel reports, so no need to warn on them
             # warn "no matching record found for Cancel payment with id $payer\n";
         }
+        $self->log("finished looking at payment " . $payment->{$self->cancelReferenceField});
     }
 }
 
@@ -305,6 +350,15 @@ sub waste_get_sub_quantity {
     }
 
     return $quantity;
+}
+
+sub log {
+    my ($self, $message, $level) = @_;
+
+    $level ||= 'DEBUG';
+
+    print $message . "\n" if
+        $self->logging_levels->{$level} >= $self->logging_levels->{$self->log_level};
 }
 
 1;
