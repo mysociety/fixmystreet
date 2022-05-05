@@ -176,6 +176,7 @@ sub garden_current_bin_subscription {
     my $service_id = $self->garden_bin_service_id;
     return $self->{c}->stash->{services}->{$service_id};
 }
+
 sub get_current_garden_bins {
     my $self = shift;
     return $self->garden_current_bin_subscription->{garden_bins};
