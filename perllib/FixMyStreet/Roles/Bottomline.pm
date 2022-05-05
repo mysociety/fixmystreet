@@ -47,6 +47,10 @@ has cancelReferenceField => (
     default => 'reference',
 );
 
+sub get_config {
+    return shift->feature('bottomline');
+}
+
 sub get_dd_integration {
     my $self = shift;
     my $config = $self->feature('bottomline');
