@@ -175,24 +175,15 @@ sub image_for_service {
         1903 => "$base/black-bin", # refuse
         1908 => "$base/brown-bin", # food
         1909 => "$base/green-bin", # dry mixed
-        1914 => "$base/garden-waste-bin",
-        1915 => "$base/garden-waste-bag",
+        2247 => "$base/garden-waste-bin",
     };
     return $images->{$service_id};
 }
 
-sub garden_waste_service_id {
-    return 1914; # XXX And 1915
-}
-
-sub get_current_garden_bins {
-    my ($self) = @_;
-
-    my $service = $self->garden_waste_service_id;
-    my $bin_count = $self->{c}->stash->{services}{$service}->{garden_bins};
-
-    return $bin_count;
-}
+use constant GARDEN_WASTE_SERVICE_ID => 2247;
+sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
+sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
+sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 
 sub service_name_override {
     my ($self, $service) = @_;
@@ -202,8 +193,7 @@ sub service_name_override {
         1903 => 'Refuse',
         1908 => 'Food',
         1909 => 'Mixed',
-        1914 => 'Garden Waste',
-        1915 => 'Garden Waste',
+        2247 => 'Garden Waste',
     );
 
     return $service_name_override{$service} || 'Unknown';
@@ -249,12 +239,12 @@ sub bin_services_for_address {
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
-        1914 => [ 26 ],
-        1915 => [ 28 ],
+        #    1914 => [ 26 ],
+        #    1915 => [ 28 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
-        1914 => 5,
+        2247 => 5,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -295,7 +285,7 @@ sub bin_services_for_address {
             my $service_id = $task->{TaskTypeId};
 
             # Only Garden for now XXX
-            next unless $service_id == 1914 || $service_id == 1915;
+            next unless $service_id == $self->garden_service_id;
             # Only Garden for now XXX
 
             # When this covers more than garden, this code can replace the property_has_domestic_refuse above
@@ -556,8 +546,8 @@ sub waste_garden_sub_params {
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
 
-    # TODO This will need to sometimes be a sack!
-    my $container = $container_types{'Garden Waste Bin'};
+    my $container = $c->stash->{garden_sacks} ? 'Garden Waste Sacks' : 'Garden Waste Bin';
+    $container = $container_types{$container};
 
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);
@@ -639,6 +629,12 @@ sub waste_display_payment_method {
     };
 
     return $display->{$method};
+}
+
+sub garden_waste_sacks_cost_pa {
+    my ($self) = @_;
+    my $cost = $self->feature('payment_gateway')->{ggw_sacks_cost};
+    return $cost;
 }
 
 sub garden_waste_cost_pa {

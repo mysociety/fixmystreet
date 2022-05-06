@@ -18,6 +18,8 @@ use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
+use FixMyStreet::App::Form::Waste::Garden::Sacks;
+use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
@@ -968,8 +970,7 @@ sub garden_check : Chained('garden_setup') : Args(0) {
     my $id = $c->stash->{property}->{id};
     my $uri = '/waste/' . $id;
 
-    # TODO Sacks
-    my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
+    my $service = $c->cobrand->garden_current_subscription;
     if (!$service) {
         # If no subscription, go straight to /garden
         $uri .= '/garden';
@@ -981,30 +982,37 @@ sub garden_check : Chained('garden_setup') : Args(0) {
 sub garden : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
-    if ( $c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
+    if ($c->cobrand->garden_current_subscription) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
 
-    my $service = $c->cobrand->garden_waste_service_id;
-    $c->stash->{garden_form_data} = {
-        max_bins => $c->stash->{quantity_max}->{$service}
-    };
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
+    if ($c->stash->{garden_sacks}) {
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
+    } else {
+        my $service = $c->cobrand->garden_service_id;
+        $c->stash->{garden_form_data} = {
+            max_bins => $c->stash->{quantity_max}->{$service}
+        };
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
+    }
     $c->forward('form');
 }
 
 sub garden_modify : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
+    my $service_id = $c->cobrand->garden_service_id;
+    my $service = $c->stash->{services}{$service_id};
+    if (!$service || $service->{garden_due}) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+
     unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
     }
-
-    $c->forward('get_original_sub');
-
-    my $service = $c->cobrand->garden_waste_service_id;
 
     my $pick = $c->get_param('task') || '';
     if ($pick eq 'cancel') {
@@ -1012,12 +1020,9 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach;
     }
 
-    my $max_bins = $c->stash->{quantity_max}->{$service};
-    $service = $c->stash->{services}{$service};
-    if (!$service || $service->{garden_due}) {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id});
-        $c->detach;
-    }
+    $c->forward('get_original_sub');
+
+    my $max_bins = $c->stash->{quantity_max}->{$service_id};
 
     my $payment_method = 'credit_card';
     if ( $c->stash->{orig_sub} ) {
@@ -1045,7 +1050,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 sub garden_cancel : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
-    if ( !$c->stash->{services}{$c->cobrand->garden_waste_service_id} ) {
+    if (!$c->cobrand->garden_current_subscription) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
@@ -1081,16 +1086,19 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         $c->detach;
     }
 
-    my $service = $c->cobrand->garden_waste_service_id;
-    my $max_bins = $c->stash->{quantity_max}->{$service};
-    $service = $c->stash->{services}{$service};
-    $c->stash->{garden_form_data} = {
-        max_bins => $max_bins,
-        bins => $service->{garden_bins},
-    };
-
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
+    if ($c->stash->{garden_sacks}) {
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
+    } else {
+        my $service = $c->cobrand->garden_service_id;
+        my $max_bins = $c->stash->{quantity_max}->{$service};
+        $service = $c->stash->{services}{$service};
+        $c->stash->{garden_form_data} = {
+            max_bins => $max_bins,
+            bins => $service->{garden_bins},
+        };
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
+    }
     $c->forward('form');
 }
 
@@ -1112,13 +1120,13 @@ sub process_garden_cancellation : Private {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     $c->set_param('Subscription_End_Date', $now->ymd);
 
-    my $bin_count = $c->cobrand->get_current_garden_bins;
-
-    $data->{new_bins} = $bin_count * -1;
+    unless ($c->stash->{garden_sacks}) {
+        my $bin_count = $c->cobrand->get_current_garden_bins;
+        $data->{new_bins} = $bin_count * -1;
+    }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
     $c->forward('add_report', [ $data, 1 ]) or return;
-
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{report}->confirm;
@@ -1188,7 +1196,13 @@ sub setup_garden_sub_params : Private {
 
     $data->{detail} = "$data->{category}\n\n$address";
 
-    $c->set_param('service_id', $c->cobrand->garden_waste_service_id);
+    my $service_id;
+    if (my $service = $c->cobrand->garden_current_subscription) {
+        $service_id = $service->{service_id};
+    } else {
+        $service_id = $c->cobrand->garden_service_id;
+    }
+    $c->set_param('service_id', $service_id);
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
@@ -1258,16 +1272,8 @@ sub process_garden_renew : Private {
     my ($self, $c, $form) = @_;
 
     my $data = $form->saved_data;
-    my $service = $c->stash->{services}{$c->cobrand->garden_waste_service_id};
 
-    my $total_bins = $data->{bins_wanted};
-    my $current_bins = $data->{current_bins};
-    $data->{bin_count} = $total_bins;
-    $data->{new_bins} = $total_bins - $current_bins;
-
-    my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
-    my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-
+    my $service = $c->cobrand->garden_current_subscription;
     my $type;
     if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
         $data->{category} = 'Garden Subscription';
@@ -1279,8 +1285,23 @@ sub process_garden_renew : Private {
         $type = $c->stash->{garden_subs}->{Renew};
     }
 
-    $c->set_param('payment', $cost_pa);
-    $c->set_param('admin_fee', $cost_now_admin);
+    if ($c->stash->{garden_sacks}) {
+        $data->{bin_count} = 1;
+        $data->{new_bins} = 1;
+        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
+        $c->set_param('payment', $cost_pa);
+    } else {
+        my $total_bins = $data->{bins_wanted};
+        my $current_bins = $data->{current_bins};
+        $data->{bin_count} = $total_bins;
+        $data->{new_bins} = $total_bins - $current_bins;
+
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
+
+        $c->set_param('payment', $cost_pa);
+        $c->set_param('admin_fee', $cost_now_admin);
+    }
 
     $c->forward('setup_garden_sub_params', [ $data, $type ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
@@ -1315,15 +1336,22 @@ sub process_garden_data : Private {
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - New';
 
-    my $bin_count = $data->{bins_wanted};
-    $data->{bin_count} = $bin_count;
-    $data->{new_bins} = $data->{bins_wanted} - $data->{current_bins};
+    if ($c->stash->{garden_sacks}) {
+        $data->{bin_count} = 1;
+        $data->{new_bins} = 1;
+        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
+        $c->set_param('payment', $cost_pa);
+    } else {
+        my $bin_count = $data->{bins_wanted};
+        $data->{bin_count} = $bin_count;
+        $data->{new_bins} = $data->{bins_wanted} - $data->{current_bins};
 
-    my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-    my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
 
-    $c->set_param('payment', $cost_pa);
-    $c->set_param('admin_fee', $cost_now_admin);
+        $c->set_param('payment', $cost_pa);
+        $c->set_param('admin_fee', $cost_now_admin);
+    }
 
     $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{New} ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
