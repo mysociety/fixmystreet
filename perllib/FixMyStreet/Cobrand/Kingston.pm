@@ -129,17 +129,21 @@ sub image_for_service {
     return $images->{$service_id};
 }
 
-sub garden_waste_service_id {
-    return 1914; # XXX And 1915
+sub garden_bin_service_id { 1914 }
+sub garden_bag_service_id { 1915 }
+sub garden_current_subscription {
+    my $self = shift;
+    my $services = $self->{c}->stash->{services};
+    return $services->{$self->garden_bin_service_id} || $services->{$self->garden_bag_service_id};
 }
-
+sub garden_current_bin_subscription {
+    my $self = shift;
+    my $service_id = $self->garden_bin_service_id;
+    return $self->{c}->stash->{services}->{$service_id};
+}
 sub get_current_garden_bins {
-    my ($self) = @_;
-
-    my $service = $self->garden_waste_service_id;
-    my $bin_count = $self->{c}->stash->{services}{$service}->{garden_bins};
-
-    return $bin_count;
+    my $self = shift;
+    return $self->garden_current_bin_subscription->{garden_bins};
 }
 
 sub service_name_override {
@@ -233,7 +237,7 @@ sub bin_services_for_address {
             my $service_id = $task->{TaskTypeId};
 
             # Only Garden for now XXX
-            next unless $service_id == 1914 || $service_id == 1915;
+            next unless $service_id == $self->garden_bin_service_id || $service_id == $self->garden_bag_service_id;
             # Only Garden for now XXX
 
             # When this covers more than garden, this code can replace the property_has_refuse_sacks above
@@ -492,8 +496,8 @@ sub waste_garden_sub_params {
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
 
-    # TODO This will need to sometimes be a sack!
-    my $container = $container_types{'Garden Waste Bin'};
+    my $container = $c->get_param('service_id') == $self->garden_bag_service_id ? 'Garden Waste Sacks' : 'Garden Waste Bin';
+    $container = $container_types{$container};
 
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);
@@ -575,6 +579,12 @@ sub waste_display_payment_method {
     };
 
     return $display->{$method};
+}
+
+sub garden_waste_sacks_cost_pa {
+    my ($self) = @_;
+    my $cost = $self->feature('payment_gateway')->{ggw_sacks_cost};
+    return $cost;
 }
 
 sub garden_waste_cost_pa {
