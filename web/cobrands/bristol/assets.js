@@ -19,6 +19,10 @@ var park_style = new OpenLayers.Style({
     fillOpacity: "0.25"
 });
 
+var park_style_map = new OpenLayers.StyleMap({
+    default: park_style
+});
+
 // Assets are served from two different WFS feeds; one for lighting and one
 // for everything else. They have some options in common:
 var options = $.extend(true, {}, base_options, {
@@ -41,7 +45,7 @@ var parkOptions = $.extend(true, {}, base_options, {
     asset_type: 'area',
     asset_id_field: 'SITE_CODE',
     srsName: "EPSG:3857",
-    stylemap: park_style,
+    stylemap: park_style_map,
     strategy_class: OpenLayers.Strategy.FixMyStreet,
     road: true,
     non_interactive: true,
