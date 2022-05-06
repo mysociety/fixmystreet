@@ -65,7 +65,7 @@ sub build_active {
     }
 
     foreach my $page ( $self->all_pages ) {
-        foreach my $fname ( $page->all_fields ) {
+        foreach my $fname ( $page->all_fields_copy ) {
             my $field = $self->field($fname);
             $field->inactive(1) unless $active{$fname};
         }

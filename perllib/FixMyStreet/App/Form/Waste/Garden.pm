@@ -5,7 +5,6 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_field service_id => ( type => 'Hidden' );
-has_field is_staff => ( type => 'Hidden' );
 
 sub details_update_fields {
     my $form = shift;
@@ -28,12 +27,6 @@ has_page intro => (
     title => 'Subscribe to the Green Garden Waste collection service',
     template => 'waste/garden/subscribe_intro.html',
     fields => ['continue'],
-    update_field_list => sub {
-        my $form = shift;
-        return {
-            is_staff => { default => $form->{c}->stash->{staff_payments_allowed} || 0 }
-        };
-    },
     next => 'existing',
 );
 
@@ -41,25 +34,20 @@ has_page existing => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/subscribe_existing.html',
     fields => ['existing', 'existing_number', 'continue'],
-    next => sub { return $_[0]->{is_staff} ? 'details_staff' : 'details'; },
+    next => 'details',
 );
 
 has_page details => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/subscribe_details.html',
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'email', 'phone', 'password', 'continue_review'],
+    field_ignore_list => sub {
+        my $page = shift;
+        return ['payment_method', 'password'] if $page->form->c->stash->{staff_payments_allowed};
+    },
     update_field_list => \&details_update_fields,
     next => 'summary',
 );
-
-has_page details_staff => (
-    title => 'Subscribe to Green Garden Waste collections',
-    template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'name', 'email', 'phone', 'continue_review'],
-    update_field_list => \&details_update_fields,
-    next => 'summary',
-);
-
 
 has_page summary => (
     fields => ['tandc', 'submit'],

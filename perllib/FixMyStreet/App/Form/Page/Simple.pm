@@ -24,4 +24,30 @@ has check_unique_id => ( is => 'ro', default => 1 );
 # Catalyst action to forward to once this page has been reached
 has finished => ( is => 'ro', isa => 'CodeRef' );
 
+has field_ignore_list => (
+    is => 'ro',
+    isa => 'CodeRef',
+    predicate => 'has_field_ignore_list'
+);
+has fields_copy => (
+    traits => ['Array'],
+    is => 'rw',
+    isa => 'ArrayRef[Str]',
+    default => sub { [] },
+    handles => {
+        all_fields_copy => 'elements',
+    },
+);
+
+sub BUILD {
+    my $self = shift;
+    my $fields = $self->fields;
+    $self->fields_copy($fields);
+    if ($self->has_field_ignore_list) {
+        my %ignore = map { $_ => 1 } @{$self->field_ignore_list->($self) || []};
+        my $kept_fields = [ grep { !$ignore{$_} } @$fields ];
+        $self->fields($kept_fields);
+    }
+}
+
 1;

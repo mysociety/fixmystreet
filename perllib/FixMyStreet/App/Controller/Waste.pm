@@ -1052,8 +1052,7 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         bins => $service->{garden_bins},
     };
 
-
-    $c->stash->{first_page} = $c->stash->{staff_payments_allowed} ? 'intro_staff' : 'intro';
+    $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
     $c->forward('form');
 }
