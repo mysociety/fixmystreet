@@ -711,12 +711,13 @@ FixMyStreet::override_config {
             $mech->click();
             $mech->get_ok("/reports");
             $root = HTML::TreeBuilder->new_from_content($mech->content());
-            @assigned_to = $root->find("li#report-$report_id div.assigned-to span.assignee")->content_list;
+            my $elem = $root->find("li#report-$report_id div.assigned-to span.assignee");
+            @assigned_to = $elem ? $elem->content_list : ();
         };
         $toggle_shortlist->();
         like($assigned_to[0], qr/Body User/, 'assignment by shortlist-add button still works' );
         $toggle_shortlist->();
-        like($assigned_to[0], qr/unassigned/, 'unassignment by shortlist-remove button still works' );
+        is($assigned_to[0], undef, 'unassignment by shortlist-remove button still works' );
     };
     $user->user_body_permissions->delete;
 };

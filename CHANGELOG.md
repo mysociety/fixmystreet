@@ -8,6 +8,8 @@
         - Include username in inactive email.
         - Update document title on client-side new report page transition.
         - Disable staff phone and name fields to avoid accidental overwriting.
+        - Hide 'Assigned to' text if a report is not assigned to anyone
+        - Hide 'Assign to' dropdown if no available assignees
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704

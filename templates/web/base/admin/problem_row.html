@@ -30,10 +30,14 @@
             [%- END -%]
             <br>[% problem.cobrand %]<br>[% problem.cobrand_data | html %]
             <br>
-            [% IF c.user.has_body_permission_to('assign_report_to_user') %] [%# see report's assigned user %]
+            [% assigned_user = problem.shortlisted_user.name OR problem.shortlisted_user.username %]
+            [%
+                IF c.user.has_body_permission_to('assign_report_to_user')
+                && assigned_user
+            %] [%# see report's assigned user %]
                 <span>[% loc('Assigned to') %]: </span>
                 <span>
-                    [%- problem.shortlisted_user.name OR problem.shortlisted_user.username OR loc('unassigned') -%]
+                    [%- assigned_user -%]
                 </span>
             [%- END -%]
         </td>

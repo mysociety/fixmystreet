@@ -454,9 +454,9 @@ they are in a practical order for your route or priorities.
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and 'Assign problem reports to users' must be ticked.</span>
 
-Managers of teams of inspectors can assign reports to the shortlists of inspectors (i.e. staff with the 'Markup problem details' permission). The assignment dropdown appears when editing reports with the inspector tool.
+Managers of teams of inspectors can assign reports to the shortlists of inspectors (i.e. staff with the 'Markup problem details' permission). The assignment dropdown appears when editing reports with the inspector tool, but only if there are any users available to be assigned.
 
-Reports can also be assigned in bulk from the 'All reports' page, where inspector managers can see at a glance which reports are assigned to which inspectors, as well as which are unassigned.
+Reports can also be assigned in bulk from the 'All reports' page, where inspector managers can see at a glance which reports are assigned to which inspectors.
 
 Assigned users can also be viewed on the Reports list page in the Admin area, as well as when editing a report in that list by clicking its 'Edit' link.
 
@@ -464,7 +464,7 @@ Assigned users can also be viewed on the Reports list page in the Admin area, as
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and 'Markup problem details' must be ticked.</span>
 
-In addition to seeing their own shortlist, inspectors can, like inspector managers, see which reports are assigned to other inspectors and which are unassigned both in the individual report webpage and in the 'All reports' list.
+In addition to seeing their own shortlist, inspectors can, like inspector managers, see which reports are assigned to other inspectors, both in the individual report webpage and in the 'All reports' list.
 
 #### Viewing navigation routes
 
