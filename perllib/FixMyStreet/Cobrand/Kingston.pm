@@ -165,6 +165,8 @@ sub bin_payment_types {
     };
 }
 
+sub waste_password_hidden { 1 }
+
 sub waste_subscription_types {
     return {
         New => 1,
