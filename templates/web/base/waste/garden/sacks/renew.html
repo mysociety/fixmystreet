@@ -1,0 +1,43 @@
+[% extra_js = [
+    version('/js/waste.js')
+] ~%]
+[% INCLUDE 'waste/header.html' %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
+
+[% PROCESS 'waste/garden/renew_sacks_desc.html' %]
+
+<form method="post" id="renew">
+  <fieldset class="govuk-fieldset">
+  <hr class="fieldset-hr">
+    <div class="cost-pa__total js-bin-costs"
+        data-per_bin_cost="[% per_bin_cost %]"
+    >
+      <span class="cost-pa__total-costs">
+          Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
+      </span>
+      <span class="cost-pa__total-costs">
+          Total to pay now: £<span id="cost_now">[% tprintf( '%.2f', cost_now ) %]</span>
+      </span>
+    </div>
+  </fieldset>
+
+  <hr class="fieldset-hr">
+  [% IF NOT staff_payments_allowed %]
+  [% PROCESS form override_fields=['payment_method'] %]
+  [% END %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title"><h2 class="govuk-fieldset__heading">Collection address</h2></dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+  [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
+  [% PROCESS form override_fields=['saved_data', 'token', 'process', 'unique_id'] %]
+
+</form>
+[% INCLUDE footer.html %]

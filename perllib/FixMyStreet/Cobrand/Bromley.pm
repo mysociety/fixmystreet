@@ -430,18 +430,10 @@ sub image_for_service {
     return $images->{$service_id};
 }
 
-sub garden_waste_service_id {
-    return 545;
-}
-
-sub get_current_garden_bins {
-    my ($self) = @_;
-
-    my $service = $self->garden_waste_service_id;
-    my $bin_count = $self->{c}->stash->{services}{$service}->{garden_bins};
-
-    return $bin_count;
-}
+use constant GARDEN_WASTE_SERVICE_ID => 545;
+sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
+sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
+sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 
 sub service_name_override {
     my ($self, $service) = @_;

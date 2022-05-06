@@ -296,7 +296,7 @@ sub waste_get_current_garden_sub {
 
     my $garden;
     for my $service ( @$services ) {
-        if ( $service->{ServiceId} == $self->garden_waste_service_id ) {
+        if ( $service->{ServiceId} == $self->garden_service_id ) {
             $garden = $self->_get_current_service_task($service);
             last;
         }

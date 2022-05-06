@@ -1,0 +1,39 @@
+[% extra_js = [
+    version('/js/waste.js')
+] ~%]
+[% INCLUDE 'waste/header.html' %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
+
+[% PROCESS 'waste/garden/subscribe_details_sacks_desc.html' %]
+
+<form method="post" id="subscribe_details">
+  <fieldset class="govuk-fieldset" style="margin-top: 1.5em;">
+    <hr class="fieldset-hr">
+
+    <div class="cost-pa__total js-bin-costs">
+      <span class="cost-pa__total-costs">
+          Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
+      </span>
+    </div>
+  </fieldset>
+
+  [% IF NOT staff_payments_allowed %]
+  [% PROCESS form override_fields=['payment_method'] %]
+  [% END %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title"><h2 class="govuk-fieldset__heading">Collection address</h2></dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+  [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
+  [% PROCESS form override_fields=['saved_data', 'token', 'process', 'service_id', 'unique_id'] %]
+
+</form>
+
+[% INCLUDE footer.html %]
