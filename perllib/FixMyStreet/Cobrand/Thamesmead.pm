@@ -64,6 +64,8 @@ sub problems_sql_restriction { FixMyStreet::Cobrand::UKCouncils::problems_sql_re
 sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0], $_[1]) }
 sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction($_[0], $_[1]) }
 
+sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
+
 sub default_map_zoom { 6 }
 
 sub munge_report_new_bodies {
