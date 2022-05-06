@@ -44,7 +44,7 @@
   </dl>
   [% END %]
 
-  [% IF staff_payments_allowed %]
+  [% IF staff_payments_allowed OR c.cobrand.waste_password_hidden %]
   [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
   [% ELSE %]
   [% PROCESS form override_fields=['name', 'email', 'phone', 'password', 'continue_review' ] %]
