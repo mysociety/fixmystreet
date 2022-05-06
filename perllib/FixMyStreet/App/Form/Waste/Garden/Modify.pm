@@ -4,25 +4,22 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
-has_field is_staff => ( type => 'Hidden' );
-
 has_page intro => (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify_pick.html',
     fields => ['task', 'continue'],
-    update_field_list => sub {
-        my $form = shift;
-        return {
-            is_staff => { default => $form->{c}->stash->{is_staff} }
-        };
-    },
-    next => sub { return $_[0]->{is_staff} ? 'alter_staff' : 'alter'; },
+    next => 'alter',
 );
 
-my %alter_fields = (
+has_page alter => (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify.html',
-    fields => ['current_bins', 'bins_wanted', 'name', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'],
+    field_ignore_list => sub {
+        my $page = shift;
+        return ['phone', 'email'] unless $page->form->c->stash->{is_staff};
+        return [];
+    },
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
@@ -45,15 +42,6 @@ my %alter_fields = (
     },
     next => 'summary',
 );
-
-my %alter_fields_staff = (
-    %alter_fields,
-    ( fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'] ),
-);
-
-has_page alter => ( %alter_fields );
-
-has_page alter_staff => ( %alter_fields_staff );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 

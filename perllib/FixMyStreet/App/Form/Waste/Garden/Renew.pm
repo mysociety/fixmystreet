@@ -4,10 +4,14 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
-my %intro_fields = (
+has_page intro => (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/renew.html',
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'phone', 'email', 'continue_review'],
+    field_ignore_list => sub {
+        my $page = shift;
+        return ['payment_method'] if $page->form->c->stash->{staff_payments_allowed};
+    },
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
@@ -24,15 +28,6 @@ my %intro_fields = (
     },
     next => 'summary',
 );
-
-my %intro_fields_staff = (
-    %intro_fields,
-    ( fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'] )
-);
-
-has_page intro => ( %intro_fields );
-
-has_page intro_staff => ( %intro_fields_staff );
 
 has_page summary => (
     fields => ['tandc', 'submit'],
