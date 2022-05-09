@@ -1,4 +1,4 @@
-[% FOR user IN body.staff_with_permission('report_inspect')  %]
+[% FOR user IN inspectors %]
     <option value='[% user.id %]'
     [%- IF problem AND (user.id == problem.shortlisted_user.id) -%]
         selected="selected"
@@ -9,4 +9,3 @@
 <option value='unassigned'
 [%- UNLESS problem.shortlisted_user -%] selected="selected"[%- END -%]
 >[% loc('unassigned') %]</option>
-

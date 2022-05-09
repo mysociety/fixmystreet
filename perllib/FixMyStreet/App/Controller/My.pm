@@ -286,7 +286,9 @@ sub bulk_assign : Path('planned/bulk_assign') {
             # take off shortlist
             my @problems = $c->model('DB::Problem')->search({ id => { -in => [ @bulk_reports ]} });
             foreach my $problem (@problems) {
-                $problem->user->remove_from_planned_reports($problem);
+                my $current_assignee = $problem->shortlisted_user;
+                $current_assignee->remove_from_planned_reports($problem)
+                    if $current_assignee;
             }
         } else {
             # add to shortlist

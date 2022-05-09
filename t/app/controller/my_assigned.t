@@ -109,6 +109,34 @@ FixMyStreet::override_config {
         for (0..2) {
             like($assigned_to[$_], qr/Inspector Ian/, 'Report ' . ($_ + 1) . ' assigned to Ian');
         }
+
+        # unassign reports
+        $mech->form_name('bulk-assign-form');
+        # HTML::Form does not seem to find external form inputs :(
+        # So, copy the checkboxes to inside the form, then tick them.
+        $bulk_form = $mech->current_form;
+        @tickboxes = $root->find('input.bulk-assign');
+        for my $box (@tickboxes) {
+            $bulk_form->push_input('checkbox', {
+                name  => $box->attr('name'),
+                id    => $box->id,
+                value => $box->attr('value'),
+            });
+        }
+
+        $mech->form_name('bulk-assign-form');
+        $mech->select('inspector', 'unassigned');
+        $mech->tick('bulk-assign-reports', $report_id);
+        $mech->tick('bulk-assign-reports', $report2_id);
+        $mech->tick('bulk-assign-reports', $report3_id);
+        $mech->click;
+
+        # check reports are now unassigned
+        $root = HTML::TreeBuilder->new_from_content($mech->content());
+        @assigned_to = $get_assignees->();
+        for (0..2) {
+            is($assigned_to[$_], undef, 'Report ' . ($_ + 1) . ' unassigned from Ian');
+        }
     };
 };
 

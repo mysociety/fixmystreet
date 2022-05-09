@@ -691,6 +691,13 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => $ian->id } });
         $mech->content_contains('Shortlisted by Inspector Ian');
+
+        $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => 'unassigned' } });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('Shortlisted by', 'Unassignment of user who did not raise report works');
+
+        # Reassign in prep for following tests
+        $mech->submit_form_ok({ button => 'save', with_fields => { include_update => 0, assignment => $ian->id } });
     };
 
     $ian->remove_from_roles($role_a);

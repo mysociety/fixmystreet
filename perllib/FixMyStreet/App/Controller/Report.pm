@@ -526,7 +526,9 @@ sub inspect : Private {
         my $assigned = ($c->get_param('assignment'));
         if ($assigned && $assigned eq 'unassigned') {
             # take off shortlist
-            $problem->user->remove_from_planned_reports($problem);
+            my $current_assignee = $problem->shortlisted_user;
+            $current_assignee->remove_from_planned_reports($problem)
+                if $current_assignee;
         } elsif ($assigned) {
             my $assignee = $c->model('DB::User')->find({ id => $assigned });
             $assignee->add_to_planned_reports($problem);
