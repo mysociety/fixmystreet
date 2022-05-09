@@ -90,6 +90,70 @@ a:focus,
         color: inherit;
         text-decoration: underline;
     }
+
+    small.copy {
+        text-align: center;
+        display: block;
+        margin-top: 24px;
+    }
+
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        width: 70%;
+
+        ul {
+            a {
+                font-size: 0.75em;
+                text-decoration: none;
+
+                &:hover, &:focus {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        .footer-link-wrapper {
+            margin-top: 25px;
+        }
+
+        p.footer-link {
+            .button {
+                background-repeat: no-repeat;
+                background-position: 0 center;
+                color: #ffffff;
+                padding-left: 1.5em;
+                background-color: transparent;
+                font-size: 1em;
+                text-decoration: none;
+    
+                &:hover, &:focus {
+                    text-decoration: underline;
+                }
+    
+                &.map {
+                    background-image: url('https://images.static.shropshire.gov.uk/external-template/img/map.png');
+                    width: auto;
+                }
+    
+                &.feedback {
+                    background-image: url('https://images.static.shropshire.gov.uk/external-template/img/feedback.png');
+                }
+    
+                &.govroam {
+                    display: block;
+                    background-image: url('https://images.static.shropshire.gov.uk/external-template/img/govroam-logo-white-140x80.png');
+                    min-width: 140px;
+                    min-height: 80px;
+                    background-size: contain;
+    
+                    &:hover {
+                        background-image: url('https://images.static.shropshire.gov.uk/external-template/img/govroam-logo-140x80.png'); 
+                    }
+                }
+            }
+        }
+    }
 }
 
 #report-cta {
@@ -228,7 +292,7 @@ body.twothirdswidthpage .content .sticky-sidebar {
 }
 
 .box-warning {
-    background-color: mix($shropshire-yellow, #fff, 15%);
+    background-color: mix($shropshire-yellow, #fff, 25%);
 }
 
 .fms-admin-info {
