@@ -24,10 +24,11 @@ has_page alter => (
         my $form = shift;
         my $c = $form->c;
         my $data = $c->stash->{garden_form_data};
-        my $current_bins = $form->saved_data->{current_bins} || $data->{bins};
+        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
         my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
         my $new_bins = $bins_wanted - $current_bins;
 
+        my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
         my $cost_pa = $c->cobrand->garden_waste_cost_pa($bins_wanted);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         $c->stash->{cost_pa} = $cost_pa / 100;
@@ -37,14 +38,15 @@ has_page alter => (
         $c->stash->{pro_rata} = 0;
         if ($new_bins > 0) {
             $c->stash->{new_bin_count} = $new_bins;
-            my $cost_pro_rata = $c->cobrand->waste_get_pro_rata_cost($new_bins, $c->stash->{garden_form_data}->{end_date});
+            my $cost_pro_rata = $c->cobrand->waste_get_pro_rata_cost($new_bins, $data->{end_date});
             $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
         }
-        my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+        my $max_bins = $data->{max_bins};
+        my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
         return {
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
-            current_bins => { default => $data->{bins}, range_end => $max_bins },
-            bins_wanted => { default => $data->{bins}, range_end => $max_bins },
+            current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
+            bins_wanted => { %bin_params },
         };
     },
     next => 'summary',

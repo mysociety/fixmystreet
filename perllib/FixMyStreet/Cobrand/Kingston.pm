@@ -232,6 +232,9 @@ sub waste_container_actions {
     };
 }
 
+# For renewal/modify
+sub waste_allow_current_bins_edit { 1 }
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
