@@ -149,6 +149,20 @@ p.form-error {
     }
 }
 
+.main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    img {
+        max-width: 360px;
+        width: 100%;
+        height: auto;
+        border-radius: 0.25em;
+        margin-bottom: 3em;
+    }
+}
+
 .front-blurb,
 .highwaysengland-warning {
     max-width: 32em;

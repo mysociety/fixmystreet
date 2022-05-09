@@ -77,6 +77,15 @@ p.form-error {
     }
 }
 
+.main-content-wrapper {
+    flex-direction: row;
+
+    img {
+        margin-left: 5em;
+        margin-bottom: 0;
+    }
+}
+
 .front-blurb,
 .highwaysengland-warning {
     margin: 2em 0;
