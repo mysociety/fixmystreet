@@ -134,3 +134,19 @@ body.twothirdswidthpage .content .sticky-sidebar {
         margin: 0 0 2em 0;
     }
 }
+
+.shropshire-footer {
+    .footer-link-wrapper {
+        margin-top: 0;
+    }
+
+    .footer-links {
+        flex-direction: row;
+
+        ul {
+            width: 50%;
+            margin-right: 20px;
+            border-right: solid 1px #565656;
+        }
+    }
+}

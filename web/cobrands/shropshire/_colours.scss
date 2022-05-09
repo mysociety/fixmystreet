@@ -91,9 +91,9 @@ $mappage-header-height: 64px;
     font-size: $font-size;
     line-height: $line-height;
     padding: $padding;
-    border: 2px solid $shropshire-dark-blue;
+    border: 2px solid $shropshire-green;
     border-radius: 4px;
-    background: $shropshire-dark-blue;
+    background: $shropshire-green;
     color: #fff !important;
 
     &:focus {
@@ -105,6 +105,6 @@ $mappage-header-height: 64px;
 
     &:hover {
         background: #fff !important;
-        color: $shropshire-dark-blue !important;
+        color: $shropshire-green !important;
     }
 }
