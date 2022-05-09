@@ -7,9 +7,11 @@
 
 a,
 .fake-link {
+    color: $shropshire-royal-blue;
     &:hover,
     &:active {
         color: $shropshire-dark-grey;
+        // text-decoration: none;
     }
 }
 
@@ -29,17 +31,43 @@ a:focus,
 }
 
 #site-logo {
-    width: 150px;
+    $logo-width: 140px;
+    $logo-height: 40px;
+    width:  $logo-width;
     // height: 61px; // see below
-    background-size: 150px 45px;
-    background-image: url("/cobrands/shropshire/images/sc-logo-v3.png");
+    background-size:  $logo-width  $logo-height;
+    @include svg-background-image("images/sc-logo-v3");
 
     // text-indent doesn’t play nicely with focus outline,
     // so use padding overflow trick instead
     text-indent: 0;
     height: 0;
-    padding-top: 61px;
+    padding-top: calc(#{$logo-height} + 5px);
     overflow: hidden;
+}
+
+.nav-menu {
+    a, span {
+        letter-spacing: 0.08px;
+        font-size: 1em;
+        color: #fff !important;
+    }
+
+    a {
+        background-color: #424242;
+        border-bottom-color: $primary_b;
+
+        &:hover, &:focus {
+            background-color: $primary_b;
+        }
+    }
+
+    span {
+        background-color: $primary_b;
+        border-bottom-color: $primary_b;
+        color: #fff;
+        font-size: 1em;
+    }
 }
 
 .shropshire-footer {
@@ -154,8 +182,13 @@ p.form-error {
 }
 
 #front_stats {
-    color: $shropshire-blue;
+    border-top-color: #bde1ce !important;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
     background: transparent;
+    big {
+        color: $shropshire-green !important;
+    }
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
@@ -196,6 +229,26 @@ body.twothirdswidthpage .content .sticky-sidebar {
 
 .box-warning {
     background-color: mix($shropshire-yellow, #fff, 15%);
+}
+
+.fms-admin-info {
+    border-color: $shropshire-green;
+    background-color: mix($shropshire-green, #fff, 15%);
+}
+
+.segmented-control--radio input:checked+label {
+    background: $shropshire-dark-blue;
+    border-color: $shropshire-dark-blue;
+    color: #fff !important;
+}
+
+.item-list--wards__item a:hover,
+.item-list--reports__item a:hover,
+.item-list--wards__item a:focus,
+.item-list--reports__item a:focus,
+.hovered.item-list--wards__item a,
+.hovered.item-list--reports__item a {
+    background-color: mix($shropshire-blue, #fff, 25%);
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";
