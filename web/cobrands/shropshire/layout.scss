@@ -1,9 +1,13 @@
 @import "_colours";
 @import "../sass/layout";
 
+$shropshire-nav-height: 55px;
+$shropshire-nav-border: 5px;
+$shropshire-nav-total-height: calc(#{$shropshire-nav-height} + #{$shropshire-nav-border});
+
 body {
     background-image: url(/cobrands/shropshire/images/full-bg.jpg);
-    background-position: 0 64px; // height of #site-header
+    background-position: 0 $shropshire-nav-total-height; // height of #site-header
     background-repeat: no-repeat;
     background-size: 100%;
 }
@@ -24,6 +28,7 @@ body {
     a.report-a-problem-btn,
     span.report-a-problem-btn {
         padding: 0.5em 0.75em;
+        border-radius: 4px;
 
         &, &:hover {
             color: $nav_colour;
@@ -35,8 +40,9 @@ body {
     a.report-a-problem-btn {
         text-decoration: underline;
 
-        &:hover {
+        &:hover, &:focus {
             text-decoration: none;
+            color: $shropshire-pale-blue !important;
         }
     }
 
@@ -49,8 +55,32 @@ body {
     }
 }
 
+#site-header {
+    height: $shropshire-nav-height;
+    border-bottom: $shropshire-nav-border solid $shropshire-blue-l1;
+}
+
+#main-nav {
+    min-height: $shropshire-nav-total-height;
+}
+
+#site-logo {
+    width: 240px;
+    // height: 61px; // see below
+    background-size: 240px 74px;
+    @include svg-background-image("images/sc-logo-swoosh-v1_257x80");
+
+    // text-indent doesn’t play nicely with focus outline,
+    // so use padding overflow trick instead
+    text-indent: 0;
+    height: 0;
+    padding-top: 74px;
+    overflow: hidden;
+}
+
 #front-main {
     margin: 0 auto;
+    margin-top: 20px;
     padding: 0 1em;
     max-width: $container-max-width;
     background: transparent;
@@ -59,6 +89,7 @@ body {
         max-width: none;
         background: #fff;
         padding: 4%;
+        border-radius: 7px;
     }
 
     #postcodeForm {
@@ -72,6 +103,7 @@ body {
 
 .content {
     padding: 4%;
+    border-radius: 7px;
 }
 
 h1 {
