@@ -68,6 +68,15 @@ sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
 sub default_map_zoom { 6 }
 
+sub enter_postcode_text {
+    my ( $self ) = @_;
+    return _("Enter a road name or postcode adjacent to the area you want to report on or the name of the area");
+}
+
+sub example_places {
+    return [ 'Glendale Way', 'Manorway Green' ];
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
