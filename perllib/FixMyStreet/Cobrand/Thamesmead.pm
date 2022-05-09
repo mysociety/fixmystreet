@@ -77,6 +77,10 @@ sub example_places {
     return [ 'Glendale Way', 'Manorway Green' ];
 }
 
+sub get_body_handler_for_problem {
+    return $_[0];
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
