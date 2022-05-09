@@ -15,20 +15,23 @@ has_page intro => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
-        my $current_bins = $c->stash->{garden_form_data}->{bins};
-        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $c->stash->{garden_form_data}->{bins};
+        my $data = $c->stash->{garden_form_data};
+        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
+        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
         my $new_bins = $bin_count - $current_bins;
 
+        my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
         my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
         $form->{c}->stash->{cost_now_admin} = $cost_now_admin / 100;
         $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
 
-        my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+        my $max_bins = $data->{max_bins};
+        my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
         return {
-            current_bins => { default => $c->stash->{garden_form_data}->{bins}, range_end => $max_bins },
-            bins_wanted => { default => $c->stash->{garden_form_data}->{bins}, range_end => $max_bins },
+            current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
+            bins_wanted => { %bin_params },
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
             email => { default => $c->stash->{is_staff} ? '' : $c->user->email },
             phone => { default => $c->stash->{is_staff} ? '' : $c->user->phone },

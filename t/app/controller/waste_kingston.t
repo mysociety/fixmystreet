@@ -501,9 +501,9 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 2 } });
-        $mech->content_contains('2 bins');
-        $mech->content_contains('40.00');
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 3 } });
+        $mech->content_contains('3 bins');
+        $mech->content_contains('60.00');
         $mech->content_contains('35.00');
     };
     subtest 'check modify sub credit card payment' => sub {
