@@ -7,14 +7,7 @@
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 <ul>
-    [%- cobrand_data = update.cobrand_data;
-        cobrand_data = c.data_for_generic_update IF !update.cobrand;
-        IF cobrand_data;
-            uri = c.uri_for_email( '/report', update.problem_id, cobrand_data );
-        ELSE;
-            uri = c.uri_for_email( '/report', update.problem_id );
-        END;
-    %]
+    [%- uri = c.uri_for_email( '/report', update.problem_id ) %]
 <li><a href="[% uri %]#update_[% update.id %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
 
 <li><label for='detail'>[% loc('Text:') %]</label>

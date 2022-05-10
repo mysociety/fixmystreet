@@ -431,24 +431,6 @@ Returns any disambiguating information available. Defaults to none.
 
 sub disambiguate_location { FixMyStreet->config('GEOCODING_DISAMBIGUATION') or {}; }
 
-=item cobrand_data_for_generic_update
-
-Parameter is UPDATE_DATA, a reference to a hash of non-cobranded update data.
-Return cobrand extra data for the update
-
-=cut
-
-sub cobrand_data_for_generic_update { '' }
-
-=item cobrand_data_for_generic_update
-
-Parameter is PROBLEM_DATA, a reference to a hash of non-cobranded problem data.
-Return cobrand extra data for the problem
-
-=cut
-
-sub cobrand_data_for_generic_problem { '' }
-
 =item header_params
 
 Return any params to be added to responses
