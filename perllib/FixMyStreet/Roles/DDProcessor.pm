@@ -168,6 +168,7 @@ sub waste_reconcile_direct_debits {
                             description => 'LastPayMethod',
                             value => $self->bin_payment_types->{direct_debit},
                         } );
+                        $self->add_new_sub_metadata($cur, $payment);
                         $self->log("confirming matching report " . $cur->id);
                         $cur->confirm;
                         $cur->update;
@@ -266,6 +267,8 @@ sub waste_reconcile_direct_debits {
         $self->log("finished looking at payment " . $payment->{$self->cancelReferenceField});
     }
 }
+
+sub add_new_sub_metadata { return; }
 
 sub _report_matches_payment {
     my ($self, $r, $p) = @_;
