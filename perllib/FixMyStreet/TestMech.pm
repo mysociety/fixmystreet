@@ -109,7 +109,8 @@ sub log_in_ok {
     my $mech  = shift;
     my $username = shift;
 
-    $mech->get_ok('/auth'); # Doing this here so schema cobrand set appropriately (for e.g. TfL password setting)
+    # Staff extra for Kingston but doesn't hurt anyone else
+    $mech->get_ok('/auth?staff=1'); # Doing this here so schema cobrand set appropriately (for e.g. TfL password setting)
 
     $username = $mech->uniquify_email($username, (caller)[1]);
     my $user = $mech->create_user_ok($username);
