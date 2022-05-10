@@ -91,4 +91,31 @@ sub privacy_policy_url {
     'https://www.thamesmeadnow.org.uk/terms-and-conditions/privacy-statement/'
 }
 
+sub get_geocoder { 'OSM' }
+
+sub disambiguate_location {
+    my $self    = shift;
+    my $string  = shift;
+
+    my $town = 'Thamesmead';
+
+    my $results = {
+        %{ $self->SUPER::disambiguate_location() },
+        centre => 51.4981168,0.1054538,
+        string => $string,
+        town => $town,
+    };
+
+    return $results;
+}
+
+sub geocoder_munge_results {
+    my $self = shift;
+    my ($result) = @_;
+    if ($result->{display_name} !~ /Greenwich|Bexley|Thamesmead/) {
+        $result->{display_name} = '';
+    }
+
+}
+
 1;
