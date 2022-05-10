@@ -164,11 +164,13 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 
     my $p = $c->stash->{report};
     $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
-    $c->forward('pay');
+    $c->forward('pay', [ 'bin_days' ]);
 }
 
 sub pay : Path('pay') : Args(0) {
-    my ($self, $c, $id) = @_;
+    my ($self, $c, $back) = @_;
+
+    my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
 
     my $payment = Integrations::SCP->new({
         config => $c->cobrand->feature('payment_gateway')
@@ -206,7 +208,7 @@ sub pay : Path('pay') : Args(0) {
     }
     my $result = $payment->pay({
         returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
-        backUrl => $c->uri_for('pay') . '',
+        backUrl => $backUrl,
         ref => 'GGW' . $uprn,
         request_id => $p->id,
         description => $p->title,
@@ -1229,7 +1231,7 @@ sub process_garden_modification : Private {
         } elsif ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit_modify');
         } elsif ( $pro_rata ) {
-            $c->forward('pay');
+            $c->forward('pay', [ 'garden_modify' ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} ) {
                 my $report = $c->stash->{report};
@@ -1296,7 +1298,7 @@ sub process_garden_renew : Private {
         } elsif ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit');
         } else {
-            $c->forward('pay');
+            $c->forward('pay', [ 'garden_renew' ]);
         }
     }
 
@@ -1340,7 +1342,7 @@ sub process_garden_data : Private {
         } elsif ( $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
         } else {
-            $c->forward('pay');
+            $c->forward('pay', [ 'garden' ]);
         }
     }
     return 1;
