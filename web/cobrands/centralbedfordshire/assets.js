@@ -37,6 +37,39 @@ var centralbeds_types = [
     "Fw",
 ];
 
+function likely_trees_report() {
+    // Ensure the user can select anywhere on the map if they want to
+    // make a report in the "Trees" category. This means we don't show the
+    // "not found" message if no category/group has yet been selected
+    // or if only the group containing the "Trees" category has been
+    // selected.
+    var selected = fixmystreet.reporting.selectedCategory();
+    return selected.category === "Trees" ||
+            (selected.group === "Grass, Trees, Verges and Weeds" && !selected.category) ||
+            (!selected.group && !selected.category);
+}
+
+function show_non_stopper_message() {
+    // For reports about trees on private roads, Central Beds want the
+    // "not our road" message to be shown and also for the report to be
+    // able to be made.
+    // The existing stopper message code doesn't allow for this situation, so
+    // this function is used to show a custom DOM element that contains the
+    // message.
+    if ($('html').hasClass('mobile')) {
+        var msg = $("#js-custom-not-council-road").html();
+        $div = $('<div class="js-mobile-not-an-asset"></div>').html(msg);
+        $div.appendTo('#map_box');
+    } else {
+        $("#js-custom-roads-responsibility").removeClass("hidden");
+    }
+}
+
+function hide_non_stopper_message() {
+    $('.js-mobile-not-an-asset').remove();
+    $("#js-custom-roads-responsibility").addClass("hidden");
+}
+
 fixmystreet.assets.add(defaults, {
     http_options: {
         params: {
@@ -55,13 +88,25 @@ fixmystreet.assets.add(defaults, {
     actions: {
         found: function(layer, feature) {
             fixmystreet.message_controller.road_found(layer, feature, function(feature) {
+                hide_non_stopper_message();
                 if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
+                    return true;
+                }
+                if (likely_trees_report()) {
+                    show_non_stopper_message();
                     return true;
                 }
                 return false;
             }, "#js-not-council-road");
         },
-        not_found: fixmystreet.message_controller.road_not_found,
+        not_found: function(layer) {
+            hide_non_stopper_message();
+            if (likely_trees_report()) {
+                fixmystreet.message_controller.road_found(layer);
+            } else {
+                fixmystreet.message_controller.road_not_found(layer);
+            }
+        }
     },
     asset_item: "road",
     asset_type: 'road',
