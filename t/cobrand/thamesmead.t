@@ -18,6 +18,85 @@ my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2493,", category => 'Overgrown shrub beds', cobrand => 'thamesmead',
     user => $user1,});
 
+my $osm = Test::MockModule->new('FixMyStreet::Geocode');
+
+$osm->mock('cache', sub {
+    [
+        {
+            'class' => 'highway',
+            'boundingbox' => [
+                               '52.4062908',
+                               '52.4069021',
+                               '-1.6015067',
+                               '-1.5979428'
+                             ],
+            'type' => 'residential',
+            'lon' => '-1.5995035',
+            'display_name' => 'Glendale Way, Tanyard Farm, Eastern Green, Coventry, West Midlands Combined Authority, England, CV4 9XF, United Kingdom',
+            'osm_type' => 'way',
+            'osm_id' => 8317909,
+            'importance' => '0.3',
+            'lat' => '52.4064971',
+            'place_id' => 99338892,
+            'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright"
+        },
+        {
+            'display_name' => 'Glendale Way, Tanyard Farm, Eastern Green, Coventry, West Midlands Combined Authority, England, CV4 9YQ, United Kingdom',
+            'lon' => '-1.597785',
+            'boundingbox' => [
+                               '52.4070828',
+                               '52.4071357',
+                               '-1.597785',
+                               '-1.5976885'
+                             ],
+            'type' => 'unclassified',
+            'class' => 'highway',
+            'lat' => '52.4070828',
+            'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+            'place_id' => 97338253,
+            'importance' => '0.3',
+            'osm_type' => 'way',
+            'osm_id' => 8438133
+        },
+        {
+            'importance' => '0.3',
+            'place_id' => 97802139,
+            'lat' => '51.5055221',
+            'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+            'osm_id' => 5181163,
+            'osm_type' => 'way',
+            'display_name' => 'Glendale Way, London, Thamesmead, Greater London, England, SE28 8HA, United Kingdom',
+            'type' => 'residential',
+            'boundingbox' => [
+                               '51.5041544',
+                               '51.5065265',
+                               '0.1235885',
+                               '0.1236829'
+                             ],
+            'lon' => '0.123597',
+            'class' => 'highway'
+        },
+        {
+            'importance' => '0.3',
+            'place_id' => 97802139,
+            'lat' => '51.5055221',
+            'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+            'osm_id' => 5181163,
+            'osm_type' => 'way',
+            'display_name' => 'Glendale Way, London, London Borough of Bexley, Greater London, England, SE28 8HA, United Kingdom',
+            'type' => 'residential',
+            'boundingbox' => [
+                               '51.5041544',
+                               '51.5065265',
+                               '0.1235885',
+                               '0.1236829'
+                             ],
+            'lon' => '0.123597',
+            'class' => 'highway'
+        }
+    ]
+});
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'thamesmead' ],
 }, sub {
@@ -88,6 +167,19 @@ FixMyStreet::override_config {
     $mech->get_ok('/report/' . $problem->id);
     $mech->content_contains('option value="confirmed"', 'Superuser can select "Open" on closed report');
 
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'thamesmead' ],
+}, sub {
+    $mech->get_ok('/', "Get search page");
+    $mech->submit_form_ok(
+        { with_fields => {
+            pc => 'Glendale Way'
+        }
+    }, "Search for Glendale Way");
+    my @glendales = $mech->content =~ /Glendale Way,/g;
+    ok (scalar @glendales == 2, "Finds only Glendale Ways with Bexley or Thamesmead in the address");
 };
 
 done_testing();
