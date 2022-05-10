@@ -260,7 +260,7 @@ sub pay_complete : Path('pay_complete') : Args(2) {
             my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
             $c->stash->{title} = 'Payment successful';
             $c->stash->{reference} = $ref;
-            $c->stash->{action} = 'new_subscription';
+            $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
             $c->forward( 'confirm_subscription', [ $ref ] );
         # It is not clear to me that it's possible to get to this with a redirect
         } else {
@@ -1184,12 +1184,10 @@ sub process_garden_modification : Private {
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
         if ( $pro_rata && $c->stash->{staff_payments_allowed} ) {
-            $c->stash->{action} = 'add_containers';
             $c->forward('csc_code');
         } elsif ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit_modify');
         } elsif ( $pro_rata ) {
-            $c->stash->{action} = 'add_containers';
             $c->forward('pay');
         } else {
             if ( $c->stash->{staff_payments_allowed} ) {
