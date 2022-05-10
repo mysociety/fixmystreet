@@ -1,6 +1,4 @@
-[% INCLUDE header.html %]
-
-<h1 class="govuk-heading-xl">Subscription completed</h1>
+[% INCLUDE waste/header.html %]
 
 <div class="govuk-panel govuk-panel--confirmation">
 [% IF error %]
@@ -17,32 +15,34 @@
         [% title %]
     </h1>
     <div class="govuk-panel__body">
-        <p>[% message %]
-          [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
-            a copy has been sent to your email address, [% report.user.email %].
-          [% END %]
-        </p>
         <p>
-        [% IF action == 'new_subscription' %]
-        Your Garden Waste subscription won't show on your check your <a class="govuk-button" href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered. Containers typically arrive within two weeks, but this may vary due to demand.
-        [% ELSIF action == 'add_containers' %]
-        Bins typically arrive within two weeks, but this may vary due to demand.
-        [% ELSE %]
-        Changes to your subscription will show up on your bin calender shortly.
-        [% END %]
+          [% INCLUDE 'waste/_report_ids.html' %]
         </p>
-
         [% IF reference %]
         <p>
           Your payment reference is [% reference %].
         </p>
         [% END %]
-        <p>
-          Your reference number is <strong>[% report.id %]</strong>.
-        </p>
     </div>
 [% END %]
 </div>
+
+<p>
+[% message %]
+[% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+We have sent a confirmation email (you may also receive a payment receipt separately) to [% report.user.email %].
+[% END %]
+</p>
+
+<p>
+  [% IF action == 'new_subscription' %]
+    Your Garden Waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered. Containers typically arrive within two weeks, but this may vary due to demand.
+  [% ELSIF action == 'add_containers' %]
+    Bins typically arrive within two weeks, but this may vary due to demand.
+  [% ELSE %]
+    Changes to your subscription will show up on your bin calender shortly.
+  [% END %]
+</p>
 
 [% FOR unit IN service_data %]
   [% NEXT UNLESS unit.service_id == 545 AND unit.next %]

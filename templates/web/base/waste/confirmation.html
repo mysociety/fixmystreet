@@ -22,11 +22,7 @@ END ~%]
           [% IF report.category == 'Request new container' %]
             Containers typically arrive within two weeks, but this may vary due to demand.
           [% END %]
-          [% IF report.get_extra_metadata('grouped_ids') %]
-            Your reference numbers are: <strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>.
-          [% ELSE %]
-            Your reference number is <strong>[% report.id %]</strong>.
-          [% END %]
+          [% INCLUDE 'waste/_report_ids.html' %]
         </p>
     </div>
 </div>

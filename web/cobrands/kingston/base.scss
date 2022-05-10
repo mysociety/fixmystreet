@@ -138,6 +138,18 @@ h2, h2.govuk-heading-l {
     color: $black;
     font-size: 1.75em;
 }
+.govuk-panel--confirmation {
+    background-color: $blue !important;
+}
+.govuk-panel--confirmation h1 {
+    color: $white;
+}
+.govuk-panel__title {
+    font-size: 2rem !important;
+}
+.govuk-panel__body {
+    font-size: 1.5rem !important;
+}
 
 label {
     @include kingston-form-label();
