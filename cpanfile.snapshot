@@ -3632,6 +3632,20 @@ DISTRIBUTIONS
       File::Temp 0.14
       HTTP::Headers 0
       IO::File 1.14
+  HTTP-CookieJar-0.012
+    pathname: D/DA/DAGOLDEN/HTTP-CookieJar-0.012.tar.gz
+    provides:
+      HTTP::CookieJar 0.012
+      HTTP::CookieJar::LWP 0.012
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 6.17
+      HTTP::Date 0
+      Time::Local 1.1901
+      parent 0
+      perl 5.008001
+      strict 0
+      warnings 0
   HTTP-Cookies-6.01
     pathname: G/GA/GAAS/HTTP-Cookies-6.01.tar.gz
     provides:
