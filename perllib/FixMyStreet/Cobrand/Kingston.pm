@@ -106,6 +106,30 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
+# Cut down list as only Waste
+sub available_permissions {
+    my $self = shift;
+
+    return {
+        _("Problems") => {
+            report_edit => _("Edit reports"),
+            report_mark_private => _("View/Mark private reports"),
+            contribute_as_another_user => _("Create reports/updates on a user's behalf"),
+            contribute_as_anonymous_user => _("Create reports/updates as anonymous user"),
+            contribute_as_body => _("Create reports/updates as the council"),
+        },
+        _("Users") => {
+            user_edit => _("Edit users' details/search for their reports"),
+            user_manage_permissions => _("Edit other users' permissions"),
+            user_assign_body => _("Grant access to the admin"),
+        },
+        _("Bodies") => {
+            template_edit => _("Add/edit response templates"),
+            emergency_message_edit => _("Add/edit emergency message"),
+        },
+    };
+}
+
 sub clear_cached_lookups_property {
     my ($self, $id) = @_;
 
