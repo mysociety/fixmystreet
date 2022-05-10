@@ -11,6 +11,7 @@ use JSON::MaybeXS;
 use LWP::Simple;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::Bottomline';
 
 sub council_area_id { return 2480; }
 sub council_area { return 'Kingston'; }
