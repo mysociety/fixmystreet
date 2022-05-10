@@ -25,14 +25,7 @@
     <p align="center"><input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]"></p>
 
     <ul>
-    [%- cobrand_data = problem.cobrand_data;
-        cobrand_data = c.data_for_generic_problem IF !problem.cobrand;
-        IF cobrand_data;
-            uri = c.uri_for_email( '/report', problem.id, cobrand_data );
-        ELSE;
-            uri = c.uri_for_email( '/report', problem.id );
-        END;
-    %]
+         [% uri = c.uri_for_email( '/report', problem.id ) %]
     <li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
 
 <li>[% loc('Co-ordinates:') %]
@@ -96,7 +89,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li>[% loc('Alerts:') %] [% alert_count %]</li>
 <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]
-<br><small>[% loc('Cobrand data:') %] [% cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>
+<br><small>[% loc('Cobrand data:') %] [% problem.cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>
 </li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
 
