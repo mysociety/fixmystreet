@@ -1,70 +1,196 @@
 @import "_colours";
 @import "../sass/layout";
 
-// Alter the logo and the header on every page *but* the map page. On the map
-// page it stays small like in base.css
-body.fullwidthpage, body.twothirdswidthpage, body.authpage {
-  #site-logo {
-    width: 159px;
-    height: 114px;
-    background: url(/cobrands/bromley/bromley-logo.png) 0 0 no-repeat;
-    float: left;
-  }
-}
-body.waste #site-logo {
-    width: 334px;
-    height: 114px;
-    float: left;
+body {
+  background-color: white;
 }
 
-body.mappage {
-  .bromley-header {
-    margin-bottom: 0;
-    padding-top: 0.5em;
+.container, #front-main-container {
+  body.frontpage & {
+    max-width: 992px !important;
+  }
+}
+
+// Alter the logo and the header on every page *but* the map page. On the map
+// page it stays small like in base.css
+body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
+  #site-logo {
+    $logo-height-desktop: 88px;
+    width: 157px;
+    height: 0;
+
+    @include svg-background-image("images/site-logo");
+    background-size: 157px $logo-height-desktop;
+    background-position: center;
+    background-repeat: no-repeat;
+  
+    //Not displaying the text
+    padding-top: calc(#{$logo-height-desktop} + 10px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-indent: -999999px;
+    z-index:2;
   }
 }
 
 #main-nav {
   display: block; // remove flex so nav touches top of parent
   min-height: 0; // no vertical align, so no need for a height
-  margin-top: 0; // don't bother overlapping the border
+  margin-top: 2em;
   height: auto;
 
   .ie9 & > * {
     position: static;
     -ms-transform: none;
   }
+
+  body.mappage & {
+    margin-top: 0.5em;
+  }
 }
 
 // Override the FMS main menu to give it a background colour
 .nav-menu--main {
-  background-color: $bromley_blue;
+  li {
+    margin: 0 5px;
+  }
 
   // Bromley doesn't have a special styling for the report button in the nav
   a.report-a-problem-btn {
-    color: $nav_colour;
-    background: none;
+    border-radius: 0.25em;
+
+    color: #fff;
+    background: $bromley_blue;
     padding: 0.75em;
+
     margin: 0;
-    @include border-radius(0);
-    &:hover {
-      background: $nav_hover_background_colour;
+    @include border-radius(0.25em);
+    &:hover, &:focus {
+      background: darken($bromley_blue, 10%);
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+
+  span.report-a-problem-btn {
+    cursor:auto;
+    border-radius: 0.25em;
+    &:hover, &:focus {
+      color: $nav_colour !important;
+      background-color: $nav_hover_background_colour !important;
+    }
+  }
+
+  span {
+    color: $nav_colour;
+    background-color: $nav_hover_background_colour;
+  }
+
+  a {
+    color: $nav_colour;
+    border-radius: 0.25em;
+    // background-color: $nav_hover_background_colour;
+    &:hover, &:focus {
+      color: $bromley_blue;
+      text-decoration: underline;
     }
   }
 }
-.nav-menu--main span {
-  color: $nav_colour;
-  background-color: $nav_hover_background_colour;
+
+
+#map_box, #map_sidebar {
+  // Navbar height + border
+  top: 66px;
+}
+
+#front-main {
+  background: $bromley_green;
+  padding-top: 5em;
+  padding-bottom: 5em;
+  position: relative;
+
+  h1.main {
+    color: #fff;
+    font-weight: 500;
+    max-width: 350px;
+    line-height: 130%;
+    text-align: left;
+  }
+
+  #front-main-container {
+    position: relative;
+    z-index: 2;
+
+    form#postcodeForm {
+      margin: 0 0;
+      text-align: left;
+      color: $bromley_black;
+      background: white;
+      border-radius: 8px;
+      border: 2px solid $bromley_green;
+      max-width: 550px;
+      padding: 1.5em 2em;
+
+      label {
+        margin-bottom: 1em;
+      }
+
+      .form-hint {
+        color: transparentize($color: $bromley_black, $amount: 0.3);
+      }
+      
+      div {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .bromley-bubble {
+    position: absolute;
+    @include svg-background-image("images/curve-top");
+    background-position: bottom 0 right 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 272px;
+    right: 0;
+    bottom: -2px;
+    z-index: 1;
+  }
+}
+
+.container .content {
+  .frontpage & {
+    background: $bromley_green_l2;
+    border: 2px solid #b3d3b3;
+    // border: 2px solid $bromley_green;
+    border-radius: 8px;
+
+    &:first-child p {
+        margin-bottom: 2.5em;
+        padding: 1em;
+        border-radius: 2px;
+        background: $bromley_yellow;
+    }
+
+    h2 {
+      margin-bottom: 1em;
+    }
+  }
+}
+
+#front_stats {
+  border-top-color: $bromley_green !important;
+  background: transparent !important;
+
+  big {
+    color: $bromley_green !important;
+  }
 }
 
 // Fix bad margin on local alerts form
 body.alertindex form.full-width {
   margin-left: 0;
-}
-
-// The page h1 needs to be white on desktop, because it's in a blue box
-h1.main {
-  color: #fff;
 }
 
 .emergency-message {
@@ -80,93 +206,18 @@ h1.main {
   padding-left: 3em;
 }
 
-// This is our custom wrapper for Bromley's header elements
-.bromley-header {
-  // Bromley's logo has a bottom margin to space it out from the A-Z nav, we
-  // can't do that because they're in separate divs, so add a margin here
-  // instead.
-  margin-bottom: 20px;
-}
-
-// Center the mobile app buttons
-#footer-mobileapps p {
-  text-align: center;
-  margin: 1em 0 3em 0;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Bromley desktop styles
-//////////////////////////////////////////////////////////////////////////////
-
-// Bromley's .top-links section floats to the right on bigger screens
-.top-links {
-    float: right;
-    width: auto;
-    margin-top: 3em;
-}
-
-// Bromley's search form floats to the right too
-.main-search {
-  width: 35%;
-  margin: 0;
-  float: right;
-  min-width: 287px;
-  clear: right;
-}
-
-// Bromley's A-Z nav gets the background coloured in on bigger screens to
-// appear full-screen
-.a-z-container {
-  background: #647890;
-  padding: 0;
-}
-
-// The link to open the A-Z nav gets hidden on big screens
-.drop-down-nav > li > a {
-  display: none;
-}
-
-// And the rest of the A-Z nav gets show with a horrible !important
-.main-a-z ul li ul {
-  display: block!important;
-}
-
 // Bromley's footer
 .site-footer {
-  // Undo our footer background styling above
-  background-color: #d5d2c3;
-  padding-top: 1em;
+  padding: 120px 0 0;
+  height: 225px;
+  margin-top: 3em;
 
-  .column {
-    margin-right: 1.66667%;
-    display: block;
-    float: left;
-    .additional-links {
-      float: left;
-      width: 24%;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      li {
-        padding: 0 1em;
-      }
-    }
-    .footer-list2 {
-      margin-left: 2%;
-      margin-right: 2%;
-      width: 48%;
-      ul {
-        overflow: auto;
-      }
-    }
-    .footer-list2 ul li,
-    .footer-list1 ul li {
-      width: 41%;
-      margin-right: 2%;
-      padding-left: 1em;
-    }
-    .social ul li {
-      padding: 0 0 0 1em;
-    }
+  @media screen and (min-width: 960px) {
+    background-size: 2000px;
+  }
+
+  .site-footer__content-right {
+    bottom: 24px;
+    right: 80px;
   }
 }

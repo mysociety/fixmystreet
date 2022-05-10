@@ -7,23 +7,52 @@
 @import "../sass/report_list_pins";
 
 // Override the site logo
+#site-header {
+  border-bottom: 0.375rem solid #ababab;
+  border-top: none;
+}
+
 #site-logo {
-  width: 80px;
-  height: 44px;
-  background: url('/cobrands/bromley/bromley-logo.s.png') 0 0 no-repeat;
+  $logo-height: 60px;
+  width: 95px;
+  height: 0;
+  @include svg-background-image("images/site-logo");
+  background-size: 95px $logo-height;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  //Not displaying the text
+  padding-top: calc(#{$logo-height} + 10px);
+  overflow: hidden;
+  white-space: nowrap;
   text-indent: -999999px;
   z-index:2;
-}
-body.waste #site-logo {
-  width: 129px;
-  background: none;
-  text-indent: 0;
+
+  body.mappage & {
+    $logo-height-map: 50px;
+    width: 74px;
+    height: 0px;
+    background-size: 80px $logo-height-map;
+    padding-top: calc(#{$logo-height-map} + 10px);
+  }
 }
 
 #nav-link {
-  top: 7px;
+  top: 11px;
   right: 0.5em;
   transform: none;
+
+  body.mappage & {
+    top: 7px;
+  }
+}
+
+h1#reports_heading {
+  margin-bottom: 0.5em;
+}
+
+#report-cta {
+  right: 4.5em;
 }
 
 // Reset form placeholders so that they match Bromley's
@@ -51,28 +80,42 @@ body.waste #site-logo {
   font-size: 0.9375em;
 }
 
-// Reset body line height on front page
-body.frontpage.fullwidthpage {
-  line-height: normal;
+#front-main {
+  margin: 0;
+  padding: 1.5em 1em;
+  background: $bromley_green;
+  margin-bottom: 2em;
+
+  h1.main {
+    color: #fff;
+  }
+
+  #postcodeForm {
+    background-color: $bromley_green;
+
+    div input#pc {
+      border: 1px solid #616365;
+    }
+
+    .form-hint {
+      color: mix($primary, $primary_text, 30%);
+    }
+  }
 }
 
-#front-main #postcodeForm .form-hint {
-  color: mix($primary, $primary_text, 30%);
+
+ol.big-numbers>li:before {
+  color: $bromley_green;
 }
 
-.bromley-header {
-  // These are from Bromley's styles, applied here because it's the closest
-  // analog to their site header.
+#front_stats {
+  background: $bromley_green !important;
   padding-top: 1em;
-}
+  padding-bottom: 1em;
 
-// Override the links to match Bromley's
-a {
-  opacity: 1;
-}
-
-a:hover {
-  opacity: 0.8;
+  big {
+    color: #fff !important;
+  }
 }
 
 a:active {
@@ -99,6 +142,7 @@ a:active {
   height:2.4em;
   padding-top:0.15em;
   margin-top:0;
+  line-height: 2em;
 }
 
 // Darken the "key tools" links because we've darkened our background and as a
@@ -130,89 +174,6 @@ h1,h2,h3,h4,h5 {
   font-family:$heading-font;
 }
 
-// Bromley's styles for the .top-links nav
-.top-links {
-  // Needed to push it below FMS' mobile menu bar
-  margin: 0 0 13px;
-  display: block;
-  width: 100%;
-  text-align: center;
-  li {
-    display: inline-block;
-    padding: 0 10px;
-    font-size: 0.9em;
-    list-style-type: none;
-    a {
-      font-family: "Helvetica", sans-serif;
-      color: #235e1c;
-      opacity: 1;
-      transition: opacity .25s ease-in-out;
-      -moz-transition: opacity .25s ease-in-out;
-      -webkit-transition: opacity .25s ease-in-out;
-    }
-  }
-  .fa {
-    color: #235e1c;
-    opacity: 0.5;
-  }
-}
-
-// Bromley's icons
-.fa {
-  padding-right: 5px;
-  display: inline-block;
-  font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-.fa-sitemap:before {
-  content: "\f0e8";
-}
-.fa-user:before {
-  content: "\f007";
-}
-.fa-home:before {
-  content: "\f015";
-}
-
-// Bromley's site search
-.main-search {
-  margin: 1em 0;
-  text-align: center;
-  .main-search-input {
-    border-radius: 5px 0 0 5px;
-    border-right: 0px;
-    padding: 7px 2%;
-    font-size: 0.9em;
-    font-weight: 300;
-    width: 74%;
-    text-align: left;
-
-    // Undo some FMS' specific styling that breaks Bromley's look and feel
-    display: inline-block;
-    box-sizing: content-box;
-
-  }
-  .button__primary {
-    height: 42px;
-    line-height: 0;
-    padding: 1.3em 1em;
-    margin: 0 0 0 -3px;
-    border: 1px solid #647890;
-    width: 20%;
-    opacity: 1;
-    transition: opacity .25s ease-in-out;
-    -moz-transition: opacity .25s ease-in-out;
-    -webkit-transition: opacity .25s ease-in-out;
-    background: #647890 url("search-icon.png") no-repeat center center !important;
-    text-indent: -10000px;
-    border-radius: 0 5px 5px 0;
-  }
-}
-
 // Bromley's field definitions, with extra tag-level selectors to override
 // FMS' input[type=text]
 input.field, input.text,
@@ -229,7 +190,7 @@ input.field, input.text,
   color: #000;
   width: 100%;
   max-width: 100%;
-  font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
+  font-family: $body-font;
 }
 
 .btn-primary,
@@ -240,209 +201,130 @@ input.field, input.text,
   @include button-variant($bg, $bg, false, #fff, $hover-bg, $hover-bg, false, #fff);
 }
 
-// Bromley's silly A-Z menu
-// Add a border to this to approximate Bromley's border between the breadcrumb
-// and A-Z menu
-.a-z-container {
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e2e2e2;
-}
-
-.main-a-z {
-  padding: 10px 5px;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 1200px;
-  clear: both;
-  min-height: 10px;
-  overflow: hidden;
-  background: #647890;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-
-  ul {
-    padding-left: 0px;
-    text-align: center;
-    margin: 0;
-
-    li {
-      display: inline-block;
-      padding: 0 15px;
-      color: #e0e9f3;
-      text-align: center;
-      margin: 4px 0;
-
-      a {
-        color: #FFF;
-        opacity: 1;
-        text-transform: uppercase;
-        transition: opacity .25s ease-in-out;
-        -moz-transition: opacity .25s ease-in-out;
-        -webkit-transition: opacity .25s ease-in-out;
-      }
+.container .content {
+  .frontpage & {
+    &:first-child p {
+        margin-bottom: 2.5em;
+        padding: 1em;
+        border-radius: 2px;
+        background: $bromley_yellow;
     }
-  }
 
-  .nav-hover-item {
-    margin: 0;
-    overflow: auto;
-    float: left;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-  }
-}
-.main-a-z ul > li > a {
-  text-transform: capitalize;
-}
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .main-a-z ul li {
-    padding: 0 14px;
-  }
-}
-.drop-down-nav {
-  list-style-type: none;
-}
-.drop-down-nav > li {
-  margin-left: 0!important;
-  border-bottom: none!important;
-}
-
-// Bromley's breadcrumb
-.breadcrumb {
-  width: 100%;
-  margin-bottom: 15px;
-
-  // Approximate Bromley's top border despite this being in a different
-  // location than on their site
-  border-top: 1px solid #fff;
-  padding-top: 15px;
-
-  ul {
-    list-style: none;
-    padding: 10px;
-    margin-top: 0;
-    background: #cccccc;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    font-size: 0.8em;
-
-    // Override FMS' default list styles
-    margin-left: 0;
-    margin-bottom: 1em;
-
-    li {
-      list-style: none;
-      display: inline;
-      &:before {
-        content: '|';
-        padding: 0 5px;
-      }
-      &:first-child:before {
-        display: none;
-      }
-    }
-    .current {
-      font-weight: 700;
-      color: #235E1C;
+    h2 {
+      margin-bottom: 1em;
     }
   }
 }
 
-// Hide things in the header on the map page, because the header is small
-body.mappage {
-  .main-search,
-  .breadcrumb,
-  .a-z-container,
-  .linear-links {
-    display: none;
+.item-list--wards__item a:hover,
+.item-list--reports__item a:hover,
+.item-list--wards__item a:focus,
+.item-list--reports__item a:focus,
+.hovered.item-list--wards__item a,
+.hovered.item-list--reports__item a {
+  background-color: mix($bromley_green, #fff, 30%);
+}
+
+.click-the-map {
+  background: $bromley_green;
+
+  h2 {
+    color: #fff;
   }
+
+  p {
+    opacity: 0.8;
+    color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg width='8' height='12' viewBox='0 0 8 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.2469 11.6803C1.43913 11.8602 1.73795 11.8602 1.93019 11.6803L7.60989 6.36507C7.82103 6.16748 7.82103 5.83252 7.60989 5.63493L1.93019 0.31972C1.73795 0.139818 1.43913 0.139818 1.2469 0.31972L0.390109 1.12152C0.178969 1.31911 0.178969 1.65408 0.390109 1.85167L4.43281 5.63493C4.64395 5.83252 4.64395 6.16748 4.43281 6.36507L0.390109 10.1483C0.178969 10.3459 0.178969 10.6809 0.390109 10.8785L1.2469 11.6803Z' fill='white'/%3E%3C/svg%3E%0A");
+  }
+}
+
+.box-warning {
+  background-color: $bromley_yellow;
 }
 
 // Bromley's footer
 .site-footer {
-  width: 100%;
-  clear: both;
-  margin: 0;
-  min-height: 210px;
-  overflow: hidden;
-  // Add more margin to push this down from FMS's footer
-  margin-top: 2em;
-  .footer-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    .column {
-      width: 100% !important;
-      margin-right: 0;
-      margin-left: 0 !important;
-      float: none;
-      clear: both;
-      &:last-child {
-        margin-right:0;
-      }
+  @include svg-background-image("images/footer-blue-bg");
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  background-color: #f5f3ed;
+  background-size: 1500px;
+  padding: 60px 0 0;
+  padding-bottom: 150px;
+  position: relative;
 
-    }
-  }
-  .additional-links {
-    h5 {
-      background-color: #cecab7;
-      padding: 0.5em 1em;
-      margin: 0;
-      font-size: 1em;
-      font-weight: 400;
-      color: #505050;
-      -webkit-border-radius: 5px;
-      -moz-border-radius: 5px;
-      border-radius: 5px;
-    }
-    ul {
-      padding-left: 0px;
-      // Undo FMS' left margin for uls
-      margin-left: 0;
-      // Override top/bottom margins to match Bromley's default ul styling
-      margin-top: 1em;
-      margin-bottom: 1em;
-      li {
-        padding-left: 1em;
-        width: 80%;
-        display: inline-block;
-        // Remove the bottom margin FMS puts on
-        margin-bottom: 0;
-        a {
-          font-size: 0.9em;
-        }
+  ul.list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    li {
+      list-style: none;
+      flex-basis: 33%;
+
+      a {
+        color: $bromley_black;
+        display: block;
+        padding-right: 0.375rem;
+        position: relative;
+        vertical-align: middle;
+        text-decoration: underline;
       }
     }
   }
-  .copyright {
-    font-size: 0.8em;
-    background: #dad7c9;
-    color: #505050;
-    padding: 0.3em 1em;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+
+  .site-footer__rights {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin-top: 1em;
   }
-  .social {
-    ul {
-      li {
-        width: auto;
-        padding: 0 0 0 1em;
-        img {
-          max-width: 36px;
+
+  .site-footer__content-right {
+    position:  absolute;
+    bottom: 16px;
+    right: 16px;
+    max-width: 350px;
+
+    .h4.nav__heading {
+      display: block;
+      font-size: 1.25em;
+      font-weight: 500;
+      margin-bottom: 0.75em;
+      color: #fff;
+      text-align: right;
+    }
+
+    .social-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+
+      a.list__link {
+        display: block;
+        width: 65px;
+        height: 65px;
+        background-repeat: no-repeat;
+        background-size: 40px;
+        background-position: center;
+  
+        &.twitter {
+          background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20width%3D%2260%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22m55.74%2013.88a.91.91%200%200%200%20-1.05-.24%2019.25%2019.25%200%200%201%20-2.3.85%2011%2011%200%200%200%202.13-3.83.9.9%200%200%200%20-.29-1%20.91.91%200%200%200%20-1-.07%2019.55%2019.55%200%200%201%20-5.77%202.29%2011.19%2011.19%200%200%200%20-19%208%2012.44%2012.44%200%200%200%20.08%201.37%2028.38%2028.38%200%200%201%20-19.41-10.25.86.86%200%200%200%20-.76-.33.9.9%200%200%200%20-.71.44%2011.19%2011.19%200%200%200%201%2012.69%209.14%209.14%200%200%201%20-1.27-.58.92.92%200%200%200%20-.88%200%20.88.88%200%200%200%20-.45.74v.17a11.24%2011.24%200%200%200%205.24%209.47l-.57-.09a.92.92%200%200%200%20-.84.28.89.89%200%200%200%20-.18.87%2011.2%2011.2%200%200%200%208.05%207.46%2019.66%2019.66%200%200%201%20-10.36%202.88%2020.44%2020.44%200%200%201%20-2.35-.14.9.9%200%200%200%20-1%20.59.89.89%200%200%200%20.36%201.05%2030%2030%200%200%200%2016.25%204.77%2028.88%2028.88%200%200%200%2022.38-9.84%2031.15%2031.15%200%200%200%207.76-20.31c0-.3%200-.59%200-.89a21.77%2021.77%200%200%200%205-5.26.92.92%200%200%200%20-.06-1.09zm-6.34%205.18a.9.9%200%200%200%20-.37.76q0%20.64%200%201.29c0%2017.75-14.42%2028.36-28.35%2028.36a28.36%2028.36%200%200%201%20-12.08-2.72%2021.41%2021.41%200%200%200%2012.12-4.56.87.87%200%200%200%20.29-1%20.89.89%200%200%200%20-.83-.61%209.38%209.38%200%200%201%20-8.18-5.17%2011%2011%200%200%200%203.44-.41.89.89%200%200%200%20-.06-1.74%209.41%209.41%200%200%201%20-7.38-7.86%2011%2011%200%200%200%203.64.74.88.88%200%200%200%20.88-.62.89.89%200%200%200%20-.36-1%209.4%209.4%200%200%201%20-3.52-11.39%2030.19%2030.19%200%200%200%2020.94%2010%20.9.9%200%200%200%20.73-.33.86.86%200%200%200%20.18-.77%209.39%209.39%200%200%201%2016-8.56.89.89%200%200%200%20.82.26%2021.28%2021.28%200%200%200%204.43-1.38%209.39%209.39%200%200%201%20-3.05%202.93.9.9%200%200%200%20.57%201.72%2021.43%2021.43%200%200%200%203.19-.63%2020.8%2020.8%200%200%201%20-3.05%202.69z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E);
+        }
+
+        &.facebook {
+          background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20width%3D%2260%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22m36.16%2014.3h5.78a.92.92%200%200%200%20.91-.92v-9a.91.91%200%200%200%20-.91-.91h-7.85c-3.93%200-7%201-9%203.08a10.34%2010.34%200%200%200%20-2.79%207.66l.91.08h-.91v6.14h-4.24a.9.9%200%200%200%20-.91.91v8.66a.91.91%200%200%200%20.91.91h4.25v24.68a.91.91%200%200%200%20.91.91h10.6a.92.92%200%200%200%20.92-.91v-24.69h6.2a.91.91%200%200%200%20.9-.77s.68-4.22%201-8.73a.93.93%200%200%200%20-.24-.69%201%201%200%200%200%20-.67-.29h-7.15v-5a1.67%201.67%200%200%201%201.38-1.12zm-2.3%208h7.08c-.24%202.92-.6%205.57-.79%206.82h-6.33a.92.92%200%200%200%20-.91.92v24.63h-8.78v-24.67a.91.91%200%200%200%20-.91-.92h-4.22v-6.8h4.25a.91.91%200%200%200%20.91-.91v-7.14a8.59%208.59%200%200%201%202.24-6.36c1.67-1.69%204.26-2.54%207.69-2.54h6.91v7.14h-4.84a3.41%203.41%200%200%200%20-3.21%203v5.89a.91.91%200%200%200%20.91.89z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E);
+          border-right: 1px solid #4080bf;
+          border-left: 1px solid #4080bf;
+        }
+
+        &.youtube {
+          background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20width%3D%2260%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22m48%2011.13h-36a8.43%208.43%200%200%200%20-8.5%208.58v20.63a8.41%208.41%200%200%200%208.5%208.53h36a8.41%208.41%200%200%200%208.46-8.53v-20.63a8.43%208.43%200%200%200%20-8.46-8.58zm6.63%2029.21a6.59%206.59%200%200%201%20-6.63%206.66h-36a6.59%206.59%200%200%201%20-6.63-6.7v-20.59a6.62%206.62%200%200%201%206.63-6.71h36a6.62%206.62%200%200%201%206.63%206.75zm-14.63-12.06-14.73-9.69a.93.93%200%200%200%20-.94%200%20.91.91%200%200%200%20-.48.8v19.34a.91.91%200%200%200%20.48.81%201%201%200%200%200%20.43.11%201%201%200%200%200%20.51-.16l14.73-9.68a.92.92%200%200%200%200-1.53zm-14.32%208.72v-16l12.12%208z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E);
+        }
+
+        &:hover, &:focus {
+          background-color: #264d73;
         }
       }
     }
@@ -453,6 +335,15 @@ body.mappage {
 
 // Waste style overrides
 .waste {
+
+  input {
+    font-family: $body-font;
+  }
+
+  .content[role="main"] {
+    margin-top: 25px;
+  }
+
   [class^="govuk-heading-"],
   .govuk-fieldset__heading {
     font-family: $heading-font;
@@ -477,11 +368,11 @@ body.mappage {
   }
 
   .govuk-button {
-    background-color: $bromley_green;
-    box-shadow: 0 2px 0 darken($bromley_green, 10%);
+    background-color: $bromley_blue;
+    box-shadow: 0 2px 0 darken($bromley_blue, 10%);
     &:hover {
       //don't override focus as gov.uk is good at that
-      background-color: darken($bromley_green, 10%);
+      background-color: darken($bromley_blue, 10%);
     }
   }
 

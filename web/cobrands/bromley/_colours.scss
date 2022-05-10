@@ -2,9 +2,15 @@
 
 $menu-image: 'menu-black';
 
-$bromley_blue: #647890;
-$bromley_green: #235e1c;
+$bromley_blue: #336699;
+$bromley_green: #00753b;
+$bromley_green_l1: #c0dfc9; // Success green background message
+$bromley_green_l2: #edfaf4;
 $bromley_dark_green: #505050;
+$bromley_ligh_grey: #eeece8;
+$bromley_black: #171717;
+$bromley_yellow: #fdcb4c;
+$bromley_red_l1: #e8bac4;
 
 $primary: $bromley_blue;
 $primary_b: #ffffff;
@@ -12,16 +18,16 @@ $primary_text: #ffffff;
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
 
-$link-color: $bromley_green;
+$link-color: $bromley_blue;
 $link-hover-color: $bromley_green;
 $link-visited-color: $bromley_dark_green;
 
 $base_bg: #f4f4f4;
-$base_fg: #1a1a1a;
+$base_fg: $bromley_black;
 
-$nav_background_colour: #f4f4f4;
-$nav_colour: #fff;
-$nav_hover_background_colour: #444;
+$nav_background_colour: #eaeaea;
+$nav_colour: $bromley_green;
+$nav_hover_background_colour: $bromley_green_l2;
 
 $col_click_map: $bromley_blue;
 $col_fixed_label: $bromley_blue;
