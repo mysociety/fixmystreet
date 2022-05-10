@@ -100,6 +100,7 @@ requires 'JSON::MaybeXS';
 requires 'Locale::gettext';
 requires 'LWP::Simple';
 requires 'LWP::UserAgent', '6.61';
+requires 'HTTP::CookieJar', '0.012';
 requires 'Math::Trig';
 requires 'MIME::Parser'; # HandleMail
 requires 'Module::Pluggable';
