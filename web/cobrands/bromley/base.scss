@@ -493,6 +493,13 @@ body.mappage {
       box-shadow: 0 2px 0 darken($base_bg, 15%);
     }
   }
+
+  .govuk-panel__title {
+    font-size: 2rem !important;
+  }
+  .govuk-panel__body {
+    font-size: 1.5rem !important;
+  }
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";

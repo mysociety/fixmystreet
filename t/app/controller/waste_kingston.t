@@ -970,7 +970,7 @@ FixMyStreet::override_config {
         $mech->content_lacks($staff_user->email);
 
         my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my ($id) = ($content =~ m#reference number\s*<br><strong>.*?(\d+)<#);
         my $new_report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
