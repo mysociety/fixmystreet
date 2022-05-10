@@ -158,6 +158,8 @@ sub pay_retry : Path('pay_retry') : Args(0) {
     my $token = $c->get_param('token');
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
 
+    my $p = $c->stash->{report};
+    $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
     $c->forward('pay');
 }
 
