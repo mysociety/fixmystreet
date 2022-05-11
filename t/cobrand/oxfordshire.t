@@ -166,6 +166,10 @@ my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3, or
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
+    COBRAND_FEATURES => {
+        public_asset_ids =>
+            { oxfordshire => [ 'feature_id', 'unit_number' ] },
+    },
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
 
