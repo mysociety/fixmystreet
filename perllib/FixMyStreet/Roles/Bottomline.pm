@@ -59,6 +59,11 @@ sub add_new_sub_metadata {
     $new_sub->set_extra_metadata('dd_profile_id', $payment->{profileId});
     $new_sub->set_extra_metadata('dd_mandate_id', $payment->{mandateId});
     $new_sub->set_extra_metadata('dd_instruction_id', $payment->{instructionId});
+
+    my $contact = $self->get_dd_integration->get_contact_from_email($new_sub->user->email);
+    if ($contact) {
+        $new_sub->set_extra_metadata('dd_contact_id', $contact->{id});
+    }
 }
 
 sub get_dd_integration {
