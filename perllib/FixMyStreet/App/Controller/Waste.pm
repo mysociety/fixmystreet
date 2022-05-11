@@ -465,6 +465,7 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
                 reference => $p->id,
                 comments => '',
                 date => $c->cobrand->waste_get_next_dd_day('ad-hoc'),
+                orig_sub => $c->stash->{orig_sub},
         } );
     }
 

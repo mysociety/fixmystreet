@@ -112,11 +112,19 @@ sub call {
     my ($self, $method, $data) = @_;
     my $ua = $self->auth_details;
 
-    my $req = HTTP::Request::Common::POST(
-        $self->endpoint . $method,
-        %{ $self->headers },
-    );
-    $req->content(encode_json($data));
+    my $req;
+    if ( $data ) {
+        $req = HTTP::Request::Common::POST(
+            $self->endpoint . $method,
+            %{ $self->headers },
+        );
+        $req->content(encode_json($data));
+    } else {
+        $req = HTTP::Request::Common::GET(
+            $self->endpoint . $method,
+            %{ $self->headers },
+        );
+    }
 
     my $resp = $ua->request($req);
 
@@ -128,7 +136,36 @@ sub call {
 sub one_off_payment {
     my ($self, $args) = @_;
 
-    return [];
+    my $sub = $args->{orig_sub};
+
+    if ( $sub->get_extra_metadata('dd_contact_id') ) {
+        $args->{dd_contact_id} = $sub->get_extra_metadata('dd_contact_id');
+    } else {
+        my $contact = $self->get_contact_from_email($sub->user->email);
+        if ( $contact and !$contact->{error} ) {
+            $args->{dd_contact_id} = $contact->{id};
+        }
+    }
+
+    my $data = {
+        amount => $args->{amount},
+        dueDate => $args->{date},
+        comments => $args->{reference},
+        paymentType => "DEBIT",
+    };
+
+    my $path = sprintf(
+        "ddm/contacts/%s/mandates/%s/transaction",
+        $args->{dd_contact_id},
+        $sub->get_extra_metadata('dd_mandate_id'),
+    );
+    my $resp = $self->call($path, $data);
+
+    if ( ref $resp eq 'HASHREF' and $resp->{error} ) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 sub amend_plan {
@@ -307,6 +344,49 @@ sub get_cancelled_payers {
 
     my $resp = $self->call("query/execute#getCancelledPayers", $data);
     return $self->parse_results("MandateDTO", $resp);
+}
+
+sub get_contact_from_email {
+    my ($self, $email) = @_;
+
+    my $data = $self->build_query({
+        entity => {
+           "name" => "Contacts",
+           "symbol" => "com.bottomline.ddm.model.contact",
+           "key" => "com.bottomline.ddm.model.contact"
+       },
+       field => {
+            name => "Contacts",
+            symbol => "com.bottomline.ddm.model.contact.Contact",
+        },
+        query => [ {
+            '@type' => "QueryParameter",
+            "field" => {
+                "name" => "email",
+                "symbol" => "com.bottomline.ddm.model.contact.Contact.email",
+                "fieldType" => "STRING",
+                "key" => JSON()->false,
+            },
+            "operator" => {
+                "symbol" => "="
+            },
+            "queryValues" => [ {
+               '@type' => "string",
+               '$value' => $email,
+            } ]
+        } ]
+    });
+
+    my $resp = $self->call("query/execute#getContactFromEmail", $data);
+    my $contacts = $self->parse_results("ContactDTO", $resp);
+
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
+        return $resp;
+    } elsif ( @$contacts ) {
+        return $contacts->[0];
+    }
+
+    return undef;
 }
 
 sub cancel_plan {
