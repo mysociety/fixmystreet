@@ -15,6 +15,8 @@ sub council_area { return 'Kingston'; }
 sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 
+sub admin_user_domain { ('kingston.gov.uk', 'sutton.gov.uk') }
+
 sub send_questionnaires { 0 }
 
 sub abuse_reports_only { 1 }
@@ -104,6 +106,15 @@ sub updates_disallowed {
     return 'waste' if $problem->cobrand_data eq 'waste';
 
     return $self->next::method(@_);
+}
+
+sub state_groups_admin {
+    [
+        [ New => [ 'confirmed' ] ],
+        [ Pending => [ 'investigating', 'action scheduled' ] ],
+        [ Closed => [ 'fixed - council', 'unable to fix', 'closed', 'duplicate' ] ],
+        [ Hidden => [ 'unconfirmed', 'hidden', 'partial' ] ],
+    ]
 }
 
 # Cut down list as only Waste
