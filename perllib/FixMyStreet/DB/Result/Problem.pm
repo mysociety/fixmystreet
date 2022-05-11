@@ -370,6 +370,29 @@ sub visible_states_remove {
     }
 }
 
+sub public_asset_id {
+    my $self = shift;
+
+    my $current_cobrand = $self->result_source->schema->cobrand;
+
+    my $cobrand_for_problem = $current_cobrand->call_hook(
+        get_body_handler_for_problem => $self );
+
+    return unless $cobrand_for_problem;
+
+    # Should be of the form:
+    # COBRAND_FEATURES:
+    #     public_asset_ids:
+    #         oxfordshire: ['feature_id', 'unit_number']
+    my $asset_id_labels = $cobrand_for_problem->feature('public_asset_ids');
+
+    # Return the first match
+    for my $label (@$asset_id_labels) {
+        my $asset_id = $self->get_extra_field_value($label);
+        return $asset_id if $asset_id;
+    }
+}
+
 around service => sub {
     my ( $orig, $self ) = ( shift, shift );
     # service might be undef if e.g. unsaved code report
