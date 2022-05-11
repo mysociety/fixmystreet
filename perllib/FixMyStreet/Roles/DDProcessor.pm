@@ -38,7 +38,7 @@ sub waste_reconcile_direct_debits {
     my $today = DateTime->now;
     my $start = $today->clone->add( days => -14 );
 
-    my $i = $self->get_integration();
+    my $i = $self->get_dd_integration();
 
     my $recent = $i->get_recent_payments({
         start => $start,

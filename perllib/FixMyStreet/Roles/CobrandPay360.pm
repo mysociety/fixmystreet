@@ -51,7 +51,7 @@ sub get_config {
     return shift->feature('payment_gateway');
 }
 
-sub get_integration {
+sub get_dd_integration {
     my $self = shift;
     my $config = $self->feature('payment_gateway');
     my $i = Integrations::Pay360->new({
