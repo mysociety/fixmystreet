@@ -750,8 +750,9 @@ FixMyStreet::override_config {
     my $dd_sent_params = {};
     my $dd = Test::MockModule->new('Integrations::Pay360');
     $dd->mock('one_off_payment', sub {
-        my $self = shift;
-        $dd_sent_params->{'one_off_payment'} = shift;
+        my ($self, $params) = @_;
+        delete $params->{orig_sub};
+        $dd_sent_params->{'one_off_payment'} = $params;
     });
 
     $dd->mock('amend_plan', sub {

@@ -452,10 +452,13 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
 
     my $p = $c->stash->{report};
 
-    my $ad_hoc = $p->get_extra_field_value('pro_rata');
+    my $pro_rata = $p->get_extra_field_value('pro_rata');
+    my $admin_fee = $p->get_extra_field_value('admin_fee') || 0;
     my $total = $p->get_extra_field_value('payment');
 
-    my $i = Integrations::Pay360->new( { config => $c->cobrand->feature('payment_gateway') } );
+    my $ad_hoc = $pro_rata + $admin_fee;
+
+    my $i = $c->cobrand->get_dd_integration;
 
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
@@ -481,7 +484,7 @@ sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
 
     my $p = $c->stash->{report};
 
-    my $i = Integrations::Pay360->new( { config => $c->cobrand->feature('payment_gateway') } );
+    my $i = $c->cobrand->get_dd_integration;
 
     $c->stash->{payment_method} = 'direct_debit';
     my $update_ref = $i->cancel_plan( {

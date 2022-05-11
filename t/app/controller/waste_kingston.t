@@ -241,6 +241,8 @@ FixMyStreet::override_config {
             hmac_id => '1234',
             scpID => '1234',
         } },
+        bottomline => { kingston => {
+        } },
     },
 }, sub {
     my ($p) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - New', {
@@ -307,6 +309,20 @@ FixMyStreet::override_config {
                 }
             }
         };
+    });
+
+    my $dd_sent_params = {};
+    my $dd = Test::MockModule->new('Integrations::Bottomline');
+    $dd->mock('one_off_payment', sub {
+        my ($self, $params) = @_;
+        # comparing this is annoying so just remove it.
+        delete $params->{orig_sub};
+        $dd_sent_params->{'one_off_payment'} = $params;
+    });
+
+    $dd->mock('amend_plan', sub {
+        my $self = shift;
+        $dd_sent_params->{'amend_plan'} = shift;
     });
 
     subtest 'Garden type lookup' => sub {
@@ -1275,6 +1291,56 @@ FixMyStreet::override_config {
         $report->delete; # Otherwise next test sees this as latest
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+
+    remove_test_subs( $p->id );
+
+    $p->category('Garden Subscription');
+    $p->title('Garden Subscription - New');
+    $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
+    $p->set_extra_metadata('payerReference', 'GGW1000000002');
+    $p->update;
+
+    subtest 'check modify sub direct debit payment' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
+        $mech->content_contains('40.00');
+        $mech->content_contains('15.00');
+        $mech->content_contains('35.00');
+        $mech->content_contains('Amend Direct Debit');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+        is $new_report->get_extra_field_value('payment'), '4000', 'payment correctly set to future value';
+        is $new_report->get_extra_field_value('pro_rata'), '2000', 'pro rata payment correctly set';
+        is $new_report->get_extra_field_value('admin_fee'), '1500', 'adming fee payment correctly set';
+
+        my $ad_hoc_payment_date = '2021-01-15T17:00:00';
+
+        is_deeply $dd_sent_params->{one_off_payment}, {
+            payer_reference => 'GGW1000000002',
+            amount => '35.00',
+            reference => $new_report->id,
+            comments => '',
+            date => $ad_hoc_payment_date,
+        }, "correct direct debit ad hoc payment params sent";
+        is_deeply $dd_sent_params->{amend_plan}, {
+            payer_reference => 'GGW1000000002',
+            amount => '40.00',
+        }, "correct direct debit amendment params sent";
+    };
+
+    $dd_sent_params = {};
 
     # remove all reports
     remove_test_subs( 0 );
