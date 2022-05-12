@@ -1,0 +1,205 @@
+<div id="side">
+
+<form method="post" action="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+    <input type="hidden" name="submit" value="1" >
+
+<div class="sidebar">
+
+    <ul>
+         [% uri = c.uri_for_email( '/report', problem.id ) %]
+    <li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
+
+[% IF problem.extra.address %]
+<li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
+[% END %]
+
+<li class="sm">[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<li class="sm">[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
+<li class="sm">[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
+  [% IF problem.send_method_used %]
+    ([% problem.send_method_used %])
+  [% END %]
+  [% IF problem.state == 'confirmed' AND problem.whensent AND NOT c.cobrand.disable_resend_button %]
+    <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend report') %]">
+  [% ELSIF NOT problem.whensent %]
+    <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
+  [% END %]
+</li>
+[% IF c.user.is_superuser AND problem.send_fail_count > 0 %]
+<li class="sm">[% loc('Send Fail Count:') %] [% problem.send_fail_count %]</li>
+<li class="sm">[% loc('Last failure:') %] [% PROCESS format_time time=problem.send_fail_timestamp %]</li>
+<li class="sm truncate_height">[% loc('Reason:') %] [% problem.send_fail_reason | html %]</li>
+[% END %]
+<li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
+<!-- <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li> -->
+
+<li>
+    <label class="inline-text" for="state">[% loc('State:') %]</label>
+    [% INCLUDE 'admin/state_groups_select.html' %]
+</li>
+
+<li><label class="inline-text" for="category">[% loc('Category:') %]</label>
+    <input type="text" class="form-control" readonly name="category" value="[% problem.category_display %]">
+</li>
+
+<li><label class="inline-text" for="external_id">[% loc('External ID') %]:</label>
+    <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">
+
+<li><label class="inline-text" for="name">[% loc('Name:') %]</label>
+    <input type='text' readonly class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
+
+<li><label class="inline-text" for="username">[% loc('User:') %]</label>
+    <input type='text' readonly class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
+</li>
+
+[% IF problem.user.phone_display != problem.user.username %]
+<li>[% loc('Phone:') %] [% problem.user.phone_display OR loc('None') %]</li>
+[% END %]
+[% IF problem.user.email != problem.user.username %]
+<li>[% loc('Email:') %]
+[% IF problem.user.email %]<a href="mailto:[% problem.user.email | html %]">[% problem.user.email %]</a>[% ELSE %][% loc('None') %][% END %]
+</li>
+[% END %]
+
+</ul>
+
+    <p align="center"><input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]"></p>
+
+</div>
+
+[% INCLUDE status_message %]
+
+<ul class="plain-list">
+
+<li><label for='title'>[% loc('Subject:') %]</label>
+    <input size=60 type='text' class="form-control" id='title' name='title' value='[% problem.title | html %]'></li>
+<li><label for='detail'>[% loc('Details:') %]</label>
+<textarea class="form-control" name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea></li>
+</ul>
+
+<ul>
+  [% IF problem.get_extra_field_value('uprn') %]
+    <li>UPRN: [% problem.get_extra_field_value('uprn') %]
+  [% END %]
+  [% IF problem.get_extra_field_value('property_id') %]
+    <li>Property ID: <a href="/waste/[% problem.get_extra_field_value('property_id') %]">[% problem.get_extra_field_value('property_id') %]</a>
+  [% END %]
+  [% IF problem.get_extra_field_value('service_id') %]
+    <li>Service ID: [% problem.get_extra_field_value('service_id') %]
+  [% END %]
+  [% IF c.cobrand.moniker == 'bromley' %]
+    <li>Source: [% problem.get_extra_field_value('Source') %]
+  [% END %]
+</ul>
+
+[%
+BLOCK show_fields;
+    FOR field IN fields;
+        IF field.2;
+            SET val = problem.get_extra_metadata(field.1);
+        ELSE;
+            SET val = problem.get_extra_field_value(field.1);
+        END;
+        IF val;
+            '<li>' _ field.0 _ ': ' _ val _ '</li>';
+        END;
+    END;
+END
+%]
+
+[% IF c.cobrand.moniker == 'bromley' AND problem.get_extra_field_value('Container_Type') %]
+<h2>Request information</h2>
+<ul>
+[% INCLUDE show_fields fields=[
+    [ 'Container type', 'Container_Type' ],
+    [ 'Quantity', 'Quantity' ],
+    [ 'Action', 'Action' ],
+    [ 'Reason', 'Reason' ],
+] %]
+</ul>
+[% END %]
+
+[% IF c.cobrand.moniker == 'bromley' AND problem.get_extra_field_value('Subscription_Details_Container_Type') %]
+<h2>Subscription information</h2>
+<ul>
+[% INCLUDE show_fields fields=[
+    [ 'Subscription type', 'Subscription_Type' ],
+    [ 'Subscription container', 'Subscription_Details_Container_Type' ],
+    [ 'Subscription quantity', 'Subscription_Details_Quantity' ],
+    [ 'Delivery type', 'Container_Instruction_Action' ],
+    [ 'Delivery container', 'Container_Instruction_Container_Type' ],
+    [ 'Delivery quantity', 'Container_Instruction_Quantity' ],
+    [ 'End date', 'Subscription_End_Date' ],
+    [ 'Current containers', 'current_containers' ],
+    [' New containers', 'new_containers' ],
+] %]
+</ul>
+[% END %]
+
+[% IF c.cobrand.moniker == 'kingston' AND problem.get_extra_field_value('Subscription_Details_Containers') %]
+<h2>Subscription information</h2>
+<ul>
+[% INCLUDE show_fields fields=[
+    [ 'Request type', 'Request_Type' ],
+    [ 'Subscription container', 'Subscription_Details_Containers' ],
+    [ 'Subscription quantity', 'Subscription_Details_Quantity' ],
+    [ 'Delivery type', 'Bin_Delivery_Detail_Containers' ],
+    [ 'Delivery container', 'Bin_Delivery_Detail_Container' ],
+    [ 'Delivery quantity', 'Bin_Delivery_Detail_Quantity' ],
+    [ 'End date', 'Subscription_End_Date' ],
+    [ 'Current containers', 'current_containers' ],
+    [' New containers', 'new_containers' ],
+] %]
+</ul>
+[% END %]
+
+<h2>Payment information</h2>
+<ul>
+[% INCLUDE show_fields fields=[
+    [ 'Payment', 'payment' ],
+    [ 'Pro rata payment', 'pro_rata' ],
+    [ 'Admin fee', 'admin_fee' ],
+    [ 'Payment method', 'payment_method' ],
+    [ 'DD reference', 'payerReference', 1 ],
+    [ 'SCP reference', 'scpReference', 1 ],
+    [ 'Last payment method', 'LastPayMethod' ],
+    [ 'Payment code', 'PaymentCode' ],
+    [ 'DD collection date', 'dd_date', 1 ],
+] %]
+</ul>
+
+<ul class="plain-list">
+[% IF problem.photo %]
+<li>
+<ul>
+  [% FOR photo IN problem.photos %]
+    <li>
+        <div class="update-img">
+            <a href="[% c.cobrand.base_url %][% photo.url_temp_full %]" rel="fancy">
+                <img alt="Photo of this report" src="[% c.cobrand.base_url %][% photo.url_temp %]">
+                <span>zoom</span>
+            </a>
+        </div>
+        <input class="btn" type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
+        <input class="btn" type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+        <br><input type="checkbox" id="remove_photo_[% loop.index %]" name="remove_photo_[% loop.index %]" value="1">
+        <label class="inline" for="remove_photo_[% loop.index %]">[% loc("Remove photo (can't be undone!)") %]</label></li>
+    </li>
+  [% END %]
+</ul>
+</li>
+[% END %]
+</ul>
+
+<input type="hidden" name="non_public" value="1">
+<input type="hidden" name="anonymous" value="1">
+
+<p><input type="submit" class="btn btn--block btn--final" name="Submit changes" value="[% loc('Submit changes') %]">
+</form>
+
+</div>
+
+<div class="full-width full-width--bottom">
+[% INCLUDE 'admin/list_updates.html' %]
+</div>
