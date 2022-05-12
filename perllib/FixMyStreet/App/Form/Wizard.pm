@@ -108,8 +108,10 @@ after 'validate_form' => sub {
     my $self = shift;
 
     if ($self->validated) {
+        my $page = $self->current_page;
+
         # Mismatch of unique ID, resubmission?
-        if ($self->unique_id_session && $self->unique_id_session ne ($self->unique_id_form || '')) {
+        if ($self->unique_id_session && $page->check_unique_id && $self->unique_id_session ne ($self->unique_id_form || '')) {
             $self->add_form_error('You have already submitted this form.');
             return;
         }
@@ -124,7 +126,6 @@ after 'validate_form' => sub {
         $self->field('saved_data')->_set_value($saved_data);
 
         # And check to see if there is a function to call on the page
-        my $page = $self->current_page;
         if ($page->finished) {
             my $success = $page->finished->($self);
             if (!$success) {
