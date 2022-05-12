@@ -709,6 +709,12 @@ sub _waste_cc_line_item_ref {
     return "$id-$name-$str";
 }
 
+sub waste_dd_payment_ref {
+    my ($self, $p) = @_;
+
+    return substr("RBK" . '-' . $p->id . '-' . $p->get_extra_field_value('uprn'), 0, 18);
+}
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};
