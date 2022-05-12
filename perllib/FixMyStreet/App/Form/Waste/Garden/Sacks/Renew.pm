@@ -19,12 +19,7 @@ has_page intro => (
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
         $form->{c}->stash->{cost_now} = $cost_pa / 100;
-
-        return {
-            name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
-            email => { default => $c->stash->{is_staff} ? '' : $c->user->email },
-            phone => { default => $c->stash->{is_staff} ? '' : $c->user->phone },
-        };
+        return {};
     },
     next => 'summary',
 );
@@ -44,7 +39,7 @@ has_page summary => (
         $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;
 
-        unless ( $c->stash->{is_staff} ) {
+        if (!$c->stash->{is_staff} && $c->user_exists) {
             $data->{name} ||= $c->user->name;
             $data->{email} = $c->user->email;
             $data->{phone} ||= $c->user->phone;
