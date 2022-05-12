@@ -1020,7 +1020,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach;
     }
 
-    $c->forward('get_original_sub');
+    $c->forward('get_original_sub', ['user']);
 
     my $max_bins = $c->stash->{quantity_max}->{$service_id};
 
@@ -1059,7 +1059,7 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
         $c->detach( '/auth/redirect' );
     }
 
-    $c->forward('get_original_sub');
+    $c->forward('get_original_sub', ['user']);
 
     my $payment_method = $c->forward('get_current_payment_method');
     $c->forward('check_if_staff_can_pay', [ $payment_method ]);
@@ -1072,11 +1072,7 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
 sub garden_renew : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
-    unless ( $c->user_exists ) {
-        $c->detach( '/auth/redirect' );
-    }
-
-    $c->forward('get_original_sub');
+    $c->forward('get_original_sub', ['any']);
 
     # direct debit renewal is automatic so you should not
     # be doing this
@@ -1142,14 +1138,9 @@ sub process_garden_cancellation : Private {
     return 1;
 }
 
-# XXX the payment method will be stored in Echo so we should check there instead once
-# this is in place
+# We assume orig_sub has already tried to be fetched by this point
 sub get_current_payment_method : Private {
     my ($self, $c) = @_;
-
-    if ( !$c->stash->{orig_sub} ) {
-        $c->forward('get_original_sub');
-    }
 
     my $payment_method;
 
@@ -1162,7 +1153,7 @@ sub get_current_payment_method : Private {
 }
 
 sub get_original_sub : Private {
-    my ($self, $c) = @_;
+    my ($self, $c, $type) = @_;
 
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
@@ -1174,19 +1165,13 @@ sub get_original_sub : Private {
         order_by => { -desc => 'id' }
     })->to_body($c->cobrand->body);
 
-    unless ( $c->stash->{is_staff} ) {
+    if ($type eq 'user' && !$c->stash->{is_staff}) {
         $p = $p->search({
             user_id => $c->user->id,
         });
     }
 
-    if ( $p->count == 1) {
-        $c->stash->{orig_sub} = $p->first;
-    } else {
-        $c->stash->{orig_sub} = $p->first; # XXX
-    }
-
-    return 1;
+    $c->stash->{orig_sub} = $p->first;
 }
 
 sub setup_garden_sub_params : Private {
