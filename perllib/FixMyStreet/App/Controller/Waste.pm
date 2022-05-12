@@ -2,7 +2,7 @@ package FixMyStreet::App::Controller::Waste;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use utf8;
 use Lingua::EN::Inflect qw( NUMWORDS );
@@ -23,10 +23,21 @@ use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
 use Memcached;
 
+has feature => (
+    is => 'ro',
+    default => 'waste',
+);
+
+has index_template => (
+    is => 'ro',
+    default => 'waste/index.html'
+);
+
 sub auto : Private {
     my ( $self, $c ) = @_;
-    my $cobrand_check = $c->cobrand->feature('waste');
-    $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
+
+    $self->SUPER::auto($c);
+
     $c->stash->{is_staff} = $c->user && $c->cobrand->admin_allow_user($c->user);
 
     my $features = $c->cobrand->feature('waste_features') || {};
@@ -676,6 +687,7 @@ sub request : Chained('property') : Args(0) {
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => $c->stash->{form_title} || 'Which containers do you need?',
+            check_unique_id => 0,
             next => sub {
                 my $data = shift;
                 return 'replacement' if $data->{"container-44"}; # XXX
@@ -1297,69 +1309,6 @@ sub process_garden_data : Private {
     return 1;
 }
 
-sub load_form {
-    my ($c, $previous_form) = @_;
-
-    my $page;
-    if ($previous_form) {
-        $page = $previous_form->next;
-    } else {
-        $page = $c->forward('get_page');
-    }
-
-    my $form = $c->stash->{form_class}->new(
-        page_list => $c->stash->{page_list} || [],
-        $c->stash->{field_list} ? (field_list => $c->stash->{field_list}) : (),
-        page_name => $page,
-        csrf_token => $c->stash->{csrf_token},
-        c => $c,
-        previous_form => $previous_form,
-        saved_data_encoded => $c->get_param('saved_data'),
-        no_preload => 1,
-    );
-
-    if (!$form->has_current_page) {
-        $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
-    }
-
-    return $form;
-}
-
-sub form : Private {
-    my ($self, $c) = @_;
-
-    my $form = load_form($c);
-    if ($c->get_param('process')) {
-        $c->forward('/auth/check_csrf_token');
-        $form->process(params => $c->req->body_params);
-        if ($form->validated) {
-            $form = load_form($c, $form);
-        }
-    }
-
-    $form->process unless $form->processed;
-
-    # If we have sent a confirmation email, that function will have
-    # set a template that we need to show
-    $c->stash->{template} = $form->template || 'waste/index.html'
-        unless $c->stash->{sent_confirmation_message};
-    $c->stash->{form} = $form;
-    $c->stash->{label_for_field} = \&label_for_field;
-}
-
-sub get_page : Private {
-    my ($self, $c) = @_;
-
-    my $goto = $c->get_param('goto') || '';
-    my $process = $c->get_param('process') || '';
-    $goto = $c->stash->{first_page} unless $goto || $process;
-    if ($goto && $process) {
-        $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
-    }
-
-    return $goto || $process;
-}
-
 sub add_report : Private {
     my ( $self, $c, $data, $no_confirm ) = @_;
 
@@ -1555,12 +1504,6 @@ sub uprn_redirect : Path('/property') : Args(1) {
     my $result = $echo->GetPointAddress($uprn, 'Uprn');
     $c->detach( '/page_error_404_not_found', [] ) unless $result;
     $c->res->redirect('/waste/' . $result->{Id});
-}
-sub label_for_field {
-    my ($form, $field, $key) = @_;
-    foreach ($form->field($field)->options) {
-        return $_->{label} if $_->{value} eq $key;
-    }
 }
 
 __PACKAGE__->meta->make_immutable;
