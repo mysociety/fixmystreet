@@ -196,6 +196,8 @@ sub validate {
         $self->add_form_error('The total number of bins must be at least 1')
             if $total == 0;
     }
+
+    $self->next::method();
 }
 
 1;
