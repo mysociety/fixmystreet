@@ -567,6 +567,10 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 
+    # To try and work out whether to show a renewal path or not
+    $c->forward('get_original_sub', ['any']);
+    $c->stash->{current_payment_method} = $c->forward('get_current_payment_method');
+
     my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
 
     my $cfg = $c->cobrand->feature('waste_features');
