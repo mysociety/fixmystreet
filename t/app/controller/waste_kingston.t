@@ -554,10 +554,7 @@ FixMyStreet::override_config {
 
     subtest 'renew credit card sub' => sub {
         $mech->log_out_ok();
-        $mech->get_ok('/waste/12345/garden_renew');
-        is $mech->uri->path, '/auth', 'have to be logged in to renew subscription';
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 0,
@@ -569,6 +566,8 @@ FixMyStreet::override_config {
             current_bins => 1,
             bins_wanted => 1,
             payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net',
         } });
         $mech->content_contains('1 bin');
         $mech->content_contains('20.00');
@@ -609,6 +608,8 @@ FixMyStreet::override_config {
             current_bins => 1,
             bins_wanted => 2,
             payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net',
         } });
         $mech->content_contains('40.00');
         $mech->content_contains('15.00');
@@ -637,6 +638,8 @@ FixMyStreet::override_config {
             current_bins => 2,
             bins_wanted => 1,
             payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net',
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -669,6 +672,8 @@ FixMyStreet::override_config {
             current_bins => 1,
             bins_wanted => 1,
             payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net',
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -700,6 +705,8 @@ FixMyStreet::override_config {
             current_bins => 1,
             bins_wanted => 2,
             payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net',
         } });
         $mech->content_contains('40.00');
         $mech->content_contains('15.00');
@@ -799,9 +806,10 @@ FixMyStreet::override_config {
 
     subtest 'sacks, renewing' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
+            name => 'Test McTest',
+            email => 'test@example.net',
             payment_method => 'credit_card',
         } });
         $mech->content_contains('Sacks');

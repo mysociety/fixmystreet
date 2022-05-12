@@ -29,12 +29,10 @@ has_page intro => (
 
         my $max_bins = $data->{max_bins};
         my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
+
         return {
             current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
             bins_wanted => { %bin_params },
-            name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
-            email => { default => $c->stash->{is_staff} ? '' : $c->user->email },
-            phone => { default => $c->stash->{is_staff} ? '' : $c->user->phone },
         };
     },
     next => 'summary',
@@ -60,7 +58,7 @@ has_page summary => (
         $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;
 
-        unless ( $c->stash->{is_staff} ) {
+        if (!$c->stash->{is_staff} && $c->user_exists) {
             $data->{name} ||= $c->user->name;
             $data->{email} = $c->user->email;
             $data->{phone} ||= $c->user->phone;
