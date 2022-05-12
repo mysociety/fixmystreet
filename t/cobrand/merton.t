@@ -249,7 +249,7 @@ FixMyStreet::override_config {
 subtest "hides duplicate updates from endpoint" => sub {
     my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
     my ($p) = $mech->create_problems_for_body(1, $merton->id, '', { lastupdate => $dt });
-    $p->update({ external_id => $p->id });
+    $p->update({ external_id => "merton-" . $p->id });
 
     my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
     <service_requests_updates>
@@ -272,7 +272,7 @@ subtest "hides duplicate updates from endpoint" => sub {
 
     my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
 
-    $requests_xml =~ s/SERVICE_ID/@{[$p->id]}/g;
+    $requests_xml =~ s/SERVICE_ID/merton-@{[$p->id]}/g;
     $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
