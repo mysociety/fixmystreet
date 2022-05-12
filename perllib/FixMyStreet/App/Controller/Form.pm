@@ -31,7 +31,10 @@ sub load_form {
         $page = $c->forward('get_page');
     }
 
-    my $form = $self->form_class->new(
+    my $form_class = $c->stash->{form_class} || $self->form_class;
+    my $form = $form_class->new(
+        page_list => $c->stash->{page_list} || [],
+        $c->stash->{field_list} ? (field_list => $c->stash->{field_list}) : (),
         page_name => $page,
         csrf_token => $c->stash->{csrf_token},
         c => $c,
@@ -80,8 +83,19 @@ sub form : Private {
 
     $form->process unless $form->processed;
 
-    $c->stash->{template} = $form->template || $self->index_template;
+    # If we have sent a confirmation email, that function will have
+    # set a template that we need to show
+    $c->stash->{template} = $form->template || $self->index_template
+        unless $c->stash->{sent_confirmation_message};
     $c->stash->{form} = $form;
+    $c->stash->{label_for_field} = \&label_for_field;
+}
+
+sub label_for_field {
+    my ($form, $field, $key) = @_;
+    foreach ($form->field($field)->options) {
+        return $_->{label} if $_->{value} eq $key;
+    }
 }
 
 sub pre_form : Private {
@@ -93,12 +107,17 @@ sub get_page : Private {
 
     my $goto = $c->get_param('goto') || '';
     my $process = $c->get_param('process') || '';
-    $goto = 'intro' unless $goto || $process;
+    $goto = $self->first_page($c) unless $goto || $process;
     if ($goto && $process) {
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 
     return $goto || $process;
+}
+
+sub first_page {
+    my ($self, $c) = @_;
+    return $c->stash->{first_page} || 'intro';
 }
 
 __PACKAGE__->meta->make_immutable;

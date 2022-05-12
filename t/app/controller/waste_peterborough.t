@@ -433,6 +433,9 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, 'Damaged 240L Black bin';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('You have already submitted this form.');
     };
     subtest 'Report bin not returned' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
