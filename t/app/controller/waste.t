@@ -1395,19 +1395,28 @@ FixMyStreet::override_config {
         }, "correct direct debit amendment params sent";
     };
 
-    subtest 'renew credit direct debit sub' => sub {
+    subtest 'renew direct debit sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_renew');
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Renew subscription today');
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_contains('This property has a direct debit subscription which will renew automatically.',
+            "error message displayed if try to renew by direct debit");
+
+        $mech->log_out_ok();
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Renew subscription today');
+        $mech->get_ok('/waste/12345/garden_renew');
         $mech->content_contains('This property has a direct debit subscription which will renew automatically.',
             "error message displayed if try to renew by direct debit");
 
         $p->state('hidden');
         $p->update;
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Renew subscription today');
         $mech->get_ok('/waste/12345/garden_renew');
-
         $mech->content_lacks('This property has a direct debit subscription which will renew automatically.',
             "error message displayed not displayed for hidden direct debit sub");
 
@@ -1416,7 +1425,6 @@ FixMyStreet::override_config {
     };
 
     subtest 'cancel direct debit sub' => sub {
-        $mech->log_out_ok();
         $mech->get_ok('/waste/12345/garden_cancel');
         is $mech->uri->path, '/auth', 'have to be logged in to cancel subscription';
         $mech->log_in_ok($user->email);
