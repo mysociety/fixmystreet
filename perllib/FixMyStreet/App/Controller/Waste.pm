@@ -388,12 +388,13 @@ sub populate_dd_details : Private {
 
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
-    $c->stash->{amount} = sprintf( '%.2f', $c->stash->{report}->get_extra_field(name => 'payment')->{value} / 100 ),
-    $c->stash->{reference} = 'GGW' . $c->stash->{property}{uprn};
+    $c->stash->{amount} = sprintf( '%.2f', $c->stash->{report}->get_extra_field(name => 'payment')->{value} / 100 );
+    $c->stash->{reference} = $c->cobrand->call_hook( 'waste_dd_payment_ref' => $p ) || 'GGW' . $c->stash->{property}{uprn};
     $c->stash->{lookup} = $reference;
     $c->stash->{payment_date} = $dt;
     $c->stash->{day} = $dt->day;
     $c->stash->{month} = $dt->month;
+    $c->stash->{month_name} = $dt->month_name;
     $c->stash->{year} = $dt->year;
 }
 

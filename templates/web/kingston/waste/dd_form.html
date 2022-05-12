@@ -1,0 +1,25 @@
+<form name="post" method="get" action="[% payment_details.dd_push_url %]/forms/[% payment_details.company_name %]/[% payment_details.form_name %]">
+<input type="hidden" name="title" id="title"  value="[% title %]" />
+<input type="hidden" name="firstname" id="firstname"  value="[% first_name %]" />
+<input type="hidden" name="lastname" id="lastname"  value="[% last_name %]" />
+<input type="hidden" name="currenthousenamenumber" id="currenthousenamenumber"  value="[% address1 %]" />
+<input type="hidden" name="currrentstreet1" id="currrentstreet1"  value="[% address2 %]" />
+<input type="hidden" name="currentpostcode" id="currentpostcode"  value="[% postcode %]" />
+<input type="hidden" name="currenttown" id="currenttown"  value="[% address2 %]" />
+<input type="hidden" name="email" id="email"  value="[% email %]" />
+<input type="hidden" name="ddplanreference" id="ddplanreference" value="[% reference %]" />
+<input type="hidden" name="ddregularamount" id="ddregularamount"  value="[% amount %]" />
+<input type="hidden" name="ddplanspecification" id="ddplanspecification"  value="Yearly,[% month %],[% day %]" />
+<input type="hidden" name="ddstartdate" id="ddstartdate"  value="2022-06-08" />
+<input type="hidden" name="customdata" value="productcode*|*WASTE*|*reference*|*[% lookup %]*|*report_id*|*[% report.id %]">
+<input type="hidden" name="requestid" id="requestid"  value="[% reference %]" />
+<input type="hidden" name="requestuserid" id="requestuserid"  value="[% report.user.id %]" />
+<input type="hidden" name="showddplansummary" id="showddplansummary"  value="visible" />
+<input type="hidden" name="showddplanreference" id="showddplanreference"  value="visible" />
+
+[% PROCESS form_extra %]
+
+<div class="govuk-form-group">
+    <input class="govuk-button" type="submit" value="[% button_text %]">
+</div>
+</form>
