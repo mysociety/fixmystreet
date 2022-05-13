@@ -40,8 +40,9 @@ The following are all the configuration settings that you can change in `conf/ge
 * <code><a href="#fms_db_host">FMS_DB_HOST</a></code>,
 <code><a href="#fms_db_port">FMS_DB_PORT</a></code>,
 <code><a href="#fms_db_name">FMS_DB_NAME</a></code>,
-<code><a href="#fms_db_user">FMS_DB_USER</a></code>, and
-<code><a href="#fms_db_pass">FMS_DB_PASS</a></code>
+<code><a href="#fms_db_user">FMS_DB_USER</a></code>,
+<code><a href="#fms_db_pass">FMS_DB_PASS</a></code> and
+<code><a href="#fms_db_sslmode">FMS_DB_SSLMODE</a></code>
 
 ### Site settings and behaviour
 
@@ -141,8 +142,9 @@ The following are all the configuration settings that you can change in `conf/ge
     <a name="fms_db_host"><code>FMS_DB_HOST</code></a>,
     <a name="fms_db_port"><code>FMS_DB_PORT</code></a>,
     <a name="fms_db_name"><code>FMS_DB_NAME</code></a>,
-    <a name="fms_db_user"><code>FMS_DB_USER</code></a> &amp;
-    <a name="fms_db_pass"><code>FMS_DB_PASS</code></a>
+    <a name="fms_db_user"><code>FMS_DB_USER</code></a>,
+    <a name="fms_db_pass"><code>FMS_DB_PASS</code></a> &amp;
+    <a name="fms_db_sslmode"><code>FMS_DB_SSLMODE</code></a>
   </dt>
   <dd>
     These are the PostgreSQL database details for FixMyStreet.
@@ -156,6 +158,7 @@ The following are all the configuration settings that you can change in `conf/ge
             FMS_DB_NAME: 'fms'<br>
             FMS_DB_USER: 'fmsuser'<br>
             FMS_DB_PASS: 'aSecretWord'
+            FMS_DB_SSLMODE: 'require'
             </code>
         </li>
       </ul>
