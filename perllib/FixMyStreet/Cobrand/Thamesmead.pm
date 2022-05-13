@@ -66,11 +66,16 @@ sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction(
 
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
+sub contact_email {
+    my $self = shift;
+    return $self->feature('contact_email');
+};
+
 sub default_map_zoom { 6 }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
-    return _("Enter a road name or postcode adjacent to the area you want to report on or the name of the area");
+    return _("Enter a road name, postcode or the name of the area where there is a problem. If there there is no road name or postcode, please add details of the closest one to it");
 }
 
 sub example_places {
