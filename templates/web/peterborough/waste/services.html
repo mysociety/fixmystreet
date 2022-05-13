@@ -1,3 +1,4 @@
+[% USE date(format = c.cobrand.bin_day_format) %]
 [% SET pboro_staff_request = ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
 
 [% UNLESS waste_features.report_disabled %]
@@ -40,7 +41,11 @@
       <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
     </form>
   [% ELSE %]
-    <span class="waste-service-descriptor">Please note that missed collections can only be reported within 2&frac12; working days of your collection day (including the collection day).</span>
+    [% IF unit.next AND unit.next.date.ymd == date.format(date.now, "%Y-%m-%d") %]
+      <span class="waste-service-descriptor">The crew have not recorded your street as complete and may still be planning to attend. You will not be able to report a missed bin at this time.</span>
+    [% ELSE %]
+      <span class="waste-service-descriptor">Please note that missed collections can only be reported within 2&frac12; working days of your collection day (including the collection day).</span>
+    [% END %]
   [% END %]
 [% END %]
 
