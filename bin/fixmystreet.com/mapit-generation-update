@@ -1,0 +1,83 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+mapit-generation-update
+
+=head1 USAGE
+
+mapit-generation-update
+
+=head1 DESCRIPTION
+
+This is a one-off script to make some changes to various body areas as part of
+the process of moving FMS.com from MapIt generation 36 to the most recent.
+
+=cut
+
+use v5.14;
+use warnings;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Term::ANSIColor;
+use FixMyStreet;
+use FixMyStreet::DB;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c',
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+my $db;
+END {
+    if ($db) {
+        $opt->commit ? $db->txn_commit : $db->txn_rollback;
+    }
+}
+
+$db = FixMyStreet::DB->schema->storage;
+$db->txn_begin;
+if (!$opt->commit) {
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
+}
+
+# 42 is the first generation where all new areas appear.
+die colored("MAPIT_GENERATION must be at least 42", 'red') unless FixMyStreet->config('MAPIT_GENERATION') >= 42;
+
+# For some bodies we want to replace the areas entirely
+my $bodies = {
+    "Buckinghamshire Council" => [ 163793 ],
+    "Northamptonshire Highways" => [ 164185, 164186 ],
+    "Northamptonshire Police" => [ 164185, 164186 ],
+    "West Northamptonshire Council" => [ 164186 ],
+    "North Northamptonshire Council" => [ 164185 ],
+};
+
+# National Highways is a bit different in that we want to remove a couple and
+# add a few, not replace the entire lot.
+my $national_highways_del = [ 2217, 2234 ];
+my $national_highways_add = [ 163793, 164186, 164185 ];
+
+for my $body_name (keys %$bodies) {
+    my $body = FixMyStreet::DB->resultset('Body')->find({ name => $body_name });
+    die "Couldn't find body $body_name" unless $body;
+
+    $body->body_areas->delete;
+    $body->body_areas->create({ area_id => $_ }) for @{ $bodies->{$body_name} };
+}
+
+my $nh = FixMyStreet::DB->resultset('Body')->find({ name => "National Highways" });
+die "Couldn't find body National Highways" unless $nh;
+
+$nh->body_areas->search({ area_id => $national_highways_del })->delete;
+$nh->body_areas->create({ area_id => $_ }) for @$national_highways_add;
