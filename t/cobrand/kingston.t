@@ -45,9 +45,10 @@ FixMyStreet::override_config {
             if ( $id == 54321 ) {
                 return [ {
                     Id => 1005,
-                    ServiceId => 2247,
+                    ServiceId => 409,
                     ServiceName => 'Garden waste collection',
                     ServiceTasks => { ServiceTask => {
+                        TaskTypeId => 2247,
                         Id => 405,
                         ScheduleDescription => 'every other Monday',
                         Data => { ExtensibleDatum => [ {
@@ -81,9 +82,10 @@ FixMyStreet::override_config {
             if ( $id == 54322 || $id == 54324 || $id == 84324 || $id == 154323 ) {
                 return [ {
                     Id => 1005,
-                    ServiceId => 2247,
+                    ServiceId => 409,
                     ServiceName => 'Garden waste collection',
                     ServiceTasks => { ServiceTask => {
+                        TaskTypeId => 2247,
                         Id => 405,
                         ScheduleDescription => 'every other Monday',
                         Data => { ExtensibleDatum => [ {

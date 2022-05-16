@@ -437,6 +437,19 @@ sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} 
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
 
+sub garden_current_service_from_service_units {
+    my ($self, $services) = @_;
+
+    my $garden;
+    for my $service ( @$services ) {
+        if ( $service->{ServiceId} == GARDEN_WASTE_SERVICE_ID ) {
+            $garden = $self->_get_current_service_task($service);
+            last;
+        }
+    }
+
+    return $garden;
+}
 
 sub service_name_override {
     my ($self, $service) = @_;

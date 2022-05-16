@@ -324,15 +324,7 @@ sub waste_get_current_garden_sub {
     my $services = $echo->GetServiceUnitsForObject( $id );
     return undef unless $services;
 
-    my $garden;
-    for my $service ( @$services ) {
-        if ( $service->{ServiceId} == $self->garden_service_id ) {
-            $garden = $self->_get_current_service_task($service);
-            last;
-        }
-    }
-
-    return $garden;
+    return $self->garden_current_service_from_service_units($services);
 }
 
 sub waste_get_sub_quantity {
