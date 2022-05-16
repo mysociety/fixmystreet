@@ -12,7 +12,11 @@
 
 body {
     font-family: $body-font;
-    color: $primary_b;
+    color: $black;
+}
+
+.content {
+    color: $black !important;
 }
 
 .visually-hidden {
@@ -119,10 +123,16 @@ h1, h2, h3, .h1, .h2, .h3 {
     font-family: $body-font;
 }
 
-h1 {
-    font-size: 2em;
+h1, h1.govuk-heading-xl {
+    font-size: 2.375em;
     line-height: 1.25em;
-    font-weight: bold;
+    font-weight: 600;
+    color: $blue;
+}
+
+h2, h2.govuk-heading-l {
+    color: $black;
+    font-size: 1.75em;
 }
 
 label {
