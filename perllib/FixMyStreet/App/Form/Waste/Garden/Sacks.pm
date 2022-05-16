@@ -28,7 +28,7 @@ has_page details => (
     title => 'Subscribe to Green Garden Waste collections',
     template => 'waste/garden/sacks/subscribe_details.html',
     fields => ['payment_method', 'name', 'email', 'phone', 'continue_review'],
-    field_list_ignore => sub {
+    field_ignore_list => sub {
         my $page = shift;
         return ['payment_method'] if $page->form->c->stash->{staff_payments_allowed};
     },
