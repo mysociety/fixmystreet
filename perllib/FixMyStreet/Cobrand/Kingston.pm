@@ -175,6 +175,25 @@ sub garden_current_subscription {
     my $services = $self->{c}->stash->{services};
     return $services->{$self->garden_bin_service_id} || $services->{$self->garden_bag_service_id};
 }
+
+sub garden_current_service_from_service_units {
+    my ($self, $services) = @_;
+
+    my $garden;
+    for my $service ( @$services ) {
+        my $servicetasks = $self->_get_service_tasks($service);
+        foreach my $task (@$servicetasks) {
+            if ( $task->{TaskTypeId} == $self->garden_bag_service_id ||
+                 $task->{TaskTypeId} == $self->garden_bin_service_id
+             ) {
+                $garden = $self->_get_current_service_task($service);
+                last;
+            }
+        }
+    }
+    return $garden;
+}
+
 sub garden_current_bin_subscription {
     my $self = shift;
     my $service_id = $self->garden_bin_service_id;
