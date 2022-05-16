@@ -103,7 +103,7 @@ sub waste_reconcile_direct_debits {
                 next unless $self->waste_is_dd_payment($cur);
                 # only confirmed records are valid.
                 next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
-                my $sub_type = $cur->get_extra_field_value('Subscription_Type');
+                my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
                     $self->log("is a matching new report") if !$p;
                     $p = $cur if !$p;
@@ -121,8 +121,8 @@ sub waste_reconcile_direct_debits {
                     warn "no matching service to renew for $payer\n";
                     next;
                 }
-                my $renew = _duplicate_waste_report($p, 'Garden Subscription', {
-                    Subscription_Type => $self->waste_subscription_types->{Renew},
+                my $renew = $self->_duplicate_waste_report($p, 'Garden Subscription', {
+                    $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
                     #service_id => $self->garden_waste_service_id,
                     uprn => $uprn,
                     #Subscription_Details_Container_Type => $self->garden_waste_container_id,
@@ -277,9 +277,9 @@ sub _report_matches_payment {
     if ( $p->{$self->oneOffReferenceField} && $r->id eq $p->{$self->oneOffReferenceField} ) {
         $match = 'Ad-Hoc';
     } elsif ( !$p->{$self->oneOffReferenceField}
-            && ( $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{New} ||
+            && ( $r->get_extra_field_value($self->garden_subscription_type_field) eq $self->waste_subscription_types->{New} ||
                  # if we're renewing a previously non DD sub
-                 $r->get_extra_field_value('Subscription_Type') eq $self->waste_subscription_types->{Renew} )
+                 $r->get_extra_field_value($self->garden_subscription_type_field) eq $self->waste_subscription_types->{Renew} )
     ) {
         $match = 'New';
     }
@@ -288,7 +288,7 @@ sub _report_matches_payment {
 }
 
 sub _duplicate_waste_report {
-    my ( $report, $category, $extra ) = @_;
+    my ( $self, $report, $category, $extra ) = @_;
     my $new = FixMyStreet::DB->resultset('Problem')->new({
         category => $category,
         user => $report->user,
@@ -307,7 +307,7 @@ sub _duplicate_waste_report {
         non_public => 1,
     });
 
-    $extra->{Subscription_Details_Container_Type} ||= $report->get_extra_field_value('Subscription_Details_Container_Type');
+    $extra->{$self->garden_subscription_container_field} ||= $report->get_extra_field_value($self->garden_subscription_container_field);
     $extra->{service_id} ||= $report->get_extra_field_value('service_id');
 
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
