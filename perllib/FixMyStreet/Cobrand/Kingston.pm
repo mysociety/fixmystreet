@@ -160,7 +160,7 @@ sub image_for_service {
         1908 => "$base/brown-bin", # food
         1909 => "$base/green-bin", # dry mixed
         1914 => "$base/garden-waste-bin",
-        1915 => "$base/garden-waste-bag",
+        1915 => "", # No image for garden sacks
     };
     return $images->{$service_id};
 }
