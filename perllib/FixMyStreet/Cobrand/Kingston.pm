@@ -167,6 +167,9 @@ sub image_for_service {
 
 sub garden_bin_service_id { 1914 }
 sub garden_bag_service_id { 1915 }
+sub garden_subscription_type_field { 'Request_Type' }
+sub garden_subscription_container_field { 'Subscription_Details_Containers' }
+
 sub garden_current_subscription {
     my $self = shift;
     my $services = $self->{c}->stash->{services};
