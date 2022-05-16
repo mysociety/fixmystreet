@@ -75,7 +75,7 @@ sub default_map_zoom { 6 }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
-    return _("Enter a road name, postcode or the name of the area where there is a problem. If there there is no road name or postcode, please add details of the closest one to it");
+    return _("Enter a road name, postcode or the area closest to the problem");
 }
 
 sub example_places {
