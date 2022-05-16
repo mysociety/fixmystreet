@@ -188,6 +188,7 @@ sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} 
 
 sub garden_subscription_type_field { 'Request_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Containers' }
+sub garden_echo_container_name { 'SLWP - Containers' }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;

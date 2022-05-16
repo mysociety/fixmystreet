@@ -436,6 +436,7 @@ sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SE
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
+sub garden_echo_container_name { 'LBB - GW Container' }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;
