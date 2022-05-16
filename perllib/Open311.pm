@@ -367,7 +367,7 @@ sub add_media {
 
     my $ua = LWP::UserAgent->new;
     my $res = $ua->get($url);
-    if ( $res->is_success && $res->content_type eq 'image/jpeg' ) {
+    if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
         my $photoset = FixMyStreet::App::Model::PhotoSet->new({
             data_items => [ $res->decoded_content ],
         });
