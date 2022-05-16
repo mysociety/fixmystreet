@@ -16,7 +16,7 @@ sub council_area { return 'Kingston'; }
 sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 
-sub admin_user_domain { 'kingston.gov.uk' }
+sub admin_user_domain { ('kingston.gov.uk', 'sutton.gov.uk') }
 
 sub send_questionnaires { 0 }
 
