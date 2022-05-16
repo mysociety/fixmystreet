@@ -169,6 +169,7 @@ sub garden_bin_service_id { 1914 }
 sub garden_bag_service_id { 1915 }
 sub garden_subscription_type_field { 'Request_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Containers' }
+sub garden_echo_container_name { 'SLWP - Containers' }
 
 sub garden_current_subscription {
     my $self = shift;

@@ -52,7 +52,7 @@ FixMyStreet::override_config {
                         Id => 405,
                         ScheduleDescription => 'every other Monday',
                         Data => { ExtensibleDatum => [ {
-                            DatatypeName => 'LBB - GW Container',
+                            DatatypeName => 'SLWP - Containers',
                             ChildData => { ExtensibleDatum => {
                                 DatatypeName => 'Quantity',
                                 Value => 2,
@@ -89,7 +89,7 @@ FixMyStreet::override_config {
                         Id => 405,
                         ScheduleDescription => 'every other Monday',
                         Data => { ExtensibleDatum => [ {
-                            DatatypeName => 'LBB - GW Container',
+                            DatatypeName => 'SLWP - Containers',
                             ChildData => { ExtensibleDatum => {
                                 DatatypeName => 'Quantity',
                                 Value => 1,
