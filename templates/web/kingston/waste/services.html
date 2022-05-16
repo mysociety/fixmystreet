@@ -5,7 +5,7 @@
     A [% unit.service_name FILTER lower %] collection has been reported as missed
     [% IF unit.report_open.report %] – <a href="[% unit.report_open.report.url %]" class="waste-service-link">check status</a>[% END %]
   </span>
-[% ELSIF unit.report_allowed %]
+[% ELSIF unit.report_allowed AND 0 %]
   [% any_report_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -36,7 +36,9 @@
   </div>
 
   [% END %]
+ [% IF 0 %][%# At present %]
   <span class="waste-service-descriptor" style="margin-top: 1.5em;">Please note that missed collections can only be reported within 2 working days of your scheduled collection day.</span>
+ [% END %]
 [% END %]
 
 [% END %]
@@ -63,10 +65,12 @@
 [% IF unit.garden_waste %]
 
     <dl class="govuk-summary-list">
+     [% IF unit.garden_bins %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Subscription</dt>
         <dd class="govuk-summary-list__value">£[% tprintf('%.2f', unit.garden_cost )%] per year ([% unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) %])</dd>
       </div>
+     [% END %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>   
         [% IF ( unit.garden_due || unit.garden_overdue ) && current_payment_method != 'direct_debit' %]
