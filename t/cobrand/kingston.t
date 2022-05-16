@@ -117,7 +117,7 @@ FixMyStreet::override_config {
         });
 
         my $ad_hoc_orig = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54325',
@@ -127,7 +127,7 @@ FixMyStreet::override_config {
         $ad_hoc_orig->update;
 
         my $ad_hoc = setup_dd_test_report({
-            'Subscription_Type' => 3,
+            'Request_Type' => 3,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54325',
@@ -137,7 +137,7 @@ FixMyStreet::override_config {
         $ad_hoc->update;
 
         my $ad_hoc_processed = setup_dd_test_report({
-            'Subscription_Type' => 3,
+            'Request_Type' => 3,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54426',
@@ -147,7 +147,7 @@ FixMyStreet::override_config {
         $ad_hoc_processed->update;
 
         my $ad_hoc_skipped = setup_dd_test_report({
-            'Subscription_Type' => 3,
+            'Request_Type' => 3,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '94325',
@@ -157,7 +157,7 @@ FixMyStreet::override_config {
         $ad_hoc_skipped->update;
 
         my $hidden = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54399',
@@ -167,7 +167,7 @@ FixMyStreet::override_config {
         $hidden->update;
 
         my $cc_to_ignore = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'credit_card',
             'property_id' => '54399',
@@ -548,12 +548,12 @@ FixMyStreet::override_config {
                 { name => 'uprn', required => 1, automated => 'hidden_field' },
                 { name => 'property_id', required => 1, automated => 'hidden_field' },
                 { name => 'service_id', required => 0, automated => 'hidden_field' },
-                { name => 'Subscription_Type', required => 1, automated => 'hidden_field' },
+                { name => 'Request_Type', required => 1, automated => 'hidden_field' },
                 { name => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
-                { name => 'Subscription_Details_Container_Type', required => 1, automated => 'hidden_field' },
-                { name => 'Container_Instruction_Quantity', required => 1, automated => 'hidden_field' },
-                { name => 'Container_Instruction_Action', required => 1, automated => 'hidden_field' },
-                { name => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
+                { name => 'Subscription_Details_Containers', required => 1, automated => 'hidden_field' },
+                { name => 'Bin_Delivery_Detail_Quantity', required => 1, automated => 'hidden_field' },
+                { name => 'Bin_Delivery_Detail_Containers', required => 1, automated => 'hidden_field' },
+                { name => 'Bin_Delivery_Detail_Container', required => 1, automated => 'hidden_field' },
                 { name => 'current_containers', required => 1, automated => 'hidden_field' },
                 { name => 'new_containers', required => 1, automated => 'hidden_field' },
                 { name => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -564,7 +564,7 @@ FixMyStreet::override_config {
         $contact->update;
 
         my $sub_for_renewal = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54321',
@@ -572,7 +572,7 @@ FixMyStreet::override_config {
         });
 
         my $sub_for_cancel = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54322',
@@ -581,7 +581,7 @@ FixMyStreet::override_config {
 
         # e.g if they tried to create a DD but the process failed
         my $failed_new_sub = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54323',
@@ -592,7 +592,7 @@ FixMyStreet::override_config {
         $failed_new_sub->update;
 
         my $new_sub = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54323',
@@ -602,7 +602,7 @@ FixMyStreet::override_config {
         $new_sub->update;
 
         my $renewal_from_cc_sub = setup_dd_test_report({
-            'Subscription_Type' => 2,
+            'Request_Type' => 2,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '154323',
@@ -613,7 +613,7 @@ FixMyStreet::override_config {
         $renewal_from_cc_sub->update;
 
         my $sub_for_subsequent_renewal_from_cc_sub = setup_dd_test_report({
-            'Subscription_Type' => 2,
+            'Request_Type' => 2,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '154323',
@@ -623,7 +623,7 @@ FixMyStreet::override_config {
         $sub_for_subsequent_renewal_from_cc_sub->update;
 
         my $sub_for_unprocessed_cancel = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '84324',
@@ -639,14 +639,14 @@ FixMyStreet::override_config {
         $unprocessed_cancel->update;
 
         my $sub_for_processed_cancel = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54324',
             'uprn' => '654324',
         });
         my $processed_renewal = setup_dd_test_report({
-            'Subscription_Type' => 2,
+            'Request_Type' => 2,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '54324',
@@ -656,7 +656,7 @@ FixMyStreet::override_config {
         $processed_renewal->update;
 
         my $renewal_nothing_in_echo = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '74321',
@@ -664,7 +664,7 @@ FixMyStreet::override_config {
         });
 
         my $sub_for_cancel_nothing_in_echo = setup_dd_test_report({
-            'Subscription_Type' => 1,
+            'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
             'payment_method' => 'direct_debit',
             'property_id' => '94324',
@@ -701,8 +701,8 @@ FixMyStreet::override_config {
         $renewal_from_cc_sub->discard_changes;
         is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
         is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
-        is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'From CC Renewal has correct type';
-        is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 26, 'From CC Renewal has correct container type';
+        is $renewal_from_cc_sub->get_extra_field_value('Request_Type'), 2, 'From CC Renewal has correct type';
+        is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Containers'), 26, 'From CC Renewal has correct container type';
         is $renewal_from_cc_sub->get_extra_field_value('service_id'), 2247, 'Renewal has correct service id';
         is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
@@ -717,8 +717,8 @@ FixMyStreet::override_config {
         $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
         is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
-        is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Subsequent Renewal has correct type';
-        is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 26, 'Subsequent Renewal has correct container type';
+        is $subsequent_renewal_from_cc_sub->get_extra_field_value('Request_Type'), 2, 'Subsequent Renewal has correct type';
+        is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Containers'), 26, 'Subsequent Renewal has correct container type';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 2247, 'Subsequent Renewal has correct service id';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
@@ -755,10 +755,10 @@ FixMyStreet::override_config {
         is $renewal->count, 2, "two records for renewal property";
         my $p = $renewal->first;
         ok $p->id != $sub_for_renewal->id, "not the original record";
-        is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
+        is $p->get_extra_field_value('Request_Type'), 2, "renewal has correct type";
         is $p->get_extra_field_value('Subscription_Details_Quantity'), 2, "renewal has correct number of bins";
-        is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
-        is $p->get_extra_field_value('Subscription_Details_Container_Type'), 26, 'renewal has correct container type';
+        is $p->get_extra_field_value('Request_Type'), 2, "renewal has correct type";
+        is $p->get_extra_field_value('Subscription_Details_Containers'), 26, 'renewal has correct container type';
         is $p->get_extra_field_value('service_id'), 2247, 'renewal has correct service id';
         is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
         is $p->state, 'confirmed';
@@ -833,7 +833,7 @@ sub setup_dd_test_report {
     });
 
     $extras->{service_id} ||= 2247;
-    $extras->{Subscription_Details_Container_Type} ||= 26;
+    $extras->{Subscription_Details_Containers} ||= 26;
 
     my @extras = map { { name => $_, value => $extras->{$_} } } keys %$extras;
     $report->set_extra_fields( @extras );
