@@ -1,0 +1,16 @@
+[%
+title = 'Order more garden waste sacks';
+thing = 'sacks request';
+summary_title = 'Request';
+step1 = 'intro';
+%]
+
+[% BLOCK answers %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total to pay today</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf('%.2f', data.display_total) %]</dd>
+    </div>
+
+[% END %]
+
+[% PROCESS waste/summary.html %]
