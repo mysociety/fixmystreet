@@ -13,5 +13,6 @@
 [%~ END ~%]
 
 [%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
+  [%~ INCLUDE navitem uri='/waste' label='Property lookup' ~%]
   [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]
 [%~ END ~%]
