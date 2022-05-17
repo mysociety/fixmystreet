@@ -11,7 +11,8 @@ BEGIN {
 }
 
 use Getopt::Long::Descriptive;
-use FixMyStreet::Cobrand::Bromley;
+use FixMyStreet::Cobrand; # Without this, you get a method 'look_up_property' is not found in the inheritance hierarchy error
+use FixMyStreet::Cobrand::Kingston;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
@@ -20,8 +21,8 @@ my ($opts, $usage) = describe_options(
 );
 $usage->die if $opts->help;
 
-my $cobrand = FixMyStreet::Cobrand::Bromley->new;
+my $cobrand = FixMyStreet::Cobrand::Kingston->new;
 $cobrand->waste_fetch_events({
     verbose => $opts->verbose,
-    devolved => 1,
+    devolved => 0,
 });

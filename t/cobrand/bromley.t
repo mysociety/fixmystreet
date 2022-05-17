@@ -692,7 +692,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15001-' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Fetching data for report/;
         $report->discard_changes;
         is $report->comments->count, 0, 'No new update';
@@ -700,7 +700,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
         is $report->comments->count, 1, 'A new update';
@@ -710,7 +710,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Latest update matches fetched state/;
         $report->discard_changes;
         is $report->comments->count, 1, 'No new update';
@@ -718,7 +718,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15004-201' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state fixed - council, Completed/;
         $report->discard_changes;
         is $report->comments->count, 2, 'A new update';
@@ -726,12 +726,12 @@ subtest 'updating of waste reports' => sub {
 
         $reports[1]->update({ state => 'fixed - council' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/^$/, 'No open reports';
 
         $report->update({ external_id => 'waste-15005-205', state => 'confirmed' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state unable to fix, Inclement Weather/;
         $report->discard_changes;
         is $report->comments->count, 3, 'A new update';
