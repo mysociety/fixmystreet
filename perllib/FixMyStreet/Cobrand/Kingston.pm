@@ -7,6 +7,8 @@ use utf8;
 use DateTime::Format::W3CDTF;
 use Integrations::Echo;
 use FixMyStreet::WorkingDays;
+use JSON::MaybeXS;
+use LWP::Simple;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 
@@ -149,6 +151,21 @@ sub clear_cached_lookups_property {
     $key = "kingston:echo:bin_services_for_address:$id";
     delete $self->{c}->session->{$key};
 }
+
+around look_up_property => sub {
+    my ($orig, $self, $id) = @_;
+    my $data = $orig->($self, $id);
+    my $cfg = $self->feature('echo');
+    if ($cfg->{nlpg} && $data->{uprn}) {
+        my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
+        $uprn_data = JSON::MaybeXS->new->decode($uprn_data);
+        if ($uprn_data->{results}[0]{DPA}{LOCAL_CUSTODIAN_CODE_DESCRIPTION} ne 'KINGSTON UPON THAMES') {
+            $self->{c}->stash->{template} = 'waste/missing.html';
+            $self->{c}->detach;
+        }
+    }
+    return $data;
+};
 
 sub image_for_service {
     my ($self, $service_id) = @_;
