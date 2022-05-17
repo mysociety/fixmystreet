@@ -29,6 +29,8 @@
     </div>
 </form>
 
+[% TRY %][% PROCESS 'admin/_index_extra_search.html' %][% CATCH file %][% END %]
+
 [% IF c.user.is_superuser %]
 <form method="get" action="[% c.uri_for('bodies') %]">
     <label for="search_body">[% loc('Edit body details') %]</label>
