@@ -505,7 +505,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     }
 
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
-    $c->detach( '/page_error_404_not_found', [] ) unless $property;
+    $c->detach( '/page_error_404_not_found', [] ) unless $property && $property->{id};
 
     $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
     $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
