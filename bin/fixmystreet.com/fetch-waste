@@ -11,14 +11,20 @@ BEGIN {
 }
 
 use Getopt::Long::Descriptive;
-use FixMyStreet::Cobrand::Bromley;
+use FixMyStreet::Cobrand;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['verbose|v', 'more verbose output'],
+    ['cobrand=s', 'which cobrand to fetch events for'],
+    ['devolved|d', 'waste contacts are devolved in the body'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
+$usage->die unless $opts->cobrand;
 
-my $cobrand = FixMyStreet::Cobrand::Bromley->new;
-$cobrand->waste_fetch_events($opts->verbose);
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
+$cobrand->waste_fetch_events({
+    verbose => $opts->verbose,
+    devolved => $opts->devolved,
+});

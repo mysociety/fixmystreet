@@ -223,19 +223,27 @@ Loop through all open waste events to see if there have been any updates
 =cut
 
 sub waste_fetch_events {
-    my ($self, $verbose) = @_;
+    my ($self, $params) = @_;
 
     my $body = $self->body;
-    my @contacts = $body->contacts->search({
-        send_method => 'Open311',
-        endpoint => { '!=', '' },
-    })->all;
-    die "Could not find any devolved contacts\n" unless @contacts;
+    my $conf;
+    my $report_params = {};
+    if ($params->{devolved}) {
+        my @contacts = $body->contacts->search({
+            send_method => 'Open311',
+            endpoint => { '!=', '' },
+        })->all;
+        die "Could not find any devolved contacts\n" unless @contacts;
+        $conf = $contacts[0];
+        $report_params = { category => [ map { $_->category } @contacts ] };
+    } else {
+        $conf = $body;
+    }
 
     my %open311_conf = (
-        endpoint => $contacts[0]->endpoint || '',
-        api_key => $contacts[0]->api_key || '',
-        jurisdiction => $contacts[0]->jurisdiction || '',
+        endpoint => $conf->endpoint || '',
+        api_key => $conf->api_key || '',
+        jurisdiction => $conf->jurisdiction || '',
         extended_statuses => $body->send_extended_statuses,
     );
     my $cobrand = $body->get_cobrand_handler;
@@ -255,7 +263,7 @@ sub waste_fetch_events {
     $echo = Integrations::Echo->new(%$echo);
 
     my $cfg = {
-        verbose => $verbose,
+        verbose => $params->{verbose},
         updates => $updates,
         echo => $echo,
         event_types => {},
@@ -264,11 +272,12 @@ sub waste_fetch_events {
     my $reports = $self->problems->search({
         external_id => { '!=', '' },
         state => [ FixMyStreet::DB::Result::Problem->open_states() ],
-        category => [ map { $_->category } @contacts ],
+        # TODO Should know which categories to use somehow, even in non-devolved case
+        %$report_params,
     });
 
     while (my $report = $reports->next) {
-        print 'Fetching data for report ' . $report->id . "\n" if $verbose;
+        print 'Fetching data for report ' . $report->id . "\n" if $cfg->{verbose};
 
         my $event = $cfg->{echo}->GetEvent($report->external_id);
         my $request = $self->construct_waste_open311_update($cfg, $event) or next;
