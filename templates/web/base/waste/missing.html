@@ -19,6 +19,8 @@
     <li>Check your address details and <a href="[% c.uri_for_action('waste/index') %]">search again</a>
   [% IF c.cobrand.moniker == 'bromley' %]
     <li>Call our customer service team on 0800 647 7836 who will be pleased to assist you
+  [% ELSIF c.cobrand.moniker == 'kingston' %]
+    <li>Call our customer service team on 020 8547 5002 who will be pleased to assist you
   [% ELSIF c.cobrand.moniker == 'peterborough' %]
     <li>Call or email our customer service team on 01733 74 74 74 or
         <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>
