@@ -1,0 +1,21 @@
+[% INCLUDE header.html %]
+
+<h1 class="govuk-heading-xl">Order confirmed</h1>
+
+[% IF message %]<p>[% message %]</p>[% END %]
+
+<p>
+Payment reference: [% reference %]
+</p>
+
+[% FOR unit IN service_data %]
+  [% NEXT UNLESS (unit.service_id == 1914 OR unit.service_id == 1915) AND unit.next %]
+  [% next_waste = date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+[% END %]
+[% IF next_waste %]
+    <p>Your next green garden waste collection will be [% next_waste %].</p>
+[% END %]
+
+<p><a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a></p>
+
+[% INCLUDE footer.html %]

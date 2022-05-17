@@ -20,6 +20,7 @@ use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
+use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
@@ -1007,8 +1008,7 @@ sub garden : Chained('garden_setup') : Args(0) {
 sub garden_modify : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
-    my $service_id = $c->cobrand->garden_service_id;
-    my $service = $c->stash->{services}{$service_id};
+    my $service = $c->cobrand->garden_current_subscription;
     if (!$service || $service->{garden_due}) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
@@ -1018,36 +1018,44 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach( '/auth/redirect' );
     }
 
-    my $pick = $c->get_param('task') || '';
-    if ($pick eq 'cancel') {
-        $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/garden_cancel');
-        $c->detach;
+    if ($c->stash->{garden_sacks}) {
+        my $payment_method = 'credit_card';
+        $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase';
+    } else {
+        my $pick = $c->get_param('task') || '';
+        if ($pick eq 'cancel') {
+            $c->res->redirect('/waste/' . $c->stash->{property}{id} . '/garden_cancel');
+            $c->detach;
+        }
+
+        $c->forward('get_original_sub', ['user']);
+
+        my $service_id = $c->cobrand->garden_service_id;
+        my $max_bins = $c->stash->{quantity_max}->{$service_id};
+
+        my $payment_method = 'credit_card';
+        if ( $c->stash->{orig_sub} ) {
+            my $orig_sub = $c->stash->{orig_sub};
+            my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
+            $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
+        }
+
+        $c->forward('check_if_staff_can_pay', [ $payment_method ]);
+
+        $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
+        $c->stash->{garden_form_data} = {
+            pro_rata_bin_cost =>  $c->cobrand->waste_get_pro_rata_cost(1, $service->{end_date}),
+            max_bins => $max_bins,
+            bins => $service->{garden_bins},
+            end_date => $service->{end_date},
+            payment_method => $payment_method,
+        };
+
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
     }
-
-    $c->forward('get_original_sub', ['user']);
-
-    my $max_bins = $c->stash->{quantity_max}->{$service_id};
-
-    my $payment_method = 'credit_card';
-    if ( $c->stash->{orig_sub} ) {
-        my $orig_sub = $c->stash->{orig_sub};
-        my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
-        $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
-    }
-
-    $c->forward('check_if_staff_can_pay', [ $payment_method ]);
-
-    $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
-    $c->stash->{garden_form_data} = {
-        pro_rata_bin_cost =>  $c->cobrand->waste_get_pro_rata_cost(1, $service->{end_date}),
-        max_bins => $max_bins,
-        bins => $service->{garden_bins},
-        end_date => $service->{end_date},
-        payment_method => $payment_method,
-    };
 
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
     $c->forward('form');
 }
 
@@ -1207,28 +1215,36 @@ sub process_garden_modification : Private {
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - Amend';
 
-    my $total_bins = $data->{bins_wanted};
-    my $current_bins = $data->{current_bins};
-    my $new_bins = $total_bins - $current_bins;
-
-    $data->{new_bins} = $new_bins;
-    $data->{bin_count} = $data->{bins_wanted};
-
-    my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
-
-    # One-off ad-hoc payment to be made now
+    my $payment;
     my $pro_rata;
-    if ( $new_bins > 0 ) {
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-        $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-        $c->set_param('pro_rata', $pro_rata);
-        $c->set_param('admin_fee', $cost_now_admin);
+    my $payment_method;
+    if ($c->stash->{garden_sacks}) {
+        $data->{bin_count} = 1;
+        $data->{new_bins} = 1;
+        $payment = $c->cobrand->garden_waste_sacks_cost_pa();
+        $payment_method = 'credit_card';
+        $pro_rata = $payment; # Set so goes through flow below
+    } else {
+        my $bin_count = $data->{bins_wanted};
+        $data->{bin_count} = $bin_count;
+        my $new_bins = $bin_count - $data->{current_bins};
+        $data->{new_bins} = $new_bins;
+
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+
+        # One-off ad-hoc payment to be made now
+        if ( $new_bins > 0 ) {
+            my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+            $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
+            $c->set_param('pro_rata', $pro_rata);
+            $c->set_param('admin_fee', $cost_now_admin);
+        }
+
+        $payment_method = $c->stash->{garden_form_data}->{payment_method};
+        $payment = $cost_pa;
+        $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
+
     }
-
-    my $payment_method = $c->stash->{garden_form_data}->{payment_method};
-    my $payment = $cost_pa;
-    $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
-
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{Amend} ]);

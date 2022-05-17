@@ -878,9 +878,34 @@ FixMyStreet::override_config {
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
+    subtest 'sacks, cannot modify, but can buy more' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z');
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_contains('Order more garden sacks');
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->content_contains('<span id="pro_rata_cost">41.00');
+        $mech->content_lacks('current_bins');
+        $mech->content_lacks('bins_wanted');
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'no admin fee';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 1, bin_type => 28);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+        check_extra_data_post_confirm($new_report);
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+    };
+
     subtest 'sacks, cancelling' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
