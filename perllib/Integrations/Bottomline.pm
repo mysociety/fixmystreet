@@ -109,19 +109,25 @@ has auth_details => (
 
 
 sub call {
-    my ($self, $method, $data) = @_;
+    my ($self, $path, $data, $method) = @_;
     my $ua = $self->auth_details;
 
     my $req;
-    if ( $data ) {
+    if ( $method eq 'PUT' ) {
+        $req = HTTP::Request::Common::PUT (
+            $self->endpoint . $path,
+            %{ $self->headers },
+        );
+        $req->content(encode_json($data));
+    } elsif ( $data ) {
         $req = HTTP::Request::Common::POST(
-            $self->endpoint . $method,
+            $self->endpoint . $path,
             %{ $self->headers },
         );
         $req->content(encode_json($data));
     } else {
         $req = HTTP::Request::Common::GET(
-            $self->endpoint . $method,
+            $self->endpoint . $path,
             %{ $self->headers },
         );
     }
@@ -130,7 +136,15 @@ sub call {
 
     return {} if $resp->code == 204;
 
-    return decode_json( $resp->content );
+    if ( $resp->code == 200 ) {
+        return decode_json( $resp->content );
+    }
+
+    return {
+        error => "unknown error",
+        code => $resp->code,
+        content => $resp->content,
+    };
 }
 
 sub one_off_payment {
@@ -171,7 +185,71 @@ sub one_off_payment {
 sub amend_plan {
     my ($self, $args) = @_;
 
-    return [];
+    my $sub = $args->{orig_sub};
+    my $plan = $self->get_plan_for_mandate($sub->get_extra_metadata('dd_mandate_id'));
+
+    $plan->{regularAmount} = $args->{amount};
+
+    my $path = sprintf(
+        "ddm/contacts/%s/mandates/%s/payment-plans/%s",
+        $sub->get_extra_metadata('dd_contact_id'),
+        $sub->get_extra_metadata('dd_mandate_id'),
+        $plan->{id},
+    );
+
+    my $resp = $self->call($path, { "YearlyPaymentPlan" => $plan }, 'PUT');
+
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+sub get_plan_for_mandate {
+    my ($self, $mandate_id) = @_;
+
+    my $data = $self->build_query({
+        entity => {
+           "name" => "PaymentPlans",
+           "symbol" => "com.bottomline.ddm.model.base.plan.payment.PaymentPlan",
+           "key" => "com.bottomline.ddm.model.base.plan.payment.PaymentPlan"
+       },
+       field => {
+            name => "PaymentPlan",
+            symbol => "com.bottomline.ddm.model.payment.CommonPaymentPlan",
+        },
+        query => [{
+             '@type' => "QueryParameter",
+             "field" => {
+               "name" => "id",
+               "symbol" => "com.bottomline.ddm.model.base.plan.payment.PaymentPlan.mandate.modelId",
+               "fieldType" => "LONG",
+               "key" => JSON()->false,
+             },
+             "operator" => {
+               "symbol" => "="
+             },
+             "queryValues" => [
+               {
+                   '@type' => "long",
+                   '$value' => $mandate_id,
+               }
+             ]
+       }]
+    });
+
+    my $resp = $self->call("query/execute#planForMandateId", $data);
+
+    my $plans =  $self->parse_results("YearlyPaymentPlan", $resp);
+
+    if ( ref $plans eq 'HASH' and $plans->{error} ) {
+        return $plans;
+    } elsif ( @$plans ) {
+        return $plans->[0];
+    }
+
+    return undef;
 }
 
 sub build_query {

@@ -313,16 +313,62 @@ FixMyStreet::override_config {
 
     my $dd_sent_params = {};
     my $dd = Test::MockModule->new('Integrations::Bottomline');
-    $dd->mock('one_off_payment', sub {
-        my ($self, $params) = @_;
-        # comparing this is annoying so just remove it.
-        delete $params->{orig_sub};
-        $dd_sent_params->{'one_off_payment'} = $params;
-    });
-
-    $dd->mock('amend_plan', sub {
-        my $self = shift;
-        $dd_sent_params->{'amend_plan'} = shift;
+    $dd->mock('call', sub {
+        my ($self, $path, $data, $method) = @_;
+        if ( $path =~ m#mandates/[^/]*/transaction# ) {
+            $dd_sent_params->{'one_off_payment'} = $data;
+            return {};
+        } elsif ( $path =~ m#mandates/[^/]*/payment-plans# ) {
+            $dd_sent_params->{'amend_plan'} = $data;
+            return {};
+        } elsif ( $path eq 'query/execute#getContactFromEmail' ) {
+            return {
+                rows => [ {
+                  values => [ {
+                     resultValues => [ {
+                        value => {
+                           '@type' => "ContactDTO",
+                           id => 1,
+                        }
+                     } ]
+                  } ]
+                } ]
+            }
+        } elsif ( $path eq 'query/execute#planForMandateId' ) {
+            $dd_sent_params->{'plan_for_mandate'} = $data;
+            return {
+                rows => [ {
+                  values => [ {
+                     resultValues => [ {
+                        value => {
+                           '@type' => "YearlyPaymentPlan",
+                           id => 1369911,
+                           mandateId => 4876123,
+                           profileId => 4826,
+                           status => "ACTIVE",
+                           lastUpdated => "2018-09-01T08:05:22.646",
+                           nextCollection => "2018-09-14T00:00:00.000",
+                           extracted => 0,
+                           created => "2018-07-06T14:32:13.950",
+                           description => "A Direct Debit payment is due in respect of the above Direct Debit Instruction for £50.00 and will be collected on, or just after, the 15th of August 2018. Further payments of £50.00 will then be collected on, or just after, the 15th of each month until further notice.",
+                           amountType => 0,
+                           regularAmount => 50,
+                           totalAmount => 0,
+                           schedule => {
+                              numberOfOccurrences => 0,
+                              schedulePattern => "MONTHLY",
+                              frequencyEnd => "NO_END",
+                              startDate => "2018-08-15",
+                              endDate => "0000-00-00"
+                           },
+                           everyNthMonth => 1,
+                           monthDays => [ "DAY15" ]
+                        }
+                     } ]
+                  } ]
+                } ]
+            }
+        }
     });
 
     subtest 'Garden type lookup' => sub {
@@ -1298,6 +1344,8 @@ FixMyStreet::override_config {
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
     $p->set_extra_metadata('payerReference', 'GGW1000000002');
+    $p->set_extra_metadata('dd_mandate_id', '100');
+    $p->set_extra_metadata('dd_contact_id', '101');
     $p->update;
 
     subtest 'check modify sub direct debit payment' => sub {
@@ -1328,16 +1376,12 @@ FixMyStreet::override_config {
         my $ad_hoc_payment_date = '2021-01-15T17:00:00';
 
         is_deeply $dd_sent_params->{one_off_payment}, {
-            payer_reference => 'GGW1000000002',
+            comments => $new_report->id,
             amount => '35.00',
-            reference => $new_report->id,
-            comments => '',
-            date => $ad_hoc_payment_date,
+            dueDate => $ad_hoc_payment_date,
+            paymentType => 'DEBIT',
         }, "correct direct debit ad hoc payment params sent";
-        is_deeply $dd_sent_params->{amend_plan}, {
-            payer_reference => 'GGW1000000002',
-            amount => '40.00',
-        }, "correct direct debit amendment params sent";
+        is $dd_sent_params->{amend_plan}->{YearlyPaymentPlan}->{regularAmount}, '40.00', "correct direct debit amendment params sent";
     };
 
     $dd_sent_params = {};

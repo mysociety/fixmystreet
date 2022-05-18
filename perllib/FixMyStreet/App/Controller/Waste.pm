@@ -476,6 +476,7 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
     my $update_ref = $i->amend_plan( {
         payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
         amount => sprintf('%.2f', $total / 100),
+        orig_sub => $c->stash->{orig_sub},
     } );
 }
 

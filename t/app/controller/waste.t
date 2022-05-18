@@ -756,8 +756,9 @@ FixMyStreet::override_config {
     });
 
     $dd->mock('amend_plan', sub {
-        my $self = shift;
-        $dd_sent_params->{'amend_plan'} = shift;
+        my ($self, $params) = @_;
+        delete $params->{orig_sub};
+        $dd_sent_params->{'amend_plan'} = $params;
     });
 
     $dd->mock('cancel_plan', sub {
