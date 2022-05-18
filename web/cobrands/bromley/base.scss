@@ -101,6 +101,12 @@ h1#reports_heading {
       color: mix($primary, $primary_text, 30%);
     }
   }
+
+  #geolocate_link {
+    svg {
+      vertical-align: middle;
+    }
+  }
 }
 
 
@@ -199,6 +205,14 @@ input.field, input.text,
   $bg: $bromley_blue;
   $hover-bg: darken($bromley_blue, 10%);
   @include button-variant($bg, $bg, false, #fff, $hover-bg, $hover-bg, false, #fff);
+  border-color: $bromley_blue !important;
+}
+
+.btn-primary--bg-white {
+  $bg: #fff;
+  $hover-bg: darken($bromley_blue, 10%);
+  @include button-variant($bg, $bg, false, $bromley_blue, $hover-bg, $hover-bg, false, $bg);
+  border-color: $bromley_blue !important;
 }
 
 .container .content {
