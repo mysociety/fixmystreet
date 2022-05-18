@@ -762,8 +762,9 @@ FixMyStreet::override_config {
     });
 
     $dd->mock('cancel_plan', sub {
-        my $self = shift;
-        $dd_sent_params->{'cancel_plan'} = shift;
+        my ($self, $params) = @_;
+        delete $params->{report};
+        $dd_sent_params->{'cancel_plan'} = $params;
     });
 
     subtest 'check bin calendar with multiple service tasks' => sub {
