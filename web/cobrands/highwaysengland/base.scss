@@ -96,6 +96,7 @@ p.form-error {
     #postcodeForm {
         background: transparent;
         padding: 1em;
+        padding-bottom: 2em;
         margin: 1em auto;
         color: inherit;
         font-family: inherit;
@@ -170,7 +171,7 @@ p.form-error {
     background-repeat: repeat;
     background-size: cover;
     background-position: center;
-    padding: 5% 1em;
+    padding: 12% 1em;
 
     .hero-content-wrapper {
         max-width: 60em;
@@ -180,12 +181,13 @@ p.form-error {
 
 .highwaysengland-warning {
     box-sizing: border-box;
-    padding: 1em 1.5em;
+    padding: 1.5em 1.5em;
     border-radius: 0.25em;
     background: #f9e4ae;
 
     h2 {
         font-weight: bold;
+        margin-top: 0;
     }
 
     div {
