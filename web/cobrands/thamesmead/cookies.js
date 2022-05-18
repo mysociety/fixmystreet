@@ -56,7 +56,7 @@ function acceptCookies() {
     function gtag(){dataLayer.push(arguments);} 
     gtag('js', new Date()); 
     
-    gtag('config', 'G-1EJP6Q9PMT'); 
+    gtag('config', 'G-BX35RQ45LG'); 
     // gtag end
 
     document.querySelectorAll("div.cookie-warning")[0].style.display = "none";
