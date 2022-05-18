@@ -18,7 +18,7 @@ has paymentTypeField => (
 
 has oneOffReferenceField => (
     is => 'ro',
-    default => 'altReference',
+    default => 'comments',
 );
 
 has referenceField => (
