@@ -39,7 +39,7 @@ $csc_user->add_to_roles($role);
 
 sub create_contact {
     my ($params, @extra) = @_;
-    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste']);
+    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
         { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },

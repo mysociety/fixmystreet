@@ -485,7 +485,7 @@ subtest 'check existing non_public category does not get marked public' => sub {
     is $contact->non_public, 1, 'contact remains non_public';
 };
 
-subtest 'check new category marked waste_only' => sub {
+subtest 'check new category marked waste' => sub {
     FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
     my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
@@ -514,10 +514,10 @@ subtest 'check new category marked waste_only' => sub {
     my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
     is $contact->email, '404', 'email correct';
     is $contact->category, 'Food bin missing', 'category correct';
-    is $contact->get_extra_metadata('waste_only'), 1, 'contact marked as waste_only in extra';
+    is $contact->get_extra_metadata('type'), 'waste', 'contact marked as waste in extra';
 };
 
-subtest 'check new category not marked waste_only' => sub {
+subtest 'check new category not marked waste' => sub {
     FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 
     my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
@@ -546,12 +546,12 @@ subtest 'check new category not marked waste_only' => sub {
     my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
     is $contact->email, '404', 'email correct';
     is $contact->category, 'Food bin missing', 'category correct';
-    is $contact->get_extra_metadata('waste_only'), undef, 'contact not marked as waste_only in extra';
+    is $contact->get_extra_metadata('type'), undef, 'contact not marked as waste in extra';
 };
 
-subtest 'check existing category marked waste_only' => sub {
+subtest 'check existing category marked waste' => sub {
     my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
-    is $contact->get_extra_metadata('waste_only'), undef, 'contact not marked as waste_only in extra';
+    is $contact->get_extra_metadata('type'), undef, 'contact not marked as waste in extra';
 
     my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
     <services>
@@ -579,7 +579,7 @@ subtest 'check existing category marked waste_only' => sub {
     $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
     is $contact->email, '404', 'email correct';
     is $contact->category, 'Food bin missing', 'category correct';
-    is $contact->get_extra_metadata('waste_only'), 1, 'contact marked as waste_only in extra';
+    is $contact->get_extra_metadata('type'), 'waste', 'contact marked as waste in extra';
 };
 
 for my $test (

@@ -284,6 +284,14 @@ sub update_contact : Private {
         }
     }
 
+    if (my $type = $c->get_param('type')) {
+        if ($type eq 'standard') {
+            $contact->unset_extra_metadata('type');
+        } else {
+            $contact->set_extra_metadata(type => $type);
+        }
+    }
+
     foreach (qw(title_hint detail_hint)) {
         my $value = $c->get_param($_) || '';
         $value = $self->trim($value);

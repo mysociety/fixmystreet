@@ -62,45 +62,6 @@ sub open311_post_send {
     }
 }
 
-# We want to send confirmation emails only for Waste reports
-sub report_sent_confirmation_email {
-    my ($self, $report) = @_;
-    my $contact = $report->contact or return;
-    return 'id' if grep { $_ eq 'Waste' } @{$contact->groups};
-    return '';
-}
-
-sub munge_around_category_where {
-    my ($self, $where) = @_;
-    $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
-}
-
-sub munge_reports_category_list {
-    my ($self, $categories) = @_;
-    my $c = $self->{c};
-    return if $c->action eq 'dashboard/heatmap';
-
-    unless ( $c->user_exists && $c->user->from_body && $c->user->has_permission_to('report_mark_private', $self->body->id) ) {
-        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
-    }
-}
-
-sub munge_report_new_contacts {
-    my ($self, $categories) = @_;
-
-    if ($self->{c}->action =~ /^waste/) {
-        @$categories = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$categories;
-        return;
-    }
-
-    if ($self->{c}->stash->{categories_for_point}) {
-        # Have come from an admin tool
-    } else {
-        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
-    }
-    $self->SUPER::munge_report_new_contacts($categories);
-}
-
 sub updates_disallowed {
     my $self = shift;
     my ($problem) = @_;
