@@ -89,16 +89,17 @@ p.form-error {
 
 #front-main {
     margin: 0;
-    padding: 1em;
+    
     background: $color-he-grey-2;
     text-align: left;
 
     #postcodeForm {
         background: transparent;
-        padding: 0;
-        margin: 0;
+        padding: 1em;
+        margin: 1em auto;
         color: inherit;
         font-family: inherit;
+        max-width: 60em;
 
         div {
             border: none;
@@ -140,19 +141,41 @@ p.form-error {
 
     h1 {
         margin-top: 0;
+        color: $white;
 
         span {
             display: block;
             font-weight: normal;
-            color: $color-he-grey-4;
+            color: $color-he-grey-2;
         }
     }
 }
 
-.front-blurb,
-.highwaysengland-warning {
-    max-width: 32em;
-    margin: 1em 0;
+#front-main-container {
+    max-width: 100% !important;
+
+    .front-blurb {
+        color:$white;
+        max-width: 28em;
+        opacity: 0.85;
+        background: transparentize($color-he-black, $amount: 0.5);
+        padding: 1em;
+        border-radius: 4px;
+        margin: 0 -1em;
+    }
+}
+
+.hero-bg {
+    background-image: url(images/maintenance-hero.jpg);
+    background-repeat: repeat;
+    background-size: cover;
+    background-position: center;
+    padding: 5% 1em;
+
+    .hero-content-wrapper {
+        max-width: 60em;
+        margin: 0 auto;
+    }
 }
 
 .highwaysengland-warning {
@@ -163,6 +186,11 @@ p.form-error {
 
     h2 {
         font-weight: bold;
+    }
+
+    div {
+        max-width: 60em;
+        margin: 0 auto;
     }
 }
 
