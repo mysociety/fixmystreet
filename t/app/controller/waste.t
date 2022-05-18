@@ -140,7 +140,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('service-537', 'No checkbox, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'No checkbox, last collection was 20th');
         $mech->content_lacks('service-542', 'No checkbox, last collection was 18th');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->content_contains('Please specify what was missed');
         $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test" } });
@@ -152,7 +152,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Non-Recyclable Refuse');
         $mech->content_contains('Test McTest');
         $mech->content_contains('test@example.org');
-        $mech->submit_form_ok({ form_number => 3 });
+        $mech->submit_form_ok({ form_number => 2 });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -238,7 +238,7 @@ FixMyStreet::override_config {
     };
     subtest 'Request a new container' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->content_contains('Please specify what you need');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
         $mech->content_contains('Quantity field is required');
@@ -259,7 +259,7 @@ FixMyStreet::override_config {
     subtest 'Request a replacement garden container' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/<input type="hidden" name="quantity-44" id="quantity-44" value="1">/);
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->content_contains('Please specify what you need');
         $mech->submit_form_ok({ with_fields => { 'container-44' => 1 } });
         $mech->submit_form_ok({ with_fields => { replacement_reason => 'damaged' } });
@@ -946,7 +946,7 @@ FixMyStreet::override_config {
 
     subtest 'check new sub bin limits' => sub {
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'yes' } });
         $mech->content_contains('Please specify how many bins you already have');
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 0 } });
@@ -991,7 +991,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Value must be between 0 and 6');
 
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
         $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
         ok $form, "form found";
@@ -1001,7 +1001,7 @@ FixMyStreet::override_config {
 
     subtest 'check new sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
@@ -1070,7 +1070,7 @@ FixMyStreet::override_config {
 
     subtest 'check new sub credit card payment with no bins required' => sub {
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 1,
@@ -1119,7 +1119,7 @@ FixMyStreet::override_config {
 
     subtest 'check new sub credit card payment with one less bin required' => sub {
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
@@ -1169,7 +1169,7 @@ FixMyStreet::override_config {
     subtest 'check new sub direct debit payment' => sub {
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
@@ -1766,7 +1766,7 @@ FixMyStreet::override_config {
             });
 
             $mech->get_ok('/waste/12345/garden');
-            $mech->submit_form_ok({ form_number => 2 });
+            $mech->submit_form_ok({ form_number => 1 });
             $mech->submit_form_ok({ with_fields => { existing => 'no' } });
             $mech->submit_form_ok({ with_fields => {
                     current_bins => 0,
@@ -1825,7 +1825,7 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
@@ -1857,7 +1857,7 @@ FixMyStreet::override_config {
             };
         });
 
-        $mech2->submit_form_ok({ form_number => 2 });
+        $mech2->submit_form_ok({ form_number => 1 });
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
         is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
     };
@@ -2080,7 +2080,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($csc_user->email);
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->content_lacks('password', 'no password field');
@@ -2130,7 +2130,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($staff_user->email);
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->content_lacks('password', 'no password field');
@@ -2170,7 +2170,7 @@ FixMyStreet::override_config {
     subtest 'staff create new subscription no email' => sub {
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
@@ -2223,7 +2223,7 @@ FixMyStreet::override_config {
     subtest 'staff create new subscription no email - payment failed' => sub {
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
