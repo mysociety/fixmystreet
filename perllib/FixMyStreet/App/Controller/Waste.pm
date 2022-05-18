@@ -490,6 +490,7 @@ sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
     $c->stash->{payment_method} = 'direct_debit';
     my $update_ref = $i->cancel_plan( {
         payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
+        report => $p,
     } );
 }
 

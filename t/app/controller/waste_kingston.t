@@ -51,6 +51,9 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_canc
     { code => 'Bin_Delivery_Detail_Container', required => 1, automated => 'hidden_field' },
     { code => 'Bin_Delivery_Detail_Containers', required => 1, automated => 'hidden_field' },
     { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'dd_contact_id', required => 0, automated => 'hidden_field' },
+    { code => 'dd_mandate_id', required => 0, automated => 'hidden_field' },
 );
 
 package SOAP::Result;
@@ -320,6 +323,9 @@ FixMyStreet::override_config {
             return {};
         } elsif ( $path =~ m#mandates/[^/]*/payment-plans# ) {
             $dd_sent_params->{'amend_plan'} = $data;
+            return {};
+        } elsif ( $method and $method eq 'DELETE' ) {
+            $dd_sent_params->{cancel_plan} = {};
             return {};
         } elsif ( $path eq 'query/execute#getContactFromEmail' ) {
             return {
@@ -830,6 +836,34 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     remove_test_subs( $p->id );
+    $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
+    $p->set_extra_metadata('dd_mandate_id', '100');
+    $p->set_extra_metadata('dd_contact_id', '101');
+    $p->update;
+
+    subtest 'cancel direct debit sub' => sub {
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->state, 'unconfirmed', 'report confirmed';
+        is $p->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment type on report';
+
+        is_deeply $dd_sent_params->{cancel_plan}, {}, "correct direct debit cancellation params sent";
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Cancellation in progress');
+    };
+
+    remove_test_subs( $p->id );
+
+    $p->update_extra_field({ name => 'payment_method', value => 'credit_card' });
+    $p->update;
 
     subtest 'renew credit card sub after end of sub' => sub {
         set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection

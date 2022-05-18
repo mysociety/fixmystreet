@@ -119,6 +119,11 @@ sub call {
             %{ $self->headers },
         );
         $req->content(encode_json($data));
+    } elsif ( $method eq 'DELETE' ) {
+        $req = HTTP::Request::Common::DELETE (
+            $self->endpoint . $path,
+            %{ $self->headers },
+        );
     } elsif ( $data ) {
         $req = HTTP::Request::Common::POST(
             $self->endpoint . $path,
@@ -470,7 +475,23 @@ sub get_contact_from_email {
 sub cancel_plan {
     my ($self, $args) = @_;
 
-    return [];
+    my $sub = $args->{report};
+
+    my $path = sprintf(
+        "ddm/contacts/%s/mandates/%s",
+        $sub->get_extra_field_value('dd_contact_id'),
+        $sub->get_extra_field_value('dd_mandate_id'),
+    );
+
+    my $resp = $self->call($path, undef, 'DELETE');
+
+    # if there's not an error then return success as there's no content
+    # returned
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
+        return $resp;
+    } else {
+        return 1;
+    }
 }
 
 1;
