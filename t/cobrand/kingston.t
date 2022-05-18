@@ -267,7 +267,7 @@ FixMyStreet::override_config {
                             } } ] } ] },
                             { values => [ { resultValues => [ { value => {   # ad hoc already processed
                                 '@type' => "Instruction",
-                                altReference => $ad_hoc_processed->id,
+                                comments => $ad_hoc_processed->id,
                                 amount => 10.00,
                                 lastUpdated => "16/03/2021",
                                 paymentDate => "16/03/2021",
@@ -444,7 +444,7 @@ FixMyStreet::override_config {
                             } } ] } ] },
                             { values => [ { resultValues => [ { value => {   # ad hoc
                                 '@type' => "Instruction",
-                                altReference => $ad_hoc->id,
+                                comments => $ad_hoc->id,
                                 amount => 10.00,
                                 lastUpdated => "14/03/2021",
                                 paymentDate => "16/03/2021",
@@ -554,6 +554,19 @@ FixMyStreet::override_config {
                             } } ] } ] },
                         ]
                 };
+            } elsif ( $method eq 'query/execute#getContactFromEmail' ) {
+                return {
+                    rows => [ {
+                      values => [ {
+                         resultValues => [ {
+                            value => {
+                               '@type' => "ContactDTO",
+                               id => 1,
+                            }
+                         } ]
+                      } ]
+                    } ]
+                }
             }
         });
 
