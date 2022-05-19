@@ -492,8 +492,9 @@ sub look_up_property {
     return $premises{$uprn};
 }
 
-sub image_for_service {
-    my ($self, $service_id) = @_;
+sub image_for_unit {
+    my ($self, $unit) = @_;
+    my $service_id = $unit->{service_id};
     my $base = '/cobrands/peterborough/images';
     my $images = {
         6533 => "$base/black-bin",
