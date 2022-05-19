@@ -25,7 +25,9 @@ sub bin_addresses_for_postcode {
         value => $_->{Id},
         label => FixMyStreet::Template::title($_->{Description}),
     } } @$points ];
-    natkeysort_inplace { $_->{label} } @$data;
+    if ($self->moniker eq 'bromley') {
+        natkeysort_inplace { $_->{label} } @$data;
+    }
     return $data;
 }
 
