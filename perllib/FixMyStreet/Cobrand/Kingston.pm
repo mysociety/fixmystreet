@@ -176,23 +176,19 @@ sub image_for_service {
         1903 => "$base/black-bin", # refuse
         1908 => "$base/brown-bin", # food
         1909 => "$base/green-bin", # dry mixed
-        1914 => "$base/garden-waste-bin",
-        1915 => "", # No image for garden sacks
+        2247 => "$base/garden-waste-bin",
     };
     return $images->{$service_id};
 }
 
-sub garden_bin_service_id { 1914 }
-sub garden_bag_service_id { 1915 }
+use constant GARDEN_WASTE_SERVICE_ID => 2247;
+sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
+sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
+sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
+
 sub garden_subscription_type_field { 'Request_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Containers' }
 sub garden_echo_container_name { 'SLWP - Containers' }
-
-sub garden_current_subscription {
-    my $self = shift;
-    my $services = $self->{c}->stash->{services};
-    return $services->{$self->garden_bin_service_id} || $services->{$self->garden_bag_service_id};
-}
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;
@@ -201,26 +197,13 @@ sub garden_current_service_from_service_units {
     for my $service ( @$services ) {
         my $servicetasks = $self->_get_service_tasks($service);
         foreach my $task (@$servicetasks) {
-            if ( $task->{TaskTypeId} == $self->garden_bag_service_id ||
-                 $task->{TaskTypeId} == $self->garden_bin_service_id
-             ) {
+            if ( $task->{TaskTypeId} == $self->garden_service_id ) {
                 $garden = $self->_get_current_service_task($service);
                 last;
             }
         }
     }
     return $garden;
-}
-
-sub garden_current_bin_subscription {
-    my $self = shift;
-    my $service_id = $self->garden_bin_service_id;
-    return $self->{c}->stash->{services}->{$service_id};
-}
-
-sub get_current_garden_bins {
-    my $self = shift;
-    return $self->garden_current_bin_subscription->{garden_bins};
 }
 
 sub service_name_override {
@@ -231,8 +214,7 @@ sub service_name_override {
         1903 => 'Refuse',
         1908 => 'Food',
         1909 => 'Mixed',
-        1914 => 'Garden Waste',
-        1915 => 'Garden Waste',
+        2247 => 'Garden Waste',
     );
 
     return $service_name_override{$service} || 'Unknown';
@@ -278,12 +260,12 @@ sub bin_services_for_address {
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
-        1914 => [ 26 ],
-        1915 => [ 28 ],
+        #    1914 => [ 26 ],
+        #    1915 => [ 28 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
-        1914 => 5,
+        2247 => 5,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -314,7 +296,7 @@ sub bin_services_for_address {
             my $service_id = $task->{TaskTypeId};
 
             # Only Garden for now XXX
-            next unless $service_id == $self->garden_bin_service_id || $service_id == $self->garden_bag_service_id;
+            next unless $service_id == $self->garden_service_id;
             # Only Garden for now XXX
 
             # When this covers more than garden, this code can replace the property_has_refuse_sacks above
@@ -573,7 +555,7 @@ sub waste_garden_sub_params {
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
 
-    my $container = $c->get_param('service_id') == $self->garden_bag_service_id ? 'Garden Waste Sacks' : 'Garden Waste Bin';
+    my $container = $c->stash->{garden_sacks} ? 'Garden Waste Sacks' : 'Garden Waste Bin';
     $container = $container_types{$container};
 
     $c->set_param('Request_Type', $type);

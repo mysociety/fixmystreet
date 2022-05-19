@@ -558,9 +558,8 @@ sub image_for_service {
 }
 
 use constant GARDEN_WASTE_SERVICE_ID => 545;
-sub garden_bin_service_id { GARDEN_WASTE_SERVICE_ID }
+sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
-sub garden_current_bin_subscription { shift->garden_current_subscription }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }

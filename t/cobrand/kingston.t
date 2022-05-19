@@ -48,7 +48,7 @@ FixMyStreet::override_config {
                     ServiceId => 409,
                     ServiceName => 'Garden waste collection',
                     ServiceTasks => { ServiceTask => {
-                        TaskTypeId => 1914,
+                        TaskTypeId => 2247,
                         Id => 405,
                         ScheduleDescription => 'every other Monday',
                         Data => { ExtensibleDatum => [ {
@@ -85,7 +85,7 @@ FixMyStreet::override_config {
                     ServiceId => 409,
                     ServiceName => 'Garden waste collection',
                     ServiceTasks => { ServiceTask => {
-                        TaskTypeId => 1914,
+                        TaskTypeId => 2247,
                         Id => 405,
                         ScheduleDescription => 'every other Monday',
                         Data => { ExtensibleDatum => [ {
@@ -705,7 +705,7 @@ FixMyStreet::override_config {
         is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
         is $renewal_from_cc_sub->get_extra_field_value('Request_Type'), 2, 'From CC Renewal has correct type';
         is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Containers'), 26, 'From CC Renewal has correct container type';
-        is $renewal_from_cc_sub->get_extra_field_value('service_id'), 1914, 'Renewal has correct service id';
+        is $renewal_from_cc_sub->get_extra_field_value('service_id'), 2247, 'Renewal has correct service id';
         is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
         my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({
@@ -721,7 +721,7 @@ FixMyStreet::override_config {
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('Request_Type'), 2, 'Subsequent Renewal has correct type';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Containers'), 26, 'Subsequent Renewal has correct container type';
-        is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 1914, 'Subsequent Renewal has correct service id';
+        is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 2247, 'Subsequent Renewal has correct service id';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
 
@@ -761,7 +761,7 @@ FixMyStreet::override_config {
         is $p->get_extra_field_value('Subscription_Details_Quantity'), 2, "renewal has correct number of bins";
         is $p->get_extra_field_value('Request_Type'), 2, "renewal has correct type";
         is $p->get_extra_field_value('Subscription_Details_Containers'), 26, 'renewal has correct container type';
-        is $p->get_extra_field_value('service_id'), 1914, 'renewal has correct service id';
+        is $p->get_extra_field_value('service_id'), 2247, 'renewal has correct service id';
         is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
         is $p->state, 'confirmed';
 
@@ -883,7 +883,7 @@ sub setup_dd_test_report {
         user => $user,
     });
 
-    $extras->{service_id} ||= 1914;
+    $extras->{service_id} ||= 2247;
     $extras->{Subscription_Details_Containers} ||= 26;
 
     my @extras = map { { name => $_, value => $extras->{$_} } } keys %$extras;

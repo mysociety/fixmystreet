@@ -983,7 +983,7 @@ sub garden : Chained('garden_setup') : Args(0) {
     if ($c->stash->{garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
     } else {
-        my $service = $c->cobrand->garden_bin_service_id;
+        my $service = $c->cobrand->garden_service_id;
         $c->stash->{garden_form_data} = {
             max_bins => $c->stash->{quantity_max}->{$service}
         };
@@ -1018,7 +1018,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->forward('get_original_sub', ['user']);
 
-        my $service_id = $c->cobrand->garden_bin_service_id;
+        my $service_id = $c->cobrand->garden_service_id;
         my $max_bins = $c->stash->{quantity_max}->{$service_id};
 
         my $payment_method = 'credit_card';
@@ -1085,7 +1085,7 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     if ($c->stash->{garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
     } else {
-        my $service = $c->cobrand->garden_bin_service_id;
+        my $service = $c->cobrand->garden_service_id;
         my $max_bins = $c->stash->{quantity_max}->{$service};
         $service = $c->stash->{services}{$service};
         $c->stash->{garden_form_data} = {
@@ -1183,10 +1183,8 @@ sub setup_garden_sub_params : Private {
     my $service_id;
     if (my $service = $c->cobrand->garden_current_subscription) {
         $service_id = $service->{service_id};
-    } elsif ($c->stash->{garden_sacks}) {
-        $service_id = $c->cobrand->garden_bag_service_id;
     } else {
-        $service_id = $c->cobrand->garden_bin_service_id;
+        $service_id = $c->cobrand->garden_service_id;
     }
     $c->set_param('service_id', $service_id);
     $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});

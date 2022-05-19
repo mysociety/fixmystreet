@@ -130,7 +130,6 @@ sub _garden_waste_service_units {
     my ($bin_count, $type) = @_;
 
     my $bin_type_id = $type eq 'sack' ? 28 : 26;
-    my $task_type_id = $type eq 'sack' ? 1915 : 1914;
 
     return [ {
         Id => 1002,
@@ -138,7 +137,7 @@ sub _garden_waste_service_units {
         ServiceName => 'Garden waste collection',
         ServiceTasks => { ServiceTask => {
             Id => 405,
-            TaskTypeId => $task_type_id,
+            TaskTypeId => 2247,
             Data => { ExtensibleDatum => [ {
                 DatatypeName => 'SLWP - Containers',
                 ChildData => { ExtensibleDatum => [ {
