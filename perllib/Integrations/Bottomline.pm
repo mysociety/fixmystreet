@@ -152,25 +152,16 @@ sub call {
     };
 }
 
-sub get_all_contacts {
-    my $self = shift;
-
-    my $resp = $self->call("ddm/contacts");
-
-    return $resp;
-}
-
 sub one_off_payment {
     my ($self, $args) = @_;
 
     my $sub = $args->{orig_sub};
 
-    # XXX error handling
     if ( $sub->get_extra_metadata('dd_contact_id') ) {
         $args->{dd_contact_id} = $sub->get_extra_metadata('dd_contact_id');
     } else {
         my $contact = $self->get_contact_from_email($sub->user->email);
-        if ( $contact ) {
+        if ( $contact and !$contact->{error} ) {
             $args->{dd_contact_id} = $contact->{id};
         }
     }
@@ -189,7 +180,7 @@ sub one_off_payment {
     );
     my $resp = $self->call($path, $data);
 
-    if ( $resp->{error} ) {
+    if ( ref $resp eq 'HASHREF' and $resp->{error} ) {
         return 0;
     } else {
         return 1;
@@ -212,8 +203,12 @@ sub amend_plan {
     );
 
     my $resp = $self->call($path, { "YearlyPaymentPlan" => $plan }, 'PUT');
-    return [];
-    return { error => "unknown error" };
+
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 sub get_plan_for_mandate {
@@ -253,24 +248,13 @@ sub get_plan_for_mandate {
 
     my $plans =  $self->parse_results("YearlyPaymentPlan", $resp);
 
-    return {} unless $plans;
+    if ( ref $plans eq 'HASH' and $plans->{error} ) {
+        return $plans;
+    } elsif ( @$plans ) {
+        return $plans->[0];
+    }
 
-    return $plans->[0];
-}
-
-sub get_payers {
-    my ($self, $args) = @_;
-
-    return [];
-    return { error => "unknown error" };
-}
-
-sub get_all_history {
-    my ($self, $args) = @_;
-
-    return [];
-
-    return { error => "unknown error" };
+    return undef;
 }
 
 sub build_query {
@@ -305,8 +289,13 @@ sub build_query {
 }
 
 
-sub parse_results{
+sub parse_results {
     my ($self, $type, $results) = @_;
+
+    # do not try and process an error, just return the error
+    if ( ref $results eq 'HASH' and $results->{error} ) {
+        return $results;
+    }
 
     my $payments = [];
 
@@ -362,8 +351,6 @@ sub get_recent_payments {
     my $resp = $self->call("query/execute#CollectionHistoryDates", $data);
 
     return $self->parse_results("Instruction", $resp);
-
-    return { error => "unknown error" };
 }
 
 sub get_payments_with_status {
@@ -402,8 +389,6 @@ sub get_payments_with_status {
 
     my $resp = $self->call("query/execute#CollectionHistoryStatus", $data);
     return $self->parse_results("Instruction", $resp);
-
-    return { error => "unknown error" };
 }
 
 sub get_cancelled_payers {
@@ -442,9 +427,6 @@ sub get_cancelled_payers {
 
     my $resp = $self->call("query/execute#getCancelledPayers", $data);
     return $self->parse_results("MandateDTO", $resp);
-    return $resp;
-
-    return { error => "unknown error" };
 }
 
 sub get_contact_from_email {
@@ -480,7 +462,10 @@ sub get_contact_from_email {
 
     my $resp = $self->call("query/execute#getContactFromEmail", $data);
     my $contacts = $self->parse_results("ContactDTO", $resp);
-    if ( @$contacts ) {
+
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
+        return $resp;
+    } elsif ( @$contacts ) {
         return $contacts->[0];
     }
 
