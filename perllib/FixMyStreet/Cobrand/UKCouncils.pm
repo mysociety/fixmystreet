@@ -337,6 +337,10 @@ sub munge_report_new_bodies {
     if ( $bodies{'Environment Agency'} ) {
         %$bodies = map { $_->id => $_ } grep { $_->name ne 'Environment Agency' } values %$bodies;
     }
+
+    if ( $bodies{'Thamesmead'} ) {
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+    }
 }
 
 sub munge_report_new_contacts {

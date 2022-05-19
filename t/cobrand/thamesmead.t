@@ -6,7 +6,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2493, 'Thamesmead'); # Using Greenwich as area
+my $body = $mech->create_body_ok(2494, 'Thamesmead'); # Using Bexley as area
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Overgrown shrub beds', email => 'shrubs@example.org');
 
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
@@ -180,6 +180,38 @@ FixMyStreet::override_config {
     }, "Search for Glendale Way");
     my @glendales = $mech->content =~ /Glendale Way,/g;
     ok (scalar @glendales == 2, "Finds only Glendale Ways with Bexley or Thamesmead in the address");
+};
+
+subtest "Thamesmead categories don't appear on council cobrands or FMS" => sub {
+
+    my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+    my $bexley_contact = $mech->create_contact_ok(body_id => $bexley->id, category => 'Bexley graffiti', email => 'bexley@example.org');
+    my $thamesmead_contact = $mech->create_contact_ok(body_id => $body->id, category => 'Thamesmead graffiti', email => 'thamesmead@example.org');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'bexley' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_contains('Bexley graffiti');
+        $mech->content_lacks('Thamesmead graffiti');
+    };
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'thamesmead' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_lacks('Bexley graffiti');
+        $mech->content_contains('Thamesmead graffiti');
+    };
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_contains('Bexley graffiti');
+        $mech->content_lacks('Thamesmead graffiti');
+    };
 };
 
 done_testing();
