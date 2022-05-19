@@ -412,8 +412,9 @@ sub clear_cached_lookups_property {
     delete $self->{c}->session->{$key};
 }
 
-sub image_for_service {
-    my ($self, $service_id) = @_;
+sub image_for_unit {
+    my ($self, $unit) = @_;
+    my $service_id = $unit->{service_id};
     my $base = '/cobrands/bromley/images/container-images';
     my $images = {
         531 => "$base/refuse-black-sack",

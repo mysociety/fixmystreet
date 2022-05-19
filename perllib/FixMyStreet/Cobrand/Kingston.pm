@@ -168,15 +168,19 @@ around look_up_property => sub {
     return $data;
 };
 
-sub image_for_service {
-    my ($self, $service_id) = @_;
+sub image_for_unit {
+    my ($self, $unit) = @_;
     my $base = '/cobrands/kingston/container-images';
+    if (my $container = $unit->{garden_container}) {
+        return "$base/garden-waste-bin" if $container == 26;
+        return "";
+    }
+    my $service_id = $unit->{service_id};
     my $images = {
         1906 => "$base/black-bin-blue-lid", # paper and card
         1903 => "$base/black-bin", # refuse
         1908 => "$base/brown-bin", # food
         1909 => "$base/green-bin", # dry mixed
-        2247 => "$base/garden-waste-bin",
     };
     return $images->{$service_id};
 }
@@ -348,6 +352,7 @@ sub bin_services_for_address {
 
             my $garden = 0;
             my $garden_bins;
+            my $garden_container;
             my $garden_cost = 0;
             my $garden_due = $self->waste_sub_due($schedules->{end_date});
             my $garden_overdue = $expired{$service_id};
@@ -355,10 +360,10 @@ sub bin_services_for_address {
                 $garden = 1;
                 my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
                 foreach (@$data) {
-                    next unless $_->{DatatypeName} eq 'SLWP - Containers'; # DatatypeId 3346
+                    next unless $_->{DatatypeName} eq $self->garden_echo_container_name; # DatatypeId 3346
                     my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                     foreach (@$moredata) {
-                        # $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type'; # should be 26 or 28
+                        $garden_container = $_->{Value} if $_->{DatatypeName} eq 'Container Type'; # should be 26 or 28
                         if ( $_->{DatatypeName} eq 'Quantity' ) {
                             $garden_bins = $_->{Value};
                             $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
@@ -377,6 +382,7 @@ sub bin_services_for_address {
                 service_id => $service_id,
                 service_name => $service_name,
                 garden_waste => $garden,
+                garden_container => $garden_container,
                 garden_bins => $garden_bins,
                 garden_cost => $garden_cost,
                 garden_due => $garden_due,
