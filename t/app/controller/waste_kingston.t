@@ -656,7 +656,7 @@ FixMyStreet::override_config {
             current_bins => 1,
             bins_wanted => 2,
             payment_method => 'credit_card',
-            name => 'Test McTest',
+            name => 'New McTest',
             email => 'test@example.net',
         } });
         $mech->content_contains('40.00');
@@ -664,6 +664,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
         is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'New McTest', 'Correct name';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -933,6 +934,8 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, 'a_user@example.net', 'Correct name';
         is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
 

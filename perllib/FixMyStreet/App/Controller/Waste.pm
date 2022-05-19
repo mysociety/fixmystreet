@@ -224,6 +224,7 @@ sub pay : Path('pay') : Args(0) {
         ref => 'GGW' . $uprn,
         request_id => $p->id,
         description => $p->title,
+        name => $p->name,
         email => $p->user->email,
         uprn => $uprn,
         address1 => shift @parts,

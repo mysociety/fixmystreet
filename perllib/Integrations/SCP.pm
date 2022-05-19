@@ -124,6 +124,7 @@ sub pay {
         },
         'scpbase:billing' => {
             'scpbase:cardHolderDetails' => ixhash(
+                'scpbase:cardHolderName' => $args->{name},
                 'scpbase:address' => ixhash(
                     'scpbase:address1' => $args->{address1},
                     'scpbase:address2' => $args->{address2},
