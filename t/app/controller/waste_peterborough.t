@@ -127,6 +127,8 @@ FixMyStreet::override_config {
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('There was a problem with your bin collection, please call');
+        $mech->content_contains('quoting your collection address in the subject line');
+        $mech->content_contains('mailto:ask&#64;peterborough.gov.uk?subject=1 Pope Way, Peterborough, PE1 3NA - missed bin');
 
         $b->mock('Premises_Events_Get', sub { [] }); # reset
 

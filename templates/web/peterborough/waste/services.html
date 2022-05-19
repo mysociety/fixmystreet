@@ -27,7 +27,7 @@
     [%~ IF c.user.from_body OR c.user.is_superuser %]
         ([% unit.report_locked_out.join(', ') %])
     [%~ END %], please call 01733 74 74 74 or email us at
-        <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>.<br />
+        <a href="mailto:ask&#64;peterborough.gov.uk?subject=[% property.address %] - missed bin">ask&#64;peterborough.gov.uk</a>, quoting your collection address in the subject line.<br />
         <small>Please note: we will not return to collect bins that have been recorded
         by the crew as overweight, contaminated or bin not presented. For more
         information please visit
