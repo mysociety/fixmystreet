@@ -923,7 +923,9 @@ sub process_user : Private {
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
 
-        if ($c->stash->{contributing_as_another_user}) {
+        # WasteWorks can set a flag to treat the user as if not logged in if username differs
+        my $same_user = $user->username eq $params{username};
+        if ($c->stash->{contributing_as_another_user} || ($c->stash->{ignore_logged_in_user} && !$same_user)) {
             if ($params{username} || $params{phone}) {
                 # Act as if not logged in (and it will be auto-confirmed later on)
                 $report->user(undef);
