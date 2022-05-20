@@ -165,6 +165,12 @@ a:focus,
     border-color: #fff;
 }
 
+.screen-reader-only.skip-the-map {
+    display: block !important;
+    position: static !important;
+    top: initial !important;
+}
+
 #front-main {
     text-align: left;
 
