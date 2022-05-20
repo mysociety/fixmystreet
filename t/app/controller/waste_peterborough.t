@@ -24,6 +24,7 @@ my $params = {
 my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
+$staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -256,7 +257,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
         $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'cracked' }});
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
         $mech->content_like(qr/If your bin is not received two working days before scheduled collection\s+please call 01733 747474 to discuss alternative arrangements./);
@@ -267,10 +268,9 @@ FixMyStreet::override_config {
         is $report->title, 'Request new All bins';
     };
     subtest 'Report a cracked bin raises a bin delivery request' => sub {
-        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
         $mech->submit_form_ok({ with_fields => { 'service-420' => 1 } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('The bin is cracked', "Cracked category found");
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
@@ -282,7 +282,6 @@ FixMyStreet::override_config {
         is $report->title, 'Request new 240L Green';
     };
     subtest 'Staff-only request reason shown correctly' => sub {
-        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
         $mech->content_lacks("(Other - PD STAFF)");
         $mech->log_in_ok($staff->email);
@@ -320,7 +319,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('About you');
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Request food bags');
         $mech->content_contains('Submit food bags request');
         $mech->content_lacks('Request new bins');
