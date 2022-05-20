@@ -432,6 +432,7 @@ sub image_for_unit {
 }
 
 use constant GARDEN_WASTE_SERVICE_ID => 545;
+sub garden_service_name { 'Green Garden Waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }

@@ -34,21 +34,21 @@ sub details_update_fields {
 }
 
 has_page intro => (
-    title => 'Subscribe to the Green Garden Waste collection service',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_intro.html',
     fields => ['continue'],
     next => 'existing',
 );
 
 has_page existing => (
-    title => 'Subscribe to Green Garden Waste collections',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_existing.html',
     fields => ['existing', 'existing_number', 'continue'],
     next => 'details',
 );
 
 has_page details => (
-    title => 'Subscribe to Green Garden Waste collections',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_details.html',
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'email', 'phone', 'password', 'continue_review'],
     field_ignore_list => sub {
