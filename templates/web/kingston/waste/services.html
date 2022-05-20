@@ -25,11 +25,11 @@
     <div class="govuk-warning-text__content">
         <span class="govuk-warning-text__assistive">Warning</span>
         <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is now overdue.</h3>    
-        Collections have been paused. They'll start again when you renew.
+        We’ve paushed your garden waste collections. They’ll start again when you renew.
         [% IF ( unit.garden_due || unit.garden_overdue ) && current_payment_method != 'direct_debit' %]
         <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
           <input type="hidden" name="token" value="[% csrf_token %]">
-          <input type="submit" value="Renew subscription today" class="govuk-button">
+          <input type="submit" value="Renew your subscription" class="govuk-button">
         </form>
         [% END %]
     </div>
