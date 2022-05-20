@@ -1108,7 +1108,13 @@ sub waste_munge_request_form_fields {
         my $reasons = [
             { label => 'Cracked bin', value => 'cracked', data_hide => '#request_reason-item-hint' },
             { label => 'Lost/stolen bin', value => 'lost_stolen', data_hide => '#request_reason-item-hint' },
-            { label => 'New build', value => 'new_build', data_hide => '#request_reason-item-hint' },
+            {
+                label => 'New build',
+                value => 'new_build',
+                hint => 'To reduce the number of bins being stolen or damaged, bins must only be ordered within 2 weeks prior to your move in date.',
+                hint_class => 'hidden-js',
+                data_show => '#request_reason-item-hint',
+            },
         ];
         if ( $self->{c}->user && $self->{c}->user->from_body
              && $self->{c}->user->from_body->name eq $self->council_name ) {
