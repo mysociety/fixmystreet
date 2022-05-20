@@ -18,14 +18,14 @@ sub details_update_fields {
 }
 
 has_page intro => (
-    title => 'Subscribe to the Green Garden Waste collection service',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/sacks/subscribe_intro.html',
     fields => ['continue'],
     next => 'details',
 );
 
 has_page details => (
-    title => 'Subscribe to Green Garden Waste collections',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/sacks/subscribe_details.html',
     fields => ['payment_method', 'name', 'email', 'phone', 'continue_review'],
     field_ignore_list => sub {
