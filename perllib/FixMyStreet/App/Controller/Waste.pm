@@ -1323,13 +1323,17 @@ sub add_report : Private {
     };
 
     # Don’t let staff inadvertently change their name when making reports
-    my $original_name = $c->user->name if $c->user_exists && $c->user->from_body && $c->user->email eq $data->{email};
+    my $original_name = $c->user->name if $c->user_exists && $c->user->from_body && $c->user->email eq ($data->{email} || '');
 
-    # XXX Is this best way to do this?
-    if ($c->user_exists && $c->user->from_body && !$data->{email} && !$data->{phone}) {
-        $c->set_param('form_as', 'anonymous_user');
-    } elsif ($c->user_exists && $c->user->from_body && $c->user->email ne $data->{email}) {
-        $c->set_param('form_as', 'another_user');
+    # We want to take what has been entered in the form, even if someone is logged in
+    $c->stash->{ignore_logged_in_user} = 1;
+
+    if ($c->user_exists) {
+        if ($c->user->from_body && !$data->{email} && !$data->{phone}) {
+            $c->set_param('form_as', 'anonymous_user');
+        } elsif ($c->user->from_body && $c->user->email ne $data->{email}) {
+            $c->set_param('form_as', 'another_user');
+        }
         $c->set_param('username', $data->{email} || $data->{phone});
     } else {
         $c->set_param('username_register', $data->{email} || $data->{phone});
