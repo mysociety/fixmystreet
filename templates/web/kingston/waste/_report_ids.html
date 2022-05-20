@@ -1,5 +1,7 @@
 [% IF report.get_extra_metadata('grouped_ids') %]
-    Your reference numbers are: <strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>.
+    Your reference numbers
+    <br><strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>
 [% ELSE %]
-    Your reference number is <strong>RBK-GGW-[% report.id %]</strong>.
+    Your reference number
+    <br><strong>RBK-GGW-[% report.id %]</strong>
 [% END %]
