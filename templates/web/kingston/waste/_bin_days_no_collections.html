@@ -1,0 +1,21 @@
+[% IF waste_features.garden_disabled %]
+
+<h3 class="govuk-heading-m waste-service-name">Garden waste collection service</h3>
+<p>
+We do not provide a garden waste service to commercial properties and some other types of address.
+If you believe that your address is eligible for waste service please call our customer services team on 020 8547 5002 (Monday to Friday from 9am to 5pm).
+</p>
+
+[% ELSE %]
+
+
+[% SET show_garden_subscribe = NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
+[% IF show_garden_subscribe %]
+<h3 class="govuk-heading-m waste-service-name">Garden waste collection service</h3>
+<ul>
+    <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste</a></li>
+</ul>
+[% END %]
+
+[% END %]
+

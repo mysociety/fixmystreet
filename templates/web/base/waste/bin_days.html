@@ -95,7 +95,9 @@
 [% END %]
 [% END %]
 [% IF NOT service_data.size %]
+    [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
     <p>This property has no collections.</p>
+    [% END %]
 [% END %]
 
         [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
