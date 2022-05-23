@@ -692,7 +692,7 @@ sub waste_cc_payment_admin_fee_line_item_ref {
 
 sub _waste_cc_line_item_ref {
     my ($p, $str) = @_;
-    my $id = $p->id;
+    my $id = 'RBK-GGW-' . $p->id;
     my $len = 50 - length($id) - length($str) - 2;
     my $name = substr($p->name, 0, $len);
     return "$id-$name-$str";
