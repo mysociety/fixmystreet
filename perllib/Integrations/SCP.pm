@@ -102,6 +102,9 @@ sub pay {
                 'scpbase:fundCode' => $self->config->{scp_fund_code},
                 'scpbase:additionalReference' => $_->{lineId},
                 'scpbase:narrative' => $args->{uprn},
+                'scpbase:accountName' => {
+                    'scpbase:surname' => $args->{name},
+                },
             ),
             'scpbase:lineId' => $_->{lineId},
         );
