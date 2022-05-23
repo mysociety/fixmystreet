@@ -262,7 +262,11 @@ sub bin_services_for_address {
     $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
 
     my $result = $self->{api_serviceunits};
-    return [] unless @$result;
+    unless (@$result) {
+        # No domestic refuse collection, no garden collection possible
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+        return [];
+    }
 
     my $events = $self->_parse_events($self->{api_events});
     $self->{c}->stash->{open_service_requests} = $events->{enquiry};
@@ -273,7 +277,13 @@ sub bin_services_for_address {
 
     # Refuse currently in separate Echo
     # This can be done within the loop below once this is not the case
-    $self->{c}->stash->{garden_sacks} = $self->property_has_refuse_sacks($property->{id});
+    my $refuse = $self->property_has_domestic_refuse($property->{id});
+    if ($refuse) {
+        $self->{c}->stash->{garden_sacks} = $refuse eq 'sack';
+    } else {
+        # No domestic refuse collection, no garden collection possible
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+    }
 
     my @to_fetch;
     my %schedules;
@@ -288,8 +298,9 @@ sub bin_services_for_address {
             next unless $service_id == 1914 || $service_id == 1915;
             # Only Garden for now XXX
 
-            # When this covers more than garden, this code can replace the property_has_refuse_sacks above
-            #if ($service_id == 1904) { # Collect Refuse Bag
+            # When this covers more than garden, this code can replace the property_has_domestic_refuse above
+            # XXX Might also need to check for 2238 (domestic refuse) to see if garden allowed at all
+            #if ($service_id == 2242) { # Collect Domestic Refuse Bag
             #    $self->{c}->stash->{garden_sacks} = 1;
             #}
 
@@ -442,7 +453,7 @@ sub bin_services_for_address {
 }
 
 # Refuse currently in separate Echo - when not, could do this in main loop
-sub property_has_refuse_sacks {
+sub property_has_domestic_refuse {
     my ($self, $id) = @_;
     my $cfg = $self->feature('echo_rbk');
     my $echo = Integrations::Echo->new(%$cfg);
@@ -456,10 +467,11 @@ sub property_has_refuse_sacks {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach (@$servicetasks) {
             my $id = $_->{TaskTypeId};
-            return 1 if $id == 1904; # Collect Refuse Bag
+            return 'sack' if $id == 1904; # Collect Refuse Bag
+            return 'bin' if $id == 1903; # Collect Refuse Bin
         }
     }
-    return 0;
+    return '';
 }
 
 #sub _closed_event {

@@ -59,7 +59,7 @@ package main;
 sub garden_waste_no_bins {
     return [ {
         Id => 1001,
-        ServiceId => 408,
+        ServiceId => 355,
         ServiceName => 'Food waste collection',
         ServiceTasks => { ServiceTask => {
             Id => 400,
@@ -83,11 +83,15 @@ sub garden_waste_no_bins {
 }
 
 sub garden_waste_one_bin {
-    return _garden_waste_service_units(1);
+    my $refuse_bin = garden_waste_no_bins();
+    my $garden_bin = _garden_waste_service_units(1);
+    return [ $refuse_bin->[0], $garden_bin->[0] ];
 }
 
 sub garden_waste_two_bins {
-    return _garden_waste_service_units(2);
+    my $refuse_bin = garden_waste_no_bins();
+    my $garden_bins = _garden_waste_service_units(2);
+    return [ $refuse_bin->[0], $garden_bins->[0] ];
 }
 
 sub _garden_waste_service_units {
