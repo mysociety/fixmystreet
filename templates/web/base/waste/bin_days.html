@@ -12,7 +12,13 @@
 [% DEFAULT any_report_allowed = 0 ~%]
 [% SET any_request_allowed = 0 ~%]
 [% IF NOT waste_features.garden_disabled AND pending_subscription %]
-    <p>You have a pending [% pending_subscription.title %]</p>
+    <p>You have a pending
+        [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
+            garden subscription renewal.
+        [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
+            garden subscription.
+        [%~ END %]
+    </p>
 [% END %]
 [% FOR unit IN service_data %]
 [% UNLESS unit.request_only %]

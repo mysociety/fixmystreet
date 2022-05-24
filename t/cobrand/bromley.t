@@ -581,7 +581,7 @@ FixMyStreet::override_config {
             },
         ] } );
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_contains('You have a pending garden subscription');
         $mech->content_lacks('Subscribe to Green Garden Waste');
     };
 
