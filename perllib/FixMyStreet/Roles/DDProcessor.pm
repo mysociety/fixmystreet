@@ -66,15 +66,7 @@ sub waste_reconcile_direct_debits {
 
         my $payer = $payment->{$self->referenceField};
 
-        (my $uprn = $payer) =~ s/^GGW//;
-
-        my $len = length($uprn);
-        my $rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-        },
-        {
-                order_by => { -desc => 'created' }
-        })->to_body( $self->body );
+        my ($uprn, $rs) = $self->_process_reference($payer);
 
         my $handled;
 
@@ -88,7 +80,7 @@ sub waste_reconcile_direct_debits {
         # If we're a renew payment then find the initial subscription payment, also
         # checking if we've already processed this payment. If we've not processed it
         # create a renewal record using the original subscription as a basis.
-        if ( $type && $type eq $self->waste_subscription_types->{Renew} ) {
+        if ( $rs && $type && $type eq $self->waste_subscription_types->{Renew} ) {
             next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
             $self->log("is a renewal");
             $rs = $rs->search({ category => 'Garden Subscription' });
@@ -139,7 +131,7 @@ sub waste_reconcile_direct_debits {
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
         # a record in the database as they are the result of user action
-        } else {
+        } elsif ($rs) {
             next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
             $self->log("is a new/ad hoc");
             # we fetch the confirmed ones as well as we explicitly want to check for
@@ -148,6 +140,7 @@ sub waste_reconcile_direct_debits {
             while ( my $cur = $rs->next ) {
                 $self->log("looking at potential match " . $cur->id);
                 next unless $self->waste_is_dd_payment($cur);
+                $self->log("potentual match is a dd payment");
                 if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
                     $self->log("found matching report " . $cur->id . " with state " . $cur->state);
                     if ( $cur->state eq 'unconfirmed' && !$handled) {
@@ -188,6 +181,7 @@ sub waste_reconcile_direct_debits {
         }
 
         unless ( $handled ) {
+            $self->log("no matching record found for $category payment with id $payer\n");
             warn "no matching record found for $category payment with id $payer\n";
         }
 
@@ -222,47 +216,43 @@ sub waste_reconcile_direct_debits {
         next unless $date;
 
         my $payer = $payment->{$self->cancelReferenceField};
-        (my $uprn = $payer) =~ s/^GGW//;
-        my $len = length($uprn);
-        my $rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-        }, {
-            order_by => { -desc => 'created' }
-        })->to_body( $self->body );
+        my ($uprn, $rs) = $self->_process_reference($payer);
 
-        $rs = $rs->search({ category => 'Cancel Garden Subscription' });
-        my $r;
-        while ( my $cur = $rs->next ) {
-            $self->log("looking at report " . $cur->id);
-            if ( $cur->state eq 'unconfirmed' ) {
-                $self->log("found matching report " . $cur->id);
-                $r = $cur;
-            # already processed
-            } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
-                $self->log("skipping report " . $cur->id);
-                next CANCELLED;
+        if ( $rs ) {
+            $rs = $rs->search({ category => 'Cancel Garden Subscription' });
+            my $r;
+            while ( my $cur = $rs->next ) {
+                $self->log("looking at report " . $cur->id);
+                if ( $cur->state eq 'unconfirmed' ) {
+                    $self->log("found matching report " . $cur->id);
+                    $r = $cur;
+                # already processed
+                } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+                    $self->log("skipping report " . $cur->id);
+                    next CANCELLED;
+                }
             }
-        }
 
-        if ( $r ) {
-            $self->log("processing matched report " . $r->id);
-            my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
-            # if there's not a service then it's fine as it's already been cancelled
-            if ( $service ) {
-                $r->set_extra_metadata('dd_date', $date);
-                $self->log("confirming report");
-                $r->confirm;
-                $r->update;
-            # there's no service but we don't want to be processing the report all the time.
+            if ( $r ) {
+                $self->log("processing matched report " . $r->id);
+                my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
+                # if there's not a service then it's fine as it's already been cancelled
+                if ( $service ) {
+                    $r->set_extra_metadata('dd_date', $date);
+                    $self->log("confirming report");
+                    $r->confirm;
+                    $r->update;
+                # there's no service but we don't want to be processing the report all the time.
+                } else {
+                    $self->log("hiding report");
+                    $r->state('hidden');
+                    $r->update;
+                }
             } else {
-                $self->log("hiding report");
-                $r->state('hidden');
-                $r->update;
+                # We don't do anything with DD cancellations that don't have
+                # associated Cancel reports, so no need to warn on them
+                # warn "no matching record found for Cancel payment with id $payer\n";
             }
-        } else {
-            # We don't do anything with DD cancellations that don't have
-            # associated Cancel reports, so no need to warn on them
-            # warn "no matching record found for Cancel payment with id $payer\n";
         }
         $self->log("finished looking at payment " . $payment->{$self->cancelReferenceField});
     }
@@ -274,6 +264,8 @@ sub _report_matches_payment {
     my ($self, $r, $p) = @_;
 
     my $match = 0;
+    $self->log( "one off reference field is " . $p->{$self->oneOffReferenceField} ) if $p->{ $self->oneOffReferenceField };
+    $self->log( "potential match type is " . $r->get_extra_field_value($self->garden_subscription_type_field) );
     if ( $p->{$self->oneOffReferenceField} && $r->id eq $p->{$self->oneOffReferenceField} ) {
         $match = 'Ad-Hoc';
     } elsif ( !$p->{$self->oneOffReferenceField}
@@ -314,6 +306,22 @@ sub _duplicate_waste_report {
     $new->set_extra_fields(@extra);
 
     return $new;
+}
+
+sub _process_reference {
+    my ($self, $payer) = @_;
+
+    (my $uprn = $payer) =~ s/^GGW//;
+
+    my $len = length($uprn);
+    my $rs = FixMyStreet::DB->resultset('Problem')->search({
+        extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+    },
+    {
+            order_by => { -desc => 'created' }
+    })->to_body( $self->body );
+
+    return ($uprn, $rs);
 }
 
 sub waste_get_current_garden_sub {
