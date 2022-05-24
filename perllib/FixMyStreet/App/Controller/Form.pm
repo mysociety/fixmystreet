@@ -85,7 +85,7 @@ sub form : Private {
 
     # If we have sent a confirmation email, that function will have
     # set a template that we need to show
-    $c->stash->{template} = $form->template || $self->index_template
+    $c->stash->{template} = $c->stash->{override_template} || $form->template || $self->index_template
         unless $c->stash->{sent_confirmation_message};
     $c->stash->{form} = $form;
     $c->stash->{label_for_field} = \&label_for_field;

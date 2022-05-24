@@ -325,7 +325,10 @@ sub confirm_subscription : Private {
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
     $p->update;
     $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
-    $c->detach;
+    # Set an override template, so that the form processing can finish (to e.g.
+    # clear the session unique ID) and have the form code load this template
+    # rather than the default 'done' form one
+    $c->stash->{override_template} = $c->stash->{template};
 }
 
 sub cancel_subscription : Private {
