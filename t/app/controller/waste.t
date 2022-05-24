@@ -1308,6 +1308,10 @@ FixMyStreet::override_config {
         $new_report->delete;
 
         is $sent_params, undef, "no one off payment if reducing bin count";
+
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('You have already submitted this form.');
     };
 
     $p->category('Garden Subscription');
