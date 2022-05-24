@@ -670,8 +670,8 @@ subtest "category groups" => sub {
         my $trees_input = $div . '<input[^>]* value=\'Trees\'>\s*';
         my $trees_input_checked = $div . '<input[^>]* value=\'Trees\' checked>\s*';
         $mech->content_like(qr{$pavements_input$pavements_label$roads$trees_input$trees_label</fieldset>});
-        my $streetlighting = $div . '<input[^>]*value=\'Street lighting\'>\s*<label[^>]* for="subcategory_\d+">Street lighting</label>\s*' . $div_end;
-        my $potholes_label = '<label[^>]* for="subcategory_\d+">Potholes</label>\s*' . $div_end;
+        my $streetlighting = $div . '<input[^>]*value=\'Street lighting\'>\s*<label[^>]* for="subcategory_(Roads|Pavements)_\d+">Street lighting</label>\s*' . $div_end;
+        my $potholes_label = '<label[^>]* for="subcategory_(Roads|Pavements)_\d+">Potholes</label>\s*' . $div_end;
         my $potholes_input = $div . '<input[^>]* value=\'Potholes\'>\s*';
         my $potholes_input_checked = $div . '<input[^>]* value=\'Potholes\' checked>\s*';
         my $options = "$potholes_input$potholes_label$streetlighting</fieldset>";
