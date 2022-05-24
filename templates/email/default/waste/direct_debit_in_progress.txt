@@ -1,4 +1,4 @@
-Subject: Your report has been logged: [% report.title %]
+Subject: Your request has been logged: [% report.title %]
 
 Hello [% report.name %],
 
