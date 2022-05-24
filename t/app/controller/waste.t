@@ -1195,7 +1195,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_contains('You have a pending garden subscription');
         $mech->content_lacks('Subscribe to Green Garden Waste');
 
         $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
@@ -1543,7 +1543,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_contains('You have a pending garden subscription');
         $mech->content_lacks('Subscribe to Green Garden Waste');
 
         $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
