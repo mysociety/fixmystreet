@@ -1142,6 +1142,9 @@ sub process_garden_cancellation : Private {
         $c->stash->{report}->update;
     } else {
         if ( $payment_method eq 'direct_debit' ) {
+            my $report = $c->stash->{report};
+            $report->set_extra_metadata('payerReference', $c->stash->{orig_sub}->get_extra_metadata('payerReference'));
+            $report->update;
             $c->forward('direct_debit_cancel_sub');
         } else {
             $c->stash->{report}->confirm;
@@ -1259,6 +1262,9 @@ sub process_garden_modification : Private {
         if ( $pro_rata && $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } elsif ( $payment_method eq 'direct_debit' ) {
+            my $report = $c->stash->{report};
+            $report->set_extra_metadata('payerReference', $c->stash->{orig_sub}->get_extra_metadata('payerReference'));
+            $report->update;
             $c->forward('direct_debit_modify');
         } elsif ( $pro_rata ) {
             $c->forward('pay', [ 'garden_modify' ]);

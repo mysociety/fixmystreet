@@ -118,6 +118,8 @@ FixMyStreet::override_config {
             }
         });
 
+        my $id_replacements = {};
+
         my $ad_hoc_orig = setup_dd_test_report({
             'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
@@ -128,6 +130,8 @@ FixMyStreet::override_config {
         $ad_hoc_orig->set_extra_metadata('dd_date', '01/01/2021');
         $ad_hoc_orig->update;
 
+        $id_replacements->{AD_HOC_ORIG} = $ad_hoc_orig->id;
+
         my $ad_hoc = setup_dd_test_report({
             'Request_Type' => 3,
             'Subscription_Details_Quantity' => 1,
@@ -135,8 +139,11 @@ FixMyStreet::override_config {
             'property_id' => '54325',
             'uprn' => '654325',
         });
+        $ad_hoc->set_extra_metadata('payerReference', get_reference("RBK-AD_HOC_ORIG-654325", $id_replacements));
         $ad_hoc->state('unconfirmed');
         $ad_hoc->update;
+
+        $id_replacements->{AD_HOC} = $ad_hoc->id;
 
         my $ad_hoc_processed = setup_dd_test_report({
             'Request_Type' => 3,
@@ -148,6 +155,8 @@ FixMyStreet::override_config {
         $ad_hoc_processed->set_extra_metadata('dd_date' => '16/03/2021');
         $ad_hoc_processed->update;
 
+        $id_replacements->{AD_HOC_PROCESSED} = $ad_hoc_processed->id;
+
         my $ad_hoc_skipped = setup_dd_test_report({
             'Request_Type' => 3,
             'Subscription_Details_Quantity' => 1,
@@ -157,6 +166,7 @@ FixMyStreet::override_config {
         });
         $ad_hoc_skipped->state('unconfirmed');
         $ad_hoc_skipped->update;
+        $id_replacements->{AD_HOC_SKIPPED} = $ad_hoc_skipped->id;
 
         my $hidden = setup_dd_test_report({
             'Request_Type' => 1,
@@ -167,6 +177,7 @@ FixMyStreet::override_config {
         });
         $hidden->state('hidden');
         $hidden->update;
+        $id_replacements->{HIDDEN} = $hidden->id;
 
         my $cc_to_ignore = setup_dd_test_report({
             'Request_Type' => 1,
@@ -177,6 +188,7 @@ FixMyStreet::override_config {
         });
         $cc_to_ignore->state('unconfirmed');
         $cc_to_ignore->update;
+        $id_replacements->{CC_TO_IGNORE} = $cc_to_ignore->id;
 
         my $integ = Test::MockModule->new('Integrations::Bottomline');
         $integ->mock('config', sub { return { dd_sun => 'sun', dd_client_id => 'client' }; } );
@@ -194,7 +206,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654321",
+                                reference => get_reference("RBK-NEW_SUB-654321", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "2",
@@ -216,7 +228,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW554321",
+                                reference => get_reference("RBK-3000-554321", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "2",
@@ -238,7 +250,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW554399",
+                                reference => get_reference("RBK-HIDDEN-554399", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "2",
@@ -261,7 +273,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654326",
+                                reference => get_reference("RBK-AD_HOC_PROCESSED-654326", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -283,7 +295,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654322",
+                                reference => get_reference("RBK-SUB_FOR_RENEWAL-654322", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -305,7 +317,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654324",
+                                reference => get_reference("RBK-PROCESSED_RENEWAL-654324", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -327,7 +339,7 @@ FixMyStreet::override_config {
                                 paymentDate => "19/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654329",
+                                reference => get_reference("RBK654329", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -349,7 +361,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW754322",
+                                reference => get_reference("RBK-RENEWAL_NOTHING_IN_ECHO-754322", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -371,7 +383,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW854324",
+                                reference => get_reference("RBK-4000-854324", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -393,7 +405,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW3654321",
+                                reference => get_reference("RBK-SUB_FOR_SUBSEQUENT_RENEWAL_FROM_CC_SUB-3654321", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -415,7 +427,7 @@ FixMyStreet::override_config {
                                 paymentDate => "15/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW1654321",
+                                reference => get_reference("RBK-RENEWAL_FROM_CC_SUB-1654321", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "2",
@@ -438,7 +450,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654325",
+                                reference => get_reference("RBK-AD_HOC_ORIG-654325", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "1",
@@ -460,7 +472,7 @@ FixMyStreet::override_config {
                                 paymentDate => "16/03/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW954325",
+                                reference => get_reference("RBK-AD_HOC_SKIPPED-954325", $id_replacements),
                                 sortCode => "12345",
                                 status => "SUCCESS",
                                 transactionCode => "2",
@@ -488,7 +500,7 @@ FixMyStreet::override_config {
                                 lastUpdated => "26/02/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW654323",
+                                reference => get_reference("RBK-SUB_FOR_CANCEL-654323", $id_replacements),
                                 sortCode => "12345",
                                 status => "CANCELLED",
                             } } ] } ] },
@@ -500,7 +512,7 @@ FixMyStreet::override_config {
                                 lastUpdated => "26/02/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW954326",
+                                reference => get_reference("RBK954326", $id_replacements),
                                 sortCode => "12345",
                                 status => "CANCELLED",
                             } } ] } ] },
@@ -512,7 +524,7 @@ FixMyStreet::override_config {
                                 lastUpdated => "21/02/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW854325",
+                                reference => get_reference("RBK-SUB_FOR_UNPROCESSED_CANCEL-854325", $id_replacements),
                                 sortCode => "12345",
                                 status => "CANCELLED",
                             } } ] } ] },
@@ -524,7 +536,7 @@ FixMyStreet::override_config {
                                 lastUpdated => "26/02/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW954324",
+                                reference => get_reference("RBK-SUB_CANCEL_NOTHING_IN_ECHO-954324", $id_replacements),
                                 sortCode => "12345",
                                 status => "CANCELLED",
                             } } ] } ] },
@@ -536,7 +548,7 @@ FixMyStreet::override_config {
                                 lastUpdated => "26/02/2021",
                                 accountName => "A Payer",
                                 accountNumber => 123,
-                                reference => "GGW6654326",
+                                reference => get_reference("RBK6654326", $id_replacements),
                                 sortCode => "12345",
                                 status => "CANCELLED",
                             } } ] } ] },
@@ -573,6 +585,8 @@ FixMyStreet::override_config {
             'uprn' => '654322',
         });
 
+        $id_replacements->{SUB_FOR_RENEWAL} = $sub_for_renewal->id;
+
         my $sub_for_cancel = setup_dd_test_report({
             'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
@@ -580,6 +594,8 @@ FixMyStreet::override_config {
             'property_id' => '54322',
             'uprn' => '654323',
         });
+
+        $id_replacements->{SUB_FOR_CANCEL} = $sub_for_cancel->id;
 
         # e.g if they tried to create a DD but the process failed
         my $failed_new_sub = setup_dd_test_report({
@@ -593,6 +609,8 @@ FixMyStreet::override_config {
         $failed_new_sub->created(\" created - interval '2' second");
         $failed_new_sub->update;
 
+        $id_replacements->{FAILED_NEW_SUB} = $failed_new_sub->id;
+
         my $new_sub = setup_dd_test_report({
             'Request_Type' => 1,
             'Subscription_Details_Quantity' => 1,
@@ -603,6 +621,8 @@ FixMyStreet::override_config {
         $new_sub->state('unconfirmed');
         $new_sub->update;
 
+        $id_replacements->{NEW_SUB} = $new_sub->id;
+
         my $renewal_from_cc_sub = setup_dd_test_report({
             'Request_Type' => 2,
             'Subscription_Details_Quantity' => 1,
@@ -611,8 +631,10 @@ FixMyStreet::override_config {
             'uprn' => '1654321',
         });
         $renewal_from_cc_sub->state('unconfirmed');
-        $renewal_from_cc_sub->set_extra_metadata('payerReference' => 'GGW1654321');
+        $renewal_from_cc_sub->set_extra_metadata('payerReference' => 'RBK1654321');
         $renewal_from_cc_sub->update;
+
+        $id_replacements->{RENEWAL_FROM_CC_SUB} = $renewal_from_cc_sub->id;
 
         my $sub_for_subsequent_renewal_from_cc_sub = setup_dd_test_report({
             'Request_Type' => 2,
@@ -621,8 +643,10 @@ FixMyStreet::override_config {
             'property_id' => '154323',
             'uprn' => '3654321',
         });
-        $sub_for_subsequent_renewal_from_cc_sub->set_extra_metadata('payerReference' => 'GGW3654321');
+        $sub_for_subsequent_renewal_from_cc_sub->set_extra_metadata('payerReference' => 'RBK3654321');
         $sub_for_subsequent_renewal_from_cc_sub->update;
+
+        $id_replacements->{SUB_FOR_SUBSEQUENT_RENEWAL_FROM_CC_SUB} = $sub_for_subsequent_renewal_from_cc_sub->id;
 
         my $sub_for_unprocessed_cancel = setup_dd_test_report({
             'Request_Type' => 1,
@@ -631,6 +655,7 @@ FixMyStreet::override_config {
             'property_id' => '84324',
             'uprn' => '854325',
         });
+        $id_replacements->{SUB_FOR_UNPROCESSED_CANCEL} = $sub_for_unprocessed_cancel->id;
         my $unprocessed_cancel = setup_dd_test_report({
             'payment_method' => 'direct_debit',
             'property_id' => '84324',
@@ -638,6 +663,7 @@ FixMyStreet::override_config {
         });
         $unprocessed_cancel->state('unconfirmed');
         $unprocessed_cancel->category('Cancel Garden Subscription');
+        $unprocessed_cancel->set_extra_metadata('payerReference' => get_reference("RBK-SUB_FOR_UNPROCESSED_CANCEL-854325", $id_replacements));
         $unprocessed_cancel->update;
 
         my $sub_for_processed_cancel = setup_dd_test_report({
@@ -656,6 +682,7 @@ FixMyStreet::override_config {
         });
         $processed_renewal->set_extra_metadata('dd_date' => '16/03/2021');
         $processed_renewal->update;
+        $id_replacements->{PROCESSED_RENEWAL} = $processed_renewal->id;
 
         my $renewal_nothing_in_echo = setup_dd_test_report({
             'Request_Type' => 1,
@@ -664,6 +691,7 @@ FixMyStreet::override_config {
             'property_id' => '74321',
             'uprn' => '754322',
         });
+        $id_replacements->{RENEWAL_NOTHING_IN_ECHO} = $renewal_nothing_in_echo->id;
 
         my $sub_for_cancel_nothing_in_echo = setup_dd_test_report({
             'Request_Type' => 1,
@@ -672,6 +700,7 @@ FixMyStreet::override_config {
             'property_id' => '94324',
             'uprn' => '954324',
         });
+        $id_replacements->{SUB_CANCEL_NOTHING_IN_ECHO} = $sub_for_cancel_nothing_in_echo->id;
 
         my $cancel_nothing_in_echo = setup_dd_test_report({
             'payment_method' => 'direct_debit',
@@ -680,29 +709,31 @@ FixMyStreet::override_config {
         });
         $cancel_nothing_in_echo->state('unconfirmed');
         $cancel_nothing_in_echo->category('Cancel Garden Subscription');
+        $cancel_nothing_in_echo->set_extra_metadata('payerReference',  get_reference("RBK-SUB_CANCEL_NOTHING_IN_ECHO-954324", $id_replacements));
         $cancel_nothing_in_echo->update;
+        $id_replacements->{CANCEL_NOTHING_IN_ECHO} = $cancel_nothing_in_echo->id;
 
         my $c = FixMyStreet::Cobrand::Kingston->new;
         warnings_are {
             $c->waste_reconcile_direct_debits;
         } [
-            "no matching record found for Garden Subscription payment with id GGW554321\n",
-            "no matching record found for Garden Subscription payment with id GGW554399\n",
-            "no matching service to renew for GGW754322\n",
-            "no matching record found for Garden Subscription payment with id GGW854324\n",
-            "no matching record found for Garden Subscription payment with id GGW954325\n",
+            "no matching record found for Garden Subscription payment with id RBK-3000-554321\n",
+            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{HIDDEN} . "-554399\n",
+            "no matching service to renew for RBK-" . $id_replacements->{RENEWAL_NOTHING_IN_ECHO} . "-754322\n",
+            "no matching record found for Garden Subscription payment with id RBK-4000-854324\n",
+            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{AD_HOC_SKIPPED} . "-954325\n",
         ], "warns if no matching record";
 
         $new_sub->discard_changes;
         is $new_sub->state, 'confirmed', "New report confirmed";
-        is $new_sub->get_extra_metadata('payerReference'), "GGW654321", "payer reference set";
-        is $new_sub->get_extra_field_value('PaymentCode'), "GGW654321", 'correct echo payment code field';
+        is $new_sub->get_extra_metadata('payerReference'), get_reference("RBK-NEW_SUB-654321", $id_replacements), "payer reference set";
+        is $new_sub->get_extra_field_value('PaymentCode'), get_reference("RBK-NEW_SUB-654321", $id_replacements), 'correct echo payment code field';
         is $new_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
         is $new_sub->get_extra_metadata('dd_mandate_id'), 1, 'correct mandate id set';
 
         $renewal_from_cc_sub->discard_changes;
         is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-        is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
+        is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), get_reference("RBK-RENEWAL_FROM_CC_SUB-1654321", $id_replacements), 'correct echo payment code field';
         is $renewal_from_cc_sub->get_extra_field_value('Request_Type'), 2, 'From CC Renewal has correct type';
         is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Containers'), 26, 'From CC Renewal has correct container type';
         is $renewal_from_cc_sub->get_extra_field_value('service_id'), 2247, 'Renewal has correct service id';
@@ -718,7 +749,7 @@ FixMyStreet::override_config {
         is $subsequent_renewal_from_cc_sub->count, 2, "two record for subsequent renewal property";
         $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
         is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-        is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
+        is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), get_reference("RBK-SUB_FOR_SUBSEQUENT_RENEWAL_FROM_CC_SUB-3654321", $id_replacements), 'correct echo payment code field';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('Request_Type'), 2, 'Subsequent Renewal has correct type';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Containers'), 26, 'Subsequent Renewal has correct container type';
         is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 2247, 'Subsequent Renewal has correct service id';
@@ -731,7 +762,7 @@ FixMyStreet::override_config {
         $ad_hoc->discard_changes;
         is $ad_hoc->state, 'confirmed', "ad hoc report confirmed";
         is $ad_hoc->get_extra_metadata('dd_date'), "16/03/2021", "dd date set for ad hoc";
-        is $ad_hoc->get_extra_field_value('PaymentCode'), "GGW654325", 'correct echo payment code field';
+        is $ad_hoc->get_extra_field_value('PaymentCode'), get_reference("RBK-AD_HOC_ORIG-654325", $id_replacements), 'correct echo payment code field';
         is $ad_hoc->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
         $ad_hoc_skipped->discard_changes;
@@ -802,20 +833,20 @@ FixMyStreet::override_config {
         is $unprocessed_cancel->get_extra_metadata('dd_date'), "21/02/2021", "dd date set for unprocessed cancelled";
 
         $failed_new_sub->discard_changes;
-        is $failed_new_sub->state, 'hidden', 'failed sub not hidden';
+        is $failed_new_sub->state, 'unconfirmed', 'failed sub not confirmed';
 
         warnings_are {
             $c->waste_reconcile_direct_debits;
         } [
-            "no matching record found for Garden Subscription payment with id GGW554321\n",
-            "no matching record found for Garden Subscription payment with id GGW554399\n",
-            "no matching service to renew for GGW754322\n",
-            "no matching record found for Garden Subscription payment with id GGW854324\n",
-            "no matching record found for Garden Subscription payment with id GGW954325\n",
+            "no matching record found for Garden Subscription payment with id RBK-3000-554321\n",
+            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{HIDDEN} . "-554399\n",
+            "no matching service to renew for RBK-" . $id_replacements->{RENEWAL_NOTHING_IN_ECHO} . "-754322\n",
+            "no matching record found for Garden Subscription payment with id RBK-4000-854324\n",
+            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{AD_HOC_SKIPPED} . "-954325\n",
         ], "warns if no matching record";
 
         $failed_new_sub->discard_changes;
-        is $failed_new_sub->state, 'hidden', 'failed sub still hidden on second run';
+        is $failed_new_sub->state, 'unconfirmed', 'failed sub still unconfirmed on second run';
         $ad_hoc_skipped->discard_changes;
         is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
 
@@ -843,5 +874,17 @@ sub setup_dd_test_report {
 
     return $report;
 }
+
+sub get_reference {
+    my ($ref, $replacements) = @_;
+
+    my ($key, $uprn) = $ref =~ /RBK-([A-Z_]*)-(\d+)/;
+
+    return $ref unless $key;
+    return $ref unless $replacements->{$key};
+
+    return "RBK-" . $replacements->{$key} . "-$uprn";
+}
+
 
 done_testing();
