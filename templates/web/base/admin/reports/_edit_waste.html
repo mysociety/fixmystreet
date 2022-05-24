@@ -79,9 +79,15 @@
 </ul>
 
 <ul>
+  [% IF problem.get_extra_field_value('uprn') %]
     <li>UPRN: [% problem.get_extra_field_value('uprn') %]
-    <li>Property ID: [% problem.get_extra_field_value('property_id') %]
+  [% END %]
+  [% IF problem.get_extra_field_value('property_id') %]
+    <li>Property ID: <a href="/waste/[% problem.get_extra_field_value('property_id') %]">[% problem.get_extra_field_value('property_id') %]</a>
+  [% END %]
+  [% IF problem.get_extra_field_value('service_id') %]
     <li>Service ID: [% problem.get_extra_field_value('service_id') %]
+  [% END %]
   [% IF c.cobrand.moniker == 'bromley' %]
     <li>Source: [% problem.get_extra_field_value('Source') %]
   [% END %]
