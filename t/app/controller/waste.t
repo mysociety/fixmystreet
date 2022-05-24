@@ -1304,6 +1304,10 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
 
         is $sent_params, undef, "no one off payment if reducing bin count";
+
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('You have already submitted this form.');
     };
 
     $p->category('Garden Subscription');
