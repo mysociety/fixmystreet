@@ -9,14 +9,21 @@
 <ul class="govuk-list govuk-list--bullet">
     <li>It’s a commercial or non-residential property and isn’t eligible for kerbside collections
     <li>It’s a brand new address and hasn’t had collections arranged yet
-    <li>It’s outside of our area, you can find your council who is responsible for your bins on <a href="https://gov.uk/">GOV.UK</a>
+    <li>It’s outside of our area, you can find your council who is responsible for your bins on
+        <a target="_blank" href="https://www.gov.uk/rubbish-collection-day">GOV.UK</a>
 </ul>
 
 <h2 class="govuk-heading-m">What you can do now</h2>
 
 <ul class="govuk-list govuk-list--bullet">
     <li>Check your address details and <a href="[% c.uri_for_action('waste/index') %]">search again</a>
+  [% IF c.cobrand.moniker == 'bromley' %]
     <li>Call our customer service team on 0800 647 7836 who will be pleased to assist you
+  [% ELSIF c.cobrand.moniker == 'peterborough' %]
+    <li>Call or email our customer service team on 01733 74 74 74 or
+        <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>
+        who will be pleased to assist you
+  [% END %]
 </ul>
 
 [% INCLUDE footer.html %]
