@@ -526,7 +526,10 @@ function layer_visibilitychanged() {
         }
         return;
     } else if (!this.getVisibility()) {
-        this.get_select_control().unselectAll();
+        var ctl = this.get_select_control();
+        if (ctl) {
+            ctl.unselectAll();
+        }
         this.asset_not_found(); // as trigger won't call on non-visible layers
     }
 

@@ -112,7 +112,7 @@ if ($opt->test_fixtures) {
 
     foreach (
         { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council' },
-        { area_id => 2482, categories => ['Street Lighting and Road Signs'], name => 'Bromley Council' },
+        { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council' },
         { area_id => 2234, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways' },
         { area_id => 2217, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
@@ -307,19 +307,10 @@ if ($opt->test_fixtures) {
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2482},
-        category => 'Street Lighting and Road Signs',
+        category => 'Lamp Column Damaged',
     });
+    $child_cat->set_extra_metadata(group => 'Street Lighting and Road Signs');
     $child_cat->set_extra_fields({
-        code => 'service_sub_code',
-        datatype => 'singlevaluelist',
-        order => 1,
-        variable => 'true',
-        required => 'true',
-        values => [
-            { key => 'SL_ON_DAY', name => 'On in day' },
-            { key => 'SL_NEW', name => 'Non-asset' },
-        ],
-    }, {
         code => 'prow_reference',
         datatype => 'string',
         order => 1,
@@ -327,6 +318,13 @@ if ($opt->test_fixtures) {
         required => 'false',
         automated => 'hidden_field',
     });
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2482},
+        category => 'Sign Light Not Working',
+    });
+    $child_cat->set_extra_metadata(group => 'Street Lighting and Road Signs');
     $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({

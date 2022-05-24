@@ -400,6 +400,11 @@ sub heatmap : Local : Args(0) {
 
     $c->forward('/reports/setup_categories');
     $c->forward('/reports/setup_map');
+
+    if (!%{$c->stash->{filter_category}}) {
+        my $cats = $c->user->categories;
+        $c->stash->{filter_category} = { map { $_ => 1 } @$cats } if @$cats;
+    }
 }
 
 sub heatmap_filters :Private {
@@ -414,6 +419,12 @@ sub heatmap_filters :Private {
             $where->{areas} = [
                 map { { 'like', '%,' . $_ . ',%' } } @areas
             ];
+        }
+
+        # Default to user categories if no categories given
+        if (!$where->{'me.category'}) {
+            my $cats = $c->user->categories;
+            $where->{'me.category'} = $cats if @$cats;
         }
     }
 
