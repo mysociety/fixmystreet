@@ -316,6 +316,16 @@ sub validate_contact_email {
     return 1 if is_valid_email_list(join(",", @emails));
 }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ( length( $report->detail ) > 256 ) {
+        $errors->{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 256 );
+    }
+
+    return $errors;
+}
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
