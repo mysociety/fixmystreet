@@ -392,10 +392,13 @@ sub populate_dd_details : Private {
     $c->stash->{reference} = $c->cobrand->call_hook( 'waste_dd_payment_ref' => $p ) || 'GGW' . $c->stash->{property}{uprn};
     $c->stash->{lookup} = $reference;
     $c->stash->{payment_date} = $dt;
+    $c->stash->{start_date} = $dt->ymd;
     $c->stash->{day} = $dt->day;
     $c->stash->{month} = $dt->month;
     $c->stash->{month_name} = $dt->month_name;
     $c->stash->{year} = $dt->year;
+
+    $c->stash->{redirect} = $c->cobrand->call_hook( 'garden_waste_dd_redirect_url' => $p ) || '';
 }
 
 sub direct_debit : Path('dd') : Args(0) {
@@ -411,8 +414,7 @@ sub direct_debit : Path('dd') : Args(0) {
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
     my ($self, $c) = @_;
 
-    my $token = $c->get_param('reference');
-    my $id = $c->get_param('report_id');
+    my ($token, $id) = $c->cobrand->call_hook( 'garden_waste_dd_get_redirect_params' => $c );
     $c->forward('check_payment_redirect_id', [ $id, $token]);
 
     $c->stash->{title} = "Direct Debit mandate";
