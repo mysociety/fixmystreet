@@ -797,6 +797,15 @@ sub waste_garden_sub_params {
     $self->_set_user_source;
 }
 
+sub garden_waste_dd_get_redirect_params {
+    my ($self, $c) = @_;
+
+    my $token = $c->get_param('reference');
+    my $id = $c->get_param('report_id');
+
+    return ($token, $id);
+}
+
 sub _set_user_source {
     my $self = shift;
     my $c = $self->{c};

@@ -10,12 +10,13 @@
 <input type="hidden" name="ddplanreference" id="ddplanreference" value="[% reference %]" />
 <input type="hidden" name="ddregularamount" id="ddregularamount"  value="[% amount %]" />
 <input type="hidden" name="ddplanspecification" id="ddplanspecification"  value="Yearly,[% month %],[% day %]" />
-<input type="hidden" name="ddstartdate" id="ddstartdate"  value="2022-06-08" />
-<input type="hidden" name="customdata" value="productcode*|*WASTE*|*reference*|*[% lookup %]*|*report_id*|*[% report.id %]">
-<input type="hidden" name="requestid" id="requestid"  value="[% reference %]" />
+<input type="hidden" name="ddstartdate" id="ddstartdate"  value="[% start_date %]" />
+<input type="hidden" name="customdata" value="productcode:WASTE^reference:[% lookup %]^report_id:[% report.id %]">
+<input type="hidden" name="requestid" id="requestid"  value="[% lookup %]" />
 <input type="hidden" name="requestuserid" id="requestuserid"  value="[% report.user.id %]" />
 <input type="hidden" name="showddplansummary" id="showddplansummary"  value="visible" />
 <input type="hidden" name="showddplanreference" id="showddplanreference"  value="visible" />
+<input type="hidden" name="redirecturl" id="redirecturl"  value="[% redirect %]" />
 
 [% PROCESS form_extra %]
 
