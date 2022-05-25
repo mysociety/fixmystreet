@@ -699,6 +699,25 @@ sub _waste_cc_line_item_ref {
 
 sub waste_payment_ref_council_code { "RBK" }
 
+sub garden_waste_dd_redirect_url {
+    my ($self, $p) = @_;
+
+    return "https://kingston.staging.fixmystreet.com/waste/dd_redirect/";
+}
+
+sub garden_waste_dd_get_redirect_params {
+    my ($self, $c) = @_;
+
+    my $data = $c->get_param('customData');
+
+    my %params = map {
+        my ($key, $value) = split ':';
+        $key => $value;
+    } split '\^', $data;
+
+    return ($params{reference}, $params{report_id});
+}
+
 sub waste_dd_payment_ref {
     my ($self, $p) = @_;
 
