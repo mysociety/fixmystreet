@@ -637,10 +637,11 @@ FixMyStreet::override_config {
         is $new_report->title, 'Garden Subscription - New', 'correct title on report';
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
+        is $new_report->get_extra_metadata('ddsubmitted'), undef, "direct debit not marked as submitted";
 
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('You have a pending garden subscription');
-        $mech->content_lacks('Subscribe to garden waste collection');
+        $mech->content_lacks('You have a pending garden subscription');
+        $mech->content_contains('Subscribe to garden waste collection');
 
         $mech->get("/waste/dd_complete?customData=reference:$token^report_id:xxy");
         ok !$mech->res->is_success(), "want a bad response";
@@ -651,6 +652,10 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id");
         $mech->content_contains('confirmation details once your Direct Debit');
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to garden waste collection');
+
         $mech->email_count_is( 1, "email sent for direct debit sub");
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
@@ -658,6 +663,7 @@ FixMyStreet::override_config {
         like $body, qr/reference number is RBK-GGW-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
+        is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
         $new_report->delete;
     };
 
@@ -935,7 +941,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('You have a pending garden subscription');
         $mech->content_lacks('Subscribe to garden waste collection');
 
         $mech->get("/waste/dd_complete?customData=reference:$token^report_id:xxy");
@@ -946,6 +952,10 @@ FixMyStreet::override_config {
         is $mech->res->code, 404, "got 404";
         $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id");
         $mech->content_contains('confirmation details once your Direct Debit');
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to garden waste collection');
 
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';

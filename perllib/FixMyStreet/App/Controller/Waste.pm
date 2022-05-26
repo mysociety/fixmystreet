@@ -173,6 +173,7 @@ sub get_pending_subscription : Private {
         }
 
     }
+    $new = $c->cobrand->call_hook( 'garden_waste_check_pending' => $new );
     $c->stash->{pending_subscription} ||= $new;
     $c->stash->{pending_cancellation} = $cancel;
 }
@@ -423,6 +424,7 @@ sub direct_debit_complete : Path('dd_complete') : Args(0) {
 
     my ($token, $id) = $c->cobrand->call_hook( 'garden_waste_dd_get_redirect_params' => $c );
     $c->forward('check_payment_redirect_id', [ $id, $token]);
+    $c->cobrand->call_hook( 'garden_waste_dd_complete' => $c->stash->{report} );
 
     $c->stash->{title} = "Direct Debit mandate";
 
