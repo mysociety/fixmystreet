@@ -1,10 +1,12 @@
 @import "_colours";
 @import "../sass/layout";
 
-#site-logo {
-    height: 9rem;
-    width: 5.9375rem;
 
+#site-header {
+    min-height: $mappage-header-height;
+}
+
+#site-logo {
     .mappage & {
         width: 3.43rem;
         height: 4rem;
@@ -12,7 +14,6 @@
 }
 
 .nav-wrapper {
-    top: 40px;
     .mappage & {
         top: 10px;
     }

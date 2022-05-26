@@ -24,9 +24,11 @@ body {
 }
 
 #site-logo {
-    width: 3.43rem;
-    height: 4rem;
-    @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo');
+    width: 8.56rem;
+    height: $mappage-header-height;
+    // Using line-height to vertically align the logo
+    line-height: $mappage-header-height;
+    background-image: url('images/sutton-logo.png');
     background-size: contain;
 
     .mappage & {
