@@ -702,7 +702,9 @@ sub waste_payment_ref_council_code { "RBK" }
 sub garden_waste_dd_redirect_url {
     my ($self, $p) = @_;
 
-    return "https://kingston.staging.fixmystreet.com/waste/dd_complete";
+    my $c = $self->{c};
+
+    return $c->cobrand->base_url_with_lang . "/waste/dd_complete";
 }
 
 sub garden_waste_dd_get_redirect_params {
