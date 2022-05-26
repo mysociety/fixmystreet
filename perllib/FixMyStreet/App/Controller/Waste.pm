@@ -386,9 +386,16 @@ sub populate_dd_details : Private {
 
     my $dt = $c->cobrand->waste_get_next_dd_day;
 
+    my $payment = $p->get_extra_field_value('payment');
+    my $admin_fee = $p->get_extra_field_value('admin_fee');
+    if ( $admin_fee ) {
+        my $first_payment = $admin_fee + $payment;
+        $c->stash->{firstamount} = sprintf( '%.2f', $first_payment / 100 );
+    }
+
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
-    $c->stash->{amount} = sprintf( '%.2f', $c->stash->{report}->get_extra_field(name => 'payment')->{value} / 100 );
+    $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
     $c->stash->{reference} = $c->cobrand->call_hook( 'waste_dd_payment_ref' => $p ) || 'GGW' . $c->stash->{property}{uprn};
     $c->stash->{lookup} = $reference;
     $c->stash->{payment_date} = $dt;

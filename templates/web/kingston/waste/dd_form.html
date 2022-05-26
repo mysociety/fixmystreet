@@ -17,6 +17,9 @@
 <input type="hidden" name="showddplansummary" id="showddplansummary"  value="visible" />
 <input type="hidden" name="showddplanreference" id="showddplanreference"  value="visible" />
 <input type="hidden" name="redirecturl" id="redirecturl"  value="[% redirect %]" />
+[% IF firstamount %]
+<input type="hidden" name="ddfirstamount" id="ddfirstamount"  value="[% firstamount %]" />
+[% END %]
 
 [% PROCESS form_extra %]
 

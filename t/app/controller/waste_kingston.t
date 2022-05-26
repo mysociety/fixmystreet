@@ -542,6 +542,56 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($new_report);
     };
 
+    subtest 'check new sub direct debit payment' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                bins_wanted => 1,
+                payment_method => 'direct_debit',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
+        $mech->content_like( qr/ddfirstamount[^>]*"35.00"/, 'first payment amount correct');
+
+        my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
+                id => $report_id,
+                extra => { like => '%redirect_id,T18:'. $token . '%' }
+        } )->first;
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to garden waste collection');
+
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:xxy");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/dd_complete?customData=reference:NOTATOKEN^report_id:$report_id");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id");
+        $mech->content_contains('confirmation details once your Direct Debit');
+
+        $mech->email_count_is( 1, "email sent for direct debit sub");
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
+        $new_report->discard_changes;
+        is $new_report->state, 'unconfirmed', 'report still not confirmed';
+        $new_report->delete;
+    };
+
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check modify sub with bad details' => sub {
@@ -747,6 +797,64 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
+    };
+
+    remove_test_subs( $p->id );
+    $p->update_extra_field({ name => 'payment_method', value => 'credit_card' });
+    $p->update;
+
+    subtest 'renew credit card sub with direct debit' => sub {
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            bins_wanted => 1,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            email => 'test@example.net',
+        } });
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
+        $mech->content_lacks( "ddfirstamount", "no different first payment");
+
+        my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
+                id => $report_id,
+                extra => { like => '%redirect_id,T18:'. $token . '%' }
+        } )->first;
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->get_extra_field_value('Request_Type'), 2, 'correct subscription type';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Subscription_Details_Containers'), 26, 'correct bin type';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), '', 'no container request bin type';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), '', 'no container request count';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to garden waste collection');
+
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:xxy");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/dd_complete?customData=reference:NOTATOKEN^report_id:$report_id");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id");
+        $mech->content_contains('confirmation details once your Direct Debit');
+
+        $new_report->discard_changes;
+        is $new_report->state, 'unconfirmed', 'report still not confirmed';
+
+        # Delete report otherwise next test thinks we have a DD subscription (which we do now)
+        $new_report->delete;
     };
 
     remove_test_subs( $p->id );
