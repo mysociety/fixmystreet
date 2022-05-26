@@ -5,12 +5,16 @@
         [% field = form.field(field) %]
     [% END %]
     [% NEXT IF field.name == 'back' %]
+
+    [% IF field.widget == 'Hidden' %]
+        [% PROCESS hidden %]
+        [% NEXT %]
+    [% END %]
+
     [% SET error = field.errors.join(' ') ~%]
     <div class="govuk-form-group[% IF error %] govuk-form-group--error[% END %][% ' hidden-js' IF field.get_tag('initial_hidden') %]" id="form-[% field.id %]-row">
     [% IF field.widget == 'Submit' %]
         [% field.render_element | safe %]
-    [% ELSIF field.widget == 'Hidden' %]
-        [% PROCESS hidden %]
     [% ELSIF field.widget == 'Text' || field.type == 'Password' %]
         [% PROCESS text %]
     [% ELSIF field.widget == 'Textarea' %]
