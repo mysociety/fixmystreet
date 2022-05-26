@@ -738,6 +738,23 @@ sub garden_waste_dd_get_redirect_params {
     return ($params{reference}, $params{report_id});
 }
 
+sub garden_waste_check_pending {
+    my ($self, $report) = @_;
+
+
+    if ( $report && $report->get_extra_metadata('ddsubmitted') == 1 ) {
+        return $report;
+    }
+
+    return undef;
+}
+
+sub garden_waste_dd_complete {
+    my ($self, $report) = @_;
+    $report->set_extra_metadata('ddsubmitted', 1);
+    $report->update();
+}
+
 sub waste_dd_payment_ref {
     my ($self, $p) = @_;
 
