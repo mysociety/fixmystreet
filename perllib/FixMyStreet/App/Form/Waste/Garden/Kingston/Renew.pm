@@ -1,10 +1,30 @@
-package FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
+package FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 
 use utf8;
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Waste';
+extends 'FixMyStreet::App::Form::Waste::Garden::Renew';
 
-has_page intro => (
+has_page sacks_choice => (
+    title_ggw => 'Subscribe to the %s',
+    fields => ['container_choice', 'continue'],
+    next => sub {
+        return 'sacks_details' if $_[0]->{container_choice} eq 'sack';
+        return 'intro';
+    }
+);
+
+has_field container_choice => (
+    type => 'Select',
+    label => 'Would you like bins or sacks?',
+    required => 1,
+    widget => 'RadioGroup',
+    options => [
+        { value => 'bin', label => '240L bin', hint => 'Some information about bins here' },
+        { value => 'sack', label => 'Garden sacks', hint => 'Some information about sacks here' },
+    ],
+);
+
+has_page sacks_details => (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/sacks/renew.html',
     fields => ['payment_method', 'name', 'phone', 'email', 'continue_review'],
@@ -21,10 +41,10 @@ has_page intro => (
         $form->{c}->stash->{cost_now} = $cost_pa / 100;
         return {};
     },
-    next => 'summary',
+    next => 'sacks_summary',
 );
 
-has_page summary => (
+has_page sacks_summary => (
     fields => ['tandc', 'submit'],
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/sacks/renew_summary.html',
@@ -52,33 +72,10 @@ has_page summary => (
     next => 'done',
 );
 
-has_page done => (
-    title => 'Subscription renewed',
-    template => 'waste/garden/renewed.html',
-);
-
-with 'FixMyStreet::App::Form::Waste::Billing';
-
-has_field tandc => (
-    type => 'Checkbox',
-    required => 1,
-    label => 'Terms and conditions',
-    option_label => FixMyStreet::Template::SafeString->new(
-        'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a>',
-    ),
-);
-
-has_field continue_review => (
+has_field continue => (
     type => 'Submit',
-    value => 'Review subscription',
+    value => 'Continue',
     element_attr => { class => 'govuk-button' },
-);
-
-has_field submit => (
-    type => 'Submit',
-    value => 'Continue to payment',
-    element_attr => { class => 'govuk-button' },
-    order => 999,
 );
 
 1;

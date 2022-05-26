@@ -47,6 +47,9 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'admin_fee', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com'},
+    { code => 'Bin_Delivery_Detail_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Bin_Delivery_Detail_Container', required => 1, automated => 'hidden_field' },
+    { code => 'Bin_Delivery_Detail_Containers', required => 1, automated => 'hidden_field' },
     { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
 );
 
@@ -113,6 +116,12 @@ sub garden_waste_only_refuse_sacks {
 # and this will be like this when they are in the same Echo
 sub garden_waste_with_sacks {
     my $garden_sacks = _garden_waste_service_units(1, 'sack');
+    my $refuse_sacks = garden_waste_only_refuse_sacks();
+    return [ $refuse_sacks->[0], $garden_sacks->[0] ];
+}
+
+sub garden_waste_bin_with_refuse_sacks {
+    my $garden_sacks = _garden_waste_service_units(1, 'bin');
     my $refuse_sacks = garden_waste_only_refuse_sacks();
     return [ $refuse_sacks->[0], $garden_sacks->[0] ];
 }
@@ -782,6 +791,9 @@ FixMyStreet::override_config {
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), 26, 'correct container request bin type';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
@@ -796,11 +808,19 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_only_refuse_sacks);
 
+    subtest 'sacks, subscribing to a bin' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+    };
+
     subtest 'sacks, subscribing' => sub {
         $mech->log_out_ok;
         $mech->get_ok('/waste/12345/garden');
-        $mech->content_contains('sack');
         $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
@@ -810,7 +830,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains('£41.00');
         $mech->content_contains('Sacks');
-        $mech->submit_form_ok({ with_fields => { goto => 'details' } });
+        $mech->submit_form_ok({ with_fields => { goto => 'sacks_details' } });
         $mech->content_contains('<span id="cost_pa">41.00');
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
@@ -845,11 +865,72 @@ FixMyStreet::override_config {
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_bin_with_refuse_sacks);
+
+    subtest 'refuse sacks, garden bin, still asks for choice' => sub {
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 1,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net',
+        } });
+        $mech->content_contains('1 bin');
+        $mech->content_contains('20.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
+    };
+
+    subtest 'refuse sacks, garden bin, can modify' => sub {
+        set_fixed_time('2021-01-09T17:00:00Z');
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Modify your garden waste subscription');
+        $mech->content_lacks('Order more garden sacks');
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        $mech->content_lacks('<span id="pro_rata_cost">41.00');
+        $mech->content_contains('current_bins');
+        $mech->content_contains('bins_wanted');
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2, name => 'Test McTest' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'no admin fee';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
+    };
+
+    subtest 'refuse sacks, garden bin, cancelling' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), 26, 'correct container request bin type';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
+        is $new_report->state, 'confirmed', 'report confirmed';
+    };
+
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_with_sacks);
 
     subtest 'sacks, renewing' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->submit_form_ok({ with_fields => {
             name => 'Test McTest',
             email => 'test@example.net',
@@ -857,7 +938,8 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Sacks');
         $mech->content_contains('41.00');
-        $mech->submit_form_ok({ with_fields => { goto => 'intro' } });
+        $mech->submit_form_ok({ with_fields => { goto => 'sacks_choice' } });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_contains('<span id="cost_pa">41.00');
         $mech->content_contains('<span id="cost_now">41.00');
         $mech->submit_form_ok({ with_fields => {
@@ -916,6 +998,9 @@ FixMyStreet::override_config {
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), '', 'correct container request bin type';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), '', 'correct container request action';
+        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), '', 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
