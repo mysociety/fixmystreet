@@ -2,26 +2,37 @@
 
 $menu-image: 'menu-black';
 
-$red: #a0505c;
-$black: #3c3c3c;
-$green: #029A81;
-$blue: #09509d;
-$blue-l1: #0c69cd;
+$red: #cf1643;
+$green:#00856a;
+$green-l2:#40a360;
+$teal: #00a3b6;
+$orange: #ec6723;
+$purple: #84328a;
+$yellow: #f9b34a;
+$blue: 	#3466af;
+
 $white: #fff;
-$yellow: #fdb945;
+$black: #0b0c0c;
+$black-l2: #505a5f;
+$grey:#757474;
+$grey-l1:#DBDBDB; // Footer background
+$grey-l2: #f8f9fa; // bg light
 
 $primary: $red;
 $primary_b: $black;
 $primary_text: $primary_b;
-$primary_link_color: $blue;
-$primary_link_hover_color: $blue-l1;
 
-$link-color: $blue;
-$link-hover-color: $blue-l1;
-$link-visited-color: $primary;
 
-$base_bg: #eef1e6;
-$base_fg: #1a1a1a;
+$link-color: #3466af;
+$link-hover-color:#003078;
+$link-visited-color: #1d3860;
+$link-active-color: #0b0c0c;
+
+$primary_link_color: $link-color;
+$primary_link_hover_color: $link-hover-color;
+
+$base_bg: $grey-l2;
+$base_fg: $black;
 
 $nav_background_colour: $white;
 $nav_colour: $primary_b;
