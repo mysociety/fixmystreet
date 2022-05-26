@@ -44,88 +44,59 @@ $col_fixed_label: $primary;
 // $header-top-border-width: 4px;
 
 $mappage-header-height: 70px;
-$body-font: 'Noto Sans', sans-serif;
-$border-radius: 25px;
-//The orginal website uses a width of 1280px, however that looks
-//way to spacious for page with no much elements.
-$container-max-width: 1024px;
+$body-font: "proxima-nova","Helvetica","Arial",sans-serif;
+$border-radius: 0px;
 
-@mixin kingston-form-input($margin: 0.5em 0, $padding: 5px) {
-    margin-right: 5px;
+// The original website uses a width of 1100px, however
+// the style guide uses 1024px 
+$container-max-width: 1100px;
+
+@mixin sutton-form-input($margin: 0.5em 0, $padding: 5px) {
     padding: $padding;
-    border: 1px solid #bbb;
-    border-radius: 5px;
+    margin: $margin;
+    border: 2px solid $black;
     box-shadow: none;
 
     &:focus {
-        outline: none; // hide browser default outline, to match screenshot in branding guidelines
-        border: 1px solid $green;
         background-color: mix($green, $white, 5%);
-        box-shadow: 0 1px 3px #e1e1e1, 0 0 4px $green;
+        outline: 3px solid #f9b34a;
     }
 }
 
-@mixin kingston-form-label() {
-    color: #555;
+@mixin sutton-form-label() {
+    color: $black;
     font-weight: 700;
 }
 
-@mixin kingston-button-primary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
-    font-weight: bold;
-    text-align: center;
-    font-size: $font-size;
-    line-height: $line-height;
-    padding: $padding;
-    border-radius: 25px;
-    border: 4px solid $primary;
-    background: $primary !important;
-    color: $white !important;
+@mixin sutton-button($background-color: $white, $color: $green, $border-color: $green) {
+    // For a button with more empashis use: 
+    // @include sutton-button($background-color: $green, $color: $white);
+
+
+    // lbs-button--tertiary class on Sutton website
+    border: 2px solid $border-color;
+    color: $color;
+    background: $background-color;
+    border-radius: $border-radius;
 
     // This gets rid of the .govuk-button box-shadow
     box-shadow: none;
 
-    &:hover, &:focus {
-        background: $white !important;
-        color: $primary !important;
-        border-color: $primary;
-        outline:none;
+    &:hover {
+        background: $color;
+        color: $background-color;
         text-decoration: none;
     }
 
     &:focus {
-        text-decoration: underline !important;
+        border-color: $yellow;
+        color: $black;
+        background-color: $yellow;
+        outline: 2px solid $black;
     }
 
     &.govuk-button:focus:not(:active):not(:hover) {
-        border-color: $primary;
-        box-shadow: none;
-    }
-}
-
-@mixin kingston-button-secondary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
-    font-weight: bold;
-    text-align: center;
-    font-size: $font-size;
-    line-height: $line-height;
-    padding: $padding;
-    border: 4px solid $blue;
-    border-radius: $border-radius;
-    background: $white;
-    color: $blue;
-
-    // This gets rid of the .govuk-button box-shadow
-    box-shadow: none;
-
-    &:hover, &:focus {
-        background: $blue;
-        color: $white;
-        text-decoration: none;
-    }
-
-    &:focus { text-decoration: underline !important;}
-
-    &.govuk-button:focus:not(:active):not(:hover) {
-        border-color: $blue;
+        border-color: $yellow;
         box-shadow: none;
     }
 }
@@ -139,4 +110,12 @@ $container-max-width: 1024px;
     padding: 0;
     position: absolute;
     width: 1px;
+}
+
+@mixin hide-text($height) {
+    padding-top: $height;
+    padding-bottom: 0;
+    height: 0;
+    overflow: hidden;
+    white-space: nowrap;
 }

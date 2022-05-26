@@ -1,6 +1,9 @@
 @import "_colours";
 @import "../sass/layout";
 
+body {
+    background: linear-gradient(45deg,#00856a 5%,#00715a 20%,#00856a 60%,#40a360);
+}
 
 #site-header {
     min-height: $mappage-header-height;
@@ -82,6 +85,10 @@
         div {
             margin: 0;
         }
+    }
+
+    h2 {
+        color: $black-l2;
     }
 }
 

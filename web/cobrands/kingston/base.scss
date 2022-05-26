@@ -21,6 +21,7 @@ body {
 
 #site-header {
     border-top-width: 0;
+    border-bottom: 5px solid $green;
 }
 
 #site-logo {
@@ -33,6 +34,14 @@ body {
 
     .mappage & {
         height: $mappage-header-height;
+    }
+}
+
+.nav-menu {
+    a {
+        background-color: #CFDCDA;
+        color: $black;
+        font-weight: bold;
     }
 }
 
@@ -54,6 +63,10 @@ a,
 .olButton:focus {
     text-decoration: underline;
     
+}
+
+.content {
+    padding-top: 1em;
 }
 
 .olButton:focus {
@@ -95,44 +108,73 @@ a,
             border: none;
             background: transparent;
 
+            $border-radius: 50px;
             input#pc {
-                @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+                @include sutton-form-input($margin: 0 0 0 0, $padding: 5px 0.5em);
                 font-size: 1.25em;
+                // border-top-left-radius: $border-radius;
+                // border-bottom-left-radius: $border-radius;
+
+                &:hover {
+                    background-color: $white;
+                }
             }
 
             input#sub {
-                @include kingston-button-primary();
-                border-radius: 5px;
+                margin-left: 0.5em;
                 font-size: 1.25em;
-            }
+                @include sutton-button($background-color: $green, $color: $white);            }
         }
     }
 
     h2 {
         font-style: inherit;
+        color: $black-l2;
+    }
+
+    a {
+        @include sutton-button;
+        border-width: 2px;
+        color: $green !important;
+
+        &:focus {
+            color: $black !important;
+        }
+
+        &:hover {
+            color: $white !important;
+        }
     }
 }
 
 a#geolocate_link {
-    @include kingston-button-secondary();
+    @include sutton-button();
 }
 
 h1, h2, h3, .h1, .h2, .h3 {
     font-family: $body-font;
-}
-
-h1 {
-    font-size: 2em;
-    line-height: 1.25em;
     font-weight: bold;
 }
 
+h1, .h1 {
+    font-size: 2em;
+    line-height: 1.25em;
+}
+
+h2, .h2 {
+    font-size: 1.5em;
+}
+
+h3, .h3 {
+    font-size: 1.17em;
+}
+
 label {
-    @include kingston-form-label();
+    @include sutton-form-label();
 }
 
 .form-control {
-    @include kingston-form-input();
+    @include sutton-form-input();
 
     .form-txt-submit-box & {
         margin: 0 0 0.5em 0;
@@ -180,7 +222,7 @@ p.form-error {
 
 .btn,
 .green-btn {
-    @include kingston-button-primary();
+    @include sutton-button();
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
@@ -199,7 +241,6 @@ body.twothirdswidthpage .content .sticky-sidebar {
     }
 }
 
-// As per Kingston Website style guide
 .skiplink:focus {
     border: 1px solid #FFFFFF;
     background: #2C2C2C;
@@ -377,10 +418,30 @@ body.twothirdswidthpage .content .sticky-sidebar {
 //WASTEWORKS
 .waste {
     .content[role="main"] {
-        border-top: 4px solid $green;
+        background-color: $white;
+
+        label {
+            margin-bottom: 0.5em;
+        }
+
+        input#postcode {
+            @include sutton-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+
+            &:hover {
+                background-color: $white;
+            }
+        }
+
+        input#go {
+            margin-left: 5px;
+            @include sutton-button($background-color: $green, $color: $white);
+        }
     }
 
     form.waste {
+        flex-direction: row;
+        align-items: end;
+
         div.govuk-form-group {
             display: inline-block;
 
@@ -396,20 +457,31 @@ body.twothirdswidthpage .content .sticky-sidebar {
         }
     } 
     .govuk-button {
-        @include kingston-button-primary;
-        border-radius: 5px;
+        @include sutton-button;
+        // Corrects the default behaviour top:2px;
+        &:active {
+            top: 0;
+        }
     }
 }
 
 input[type="text"], input[type="email"], textarea {
     &.govuk-input {
-        @include kingston-form-input;
+        @include sutton-form-input;
     }
 }
 
 .govuk-radios__input:focus + .govuk-radios__label:before {
     border-width: 3px;
     box-shadow: 0 0 0 3px mix($green, $white, 65%) !important;
+}
+
+.govuk-list.govuk-error-summary__list {
+    margin-left: 0;
+
+    li {
+        list-style: none;
+    }
 }
 
 form.waste {
