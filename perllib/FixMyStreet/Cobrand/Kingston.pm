@@ -574,7 +574,7 @@ sub waste_garden_sub_params {
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
 
-    my $container = $c->stash->{garden_sacks} ? 'Garden Waste Sacks' : 'Garden Waste Bin';
+    my $container = $data->{garden_sacks} ? 'Garden Waste Sacks' : 'Garden Waste Bin';
     $container = $container_types{$container};
 
     $c->set_param('Request_Type', $type);
