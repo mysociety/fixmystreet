@@ -18,9 +18,9 @@ use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
-use FixMyStreet::App::Form::Waste::Garden::Sacks;
-use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
+use FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe;
+use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 use Open311::GetServiceRequestUpdates;
 use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
@@ -996,14 +996,13 @@ sub garden : Chained('garden_setup') : Args(0) {
     }
 
     $c->stash->{first_page} = 'intro';
-    if ($c->stash->{garden_sacks}) {
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
-    } else {
-        my $service = $c->cobrand->garden_service_id;
-        $c->stash->{garden_form_data} = {
-            max_bins => $c->stash->{quantity_max}->{$service}
-        };
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
+    my $service = $c->cobrand->garden_service_id;
+    $c->stash->{garden_form_data} = {
+        max_bins => $c->stash->{quantity_max}->{$service}
+    };
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
+    if ($c->cobrand->moniker eq 'kingston') {
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe';
     }
     $c->forward('form');
 }
@@ -1021,7 +1020,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach( '/auth/redirect' );
     }
 
-    if ($c->stash->{garden_sacks}) {
+    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) { # XXX Kingston sack
         my $payment_method = 'credit_card';
         $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase';
@@ -1098,17 +1097,17 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     }
 
     $c->stash->{first_page} = 'intro';
-    if ($c->stash->{garden_sacks}) {
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
-    } else {
-        my $service = $c->cobrand->garden_service_id;
-        my $max_bins = $c->stash->{quantity_max}->{$service};
-        $service = $c->stash->{services}{$service};
-        $c->stash->{garden_form_data} = {
-            max_bins => $max_bins,
-            bins => $service->{garden_bins},
-        };
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
+    my $service = $c->cobrand->garden_service_id;
+    my $max_bins = $c->stash->{quantity_max}->{$service};
+    $service = $c->stash->{services}{$service};
+    $c->stash->{garden_form_data} = {
+        max_bins => $max_bins,
+        bins => $service->{garden_bins},
+    };
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
+    if ($c->cobrand->moniker eq 'kingston' && $c->stash->{garden_sacks}) {
+        $c->stash->{first_page} = 'sacks_choice';
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Renew';
     }
     $c->forward('form');
 }
@@ -1131,9 +1130,12 @@ sub process_garden_cancellation : Private {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     $c->set_param('Subscription_End_Date', $now->ymd);
 
-    unless ($c->stash->{garden_sacks}) {
+    my $service = $c->cobrand->garden_current_subscription;
+    if (!$c->stash->{garden_sacks} || $service->{garden_container} == 26) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
+    } else {
+        $data->{garden_sacks} = 1;
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
@@ -1224,7 +1226,10 @@ sub process_garden_modification : Private {
     my $payment;
     my $pro_rata;
     my $payment_method;
-    if ($c->stash->{garden_sacks}) {
+    # Needs to check current subscription too
+    my $service = $c->cobrand->garden_current_subscription;
+    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) { # XXX Kingston sack
+        $data->{garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
@@ -1299,7 +1304,8 @@ sub process_garden_renew : Private {
         $type = $c->stash->{garden_subs}->{Renew};
     }
 
-    if ($c->stash->{garden_sacks}) {
+    if ($c->stash->{garden_sacks} && !$data->{bins_wanted}) {
+        $data->{garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
@@ -1350,7 +1356,8 @@ sub process_garden_data : Private {
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - New';
 
-    if ($c->stash->{garden_sacks}) {
+    if ($c->stash->{garden_sacks} && !$data->{bins_wanted}) {
+        $data->{garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
