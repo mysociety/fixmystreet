@@ -191,6 +191,7 @@ sub pay : Path('pay') : Args(0) {
         request_id => $p->id,
         description => $p->title,
         amount => $amount,
+        name => $p->name,
         email => $p->user->email,
         uprn => $p->get_extra_field_value('uprn'),
         address1 => shift @parts,

@@ -94,6 +94,7 @@ sub pay {
         },
         'scpbase:billing' => {
             'scpbase:cardHolderDetails' => ixhash(
+                'scpbase:cardHolderName' => $args->{name},
                 'scpbase:address' => ixhash(
                     'scpbase:address1' => $args->{address1},
                     'scpbase:address2' => $args->{address2},
@@ -130,6 +131,9 @@ sub pay {
                             'scpbase:fundCode' => $self->config->{scp_fund_code},
                             'scpbase:additionalReference' => $args->{ref},
                             'scpbase:narrative' => $args->{uprn},
+                            'scpbase:accountName' => {
+                                'scpbase:surname' => $args->{name},
+                            },
                         ),
                         'scpbase:lineId' => $args->{ref},
                     ),
