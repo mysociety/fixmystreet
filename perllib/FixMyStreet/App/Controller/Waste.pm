@@ -45,6 +45,16 @@ sub auto : Private {
     return 1;
 }
 
+sub pre_form : Private {
+    my ($self, $c) = @_;
+
+    # Special button to go back to existing (as form wraps whole page)
+    if ($c->get_param('goto-existing')) {
+        $c->set_param('goto', 'existing');
+        $c->set_param('process', '');
+    }
+}
+
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 

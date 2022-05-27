@@ -127,6 +127,7 @@ has_field current_bins => (
         return "Number of bins currently on site (0-$max_bins)";
     },
     required => 1,
+    readonly => 1,
     range_start => 0,
 );
 
