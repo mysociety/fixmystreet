@@ -72,12 +72,12 @@ $container-max-width: 1100px;
     // For a button with more empashis use: 
     // @include sutton-button($background-color: $green, $color: $white);
 
-
     // lbs-button--tertiary class on Sutton website
     border: 2px solid $border-color;
     color: $color;
     background: $background-color;
     border-radius: $border-radius;
+    padding: 0.5em;
 
     // This gets rid of the .govuk-button box-shadow
     box-shadow: none;

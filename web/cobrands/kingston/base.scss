@@ -13,6 +13,8 @@
 body {
     font-family: $body-font;
     color: $primary_b;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .visually-hidden {
@@ -71,27 +73,6 @@ a,
 
 .olButton:focus {
     z-index: 1; // pull forward, so entire outline is visible
-}
-
-.kingston-footer {
-    background: $primary_b;
-    color: $white;
-    padding: 1.5em 0;
-
-    ul {
-        margin: 0;
-        font-size: 12px;
-    }
-
-    li {
-        list-style: none;
-        margin: 0.66em 0;
-    }
-
-    a {
-        color: inherit;
-        text-decoration: underline;
-    }
 }
 
 #report-cta {
@@ -221,8 +202,9 @@ p.form-error {
 }
 
 .btn,
-.green-btn {
-    @include sutton-button();
+.green-btn,
+.lbs-button--tertiary {
+    @include sutton-button;
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
@@ -303,111 +285,87 @@ body.twothirdswidthpage .content .sticky-sidebar {
 }
 
 //FOOTER
-.site-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: $black;
-    padding: 3em 1em 1.5em 1em;
+.lbs-footer {
+    border-top: 5px solid $green;
+    background-color: lighten($grey-l1, 10%);
 
-    a {
-        color:$white;
-        text-decoration: underline;
-        &:hover {
-            text-decoration: none;
-        }
+    .lbs-row__container {
+        max-width: $container-max-width;
+        margin-right: 15px;
+        margin-left: 15px;
+        padding: 1rem 0;
     }
 
-    .list-inline {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
+    h2 {
+        margin-top: 0.5em;
+    }
+
+    a[role="button"] {
+        display: block;
+        text-align: center;
+    }
+
+    ul {
+        color: $black;
+        margin-top: 0;
+        margin-bottom: 15px;
+        margin-left: 0;
+        padding-left: 0;
+        list-style-type: none;
+
         li {
             list-style: none;
-            margin-right: 10px;
-        }
-    }
+            margin-bottom: 10px;
 
-    .nav--social-links {
-        margin-top: 1.125em;
-
-        li {
-            display: inline-block;
-            margin: 0.75em 1em 0;
-
-            a.list__link {
-                color: $black;
-                background-color: $white;
-                border-radius: 50%;
-                display: block;
-                // padding: 0.5em;
-                width: 34px;
-                height: 34px;
-                position: relative;
-            }
-        }
-
-        .icon {
-            position: relative;
-            z-index: 2;
-            height: 2.125em;
-            width: 2.125em;
-            background-size: 20px;
-            background-position: center;
-            background-repeat: no-repeat;
-
-            &.icon-misc-facebook {
-                background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22M22.37%2C12.54v7.85H16.62V30h5.75V58.5H34.18V30h7.93s.74-4.6%2C1.1-9.63h-9V13.79a2.79%2C2.79%2C0%2C0%2C1%2C2.56-2.3h6.43V1.5H34.47C22.08%2C1.5%2C22.37%2C11.11%2C22.37%2C12.54Z%22%20fill%3D%22%233c3c3c%22%20%2F%3E%3C%2Fsvg%3E);
-            }
-            &.icon-misc-twitter {
-                background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22M52.67%2C18.38c0%2C.5%2C0%2C1%2C0%2C1.51%2C0%2C15.45-11.76%2C33.27-33.27%2C33.27A33.06%2C33.06%2C0%2C0%2C1%2C1.5%2C47.91a23.36%2C23.36%2C0%2C0%2C0%2C2.79.16%2C23.43%2C23.43%2C0%2C0%2C0%2C14.52-5A11.7%2C11.7%2C0%2C0%2C1%2C7.89%2C34.94a11.4%2C11.4%2C0%2C0%2C0%2C2.2.21%2C11.56%2C11.56%2C0%2C0%2C0%2C3.08-.41A11.69%2C11.69%2C0%2C0%2C1%2C3.79%2C23.28v-.15a11.72%2C11.72%2C0%2C0%2C0%2C5.3%2C1.46A11.71%2C11.71%2C0%2C0%2C1%2C5.47%2C9%2C33.22%2C33.22%2C0%2C0%2C0%2C29.57%2C21.2%2C11.7%2C11.7%2C0%2C0%2C1%2C49.5%2C10.53a23.38%2C23.38%2C0%2C0%2C0%2C7.43-2.84%2C11.73%2C11.73%2C0%2C0%2C1-5.15%2C6.47%2C23.3%2C23.3%2C0%2C0%2C0%2C6.72-1.84A23.83%2C23.83%2C0%2C0%2C1%2C52.67%2C18.38Z%22%20fill%3D%22%233c3c3c%22%20%2F%3E%3C%2Fsvg%3E);
-            }
-            &.icon-misc-youtube {
-                background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2243%22%20viewBox%3D%220%200%2060%2043%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20fill%3D%22%233C3C3C%22%20d%3D%22M23.4%2C32.2V8.8L41%2C20.5L23.4%2C32.2L23.4%2C32.2z%20M59.9%2C9.3c0-5.1-4-9.3-9-9.3H8.9%20c-5%2C0-9%2C4.1-9%2C9.3v24.6c0%2C5.1%2C4%2C9.3%2C9%2C9.3h42.1c5%2C0%2C9-4.1%2C9-9.3V9.3L59.9%2C9.3z%22%2F%3E%3C%2Fsvg%3E);
-            }
-        }
-
-        a.list__link::before {
-            background-color: #dbebfd;
-            border-radius: 50%;
-            bottom: 0;
-            content: '';
-            display: block;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            -webkit-transform: scale(0);
-            -ms-transform: scale(0);
-            transform: scale(0);
-            -webkit-transform-origin: center;
-            -ms-transform-origin: center;
-            transform-origin: center;
-            -webkit-transition: -webkit-transform .3s ease-out;
-            transition: -webkit-transform .3s ease-out;
-            -o-transition: transform .3s ease-out;
-            transition: transform .3s ease-out;
-            transition: transform .3s ease-out, -webkit-transform .3s ease-out;
-            z-index: 1;
-        }
-
-        &:hover {
-            .list__link:hover::before {
-                -webkit-transform: scale(1);
-                -ms-transform: scale(1);
-                transform: scale(1);
+            a {
+                text-decoration: underline;
             }
         }
     }
 
-    .footer-logo {
-        display: block;
-        width: 6.25em;
-        height: 7.25em;
-        @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo-white');
-        background-size: contain;
-        margin-bottom: 0.75em;
+    .lbs-footer__icon-container {
+        display: flex;
+    }
+
+    .lbs-footer__icon {
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 1rem;
+        padding: 0.5rem;
+        border: 2px solid rgba(0,133,106,0.25);
+        border-radius: 50%;
+        vertical-align: middle;
+    }
+
+    .lbs-footer--secondary {
+        background-color: $white;
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            ul {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 0;
+
+                li {
+                    margin: 0;
+                    margin-bottom: 10px;
+
+                    a {
+                        font-size: 1rem;
+                    }
+                }
+
+                &.lbs-footer__navigation--social {
+                    flex-direction: row;
+                    margin-top: 1rem;
+                }
+            }
+        }
     }
 }
 

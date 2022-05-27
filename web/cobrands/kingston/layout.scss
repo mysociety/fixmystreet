@@ -105,10 +105,6 @@ textarea.form-error {
     border-radius: 4px;
 }
 
-.kingston-footer {
-    margin-top: 4em;
-}
-
 body.mappage #site-header {
     height: $mappage-header-height - 3px;
 }
@@ -127,9 +123,40 @@ body.twothirdswidthpage .content .sticky-sidebar {
 
 // FOOTER
 
-.site-footer {
-    .footer-logo {
-        width: 8em;
-        height: 9.31em;
+.lbs-footer {
+    .lbs-row__container {
+        margin: 0 auto;
+    }
+
+    ul {
+        font-size: 1.1875rem;
+        line-height: 1.31579;
+    }
+
+    .lbs-footer--secondary {
+        background-color: $white;
+
+        nav {
+            height: 55px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            ul {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                li {
+                    margin: 0 2rem 0 0;
+                    margin-bottom: 0.5em;
+                }
+
+                &.lbs-footer__navigation--social {
+                    margin-top: 0;
+                }
+            }
+        }
     }
 }
