@@ -7,11 +7,16 @@
 
 a,
 .fake-link {
+    text-decoration: underline;
     color: $shropshire-royal-blue;
     &:hover,
     &:active {
         color: $shropshire-dark-grey;
         // text-decoration: none;
+    }
+
+    #js-reports-list & {
+        text-decoration: none;
     }
 }
 
@@ -104,7 +109,7 @@ a:focus,
 
         ul {
             a {
-                font-size: 0.75em;
+                font-size: 1em;
                 text-decoration: none;
 
                 &:hover, &:focus {
