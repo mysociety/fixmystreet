@@ -50,6 +50,8 @@ You have signed up for the garden waste collection at [% ADDRESS %].
     Your subscription will start on the next garden waste collection date for your
     address after your garden waste bins are delivered. We will email you again
     when our waste team have delivered your bins.
+    [% ELSE %]
+    Your subscription will start from the following collection.
     [% END %]
 [% ELSIF action == 'add_containers' %]
     Your garden waste [% nget('bin', 'bins', report.get_extra_field_value('new_containers')) %] will be delivered to you within 20 working days.
