@@ -80,10 +80,10 @@ sub waste_payment_type {
     my ($self, $type, $ref) = @_;
 
     my ($sub_type, $category);
-    if ( $type eq 2 ) {
+    if ( $type eq '01' ) {
         $category = 'Garden Subscription';
         $sub_type = $self->waste_subscription_types->{New};
-    } elsif ( $type eq 1 ) {
+    } elsif ( $type eq 17 ) {
         $category = 'Garden Subscription';
         # XXX
         if ( $ref ) {
