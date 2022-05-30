@@ -364,12 +364,19 @@ sub bin_services_for_address {
                     next unless $_->{DatatypeName} eq $self->garden_echo_container_name; # DatatypeId 3346
                     my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                     foreach (@$moredata) {
-                        $garden_container = $_->{Value} if $_->{DatatypeName} eq 'Container Type'; # should be 26 or 28
+                        if ( $_->{DatatypeName} eq 'Container Type' ) { # should be 26 or 28
+                            $garden_container = $_->{Value};
+                        }
                         if ( $_->{DatatypeName} eq 'Quantity' ) {
                             $garden_bins = $_->{Value};
-                            $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
                         }
                     }
+                    if ($garden_container == 28) {
+                        $garden_cost = $self->garden_waste_sacks_cost_pa() / 100;
+                    } else {
+                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                    }
+
                 }
                 $request_max = $garden_bins;
 
