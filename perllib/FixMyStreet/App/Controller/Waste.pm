@@ -422,6 +422,7 @@ sub direct_debit : Path('dd') : Args(0) {
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->cobrand->call_hook( 'garden_waste_dd_check_success' => $c );
     my ($token, $id) = $c->cobrand->call_hook( 'garden_waste_dd_get_redirect_params' => $c );
     $c->forward('check_payment_redirect_id', [ $id, $token]);
     $c->cobrand->call_hook( 'garden_waste_dd_complete' => $c->stash->{report} );
@@ -439,14 +440,25 @@ sub direct_debit_complete : Path('dd_complete') : Args(0) {
 sub direct_debit_cancelled : Path('dd_cancelled') : Args(0) {
     my ($self, $c) = @_;
 
-    my $token = $c->get_param('reference');
-    my $id = $c->get_param('report_id');
+    my ($token, $id) = $c->cobrand->call_hook( 'garden_waste_dd_get_redirect_params' => $c );
     if ( $id && $token ) {
         $c->forward('check_payment_redirect_id', [ $id, $token ]);
         $c->forward('populate_dd_details');
     }
 
     $c->stash->{template} = 'waste/dd_cancelled.html';
+}
+
+sub direct_debit_error : Path('dd_error') : Args(0) {
+    my ($self, $c) = @_;
+
+    my ($token, $id) = $c->cobrand->call_hook( 'garden_waste_dd_get_redirect_params' => $c );
+    if ( $id && $token ) {
+        $c->forward('check_payment_redirect_id', [ $id, $token ]);
+        $c->forward('populate_dd_details');
+    }
+
+    $c->stash->{template} = 'waste/dd_error.html';
 }
 
 sub direct_debit_modify : Path('dd_amend') : Args(0) {

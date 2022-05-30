@@ -729,6 +729,20 @@ sub garden_waste_dd_redirect_url {
     return $c->cobrand->base_url_with_lang . "/waste/dd_complete";
 }
 
+sub garden_waste_dd_check_success {
+    my ($self, $c) = @_;
+
+    # check if the bank details have been verified
+    if ( lc $c->get_param('verificationapplied') eq 'true' ) {
+        # and if they have and verification has failed then redirect
+        # to the cancelled page
+        if ( lc $c->get_param('status') eq 'false') {
+            $c->forward('direct_debit_error');
+            $c->detach();
+        }
+    }
+}
+
 sub garden_waste_dd_get_redirect_params {
     my ($self, $c) = @_;
 

@@ -686,7 +686,7 @@ FixMyStreet::override_config {
         $mech->get("/waste/dd_complete?customData=reference:NOTATOKEN^report_id:$report_id");
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
-        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id");
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&status=True&verificationapplied=False");
         $mech->content_contains('confirmation details once your Direct Debit');
 
         $mech->get_ok('/waste/12345');
@@ -701,6 +701,59 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
+        $new_report->delete;
+    };
+
+    subtest 'check new sub direct debit payment failed payment' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                bins_wanted => 1,
+                payment_method => 'direct_debit',
+                name => 'Test McTest',
+                email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
+        $mech->content_like( qr/ddfirstamount[^>]*"35.00"/, 'first payment amount correct');
+
+        my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
+                id => $report_id,
+                extra => { like => '%redirect_id,T18:'. $token . '%' }
+        } )->first;
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - New', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+        is $new_report->get_extra_metadata('ddsubmitted'), undef, "direct debit not marked as submitted";
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('You have a pending garden subscription');
+        $mech->content_contains('Subscribe to garden waste collection');
+
+        $mech->get("/waste/dd_complete?customData=reference:NOTATOKEN^report_id:$report_id&status=False&verificationapplied=True");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&status=False&verificationapplied=True");
+        $mech->content_contains('There was a problem with your attempt to pay by Direct Debit');
+        $mech->content_contains('Retry to pay £35.00');
+        # need to get the token again as it's unique per request
+        ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('You have a pending garden subscription');
+        $mech->content_contains('Subscribe to garden waste collection');
+
+        $mech->email_count_is( 0, "no email sent for failed direct debit sub");
+
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&status=True&verificationapplied=False");
+        $mech->content_contains('confirmation details once your Direct Debit');
         $new_report->delete;
     };
 
