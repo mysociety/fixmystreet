@@ -85,6 +85,12 @@ sub garden_waste_no_bins {
                 },
             } ] },
         } },
+    }, {
+        # Eligibility for garden waste, but no task
+        Id => 1002,
+        ServiceId => 409,
+        ServiceName => 'Garden waste collection',
+        ServiceTasks => ''
     } ];
 }
 
@@ -111,6 +117,12 @@ sub garden_waste_only_refuse_sacks {
                 },
             } ] },
         } },
+    }, {
+        # Eligibility for garden waste, but no task
+        Id => 1002,
+        ServiceId => 409,
+        ServiceName => 'Garden waste collection',
+        ServiceTasks => ''
     } ];
 }
 

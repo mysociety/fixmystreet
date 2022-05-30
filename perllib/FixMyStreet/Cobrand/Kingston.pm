@@ -278,8 +278,8 @@ sub bin_services_for_address {
     $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
 
     my $result = $self->{api_serviceunits};
-    unless (@$result) {
-        # No domestic refuse collection, no garden collection possible
+    unless (@$result && grep { $_->{ServiceId} == 409 } @$result) {
+        # No garden collection possible
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
         return [];
     }
@@ -296,9 +296,6 @@ sub bin_services_for_address {
     my $refuse = $self->property_has_domestic_refuse($property->{id});
     if ($refuse) {
         $self->{c}->stash->{garden_sacks} = $refuse eq 'sack';
-    } else {
-        # No domestic refuse collection, no garden collection possible
-        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
 
     my @to_fetch;
