@@ -185,6 +185,8 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+sub waste_staff_choose_payment_method { 1 }
+
 use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
@@ -746,7 +748,7 @@ sub garden_waste_check_pending {
     my ($self, $report) = @_;
 
 
-    if ( $report && $report->get_extra_metadata('ddsubmitted') == 1 ) {
+    if ( $report && ($report->get_extra_metadata('ddsubmitted') || 0) == 1 ) {
         return $report;
     }
 

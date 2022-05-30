@@ -45,10 +45,6 @@ has_page sacks_details => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/sacks/subscribe_details.html',
     fields => ['payment_method', 'name', 'email', 'phone', 'continue_review'],
-    field_ignore_list => sub {
-        my $page = shift;
-        return ['payment_method'] if $page->form->c->stash->{staff_payments_allowed};
-    },
     update_field_list => sub {
         my $form = shift;
         my $cost_pa = $form->{c}->cobrand->garden_waste_sacks_cost_pa();

@@ -28,10 +28,6 @@ has_page sacks_details => (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/sacks/renew.html',
     fields => ['payment_method', 'name', 'phone', 'email', 'continue_review'],
-    field_ignore_list => sub {
-        my $page = shift;
-        return ['payment_method'] if $page->form->c->stash->{staff_payments_allowed};
-    },
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};

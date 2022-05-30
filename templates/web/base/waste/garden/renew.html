@@ -33,7 +33,7 @@
   </fieldset>
 
   <hr class="fieldset-hr">
-  [% IF NOT staff_payments_allowed %]
+  [% IF NOT staff_payments_allowed OR c.cobrand.waste_staff_choose_payment_method %]
   [% PROCESS form override_fields=['payment_method'] %]
   [% END %]
 

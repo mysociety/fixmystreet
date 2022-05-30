@@ -10,7 +10,8 @@ has_page intro => (
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'phone', 'email', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
-        return ['payment_method'] if $page->form->c->stash->{staff_payments_allowed};
+        my $c = $page->form->c;
+        return ['payment_method'] if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
     },
     update_field_list => sub {
         my $form = shift;

@@ -1239,12 +1239,12 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_renew');
-        $mech->content_lacks('Direct Debit', "no payment method on page");
         $mech->submit_form_ok({ with_fields => {
             name => 'a user',
             email => 'a_user@example.net',
             current_bins => 1,
             bins_wanted => 1,
+            payment_method => 'credit_card',
         }});
         $mech->content_contains('20.00');
 
@@ -1264,6 +1264,53 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($report);
         $report->delete; # Otherwise next test sees this as latest
+    };
+
+    subtest 'check staff renewal with direct debit' => sub {
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'a user',
+            email => 'a_user@example.net',
+            current_bins => 1,
+            bins_wanted => 1,
+            payment_method => 'direct_debit',
+        }});
+        $mech->content_contains('20.00');
+
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
+
+        my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
+                id => $report_id,
+                extra => { like => '%redirect_id,T18:'. $token . '%' }
+        } )->first;
+
+        is $new_report->category, 'Garden Subscription', 'correct category on report';
+        is $new_report->title, 'Garden Subscription - Renew', 'correct title on report';
+        is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+        is $new_report->get_extra_metadata('ddsubmitted'), undef, "direct debit not marked as submitted";
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('You have a pending garden subscription');
+
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id");
+        $mech->content_contains('confirmation details once your Direct Debit');
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
+        like $body, qr/reference number is RBK-GGW-$report_id/, 'email has ID in it';
+        $new_report->discard_changes;
+        is $new_report->state, 'unconfirmed', 'report still not confirmed';
+        is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
+        $new_report->delete;
     };
 
     subtest 'check modify sub staff' => sub {
@@ -1366,6 +1413,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
+                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -1497,10 +1545,10 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_renew');
-        $mech->content_lacks('Direct Debit', "no payment method on page");
         $mech->submit_form_ok({ with_fields => {
             name => 'a user',
             email => 'a_user@example.net',
+            payment_method => 'credit_card',
             current_bins => 1,
             bins_wanted => 1,
         }});
