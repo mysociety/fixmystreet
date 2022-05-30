@@ -65,12 +65,16 @@
 [% IF unit.garden_waste %]
 
     <dl class="govuk-summary-list">
-     [% IF unit.garden_bins %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Subscription</dt>
-        <dd class="govuk-summary-list__value">£[% tprintf('%.2f', unit.garden_cost )%] per year ([% unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) %])</dd>
+        <dd class="govuk-summary-list__value">
+          [% IF unit.garden_container == 28 %]
+            £[% tprintf('%.2f', unit.garden_cost) %] per year
+          [% ELSE %]
+            £[% tprintf('%.2f', unit.garden_cost) %] per year ([% unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) %])
+          [% END %]
+        </dd>
       </div>
-     [% END %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>   
         [% IF ( unit.garden_due || unit.garden_overdue ) && current_payment_method != 'direct_debit' %]
