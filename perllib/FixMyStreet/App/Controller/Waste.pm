@@ -428,6 +428,7 @@ sub direct_debit_complete : Path('dd_complete') : Args(0) {
 
     $c->send_email('waste/direct_debit_in_progress.txt', {
         to => [ [ $c->stash->{report}->user->email, $c->stash->{report}->name ] ],
+        sent_confirm_id_ref => $c->stash->{report}->id,
     } );
 
     $c->stash->{template} = 'waste/dd_complete.html';
