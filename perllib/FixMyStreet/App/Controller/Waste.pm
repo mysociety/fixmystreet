@@ -1353,10 +1353,10 @@ sub process_garden_renew : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-            $c->forward('csc_code');
-        } elsif ( $payment_method eq 'direct_debit' ) {
+        if ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit');
+        } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
+            $c->forward('csc_code');
         } else {
             $c->forward('pay', [ 'garden_renew' ]);
         }
@@ -1398,10 +1398,10 @@ sub process_garden_data : Private {
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
     } else {
-        if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-            $c->forward('csc_code');
-        } elsif ( $data->{payment_method} eq 'direct_debit' ) {
+        if ( $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
+        } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
+            $c->forward('csc_code');
         } else {
             $c->forward('pay', [ 'garden' ]);
         }

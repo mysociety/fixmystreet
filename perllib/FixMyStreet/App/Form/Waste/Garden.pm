@@ -53,8 +53,10 @@ has_page details => (
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'email', 'phone', 'password', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
-        return ['payment_method', 'password'] if $page->form->c->stash->{staff_payments_allowed};
-        return ['password'] if $page->form->c->cobrand->call_hook('waste_password_hidden');
+        my $c = $page->form->c;
+        return ['payment_method', 'password'] if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+        return ['password'] if $c->stash->{staff_payments_allowed};
+        return ['password'] if $c->cobrand->call_hook('waste_password_hidden');
     },
     update_field_list => \&details_update_fields,
     next => 'summary',
