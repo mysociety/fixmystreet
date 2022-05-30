@@ -32,12 +32,12 @@ has_page choice => (
 
 has_field container_choice => (
     type => 'Select',
-    label => 'Would you like bins or sacks?',
+    label => 'Would you like to subscribe for bins or sacks?',
     required => 1,
     widget => 'RadioGroup',
     options => [
-        { value => 'bin', label => '240L bin', hint => 'Some information about bins here' },
-        { value => 'sack', label => 'Garden sacks', hint => 'Some information about sacks here' },
+        { value => 'bin', label => 'Bins', hint => 'The same size as standard wheelie bins' },
+        { value => 'sack', label => 'Sacks', hint => 'Buy a roll of 10 sacks and use them anytime' },
     ],
 );
 
