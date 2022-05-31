@@ -1050,6 +1050,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
+        $mech->content_lacks('cheque');
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
             name => 'Test McTest',
@@ -1442,6 +1443,31 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         $report->delete; # Otherwise next test sees this as latest
     };
+
+    subtest 'staff create new subscription with a cheque' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'cheque',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('£20.00');
+        $mech->content_contains('1 bin');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my ($report_id) = $mech->content =~ m#RBK-GGW-(\d+)#;
+        my $report = FixMyStreet::DB->resultset('Problem')->search( { id => $report_id } )->first;
+
+        check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');
+        is $report->get_extra_field_value('LastPayMethod'), 4, 'correct echo payment method field';
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $report->delete; # Otherwise next test sees this as latest
+    };
+
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     remove_test_subs( $p->id );
@@ -1597,12 +1623,13 @@ sub check_extra_data_pre_confirm {
         new_bins => 1,
         action => 1,
         bin_type => 26,
+        payment_method => 'credit_card',
         @_
     );
     $report->discard_changes;
     is $report->category, 'Garden Subscription', 'correct category on report';
     is $report->title, "Garden Subscription - $params{type}", 'correct title on report';
-    is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+    is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
     is $report->get_extra_field_value('Subscription_Details_Quantity'), $params{quantity}, 'correct bin count';
     is $report->get_extra_field_value('Subscription_Details_Containers'), $params{bin_type}, 'correct bin type';
     if ($params{new_bins}) {

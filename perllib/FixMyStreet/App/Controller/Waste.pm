@@ -1352,6 +1352,9 @@ sub process_garden_renew : Private {
         $c->stash->{message} = 'Payment skipped on staging';
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+    } elsif ($c->cobrand->waste_cheque_payments && $data->{payment_method} eq 'cheque') {
+        $c->stash->{action} = 'new_subscription';
+        $c->forward('confirm_subscription', [ undef ] );
     } else {
         if ( $payment_method eq 'direct_debit' ) {
             $c->forward('direct_debit');
@@ -1397,6 +1400,9 @@ sub process_garden_data : Private {
         $c->stash->{message} = 'Payment skipped on staging';
         $c->stash->{reference} = $c->stash->{report}->id;
         $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+    } elsif ($c->cobrand->waste_cheque_payments && $data->{payment_method} eq 'cheque') {
+        $c->stash->{action} = 'new_subscription';
+        $c->forward('confirm_subscription', [ undef ]);
     } else {
         if ( $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
