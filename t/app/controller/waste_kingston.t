@@ -555,6 +555,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_contains('Your garden waste bin will');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
@@ -1089,6 +1090,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_contains('Your garden waste sacks will');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
