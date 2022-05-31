@@ -43,18 +43,26 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 </p>
 -->
 
+[% SET container = report.get_extra_field_value('Subscription_Details_Containers') %]
+[% SET new_bins = report.get_extra_field_value('new_containers') %]
+[% IF container == 28 %]
+    [% SET container_str = 'sacks' %]
+[% ELSE %]
+    [% SET container_str = nget('bin', 'bins', new_bins) %]
+[% END %]
+
 <p>
 [% IF action == 'new_subscription' %]
-    [% IF report.get_extra_field_value('new_containers') > 0 %]
-    Your garden waste [% nget('bin', 'bins', report.get_extra_field_value('new_containers')) %] will be delivered to you within 20 working days.
+  [% IF new_bins > 0 %]
+    Your garden waste [% container_str %] will be delivered to you within 20 working days.
     Your subscription will start on the next garden waste collection date for your
-    address after your garden waste bins are delivered. We will email you again
-    when our waste team have delivered your bins.
+    address after the delivery of your garden waste [% container_str %]. We will email you again
+    when our waste team have delivered your [% container_str %].
     [% ELSE %]
     Your subscription will start from the following collection.
     [% END %]
 [% ELSIF action == 'add_containers' %]
-    Your garden waste [% nget('bin', 'bins', report.get_extra_field_value('new_containers')) %] will be delivered to you within 20 working days.
+    Your garden waste [% container_str %] will be delivered to you within 20 working days.
 [% ELSE %]
     Changes to your subscription will show up on your bin calender shortly.
 [% END %]
@@ -67,7 +75,7 @@ Your garden waste needs to be at the boundary of your property by 6.30am on the 
 
 <p>
 <a target="_blank" href="https://www.kingston.gov.uk/bins-recycling-rubbish/recycling-rubbish-collections-guide/3">
-Find out what you can put in your garden waste bin on our website</a>.
+Find out what you can put in your garden waste [% container_str %] on our website</a>.
 </p>
 
 <p>
