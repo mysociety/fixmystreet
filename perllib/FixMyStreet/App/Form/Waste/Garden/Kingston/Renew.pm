@@ -19,8 +19,8 @@ has_field container_choice => (
     required => 1,
     widget => 'RadioGroup',
     options => [
-        { value => 'bin', label => 'Bins', hint => 'The same size as standard wheelie bins' },
-        { value => 'sack', label => 'Sacks', hint => 'Buy a roll of 10 sacks and use them anytime' },
+        { value => 'bin', label => 'Bins', hint => '240L capacity, which is about the same size as a standard wheelie bin' },
+        { value => 'sack', label => 'Sacks', hint => 'Buy a roll of 10 sacks and use them anytime within your subscription year' },
     ],
 );
 
