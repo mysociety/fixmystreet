@@ -599,6 +599,12 @@ sub waste_garden_sub_params {
         $c->set_param('dd_contact_id', $c->stash->{orig_sub}->get_extra_metadata('dd_contact_id'));
         $c->set_param('dd_mandate_id', $c->stash->{orig_sub}->get_extra_metadata('dd_mandate_id'));
     }
+
+    # 2022 renewals need to end in March 2023
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    if ($type && $type == $c->stash->{garden_subs}->{Renew} && $now->ymd("") < '20220701') {
+        $c->set_param('End_Date', '31/03/2023');
+    }
 }
 
 #sub waste_munge_request_data {
