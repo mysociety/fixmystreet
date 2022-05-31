@@ -9,11 +9,19 @@ has_field payment_method => (
     label => 'How do you want to pay?',
     required => 1,
     widget => 'RadioGroup',
-    options => [
+);
+
+sub options_payment_method {
+    my $form = shift;
+    my @options = (
         { value => 'direct_debit', label => 'Direct Debit', hint => 'Set up your payment details once, and we’ll automatically renew your subscription each year, until you tell us to stop. You can cancel or amend at any time.' },
         { value => 'credit_card', label => 'Debit or Credit Card' },
-    ],
-);
+    );
+    if ($form->{c}->cobrand->waste_cheque_payments) {
+        push @options, { label => 'Cheque', value => 'cheque' };
+    }
+    return @options;
+}
 
 has_field name => (
     type => 'Text',

@@ -186,6 +186,7 @@ sub image_for_unit {
 }
 
 sub waste_staff_choose_payment_method { 1 }
+sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
 
 use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
@@ -232,6 +233,7 @@ sub bin_payment_types {
         'csc' => 1,
         'credit_card' => 2,
         'direct_debit' => 3,
+        'cheque' => 4,
     };
 }
 

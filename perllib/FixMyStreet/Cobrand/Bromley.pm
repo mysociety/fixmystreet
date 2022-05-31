@@ -432,6 +432,7 @@ sub image_for_unit {
 }
 
 sub waste_staff_choose_payment_method { 0 }
+sub waste_cheque_payments { 0 }
 
 use constant GARDEN_WASTE_SERVICE_ID => 545;
 sub garden_service_name { 'Green Garden Waste collection service' }
