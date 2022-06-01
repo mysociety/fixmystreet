@@ -82,6 +82,7 @@ my @PLACES = (
     [ '?', 52.51093, -1.86514, 11809, 'West Midlands', 'EUR' ],
     [ '?', 51.379009, -2.359276, 2551, 'Bath and North East Somerset Council', 'UTA' ],
     [ 'The Circus', 51.386269, -2.364050, 2551, 'Bath and North East Somerset Council', 'UTA' ],
+    [ 'SM1 1AA', 51.359723, -0.193146, 2498, 'Sutton Council', 'LBO' ],
     [ 'SM4 5DX', 51.400975, -0.19655, 2500, 'Merton Council', 'LBO' ],
     [ 'SY4 5DL', 52.855684, -2.723877, 2238, 'Shropshire Council', 'UTA' ],
     # Norway

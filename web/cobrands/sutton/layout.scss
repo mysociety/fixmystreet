@@ -1,0 +1,168 @@
+@import "_colours";
+@import "../sass/layout";
+
+body {
+    background-color: $white;
+}
+
+#site-header {
+    min-height: $mappage-header-height;
+}
+
+.nav-wrapper {
+    .mappage & {
+        top: 10px;
+    }
+}
+
+.nav-menu--main {
+    // remove special styling for this nav item
+    a.report-a-problem-btn {
+        border-radius: 0;
+        margin: 0;
+
+        &:hover {
+            background-color: $nav_hover_background_colour;
+        }
+    }
+
+    a,
+    span,
+    a.report-a-problem-btn,
+    span.report-a-problem-btn {
+        padding: 0.5em 0.75em;
+        font-size: 18px;
+        font-weight: 700;
+        text-decoration: none;
+
+        &, &:hover {
+            color: $nav_colour;
+        }
+    }
+
+    // underlines for clickable nav items
+    a,
+    a.report-a-problem-btn {
+        &:hover {
+            color: $primary;
+            text-decoration: underline;
+        }
+    }
+
+    // darken background for selected nav item
+    span,
+    span.report-a-problem-btn {
+        &, &:hover {
+            background-color: $nav_hover_background_colour;
+        }
+    }
+}
+
+#front-main {
+    margin: 0 auto;
+    margin-top: 60px;
+    padding: 0 1em;
+    max-width: $container-max-width;
+    background: transparent;
+
+    #front-main-container {
+        max-width: none;
+        background: $white;
+        padding: 4%;
+    }
+
+    #postcodeForm {
+        overflow: visible;
+
+        div {
+            margin: 0;
+        }
+    }
+
+    h2 {
+        color: $black-l2;
+    }
+
+    a {
+        @include sutton-button;
+        border-width: 2px;
+        color: $green;
+
+        &:focus {
+            color: $black;
+        }
+
+        &:hover {
+            color: $white;
+        }
+    }
+}
+
+.content {
+    padding: 4%;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+input.form-error,
+textarea.form-error {
+    border-radius: 4px;
+}
+
+body.mappage #site-header {
+    height: $mappage-header-height - 3px;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    position: static;
+
+    aside {
+        position: static;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        margin: 0 0 2em 0;
+    }
+}
+
+// FOOTER
+
+.lbs-footer {
+    .lbs-row__container {
+        margin: 0 auto;
+    }
+
+    ul {
+        font-size: 1.1875rem;
+        line-height: 1.31579;
+    }
+
+    .lbs-footer--secondary {
+        background-color: $white;
+
+        nav {
+            height: 55px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            ul {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                li {
+                    margin: 0 2rem 0 0;
+                    margin-bottom: 0.5em;
+                }
+
+                &.lbs-footer__navigation--social {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+}
