@@ -980,7 +980,7 @@ FixMyStreet::override_config {
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->content_contains('Value must be between 0 and 6');
+        $mech->content_contains('Value must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 7,
@@ -988,7 +988,7 @@ FixMyStreet::override_config {
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->content_contains('Value must be between 0 and 6');
+        $mech->content_contains('Value must be between 1 and 6');
 
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 2 });

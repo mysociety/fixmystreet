@@ -127,7 +127,7 @@ has_field bins_wanted => (
         return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
     },
     required => 1,
-    range_start => 0,
+    range_start => 1,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     },
