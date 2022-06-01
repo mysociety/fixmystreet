@@ -1601,6 +1601,28 @@ subtest 'check direct debit reconcilliation' => sub {
 
     my $c = FixMyStreet::Cobrand::Bromley->new;
     warnings_are {
+        $c->waste_reconcile_direct_debits({ dry_run => 1 });
+    } [
+        "running in dry_run mode, no records will be created or updated\n",
+        "no matching record found for Garden Subscription payment with id GGW554321\n",
+        "no matching record found for Garden Subscription payment with id GGW554399\n",
+        "no matching service to renew for GGW754322\n",
+        "no matching record found for Garden Subscription payment with id GGW854324\n",
+        "no matching record found for Garden Subscription payment with id GGW954325\n",
+    ], "warns if no matching record";
+
+    $new_sub->discard_changes;
+    is $new_sub->state, 'unconfirmed', "New report not confirmed after dry run";
+    $renewal_from_cc_sub->discard_changes;
+    is $renewal_from_cc_sub->state, 'unconfirmed', "Renewal report not confirmed after dry run";
+    $ad_hoc->discard_changes;
+    is $ad_hoc->state, 'unconfirmed', "ad hoc report not confirmed after dry run";
+    $cancel_nothing_in_echo->discard_changes;
+    is $cancel_nothing_in_echo->state, 'unconfirmed', 'already cancelled report not hidded after dry_run';
+    $unprocessed_cancel->discard_changes;
+    is $unprocessed_cancel->state, 'unconfirmed', 'Unprocessed cancel is not confirmed after dry_run';
+
+    warnings_are {
         $c->waste_reconcile_direct_debits;
     } [
         "no matching record found for Garden Subscription payment with id GGW554321\n",
