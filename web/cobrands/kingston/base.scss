@@ -50,13 +50,22 @@ body {
 
 a,
 .fake-link {
-    &:hover,
-    &:active {
-        color: $link-color;
+    text-decoration: underline;
+
+    &:hover {
+        color: $link-hover-color;
     }
+
+    &:active {
+        color: $link-active-color;
+    }
+
     &:focus {
-        background-color: $link-color;
-        color: $white !important;
+        outline: 3px solid transparent;
+        color: $black;
+        background-color: $yellow;
+        box-shadow: 0 -2px $yellow, 0 4px $black;
+        text-decoration: none;
     }
 }
 
@@ -84,6 +93,7 @@ a,
 
     #postcodeForm {
         background: transparent;
+        font-family: $body-font;
 
         div {
             border: none;
@@ -104,7 +114,12 @@ a,
             input#sub {
                 margin-left: 0.5em;
                 font-size: 1.25em;
-                @include sutton-button($background-color: $green, $color: $white);            }
+                @include sutton-button($background-color: $green, $color: $white);
+            }
+        }
+
+        .form-hint {
+            color: $grey;
         }
     }
 
@@ -133,7 +148,7 @@ a#geolocate_link {
 }
 
 h1, h2, h3, .h1, .h2, .h3 {
-    font-family: $body-font;
+    font-family: $body-font !important;
     font-weight: bold;
 }
 
@@ -196,9 +211,21 @@ p.form-error {
     padding: 1.5em;
 }
 
+.item-list__item.item-list--reports__item {
+    a {
+        text-decoration: none;
+
+        &:focus {
+            background-color: $yellow;
+        }
+    }
+
+}
+
 #front_stats {
     color: $blue;
     background: transparent;
+    font-family: $body-font;
 }
 
 .btn,
@@ -303,6 +330,7 @@ body.twothirdswidthpage .content .sticky-sidebar {
     a[role="button"] {
         display: block;
         text-align: center;
+        text-decoration: none;
     }
 
     ul {
@@ -316,10 +344,6 @@ body.twothirdswidthpage .content .sticky-sidebar {
         li {
             list-style: none;
             margin-bottom: 10px;
-
-            a {
-                text-decoration: underline;
-            }
         }
     }
 
