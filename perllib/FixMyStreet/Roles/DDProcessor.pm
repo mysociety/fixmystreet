@@ -60,6 +60,9 @@ sub waste_reconcile_direct_debits {
     my $user = $self->body->comment_user;
 
     $log_level = "DEBUG" if $params->{verbose};
+    my $dry_run = $params->{dry_run};
+
+    warn "running in dry_run mode, no records will be created or updated\n" if $dry_run;
 
     my $today = DateTime->now;
     my $start = $today->clone->add( days => -14 );
@@ -138,8 +141,8 @@ sub waste_reconcile_direct_debits {
                     $self->output_log(1);
                     next;
                 }
-                my $renew = $self->_duplicate_waste_report($p, $uprn, $service, $payment);
-                $handled = $renew->id;
+                my $renew = $self->_duplicate_waste_report($p, $uprn, $service, $payment, $dry_run);
+                $handled = $dry_run ? 1 : $renew->id;
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
         # a record in the database as they are the result of user action
@@ -156,11 +159,11 @@ sub waste_reconcile_direct_debits {
 
                 $self->log("found matching report " . $cur->id . " with state " . $cur->state);
                 if ( $cur->state eq 'unconfirmed' && !$handled) {
-                    $self->_confirm_dd_report($type, $cur, $payment);
+                    $self->_confirm_dd_report($type, $cur, $payment, $dry_run);
                     $handled = $cur->id;
                 } elsif ( $cur->state eq 'unconfirmed' ) {
                     # if we've pulled out more that one record, e.g. because they failed to make a payment then skip remaining ones.
-                    $self->_hide_matching_dd_report($cur, $handled, $user);
+                    $self->_hide_matching_dd_report($cur, $handled, $user, $dry_run);
                 } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date)  {
                     $self->log("skipping matching report " . $cur->id);
                     next RECORD;
@@ -228,13 +231,13 @@ sub waste_reconcile_direct_debits {
                 $r->set_extra_metadata('dd_date', $payment->date);
                 $self->log("confirming report");
                 $r->confirm;
-                $r->update;
+                $r->update unless $dry_run;
             # there's no service but we don't want to be processing the report all the time.
             } else {
                 $self->log("hiding report");
                 $r->state('hidden');
-                $r->add_to_comments( { text => 'Hiding report as no existing service', user => $user, problem_state => $r->state } );
-                $r->update;
+                $r->add_to_comments( { text => 'Hiding report as no existing service', user => $user, problem_state => $r->state } ) unless $dry_run;
+                $r->update unless $dry_run;
             }
         } else {
             # We don't do anything with DD cancellations that don't have
@@ -268,7 +271,7 @@ sub _report_matches_payment {
 }
 
 sub _duplicate_waste_report {
-    my ($self, $report, $uprn, $service, $payment) = @_;
+    my ($self, $report, $uprn, $service, $payment, $dry_run) = @_;
 
     my $extra = {
         $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
@@ -306,13 +309,13 @@ sub _duplicate_waste_report {
     $renew->set_extra_metadata('payerReference', $payment->payer);
     $renew->set_extra_metadata('dd_date', $payment->date);
     $renew->confirm;
-    $renew->insert;
-    $self->log("created new confirmed report: " . $renew->id);
+    $renew->insert unless $dry_run;
+    $self->log("created new confirmed report: " . $renew->id) unless $dry_run;
     return $renew;
 }
 
 sub _confirm_dd_report {
-    my ($self, $type, $cur, $payment) = @_;
+    my ($self, $type, $cur, $payment, $dry_run) = @_;
 
     if ( $type eq 'New' ) {
         $self->log("matching report is New " . $cur->id);
@@ -333,17 +336,17 @@ sub _confirm_dd_report {
     } );
     $self->add_new_sub_metadata($cur, $payment);
     $cur->confirm;
-    $cur->update;
+    $cur->update unless $dry_run;
     $self->log("confirming matching report " . $cur->id);
 }
 
 sub _hide_matching_dd_report {
-    my ($self, $cur, $handled, $user) = @_;
+    my ($self, $cur, $handled, $user, $dry_run) = @_;
 
     $self->log("hiding matching report $handled");
     $cur->state('hidden');
-    $cur->add_to_comments( { text => "Hiding report as handled elsewhere by report $handled", user => $user, problem_state => $cur->state } );
-    $cur->update;
+    $cur->add_to_comments( { text => "Hiding report as handled elsewhere by report $handled", user => $user, problem_state => $cur->state } ) unless $dry_run;
+    $cur->update unless $dry_run;
 }
 
 sub _process_reference {
