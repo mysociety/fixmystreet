@@ -98,7 +98,7 @@ has_field existing_number => (
         my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
         if ( $self->parent->field('existing')->value eq 'yes' ) {
             $self->add_error('Please specify how many bins you already have')
-                unless $self->value;
+                unless length $self->value;
             $self->add_error("Existing bin count must be between 1 and $max_bins")
                 if $self->value < 1 || $self->value > $max_bins;
         } else {
@@ -174,7 +174,7 @@ has_field submit => (
 sub validate {
     my $self = shift;
     $self->add_form_error('Please specify how many bins you already have')
-        unless $self->field('existing')->is_inactive || $self->field('existing')->value eq 'no' || $self->field('existing_number')->value;
+        unless $self->field('existing')->is_inactive || $self->field('existing')->value eq 'no' || length $self->field('existing_number')->value;
 
     my $max_bins = $self->{c}->stash->{garden_form_data}->{max_bins};
     unless ( $self->field('current_bins')->is_inactive ) {

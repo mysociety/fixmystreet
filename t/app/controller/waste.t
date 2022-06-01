@@ -950,7 +950,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'yes' } });
         $mech->content_contains('Please specify how many bins you already have');
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 0 } });
-        $mech->content_contains('Please specify how many bins you already have');
+        $mech->content_contains('Existing bin count must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 7 } });
         $mech->content_contains('Existing bin count must be between 1 and 6');
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
