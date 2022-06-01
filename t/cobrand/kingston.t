@@ -489,6 +489,10 @@ FixMyStreet::override_config {
                                 retryCount => 0,
                                 serviceUserNumber => 1,
                             } } ] } ] },
+                            { values => [ { resultValues => [ { value => {
+                                '@type' => "long",
+                                '$value' => 13,
+                            } } ] } ] },
                         ]
                 };
             } elsif ( $method eq 'query/execute#getCancelledPayers' ) {
@@ -553,6 +557,10 @@ FixMyStreet::override_config {
                                 reference => get_reference("RBK6654326", $id_replacements),
                                 sortCode => "12345",
                                 status => "CANCELLED",
+                            } } ] } ] },
+                            { values => [ { resultValues => [ { value => {
+                                '@type' => "long",
+                                '$value' => 5,
                             } } ] } ] },
                         ]
                 };
