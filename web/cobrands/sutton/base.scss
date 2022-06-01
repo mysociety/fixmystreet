@@ -1,0 +1,458 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "../sass/base";
+@import "../sass/waste";
+@import "../fixmystreet-uk-councils/societyworks-footer";
+
+// BASIC STYLING
+
+* {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    // This will override the use of the default "Helmet" font in some elements.
+    font-family: $body-font !important;
+    color: $primary_b;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, .h1, .h2, .h3 {
+    font-family: $body-font;
+    font-weight: bold;
+}
+
+h1, .h1 {
+    font-size: 2em;
+    line-height: 1.25em;
+}
+
+h2, .h2 {
+    font-size: 1.5em;
+}
+
+h3, .h3 {
+    font-size: 1.17em;
+}
+
+.visually-hidden {
+    @include visually-hidden;
+}
+
+a,
+.fake-link {
+    text-decoration: underline;
+
+    &:hover {
+        color: $link-hover-color;
+    }
+
+    &:active {
+        color: $link-active-color;
+    }
+
+    &:focus {
+        outline: 3px solid transparent;
+        color: $black;
+        background-color: $yellow;
+        box-shadow: 0 -2px $yellow, 0 4px $black;
+        text-decoration: none;
+    }
+}
+
+.fake-link:focus,
+#nav-link.focussed,
+.olButton:focus {
+    text-decoration: underline;
+    
+}
+
+.content {
+    padding-top: 1em;
+}
+
+.sutton-gradient {
+    background: linear-gradient(45deg,$green 5%,#00715a 20%,$green 60%,$green-l2);
+}
+
+// HEADER
+
+#site-header {
+    border-top-width: 0;
+    border-bottom: 5px solid $green;
+}
+
+#site-logo {
+    width: 8.56rem;
+    height: $mappage-header-height;
+    // Using line-height to vertically align the logo
+    line-height: $mappage-header-height;
+    background-image: url('images/sutton-logo.png');
+    background-size: contain;
+
+    .mappage & {
+        height: $mappage-header-height;
+    }
+}
+
+.nav-menu {
+    a {
+        background-color: #CFDCDA;
+        color: $black;
+        font-weight: bold;
+        text-decoration: none;
+    }
+}
+
+// GENERAL
+
+.page-title-wrapper {
+    padding: 1em 1em;
+    h1 {
+        color: $white;
+        margin-bottom: 0;
+        margin-top: 0;
+    }
+}
+
+.olButton:focus {
+    z-index: 1; // pull forward, so entire outline is visible
+}
+
+#report-cta {
+    border-color: $white;
+}
+
+#front-main {
+    text-align: left;
+
+    #postcodeForm {
+        background: transparent;
+        font-family: $body-font;
+
+        div {
+            border: none;
+            background: transparent;
+
+            $border-radius: 50px;
+            input#pc {
+                @include sutton-form-input($margin: 0 0 0 0, $padding: 5px 0.5em);
+                font-size: 1.25em;
+
+                &:hover {
+                    background-color: $white;
+                }
+            }
+
+            input#sub {
+                margin-left: 0.5em;
+                font-size: 1.25em;
+                @include sutton-button($background-color: $green, $color: $white);
+            }
+        }
+
+        .form-hint {
+            color: $grey;
+        }
+    }
+
+    h2 {
+        font-style: inherit;
+        color: $black-l2;
+    }
+}
+
+a#geolocate_link {
+    @include sutton-button();
+}
+
+label {
+    @include sutton-form-label();
+}
+
+.form-control {
+    @include sutton-form-input();
+
+    .form-txt-submit-box & {
+        margin: 0 0 0.5em 0;
+    }
+}
+
+input[type="submit"] {
+    border-radius: 5px;
+}
+
+.multi-select-button {
+    &:focus {
+        outline: none;
+        border: 1px solid #52A8EC;
+        box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
+    }
+}
+
+input.form-error,
+textarea.form-error {
+    background: #FBE3E4;
+    border: 1px solid #FBC2C4;
+    border-radius: 4px;
+}
+
+div.form-error,
+p.form-error {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+
+    color: #A22C2E;
+    font-weight: 700;
+}
+
+.dropzone {
+    padding: 1.5em;
+}
+
+.item-list__item.item-list--reports__item {
+    a {
+        text-decoration: none;
+
+        &:focus {
+            background-color: $yellow;
+        }
+    }
+
+}
+
+#front_stats {
+    color: $blue;
+    background: transparent;
+    font-family: $body-font;
+}
+
+.btn,
+.green-btn,
+.lbs-button--tertiary {
+    @include sutton-button;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    aside {
+        margin: 1em 0 2em 0;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.5em;
+    }
+
+    li {
+        margin: 0 0.5em;
+    }
+}
+
+.skiplink:focus {
+    border: 1px solid #FFFFFF;
+    background: #2C2C2C;
+    padding: 6px;
+    color: #FFFFFF;
+    min-width: 150px;
+    outline: none;
+    text-align: center;
+    border-radius: 6px;
+    box-shadow: 2px 2px 5px #5F5F5F;
+
+    top: 0.5em;
+    left: 0.5em;
+}
+
+.item-list__item--empty {
+    color: $blue;
+}
+
+.box-warning {
+    background-color: $yellow;
+}
+
+.segmented-control.segmented-control--radio {
+    // Overrides .segmented-control--radio input:checked+label from FMS _base.scss
+    input:checked+label {
+        @include sutton-button($background-color: $green, $color: $white);
+        color: $white !important;
+        &:hover {
+            color: $green !important;
+        }
+    }
+    label.btn {
+        @include sutton-button;
+        color: $green !important;
+        &:hover {
+            color: $white !important;
+        }
+        &:focus {
+            color: $black !important;
+        }
+    }
+}
+
+// ADMIN
+
+.my-account-buttons {
+    text-align: right;
+}
+
+.fms-admin-info {
+    border-color: $green;
+    background-color: mix($green, $white, 15%);
+}
+
+// FOOTER
+.lbs-footer {
+    border-top: 5px solid $green;
+    background-color: lighten($grey-l1, 10%);
+
+    .lbs-row__container {
+        max-width: $container-max-width;
+        margin-right: 15px;
+        margin-left: 15px;
+        padding: 1rem 0;
+    }
+
+    h2 {
+        margin-top: 0.5em;
+    }
+
+    a[role="button"] {
+        display: block;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    ul {
+        color: $black;
+        margin-top: 0;
+        margin-bottom: 15px;
+        margin-left: 0;
+        padding-left: 0;
+        list-style-type: none;
+
+        li {
+            list-style: none;
+            margin-bottom: 10px;
+        }
+    }
+
+    .lbs-footer__icon-container {
+        display: flex;
+    }
+
+    .lbs-footer__icon {
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 1rem;
+        padding: 0.5rem;
+        border: 2px solid rgba(0,133,106,0.25);
+        border-radius: 50%;
+        vertical-align: middle;
+    }
+
+    .lbs-footer--secondary {
+        background-color: $white;
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            ul {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 0;
+
+                li {
+                    margin: 0;
+                    margin-bottom: 10px;
+
+                    a {
+                        font-size: 1rem;
+                    }
+                }
+
+                &.lbs-footer__navigation--social {
+                    flex-direction: row;
+                    margin-top: 1rem;
+                }
+            }
+        }
+    }
+}
+
+.societyworks-footer {
+    text-align: center;
+}
+
+// WASTEWORKS
+.waste {
+    .content[role="main"] {
+        background-color: $white;
+
+        label {
+            margin-bottom: 0.5em;
+        }
+
+        input#postcode {
+            @include sutton-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+
+            &:hover {
+                background-color: $white;
+            }
+        }
+
+        input#go {
+            margin-left: 5px;
+            @include sutton-button($background-color: $green, $color: $white);
+        }
+    }
+
+    form.waste--uprn {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+
+        .govuk-button {
+            height: 40px;
+            line-height: 1rem;
+            margin-bottom: 0;
+        }
+    } 
+    .govuk-button {
+        @include sutton-button;
+        // Corrects the default behaviour top:2px;
+        &:active {
+            top: 0;
+        }
+    }
+}
+
+input[type="text"], input[type="email"], textarea {
+    &.govuk-input {
+        @include sutton-form-input;
+    }
+}
+
+.govuk-radios__input:focus + .govuk-radios__label:before {
+    border-width: 3px;
+    // Overrides the inherit behaviour from govuk
+    box-shadow: 0 0 0 3px mix($green, $white, 65%) !important;
+}
+
+.govuk-list.govuk-error-summary__list {
+    margin-left: 0;
+
+    li {
+        list-style: none;
+    }
+}

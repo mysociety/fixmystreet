@@ -146,10 +146,16 @@ sub _schedule_object {
 
 sub _parse_schedules {
     my $servicetask = shift;
+    my $desc_to_use = shift || 'schedule';
     my $schedules = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
     my ($min_next, $max_last, $description, $max_end_date);
+
+    if ($desc_to_use eq 'task') {
+        $description = $servicetask->{ScheduleDescription};
+    }
+
     foreach my $schedule (@$schedules) {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
         my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
@@ -162,7 +168,7 @@ sub _parse_schedules {
         $d = undef if $d && $d->strftime('%F') lt $start_date; # Shouldn't happen
         if ($d && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($next, $d);
-            $description = $schedule->{ScheduleDescription};
+            $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
         }
 
         next if $start_date gt $today; # Shouldn't have a LastInstance in this case, but some bad data
@@ -173,7 +179,7 @@ sub _parse_schedules {
         # be in the future. If so, we should treat it like it is a next instance.
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($last, $d);
-            $description = $schedule->{ScheduleDescription};
+            $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
             $max_last = _schedule_object($last, $d);
         }

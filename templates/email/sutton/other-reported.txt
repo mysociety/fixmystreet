@@ -1,7 +1,7 @@
 [% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' ~%]
 [% PROCESS 'other-reported-garden.txt' ~%]
 [% ELSE ~%]
-Subject: Your report has been logged, reference RBK-[% report.id %]
+Subject: Your report has been logged, reference LBS-[% report.id %]
 
 Dear [% report.name %],
 
