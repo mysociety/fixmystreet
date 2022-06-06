@@ -188,6 +188,24 @@ sub image_for_unit {
 sub waste_staff_choose_payment_method { 1 }
 sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
 
+sub waste_event_state_map {
+    return {
+        New => { New => 'confirmed' },
+        Pending => {
+            Unallocated => 'investigating',
+            #'Allocated to Crew' => 'action scheduled',
+            #Accepted => 'action scheduled',
+        },
+        Closed => {
+            Closed => 'fixed - council',
+            Completed => 'fixed - council',
+            'Not Completed' => 'unable to fix',
+            'Partially Completed' => 'closed',
+            Rejected => 'closed',
+        },
+    };
+}
+
 use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }

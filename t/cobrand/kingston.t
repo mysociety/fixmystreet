@@ -866,6 +866,83 @@ FixMyStreet::override_config {
     };
 };
 
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'updating of waste reports' => sub {
+    my $integ = Test::MockModule->new('SOAP::Lite');
+    $integ->mock(call => sub {
+        my ($cls, @args) = @_;
+        my $method = $args[0]->name;
+        if ($method eq 'GetEvent') {
+            my ($key, $type, $value) = ${$args[3]->value}->value;
+            my $external_id = ${$value->value}->value->value;
+            my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            return SOAP::Result->new(result => {
+                EventStateId => $event_state_id,
+                EventTypeId => '1638',
+                LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
+                ResolutionCodeId => $resolution_code,
+            });
+        } elsif ($method eq 'GetEventType') {
+            return SOAP::Result->new(result => {
+                Workflow => { States => { State => [
+                    { CoreState => 'New', Name => 'New', Id => 15001 },
+                    { CoreState => 'Pending', Name => 'Unallocated', Id => 15002 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
+                ] } },
+            });
+        } else {
+            is $method, 'UNKNOWN';
+        }
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'kingston',
+        COBRAND_FEATURES => {
+            echo => { kingston => { url => 'https://www.example.org/' } },
+            waste => { kingston => 1 }
+        },
+    }, sub {
+        my @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
+            category => 'Report missed collection',
+            cobrand_data => 'waste',
+        });
+        $reports[1]->update({ external_id => 'something-else' }); # To test loop
+        my $report = $reports[0];
+        my $cobrand = FixMyStreet::Cobrand::Kingston->new;
+
+        $report->update({ external_id => 'waste-15001-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 0, 'No new update';
+        is $report->state, 'confirmed', 'No state change';
+
+        $report->update({ external_id => 'waste-15002-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state investigating, Unallocated/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'A new update';
+        my $update = $report->comments->first;
+        is $update->text, 'Unallocated';
+        is $report->state, 'investigating', 'A state change';
+
+        $report->update({ external_id => 'waste-15003-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'No new update';
+        is $report->state, 'investigating', 'State unchanged';
+    };
+};
+
 sub setup_dd_test_report {
     my $extras = shift;
     my ($report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {

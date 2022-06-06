@@ -319,21 +319,7 @@ sub waste_get_event_type {
 
     my $event_type = $cfg->{echo}->GetEventType($id);
 
-    my $state_map = {
-        New => { New => 'confirmed' },
-        Pending => {
-            Unallocated => 'investigating',
-            'Allocated to Crew' => 'action scheduled',
-            Accepted => 'action scheduled',
-        },
-        Closed => {
-            Closed => 'fixed - council',
-            Completed => 'fixed - council',
-            'Not Completed' => 'unable to fix',
-            'Partially Completed' => 'closed',
-            Rejected => 'closed',
-        },
-    };
+    my $state_map = $self->waste_event_state_map;
 
     my $states = $event_type->{Workflow}->{States}->{State};
     my $data;
