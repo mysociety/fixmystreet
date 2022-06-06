@@ -67,22 +67,24 @@ $container-max-width: 1024px;
     padding: $padding;
     border-radius: 25px;
     border: 4px solid $primary;
-    background: $primary !important;
-    color: $white !important;
+    background: $primary;
+    color: $white;
+    text-decoration: none;
 
     // This gets rid of the .govuk-button box-shadow
     box-shadow: none;
 
     &:hover, &:focus {
+        // Overrides .govuk-button:focus:not(:active):not(:hover)
         background: $white !important;
         color: $primary !important;
-        border-color: $primary;
+        border-color: $primary !important;
         outline:none;
         text-decoration: none;
     }
 
     &:focus {
-        text-decoration: underline !important;
+        text-decoration: underline;
     }
 
     &.govuk-button:focus:not(:active):not(:hover) {
