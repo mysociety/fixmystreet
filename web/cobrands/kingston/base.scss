@@ -45,13 +45,20 @@ body {
 
 a,
 .fake-link {
+    text-decoration: underline;
+
     &:hover,
     &:active {
-        color: $link-color;
+        color: $link-hover-color;
     }
+
     &:focus {
         background-color: $link-color;
-        color: $white !important;
+        color: $white;
+
+        small {
+            color: transparentize($color: $white, $amount: 0.3)
+        }
     }
 }
 
@@ -59,7 +66,19 @@ a,
 #nav-link.focussed,
 .olButton:focus {
     text-decoration: underline;
-    
+}
+
+.item-list--reports__item a,
+.item-list--wards__item a {
+    @extend .fake-link;
+    text-decoration: none;
+
+    &:focus {
+        text-decoration: none;
+        small {
+            color: transparentize($color: $white, $amount: 0.3)
+        }
+    }
 }
 
 .olButton:focus {
