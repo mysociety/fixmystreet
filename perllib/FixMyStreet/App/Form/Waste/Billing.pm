@@ -17,6 +17,9 @@ sub options_payment_method {
         { value => 'direct_debit', label => 'Direct Debit', hint => 'Set up your payment details once, and we’ll automatically renew your subscription each year, until you tell us to stop. You can cancel or amend at any time.' },
         { value => 'credit_card', label => 'Debit or Credit Card' },
     );
+    if ($form->{c}->stash->{waste_features}->{dd_disabled}) {
+        shift @options;
+    }
     if ($form->{c}->cobrand->waste_cheque_payments) {
         push @options, { label => 'Cheque', value => 'cheque' };
     }
