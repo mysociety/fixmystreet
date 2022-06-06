@@ -9,6 +9,11 @@
         width: 3.43rem;
         height: 4rem;
     }
+
+    &:focus {
+        outline: 2px solid $blue;
+        background-color: $white;
+    }
 }
 
 .nav-wrapper {
@@ -23,40 +28,23 @@
     a.report-a-problem-btn {
         border-radius: 0;
         margin: 0;
-
-        &:hover {
-            background-color: $nav_hover_background_colour;
-        }
+        @include kingston-button-primary;
     }
 
     a,
     span,
-    a.report-a-problem-btn,
     span.report-a-problem-btn {
         padding: 0.5em 0.75em;
         font-size: 18px;
         font-weight: 700;
         text-decoration: none;
-
-        &, &:hover {
-            color: $nav_colour;
-        }
     }
 
-    // underlines for clickable nav items
-    a,
-    a.report-a-problem-btn {
-        &:hover {
-            color: $primary;
+    a {
+        &:hover, &:focus {
+            background-color: $blue;
+            color: $white;
             text-decoration: underline;
-        }
-    }
-
-    // darken background for selected nav item
-    span,
-    span.report-a-problem-btn {
-        &, &:hover {
-            background-color: $nav_hover_background_colour;
         }
     }
 }
