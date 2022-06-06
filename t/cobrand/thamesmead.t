@@ -1,5 +1,6 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
+
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -211,6 +212,30 @@ subtest "Thamesmead categories don't appear on council cobrands or FMS" => sub {
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
         $mech->content_contains('Bexley graffiti');
         $mech->content_lacks('Thamesmead graffiti');
+    };
+};
+
+subtest "Thamesmead staff comments are ascribed to Peabody" => sub {
+    FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'thamesmead' ],
+    }, sub {
+
+        my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+        areas => "2493,", category => 'Overgrown shrub beds', cobrand => 'thamesmead',
+        user => $user1});
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
+            problem_state => 'confirmed',
+            problem_id => $problem->id,
+            user_id    => $staff_user->id,
+            name       => 'User',
+            text       => "Test comment",
+            state      => 'confirmed',
+            confirmed  => 'now()',
+        } );
+
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains("Posted by <strong>Peabody</strong>");
     };
 };
 

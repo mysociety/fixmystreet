@@ -308,6 +308,8 @@ sub meta_line {
                 $body = 'Hounslow Highways';
             } elsif ($body eq 'Isle of Wight Council') {
                 $body = 'Island Roads';
+            } elsif ($body eq 'Thamesmead') {
+               $body = 'Peabody';
             }
         }
         my $cobrand_always_view_body_user = $cobrand->call_hook(always_view_body_contribute_details => $contributed_as);
