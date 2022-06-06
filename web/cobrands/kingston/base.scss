@@ -81,6 +81,18 @@ a,
     }
 }
 
+.nav-menu a {
+    text-decoration: none;
+    &:focus {
+        color: $white;
+        text-decoration: underline;
+    }
+}
+
+#report-cta {
+    @include kingston-button-primary;
+}
+
 .olButton:focus {
     z-index: 1; // pull forward, so entire outline is visible
 }
