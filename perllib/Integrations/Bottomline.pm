@@ -192,9 +192,38 @@ sub amend_plan {
     my ($self, $args) = @_;
 
     my $sub = $args->{orig_sub};
-    my $plan = $self->get_plan_for_mandate($sub->get_extra_metadata('dd_mandate_id'));
+    my $current_plan = $self->get_plan_for_mandate(
+        $sub->get_extra_metadata('dd_mandate_id')
+    );
 
-    $plan->{regularAmount} = $args->{amount};
+    return 0 unless $current_plan->{regularAmount};
+
+    $current_plan->{description} =~ s/$current_plan->{regularAmount}/$args->{amount}/g;
+
+    my $plan = ixhash(
+        '@type' => $current_plan->{'@type'},
+        amountType => $current_plan->{amountType},
+        regularAmount => $args->{amount},
+        firstAmount => $current_plan->{firstAmount},
+        lastAmount => $current_plan->{lastAmount},
+        totalAmount => $current_plan->{totalAmount},
+        id => $current_plan->{id},
+        mandateId => $current_plan->{mandateId},
+        profileId => $current_plan->{profileId},
+        status => $current_plan->{status},
+        extracted => $current_plan->{extracted},
+        description => $current_plan->{description},
+        schedule => ixhash(
+            numberOfOccurrences => $current_plan->{schedule}->{numberOfOccurrences},
+            schedulePattern => $current_plan->{schedule}->{schedulePattern},
+            frequencyEnd => $current_plan->{schedule}->{frequencyEnd},
+            comments => $current_plan->{schedule}->{comments},
+            startDate => $current_plan->{schedule}->{startDate},
+            endDate => $current_plan->{schedule}->{endDate},
+        ),
+        monthOfYear => $current_plan->{monthOfYear},
+        monthDays => $current_plan->{monthDays},
+    );
 
     my $path = sprintf(
         "ddm/contacts/%s/mandates/%s/payment-plans/%s",
@@ -203,7 +232,7 @@ sub amend_plan {
         $plan->{id},
     );
 
-    my $resp = $self->call($path, { "YearlyPaymentPlan" => $plan }, 'PUT');
+    my $resp = $self->call($path, $plan, 'PUT');
 
     if ( ref $resp eq 'HASH' and $resp->{error} ) {
         return 0;

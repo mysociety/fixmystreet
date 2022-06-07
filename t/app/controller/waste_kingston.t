@@ -1600,7 +1600,7 @@ FixMyStreet::override_config {
             dueDate => $ad_hoc_payment_date,
             paymentType => 'DEBIT',
         }, "correct direct debit ad hoc payment params sent";
-        is $dd_sent_params->{amend_plan}->{YearlyPaymentPlan}->{regularAmount}, '40.00', "correct direct debit amendment params sent";
+        is $dd_sent_params->{amend_plan}->{regularAmount}, '40.00', "correct direct debit amendment params sent";
     };
 
     $dd_sent_params = {};
