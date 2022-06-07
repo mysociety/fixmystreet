@@ -864,55 +864,6 @@ FixMyStreet::override_config {
         is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
 
     };
-
-    subtest 'Garden Waste new subs alert update emails contain bin collection days link' => sub {
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => 'bromley',
-        }, sub {
-            $mech->clear_emails_ok;
-
-            my $property_id = '54323';
-
-            my $new_sub = setup_dd_test_report({ property_id => $property_id });
-
-            my $update = FixMyStreet::DB->resultset('Comment')->find_or_create({
-                problem_state => 'action scheduled',
-                problem_id => $new_sub->id,
-                user_id    => $staffuser->id,
-                name       => 'Staff User',
-                mark_fixed => 'f',
-                text       => "Green bin on way",
-                state      => 'confirmed',
-                confirmed  => 'now()',
-                anonymous  => 'f',
-            });
-
-            my $alert = FixMyStreet::DB->resultset('Alert')->create({
-                user => $user,
-                parameter => $new_sub->id,
-                alert_type => 'new_updates',
-                whensubscribed => '2021-09-27 12:00:00',
-                cobrand => 'bromley',
-                cobrand_data => 'waste',
-            });
-            $alert->confirm;
-
-            FixMyStreet::Script::Alerts::send_updates();
-
-            my $email = $mech->get_email;
-            my $text_body = $mech->get_text_body_from_email($email);
-            like $text_body, qr/Check your bin collections day/, 'has bin day link text in text part';
-            my @links = $mech->get_link_from_email($email, 'get_all_links');
-            my $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @links;
-            ok $found, 'Found bin day URL in text part of alert email';
-
-            my $html_body = $mech->get_html_body_from_email($email);
-            like $html_body, qr/Check your bin collections day/, 'has bin day link text in HTML part';
-            my @uris = $html_body =~ m/$RE{URI}/g;
-            $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @uris;
-            ok $found, 'Found bin day URL in HTML part of alert email';
-        }
-    };
 };
 
 package SOAP::Result;
@@ -998,7 +949,7 @@ sub setup_dd_test_report {
         category => 'Garden Subscription',
         latitude => 51.402096,
         longitude => 0.015784,
-        cobrand => 'bromley',
+        cobrand => 'kingston',
         cobrand_data => 'waste',
         areas => '2482,8141',
         user => $user,
