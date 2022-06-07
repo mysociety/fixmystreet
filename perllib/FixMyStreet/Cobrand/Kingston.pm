@@ -613,7 +613,7 @@ sub waste_garden_sub_params {
         $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
     }
 
-    if ( $c->stash->{orig_sub} and $c->stash->{orig_sub}->get_extra_field_value('payment_method') eq 'direct_debit' ) {
+    if ( $c->stash->{orig_sub} and ($c->stash->{orig_sub}->get_extra_field_value('payment_method')||'') eq 'direct_debit' ) {
         $c->set_param('dd_contact_id', $c->stash->{orig_sub}->get_extra_metadata('dd_contact_id'));
         $c->set_param('dd_mandate_id', $c->stash->{orig_sub}->get_extra_metadata('dd_mandate_id'));
     }
