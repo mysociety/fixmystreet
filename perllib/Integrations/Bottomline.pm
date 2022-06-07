@@ -182,7 +182,7 @@ sub one_off_payment {
     );
     my $resp = $self->call($path, $data);
 
-    if ( ref $resp eq 'HASHREF' and $resp->{error} ) {
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
         return 0;
     } else {
         return 1;
