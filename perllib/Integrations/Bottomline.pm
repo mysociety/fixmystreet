@@ -501,6 +501,50 @@ sub get_contact_from_email {
     return undef;
 }
 
+
+sub get_mandate_from_reference {
+    my ($self, $reference) = @_;
+
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
+           "name" => "Mandates",
+           "symbol" => "com.bottomline.ddm.model.mandate",
+           "key" => "com.bottomline.ddm.model.mandate"
+       ),
+       field => ixhash(
+            name => "Mandate",
+            symbol => "com.bottomline.ddm.model.mandate.Mandate",
+        ),
+        query => [ ixhash(
+            '@type' => "QueryParameter",
+            "field" => ixhash(
+                "name" => "reference",
+                "symbol" => "com.bottomline.ddm.model.mandate.Mandate.reference",
+                "fieldType" => "STRING",
+                "key" => JSON()->false,
+            ),
+            "operator" => ixhash(
+                "symbol" => "CONTAINS"
+            ),
+            "queryValues" => [ ixhash(
+               '@type' => "string",
+               '$value' => $reference,
+            ) ]
+        ) ]
+    ));
+
+    my $resp = $self->call("query/execute#getMandateFromReference", $data, "POST");
+    my $mandates = $self->parse_results("MandateDTO", $resp);
+
+    if ( ref $resp eq 'HASH' and $resp->{error} ) {
+        return $resp;
+    } elsif ( @$mandates ) {
+        return $mandates->[0];
+    }
+
+    return undef;
+}
+
 sub cancel_plan {
     my ($self, $args) = @_;
 
