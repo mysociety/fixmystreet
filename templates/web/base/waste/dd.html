@@ -9,7 +9,11 @@
             First Payment Date
         </dt>
         <dd class="govuk-summary-list__value">
+            [% IF initial_ad_hoc %]
+            [% payment_date.strftime('%e %B %Y') %], and annually on [% day %] [% month_name %] thereafter
+            [% ELSE %]
             [% payment_date.strftime('%e %B %Y') %], and annually thereafter
+            [% END %]
         </dd>
       </div>
       <div class="govuk-summary-list__row">
