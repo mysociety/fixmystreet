@@ -9,26 +9,22 @@ has_field payment_method => (
     label => 'How do you want to pay?',
     required => 1,
     widget => 'RadioGroup',
-    options => [
+);
+
+sub options_payment_method {
+    my $form = shift;
+    my @options = (
         { value => 'direct_debit', label => 'Direct Debit', hint => 'Set up your payment details once, and we’ll automatically renew your subscription each year, until you tell us to stop. You can cancel or amend at any time.' },
         { value => 'credit_card', label => 'Debit or Credit Card' },
-    ],
-);
-
-has_field billing_differ => (
-    type => 'Checkbox',
-    option_label => 'Check if different to collection address',
-    label => "Billing address",
-    tags => {
-        toggle => 'form-billing_address-row'
-    },
-);
-
-has_field billing_address => (
-    type => 'Text',
-    widget => 'Textarea',
-    label => "Billing address",
-);
+    );
+    if ($form->{c}->stash->{waste_features}->{dd_disabled}) {
+        shift @options;
+    }
+    if ($form->{c}->cobrand->waste_cheque_payments) {
+        push @options, { label => 'Cheque', value => 'cheque' };
+    }
+    return @options;
+}
 
 has_field name => (
     type => 'Text',

@@ -1,0 +1,184 @@
+@import "_colours";
+@import "./_mixins";
+@import "../sass/layout";
+
+@import url(//hello.myfonts.net/count/344b63);
+
+body {
+    background-color: $peabody-teal-l1;
+}
+
+$header-height: 81px;
+$mappage-navbar-height: 64px;
+#site-header {
+    padding: 10px 0;
+    box-shadow: 0 -4px 4px 8px rgba(0, 0, 0,0.1);
+
+    body.mappage & {
+        // height: $mappage-header-height - 3px;
+        height: $mappage-navbar-height;
+        box-sizing: border-box;
+    }
+}
+
+#map_sidebar {
+    top: $header-height;
+    .mappage & {
+        top: $mappage-navbar-height;
+    }
+}
+
+#main-nav {
+    min-height: $header-height;
+    .mappage & {
+        min-height: $mappage-navbar-height;
+    }
+}
+
+#site-logo {
+    width: 272px;
+    padding-top: 61px;
+    .mappage & {
+        top: -5px;
+        padding-top: 61px;
+        width: 230px;
+        padding-top: 53px;
+    }
+}
+
+// .nav-wrapper {
+//     //This centers align the content
+//     top: 10px;
+//     .mappage & {
+//         top: 0;
+//     }
+// }
+
+.nav-menu--main {
+    // remove special styling for this nav item
+    a.report-a-problem-btn {
+        border-radius: 0;
+        margin: 0;
+
+        &:hover {
+            background-color: $nav_hover_background_colour;
+        }
+    }
+
+    // Active state
+    span, span.report-a-problem-btn {
+        color: $peabody-brick-d1;
+        background-color: $peabody-white;
+        border-bottom: 1.5px solid $peabody-orange;
+        border
+
+        &:hover {
+            color: $nav_colour;
+        }
+    }
+
+    a,
+    span,
+    a.report-a-problem-btn {
+        padding: 0.5em 1em;
+
+        &, &:hover {
+            color: $nav_colour_hover;
+            background-color: $peabody-white;
+        }
+    }
+
+
+    // underlines for clickable nav items
+    a,
+    a.report-a-problem-btn {
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    // darken background for selected nav item
+    // span,
+    // span.report-a-problem-btn {
+    //     &, &:hover {
+    //         background-color: $nav_hover_background_colour;
+    //     }
+    // }
+
+    // Add right border
+    li {
+        &:nth-child(2), &:nth-child(3), &:nth-child(4) {
+            a {
+                position: relative;
+                &:before {
+                    content: "";
+                    position: absolute;
+                    background-color: #b3460f;
+                    height: 15px;
+                    width: 1px;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+        }
+    }
+}
+
+#front-main {
+    margin: 0 auto;
+    margin-top: 75px;
+    padding: 0 1em;
+    max-width: $container-max-width;
+    background: transparent;
+
+    #front-main-container {
+        max-width: none;
+        background: #fff;
+        padding: 4%;
+
+        h1 {
+            color: $primary;
+        }
+    }
+
+    #postcodeForm {
+        overflow: visible;
+
+        div {
+            margin: 0;
+        }
+    }
+}
+
+.content {
+    padding: 4%;
+    color: $primary_b;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+input.form-error,
+textarea.form-error {
+    border-radius: 4px;
+}
+
+.peabody-footer {
+    margin-top: 4em;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    position: static;
+
+    aside {
+        position: static;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        margin: 0 0 2em 0;
+    }
+}

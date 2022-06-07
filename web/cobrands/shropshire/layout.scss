@@ -1,9 +1,13 @@
 @import "_colours";
 @import "../sass/layout";
 
+$shropshire-nav-height: 55px;
+$shropshire-nav-border: 5px;
+$shropshire-nav-total-height: calc(#{$shropshire-nav-height} + #{$shropshire-nav-border});
+
 body {
     background-image: url(/cobrands/shropshire/images/full-bg.jpg);
-    background-position: 0 64px; // height of #site-header
+    background-position: 0 $shropshire-nav-total-height; // height of #site-header
     background-repeat: no-repeat;
     background-size: 100%;
 }
@@ -23,7 +27,9 @@ body {
     span,
     a.report-a-problem-btn,
     span.report-a-problem-btn {
-        padding: 0.5em 0.75em;
+        padding: 0.5em 0.4em;
+        margin: 0 4px;
+        border-radius: 4px;
 
         &, &:hover {
             color: $nav_colour;
@@ -37,6 +43,12 @@ body {
 
         &:hover {
             text-decoration: none;
+            color: $shropshire-pale-blue !important;
+        }
+
+        &:focus {
+            color: $nav_colour !important;
+            text-decoration: none;
         }
     }
 
@@ -49,8 +61,48 @@ body {
     }
 }
 
+#site-header {
+    height: $shropshire-nav-height;
+    border-bottom: $shropshire-nav-border solid $shropshire-blue-l1;
+}
+
+#main-nav {
+    min-height: $shropshire-nav-total-height;
+}
+
+#site-logo {
+    width: 240px;
+    // height: 61px; // see below
+    background-size: 240px 74px;
+    @include svg-background-image("images/sc-logo-swoosh-v1_257x80");
+
+    // text-indent doesn’t play nicely with focus outline,
+    // so use padding overflow trick instead
+    text-indent: 0;
+    height: 0;
+    padding-top: 74px;
+    overflow: hidden;
+
+    @media only screen and (max-width: 59em)  {
+        $logo-width: 140px;
+        $logo-height: 40px;
+        width:  $logo-width;
+        // height: 61px; // see below
+        background-size:  $logo-width  $logo-height;
+        @include svg-background-image("images/sc-logo-v3");
+    
+        // text-indent doesn’t play nicely with focus outline,
+        // so use padding overflow trick instead
+        text-indent: 0;
+        height: 0;
+        padding-top: calc(#{$logo-height} + 5px);
+        overflow: hidden;
+    }
+}
+
 #front-main {
     margin: 0 auto;
+    margin-top: 20px;
     padding: 0 1em;
     max-width: $container-max-width;
     background: transparent;
@@ -59,6 +111,7 @@ body {
         max-width: none;
         background: #fff;
         padding: 4%;
+        border-radius: 7px;
     }
 
     #postcodeForm {
@@ -72,6 +125,7 @@ body {
 
 .content {
     padding: 4%;
+    border-radius: 7px;
 }
 
 h1 {
@@ -100,5 +154,21 @@ body.twothirdswidthpage .content .sticky-sidebar {
         padding: 0;
         width: auto;
         margin: 0 0 2em 0;
+    }
+}
+
+.shropshire-footer {
+    .footer-link-wrapper {
+        margin-top: 0;
+    }
+
+    .footer-links {
+        flex-direction: row;
+
+        ul {
+            width: 50%;
+            margin-right: 20px;
+            border-right: solid 1px #565656;
+        }
     }
 }

@@ -1,43 +1,41 @@
 [% USE date %]
 <footer class="site-footer">
-    <div class="footer-container">
-        <div class="column span-12">
-            <div class="additional-links footer-list1">
-                <h5>Get in touch</h5>
-                <ul>
-                    <li class="border first-child"><a href="https://www.bromley.gov.uk/contact">Contact Us</a></li>
-                    <li class="border"><a href="https://www.bromley.gov.uk/feedback">Feedback</a></li>
-                </ul>
-            </div><!--additional-links-->
-            <div class="additional-links footer-list2">
-                <h5>Our website</h5>
-                <ul>
-                    <li class="first-child"><a href="https://www.bromley.gov.uk/accessibility">Accessibility</a></li>
-                    <li><a href="javascript:void(0);" onclick="window.print()" rel="nofollow">Print</a></li>
-                    <li><a href="javascript:bookmark('https://www.bromley.gov.uk', 'London Borough of Bromley')">Bookmark this page</a></li>
-                    <li><a href="https://www.bromley.gov.uk/privacy">Privacy and cookies</a></li>
-                    <li><a href="https://www.bromley.gov.uk/terms">Disclaimer</a></li>
-                </ul>
-            </div><!--additional-links-->
-            <div class="additional-links">
-                <h5>Social</h5>
-                <div class="social">
-                    <ul class="inline-list small-size width">
-                        <li class="first-child"><a href="http://www.facebook.com/LBBromley" title="Facebook"><img src="/cobrands/bromley/facebook.png" alt="Facebook"></a></li>
-                        <li><a href="https://twitter.com/LBofBromley" title="Twitter"><img src="/cobrands/bromley/twitter.png" alt="twitter"></a></li>
-                        <li><a href="https://www.youtube.com/LBBromley" title="Youtube"><img src="/cobrands/bromley/youtube.png" alt="youtube"></a></li>
-                        <li><a href="https://www.flickr.com/photos/lbofbromley/" title="flickr"><img src="/cobrands/bromley/flickr.png" alt="flickr"></a></li>
-                        <li><a href="https://www.bromley.gov.uk/rss/press" title="RSS"><img src="/cobrands/bromley/rss.png" alt="RSS"></a></li>
-                    </ul>
-                </div><!--social-->
-            </div><!--additional-links-->
+    <div class="container container--flex">
+        <nav class="site-footer__group" aria-label="Footer Navigation">
+            <ul class="list">
+                <li class="list__item">
+                    <a class="list__link" href="https://www.bromley.gov.uk/privacy">Privacy</a>
+                </li>
+                <li class="list__item">
+                    <a class="list__link" href="https://www.bromley.gov.uk/accessibility">Accessibility
+                    </a>
+                </li>
+                <li class="list__item">
+                    <a class="list__link" href="https://www.bromley.gov.uk/terms">Disclaimer</a>
+                </li>
+                <li class="list__item">
+                    <a class="list__link" href="https://www.bromley.gov.uk/privacy">Cookies</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="container">
+        <div class="site-footer__content-left">
+            <p class="site-footer__text site-footer__rights">© London Borough of Bromley.
+                <span class="site-footer__rights-tag">All Rights Reserved.</span>
+            </p>
         </div>
-        <div class="column span-12">
-            <div class="copyright">
-                <p class="first-child">&copy; [% date.format(date.now, '%Y') %] London Borough of Bromley</p>
-            </div><!--copyright-->
-        </div><!--column-->
-    </div><!--footer-container-->
+    </div>
+    <div class="site-footer__content-right">
+        <nav class="nav nav--social-links" aria-label="social links">
+            <span class="h4 nav__heading">Stay connected</span>
+            <div class="social-wrapper">
+                    <a class="list__link twitter" href="https://twitter.com/LBofBromley" title="Twitter" target="_blank" aria-label="Follow us on Facebook"></a>
+                    <a class="list__link facebook" href="http://facebook.com/LBBromley" title="Facebook" target="_blank" aria-label="Follow us on Facebook"></a>
+                    <a class="list__link youtube" href="https://www.youtube.com/user/LBBromley" title="Youtube" target="_blank" aria-label="Follow us on Youtube"></a>
+            </div>
+        </nav>
+    </div>
 </footer>
 
 <div class="societyworks-footer">

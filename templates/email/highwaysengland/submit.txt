@@ -13,6 +13,12 @@ please visit the following link:
 
 [% has_photo %]----------
 
+Name: [% report.name %]
+
+Email: [% report.user.email OR "None provided" %]
+
+Phone: [% report.user.phone OR "None provided" %]
+
 Category: [% report.category %]
 
 Subject: [% report.title %]

@@ -8,7 +8,7 @@ use mySociety::PostcodeUtil qw(is_valid_postcode);
 
 has '+field_name_space' => ( default => 'FixMyStreet::App::Form::Field' );
 
-has cobrand => ( is => 'ro' );
+has cobrand => ( is => 'ro', weak_ref => 1 );
 
 has_field postcode => (
     required => 1,

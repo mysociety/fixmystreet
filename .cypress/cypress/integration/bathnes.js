@@ -30,7 +30,7 @@ it('loads the staff layer correctly', function() {
 
 it('uses the Curo Group housing layer correctly', function() {
     cy.server();
-    cy.route(/.*?isharemaps.*?Curo_Land_Registry.*/, 'fixture:banes-caro-group-housing-layer.json').as('banes-caro-group-housing-layer-tilma');
+    cy.route(/.*?data\.bathnes\.gov\.uk.*?fms:curo_land_registry.*/, 'fixture:banes-caro-group-housing-layer.json').as('banes-caro-group-housing-layer-tilma');
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.visit('http://bathnes.localhost:3001/report/new?longitude=-2.359276&latitude=51.379009');
     cy.contains('Bath & North East Somerset Council');

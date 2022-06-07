@@ -1,0 +1,24 @@
+[%
+title = 'Subscribe to green garden waste collections';
+thing = 'garden subscription';
+summary_title = 'Subscription';
+step1 = 'sacks_details';
+%]
+
+[% BLOCK answers %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste subscription</dt>
+        <dd class="govuk-summary-list__value">Sacks</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total per year</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.cost_pa ) %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Payment method</dt>
+        <dd class="govuk-summary-list__value">[% PROCESS 'waste/garden/_payment_method.html' %]</dd>
+    </div>
+
+[% END %]
+
+[% PROCESS waste/summary.html %]

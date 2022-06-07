@@ -1,0 +1,9 @@
+[% FILTER collapse %]
+[% category = mark_safe(category) %]
+[% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
+    [% loc('These details will never be shown online without your permission.') %]
+[% ELSE %]
+    [% loc('These details will be sent to Peabody, but will never be shown online without your permission.') %]
+[% END %]
+(<a href="[% c.cobrand.privacy_policy_url %]">[% loc('See our privacy policy') %]</a>.)
+[% END -%]

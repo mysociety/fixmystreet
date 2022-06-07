@@ -5,60 +5,62 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_field service_id => ( type => 'Hidden' );
-has_field is_staff => ( type => 'Hidden' );
 
 sub details_update_fields {
     my $form = shift;
     my $data = $form->saved_data;
     my $c = $form->{c};
 
+    # From first question
     my $existing = $data->{existing_number} || 0;
     $existing = 0 if $data->{existing} eq 'no';
+
+    # From main form
+    my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $existing;
     my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
-    my $cost = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost($bin_count);
-    $form->{c}->stash->{payment} = $cost / 100;
+    my $new_bins = $bin_count - $current_bins;
+
+    my $cost_pa = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+    my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+    $form->{c}->stash->{cost_pa} = $cost_pa / 100;
+    $form->{c}->stash->{cost_now_admin} = $cost_now_admin / 100;
+    $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
+
+    my $max_bins = $c->stash->{garden_form_data}->{max_bins};
     return {
-        current_bins => { default => $existing },
-        bins_wanted => { default => $bin_count },
+        current_bins => { default => $existing, range_end => $max_bins },
+        bins_wanted => { default => $bin_count, range_end => $max_bins },
     };
 }
 
 has_page intro => (
-    title => 'Subscribe to the Green Garden Waste collection service',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_intro.html',
     fields => ['continue'],
-    update_field_list => sub {
-        my $form = shift;
-        return {
-            is_staff => { default => $form->{c}->stash->{staff_payments_allowed} || 0 }
-        };
-    },
     next => 'existing',
 );
 
 has_page existing => (
-    title => 'Subscribe to Green Garden Waste collections',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_existing.html',
     fields => ['existing', 'existing_number', 'continue'],
-    next => sub { return $_[0]->{is_staff} ? 'details_staff' : 'details'; },
+    next => 'details',
 );
 
 has_page details => (
-    title => 'Subscribe to Green Garden Waste collections',
+    title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'billing_differ', 'billing_address', 'name', 'email', 'phone', 'password', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'name', 'email', 'phone', 'password', 'continue_review'],
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        return ['payment_method', 'password'] if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+        return ['password'] if $c->stash->{staff_payments_allowed};
+        return ['password'] if $c->cobrand->call_hook('waste_password_hidden');
+    },
     update_field_list => \&details_update_fields,
     next => 'summary',
 );
-
-has_page details_staff => (
-    title => 'Subscribe to Green Garden Waste collections',
-    template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'name', 'email', 'phone', 'continue_review'],
-    update_field_list => \&details_update_fields,
-    next => 'summary',
-);
-
 
 has_page summary => (
     fields => ['tandc', 'submit'],
@@ -67,9 +69,19 @@ has_page summary => (
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
-        my $total = $form->{c}->cobrand->garden_waste_cost( $data->{bins_wanted} );
+
+        my $current_bins = $data->{current_bins};
+        my $bin_count = $data->{bins_wanted};
+        my $new_bins = $bin_count - $current_bins;
+        my $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $total = $cost_now_admin + $cost_pa;
+
         $data->{total_bins} = $data->{bins_wanted};
+        $data->{cost_now_admin} = $cost_now_admin / 100;
+        $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;
+
         return {};
     },
     finished => sub {
@@ -99,13 +111,17 @@ has_field existing => (
 
 has_field existing_number => (
     type => 'Integer',
-    label => 'How many? (1-6)',
+    build_label_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        return "How many? (1-$max_bins)";
+    },
     validate_method => sub {
         my $self = shift;
         my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
         if ( $self->parent->field('existing')->value eq 'yes' ) {
             $self->add_error('Please specify how many bins you already have')
-                unless $self->value;
+                unless length $self->value;
             $self->add_error("Existing bin count must be between 1 and $max_bins")
                 if $self->value < 1 || $self->value > $max_bins;
         } else {
@@ -116,18 +132,25 @@ has_field existing_number => (
 
 has_field current_bins => (
     type => 'Integer',
-    label => 'Number of bins currently on site (0-6)',
+    build_label_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        return "Number of bins currently on site (0-$max_bins)";
+    },
     required => 1,
+    readonly => 1,
     range_start => 0,
-    range_end => 6,
 );
 
 has_field bins_wanted => (
     type => 'Integer',
-    label => 'Number of bins to be emptied (including bins already on site) (0-6)',
+    build_label_method => sub {
+        my $self = shift;
+        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
+    },
     required => 1,
-    range_start => 0,
-    range_end => 6,
+    range_start => 1,
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     },
@@ -156,6 +179,7 @@ has_field continue => (
     type => 'Submit',
     value => 'Continue',
     element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 has_field continue_review => (
@@ -174,7 +198,7 @@ has_field submit => (
 sub validate {
     my $self = shift;
     $self->add_form_error('Please specify how many bins you already have')
-        unless $self->field('existing')->is_inactive || $self->field('existing')->value eq 'no' || $self->field('existing_number')->value;
+        unless $self->field('existing')->is_inactive || $self->field('existing')->value eq 'no' || length $self->field('existing_number')->value;
 
     my $max_bins = $self->{c}->stash->{garden_form_data}->{max_bins};
     unless ( $self->field('current_bins')->is_inactive ) {
@@ -185,6 +209,8 @@ sub validate {
         $self->add_form_error('The total number of bins must be at least 1')
             if $total == 0;
     }
+
+    $self->next::method();
 }
 
 1;

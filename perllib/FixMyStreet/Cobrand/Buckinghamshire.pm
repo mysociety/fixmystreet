@@ -187,13 +187,16 @@ sub dashboard_export_problems_add_columns {
     shift->_dashboard_export_add_columns(@_);
 }
 
-# Enable adding/editing of parish councils in the admin
-sub add_extra_areas {
-    my ($self, $areas) = @_;
+sub dashboard_extra_bodies {
+    my ($self) = @_;
 
+    return $self->parish_bodies->all;
+}
+
+sub _parish_ids {
     # This is a list of all Parish Councils within Buckinghamshire,
     # taken from https://mapit.mysociety.org/area/2217/covers.json?type=CPC
-    my $parish_ids = [
+    return [
         "135493",
         "135494",
         "148713",
@@ -364,7 +367,13 @@ sub add_extra_areas {
         "63715",
         "63723"
     ];
-    my $ids_string = join ",", @{ $parish_ids };
+}
+
+# Enable adding/editing of parish councils in the admin
+sub add_extra_areas {
+    my ($self, $areas) = @_;
+
+    my $ids_string = join ",", @{ $self->_parish_ids };
 
     my $extra_areas = mySociety::MaPit::call('areas', [ $ids_string ]);
 
@@ -398,7 +407,10 @@ sub should_skip_sending_update {
 
 sub disable_phone_number_entry { 1 }
 
-sub report_sent_confirmation_email { 'external_id' }
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    return $report->external_id ? 'external_id' : 'id';
+}
 
 sub is_council_with_case_management { 1 }
 
@@ -657,6 +669,11 @@ around 'report_validation' => sub {
         body_id => $self->body->id,
         category => $report->category,
     });
+
+    # Reports to parishes are considered "owned" by Bucks, but this method only searches for
+    # contacts owned by the Bucks body, so just call the original method if contact isn't found.
+    return $self->$orig($report, $errors) unless $contact;
+
     my %groups = map { $_ => 1 } @{ $contact->groups };
     return $self->$orig($report, $errors) unless $groups{'Car park issue'};
 
@@ -669,5 +686,84 @@ around 'report_validation' => sub {
 
     return $self->$orig($report, $errors);
 };
+
+# Route grass cutting reports to the parish if the user answers 'no' to the
+# question 'Is the speed limit on this road 30mph or greater?'
+sub munge_contacts_to_bodies {
+    my ($self, $contacts, $report) = @_;
+
+    return unless $report->category eq 'Grass cutting';
+
+    my $greater_than_30 = $report->get_extra_field_value('speed_limit_greater_than_30');
+    return unless $greater_than_30;
+
+    # This is called from FixMyStreet.pm as well, so avoid $self.
+    my $area_id = FixMyStreet::Cobrand::Buckinghamshire::council_area_id;
+
+    if ($greater_than_30 eq 'no') {
+        # Route to the parish
+        @$contacts = grep { !$_->body->areas->{$area_id} } @$contacts;
+    } else {
+        # Route to council
+        @$contacts = grep { $_->body->areas->{$area_id} } @$contacts;
+    }
+}
+
+sub area_ids_for_problems {
+    my ($self) = @_;
+
+    return ($self->council_area_id, @{$self->_parish_ids});
+}
+
+sub parish_bodies {
+    my ($self) = @_;
+
+    return FixMyStreet::DB->resultset('Body')->search(
+        { 'body_areas.area_id' => { -in => $self->_parish_ids } },
+        { join => 'body_areas', order_by => 'name' }
+    )->active;
+}
+
+# Show parish problems on the cobrand.
+sub problems_restriction_bodies {
+    my ($self) = @_;
+
+    my @parishes = $self->parish_bodies->all;
+    my @parish_ids = map { $_->id } @parishes;
+
+    return [$self->body->id, @parish_ids];
+}
+
+# Redirect to .com if not Bucks or a parish
+sub reports_body_check {
+    my ( $self, $c, $code ) = @_;
+
+    my @parishes = $self->parish_bodies->all;
+    my @bodies = ($self->body, @parishes);
+    my $matched = 0;
+    foreach my $body (@bodies) {
+        if ( $body->name =~ /^\Q$code\E/ ) {
+            $matched = 1;
+            last;
+        }
+    }
+
+    if (!$matched) {
+        $c->res->redirect( 'https://www.fixmystreet.com' . $c->req->uri->path_query, 301 );
+        $c->detach();
+    }
+
+    return;
+}
+
+sub about_hook {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+    if ($c->stash->{template} eq 'about/parishes.html') {
+        my @parishes = $self->parish_bodies->all;
+        $c->stash->{parishes} = \@parishes;
+    }
+}
 
 1;

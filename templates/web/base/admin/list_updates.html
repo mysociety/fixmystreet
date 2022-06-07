@@ -15,14 +15,7 @@
     <tr[% ' class="adminhidden"' IF update.state == 'hidden' || update.problem.state == 'hidden' %]>
         <td rowspan=2>
           [%~ IF update.state == 'confirmed' && update.problem.state != 'hidden' -%]
-          [%- cobrand_data = update.cobrand_data;
-              cobrand_data = c.data_for_generic_update IF !update.cobrand;
-              IF cobrand_data;
-                uri = c.uri_for_email( '/report', update.problem.id, cobrand_data );
-              ELSE;
-                uri = c.uri_for_email( '/report', update.problem.id );
-              END;
-          %]
+          [%- uri = c.uri_for_email( '/report', update.problem.id ) %]
             <a href="[% uri %]#update_[% update.id %]" class="admin-offsite-link">[% update.id %]</a>
           [%- ELSE %]
             [%- update.id %]

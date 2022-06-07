@@ -1,0 +1,347 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts";
+@import "./_mixins";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "cookies";
+
+body {
+    background-color: $peabody-teal-l2;
+    color: $primary_b;
+}
+
+a,
+.fake-link {
+    color: $peabody-brick-d1;
+    &:hover,
+    &:active {
+        color: $peabody-brick-d2;
+    }
+    &:focus {
+        text-decoration: underline;
+    }
+}
+
+a:focus,
+.fake-link:focus,
+#nav-link.focussed,
+.olButton:focus {
+    outline: solid 2px $peabody-blue;
+}
+
+#nav-link {
+   background: transparent url("data:image/svg+xml,%3Csvg fill='none' height='12' viewBox='0 0 18 12' width='18' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m18 12h-18v-2h18zm0-5h-18v-2h18zm0-5h-18v-2h18z' fill='%23037c88'/%3E%3C/svg%3E") center center no-repeat;
+   background-size: 25px;
+}
+
+html.js-nav-open #nav-link {
+    background: transparent url("data:image/svg+xml,%3Csvg fill='none' height='15' viewBox='0 0 15 15' width='15' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23037c88'%3E%3Cg transform='matrix(.70710678 -.70710678 .70710678 .70710678 -8.999984 3.727916)'%3E%3Cpath d='m0 12.7279h18v2h-18z'/%3E%3Cpath d='m0 12.7279h18v2h-18z'/%3E%3Cpath d='m0 12.7279h18v2h-18z'/%3E%3C/g%3E%3Cpath d='m1.48523.071045h18v2h-18z' transform='matrix(.70710678 .70710678 -.70710678 .70710678 .48525 -1.029408)'/%3E%3Cpath d='m1.48523.071045h18v2h-18z' transform='matrix(.70710678 .70710678 -.70710678 .70710678 .48525 -1.029408)'/%3E%3Cpath d='m1.48523.071045h18v2h-18z' transform='matrix(.70710678 .70710678 -.70710678 .70710678 .48525 -1.029408)'/%3E%3C/g%3E%3C/svg%3E") center center no-repeat;
+    background-size: 18px;
+}
+
+.olButton:focus {
+    z-index: 1; // pull forward, so entire outline is visible
+}
+
+#site-header {
+    background-color: $nav_background_colour;
+    padding: 15px 0;
+}
+
+#site-logo {
+    width: 144px;
+    // height: 61px; // see below
+    background-size: cover;
+    @include svg-background-image('images/peabody_logo');
+
+    // text-indent doesn’t play nicely with focus outline,
+    // so use padding overflow trick instead
+    text-indent: 0;
+    height: 0;
+    padding-top: 32px;
+    overflow: hidden;
+}
+
+.peabody-footer {
+    background: $peabody-dark-grey;
+    border-bottom: solid 1px $peabody-mid-grey;
+    color: #fff;
+    padding: 1.5em 0;
+
+    ul {
+        margin: 0;
+        font-size: 12px;
+    }
+
+    li {
+        list-style: none;
+        margin: 0.66em 0;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
+#report-cta {
+    border-color: $peabody-white;
+    border-radius: $border-radius;
+    border: 1.5px solid $peabody-brick-d1;
+    margin-right: 10px;
+
+    &:focus, &:hover {
+        color: $peabody-white;
+    }
+}
+
+#front-main {
+    text-align: left;
+
+    #postcodeForm {
+        background: transparent;
+
+        div {
+            border: none;
+            background: transparent;
+
+            input#pc {
+                @include peabody-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+                font-size: 1.25em;
+                background-color: $peabody-white;
+            }
+
+            input#sub {
+                @include peabody-button-primary();
+                font-size: 1.25em;
+            }
+        }
+    }
+
+    h2 {
+        font-style: inherit;
+        font-family: $body-font;
+    }
+}
+
+a#geolocate_link {
+    @include peabody-button-secondary();
+}
+
+h1, .h1, h2, .h2 {
+    font-family: $heading-font;
+    font-weight: normal;
+}
+
+h1 {
+    color: $peabody-mid-grey;
+    font-size: 2em;
+    line-height: 1.25em;
+    font-weight: bold;
+}
+
+label {
+    @include peabody-form-label();
+}
+
+.form-control {
+    @include peabody-form-input();
+
+    .form-txt-submit-box & {
+        margin: 0 0 0.5em 0;
+    }
+}
+
+.multi-select-button {
+    // Focus style, copied from peabody-form-input() mixin
+    &:focus {
+        outline: none;
+        border: 1px solid #52A8EC;
+        box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
+    }
+}
+
+input.form-error,
+textarea.form-error {
+    background: #FBE3E4;
+    border: 1px solid #FBC2C4;
+    border-radius: $border-radius;
+}
+
+div.form-error,
+p.form-error {
+    background: transparent;
+    padding: 5px;
+    border-radius: 0;
+    color: $peabody-brick-d2;
+    border: 1px solid #900;
+    font-weight: 800;
+}
+
+.dropzone {
+    padding: 1.5em;
+}
+
+.btn,
+.green-btn {
+    @include peabody-button-primary();
+}
+
+#front_stats {
+    color: $peabody-teal;
+    background: transparent;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    aside {
+        margin: 1em 0 2em 0;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.5em;
+    }
+
+    li {
+        margin: 0 0.5em;
+    }
+}
+
+// As per Peabody Website style guide
+.skiplink:focus {
+    border: 1px solid #FFFFFF;
+    background: #2C2C2C;
+    padding: 6px;
+    color: #FFFFFF;
+    min-width: 150px;
+    outline: none;
+    text-align: center;
+    border-radius: $border-radius;
+    box-shadow: 2px 2px 5px #5F5F5F;
+
+    top: 0.5em;
+    left: 0.5em;
+}
+
+.item-list__item--empty {
+    color: $peabody-mid-grey;
+}
+
+.item-list__item {
+    html.mobile & {
+        background-color: mix($peabody-teal, $peabody-white, 25%);
+    }
+}
+
+.pagination {
+    html.mobile & {
+        background: transparent;
+        font-weight: 600;
+        opacity: 0.8;
+    }
+}
+
+.box-warning {
+    $border-width: 1px;
+    background-color: mix($peabody-orange, #fff, 15%);
+    border: $border-width solid $peabody-orange;
+    margin: 1em calc(-1*(1em + #{$border-width})) !important;
+}
+
+.item-list--reports__item {
+    .item-list__heading {
+        font-weight: 700;
+        opacity: 0.85;
+    }
+
+    a:hover {
+        background-color: $box-background-colour;
+    }
+}
+
+html.js .form-section-preview {
+    background-color: $peabody-white;
+}
+
+.form-box, .alerts__cta-box {
+    border: 1px solid $primary;
+    border-radius: 5px;
+    background: #eaf7f8;
+}
+
+.big-green-banner {
+    background: $peabody-teal url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MyIgaGVpZ2h0PSIzMyI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxM2wxMyAxNi0xMyAxNkgwbDEzLTE2Ii8+PC9zdmc+') right center no-repeat !important;
+}
+
+// Admin console
+
+.segmented-control--radio {
+    input:checked+label  {
+       color: $peabody-white !important;
+    }
+
+    input:checked+label+input+label {
+        background-color: transparent;
+        border-color: $primary;
+        color: $peabody-teal !important;
+    }
+
+    .btn {
+        background: transparent;
+        color: $primary !important;
+        border-color: $primary;
+    }
+
+    & > :last-child {
+        border-#{$right}-width: 2px; // reinstate border on last item
+    }
+}
+
+.my-account-buttons {
+    text-align: right;
+
+    a {
+        border-radius: $border-radius;
+        border: 1px solid $peabody-brick-d1;
+    
+    }
+}
+
+.sub-map-links {
+    a:hover, a:focus {
+        color: $peabody-teal-l2;
+    }
+}
+
+.shadow-wrap {
+    html.mobile & {
+        margin-top: 10px;
+
+        #key-tools {
+            li {border-right-color: transparent;}
+
+            a, button {
+                background-color: transparent;
+                border: 1px solid $primary;
+
+                &:focus {
+                    background-color: $peabody-teal; 
+                }
+            }
+        }
+    }
+}
+
+div.form-error a, p.form-error a {
+    color: $peabody-brick-d1 !important;
+
+    &:hover, &:focus {
+        color: $peabody-brick-d2 !important;
+        text-decoration: none;
+    }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";

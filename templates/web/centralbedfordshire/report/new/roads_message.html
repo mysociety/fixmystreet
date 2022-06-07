@@ -12,3 +12,17 @@
         <p>Please select a road on which to make a report.</p>
     </div>
 </div>
+
+[%# This is a repeat of the above message but outside the #js-roads-responsibility %]
+[%# wrapper as it needs to be shown independently of the form being disabled. %]
+[%# See centralbedfordshire/assets.js#show_non_stopper_message %]
+<div id="js-custom-roads-responsibility" class="box-warning hidden">
+    <strong>Not maintained by Central Bedfordshire Council</strong>
+    <div id="js-custom-not-council-road">
+        <p>The selected road is not maintained by Central Bedfordshire Council;
+        to find out who owns this land/road please contact the Land Registry at
+        <a href="https://www.gov.uk/search-property-information-land-registry">https://www.gov.uk/search-property-information-land-registry</a>.
+        </p>
+        <p>This road may be the responsibility of the developer or builder.</p>
+    </div>
+</div>

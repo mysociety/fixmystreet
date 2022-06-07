@@ -1,0 +1,111 @@
+@import "_colours";
+@import "../sass/layout";
+
+#site-logo {
+    height: 9rem;
+    width: 5.9375rem;
+
+    .mappage & {
+        width: 3.43rem;
+        height: 4rem;
+    }
+
+    &:focus {
+        outline: 2px solid $blue;
+        background-color: $white;
+    }
+}
+
+.nav-wrapper {
+    top: 40px;
+    .mappage & {
+        top: 10px;
+    }
+}
+
+.nav-menu--main {
+    // remove special styling for this nav item
+    a.report-a-problem-btn {
+        border-radius: 0;
+        margin: 0;
+        @include kingston-button-primary;
+    }
+
+    a,
+    span,
+    span.report-a-problem-btn {
+        padding: 0.5em 0.75em;
+        font-size: 18px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    a {
+        &:hover, &:focus {
+            background-color: $blue;
+            color: $white;
+            text-decoration: underline;
+        }
+    }
+}
+
+#front-main {
+    margin: 0 auto;
+    margin-top: 60px;
+    padding: 0 1em;
+    max-width: $container-max-width;
+    background: transparent;
+
+    #front-main-container {
+        max-width: none;
+        background: $white;
+        padding: 4%;
+        border-top: 4px solid $green;
+    }
+
+    #postcodeForm {
+        overflow: visible;
+
+        div {
+            margin: 0;
+        }
+    }
+}
+
+.content {
+    padding: 4%;
+}
+
+input.form-error,
+textarea.form-error {
+    border-radius: 4px;
+}
+
+.kingston-footer {
+    margin-top: 4em;
+}
+
+body.mappage #site-header {
+    height: $mappage-header-height - 3px;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    position: static;
+
+    aside {
+        position: static;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        margin: 0 0 2em 0;
+    }
+}
+
+// FOOTER
+
+.site-footer {
+    .footer-logo {
+        width: 8em;
+        height: 9.31em;
+    }
+}

@@ -142,15 +142,16 @@ Most of the values are read from the config file and others are hordcoded here.
 # we use the one that is most similar to DBI's connect.
 
 sub dbic_connect_info {
-    my $class  = shift;
-    my $config = $class->config;
+    my $class   = shift;
+    my $config  = $class->config;
+    my $sslmode = $config->{FMS_DB_SSLMODE} || "prefer";
 
     my $dsn = "dbi:Pg:dbname=" . $config->{FMS_DB_NAME};
     $dsn .= ";host=$config->{FMS_DB_HOST}"
       if $config->{FMS_DB_HOST};
     $dsn .= ";port=$config->{FMS_DB_PORT}"
       if $config->{FMS_DB_PORT};
-    $dsn .= ";sslmode=allow";
+    $dsn .= ";sslmode=$sslmode";
 
     my $user     = $config->{FMS_DB_USER} || undef;
     my $password = $config->{FMS_DB_PASS} || undef;

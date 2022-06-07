@@ -1,2 +1,8 @@
 [% IF problem.external_id %]The report's reference number is [% problem.external_id %]. Please quote this if
-you need to contact the council about this report.[% END %]
+you need to contact the council about this report.
+[%~ ELSE %]The report's reference number is [% problem.id %].
+  [% IF problem.body != cobrand.council_name %]
+    For any further enquiries regarding this report, please contact [% problem.body %]
+    [%~ IF problem.contact.email %] at [% problem.contact.email %][% END %].
+  [% END %]
+[%~ END %]

@@ -27,9 +27,9 @@ my @PLACES = (
     [ 'EH1 1BB', 55.952055, -3.189579, 2651, 'Edinburgh City Council', 'UTA', 20728, 'City Centre', 'UTE' ],
     [ 'BS10 5EE', 51.494885, -2.602237, 2561, 'Bristol City Council', 'UTA', 148646, 'Bedminster', 'UTW' ],
     [ 'BS20 5EE', 51.496194, -2.603439, 2608, 'Borsetshire County Council', 'CTY', 148646, 'Bedminster', 'UTW' ],
-    [ 'SL9 0NX', 51.615559, -0.556903, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED' ],
-    [ '?', 51.615499, -0.556667, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED' ],
-    [ '?', 51.615965, -0.556367, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED' ],
+    [ 'SL9 0NX', 51.615559, -0.556903, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
+    [ '?', 51.615499, -0.556667, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
+    [ '?', 51.615965, -0.556367, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
     [ '?', 51.615439, -0.558362, 2217, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED' ],
     [ 'HP19 8FF', 51.822364, -0.826409, 2217, 'Buckinghamshire Council', 'CTY', 2258, 'Aylesbury Vale District Council', 'DIS', 144545, 'Gatehouse', 'DIW', 143444, 'Aylesbury North-West', 'CED' ],
     [ '?', 51.995, -0.986 , 2217, 'Buckinghamshire Council', 'CTY', 2258, 'Aylesbury Vale District Council', 'DIS', 144539, 'Buckingham South', 'DIW', 143424, 'Buckingham West', 'CED' ],
@@ -50,6 +50,7 @@ my @PLACES = (
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3EF', 51.4039, 0.018697, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 1AA', 51.401546, 0.015415, 2482, 'Bromley Council', 'LBO' ],
+    [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],
     [ '?', 51.466707, 0.181108, 2494, 'London Borough of Bexley', 'LBO' ],
     [ 'DA6 7AT', 51.45556, 0.15356, 2494, 'London Borough of Bexley', 'LBO' ],
     [ 'NN1 1NS', 52.236251, -0.892052, 2234, 'Northamptonshire County Council', 'CTY', 2397, 'Northampton Borough Council', 'DIS' ],
@@ -84,6 +85,8 @@ my @PLACES = (
     [ '0045', "59.9", "10.9", 301, 'Oslo', 'NKO', 3, 'Oslo', 'NFY' ],
     ['?', 51.015143, -0.912160, 2227, 'Hampshire County Council', 'CTY'],
     ['?', 51.020097, -0.926065, 2227, 'Hampshire County Council', 'CTY'],
+    ['?', 51.511258, -0.011937, 2506, 'Tower Hamlets Borough Council', 'LBO'],
+    ['?', 51.512139, -0.013074, 2506, 'Tower Hamlets Borough Council', 'LBO']
 
 );
 

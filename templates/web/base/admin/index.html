@@ -1,16 +1,7 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 [% PROCESS 'admin/report_blocks.html' %]
 
-<div class="fms-admin-info fms-admin-floated">
-This is the administration interface for [% site_name %]. If you
-need any help or guidance, there is <a href="https://fixmystreet.org/">plenty of
-online documentation</a>. The FixMyStreet Platform is
-<a href="https://github.com/mysociety/fixmystreet">actively supported</a> by
-its developers, and has a community of people using or working on the code.
-Please <a href="https://fixmystreet.org/community/">sign up to the mailing list
-or get in touch</a> to let us know about your use of the FixMyStreet Platform,
-and to receive notices of updates.
-</div>
+[% PROCESS 'admin/_index_intro.html' %]
 
 [% IF bodies.size == 0 %]
   <p class="fms-admin-info">
@@ -37,6 +28,8 @@ and to receive notices of updates.
         <input type="submit" class="btn" value="[% loc('Go') %]">
     </div>
 </form>
+
+[% TRY %][% PROCESS 'admin/_index_extra_search.html' %][% CATCH file %][% END %]
 
 [% IF c.user.is_superuser %]
 <form method="get" action="[% c.uri_for('bodies') %]">

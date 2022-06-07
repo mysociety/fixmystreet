@@ -27,6 +27,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
 });
+$mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
@@ -41,7 +42,6 @@ $contact->set_extra_fields(
     { code => 'easting', datatype => 'number', },
     { code => 'northing', datatype => 'number', },
     { code => 'service_request_id_ext', datatype => 'number', },
-    { code => 'service_sub_code', values => [ { key => 'RED', name => 'Red' }, { key => 'BLUE', name => 'Blue' } ], },
 );
 $contact->update;
 my $tfl = $mech->create_body_ok( 2482, 'TfL');
@@ -430,26 +430,6 @@ subtest 'check geolocation overrides' => sub {
     }
 };
 
-subtest 'check special subcategories in admin' => sub {
-    $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
-    $mech->log_in_ok('superuser@example.com');
-    $user->update({ from_body => $body->id });
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok('/admin/templates/' . $body->id . '/new');
-        $mech->get_ok('/admin/users/' . $user->id);
-        $mech->submit_form_ok({ with_fields => { 'contacts['.$contact->id.']' => 1, 'contacts[BLUE]' => 1 } });
-    };
-    $user->discard_changes;
-    is_deeply $user->get_extra_metadata('categories'), [ $contact->id ];
-    is_deeply $user->get_extra_metadata('subcategories'), [ 'BLUE' ];
-    $user->unset_extra_metadata('categories');
-    $user->unset_extra_metadata('subcategories');
-    $user->update;
-};
-
 subtest 'check title field on report page for staff' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => ['bromley', 'tfl'],
@@ -466,12 +446,55 @@ subtest 'check heatmap page' => sub {
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => { category_groups => { bromley => 1 }, heatmap => { bromley => 1 } },
     }, sub {
+        $user->update({ from_body => $body->id });
         $mech->log_in_ok($user->email);
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->content_contains('Report missed collection');
         $mech->get_ok('/dashboard/heatmap?filter_category=RED&ajax=1');
     };
     $user->update({ area_ids => undef });
+};
+
+subtest 'category restrictions for roles restricts reporting categories for users with that role' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $potholes = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Potholes',
+            email => 'potholes@example.org',
+        );
+        my $flytipping = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Flytipping',
+            email => 'flytipping@example.org',
+        );
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        my $role = $user->roles->create({
+            body => $body,
+            name => 'Out of hours',
+            permissions => ['moderate', 'planned_reports'],
+        });
+        $role->set_extra_metadata('categories', [$potholes->id]);
+        $role->update;
+        $user->add_to_roles($role);
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } },
+            "submit location" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Flytipping');
+
+        # TfL categories should always be displayed, regardless of role restrictions.
+        $mech->content_contains('Traffic Lights');
+    };
 };
 
 FixMyStreet::override_config {
@@ -600,7 +623,7 @@ FixMyStreet::override_config {
             },
         ] } );
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('You have a pending Garden Subscription');
+        $mech->content_contains('You have a pending garden subscription');
         $mech->content_lacks('Subscribe to Green Garden Waste');
     };
 
@@ -711,7 +734,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15001-' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Fetching data for report/;
         $report->discard_changes;
         is $report->comments->count, 0, 'No new update';
@@ -719,7 +742,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
         is $report->comments->count, 1, 'A new update';
@@ -729,7 +752,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Latest update matches fetched state/;
         $report->discard_changes;
         is $report->comments->count, 1, 'No new update';
@@ -737,7 +760,7 @@ subtest 'updating of waste reports' => sub {
 
         $report->update({ external_id => 'waste-15004-201' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state fixed - council, Completed/;
         $report->discard_changes;
         is $report->comments->count, 2, 'A new update';
@@ -745,12 +768,12 @@ subtest 'updating of waste reports' => sub {
 
         $reports[1]->update({ state => 'fixed - council' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/^$/, 'No open reports';
 
         $report->update({ external_id => 'waste-15005-205', state => 'confirmed' });
         stdout_like {
-            $cobrand->waste_fetch_events(1);
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state unable to fix, Inclement Weather/;
         $report->discard_changes;
         is $report->comments->count, 3, 'A new update';
@@ -939,9 +962,9 @@ subtest 'check_within_days' => sub {
             my $date = DateTime::Format::W3CDTF->parse_datetime($test->{check});
 
             if ( $test->{is_true} ) {
-                ok FixMyStreet::Cobrand::Bromley::within_working_days($date, $test->{days}, $test->{future});
+                ok(FixMyStreet::Cobrand::Bromley->within_working_days($date, $test->{days}, $test->{future}));
             } else {
-                ok !FixMyStreet::Cobrand::Bromley::within_working_days($date, $test->{days}, $test->{future});
+                ok(!FixMyStreet::Cobrand::Bromley->within_working_days($date, $test->{days}, $test->{future}));
             }
 
         };
@@ -1026,6 +1049,15 @@ subtest 'check pro-rata calculation' => sub {
 };
 
 subtest 'check direct debit reconcilliation' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            payment_gateway => {
+                bromley => {
+                }
+            }
+        },
+    }, sub {
     set_fixed_time('2021-03-19T12:00:00Z'); # After sample food waste collection
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetServiceUnitsForObject' => sub {
@@ -1629,7 +1661,9 @@ subtest 'check direct debit reconcilliation' => sub {
     $renewal_from_cc_sub->discard_changes;
     is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
     is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
-    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
+    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'From CC Renewal has correct type';
+    is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'From CC Renewal has correct container type';
+    is $renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Renewal has correct service id';
     is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({
@@ -1643,7 +1677,9 @@ subtest 'check direct debit reconcilliation' => sub {
     $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
     is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
-    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Subsequent Renewal has correct type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'Subsequent Renewal has correct container type';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Subsequent Renewal has correct service id';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
 
@@ -1682,6 +1718,8 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('Subscription_Details_Quantity'), 2, "renewal has correct number of bins";
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
+    is $p->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'renewal has correct container type';
+    is $p->get_extra_field_value('service_id'), 545, 'renewal has correct service id';
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $p->state, 'confirmed';
 
@@ -1788,7 +1826,7 @@ subtest 'Garden Waste new subs alert update emails contain bin collection days l
         $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @uris;
         ok $found, 'Found bin day URL in HTML part of alert email';
     }
-};
+}; };
 
 sub setup_dd_test_report {
     my $extras = shift;
@@ -1801,6 +1839,10 @@ sub setup_dd_test_report {
         areas => '2482,8141',
         user => $user,
     });
+
+    $extras->{service_id} ||= 545;
+    $extras->{Subscription_Details_Container_Type} ||= 44;
+
     my @extras = map { { name => $_, value => $extras->{$_} } } keys %$extras;
     $report->set_extra_fields( @extras );
     $report->update;

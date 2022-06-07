@@ -27,7 +27,7 @@ fixmystreet.assets.add(defaults, {
 
 fixmystreet.assets.add(defaults, {
     wfs_feature: "Public_Transport_Stops",
-    asset_category: [ "Bus stop", "Bus shelter" ],
+    asset_group: [ "Bus stops and shelters" ],
     asset_item: 'bus stop or shelter'
 });
 
@@ -120,15 +120,16 @@ fixmystreet.assets.add(defaults, {
 fixmystreet.assets.add(defaults, {
     wfs_feature: "Carriageway",
     asset_category: [
+        "Advertisement (e.g. an A-board)",
         "Damaged/missing cats eye",
         "Damaged road edge, encroaches less than 100mm",
         "Damaged road edge, encroaches more than 100mm",
+        "Fallen tree or branch",
         "Loose chippings",
         "Manhole/drain cover on road/cycleway",
-        "Obstruction on road/cycleway",
         "Pothole on road/cycleway",
-        "Road markings faded/missing",
-        "Road surface issue"
+        "Road Markings",
+        "Other road surface issue"
     ],
     asset_item: 'road',
     asset_item_message: '',

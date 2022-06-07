@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use DateTime::Format::W3CDTF;
 
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
@@ -143,6 +144,14 @@ around open311_extra_data_include => sub {
         $contact->email($code) if $code;
     }
 
+    if ($row->geocode) {
+        my $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address};
+        push @$open311_only, (
+            { name => 'closest_address', value => $address->{formattedAddress} }
+        );
+        $h->{closest_address} = '';
+    }
+
     return $open311_only;
 };
 
@@ -243,6 +252,48 @@ sub munge_sendreport_params {
     }
 }
 
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    my $open311_only = [
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category },
+    ];
+
+    my $title = $row->title;
+    # Certain categories for the Alloy Environmental Services integration
+    # have manually-created extra fields that should be appended to the
+    # report title when submitted via Open311.
+    # This fetches the field names from the COBRAND_FEATURES config, so
+    # if they change in the future it doesn't require code changes to deploy.
+    my $field_names = $self->feature('environment_extra_fields') || [];
+    my %fields = map { $_ => 1 } @$field_names;
+    if ($contact->email =~ /^Environment/) {
+        for (@{ $row->get_extra_fields }) {
+            if ($fields{$_->{name}}) {
+                $title .= "\n\n" . $_->{description} . "\n" . $_->{value};
+            }
+        }
+        push @$open311_only,
+            { name => 'requested_datetime',
+              value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) };
+    }
+    push @$open311_only, { name => 'title', value => $title };
+
+    return $open311_only;
+}
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 sub _split_emails {
     my ($self, $email) = @_;
 
@@ -263,6 +314,16 @@ sub validate_contact_email {
     my @emails = grep { $_ } $self->_split_emails($email);
     return unless @emails;
     return 1 if is_valid_email_list(join(",", @emails));
+}
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ( length( $report->detail ) > 256 ) {
+        $errors->{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 256 );
+    }
+
+    return $errors;
 }
 
 sub dashboard_export_problems_add_columns {
@@ -306,7 +367,7 @@ sub update_email_shortlisted_user {
     my $c = $self->{c};
     my $cobrand = FixMyStreet::Cobrand::Hackney->new; # $self may be FMS
     return if !$update->problem->to_body_named('Hackney');
-    my $sent_to = $update->problem->get_extra_metadata('sent_to');
+    my $sent_to = $update->problem->get_extra_metadata('sent_to') || [];
     if (@$sent_to) {
         my @to = map { [ $_, $cobrand->council_name ] } @$sent_to;
         $c->send_email('alert-update.txt', {

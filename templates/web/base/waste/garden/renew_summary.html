@@ -10,20 +10,25 @@ step1 = 'intro';
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste collection</dt>
         <dd class="govuk-summary-list__value">[% data.bins_wanted %] [% nget('bin', 'bins', data.bins_wanted) %]</dd>
     </div>
+  [% IF data.cost_pa %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total per year</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.cost_pa ) %]</dd>
+    </div>
+  [% END %]
+  [% IF data.cost_now_admin %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Admin fee</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.cost_now_admin ) %]</dd>
+    </div>
+  [% END %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total</dt>
         <dd class="govuk-summary-list__value">£[% tprintf('%.2f', data.display_total) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Payment method</dt>
-        <dd class="govuk-summary-list__value">[% label_for_field(form, 'payment_method', data.payment_method) %]</dd>
-    </div>
-
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Billing address</dt>
-        <dd class="govuk-summary-list__value">
-        [% data.billing_address %]
-        </dd>
+        <dd class="govuk-summary-list__value">[% PROCESS 'waste/garden/_payment_method.html' %]</dd>
     </div>
 
 [% END %]

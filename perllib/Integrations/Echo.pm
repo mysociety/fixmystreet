@@ -1,9 +1,15 @@
 package Integrations::Echo;
 
 use Moo;
+use strict;
+use warnings;
 with 'FixMyStreet::Roles::SOAPIntegration';
 
 use DateTime;
+use File::Temp;
+use JSON::MaybeXS;
+use Parallel::ForkManager;
+use Storable;
 use FixMyStreet;
 
 has attr => ( is => 'ro', default => 'http://www.twistedfish.com/xmlns/echo/api/v1' );
@@ -449,6 +455,67 @@ sub dt_to_hash {
         'dataContract:OffsetMinutes' => $dt->offset / 60,
     );
     return $dt;
+}
+
+# ---
+# Calling things in parallel
+
+sub call_api {
+    # Shifting because the remainder of @_ is passed along further down
+    my ($self, $c, $cobrand, $key) = (shift, shift, shift, shift);
+
+    $key = "$cobrand:echo:$key";
+    return $c->session->{$key} if !FixMyStreet->test_mode && $c->session->{$key};
+
+    my $tmp = File::Temp->new;
+    my @cmd = (
+        FixMyStreet->path_to('bin/fixmystreet.com/call-echo'),
+        '--cobrand', $cobrand,
+        '--out', $tmp,
+        '--calls', encode_json(\@_),
+    );
+    my $start = time();
+
+    # We cannot fork directly under mod_fcgid, so
+    # call an external script that calls back in.
+    my $data;
+    # uncoverable branch false
+    if (FixMyStreet->test_mode || $self->sample_data) {
+        $data = $self->_parallel_api_calls(@_);
+    } else {
+        # uncoverable statement
+        system(@cmd);
+        $data = Storable::fd_retrieve($tmp);
+    }
+    $c->session->{$key} = $data;
+    my $time = time() - $start;
+    $c->log->info("[$cobrand] call_api $key took $time seconds");
+    return $data;
+}
+
+sub _parallel_api_calls {
+    my $self = shift;
+
+    my %calls;
+    # uncoverable branch false
+    my $pm = Parallel::ForkManager->new(FixMyStreet->test_mode || $self->sample_data ? 0 : 10);
+    $pm->run_on_finish(sub {
+        my ($pid, $exit_code, $ident, $exit_signal, $core_dump, $data) = @_;
+        %calls = ( %calls, %$data );
+    });
+
+    while (@_) {
+        my $call = shift;
+        my $args = shift;
+        $pm->start and next;
+        my $result = $self->$call(@$args);
+        my $key = "$call @$args";
+        $key = $call if $call eq 'GetTasks';
+        $pm->finish(0, { $key => $result });
+    }
+    $pm->wait_all_children;
+
+    return \%calls;
 }
 
 1;

@@ -8,8 +8,10 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire', {
+my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 });
+my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
+my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
 
@@ -33,6 +35,35 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email =>
 $mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => "graffiti\@chiltern", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping (off-road)', email => "districts_flytipping", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', email => 'parking@example.org', send_method => 'Email', group => 'Car park issue');
+$mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
+
+# Create another Grass cutting category for a parish.
+$contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grassparish@example.org', send_method => 'Email');
+$contact->set_extra_fields({
+    code => 'speed_limit_greater_than_30',
+    description => 'Is the speed limit on this road 30mph or greater?',
+    datatype => 'singlevaluelist',
+    order => 1,
+    variable => 'true',
+    required => 'true',
+    protected => 'false',
+    values => [
+        {
+            key => 'yes',
+            name => 'Yes',
+        },
+        {
+            key => 'no',
+            name => 'No',
+        },
+        {
+            key => 'dont_know',
+            name => "Don't know",
+        },
+    ],
+});
+$contact->update;
+$contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Dirty signs', email => 'signs@example.org', send_method => 'Email');
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 $cobrand->mock('lookup_site_code', sub {
@@ -69,14 +100,15 @@ subtest 'cobrand displays council name' => sub {
 
 subtest 'cobrand displays correct categories' => sub {
     my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.615559&longitude=-0.556903');
-    is @{$json->{bodies}}, 1, 'Bucks returned';
+    is @{$json->{bodies}}, 2, 'Bucks and parish returned';
     like $json->{category}, qr/Car Parks/, 'Car Parks displayed';
     like $json->{category}, qr/Flytipping/, 'Flytipping displayed';
     like $json->{category}, qr/Blocked drain/, 'Blocked drain displayed';
     like $json->{category}, qr/Graffiti/, 'Graffiti displayed';
+    like $json->{category}, qr/Grass cutting/, 'Grass cutting displayed';
     unlike $json->{category}, qr/Flytipping \(off-road\)/, 'Flytipping (off-road) not displayed';
     $json = $mech->get_ok_json('/report/new/category_extras?latitude=51.615559&longitude=-0.556903');
-    is @{$json->{bodies}}, 1, 'Still Bucks returned';
+    is @{$json->{bodies}}, 2, 'Still Bucks and parish returned';
 };
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
@@ -172,7 +204,11 @@ subtest 'Ex-district reports are sent to correct emails' => sub {
     FixMyStreet::Script::Reports::send();
     $mech->email_count_is(4); # (one for council, one confirmation for user) x 2
     my @email = $mech->get_email;
-    is $email[0]->header('To'), 'Buckinghamshire <flytipping@chiltern>';
+    is $email[0]->header('To'), '"Buckinghamshire Council" <flytipping@chiltern>';
+    unlike $mech->get_text_body_from_email($email[0]), qr/If there is a/;
+
+    like $mech->get_text_body_from_email($email[1]), qr/reference number is/;
+    unlike $mech->get_text_body_from_email($email[1]), qr/please contact Buckinghamshire/;
 };
 
 my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Drainage problem', {
@@ -374,6 +410,91 @@ subtest 'Allows car park reports to be made in a car park' => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
+};
+
+subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub {
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 1",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+            speed_limit_greater_than_30 => 'no', # Is the speed limit greater than 30mph?
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 1', 'Got the correct report';
+    is $report->bodies_str, $parish->id, 'Report was sent to parish';
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    like $mech->get_text_body_from_email($email[1]), qr/please contact Adstock Parish Council at grassparish\@example.org/;
+};
+
+subtest 'sends grass cutting reports on roads 30mph or more to the council' => sub {
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 2",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+            speed_limit_greater_than_30 => 'yes', # Is the speed limit greater than 30mph?
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 2', 'Got the correct report';
+    is $report->bodies_str, $body->id, 'Report was sent to council';
+};
+
+subtest 'treats problems sent to parishes as owned by Bucks' => sub {
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test Dirty signs report",
+            detail => 'Test report details.',
+            category => 'Dirty signs',
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test Dirty signs report', 'Got the correct report';
+
+    # Check that the report can be accessed via the cobrand
+    my $report_id = $report->id;
+    $mech->get_ok("/report/$report_id");
+};
+
+subtest 'body filter on dashboard' => sub {
+    $mech->get_ok('/dashboard');
+    $mech->content_contains('<h1>' . $body->name . '</h1>', 'defaults to Bucks');
+    $mech->content_contains('<select class="form-control" name="body" id="body">', 'extra bodies dropdown is shown');
+    $mech->content_contains('<option value="' . $body->id . '">' . $body->name . '</option>', 'Bucks is shown in the options');
+    $mech->content_contains('<option value="' . $parish->id . '">' . $parish->name . '</option>', 'parish is shown in the options');
+
+    $mech->get_ok('/dashboard?body=' . $parish->id);
+    $mech->content_contains('<h1>' . $parish->name . '</h1>', 'shows parish dashboard');
+
+    $mech->get_ok('/dashboard?body=' . $other_body->id);
+    $mech->content_contains('<h1>' . $body->name . '</h1>', 'defaults to Bucks when body is not permitted');
+};
+
+subtest 'All reports pages for parishes' => sub {
+    $mech->get_ok('/reports/Buckinghamshire');
+    $mech->content_contains('View reports sent to parishes');
+
+    $mech->get_ok('/about/parishes');
+    $mech->content_contains('Adstock Parish Council');
+
+    $mech->get_ok('/reports/Adstock');
+    $mech->content_contains('Adstock Parish Council');
+    is $mech->uri->path, '/reports/Adstock';
 };
 
 };

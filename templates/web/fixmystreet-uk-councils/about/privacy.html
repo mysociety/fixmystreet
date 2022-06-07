@@ -6,7 +6,7 @@
 
 [% contact_us_href = '/contact' %]
 
-<h1>Privacy policy</h1>
+<h1>Privacy policy[% IF c.cobrand.moniker == 'shropshire' %] - Reporting an issue or concern on the highway or with assets maintained by the council[% END %]</h1>
 
 [% IF c.cobrand.moniker == 'bathnes' %]
 <p>Your email address identifies you and your report, and so it is your
@@ -40,6 +40,16 @@ The Council’s Data Protection Officer may be contacted at
         Morden<br>
         SM4 5DX
     </p>
+[% END %]
+
+[% IF c.cobrand.moniker == 'shropshire' %]
+<p>Shropshire council provides a website and app to make it easier for residents to report, view and update issues or concerns on the highway or with assets that are maintained by the council.</p>
+
+<p>When you make a report to the council using the new website or app, you can choose to make your personal details public or hidden so your details will not appear on the report.</p>
+
+<p>If you make a report another way, including via the council's website, email address, social media, phone or email, the council will log the report on our online website and app to allow you and the wider public to view or comment on the report.</p>
+
+<p>The council will publish details of the issue or concern with a place or asset, for example if you are reporting a pothole, streetlight defect, fly tip or one of over a hundred service categories available on the council fault reporting website or app. In some cases, the council may choose not to make a report viewable by the wider public if the report is of a sensitive nature or may identify an individual. The council will never include your personal information when you make a report.</p>
 [% END %]
 
 <h2>Who runs this service?</h2>
@@ -400,7 +410,7 @@ When you make a report
   [% IF c.cobrand.moniker == 'cheshireeast' %]
     <a href="[% contact_us_href %]">Contact us</a>
   [% ELSIF c.cobrand.feature('contact_us_url') %]
-    Please <a href="[% c.cobrand.feature('contact_us_url') %]">contact us</a> 
+    Please <a href="[% c.cobrand.feature('contact_us_url') %]">contact us</a>
   [% ELSE %]
     Please <a href="[% contact_us_href %]">contact us</a>
   [% END %]

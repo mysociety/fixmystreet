@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+
+# call-echo
+# Call the Echo API in parallel
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use JSON::MaybeXS;
+use Storable;
+use Integrations::Echo;
+use FixMyStreet::Cobrand;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['cobrand=s', 'which cobrand configuration to use'],
+    ['out=s', 'where to output data'],
+    ['calls=s', 'JSON of what API calls to make'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+$usage->die unless $opts->cobrand && $opts->out && $opts->calls;
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
+my $cfg = $cobrand->feature('echo');
+my $echo = Integrations::Echo->new(%$cfg);
+
+my $calls = decode_json($opts->calls);
+$calls = $echo->_parallel_api_calls(@$calls);
+Storable::store($calls, $opts->out);

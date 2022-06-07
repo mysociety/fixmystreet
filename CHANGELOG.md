@@ -8,6 +8,9 @@
         - Include username in inactive email.
         - Update document title on client-side new report page transition.
         - Disable staff phone and name fields to avoid accidental overwriting.
+        - Hide 'Assigned to' text if a report is not assigned to anyone
+        - Hide 'Assign to' dropdown if no available assignees
+        - Allow 'Asset ID' (part of optional extra data displayed for a report) to be customisable for all cobrands
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
@@ -15,6 +18,7 @@
         - Make calls from Geocoder files to https rather than http
         - Inspector dropdown list only shows name once even if permissions repeated #3870
         - Inspector dropdown list doesn't show anonymised users, removing blank options #3873
+        - Fix report unassignment so it works for users who did not create the report #3903
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
@@ -29,6 +33,8 @@
         - Add an index on problem(external_id) to speed up bin/fetch --updates
         - Upgrade Net::DNS and libwww to deal with IPv6 issues.
         - Add send_state column to updates. #3865
+    - Security
+        - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
     - Open311 improvements:
         - Increase default timeout.
 
@@ -103,6 +109,8 @@
         - Allow throttling by user login attempts
     - Changes
         - Send contact form emails from do-not-reply address if sender's domain uses DMARC.
+    - New features:
+        - Roles can now have category restrictions like users.
 
 * v3.1 (16th November 2020)
     - Security:

@@ -923,7 +923,9 @@ sub process_user : Private {
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
 
-        if ($c->stash->{contributing_as_another_user}) {
+        # WasteWorks can set a flag to treat the user as if not logged in if username differs
+        my $same_user = $user->username eq $params{username};
+        if ($c->stash->{contributing_as_another_user} || ($c->stash->{ignore_logged_in_user} && !$same_user)) {
             if ($params{username} || $params{phone}) {
                 # Act as if not logged in (and it will be auto-confirmed later on)
                 $report->user(undef);
@@ -1141,7 +1143,7 @@ sub process_report : Private {
             } else {
                 my $contact_options = {};
                 $contact_options->{do_not_send} = [ $c->get_param_list('do_not_send', 1) ];
-                my $bodies = $c->forward('contacts_to_bodies', [ $report->category, $contact_options ]);
+                my $bodies = $c->forward('contacts_to_bodies', [ $report, $contact_options ]);
                 join(',', map { $_->id } @$bodies) || '-1';
             }
         };
@@ -1200,8 +1202,9 @@ sub process_report : Private {
 }
 
 sub contacts_to_bodies : Private {
-    my ($self, $c, $category, $options) = @_;
+    my ($self, $c, $report, $options) = @_;
 
+    my $category = $report->category;
     my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
 
     # If there are multiple contacts for different bodies then the default
@@ -1233,6 +1236,9 @@ sub contacts_to_bodies : Private {
             @contacts = ($contacts[0]);
         }
     }
+
+    $c->cobrand->call_hook(munge_contacts_to_bodies => \@contacts, $report);
+
     [ map { $_->body } @contacts ];
 }
 

@@ -526,7 +526,10 @@ function layer_visibilitychanged() {
         }
         return;
     } else if (!this.getVisibility()) {
-        this.get_select_control().unselectAll();
+        var ctl = this.get_select_control();
+        if (ctl) {
+            ctl.unselectAll();
+        }
         this.asset_not_found(); // as trigger won't call on non-visible layers
     }
 
@@ -1367,14 +1370,14 @@ fixmystreet.message_controller = (function() {
         // If a feature wasn't found at the location they've clicked, it's
         // probably a field or something. Show an error to that effect,
         // unless an asset is selected.
-        road_not_found: function(layer) {
+        road_not_found: function(layer, criterion) {
             // don't show the message if clicking on a National Highways road
             if (fixmystreet.body_overrides.get_only_send() == 'National Highways' || !layer.visibility) {
                 responsibility_off(layer, 'road');
             } else if (fixmystreet.assets.selectedFeature()) {
                 fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
                 responsibility_off(layer, 'road');
-            } else if (is_only_body(layer.fixmystreet.body)) {
+            } else if (is_only_body(layer.fixmystreet.body) || (criterion && criterion())) {
                 responsibility_on(layer, 'road');
             }
         },

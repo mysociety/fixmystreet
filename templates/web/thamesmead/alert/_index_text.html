@@ -1,0 +1,13 @@
+<p>
+  You can find out what issues have been reported in Thamesmead and other areas nearby. You can also sign up for updates.
+</p>
+<p>
+  Please enter your postcode or street name so we can keep in touch.
+</p>
+
+[% IF location_error %]
+  <div class="error">[% location_error | safe %]</div>
+[% ELSE %]
+  [% INCLUDE 'errors.html' %]
+[% END %]
+

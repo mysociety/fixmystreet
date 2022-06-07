@@ -134,6 +134,10 @@ sub munge_report_new_bodies {
             %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
         }
     }
+
+    if ( $bodies{'Thamesmead'} ) {
+            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+    }
 }
 
 sub munge_report_new_contacts {
@@ -395,6 +399,13 @@ sub report_new_munge_before_insert {
     FixMyStreet::Cobrand::Merton::report_new_munge_before_insert($self, $report);
 }
 
+sub munge_contacts_to_bodies {
+    my ($self, $contacts, $report) = @_;
+
+    # Make sure Bucks grass cutting reports are routed correctly
+    FixMyStreet::Cobrand::Buckinghamshire::munge_contacts_to_bodies($self, $contacts, $report);
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
@@ -423,6 +434,19 @@ sub reopening_disallowed {
     my $c = $self->{c};
     return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
     return $self->next::method($problem);
+}
+
+# Make sure CPC areas are included in point lookups for new reports
+# This is so that parish bodies (e.g. in Buckinghamshire) are available
+# for reporting to on .com
+sub add_extra_area_types {
+    my ($self, $types) = @_;
+
+    my @types = (
+        @$types,
+        'CPC',
+    );
+    return \@types;
 }
 
 1;

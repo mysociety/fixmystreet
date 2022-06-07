@@ -81,6 +81,16 @@ sub check_page_allowed : Private {
         }
     } elsif ($c->user->from_body && (!$cobrand_body || $cobrand_body->id == $c->user->from_body->id)) {
         $body = $c->user->from_body;
+
+        my @extra_bodies = $c->cobrand->call_hook('dashboard_extra_bodies');
+        if (@extra_bodies) {
+            $c->stash->{default_body} = $c->user->from_body;
+            $c->stash->{extra_bodies} = \@extra_bodies;
+            if ($c->get_param('body')) {
+                my @found = grep { $_->id == $c->get_param('body') } @extra_bodies;
+                $body = $found[0] if @found;
+            }
+        }
     } elsif ($c->action eq 'dashboard/heatmap' && $c->cobrand->feature('heatmap_dashboard_body')) {
         # Heatmap might be able to be seen by more people
         $body = $c->cobrand->call_hook('dashboard_body');
@@ -400,6 +410,11 @@ sub heatmap : Local : Args(0) {
 
     $c->forward('/reports/setup_categories');
     $c->forward('/reports/setup_map');
+
+    if (!%{$c->stash->{filter_category}}) {
+        my $cats = $c->user->categories;
+        $c->stash->{filter_category} = { map { $_ => 1 } @$cats } if @$cats;
+    }
 }
 
 sub heatmap_filters :Private {
@@ -414,6 +429,12 @@ sub heatmap_filters :Private {
             $where->{areas} = [
                 map { { 'like', '%,' . $_ . ',%' } } @areas
             ];
+        }
+
+        # Default to user categories if no categories given
+        if (!$where->{'me.category'}) {
+            my $cats = $c->user->categories;
+            $where->{'me.category'} = $cats if @$cats;
         }
     }
 

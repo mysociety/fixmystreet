@@ -18,16 +18,15 @@ step1 = 'alter';
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Payment method</dt>
         <dd class="govuk-summary-list__value">[% c.cobrand.waste_display_payment_method(data.payment_method) %]</dd>
     </div>
+  [% IF data.cost_now_admin %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Admin fee</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.cost_now_admin ) %]</dd>
+    </div>
+  [% END %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Total to pay today</dt>
         <dd class="govuk-summary-list__value">£[% tprintf('%.2f', data.display_pro_rata) %]</dd>
-    </div>
-
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Billing address</dt>
-        <dd class="govuk-summary-list__value">
-        [% data.billing_address %]
-        </dd>
     </div>
 
 [% END %]

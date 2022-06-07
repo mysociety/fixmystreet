@@ -6,8 +6,8 @@
       [%~ FOREACH cat IN group.categories ~%]
         [% cat_lc = cat.category | lower =%]
         <div class="govuk-radios__item">
-        <input class="required govuk-radios__input" id="subcategory_[% cat.id %]" type="radio" name="category.[% group.id %]" data-category_display="[% cat.category_display %]" value='[% cat.category %]'[% ' checked' IF ( report.category == cat.category || category_lc == cat_lc ) AND ( NOT filter_group OR filter_group == group.name ) ~%]>
-        <label class="govuk-label govuk-radios__label" for="subcategory_[% cat.id %]">[% cat.category_display %]
+        <input class="required govuk-radios__input" id="subcategory_[% group.id %]_[% cat.id %]" type="radio" name="category.[% group.id %]" data-category_display="[% cat.category_display %]" value='[% cat.category %]'[% ' checked' IF ( report.category == cat.category || category_lc == cat_lc ) AND ( NOT filter_group OR filter_group == group.name ) ~%]>
+        <label class="govuk-label govuk-radios__label" for="subcategory_[% group.id %]_[% cat.id %]">[% cat.category_display %]
             [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
         </label>
         [%~ IF cat.get_extra_metadata('category_hint') %]

@@ -7,10 +7,17 @@ use FixMyStreet::Script::Reports;
 use Open311;
 my $mech = FixMyStreet::TestMech->new;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
+my $role = FixMyStreet::DB->resultset("Role")->create({ body => $oxon, name => 'Role', permissions => [] });
+$counciluser->add_to_roles($role);
 
 my $oxfordshire_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+$oxfordshire_cobrand->mock('area_types', sub { [ 'CTY' ] });
 
 $oxfordshire_cobrand->mock('defect_wfs_query', sub {
     return {
@@ -159,6 +166,10 @@ my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3, or
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
+    COBRAND_FEATURES => {
+        public_asset_ids =>
+            { oxfordshire => [ 'feature_id', 'unit_number' ] },
+    },
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
 
@@ -282,7 +293,7 @@ FixMyStreet::override_config {
         api_key => 'key',
         jurisdiction => 'home',
     });
-    my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Gullies and Catchpits', email => 'GC' );
+    my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Gullies and Catchpits', email => 'Alloy-GC' );
     $contact->set_extra_fields( (
         { code => 'feature_id', datatype => 'hidden', variable => 'true' },
         { code => 'usrn', datatype => 'hidden', variable => 'true' },
@@ -304,6 +315,7 @@ FixMyStreet::override_config {
                 user => $user,
                 latitude => 51.754926,
                 longitude => -1.256179,
+                extra => { contributed_by => $counciluser->id },
             });
             $p->set_extra_fields({ name => $test->{field}, value => $test->{value}});
             $p->update;
@@ -319,6 +331,7 @@ FixMyStreet::override_config {
             my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             like $c->param('description'), qr/$test->{text}: $test->{value}/, $test->{text} . ' included in body';
+            is $c->param('attribute[staff_role]'), 'Role';
         };
     }
 
@@ -380,13 +393,37 @@ FixMyStreet::override_config {
         $mech->create_contact_ok( body_id => $oxon->id, category => 'Lamp out', email => 'streetlighting', group => 'Street Lighting' );
         $mech->create_contact_ok( body_id => $oxon->id, category => 'Lamp on all day', email => 'streetlighting', group => 'Street Lighting' );
         $mech->create_contact_ok( body_id => $oxon->id, category => 'Lamp leaning', email => 'streetlighting', group => 'Street Lighting' );
-        my @params = (1, $oxon->id, 'Other light', { latitude => $latitude, longitude => $longitude, category => 'Lamp on all day' });
+        my @params = (1, $oxon->id, 'Other light', { latitude => $latitude, longitude => $longitude, category => 'Lamp on all day', cobrand => 'oxfordshire' });
         $mech->create_problems_for_body(@params);
         $params[3]{category} = 'Lamp leaning';
         $mech->create_problems_for_body(@params);
         my $json = $mech->get_ok_json("/around/nearby?latitude=$latitude&longitude=$longitude&filter_category=Lamp+out");
         my $pins = $json->{pins};
         is scalar @$pins, 2, 'other street lighting pins included';
+    };
+
+    subtest "Sends FMS report ID in confirmation emails when user is logged in." => sub {
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
+
+        my ($report) = $mech->create_problems_for_body( 1, $oxon->id, 'Flooded Gully', {
+            cobrand => 'oxfordshire',
+            category => 'Gullies and Catchpits',
+            user => $user,
+            latitude => 51.754926,
+            longitude => -1.256179,
+        });
+
+        FixMyStreet::Script::Reports::send();
+
+        my $email = $mech->get_email; # tests that there's precisely 1 email in queue
+        my $email_text = $mech->get_text_body_from_email($email);
+        like $email_text, qr/Your report to Oxfordshire County Council has been logged/, "A confirmation email has been received from Oxfordshire CC";
+        like $email_text, qr/The report's reference number is \d+\./, "...with a numerical case ref. in the text part...";
+        my $html_body = $mech->get_html_body_from_email($email);
+        like $html_body, qr/The report's reference number is <strong>\d+/, "...and a numerical case ref. in the HTML part";
+
+        $mech->clear_emails_ok;
     };
 
 };

@@ -26,10 +26,14 @@
      [% END %]
 
   [% ELSE %]
-    <h2>[% loc('Thank you for reporting this issue!') %]</h2>
-    [% IF report.bodies_str %]
-      <p>[% loc('It’s on its way to the council right now.') %]</p>
+    [% TRY %]
+        [% INCLUDE 'tokens/_confirm_problem.html' %]
+    [% CATCH file %]
+      <h2>[% loc('Thank you for reporting this issue!') %]</h2>
+      [% IF report.bodies_str %]
+        <p>[% loc('It’s on its way to the council right now.') %]</p>
     [% END %]
+  [% END %]
 
   [% END %]
 

@@ -142,6 +142,17 @@ test_overrides hackney =>
         extra => {
             url => 'http://example.com/1234',
         },
+        row_data => {
+            geocode => {
+                resourceSets => [ {
+                    resources => [ {
+                        address => {
+                            formattedAddress => '1 Test Street, Testville, TE57 1AB'
+                        }
+                    } ],
+                } ],
+            }
+        },
     },
     superhashof({
         handler => isa('FixMyStreet::Cobrand::Hackney'),
@@ -155,6 +166,7 @@ test_overrides hackney =>
             { name => 'title', value => 'Problem' },
             { name => 'description', value => 'A big problem' },
             { name => 'category', value => 'ZZ' },
+            { name => 'closest_address', value => '1 Test Street, Testville, TE57 1AB' },
         ),
     });
 

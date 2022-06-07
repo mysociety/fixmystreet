@@ -6,12 +6,11 @@ if (!fixmystreet.maps) {
 
 fixmystreet.maps.banes_defaults = {
     http_options: {
-        // Use tilma proxy for staging sites to avoid CORS issues.
-        url: fixmystreet.staging ? "https://tilma.mysociety.org/proxy/bathnes/isharemaps/" : "https://isharemaps.bathnes.gov.uk/getows.ashx",
+        url: "https://data.bathnes.gov.uk/geoserver/fms/ows",
         params: {
             mapsource: "BathNES/WFS",
             SERVICE: "WFS",
-            VERSION: "1.1.0",
+            VERSION: "1.0.0",
             REQUEST: "GetFeature",
             TYPENAME: "",
             SRSNAME: "urn:ogc:def:crs:EPSG::27700",
@@ -36,7 +35,7 @@ fixmystreet.maps.banes_defaults = {
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
-            TYPENAME: "Gritbins"
+            TYPENAME: "fms:GritBins"
         }
     },
     asset_category: "Grit bin issue",
@@ -49,7 +48,7 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
-            TYPENAME: "ParksOpenSpacesAssets"
+            TYPENAME: "fms:ParksOpenSpacesAssets"
         }
     },
     asset_category: [
@@ -168,7 +167,7 @@ var lighting_stylemap = new OpenLayers.StyleMap({
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
-            TYPENAME: "StreetLighting"
+            TYPENAME: "fms:street_lighting"
         }
     },
     asset_category: "Street Light Fault",
@@ -191,7 +190,7 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
-            TYPENAME: "AdoptedHighways"
+            TYPENAME: "fms:adopted_highways"
         }
     },
     stylemap: fixmystreet.assets.stylemap_invisible,
@@ -250,7 +249,7 @@ var curo_categories = [
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
     http_options: {
         params: {
-            TYPENAME: "Curo_Land_Registry"
+            TYPENAME: "fms:curo_land_registry"
         }
     },
     asset_type: 'area',

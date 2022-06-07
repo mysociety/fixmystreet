@@ -1,6 +1,32 @@
 <!-- report/form/user.html -->
-<div class="js-new-report-user-hidden form-section-preview form-section-preview--next">
+
+[% PROCESS 'auth/form_extra.html' %]
+
+<div class="[% IF type != 'report' %]js-new-report-user-hidden[% END %]
+    form-section-preview form-section-preview--next hidden-nojs">
+    <h2 class="form-section-heading form-section-heading--private hidden-nojs">
+        [% loc('Next:') %] [% loc('Tell us about you') %]
+    </h2>
+
+<button type="button" class="btn btn--block hidden-nojs js-reporting-page--next[% IF type != 'report' %] js-new-report-user-show[% END %]">Continue and provide contact details</button>
+[% IF type == 'report' %]
+<small>This will allow us to let you know when your report has been updated.</small>
+[% END %]
+
+<div class="[%~ ' hidden-js' UNLESS type == 'report' %]">
+    <small id="or">[% loc('or') %]</small>
     <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">Report anonymously</button>
-    <small>No personal details will be stored.</small>
+    <small>No personal details will be provided, and you will not receive updates about this report.</small>
 </div>
+
+</div>
+
+[% IF type == 'report' %]
+<div class="form-section-preview form-section-preview--next hidden-js">
+    <button name="report_anonymously" value="yes" class="btn btn--block">Report anonymously</button>
+    <small>No personal details will be provided, and you will not receive updates about this report.</small>
+    <small id="or">[% loc('or') %]</small>
+</div>
+[% END %]
+
 <!-- /report/form/user.html -->

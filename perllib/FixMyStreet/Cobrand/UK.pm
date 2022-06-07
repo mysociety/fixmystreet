@@ -117,7 +117,7 @@ sub short_name {
     return 'Durham+City' if $name eq 'Durham City Council';
 
     $name =~ s/^(Royal|London) Borough of //;
-    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ (Borough|City|District|County|Parish|Town) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
     $name =~ tr{/}{_};
@@ -373,6 +373,9 @@ sub get_body_handler_for_problem {
 
     if ($row->to_body_named('TfL')) {
         return FixMyStreet::Cobrand::TfL->new;
+    }
+    if ($row->to_body_named('Thamesmead')) {
+        return FixMyStreet::Cobrand::Thamesmead->new;
     }
     # Do not do anything for National Highways here, as we don't want it to
     # treat this as a cobrand for e.g. submit report emails made on .com

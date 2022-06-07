@@ -1,0 +1,135 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+update_district_category_notices
+
+=head1 USAGE
+
+update_district_category_notices path/to/data.json
+
+=head1 DESCRIPTION
+
+This is a one-off script to make some bulk changes to the contacts for the
+district councils in Oxfordshire.
+
+It'll read a JSON file and create/update contacts for districts to ensure their
+email addresses are correct, as well as adding a "Disable form when this
+category is selected" message to redirect the user to the relevant district
+council's website for making the report.
+
+Expects a JSON file of the format:
+
+{
+    "<body name>": {
+        "<category name>": {
+            "email": "<new email address for contact>",
+            "url": "<URL to signpost user to in 'form disabled' message (this key is optional)>"
+        },
+        [...]
+    },
+    [...]
+}
+
+If a category doesn't exist it'll be created.
+
+=cut
+
+use v5.14;
+use warnings;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Term::ANSIColor;
+use FixMyStreet::DB;
+use Getopt::Long::Descriptive;
+use JSON::MaybeXS;
+use Path::Tiny;
+use File::Basename;
+
+my ($opt, $usage) = describe_options(
+    '%c <input.json>',
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+die "Usage: $0 <path/to/input.json>" unless $ARGV[0] && -f $ARGV[0];
+
+my $db;
+END {
+    if ($db) {
+        $opt->commit ? $db->txn_commit : $db->txn_rollback;
+    }
+}
+
+$db = FixMyStreet::DB->schema->storage;
+$db->txn_begin;
+if (!$opt->commit) {
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
+}
+
+my $bodies = decode_json(path($ARGV[0])->slurp_utf8);
+
+for my $body_name (sort keys %$bodies) {
+    my $body = FixMyStreet::DB->resultset('Body')->find({ name => $body_name });
+    die "Couldn't find body $body_name" unless $body;
+
+    my $categories = $bodies->{$body_name};
+    for my $category (sort keys %$categories) {
+        next if $category eq "_"; # skip JSON "comments"
+        my $contact = $body->contacts->find_or_new( { category => $category } );
+
+        my $cfg = $categories->{$category};
+        my $note = "";
+
+        unless ($contact->in_storage) {
+            $contact->state("confirmed");
+            $contact->email($cfg->{email});
+            $contact->whenedited(\'current_timestamp');
+            $contact->note("Created contact.");
+            $contact->editor(basename($0));
+            $contact->insert;
+            printf "Created new contact for " . $body->name . ": $category\n";
+        }
+
+        if ($contact->email ne $cfg->{email}) {
+            printf "Changed " . $body->name . " $category email from " . $contact->email . " to " . $cfg->{email} . "\n";
+            $contact->email($cfg->{email});
+            $note .= "Updated to correct email address. ";
+        }
+
+        if ($cfg->{url}) {
+            my $meta = {
+                code => '_fms_disable_',
+                variable => 'false',
+                protected => 'true',
+                disable_form => 'true',
+                description => "Please <a href='" . $cfg->{url} . "'>report this issue to " . $body->name . " using their website</a>.",
+            };
+            my $updated = $contact->update_extra_field($meta);
+            my $action = ( $updated ? "Updated" : "Added" );
+            printf "$action redirection notice for " . $body->name . " $category\n";
+            $note .= "$action redirection notice.";
+        } else {
+            my @fields = @{ $contact->get_extra_fields() };
+            @fields = grep { $_->{code} eq "_fms_disable_" } @fields;
+            if (@fields) {
+                $contact->remove_extra_field('_fms_disable_');
+                $note .= "Removed redirection notice.";
+            }
+        }
+
+        $contact->update({
+            whenedited => \'current_timestamp',
+            note => $note,
+            editor => basename($0),
+        }) if $note;
+    }
+}

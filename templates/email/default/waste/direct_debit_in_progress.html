@@ -1,6 +1,6 @@
 [%
 
-email_summary = "Thanks for logging your report";
+email_summary = "Thanks for logging your request";
 email_columns = 2;
 
 PROCESS '_email_settings.html';
@@ -10,7 +10,7 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
-  <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+  <h1 style="[% h1_style %]">Your request has been&nbsp;logged</h1>
   <p style="[% p_style %]">Your application for a Direct Debit waste subscription for [% report.body %] has been logged on [% site_name %].</p>
 
 [% IF c.cobrand.moniker == 'bromley' %]

@@ -19,6 +19,7 @@ FMS_DB_PORT: '5432'
 FMS_DB_NAME: 'fms'
 FMS_DB_USER: 'fms'
 FMS_DB_PASS: ''
+FMS_DB_SSLMODE: 'prefer'
 
 # The base URL of the install.
 BASE_URL: 'http://www.example.org'

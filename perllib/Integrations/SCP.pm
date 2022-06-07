@@ -78,6 +78,39 @@ sub pay {
     my ($self, $args) = @_;
 
     my $credentials = $self->credentials($args);
+    my $entry_method = $args->{staff} ? 'CNP' : 'ECOM';
+
+    my @items;
+    my $total = 0;
+    foreach (@{$args->{items}}) {
+        push @items, ixhash(
+            'scpbase:itemSummary' => ixhash(
+                'scpbase:description' => $_->{description},
+                'scpbase:amountInMinorUnits' => $_->{amount},
+                'scpbase:reference' => $_->{reference},
+            ),
+            $self->config->{scp_vat_code} ? (
+                'scpbase:tax' => {
+                    'scpbase:vat' =>ixhash(
+                        'scpbase:vatCode' => $self->config->{scp_vat_code},
+                        'scpbase:vatRate' => $self->config->{scp_vat_rate} || 0,
+                        'scpbase:vatAmountInMinorUnits' => $_->{vat} || 0,
+                    ),
+                },
+            ) : (),
+            'scpbase:lgItemDetails' => ixhash(
+                'scpbase:fundCode' => $self->config->{scp_fund_code},
+                'scpbase:additionalReference' => $_->{lineId},
+                'scpbase:narrative' => $args->{uprn},
+                'scpbase:accountName' => {
+                    'scpbase:surname' => $args->{name},
+                },
+            ),
+            'scpbase:lineId' => $_->{lineId},
+        );
+        $total += $_->{amount};
+    }
+
     my $obj = [
         'common:credentials' => $credentials,
         'scpbase:requestType' => 'payOnly' ,
@@ -88,12 +121,13 @@ sub pay {
             'scpbase:siteId' => $self->config->{siteID},
             'scpbase:scpId' => $self->config->{scpID},
         ),
-        'scpbase:panEntryMethod' => 'ECOM',
+        'scpbase:panEntryMethod' => $entry_method,
         'scpbase:additionalInstructions' => {
             'scpbase:systemCode' => 'SCP'
         },
         'scpbase:billing' => {
             'scpbase:cardHolderDetails' => ixhash(
+                'scpbase:cardHolderName' => $args->{name},
                 'scpbase:address' => ixhash(
                     'scpbase:address1' => $args->{address1},
                     'scpbase:address2' => $args->{address2},
@@ -108,32 +142,11 @@ sub pay {
         'sale' => ixhash(
             'scpbase:saleSummary' => ixhash(
                 'scpbase:description' => $args->{description},
-                'scpbase:amountInMinorUnits' => $args->{amount},
+                'scpbase:amountInMinorUnits' => $total,
                 'scpbase:reference' => $args->{ref},
             ),
             items => {
-                item => [
-                    ixhash(
-                        'scpbase:itemSummary' => ixhash(
-                            'scpbase:description' => $args->{description},
-                            'scpbase:amountInMinorUnits' => $args->{amount},
-                            'scpbase:reference' => $self->config->{customer_ref},
-                        ),
-                        'scpbase:tax' => {
-                            'scpbase:vat' =>ixhash(
-                                'scpbase:vatCode' => $self->config->{scp_vat_code},
-                                'scpbase:vatRate' => $self->config->{scp_vat_rate} || 0,
-                                'scpbase:vatAmountInMinorUnits' => $args->{vat} || 0,
-                            ),
-                        },
-                        'scpbase:lgItemDetails' => ixhash(
-                            'scpbase:fundCode' => $self->config->{scp_fund_code},
-                            'scpbase:additionalReference' => $args->{ref},
-                            'scpbase:narrative' => $args->{uprn},
-                        ),
-                        'scpbase:lineId' => $args->{ref},
-                    ),
-                ],
+                item => \@items,
             },
         ),
     ];

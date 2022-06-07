@@ -17,7 +17,11 @@
             Amount
         </dt>
         <dd class="govuk-summary-list__value">
-            £[% amount %]
+            [% IF firstamount %]
+                An initial payment of £[% firstamount %] and subsequently £[% amount %].
+            [% ELSE %]
+                £[% amount %]
+            [% END %]
         </dd>
       </div>
       <div class="govuk-summary-list__row">
