@@ -27,7 +27,7 @@ body {
     span,
     a.report-a-problem-btn,
     span.report-a-problem-btn {
-        padding: 0.5em 0.75em;
+        padding: 0.5em 0.4em;
         margin: 0 4px;
         border-radius: 4px;
 
@@ -82,6 +82,22 @@ body {
     height: 0;
     padding-top: 74px;
     overflow: hidden;
+
+    @media only screen and (max-width: 59em)  {
+        $logo-width: 140px;
+        $logo-height: 40px;
+        width:  $logo-width;
+        // height: 61px; // see below
+        background-size:  $logo-width  $logo-height;
+        @include svg-background-image("images/sc-logo-v3");
+    
+        // text-indent doesn’t play nicely with focus outline,
+        // so use padding overflow trick instead
+        text-indent: 0;
+        height: 0;
+        padding-top: calc(#{$logo-height} + 5px);
+        overflow: hidden;
+    }
 }
 
 #front-main {
