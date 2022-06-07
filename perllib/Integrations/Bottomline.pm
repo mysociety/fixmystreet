@@ -8,6 +8,7 @@ use HTTP::Headers;
 use HTTP::Request;
 use HTTP::Request::Common;
 use JSON::MaybeXS;
+use Tie::IxHash;
 
 has config => (
     is => 'ro'
@@ -214,38 +215,37 @@ sub amend_plan {
 sub get_plan_for_mandate {
     my ($self, $mandate_id) = @_;
 
-    my $data = $self->build_query({
-        entity => {
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
            "name" => "PaymentPlans",
            "symbol" => "com.bottomline.ddm.model.base.plan.payment.PaymentPlan",
            "key" => "com.bottomline.ddm.model.base.plan.payment.PaymentPlan"
-       },
-       field => {
+       ),
+       field => ixhash(
             name => "PaymentPlan",
-            symbol => "com.bottomline.ddm.model.payment.CommonPaymentPlan",
-        },
-        query => [{
+            symbol => "com.bottomline.ddm.model.plan.payment.CommonPaymentPlan",
+        ),
+        query => [ixhash(
              '@type' => "QueryParameter",
-             "field" => {
+             "field" => ixhash(
                "name" => "id",
-               "symbol" => "com.bottomline.ddm.model.base.plan.payment.PaymentPlan.mandate.modelId",
+               "symbol" => "com.bottomline.ddm.model.plan.payment.PaymentPlan.mandate.modelId",
                "fieldType" => "LONG",
                "key" => JSON()->false,
-             },
+             ),
              "operator" => {
                "symbol" => "="
              },
              "queryValues" => [
-               {
+               ixhash(
                    '@type' => "long",
                    '$value' => $mandate_id,
-               }
+               )
              ]
-       }]
-    });
+       )]
+    ));
 
-    my $resp = $self->call("query/execute#planForMandateId", $data);
-
+    my $resp = $self->call("query/execute#planForMandateId", $data, "POST");
     my $plans =  $self->parse_results("YearlyPaymentPlan", $resp);
 
     if ( ref $plans eq 'HASH' and $plans->{error} ) {
@@ -260,30 +260,28 @@ sub get_plan_for_mandate {
 sub build_query {
     my ( $self, $params ) = @_;
 
-    my $data = {
+    my $data = ixhash(
        "entity" => $params->{entity},
-       "criteria" => {
-           "searchCriteria" => [ @{$params->{query}} ]
-       },
        "resultFields" => [
-           {
+           ixhash(
              "name" => $params->{field}->{name},
              "symbol" => $params->{field}->{symbol},
              "fieldType" => "OBJECT",
              "key" => JSON()->false,
-           },
-           {
+           ),
+           ixhash(
              "name" => "rowCount",
              "symbol" => "com.bottomline.query.count",
              "fieldType" => "LONG",
              "key" => JSON()->false,
-           }
+           )
        ],
-       "resultsPage" => {
+       $params->{query} ? ( criteria => { searchCriteria => [ @{$params->{query}} ] } ) : (),
+       "resultsPage" => ixhash(
            "firstResult" => 0,
            "maxResults" => 50
-       }
-    };
+       )
+    );
 
     return $data;
 }
@@ -315,38 +313,39 @@ sub parse_results {
 sub get_recent_payments {
     my ($self, $args) = @_;
 
-    my $data = $self->build_query({
-        entity => {
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
            "name" => "Instructions",
            "symbol" => "com.bottomline.ddm.model.instruction",
            "key" => "com.bottomline.ddm.model.instruction"
-       },
-       field => {
+       ),
+       field => ixhash(
             name => "Instruction",
             symbol => "com.bottomline.ddm.model.instruction.Instruction",
-        },
-        query => [{
+        ),
+        query => [ixhash(
              '@type' => "QueryParameter",
-             "field" => {
+             "field" => ixhash(
                "name" => "paymentDate",
                "symbol" => "com.bottomline.ddm.model.instruction.Instruction.paymentDate",
                "fieldType" => "DATE",
                "key" => JSON()->false,
-             },
+             ),
              "operator" => {
                "symbol" => "BETWEEN"
              },
              "queryValues" => [
-               {
+               ixhash(
                    '@type' => "date",
                    '$value' => $args->{start}->datetime,
-               },               {
+               ),
+               ixhash(
                    '@type' => "date",
                    '$value' => $args->{end}->datetime,
-               }
+               )
              ]
-       }]
-   });
+       )]
+   ));
 
     my $resp = $self->call("query/execute#CollectionHistoryDates", $data);
 
@@ -387,43 +386,43 @@ sub get_payments_with_status {
        }
    ]});
 
-    my $resp = $self->call("query/execute#CollectionHistoryStatus", $data);
+    my $resp = $self->call("query/execute#CollectionHistoryStatus", $data, "POST");
     return $self->parse_results("Instruction", $resp);
 }
 
 sub get_cancelled_payers {
     my ($self, $args) = @_;
 
-    my $data = $self->build_query({
-        entity => {
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
            "name" => "Mandates",
            "symbol" => "com.bottomline.ddm.model.mandate",
            "key" => "com.bottomline.ddm.model.mandate"
-       },
-       field => {
+       ),
+       field => ixhash(
             name => "Mandates",
             symbol => "com.bottomline.ddm.model.mandate.Mandates",
-        },
+        ),
         query => [
-         {
+         ixhash(
              '@type' => "QueryParameter",
-             "field" => {
+             "field" => ixhash(
                "name" => "status",
                "symbol" => "com.bottomline.ddm.model.mandate.Mandate.status",
                "fieldType" => "STRING",
                "key" => JSON()->false,
-             },
+             ),
              "operator" => {
                "symbol" => "="
              },
              "queryValues" => [
-               {
+               ixhash(
                    '@type' => "string",
                    '$value' => "CANCELLED",
-               }
+               )
              ]
-       }
-   ]});
+       )
+   ]));
 
     my $resp = $self->call("query/execute#getCancelledPayers", $data);
     return $self->parse_results("MandateDTO", $resp);
@@ -432,33 +431,33 @@ sub get_cancelled_payers {
 sub get_contact_from_email {
     my ($self, $email) = @_;
 
-    my $data = $self->build_query({
-        entity => {
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
            "name" => "Contacts",
            "symbol" => "com.bottomline.ddm.model.contact",
            "key" => "com.bottomline.ddm.model.contact"
-       },
-       field => {
+       ),
+       field => ixhash(
             name => "Contacts",
             symbol => "com.bottomline.ddm.model.contact.Contact",
-        },
-        query => [ {
+        ),
+        query => [ ixhash(
             '@type' => "QueryParameter",
-            "field" => {
+            "field" => ixhash(
                 "name" => "email",
                 "symbol" => "com.bottomline.ddm.model.contact.Contact.email",
                 "fieldType" => "STRING",
                 "key" => JSON()->false,
-            },
+            ),
             "operator" => {
                 "symbol" => "="
             },
-            "queryValues" => [ {
+            "queryValues" => [ ixhash(
                '@type' => "string",
                '$value' => $email,
-            } ]
-        } ]
-    });
+            ) ]
+        ) ]
+    ));
 
     my $resp = $self->call("query/execute#getContactFromEmail", $data);
     my $contacts = $self->parse_results("ContactDTO", $resp);
@@ -492,6 +491,11 @@ sub cancel_plan {
     } else {
         return 1;
     }
+}
+
+sub ixhash {
+    tie (my %data, 'Tie::IxHash', @_);
+    return \%data;
 }
 
 1;
