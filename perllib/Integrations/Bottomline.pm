@@ -401,7 +401,7 @@ sub get_payments_with_status {
              "field" => {
                "name" => "status",
                "symbol" => "com.bottomline.ddm.model.instruction.Instruction.status",
-               "fieldType" => "STRING",
+               "fieldType" => "ENUM",
                "key" => JSON()->false,
              },
              "operator" => {
