@@ -263,6 +263,7 @@ FixMyStreet::override_config {
     my ($p) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - New', {
         user_id => $user->id,
         category => 'Garden Subscription',
+        whensent => \'current_timestamp',
     });
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'property_id', value => 12345});
@@ -557,6 +558,13 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Your garden waste bin will');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?35.00/;
     };
 
     subtest 'check new sub credit card payment with no bins required' => sub {
@@ -589,6 +597,14 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        unlike $body, qr/Bins to be delivered/;
+        like $body, qr/Total:.*?20.00/;
     };
 
     subtest 'check new sub credit card payment with one less bin required' => sub {
@@ -621,6 +637,14 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Bins to be removed: 1/;
+        like $body, qr/Total:.*?20.00/;
     };
 
     subtest 'check new sub direct debit payment' => sub {
@@ -719,6 +743,14 @@ FixMyStreet::override_config {
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 2/;
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?35.00/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
@@ -746,6 +778,14 @@ FixMyStreet::override_config {
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Bins to be removed: 1/;
+        unlike $body, qr/Total:/;
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
@@ -789,6 +829,14 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Thank you for renewing/;
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Total:.*?20.00/;
     };
 
     subtest 'renew credit card sub with an extra bin' => sub {
@@ -822,6 +870,14 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 2/;
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?55.00/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
@@ -851,6 +907,14 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Bins to be removed: 1/;
+        like $body, qr/Total:.*?20.00/;
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
@@ -913,6 +977,14 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        unlike $body, qr/Bins to be delivered/;
+        like $body, qr/Total:.*?20.00/;
     };
 
     remove_test_subs( $p->id );
@@ -1023,6 +1095,13 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        unlike $body, qr/Number of bin subscriptions/;
+        unlike $body, qr/Bins to be delivered/;
     };
 
     my $report = FixMyStreet::DB->resultset("Problem")->search({
@@ -1093,6 +1172,14 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Your garden waste sacks will');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Garden waste sack collection: 1 roll/;
+        unlike $body, qr/Number of bin subscriptions/;
+        like $body, qr/Total:.*?41.00/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_bin_with_refuse_sacks);
