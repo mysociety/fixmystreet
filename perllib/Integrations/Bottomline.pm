@@ -552,8 +552,8 @@ sub cancel_plan {
 
     my $path = sprintf(
         "ddm/contacts/%s/mandates/%s",
-        $sub->get_extra_field_value('dd_contact_id'),
-        $sub->get_extra_field_value('dd_mandate_id'),
+        $sub->get_extra_metadata('dd_contact_id'),
+        $sub->get_extra_metadata('dd_mandate_id'),
     );
 
     my $resp = $self->call($path, undef, 'DELETE');
