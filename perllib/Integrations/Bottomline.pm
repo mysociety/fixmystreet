@@ -43,6 +43,7 @@ sub headers {
         User_Agent => "api-v2.5",
         Content_Type => "application/json",
         ":X-CSRF" => $self->csrf,
+        "Cache_Control" => "no-cache",
     };
 
     if ( $self->token ) {
