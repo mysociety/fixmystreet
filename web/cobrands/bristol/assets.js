@@ -39,8 +39,10 @@ var options = $.extend(true, {}, base_options, {
     }
 });
 
+var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
+
 var parkOptions = $.extend(true, {}, base_options, {
-    wfs_url: 'https://tilma.staging.mysociety.org/mapserver/bristol',
+    wfs_url: 'https://' + wfs_host + '/mapserver/bristol',
     wfs_feature: "parks",
     asset_type: 'area',
     asset_id_field: 'SITE_CODE',
@@ -58,18 +60,23 @@ var parkOptions = $.extend(true, {}, base_options, {
 fixmystreet.assets.add(parkOptions, {
     asset_category: ["Abandoned vehicle in park/open space",
                      "General litter",
-                     "Graffiti issue",
-                     "Flyposter removal",
+                     "Graffiti issue (parks/playgrounds)",
+                     "Flyposting (parks/playgrounds)",
                      "Grass cutting",
                      "Path cleaning",
                      "Hedge cutting",
-                     "Vegetation clearance",
+                     "Brambles",
                      "Pothole/Trip hazard",
                      "Toilet issue/damage",
                      "Building damage",
                      "Wall/Fence/Gate damage",
                      "Lighting (park facilities)",
-                     "Shrub/Rose maintenance"],
+                     "Shrub/Rose maintenance",
+                     "Equipment damaged",
+                     "Dog mess",
+                     "Fence/Gate/Barrier damage"
+                ],
+
     asset_item: 'park'
 });
 
@@ -130,7 +137,7 @@ fixmystreet.assets.add(options, {
 });
 
 fixmystreet.assets.add(options, {
-    asset_category: ["Bin full", "Bin/Seat damage"],
+    asset_category: ["Bin full (parks/playgrounds)", "Bin/Seat damage"],
     asset_item: 'bin',
     filter_value: 'PF'
 });
