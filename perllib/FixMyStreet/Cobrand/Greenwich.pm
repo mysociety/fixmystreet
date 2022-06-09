@@ -50,9 +50,19 @@ sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
     # Greenwich doesn't have category metadata to fill this
-    return [
+    my $open311_only = [
         { name => 'external_id', value => $row->id },
     ];
+
+    if ($row->geocode) {
+        my $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address};
+        push @$open311_only, (
+            { name => 'closest_address', value => $address->{formattedAddress} }
+        );
+        $h->{closest_address} = '';
+    }
+
+    return $open311_only;
 }
 
 sub open311_contact_meta_override {
