@@ -1106,8 +1106,9 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
 
     # direct debit renewal is automatic so you should not
     # be doing this
+    my $service = $c->cobrand->garden_current_subscription;
     my $payment_method = $c->forward('get_current_payment_method');
-    if ( $payment_method eq 'direct_debit' ) {
+    if ( $payment_method eq 'direct_debit' && !$c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
         $c->stash->{template} = 'waste/garden/dd_renewal_error.html';
         $c->detach;
     }
