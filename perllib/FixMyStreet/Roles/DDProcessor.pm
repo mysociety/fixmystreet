@@ -4,9 +4,12 @@ use Moo::Role;
 use strict;
 use warnings;
 
+my $log_level;
+
 sub log_level {
     my $self = shift;
-    return $self->get_config->{debug_level} || 'INFO';
+    my $new = shift;
+    return $log_level || $self->get_config->{debug_level} || 'INFO';
 }
 
 sub logging_levels {
@@ -33,7 +36,9 @@ sub waste_dd_paid {
 }
 
 sub waste_reconcile_direct_debits {
-    my $self = shift;
+    my ($self, $params) = @_;
+
+    $log_level = "DEBUG" if $params->{verbose};
 
     my $today = DateTime->now;
     my $start = $today->clone->add( days => -14 );
