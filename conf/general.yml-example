@@ -130,6 +130,7 @@ MAPIT_TYPES: [ 'ZZZ' ]
 #   MAPIT_GENERATION: 2
 MAPIT_ID_WHITELIST: []
 MAPIT_GENERATION: 0
+MAPIT_API_SEPARATOR: ";"
 
 # If your MapIt has the concept of council wards (subareas of councils, where
 # people can sign up for alerts, but not report things), then you can give the
