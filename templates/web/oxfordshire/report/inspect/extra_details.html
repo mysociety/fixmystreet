@@ -1,0 +1,17 @@
+<p>
+    <label for="problem_priority">[% loc('Priority') %]</label>
+    <select name="priority" id="problem_priority" class="form-control"
+    [% IF problem.get_extra_metadata('defect_item_category') %]
+        disabled
+    [% END %]
+    >
+        <option value="" [% 'selected' UNLESS problem.response_priority_id OR has_default_priority %]>-</option>
+        [% FOREACH priority IN problem.response_priorities %]
+        <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id OR (NOT problem.response_priority_id AND priority.is_default) %]>[% priority.name | html %]</option>
+        [% END %]
+    </select>
+</p>
+
+[% IF permissions.report_inspect %]
+    [% INCLUDE 'report/inspect/_extra_details_field.html' %]
+[% END %]

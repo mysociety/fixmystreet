@@ -9,6 +9,9 @@
         <br>[% c.user.email %] <span id="js-defect-prefix"></span> &hellip;
     </span>
     <textarea rows="2" name="detailed_information" id="detailed_information" class="form-control"
+        [% IF problem.get_extra_metadata('defect_item_category') %]
+            disabled
+        [% END %]
         [% IF max_detailed_info_length %]data-max-length="[% max_detailed_info_length %]"[% END %]>[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
 </p>
 
