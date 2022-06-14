@@ -1128,7 +1128,7 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     }
 
     $c->stash->{first_page} = 'intro';
-    my $service = $c->cobrand->garden_service_id;
+    $service = $c->cobrand->garden_service_id;
     my $max_bins = $c->stash->{quantity_max}->{$service};
     $service = $c->stash->{services}{$service};
     $c->stash->{garden_form_data} = {
