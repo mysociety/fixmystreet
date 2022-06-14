@@ -192,8 +192,13 @@ sub get_body_sender {
         # neither of those so just send email for records
         my $emails = $self->feature('open311_email');
         if ( $emails->{flytipping} ) {
-            my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
             $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
+
+            # P'bro do not want to be notified of smaller incident sizes
+            return { method => 'Blackhole' }
+                if _is_small_flytipping_incident($problem);
+
+            my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
             return { method => 'Email', contact => $contact};
         }
     }
@@ -230,6 +235,9 @@ sub open311_post_send {
     # Unset here because check above used it
     $row->unset_extra_metadata('pcc_witness');
     return unless $send_email;
+
+    # P'bro do not want to be emailed about smaller incident sizes
+    return if _is_small_flytipping_incident($row);
 
     my $emails = $self->feature('open311_email');
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
@@ -355,6 +363,16 @@ sub _flytipping_categories { [
     "Offensive graffiti",
     "Offensive graffiti - STAFF ONLY",
 ] }
+
+sub _is_small_flytipping_incident {
+    my $problem = shift;
+
+    my $single_black_bag = qr/S00/;
+    my $single_item      = qr/S01/;
+
+    return ( $problem->get_extra_field_value('Incident_Size') // '' )
+        =~ /$single_black_bag|$single_item/;
+}
 
 # We can resend reports upon category change
 sub category_change_force_resend {
