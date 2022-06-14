@@ -827,9 +827,12 @@ sub garden_waste_dd_redirect_url {
 sub garden_waste_dd_check_success {
     my ($self, $c) = @_;
 
+    if ( defined( $c->get_param('stage') ) && $c->get_param('stage') == 0 ) {
+        # something has gone wrong and the form has not recorded correctly
+        $c->forward('direct_debit_error');
+        $c->detach();
     # check if the bank details have been verified
-    my $applied = lc($c->get_param('verificationapplied') || '');
-    if ( $applied eq 'true' ) {
+    } elsif ( $c->get_param('verificationapplied') && lc($c->get_param('verificationapplied')) eq 'true' ) {
         # and if they have and verification has failed then redirect
         # to the cancelled page
         if ( lc $c->get_param('status') eq 'false') {

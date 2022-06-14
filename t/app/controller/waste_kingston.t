@@ -744,6 +744,14 @@ FixMyStreet::override_config {
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
         $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&status=False&verificationapplied=True");
+        is $mech->res->code, 200, "got 200";
+        $mech->content_contains('There was a problem with your attempt to pay by Direct Debit');
+        $mech->content_contains('Retry to pay £35.00');
+
+        # need to get the token again as it's unique per request
+        ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&stage=0&status=True&verificationapplied=True");
+        is $mech->res->code, 200, "got 200";
         $mech->content_contains('There was a problem with your attempt to pay by Direct Debit');
         $mech->content_contains('Retry to pay £35.00');
         # need to get the token again as it's unique per request
@@ -755,7 +763,7 @@ FixMyStreet::override_config {
 
         $mech->email_count_is( 0, "no email sent for failed direct debit sub");
 
-        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&status=True&verificationapplied=False");
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&&stage=6&status=True&verificationapplied=False");
         $mech->content_contains('confirmation details once your Direct Debit');
         $new_report->delete;
     };
