@@ -1340,7 +1340,7 @@ sub process_garden_data : Private {
         $p->update;
         $c->forward('confirm_subscription', [ undef ]);
     } else {
-        if ( $data->{payment_method} eq 'direct_debit' ) {
+        if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
