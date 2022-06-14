@@ -109,6 +109,30 @@ has auth_details => (
     },
 );
 
+sub call_paged {
+    my ($self, $path, $data, $method) = @_;
+
+    my $first_result = $self->call($path, $data, $method);
+
+    if ( ref $first_result eq 'HASH' and $first_result->{error} ) {
+        return $first_result;
+    }
+
+    my $count = $self->parse_results("long", $first_result);
+    my $rows = $count->[0]->{'$value'};
+    if ( $rows > 50 ) {
+        my $start = 50;
+        while ( $start < $rows ) {
+            $data->{resultsPage}->{firstResult} = $start;
+            my $res = $self->call($path, $data, $method);
+            push @{ $first_result->{rows } }, @{ $res->{rows} };
+            $start += 50;
+        }
+    }
+
+    return $first_result;
+}
+
 
 sub call {
     my ($self, $path, $data, $method) = @_;
@@ -377,7 +401,7 @@ sub get_recent_payments {
        )]
    ));
 
-    my $resp = $self->call("query/execute#CollectionHistoryDates", $data);
+    my $resp = $self->call_paged("query/execute#CollectionHistoryDates", $data);
 
     return $self->parse_results("Instruction", $resp);
 }
@@ -416,7 +440,7 @@ sub get_payments_with_status {
        }
    ]});
 
-    my $resp = $self->call("query/execute#CollectionHistoryStatus", $data, "POST");
+    my $resp = $self->call_paged("query/execute#CollectionHistoryStatus", $data);
     return $self->parse_results("Instruction", $resp);
 }
 
@@ -454,7 +478,7 @@ sub get_cancelled_payers {
        )
    ]));
 
-    my $resp = $self->call("query/execute#getCancelledPayers", $data);
+    my $resp = $self->call_paged("query/execute#getCancelledPayers", $data);
     return $self->parse_results("MandateDTO", $resp);
 }
 
