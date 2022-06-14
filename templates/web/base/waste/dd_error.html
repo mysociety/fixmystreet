@@ -1,0 +1,25 @@
+[% INCLUDE header.html %]
+
+<div class="govuk-error-summary">
+    <h1 class="govuk-panel__title">
+        Payment cancelled
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+         There was a problem with your attempt to pay by Direct Debit.
+        </p>
+    </div>
+</div>
+
+[% IF report %]
+[% BLOCK form_extra %]
+    <div class="govuk-form-group">
+        <p>
+        Retry to pay £[% IF firstamount %][% firstamount %][% ELSE %][% amount %][% END %] for [% report.title %] by Direct Debit.
+        </p>
+    </div>
+[% END %]
+[% INCLUDE 'waste/dd_form.html' button_text="Retry" %]
+[% END %]
+
+[% INCLUDE footer.html %]
