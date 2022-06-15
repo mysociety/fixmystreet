@@ -112,6 +112,42 @@ describe("Parish grass cutting category speed limit question", function() {
   });
 });
 
+describe("Correct body showing depending on category", function() {
+  beforeEach(function() {
+    cy.server();
+    cy.route('**mapserver/bucks*Whole_Street*', 'fixture:roads.xml').as('roads-layer');
+    cy.route('**mapserver/bucks*WinterRoutes*', 'fixture:roads.xml').as('winter-routes');
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route('/around\?ajax*').as('update-results');
+    cy.route('/around/nearby*').as('around-ajax');
+    cy.visit('http://buckinghamshire.localhost:3001/');
+    cy.contains('Buckinghamshire');
+    cy.get('[name=pc]').type('SL9 0NX');
+    cy.get('[name=pc]').parents('form').submit();
+    cy.wait('@update-results');
+    cy.get('#map_box').click(290, 307);
+    cy.wait('@report-ajax');
+  });
+
+  it('displays only the parish name for other parish categories', function() {
+    cy.pickCategory('Grass, hedges and weeds');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Grass, hedges and weeds', 'Hedge problem');
+    cy.wait('@around-ajax');
+    cy.nextPageReporting();
+    cy.nextPageReporting();
+    cy.contains('These will be sent to Adstock Parish Council and also published online');
+  });
+
+  it("doesn't show the parish name for Buckinghamshire categories", function() {
+    cy.pickCategory('Roads');
+    cy.wait('@around-ajax');
+    cy.nextPageReporting();
+    cy.nextPageReporting();
+    cy.contains('These will be sent to Buckinghamshire Council and also published online');
+  });
+});
+
 describe('buckinghamshire roads handling', function() {
   beforeEach(function() {
     cy.server();
