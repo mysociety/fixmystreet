@@ -88,6 +88,23 @@ describe('buckinghamshire cobrand', function() {
       cy.contains('sent to Buckinghamshire Council and also published online').should('be.visible');
     });
   });
+
+  describe("Parish reports for categories other than grass cutting", function() {
+    beforeEach(function() {
+      cy.get('#map_box').click(290, 307);
+      cy.wait('@report-ajax');
+      cy.pickCategory('Grass, hedges and weeds');
+      cy.nextPageReporting();
+      cy.pickSubcategory('Grass, hedges and weeds', 'Hedge problem');
+      cy.wait('@around-ajax');
+      cy.nextPageReporting();
+      cy.nextPageReporting();
+    });
+
+    it('displays only the parish name', function() {
+      cy.contains('These will be sent to Adstock Parish Council and also published online');
+    });
+  });
 });
 
 describe('buckinghamshire roads handling', function() {
