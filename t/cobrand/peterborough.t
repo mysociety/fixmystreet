@@ -560,6 +560,140 @@ for my $test (
     };
 }
 
+for my $test (
+    { desc => 'Offensive graffiti' },
+    { desc => 'Non offensive graffiti' },
+    )
+{
+    my $contact = $mech->create_contact_ok(
+        body_id  => $peterborough->id,
+        category => $test->{desc},
+        email    => 'GRAF',
+    );
+
+    subtest $test->{desc} => sub {
+        subtest "on PCC land is sent by open311 only" => sub {
+            FixMyStreet::override_config {
+                STAGING_FLAGS    => { send_reports => 1 },
+                MAPIT_URL        => 'http://mapit.uk/',
+                ALLOWED_COBRANDS => 'peterborough',
+                COBRAND_FEATURES => {
+                    open311_email => {
+                        peterborough =>
+                            { flytipping => 'flytipping@example.org' }
+                    }
+                },
+                },
+                sub {
+                $mech->clear_emails_ok;
+
+                my ($p) = $mech->create_problems_for_body(
+                    1,
+                    $peterborough->id,
+                    'Title',
+                    {   category  => $test->{desc},
+                        latitude  => 52.5708,
+                        longitude => 0.2505,
+                        cobrand   => 'peterborough',
+                        geocode   => {
+                            resourceSets => [
+                                {   resources => [
+                                        {   name    => '12 A Street, XX1 1SZ',
+                                            address => {
+                                                addressLine => '12 A Street',
+                                                postalCode  => 'XX1 1XZ'
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        extra => {
+                            _fields =>
+                                [ { name => 'site_code', value => '999' }, ],
+                        },
+                    },
+                );
+
+                FixMyStreet::Script::Reports::send();
+                $p->discard_changes;
+                ok $p->whensent, 'Report marked as sent';
+                is $p->get_extra_metadata('sent_to'), undef,
+                    'sent_to extra metadata is not set';
+                is $p->state,           'confirmed', 'report state unchanged';
+                is $p->comments->count, 0,           'no comment added';
+                my $cgi = CGI::Simple->new( Open311->test_req_used->content );
+                is $cgi->param('service_code'), 'GRAF',
+                    'service code is correct';
+
+                $mech->email_count_is(0);
+                };
+        };
+
+        subtest "on non PCC land is emailed only" => sub {
+            FixMyStreet::override_config {
+                STAGING_FLAGS    => { send_reports => 1 },
+                MAPIT_URL        => 'http://mapit.uk/',
+                ALLOWED_COBRANDS => 'peterborough',
+                COBRAND_FEATURES => {
+                    open311_email => {
+                        peterborough =>
+                            { flytipping => 'flytipping@example.org' }
+                    }
+                },
+                },
+                sub {
+                $mech->clear_emails_ok;
+
+                my ($p) = $mech->create_problems_for_body(
+                    1,
+                    $peterborough->id,
+                    'Title',
+                    {   category  => $test->{desc},
+                        latitude  => 52.5608,
+                        longitude => 0.2405,
+                        cobrand   => 'peterborough',
+                        geocode   => {
+                            resourceSets => [
+                                {   resources => [
+                                        {   name    => '12 A Street, XX1 1SZ',
+                                            address => {
+                                                addressLine => '12 A Street',
+                                                postalCode  => 'XX1 1XZ'
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        extra => {
+                            _fields =>
+                                [ { name => 'site_code', value => '999' }, ],
+                        },
+                    }
+                );
+
+                FixMyStreet::Script::Reports::send();
+                $p->discard_changes;
+                ok $p->whensent, 'Report marked as sent';
+                is $p->get_extra_metadata('flytipping_email'), undef,
+                    'flytipping_email extra metadata unset';
+                is $p->get_extra_metadata('sent_to')->[0],
+                    'flytipping@example.org', 'sent_to extra metadata set';
+                is $p->state, 'closed',    'report closed having sent email';
+                is $p->comments->count, 1, 'comment added';
+                like $p->comments->first->text, qr/As this is private land/,
+                    'correct comment text';
+                ok !Open311->test_req_used, 'no open311 sent';
+
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                ok $email, "got an email";
+                };
+        };
+    };
+}
+
 subtest 'Dashboard CSV extra columns' => sub {
     $report->update({
         state => 'unable to fix',

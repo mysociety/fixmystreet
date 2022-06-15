@@ -334,6 +334,9 @@ sub open311_post_send {
     $row->unset_extra_metadata('pcc_witness');
     return unless $send_email;
 
+    # P'bro do not want to be emailed about graffiti on public land
+    return if $row->category =~ /graffiti/i;
+
     # P'bro do not want to be emailed about smaller incident sizes
     return if _is_small_flytipping_incident($row);
 
