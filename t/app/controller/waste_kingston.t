@@ -745,7 +745,7 @@ FixMyStreet::override_config {
         $mech->get("/waste/dd_complete?customData=reference:NOTATOKEN^report_id:$report_id");
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
-        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddplanreference=RBK-1001&status=True&verificationapplied=False");
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddPlanReference=RBK-1001&status=True&verificationapplied=False");
         $mech->content_contains('confirmation details once your Direct Debit');
 
         $mech->get_ok('/waste/12345');
@@ -861,7 +861,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('You have a pending garden subscription');
         $mech->content_contains('soon due for renewal');
 
-        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddplanreference=RBK-1001");
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddPlanReference=RBK-1001");
         $mech->content_contains('confirmation details once your Direct Debit');
         $mech->content_lacks("Could not create initial payment");
 
@@ -923,7 +923,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('You have a pending garden subscription');
         $mech->content_contains('soon due for renewal');
 
-        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddplanreference=RBK-1000");
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddPlanReference=RBK-1000");
         $mech->content_lacks('confirmation details once your Direct Debit');
         $mech->content_contains("Could not create initial payment");
 
@@ -984,7 +984,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('You have a pending garden subscription');
         $mech->content_contains('soon due for renewal');
 
-        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddplanreference=RBK-1001");
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddPlanReference=RBK-1001");
         $mech->content_contains('confirmation details once your Direct Debit');
 
         $mech->get_ok('/waste/12345');
@@ -1341,7 +1341,7 @@ FixMyStreet::override_config {
         $mech->get("/waste/dd_complete?customData=reference:NOTATOKEN^report_id:$report_id");
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
-        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddplanreference=RBK-1001");
+        $mech->get("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddPlanReference=RBK-1001");
         $mech->content_contains('confirmation details once your Direct Debit');
 
         $mech->get_ok('/waste/12345');
@@ -1691,7 +1691,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('You have a pending garden subscription');
 
-        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddplanreference=RBK-1001");
+        $mech->get_ok("/waste/dd_complete?customData=reference:$token^report_id:$report_id&ddPlanReference=RBK-1001");
         $mech->content_contains('confirmation details once your Direct Debit');
 
         $mech->get_ok('/waste/12345');

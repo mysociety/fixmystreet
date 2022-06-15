@@ -822,8 +822,12 @@ sub garden_waste_dd_complete {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     if ($type && $type == $self->waste_subscription_types->{Renew} && $now->ymd("") < '20220701') {
         my $i = $self->get_dd_integration;
-        my $mandate = $i->get_mandate_from_reference( $self->{c}->get_param("ddplanreference") );
+        my $mandate = $i->get_mandate_from_reference( $self->{c}->get_param("ddPlanReference") );
         my $mandate_id = $mandate->{id};
+
+        $report->set_extra_metadata( dd_contact_id => $mandate->{payerId});
+        $report->set_extra_metadata( dd_mandate_id => $mandate_id );
+        $report->update;
 
         my $total = $report->get_extra_field_value('payment');
         if ( $report->get_extra_field_value('admin_fee') ) {
