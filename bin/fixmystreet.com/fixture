@@ -135,7 +135,7 @@ if ($opt->test_fixtures) {
         { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council', cobrand => 'westminster' },
         { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council', cobrand => 'bromley' },
         { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
-        { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting', 'Grass cutting'], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
+        { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting', 'Grass cutting', 'Hedge problem'], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
         { area_id => 53822, categories => [ 'Grass cutting', 'Hedge problem' ], name => 'Adstock Parish Council' }, # Buckinghamshire parish council
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
@@ -253,6 +253,13 @@ if ($opt->test_fixtures) {
     }
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{163793},
+        category => 'Hedge problem',
+    });
+    $child_cat->set_extra_metadata(group => 'Grass, hedges and weeds');
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{53822},
         category => 'Grass cutting',
     });
@@ -274,6 +281,9 @@ if ($opt->test_fixtures) {
             category => $cat_name,
         });
         $child_cat->set_extra_metadata(group => 'Grass, hedges and weeds');
+        if ($cat_name eq 'Hedge problem') {
+            $child_cat->set_extra_metadata(prefer_if_multiple => 1);
+        }
         $child_cat->update;
     }
 

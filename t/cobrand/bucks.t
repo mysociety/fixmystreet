@@ -37,6 +37,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => 
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping (off-road)', email => "districts_flytipping", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', email => 'parking@example.org', send_method => 'Email', group => 'Car park issue');
 $mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
+$mech->create_contact_ok(body_id => $body->id, category => 'Hedge problem', email => 'hedges@example.org', send_method => 'Email');
 
 # Create another Grass cutting category for a parish.
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grassparish@example.org', send_method => 'Email');
@@ -52,6 +53,11 @@ $contact->set_extra_fields({
 });
 $contact->update;
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Dirty signs', email => 'signs@example.org', send_method => 'Email');
+
+# Create a parish "Hedge problem" category with prefer_if_multiple.
+$contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Hedge problem', email => 'hedges-parish@example.org', send_method => 'Email');
+$contact->set_extra_metadata(prefer_if_multiple => 1);
+$contact->update;
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 $cobrand->mock('lookup_site_code', sub {
@@ -598,6 +604,12 @@ subtest 'Reports to parishes are closed by default' => sub {
 
     my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
     like $json->{reports_list}, qr/Test Dirty signs report 2/;
+};
+
+subtest "Only the contact with prefer_if_multiple is returned for the Hedge Problem category" => sub {
+    my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.615559&longitude=-0.556903');
+    is scalar @{$json->{by_category}->{'Hedge problem'}->{bodies}}, 1, "Only one contact returned";
+    is $json->{by_category}->{'Hedge problem'}->{bodies}->[0], 'Adstock Parish Council', "Correct contact returned";
 };
 
 };

@@ -744,6 +744,14 @@ sub setup_categories_and_bodies : Private {
     my $contacts = $c->model('DB::Contact')->for_new_reports($c, \%bodies);
     my @contacts = $c->cobrand->categories_restriction($contacts)->all_sorted;
 
+    # If there are multiple contacts with the same category name and one of
+    # them has prefer_if_multiple set then use that one.
+    my @preferred = grep { $_->get_extra_metadata('prefer_if_multiple') } @contacts;
+    my %preferred_ids = map { $_->id => 1 } @preferred;
+    my %preferred_cats = map { $_->category => 1 } @preferred;
+
+    @contacts = grep { !$preferred_cats{$_->category} || $preferred_ids{$_->id} } @contacts;
+
     $c->cobrand->call_hook(munge_report_new_contacts => \@contacts);
 
     # variables to populate
