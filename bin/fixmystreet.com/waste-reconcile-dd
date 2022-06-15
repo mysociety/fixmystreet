@@ -1,0 +1,28 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use FixMyStreet::Cobrand;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['verbose|v', 'more verbose output'],
+    ['cobrand=s', 'which cobrand to fetch events for'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+$usage->die unless $opts->cobrand;
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
+$cobrand->waste_reconcile_direct_debits({
+    verbose => $opts->verbose
+});

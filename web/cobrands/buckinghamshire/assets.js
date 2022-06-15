@@ -103,6 +103,7 @@ fixmystreet.assets.add(labeled_defaults, {
             TYPENAME: "StreetLights_Union"
         }
     },
+    class: OpenLayers.Layer.BuckinghamshireVectorAsset,
     asset_category: [
         'Light on during the day',
         'Street light dim',
@@ -119,6 +120,16 @@ fixmystreet.assets.add(labeled_defaults, {
         var extra = '. Only ITEMs maintained by Transport for Buckinghamshire are displayed.';
         extra = extra.replace(/ITEM/g, data.name);
         return 'You have selected ' + data.name + ' <b>' + data.id + '</b>' + extra;
+    },
+    actions: {
+        asset_found: function(asset) {
+            fixmystreet.message_controller.asset_found.call(this, asset);
+            fixmystreet.assets.named_select_action_found.call(this, asset);
+        },
+        asset_not_found: function() {
+            fixmystreet.message_controller.asset_not_found.call(this);
+            fixmystreet.assets.named_select_action_not_found.call(this);
+        }
     }
 });
 

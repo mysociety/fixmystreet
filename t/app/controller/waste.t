@@ -1427,6 +1427,13 @@ FixMyStreet::override_config {
         $p->update;
     };
 
+    subtest 'renew direct debit after expiry' => sub {
+        set_fixed_time('2021-04-09T17:00:00Z'); # After expiry
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Renew subscription today');
+        set_fixed_time('2021-03-09T17:00:00Z');
+    };
+
     subtest 'cancel direct debit sub' => sub {
         $mech->get_ok('/waste/12345/garden_cancel');
         is $mech->uri->path, '/auth', 'have to be logged in to cancel subscription';
