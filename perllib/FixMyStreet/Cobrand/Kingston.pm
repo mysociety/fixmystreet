@@ -761,6 +761,12 @@ sub garden_waste_dd_munge_form_details {
         $c->stash->{day} = 1;
         $c->stash->{initial_ad_hoc} = 1;
     }
+
+    $c->stash->{form_name} = $c->stash->{payment_details}->{form_name};
+
+    if ( $c->stash->{staff_payments_allowed} ) {
+        $c->stash->{form_name} = $c->stash->{payment_details}->{staff_form_name};
+    }
 }
 
 sub garden_waste_dd_redirect_url {
