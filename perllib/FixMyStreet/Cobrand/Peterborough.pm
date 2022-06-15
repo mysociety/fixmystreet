@@ -264,9 +264,11 @@ sub get_body_sender {
         if ( $emails->{flytipping} ) {
             $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
 
-            # P'bro do not want to be notified of smaller incident sizes
+            # P'bro do not want to be notified of smaller incident sizes. They
+            # also do not want email for reports raised by staff.
             return { method => 'Blackhole' }
-                if _is_small_flytipping_incident($problem);
+                if _is_small_flytipping_incident($problem)
+                || _is_raised_by_staff($problem);
 
             my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
             return { method => 'Email', contact => $contact};
@@ -337,8 +339,11 @@ sub open311_post_send {
     # P'bro do not want to be emailed about graffiti on public land
     return if $row->category =~ /graffiti/i;
 
-    # P'bro do not want to be emailed about smaller incident sizes
-    return if _is_small_flytipping_incident($row);
+    # P'bro do not want to be emailed about smaller incident sizes or staff
+    # reports
+    return
+        if _is_small_flytipping_incident($row)
+        || _is_raised_by_staff($row);
 
     my $emails = $self->feature('open311_email');
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
@@ -450,6 +455,12 @@ sub _is_small_flytipping_incident {
 
     return ( $problem->get_extra_field_value('Incident_Size') // '' )
         =~ /$single_black_bag|$single_item/;
+}
+
+sub _is_raised_by_staff {
+    my $problem = shift;
+
+    return $problem->user && $problem->user->body eq council_name();
 }
 
 # We can resend reports upon category change
