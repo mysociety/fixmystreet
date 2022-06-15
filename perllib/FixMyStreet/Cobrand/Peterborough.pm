@@ -233,7 +233,8 @@ sub open311_post_send {
     my ($self, $row, $h) = @_;
 
     # Check Open311 was successful
-    my $send_email = $row->external_id || _witnessed_general_flytipping($row);
+    my $witnessed_flytipping = _witnessed_general_flytipping($row);
+    my $send_email = $row->external_id || $witnessed_flytipping;
     # Unset here because check above used it
     $row->unset_extra_metadata('pcc_witness');
     return unless $send_email;
@@ -242,10 +243,12 @@ sub open311_post_send {
     return if $row->category =~ /graffiti/i;
 
     # P'bro do not want to be emailed about smaller incident sizes or staff
-    # reports
+    # reports - with the exception of witnessed flytipping, as this won't
+    # have been sent by Open311
     return
-        if _is_small_flytipping_incident($row)
-        || _is_raised_by_staff($row);
+        if !$witnessed_flytipping
+        && ( _is_small_flytipping_incident($row)
+        || _is_raised_by_staff($row) );
 
     my $emails = $self->feature('open311_email');
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
