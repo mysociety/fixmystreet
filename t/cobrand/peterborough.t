@@ -299,7 +299,7 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
     };
 };
 
-subtest "flytipping on PCC land witnessed is only sent by email" => sub {
+subtest "flytipping on PCC land (witnessed) is only sent by email" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
@@ -346,17 +346,6 @@ subtest "flytipping on non PCC land is emailed" => sub {
             latitude => 52.5608,
             longitude => 0.2405,
             cobrand => 'peterborough',
-            geocode => {
-                resourceSets => [ {
-                    resources => [ {
-                        name => '12 A Street, XX1 1SZ',
-                        address => {
-                            addressLine => '12 A Street',
-                            postalCode => 'XX1 1XZ'
-                        }
-                    } ]
-                } ]
-            },
             extra => {
                 _fields => [
                     { name => 'site_code', value => '12345', },
@@ -420,20 +409,7 @@ for my $test (
                         latitude  => 52.5708,
                         longitude => 0.2505,
                         cobrand   => 'peterborough',
-                        geocode   => {
-                            resourceSets => [
-                                {   resources => [
-                                        {   name    => '12 A Street, XX1 1SZ',
-                                            address => {
-                                                addressLine => '12 A Street',
-                                                postalCode  => 'XX1 1XZ'
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        extra => {
+                        extra     => {
                             _fields => [
                                 { name => 'site_code', value => '999' },
                                 $test->{extra_field},
@@ -457,51 +433,52 @@ for my $test (
                 };
         };
 
-  # TODO What is expected here?
-  #
-  # subtest "flytipping on PCC land witnessed is only sent by email" => sub {
-  #     FixMyStreet::override_config {
-  #         STAGING_FLAGS    => { send_reports => 1 },
-  #         MAPIT_URL        => 'http://mapit.uk/',
-  #         ALLOWED_COBRANDS => 'peterborough',
-  #         COBRAND_FEATURES => {
-  #             open311_email => {
-  #                 peterborough => { flytipping => 'flytipping@example.org' }
-  #             }
-  #         },
-  #         },
-  #         sub {
-  #         $mech->clear_emails_ok;
+        subtest "flytipping on PCC land (witnessed) is only sent by email" =>
+            sub {
+            FixMyStreet::override_config {
+                STAGING_FLAGS    => { send_reports => 1 },
+                MAPIT_URL        => 'http://mapit.uk/',
+                ALLOWED_COBRANDS => 'peterborough',
+                COBRAND_FEATURES => {
+                    open311_email => {
+                        peterborough =>
+                            { flytipping => 'flytipping@example.org' }
+                    }
+                },
+                },
+                sub {
+                $mech->clear_emails_ok;
 
-       #         my ($p) = $mech->create_problems_for_body(
-       #             1,
-       #             $peterborough->id,
-       #             'Title',
-       #             {   category  => 'General fly tipping',
-       #                 latitude  => 52.5708,
-       #                 longitude => 0.2505,
-       #                 cobrand   => 'peterborough',
-       #                 extra     => {
-       #                     _fields => [
-       #                         { name => 'site_code',   value => '12345', },
-       #                         { name => 'pcc-witness', value => 'yes', },
-       #                     ],
-       #                 },
-       #             }
-       #         );
+                my ($p) = $mech->create_problems_for_body(
+                    1,
+                    $peterborough->id,
+                    'Title',
+                    {   category  => 'General fly tipping',
+                        latitude  => 52.5708,
+                        longitude => 0.2505,
+                        cobrand   => 'peterborough',
+                        extra     => {
+                            _fields => [
+                                { name => 'site_code',   value => '12345', },
+                                { name => 'pcc-witness', value => 'yes', },
+                                $test->{extra_field},
+                            ],
+                        },
+                    }
+                );
 
-        #         my $test_data = FixMyStreet::Script::Reports::send();
-        #         $p->discard_changes;
-        #         ok !$test_data->{test_req_used}, 'open311 not sent';
+                my $test_data = FixMyStreet::Script::Reports::send();
+                $p->discard_changes;
+                ok !$test_data->{test_req_used}, 'open311 not sent';
 
-        #         $mech->email_count_is(1);
-        #         my $email = $mech->get_email;
-        #         ok $email, "got an email";
-        #         is $email->header('To'),
-        #             '"Environmental Services" <flytipping@example.org>',
-        #             'email sent to correct address';
-        #         };
-        # };
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                ok $email, "got an email";
+                is $email->header('To'),
+                    '"Environmental Services" <flytipping@example.org>',
+                    'email sent to correct address';
+                };
+            };
 
         subtest "flytipping on non PCC land is not sent at all" => sub {
             FixMyStreet::override_config {
@@ -526,20 +503,7 @@ for my $test (
                         latitude  => 52.5608,
                         longitude => 0.2405,
                         cobrand   => 'peterborough',
-                        geocode   => {
-                            resourceSets => [
-                                {   resources => [
-                                        {   name    => '12 A Street, XX1 1SZ',
-                                            address => {
-                                                addressLine => '12 A Street',
-                                                postalCode  => 'XX1 1XZ'
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        extra => {
+                        extra     => {
                             _fields => [
                                 { name => 'site_code', value => '999' },
                                 $test->{extra_field},
@@ -603,19 +567,6 @@ for my $test (
                         latitude  => 52.5708,
                         longitude => 0.2505,
                         cobrand   => 'peterborough',
-                        geocode   => {
-                            resourceSets => [
-                                {   resources => [
-                                        {   name    => '12 A Street, XX1 1SZ',
-                                            address => {
-                                                addressLine => '12 A Street',
-                                                postalCode  => 'XX1 1XZ'
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
                         extra => {
                             _fields =>
                                 [ { name => 'site_code', value => '999' }, ],
@@ -661,19 +612,6 @@ for my $test (
                         latitude  => 52.5608,
                         longitude => 0.2405,
                         cobrand   => 'peterborough',
-                        geocode   => {
-                            resourceSets => [
-                                {   resources => [
-                                        {   name    => '12 A Street, XX1 1SZ',
-                                            address => {
-                                                addressLine => '12 A Street',
-                                                postalCode  => 'XX1 1XZ'
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
                         extra => {
                             _fields =>
                                 [ { name => 'site_code', value => '999' }, ],
@@ -740,21 +678,6 @@ subtest 'Staff user:' => sub {
                             latitude  => 52.5708,
                             longitude => 0.2505,
                             cobrand   => 'peterborough',
-                            geocode   => {
-                                resourceSets => [
-                                    {   resources => [
-                                            {   name =>
-                                                    '12 A Street, XX1 1SZ',
-                                                address => {
-                                                    addressLine =>
-                                                        '12 A Street',
-                                                    postalCode => 'XX1 1XZ'
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
                             extra => {
                                 _fields => [
                                     { name => 'site_code', value => '999' },
@@ -803,21 +726,6 @@ subtest 'Staff user:' => sub {
                             latitude  => 52.5608,
                             longitude => 0.2405,
                             cobrand   => 'peterborough',
-                            geocode   => {
-                                resourceSets => [
-                                    {   resources => [
-                                            {   name =>
-                                                    '12 A Street, XX1 1SZ',
-                                                address => {
-                                                    addressLine =>
-                                                        '12 A Street',
-                                                    postalCode => 'XX1 1XZ'
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
                             extra => {
                                 _fields => [
                                     { name => 'site_code', value => '999' },
@@ -881,21 +789,6 @@ subtest 'Staff user:' => sub {
                             latitude  => 52.5708,
                             longitude => 0.2505,
                             cobrand   => 'peterborough',
-                            geocode   => {
-                                resourceSets => [
-                                    {   resources => [
-                                            {   name =>
-                                                    '12 A Street, XX1 1SZ',
-                                                address => {
-                                                    addressLine =>
-                                                        '12 A Street',
-                                                    postalCode => 'XX1 1XZ'
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
                             extra => {
                                 _fields => [
                                     { name => 'site_code', value => '999' },
@@ -991,21 +884,6 @@ subtest 'Staff user:' => sub {
                             latitude  => 52.5608,
                             longitude => 0.2405,
                             cobrand   => 'peterborough',
-                            geocode   => {
-                                resourceSets => [
-                                    {   resources => [
-                                            {   name =>
-                                                    '12 A Street, XX1 1SZ',
-                                                address => {
-                                                    addressLine =>
-                                                        '12 A Street',
-                                                    postalCode => 'XX1 1XZ'
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
                             extra => {
                                 _fields => [
                                     { name => 'site_code', value => '999' },
