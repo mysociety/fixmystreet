@@ -17,6 +17,17 @@ my $params = {
 };
 my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
 my $contact = $mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
+my $hazardous_flytipping_contact = $mech->create_contact_ok(email => 'HAZ', body_id => $peterborough->id, category => 'Hazardous fly tipping');
+my $offensive_graffiti_contact = $mech->create_contact_ok(
+    body_id  => $peterborough->id,
+    category => 'Offensive graffiti',
+    email    => 'OFF',
+);
+my $non_offensive_graffiti_contact = $mech->create_contact_ok(
+    body_id  => $peterborough->id,
+    category => 'Non offensive graffiti',
+    email    => 'NON',
+);
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );
 
@@ -251,190 +262,583 @@ for my $test (
     };
 }
 
-subtest "flytipping on PCC land is sent by open311 and email" => sub {
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
-    }, sub {
-        $mech->clear_emails_ok;
-
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
-            category => 'General fly tipping',
-            latitude => 52.5708,
-            longitude => 0.2505,
-            cobrand => 'peterborough',
-            geocode => {
-                resourceSets => [ {
-                    resources => [ {
-                        name => '12 A Street, XX1 1SZ',
-                        address => {
-                            addressLine => '12 A Street',
-                            postalCode => 'XX1 1XZ'
-                        }
-                    } ]
-                } ]
-            },
-            extra => {
-                _fields => [
-                    { name => 'site_code', value => '12345', },
-                ],
-            },
-        } );
-
-        FixMyStreet::Script::Reports::send();
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
-        is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata is set';
-        is $p->state, 'confirmed', 'report state unchanged';
-        is $p->comments->count, 0, 'no comment added';
-        my $cgi = CGI::Simple->new(Open311->test_req_used->content);
-        is $cgi->param('service_code'), 'FLY', 'service code is correct';
-
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
-    };
-};
-
-subtest "flytipping on PCC land (witnessed) is only sent by email" => sub {
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
-    }, sub {
-        $mech->clear_emails_ok;
-
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
-            category => 'General fly tipping',
-            latitude => 52.5708,
-            longitude => 0.2505,
-            cobrand => 'peterborough',
-            extra => {
-                _fields => [
-                    { name => 'site_code', value => '12345', },
-                    { name => 'pcc-witness', value => 'yes', },
-                ],
-            },
-        } );
-
-        my $test_data = FixMyStreet::Script::Reports::send();
-        $p->discard_changes;
-        ok !$test_data->{test_req_used}, 'open311 not sent';
-
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
-    };
-};
-
-subtest "flytipping on non PCC land is emailed" => sub {
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
-    }, sub {
-        $mech->clear_emails_ok;
-
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
-            category => 'General fly tipping',
-            latitude => 52.5608,
-            longitude => 0.2405,
-            cobrand => 'peterborough',
-            extra => {
-                _fields => [
-                    { name => 'site_code', value => '12345', },
-                ],
-            },
-        } );
-
-        FixMyStreet::Script::Reports::send();
-
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
-        is $p->get_extra_metadata('flytipping_email'), undef, 'flytipping_email extra metadata unset';
-        is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
-        is $p->state, 'closed', 'report closed having sent email';
-        is $p->comments->count, 1, 'comment added';
-        like $p->comments->first->text, qr/As this is private land/, 'correct comment text';
-        ok !Open311->test_req_used, 'no open311 sent';
-
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-    };
-};
-
+# Fly tipping
 for my $test (
-    {   desc        => 'Flytipping: incident_size = single item',
-        extra_field => {
-            name  => 'Incident_Size',
-            value => 'Single Item - S01',
-        },
-    },
-    {   desc        => 'Flytipping: incident_size = single black bag',
-        extra_field => {
-            name  => 'Incident_Size',
-            value => 'Single Black Bag - S00',
-        },
-    },
-    )
-{
-    subtest $test->{desc} => sub {
-        subtest "flytipping on PCC land is sent by open311 only" => sub {
-            FixMyStreet::override_config {
-                STAGING_FLAGS    => { send_reports => 1 },
-                MAPIT_URL        => 'http://mapit.uk/',
-                ALLOWED_COBRANDS => 'peterborough',
-                COBRAND_FEATURES => {
-                    open311_email => {
-                        peterborough =>
-                            { flytipping => 'flytipping@example.org' }
-                    }
-                },
-                },
-                sub {
-                $mech->clear_emails_ok;
+    {   user_type     => 'standard',
+        subcategories => [
+            {   name           => 'General fly tipping',
+                incident_sizes => [
+                    {   name       => 'Car Boot Load or Less - S02',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
 
-                my ($p) = $mech->create_problems_for_body(
-                    1,
-                    $peterborough->id,
-                    'Title',
-                    {   category  => 'General fly tipping',
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'FLY',
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'public witnessed',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                extra => [
+                                    { name => 'pcc-witness', value => 'yes' },
+                                ],
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Peterborough City Council" <flytipping@example.org>',
+                                },
+                            },
+                        ],
+                    },
+                    {   name       => 'Single Item - S01',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'FLY',
+                                    email_to     => undef,
+                                },
+                            },
+                            {   name      => 'public witnessed',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                extra => [
+                                    { name => 'pcc-witness', value => 'yes' },
+                                ],
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     => undef,
+                                },
+                            },
+                        ],
+                    },
+                    {   name       => 'Single Black Bag - S00',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'FLY',
+                                    email_to     => undef,
+                                },
+                            },
+                            {   name      => 'public witnessed',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                extra => [
+                                    { name => 'pcc-witness', value => 'yes' },
+                                ],
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     => undef,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+            {   name           => 'Hazardous fly tipping',
+                incident_sizes => [
+                    {   name       => 'Car Boot Load or Less - S02',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'HAZ',
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'public witnessed',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                extra => [
+                                    { name => 'pcc-witness', value => 'yes' },
+                                ],
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Peterborough City Council" <flytipping@example.org>',
+                                },
+                            },
+                        ],
+                    },
+                    {   name       => 'Single Item - S01',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'HAZ',
+                                    email_to     => undef,
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     => undef,
+                                },
+                            },
+                        ],
+                    },
+                    {   name       => 'Single Black Bag - S00',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'HAZ',
+                                    email_to     => undef,
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     => undef,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    {   user_type     => 'staff',
+        subcategories => [
+            {   name           => 'General fly tipping',
+                incident_sizes => [
+                    {   name       => 'Car Boot Load or Less - S02',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'FLY',
+                                    email_to     => undef,
+                                },
+                            },
+                            {   name      => 'public witnessed',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                extra => [
+                                    { name => 'pcc-witness', value => 'yes' },
+                                ],
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 1,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => undef,
+                                    email_to     =>
+                                        '"Environmental Services" <flytipping@example.org>',
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     => undef,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+            {   name           => 'Hazardous fly tipping',
+                incident_sizes => [
+                    {   name       => 'Car Boot Load or Less - S02',
+                        land_types => [
+                            {   name      => 'public',
+                                latitude  => 52.5708,
+                                longitude => 0.2505,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'confirmed',
+                                    comment      => undef,
+                                    service_code => 'HAZ',
+                                    email_to     => undef,
+                                },
+                            },
+                            {   name      => 'private',
+                                latitude  => 52.5608,
+                                longitude => 0.2405,
+
+                                expected => {
+                                    has_whensent => 1,
+                                    has_sent_to  => 0,
+                                    state        => 'closed',
+                                    comment => qr/As this is private land/,
+                                    service_code => undef,
+                                    email_to     => undef,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+){
+    for my $subcat ( @{ $test->{subcategories} } ){
+        if ( exists $subcat->{incident_sizes} ) {
+            for my $size ( @{ $subcat->{incident_sizes} } ) {
+                for my $land ( @{ $size->{land_types} } ) {
+                    note 'Fly tipping: '
+                        . "$test->{user_type} user: "
+                        . "$subcat->{name}: "
+                        . "$size->{name}: "
+                        . "$land->{name}: ";
+
+                    FixMyStreet::override_config {
+                        STAGING_FLAGS    => { send_reports => 1 },
+                        MAPIT_URL        => 'http://mapit.uk/',
+                        ALLOWED_COBRANDS => 'peterborough',
+                        COBRAND_FEATURES => {
+                            open311_email => {
+                                peterborough => {
+                                    flytipping => 'flytipping@example.org'
+                                }
+                            }
+                        },
+                        },
+                        sub {
+                        $mech->clear_emails_ok;
+
+                        my ($p) = $mech->create_problems_for_body(
+                            1,
+                            $peterborough->id,
+                            'Title',
+                            {   category  => $subcat->{name},
+                                latitude  => $land->{latitude},
+                                longitude => $land->{longitude},
+                                cobrand   => 'peterborough',
+                                extra     => {
+                                    _fields => [
+                                        {   name  => 'site_code',
+                                            value => '12345',
+                                        },
+                                        {   name  => 'Incident_Size',
+                                            value => $size->{name},
+                                        },
+                                        @{ $land->{extra} // [] },
+                                    ],
+                                },
+                                ( user => $staffuser ) x !!($test->{user_type} eq 'staff'),
+                            }
+                        );
+
+                        my $test_data = FixMyStreet::Script::Reports::send();
+                        $p->discard_changes;
+
+                        my $expected = $land->{expected};
+
+                        is !!$p->whensent, $expected->{has_whensent},
+                            'check whensent';
+                        if ( $expected->{has_sent_to} ) {
+                            is $p->get_extra_metadata('sent_to')->[0],
+                                'flytipping@example.org',
+                                'sent_to extra metadata is set';
+                        }
+                        else {
+                            is $p->get_extra_metadata('sent_to'),
+                                undef, 'no sent_to extra metadata';
+                        }
+
+                        is $p->state, $expected->{state}, 'check state';
+
+                        if ( $expected->{comment} ) {
+                            is $p->comments->count, 1, 'comment added';
+                            like $p->comments->first->text,
+                                $expected->{comment},
+                                'correct comment text';
+                        }
+                        else {
+                            is $p->comments->count, 0, 'no comments';
+                        }
+
+                        if ( $expected->{service_code} ) {
+                            my $cgi = CGI::Simple->new(
+                                Open311->test_req_used->content );
+                            is $cgi->param('service_code'),
+                                $expected->{service_code},
+                                'open311 sent with correct service code';
+                        }
+                        else {
+                            ok !$test_data->{test_req_used},
+                                'open311 not sent';
+                        }
+
+                        $mech->email_count_is(
+                            $land->{expected}{email_to} ? 1 : 0 );
+
+                        if ( $land->{expected}{email_to} ) {
+                            my $email = $mech->get_email;
+                            ok $email, 'got an email';
+                            is $email->header('To'),
+                                $land->{expected}{email_to},
+                                'email sent to correct address';
+                        }
+                        };
+                }
+            }
+        }
+    }
+}
+
+# Graffiti
+for my $test (
+    {   user_type     => 'standard',
+        subcategories => [
+            {   name       => 'Non offensive graffiti',
+                land_types => [
+                    {   name      => 'public',
                         latitude  => 52.5708,
                         longitude => 0.2505,
-                        cobrand   => 'peterborough',
-                        extra     => {
-                            _fields => [
-                                { name => 'site_code', value => '999' },
-                                $test->{extra_field},
-                            ],
+
+                        expected => {
+                            has_whensent => 1,
+                            has_sent_to  => 0,
+                            state        => 'confirmed',
+                            comment      => undef,
+                            service_code => 'NON',
+                            email_to     => undef,
                         },
                     },
-                );
+                    {   name      => 'private',
+                        latitude  => 52.5608,
+                        longitude => 0.2405,
 
-                FixMyStreet::Script::Reports::send();
-                $p->discard_changes;
-                ok $p->whensent, 'Report marked as sent';
-                is $p->get_extra_metadata('sent_to'), undef,
-                    'sent_to extra metadata is not set';
-                is $p->state,           'confirmed', 'report state unchanged';
-                is $p->comments->count, 0,           'no comment added';
-                my $cgi = CGI::Simple->new( Open311->test_req_used->content );
-                is $cgi->param('service_code'), 'FLY',
-                    'service code is correct';
+                        expected => {
+                            has_whensent => 1,
+                            has_sent_to  => 1,
+                            state        => 'closed',
+                            comment      => qr/As this is private land/,
+                            service_code => undef,
+                            email_to     =>
+                                '"Peterborough City Council" <flytipping@example.org>',
+                        },
+                    },
+                ],
+            },
+            {   name       => 'Offensive graffiti',
+                land_types => [
+                    {   name      => 'public',
+                        latitude  => 52.5708,
+                        longitude => 0.2505,
 
-                $mech->email_count_is(0);
-                };
-        };
+                        expected => {
+                            has_whensent => 1,
+                            has_sent_to  => 0,
+                            state        => 'confirmed',
+                            comment      => undef,
+                            service_code => 'OFF',
+                            email_to     => undef,
+                        },
+                    },
+                    {   name      => 'private',
+                        latitude  => 52.5608,
+                        longitude => 0.2405,
 
-        subtest "flytipping on PCC land (witnessed) is only sent by email" =>
-            sub {
+                        expected => {
+                            has_whensent => 1,
+                            has_sent_to  => 1,
+                            state        => 'closed',
+                            comment      => qr/As this is private land/,
+                            service_code => undef,
+                            email_to     =>
+                                '"Peterborough City Council" <flytipping@example.org>',
+                        },
+                    },
+                ],
+            },
+        ],
+    },
+    {   user_type     => 'staff',
+        subcategories => [
+            {   name       => 'Non offensive graffiti',
+                land_types => [
+                    {   name      => 'public',
+                        latitude  => 52.5708,
+                        longitude => 0.2505,
+
+                        expected => {
+                            has_whensent => 1,
+                            has_sent_to  => 0,
+                            state        => 'confirmed',
+                            comment      => undef,
+                            service_code => 'NON',
+                            email_to     => undef,
+                        },
+                    },
+                    {   name      => 'private',
+                        latitude  => 52.5608,
+                        longitude => 0.2405,
+
+                        expected => {
+                            has_whensent => 1,
+                            has_sent_to  => 0,
+                            state        => 'closed',
+                            comment      => qr/As this is private land/,
+                            service_code => undef,
+                            email_to     => undef,
+                        },
+                    },
+                ],
+            },
+        ],
+    },
+) {
+    for my $subcat ( @{ $test->{subcategories} } ) {
+        for my $land ( @{ $subcat->{land_types} } ) {
+            note 'Graffiti: '
+                . "$test->{user_type} user: "
+                . "$subcat->{name}: "
+                . "$land->{name}: ";
+
             FixMyStreet::override_config {
                 STAGING_FLAGS    => { send_reports => 1 },
                 MAPIT_URL        => 'http://mapit.uk/',
@@ -453,467 +857,75 @@ for my $test (
                     1,
                     $peterborough->id,
                     'Title',
-                    {   category  => 'General fly tipping',
-                        latitude  => 52.5708,
-                        longitude => 0.2505,
+                    {   category  => $subcat->{name},
+                        latitude  => $land->{latitude},
+                        longitude => $land->{longitude},
                         cobrand   => 'peterborough',
                         extra     => {
                             _fields => [
-                                { name => 'site_code',   value => '12345', },
-                                { name => 'pcc-witness', value => 'yes', },
-                                $test->{extra_field},
+                                {   name  => 'site_code',
+                                    value => '12345',
+                                },
                             ],
                         },
+                        ( user => $staffuser )
+                            x !!( $test->{user_type} eq 'staff' ),
                     }
                 );
 
                 my $test_data = FixMyStreet::Script::Reports::send();
                 $p->discard_changes;
-                ok !$test_data->{test_req_used}, 'open311 not sent';
 
-                $mech->email_count_is(1);
-                my $email = $mech->get_email;
-                ok $email, "got an email";
-                is $email->header('To'),
-                    '"Environmental Services" <flytipping@example.org>',
-                    'email sent to correct address';
-                };
-            };
+                my $expected = $land->{expected};
 
-        subtest "flytipping on non PCC land is not sent at all" => sub {
-            FixMyStreet::override_config {
-                STAGING_FLAGS    => { send_reports => 1 },
-                MAPIT_URL        => 'http://mapit.uk/',
-                ALLOWED_COBRANDS => 'peterborough',
-                COBRAND_FEATURES => {
-                    open311_email => {
-                        peterborough =>
-                            { flytipping => 'flytipping@example.org' }
-                    }
-                },
-                },
-                sub {
-                $mech->clear_emails_ok;
+                is !!$p->whensent, $expected->{has_whensent},
+                    'check whensent';
+                if ( $expected->{has_sent_to} ) {
+                    is $p->get_extra_metadata('sent_to')->[0],
+                        'flytipping@example.org',
+                        'sent_to extra metadata is set';
+                }
+                else {
+                    is $p->get_extra_metadata('sent_to'),
+                        undef, 'no sent_to extra metadata';
+                }
 
-                my ($p) = $mech->create_problems_for_body(
-                    1,
-                    $peterborough->id,
-                    'Title',
-                    {   category  => 'General fly tipping',
-                        latitude  => 52.5608,
-                        longitude => 0.2405,
-                        cobrand   => 'peterborough',
-                        extra     => {
-                            _fields => [
-                                { name => 'site_code', value => '999' },
-                                $test->{extra_field},
-                            ],
-                        },
-                    }
-                );
+                is $p->state, $expected->{state}, 'check state';
 
-                FixMyStreet::Script::Reports::send();
-
-                $p->discard_changes;
-                ok $p->whensent, 'Report marked as sent';
-                is $p->get_extra_metadata('flytipping_email'), undef,
-                    'flytipping_email extra metadata unset';
-                is $p->get_extra_metadata('sent_to'), undef,
-                    'sent_to extra metadata not set';
-                is $p->state,           'closed', 'report marked as closed';
-                is $p->comments->count, 1,        'comment added';
-                like $p->comments->first->text, qr/As this is private land/,
-                    'correct comment text';
-                ok !Open311->test_req_used, 'no open311 sent';
-
-                $mech->email_count_is(0);
-                };
-        };
-    };
-}
-
-for my $test (
-    { desc => 'Offensive graffiti' },
-    { desc => 'Non offensive graffiti' },
-    )
-{
-    my $contact = $mech->create_contact_ok(
-        body_id  => $peterborough->id,
-        category => $test->{desc},
-        email    => 'GRAF',
-    );
-
-    subtest $test->{desc} => sub {
-        subtest "on PCC land is sent by open311 only" => sub {
-            FixMyStreet::override_config {
-                STAGING_FLAGS    => { send_reports => 1 },
-                MAPIT_URL        => 'http://mapit.uk/',
-                ALLOWED_COBRANDS => 'peterborough',
-                COBRAND_FEATURES => {
-                    open311_email => {
-                        peterborough =>
-                            { flytipping => 'flytipping@example.org' }
-                    }
-                },
-                },
-                sub {
-                $mech->clear_emails_ok;
-
-                my ($p) = $mech->create_problems_for_body(
-                    1,
-                    $peterborough->id,
-                    'Title',
-                    {   category  => $test->{desc},
-                        latitude  => 52.5708,
-                        longitude => 0.2505,
-                        cobrand   => 'peterborough',
-                        extra => {
-                            _fields =>
-                                [ { name => 'site_code', value => '999' }, ],
-                        },
-                    },
-                );
-
-                FixMyStreet::Script::Reports::send();
-                $p->discard_changes;
-                ok $p->whensent, 'Report marked as sent';
-                is $p->get_extra_metadata('sent_to'), undef,
-                    'sent_to extra metadata is not set';
-                is $p->state,           'confirmed', 'report state unchanged';
-                is $p->comments->count, 0,           'no comment added';
-                my $cgi = CGI::Simple->new( Open311->test_req_used->content );
-                is $cgi->param('service_code'), 'GRAF',
-                    'service code is correct';
-
-                $mech->email_count_is(0);
-                };
-        };
-
-        subtest "on non PCC land is emailed only" => sub {
-            FixMyStreet::override_config {
-                STAGING_FLAGS    => { send_reports => 1 },
-                MAPIT_URL        => 'http://mapit.uk/',
-                ALLOWED_COBRANDS => 'peterborough',
-                COBRAND_FEATURES => {
-                    open311_email => {
-                        peterborough =>
-                            { flytipping => 'flytipping@example.org' }
-                    }
-                },
-                },
-                sub {
-                $mech->clear_emails_ok;
-
-                my ($p) = $mech->create_problems_for_body(
-                    1,
-                    $peterborough->id,
-                    'Title',
-                    {   category  => $test->{desc},
-                        latitude  => 52.5608,
-                        longitude => 0.2405,
-                        cobrand   => 'peterborough',
-                        extra => {
-                            _fields =>
-                                [ { name => 'site_code', value => '999' }, ],
-                        },
-                    }
-                );
-
-                FixMyStreet::Script::Reports::send();
-                $p->discard_changes;
-                ok $p->whensent, 'Report marked as sent';
-                is $p->get_extra_metadata('flytipping_email'), undef,
-                    'flytipping_email extra metadata unset';
-                is $p->get_extra_metadata('sent_to')->[0],
-                    'flytipping@example.org', 'sent_to extra metadata set';
-                is $p->state, 'closed',    'report closed having sent email';
-                is $p->comments->count, 1, 'comment added';
-                like $p->comments->first->text, qr/As this is private land/,
-                    'correct comment text';
-                ok !Open311->test_req_used, 'no open311 sent';
-
-                $mech->email_count_is(1);
-                my $email = $mech->get_email;
-                ok $email, "got an email";
-                };
-        };
-    };
-}
-
-subtest 'Staff user:' => sub {
-    $mech->log_in_ok( $staffuser->email );
-
-    for my $test (
-        { desc => 'Offensive graffiti' },
-        { desc => 'Non offensive graffiti' },
-        )
-    {
-        my $contact = $mech->create_contact_ok(
-            body_id  => $peterborough->id,
-            category => $test->{desc},
-            email    => 'GRAF',
-        );
-
-        subtest $test->{desc} => sub {
-            subtest "on PCC land is sent by open311 only" => sub {
-                FixMyStreet::override_config {
-                    STAGING_FLAGS    => { send_reports => 1 },
-                    MAPIT_URL        => 'http://mapit.uk/',
-                    ALLOWED_COBRANDS => 'peterborough',
-                    COBRAND_FEATURES => {
-                        open311_email => {
-                            peterborough =>
-                                { flytipping => 'flytipping@example.org' }
-                        }
-                    },
-                    },
-                    sub {
-                    $mech->clear_emails_ok;
-
-                    my ($p) = $mech->create_problems_for_body(
-                        1,
-                        $peterborough->id,
-                        'Title',
-                        {   category  => $test->{desc},
-                            latitude  => 52.5708,
-                            longitude => 0.2505,
-                            cobrand   => 'peterborough',
-                            extra => {
-                                _fields => [
-                                    { name => 'site_code', value => '999' },
-                                ],
-                            },
-                            user => $staffuser,
-                        },
-                    );
-
-                    FixMyStreet::Script::Reports::send();
-                    $p->discard_changes;
-                    ok $p->whensent, 'Report marked as sent';
-                    is $p->get_extra_metadata('sent_to'), undef,
-                        'sent_to extra metadata is not set';
-                    is $p->state, 'confirmed', 'report state unchanged';
-                    is $p->comments->count, 0, 'no comment added';
-                    my $cgi
-                        = CGI::Simple->new( Open311->test_req_used->content );
-                    is $cgi->param('service_code'), 'GRAF',
-                        'service code is correct';
-
-                    $mech->email_count_is(0);
-                    };
-            };
-
-            subtest "on non PCC land is not sent at all" => sub {
-                FixMyStreet::override_config {
-                    STAGING_FLAGS    => { send_reports => 1 },
-                    MAPIT_URL        => 'http://mapit.uk/',
-                    ALLOWED_COBRANDS => 'peterborough',
-                    COBRAND_FEATURES => {
-                        open311_email => {
-                            peterborough =>
-                                { flytipping => 'flytipping@example.org' }
-                        }
-                    },
-                    },
-                    sub {
-                    $mech->clear_emails_ok;
-
-                    my ($p) = $mech->create_problems_for_body(
-                        1,
-                        $peterborough->id,
-                        'Title',
-                        {   category  => $test->{desc},
-                            latitude  => 52.5608,
-                            longitude => 0.2405,
-                            cobrand   => 'peterborough',
-                            extra => {
-                                _fields => [
-                                    { name => 'site_code', value => '999' },
-                                ],
-                            },
-                            user => $staffuser,
-                        }
-                    );
-
-                    FixMyStreet::Script::Reports::send();
-
-                    $p->discard_changes;
-                    ok $p->whensent, 'Report marked as sent';
-                    is $p->get_extra_metadata('flytipping_email'), undef,
-                        'flytipping_email extra metadata unset';
-                    is $p->get_extra_metadata('sent_to'), undef,
-                        'sent_to extra metadata not set';
-                    is $p->state, 'closed',    'report marked as closed';
+                if ( $expected->{comment} ) {
                     is $p->comments->count, 1, 'comment added';
                     like $p->comments->first->text,
-                        qr/As this is private land/,
+                        $expected->{comment},
                         'correct comment text';
-                    ok !Open311->test_req_used, 'no open311 sent';
+                }
+                else {
+                    is $p->comments->count, 0, 'no comments';
+                }
 
-                    $mech->email_count_is(0);
-                    };
-            };
-        };
-    }
-
-    for my $test (
-        {   desc        => 'Flytipping: incident_size = car boot load',
-            extra_field => {
-                name  => 'Incident_Size',
-                value => 'Car Boot Load or Less - S02',
-            },
-        },
-        )
-    {
-        subtest $test->{desc} => sub {
-            subtest "flytipping on PCC land is sent by open311 only" => sub {
-                FixMyStreet::override_config {
-                    STAGING_FLAGS    => { send_reports => 1 },
-                    MAPIT_URL        => 'http://mapit.uk/',
-                    ALLOWED_COBRANDS => 'peterborough',
-                    COBRAND_FEATURES => {
-                        open311_email => {
-                            peterborough =>
-                                { flytipping => 'flytipping@example.org' }
-                        }
-                    },
-                    },
-                    sub {
-                    $mech->clear_emails_ok;
-
-                    my ($p) = $mech->create_problems_for_body(
-                        1,
-                        $peterborough->id,
-                        'Title',
-                        {   category  => 'General fly tipping',
-                            latitude  => 52.5708,
-                            longitude => 0.2505,
-                            cobrand   => 'peterborough',
-                            extra => {
-                                _fields => [
-                                    { name => 'site_code', value => '999' },
-                                    $test->{extra_field},
-                                ],
-                            },
-                            user => $staffuser,
-                        },
-                    );
-
-                    FixMyStreet::Script::Reports::send();
-                    $p->discard_changes;
-                    ok $p->whensent, 'Report marked as sent';
-                    is $p->get_extra_metadata('sent_to'), undef,
-                        'sent_to extra metadata is not set';
-                    is $p->state, 'confirmed', 'report state unchanged';
-                    is $p->comments->count, 0, 'no comment added';
+                if ( $expected->{service_code} ) {
                     my $cgi
                         = CGI::Simple->new( Open311->test_req_used->content );
-                    is $cgi->param('service_code'), 'FLY',
-                        'service code is correct';
+                    is $cgi->param('service_code'),
+                        $expected->{service_code},
+                        'open311 sent with correct service code';
+                }
+                else {
+                    ok !$test_data->{test_req_used}, 'open311 not sent';
+                }
 
-                    $mech->email_count_is(0);
-                    };
-            };
+                $mech->email_count_is( $land->{expected}{email_to} ? 1 : 0 );
 
-  # TODO What is expected here?
-  #
-  # subtest "flytipping on PCC land witnessed is only sent by email" => sub {
-  #     FixMyStreet::override_config {
-  #         STAGING_FLAGS    => { send_reports => 1 },
-  #         MAPIT_URL        => 'http://mapit.uk/',
-  #         ALLOWED_COBRANDS => 'peterborough',
-  #         COBRAND_FEATURES => {
-  #             open311_email => {
-  #                 peterborough => { flytipping => 'flytipping@example.org' }
-  #             }
-  #         },
-  #         },
-  #         sub {
-  #         $mech->clear_emails_ok;
-
-       #         my ($p) = $mech->create_problems_for_body(
-       #             1,
-       #             $peterborough->id,
-       #             'Title',
-       #             {   category  => 'General fly tipping',
-       #                 latitude  => 52.5708,
-       #                 longitude => 0.2505,
-       #                 cobrand   => 'peterborough',
-       #                 extra     => {
-       #                     _fields => [
-       #                         { name => 'site_code',   value => '12345', },
-       #                         { name => 'pcc-witness', value => 'yes', },
-       #                     ],
-       #                 },
-       #             }
-       #         );
-
-            #         my $test_data = FixMyStreet::Script::Reports::send();
-            #         $p->discard_changes;
-            #         ok !$test_data->{test_req_used}, 'open311 not sent';
-
-            #         $mech->email_count_is(1);
-            #         my $email = $mech->get_email;
-            #         ok $email, "got an email";
-            #         is $email->header('To'),
-            #             '"Environmental Services" <flytipping@example.org>',
-            #             'email sent to correct address';
-            #         };
-            # };
-
-            subtest "flytipping on non PCC land is not sent at all" => sub {
-                FixMyStreet::override_config {
-                    STAGING_FLAGS    => { send_reports => 1 },
-                    MAPIT_URL        => 'http://mapit.uk/',
-                    ALLOWED_COBRANDS => 'peterborough',
-                    COBRAND_FEATURES => {
-                        open311_email => {
-                            peterborough =>
-                                { flytipping => 'flytipping@example.org' }
-                        }
-                    },
-                    },
-                    sub {
-                    $mech->clear_emails_ok;
-
-                    my ($p) = $mech->create_problems_for_body(
-                        1,
-                        $peterborough->id,
-                        'Title',
-                        {   category  => 'General fly tipping',
-                            latitude  => 52.5608,
-                            longitude => 0.2405,
-                            cobrand   => 'peterborough',
-                            extra => {
-                                _fields => [
-                                    { name => 'site_code', value => '999' },
-                                    $test->{extra_field},
-                                ],
-                            },
-                            user => $staffuser,
-                        }
-                    );
-
-                    FixMyStreet::Script::Reports::send();
-                    $p->discard_changes;
-                    ok $p->whensent, 'Report marked as sent';
-                    is $p->get_extra_metadata('flytipping_email'), undef,
-                        'flytipping_email extra metadata unset';
-                    is $p->get_extra_metadata('sent_to'), undef,
-                        'sent_to extra metadata not set';
-                    is $p->state, 'closed',    'report marked as closed';
-                    is $p->comments->count, 1, 'comment added';
-                    like $p->comments->first->text,
-                        qr/As this is private land/,
-                        'correct comment text';
-                    ok !Open311->test_req_used, 'no open311 sent';
-
-                    $mech->email_count_is(0);
-                    };
-            };
-        };
+                if ( $land->{expected}{email_to} ) {
+                    my $email = $mech->get_email;
+                    ok $email, 'got an email';
+                    is $email->header('To'),
+                        $land->{expected}{email_to},
+                        'email sent to correct address';
+                }
+                };
+        }
     }
-};
+}
 
 subtest 'Dashboard CSV extra columns' => sub {
     $report->update({
