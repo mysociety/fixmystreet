@@ -255,6 +255,9 @@ FixMyStreet::override_config {
             hmac => '1234',
             hmac_id => '1234',
             scpID => '1234',
+            company_name => 'rbk',
+            form_name => 'rbk_user_form',
+            staff_form_name => 'rbk_staff_form',
         } },
         bottomline => { kingston => {
         } },
@@ -663,6 +666,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
         $mech->content_like( qr/ddfirstamount[^>]*"35.00"/, 'first payment amount correct');
+        $mech->content_like( qr{rbk/rbk_user_form}, 'uses standard form');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
@@ -720,6 +724,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
         $mech->content_like( qr/ddfirstamount[^>]*"35.00"/, 'first payment amount correct');
+        $mech->content_like( qr{rbk/rbk_user_form}, 'uses standard form');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
@@ -1029,6 +1034,7 @@ FixMyStreet::override_config {
 
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
         $mech->content_lacks( "ddfirstamount", "no different first payment");
+        $mech->content_like( qr{rbk/rbk_user_form}, 'uses standard form');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
@@ -1428,6 +1434,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
+        $mech->content_like( qr{rbk/rbk_staff_form}, 'uses staff form');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {

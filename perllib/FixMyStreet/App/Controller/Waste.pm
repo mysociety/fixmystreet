@@ -405,6 +405,8 @@ sub populate_dd_details : Private {
     $c->stash->{month_name} = $dt->month_name;
     $c->stash->{year} = $dt->year;
 
+    $c->cobrand->call_hook( 'garden_waste_dd_munge_form_details' => $c );
+
     $c->stash->{redirect} = $c->cobrand->call_hook( 'garden_waste_dd_redirect_url' => $p ) || '';
 }
 
