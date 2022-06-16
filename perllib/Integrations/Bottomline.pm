@@ -34,6 +34,11 @@ has token => (
     default => undef,
 );
 
+has page_size => (
+    is => 'rw',
+    default => 50,
+);
+
 sub headers {
     my $self = shift;
 
@@ -119,14 +124,17 @@ sub call_paged {
     }
 
     my $count = $self->parse_results("long", $first_result);
+
+    return $first_result unless @$count;
+
     my $rows = $count->[0]->{'$value'};
-    if ( $rows > 50 ) {
-        my $start = 50;
+    if ( $rows > $self->page_size ) {
+        my $start = $self->page_size;
         while ( $start < $rows ) {
             $data->{resultsPage}->{firstResult} = $start;
             my $res = $self->call($path, $data, $method);
             push @{ $first_result->{rows } }, @{ $res->{rows} };
-            $start += 50;
+            $start += $self->page_size;
         }
     }
 
@@ -333,7 +341,7 @@ sub build_query {
        $params->{query} ? ( criteria => { searchCriteria => [ @{$params->{query}} ] } ) : (),
        "resultsPage" => ixhash(
            "firstResult" => 0,
-           "maxResults" => 50
+           "maxResults" => $self->page_size
        )
     );
 
