@@ -199,8 +199,12 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_category: [
           'Sign light not working',
           'Sign problem',
+          'Dirty signs'
         ],
-    asset_item: 'sign'
+    asset_item: 'sign',
+
+    // Want to show signs for the parish "Dirty signs" categories, so skip body checks.
+    body: null
 });
 
 fixmystreet.assets.add(labeled_defaults, {
