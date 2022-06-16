@@ -78,6 +78,9 @@ $integ->mock('call', sub {
                         ]
                     };
         }
+    } elsif ( $method eq 'query/execute#CollectionHistoryStatus' ) {
+        # test no results
+        return {};
     }
 });
 
@@ -137,6 +140,11 @@ subtest 'check pagination' => sub {
             serviceUserNumber => 1,
         },
     ], "pages through things";
+};
+
+subtest 'check pagination when no results' => sub {
+    my $res = $i->get_payments_with_status({ status => "PENDING" });
+    is_deeply  $res, [], "returns empty array if no results";
 };
 
 done_testing();
