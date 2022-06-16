@@ -23,7 +23,7 @@ use Text::CSV;
 my $contacts = [
     { category => 'Hedge problem', extra_metadata => { prefer_if_multiple => 1, group => 'Grass, hedges and weeds' } },
     { category => 'Fly posting', extra_metadata => { prefer_if_multiple => 1 } },
-    { category => 'Dirty signs', extra_metadata => { prefer_if_multiple => 1 } },
+    { category => 'Dirty signs', extra_metadata => { prefer_if_multiple => 1, group => 'Road and street Signs' } },
     {
         category => 'Grass cutting',
         extra_metadata => {
