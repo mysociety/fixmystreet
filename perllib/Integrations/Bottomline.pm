@@ -417,36 +417,36 @@ sub get_recent_payments {
 sub get_payments_with_status {
     my ($self, $args) = @_;
 
-    my $data = $self->build_query({
-        entity => {
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
            "name" => "Instructions",
            "symbol" => "com.bottomline.ddm.model.instruction",
            "key" => "com.bottomline.ddm.model.instruction"
-       },
-       field => {
+       ),
+       field => ixhash(
             name => "Instruction",
             symbol => "com.bottomline.ddm.model.instruction.Instruction",
-        },
+        ),
         query =>[
-         {
+         ixhash(
              '@type' => "QueryParameter",
-             "field" => {
+             "field" => ixhash(
                "name" => "status",
                "symbol" => "com.bottomline.ddm.model.instruction.Instruction.status",
                "fieldType" => "ENUM",
                "key" => JSON()->false,
-             },
+             ),
              "operator" => {
                "symbol" => "="
              },
              "queryValues" => [
-               {
+               ixhash(
                    '@type' => "string",
                    '$value' => $args->{status},
-               }
+               )
              ]
-       }
-   ]});
+       )
+   ]));
 
     my $resp = $self->call_paged("query/execute#CollectionHistoryStatus", $data);
     return $self->parse_results("Instruction", $resp);
