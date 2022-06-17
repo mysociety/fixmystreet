@@ -139,6 +139,7 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params);
 };
 
+# Saves land_type in extra_metadata if not previously saved
 sub get_land_type {
     my ($self, $problem) = @_;
 
@@ -146,6 +147,10 @@ sub get_land_type {
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     return '' unless $flytipping_cats{$problem->category};
 
+    my $land_type = $problem->get_extra_metadata('land_type');
+    return $land_type if defined $land_type;
+
+    # Perform lookup with URLs if land_type not yet stored
     my ($x, $y) = Utils::convert_latlon_to_en(
         $problem->latitude,
         $problem->longitude,
@@ -163,112 +168,69 @@ sub get_land_type {
         $y,
     );
 
-    return 'public' if @$features;
+    $land_type = 'public' if $features && @$features;
 
-    # Leased land - count as 'private'? (I.e. not dealt with in Bartec.)
-    $features = $self->_fetch_features(
-        {
-            type => 'arcgis',
-            url => 'https://peterborough.assets/3/query?',
-            buffer => 1,
-        },
-        $x,
-        $y,
-    );
-
-    return 'private' if $features && @$features;
-
-    # Adopted road - count as 'public'
-    $features = $self->_fetch_features(
-        {
-            type => 'arcgis',
-            url => 'https://peterborough.assets/7/query?',
-            buffer => 1,
-        },
-        $x,
-        $y,
-    );
-
-    return 'public' if $features && @$features;
-
-    return 'private';
-}
-
-sub get_body_sender {
-    my ($self, $body, $problem) = @_;
-    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
-
-    my ($x, $y) = Utils::convert_latlon_to_en(
-        $problem->latitude,
-        $problem->longitude,
-        'G'
-    );
-    if ( $flytipping_cats{ $problem->category } ) {
-        # look for land belonging to the council
-        my $features = $self->_fetch_features(
+    unless ($land_type) {
+        # Leased land - count as 'private' (i.e. not dealt with in Bartec)
+        $features = $self->_fetch_features(
             {
                 type => 'arcgis',
-                url => 'https://peterborough.assets/4/query?',
+                url => 'https://peterborough.assets/3/query?',
                 buffer => 1,
             },
             $x,
             $y,
         );
 
-        # if not then check if it's land leased out or on a road.
-        unless ( $features && scalar @$features ) {
-            my $leased_features = $self->_fetch_features(
-                {
-                    type => 'arcgis',
-                    url => 'https://peterborough.assets/3/query?',
-                    buffer => 1,
-                },
-                $x,
-                $y,
-            );
-
-            # some PCC land is leased out and not dealt with in bartec
-            $features = [] if $leased_features && scalar @$leased_features;
-
-            # if it's not council, or leased out land check if it's on an
-            # adopted road
-            unless ( $leased_features && scalar @$leased_features ) {
-                my $road_features = $self->_fetch_features(
-                    {
-                        buffer => 1, # metres
-                        type => 'arcgis',
-                        url => 'https://peterborough.assets/7/query?',
-                    },
-                    $x,
-                    $y,
-                );
-
-                $features = $road_features if $road_features && scalar @$road_features;
-            }
-        }
-
-        # is on land that is handled by bartec so send
-        if ( $features && scalar @$features ) {
-            return $self->SUPER::get_body_sender($body, $problem);
-        }
-
-        # neither of those so just send email for records
-        my $emails = $self->feature('open311_email');
-        if ( $emails->{flytipping} ) {
-            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
-
-            # P'bro do not want to be notified of smaller incident sizes. They
-            # also do not want email for reports raised by staff.
-            return { method => 'Blackhole' }
-                if _is_small_flytipping_incident($problem)
-                || _is_raised_by_staff($problem);
-
-            my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
-            return { method => 'Email', contact => $contact};
-        }
+        $land_type = 'private' if $features && @$features;
     }
 
-    return $self->SUPER::get_body_sender($body, $problem);
+    unless ($land_type) {
+        # Adopted road - count as 'public'
+        $features = $self->_fetch_features(
+            {
+                type => 'arcgis',
+                url => 'https://peterborough.assets/7/query?',
+                buffer => 1,
+            },
+            $x,
+            $y,
+        );
+
+        $land_type = 'public' if $features && @$features;
+    }
+
+    $land_type = 'private' unless $land_type;
+
+    $problem->set_extra_metadata( land_type => $land_type );
+    $problem->update;
+
+    return $land_type;
+}
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    my $land_type = $self->get_land_type($problem);
+
+    my $emails = $self->feature('open311_email');
+    if ( $land_type eq 'private' && $emails->{flytipping} ) {
+        # Just send email for records
+        $problem->set_extra_metadata(
+            'flytipping_email' => $emails->{flytipping} );
+
+        # P'bro do not want to be notified of smaller incident sizes. They
+        # also do not want email for reports raised by staff.
+        return { method => 'Blackhole' }
+            if _is_small_flytipping_incident($problem)
+            || _is_raised_by_staff($problem);
+
+        my $contact
+            = $self->SUPER::get_body_sender( $body, $problem )->{contact};
+        return { method => 'Email', contact => $contact };
+    }
+
+    return $self->SUPER::get_body_sender( $body, $problem );
 }
 
 sub munge_sendreport_params {
