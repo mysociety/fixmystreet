@@ -82,6 +82,14 @@ sub get_geocoder { 'OSM' }
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    my $land_type = $p->land_type;
+    return 'blue' if $land_type eq 'public';
+    return 'orange' if $land_type eq 'private';
+    return 'yellow';
+}
+
 sub service_name_override {
     my $self = shift;
     return {
@@ -200,6 +208,61 @@ around 'open311_config' => sub {
     $params->{upload_files} = 1;
     $self->$orig($row, $h, $params);
 };
+
+sub get_land_type {
+    my ($self, $problem) = @_;
+
+    # For flytipping & graffiti only
+    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+    return '' unless $flytipping_cats{$problem->category};
+
+    my ($x, $y) = Utils::convert_latlon_to_en(
+        $problem->latitude,
+        $problem->longitude,
+        'G'
+    );
+
+    # Council land
+    my $features = $self->_fetch_features(
+        {
+            type => 'arcgis',
+            url => 'https://peterborough.assets/4/query?',
+            buffer => 1,
+        },
+        $x,
+        $y,
+    );
+
+    return 'public' if @$features;
+
+    # Leased land - count as 'private'? (I.e. not dealt with in Bartec.)
+    $features = $self->_fetch_features(
+        {
+            type => 'arcgis',
+            url => 'https://peterborough.assets/3/query?',
+            buffer => 1,
+        },
+        $x,
+        $y,
+    );
+
+    return 'private' if $features && @$features;
+
+    # Adopted road - count as 'public'
+    $features = $self->_fetch_features(
+        {
+            type => 'arcgis',
+            url => 'https://peterborough.assets/7/query?',
+            buffer => 1,
+        },
+        $x,
+        $y,
+    );
+
+    return 'public' if $features && @$features;
+
+    return 'private';
+}
 
 sub get_body_sender {
     my ($self, $body, $problem) = @_;
@@ -433,7 +496,6 @@ sub dashboard_export_problems_add_columns {
         return $extra;
     });
 }
-
 
 sub open311_filter_contacts_for_deletion {
     my ($self, $contacts) = @_;

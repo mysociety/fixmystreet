@@ -1298,6 +1298,27 @@ sub set_duplicate_of {
     $dupe->update;
 }
 
+sub land_type {
+    my $self = shift;
+
+    my $cobrand = $self->result_source->schema->cobrand;
+    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
+
+    # Currently for Peterborough only
+
+    # TODO What if no cobrand/handler?
+    return unless $handler->council_name eq 'Peterborough City Council';
+
+    my $land_type = $self->get_extra_metadata('land_type');
+    return $land_type if defined $land_type;
+
+    $land_type = $handler->get_land_type($self);
+    $self->set_extra_metadata( land_type => $land_type );
+    $self->update;
+
+    return $land_type;
+}
+
 has duplicate_of => (
     is => 'ro',
     lazy => 1,
