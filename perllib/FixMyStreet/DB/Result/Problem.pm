@@ -281,6 +281,20 @@ with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Translatable',
      'FixMyStreet::Roles::PhotoSet';
 
+before update => sub {
+    my $self = shift;
+
+    # Force another lookup of land type if lat or lon have changed (currently
+    # only for Peterborough)
+    my %dirty_columns = $self->get_dirty_columns;
+
+    if (   exists $dirty_columns{longitude}
+        || exists $dirty_columns{latitude} )
+    {
+        $self->land_type(1);
+    }
+};
+
 =head2
 
     @states = FixMyStreet::DB::Problem::open_states();
@@ -1298,19 +1312,22 @@ sub set_duplicate_of {
     $dupe->update;
 }
 
-# Saves land_type in extra_metadata if not previously saved.
+# Stores land_type in extra_metadata if not previously stored or force_lookup
+# flag is passed.
 # Currently for Peterborough only.
 sub land_type {
-    my $self = shift;
+    my ( $self, $force_lookup ) = @_;
 
-    my $cobrand = $self->result_source->schema->cobrand;
-    my $handler
-        = $cobrand->call_hook( get_body_handler_for_problem => $self );
+    my $logged_cobrand = $self->get_cobrand_logged;
+    my $handler_cobrand
+        = $logged_cobrand->call_hook( get_body_handler_for_problem => $self );
 
     # TODO What if no cobrand/handler?
-    return unless $handler->council_name eq 'Peterborough City Council';
+    return
+        unless $handler_cobrand
+        && $handler_cobrand->moniker eq 'peterborough';
 
-    return $handler->get_land_type($self);
+    return $handler_cobrand->land_type( $self, $force_lookup );
 }
 
 has duplicate_of => (
