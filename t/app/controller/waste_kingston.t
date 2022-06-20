@@ -22,7 +22,7 @@ $staff_user->user_body_permissions->create({ body => $body, permission_type => '
 
 sub create_contact {
     my ($params, @extra) = @_;
-    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste']);
+    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
         { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },

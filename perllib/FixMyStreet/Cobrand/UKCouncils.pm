@@ -312,6 +312,31 @@ sub prefill_report_fields_for_inspector { 1 }
 
 sub social_auth_disabled { 1 }
 
+# By default for UK councils, we send confirmation emails
+# only for Waste reports
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    my $contact = $report->contact or return;
+    return 'id' if $report->contact->get_extra_metadata('type', '') eq 'waste';
+    return '';
+}
+
+sub munge_around_category_where {
+    my ($self, $where) = @_;
+    $where->{extra} = [ undef, { -not_like => '%,T4:type,T5:waste,%' } ];
+}
+
+sub munge_reports_category_list {
+    my ($self, $categories) = @_;
+    my $c = $self->{c};
+    return if $c->action eq 'dashboard/heatmap';
+
+    unless ( $c->user_exists && $c->user->from_body && $c->user->has_permission_to('report_mark_private', $self->body->id) ) {
+        @$categories = grep { $_->get_extra_metadata('type', '') ne 'waste' } @$categories;
+    }
+}
+
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
@@ -345,6 +370,17 @@ sub munge_report_new_bodies {
 
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
+
+    if ($self->{c}->action =~ /^waste/) {
+        @$contacts = grep { $_->get_extra_metadata('type', '') eq 'waste' } @$contacts;
+        return;
+    }
+
+    if ($self->{c}->stash->{categories_for_point}) {
+        # Have come from an admin tool
+    } else {
+        @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
+    }
 
     my %bodies = map { $_->body->name => $_->body } @$contacts;
     if ( $bodies{'TfL'} ) {

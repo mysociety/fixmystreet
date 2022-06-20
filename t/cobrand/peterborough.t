@@ -439,7 +439,7 @@ foreach my $cobrand ( "peterborough", "fixmystreet" ) {
             $peterborough->contacts->delete_all;
             my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Litter Bin Needs Emptying', email => 'Bartec-Bins');
             my $waste = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Missed Collection', email => 'Bartec-MissedCollection');
-            $waste->set_extra_metadata(waste_only => 1);
+            $waste->set_extra_metadata(type => 'waste');
             $waste->update;
 
             subtest "not when getting new report categories via AJAX" => sub {

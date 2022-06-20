@@ -411,12 +411,6 @@ sub categories_restriction {
     return $rs->search( { category => { '!=', 'Flytipping (off-road)'} } );
 }
 
-sub munge_report_new_contacts {
-    my ($self, $contacts) = @_;
-    @$contacts = grep { $_->category ne 'Claim' } @$contacts;
-    $self->SUPER::munge_report_new_contacts($contacts);
-}
-
 sub lookup_site_code_config { {
     buffer => 200, # metres
     url => "https://tilma.mysociety.org/mapserver/bucks",

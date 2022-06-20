@@ -183,7 +183,7 @@ sub _handle_existing_contact {
 
     $self->_set_contact_group($contact) unless $protected;
     $self->_set_contact_non_public($contact);
-    $self->_set_contact_as_waste_only($contact);
+    $self->_set_contact_as_waste($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -219,7 +219,7 @@ sub _create_contact {
 
     $self->_set_contact_group($contact);
     $self->_set_contact_non_public($contact);
-    $self->_set_contact_as_waste_only($contact);
+    $self->_set_contact_as_waste($contact);
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
@@ -237,8 +237,8 @@ sub _add_meta_to_contact {
         warn sprintf( "Empty meta data for %s at %s",
                       $self->_current_service->{service_code},
                       $self->_current_body->endpoint )
-        # Bristol has a habit of returning empty metadata, stop noise from that.
-        if $self->verbose and $self->_current_body->name ne 'Bristol City Council';
+        # Some have a habit of returning empty metadata, stop noise from that.
+        if $self->verbose and $self->_current_body->name !~ /Bristol City Council|Royal Borough of Greenwich/;
         return;
     }
 
@@ -326,17 +326,24 @@ sub _set_contact_non_public {
     }) if $keywords{private};
 }
 
-sub _set_contact_as_waste_only {
+sub _set_contact_as_waste {
     my ($self, $contact) = @_;
 
     my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
     my $waste_only = $keywords{waste_only} ? 1 : 0;
-    my $old_waste_only = $contact->get_extra_metadata("waste_only") || 0;
+    my $type = $contact->get_extra_metadata('type', '') eq 'waste';
 
-    if ($waste_only != $old_waste_only) {
-        $contact->set_extra_metadata(waste_only => $waste_only);
+    return if $waste_only == $type; # If the same, nothing to do
+
+    if ($waste_only) { # Newly waste
+        $contact->set_extra_metadata(type => 'waste');
         $contact->update({
-            %{ $self->_action_params("set waste_only to $waste_only") },
+            %{ $self->_action_params("set type to 'waste'") },
+        });
+    } else { # No longer waste
+        $contact->unset_extra_metadata('type');
+        $contact->update({
+            %{ $self->_action_params("removed 'waste' type") },
         });
     }
 }

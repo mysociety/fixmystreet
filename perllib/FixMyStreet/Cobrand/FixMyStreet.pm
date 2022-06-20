@@ -65,15 +65,9 @@ sub munge_around_category_where {
         # can't determine the body
         $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
     }
-    my $bromley = grep { $_->name eq 'Bromley Council' } @{ $self->{c}->stash->{around_bodies} };
-    if ($bromley) {
-        $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
-    }
-
-    my $pboro = grep { $_->name eq 'Peterborough City Council' } @{ $self->{c}->stash->{around_bodies} };
-    if ($pboro) {
-        my $pboro = FixMyStreet::Cobrand::Peterborough->new({ c => $self->{c} });
-        $pboro->munge_around_category_where($where);
+    my $waste = grep { $_->name =~ /Bromley Council|Peterborough City Council/ } @{ $self->{c}->stash->{around_bodies} };
+    if ($waste) {
+        $where->{extra} = [ undef, { -not_like => '%,T4:type,T5:waste,%' } ];
     }
 }
 
@@ -96,14 +90,8 @@ sub munge_reports_category_list {
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $categories);
     }
-    if ( $bodies{'Bromley Council'} ) {
-        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
-    }
 
-    if ( $bodies{'Peterborough City Council'} ) {
-        my $pboro = FixMyStreet::Cobrand::Peterborough->new({ c => $self->{c} });
-        $pboro->munge_reports_category_list($categories);
-    }
+    @$categories = grep { $_->get_extra_metadata('type', '') ne 'waste' } @$categories;
 }
 
 sub munge_reports_area_list {
@@ -143,25 +131,19 @@ sub munge_report_new_bodies {
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
+    # Ignore contacts with a special type (e.g. waste, noise, claim)
+    @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
+
     my %bodies = map { $_->body->name => $_->body } @$contacts;
 
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
     }
-    if ( $bodies{'Bromley Council'} ) {
-        @$contacts = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$contacts;
-    }
-    if ( $bodies{'Hackney Council'} ) {
-        @$contacts = grep { $_->category ne 'Noise report' } @$contacts;
-    }
+
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
-    }
-    if ( $bodies{'Peterborough City Council'} ) {
-        my $pboro = FixMyStreet::Cobrand::Peterborough->new({ c => $self->{c} });
-        $pboro->munge_report_new_contacts($contacts);
     }
 
 }

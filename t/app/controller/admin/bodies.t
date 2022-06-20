@@ -330,6 +330,7 @@ subtest 'allow anonymous reporting' => sub {
 };
 
 }; # END of override wrap
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     MAPIT_TYPES => [ 'UTA' ],
@@ -350,6 +351,23 @@ subtest 'allow anonymous reporting' => sub {
 
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    MAPIT_TYPES => [ 'UTA' ],
+    BASE_URL => 'http://www.example.org',
+    ALLOWED_COBRANDS => "fixmystreet",
+}, sub {
+    subtest 'category type changing' => sub {
+        my $contact = $body->contacts->find({ category => 'test category' });
+        foreach ({ type => 'waste', expected => 'waste' }, { type => 'standard', expected => undef }) {
+            $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+            $mech->submit_form_ok( { with_fields => { type => $_->{type} } } );
+            $mech->content_contains('Values updated');
+            $contact->discard_changes;
+            is $contact->get_extra_metadata('type'), $_->{expected}, 'Correct type set';
+        }
+    };
+};
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
