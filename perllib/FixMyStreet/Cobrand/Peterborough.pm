@@ -139,18 +139,23 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params);
 };
 
-# Saves land_type in extra_metadata if not previously saved
-sub get_land_type {
-    my ($self, $problem) = @_;
+# Stores land_type in extra_metadata if not previously stored or force_lookup
+# flag is passed
+sub land_type {
+    my ($self, $problem, $force_lookup) = @_;
 
     # For flytipping & graffiti only
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     return '' unless $flytipping_cats{$problem->category};
 
-    my $land_type = $problem->get_extra_metadata('land_type');
-    return $land_type if defined $land_type;
+    my $land_type;
+    unless ($force_lookup) {
+        $land_type = $problem->get_extra_metadata('land_type');
+        return $land_type if defined $land_type;
+    }
 
-    # Perform lookup with URLs if land_type not yet stored
+    # Perform lookup with URLs if land_type not yet stored, or update flag
+    # has been provided
     my ($x, $y) = Utils::convert_latlon_to_en(
         $problem->latitude,
         $problem->longitude,
@@ -203,7 +208,6 @@ sub get_land_type {
     $land_type = 'private' unless $land_type;
 
     $problem->set_extra_metadata( land_type => $land_type );
-    $problem->update;
 
     return $land_type;
 }
@@ -211,7 +215,7 @@ sub get_land_type {
 sub get_body_sender {
     my ( $self, $body, $problem ) = @_;
 
-    my $land_type = $self->get_land_type($problem);
+    my $land_type = $self->land_type($problem);
 
     my $emails = $self->feature('open311_email');
     if ( $land_type eq 'private' && $emails->{flytipping} ) {
