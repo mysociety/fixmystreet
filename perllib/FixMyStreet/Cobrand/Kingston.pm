@@ -24,6 +24,17 @@ sub send_questionnaires { 0 }
 
 sub abuse_reports_only { 1 }
 
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    $rs = $self->next::method($rs);
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    $rs = $rs->search({
+        "$table.cobrand_data" => 'waste',
+    });
+    return $rs;
+}
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
