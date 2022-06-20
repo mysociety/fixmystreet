@@ -36,6 +36,14 @@
     [% END %]
 [% END %]
 
+[% # Peterborough staff only %]
+[% IF c.cobrand.moniker == 'peterborough' && c.user_exists && (c.user.from_body || c.user.is_superuser) %]
+    [% land_type = problem.land_type(); IF land_type %]
+        <div class="[% land_type == 'public' ? 'land-type-public' : 'land-type-private' %]">
+            [% land_type.ucfirst %] land
+        </div>
+    [% END %]
+[% END %]
 [% IF page != '' %]
     <div class='assigned-to'>
     [% INCLUDE 'admin/_report-assignment.html' %]

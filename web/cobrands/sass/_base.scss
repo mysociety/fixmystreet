@@ -2347,6 +2347,16 @@ div.assigned-to {
     margin-top: 0.25em;
 }
 
+div.land-type-public {
+    margin-top: 0.25em;
+    color:#54b1e4;
+}
+
+div.land-type-private {
+    margin-top: 0.25em;
+    color:#f79421;
+}
+
 // When you're in the reporting flow on mobile, we make the map full screen to
 // reduce distractions. JavaScript also tweaks the text content of some of the
 // map-related elements, to make it more "app-like".
