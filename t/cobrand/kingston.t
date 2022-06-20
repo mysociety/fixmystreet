@@ -901,6 +901,105 @@ FixMyStreet::override_config {
     };
 };
 
+my $cb = FixMyStreet::Cobrand::Kingston->new;
+
+for my $test (
+    {
+        desc => 'basic address',
+        data => { results => [ { LPI => {
+            SUB_BUILDING_NAME => "",
+            BUILDING_NAME => "",
+            BUILDING_NUMBER => 22,
+            DEPENDENT_THOROUGHFARE_NAME => "",
+            THOROUGHFARE_NAME => "TEST ROAD",
+            POST_TOWN => "TEST TOWN",
+            POSTCODE => "TA1 1AT",
+        } } ] },
+        address => {
+            address1 => "22",
+            address2 => "Test Road",
+            town => "Test Town",
+            postcode => "TA1 1AT",
+        }
+    },
+    {
+        desc => 'address with flat',
+        data => { results => [ { LPI => {
+            SUB_BUILDING_NAME => "FLAT 1",
+            BUILDING_NAME => "",
+            BUILDING_NUMBER => 22,
+            DEPENDENT_THOROUGHFARE_NAME => "",
+            THOROUGHFARE_NAME => "TEST ROAD",
+            POST_TOWN => "TEST TOWN",
+            POSTCODE => "TA1 1AT",
+        } } ] },
+        address => {
+            address1 => "Flat 1, 22",
+            address2 => "Test Road",
+            town => "Test Town",
+            postcode => "TA1 1AT",
+        }
+    },
+    {
+        desc => 'address with name',
+        data => { results => [ { LPI => {
+            SUB_BUILDING_NAME => "",
+            BUILDING_NAME => "TEST HOUSE",
+            BUILDING_NUMBER => "",
+            DEPENDENT_THOROUGHFARE_NAME => "",
+            THOROUGHFARE_NAME => "TEST ROAD",
+            POST_TOWN => "TEST TOwN",
+            POSTCODE => "TA1 1AT",
+        } } ] },
+        address => {
+            address1 => "Test House",
+            address2 => "Test Road",
+            town => "Test Town",
+            postcode => "TA1 1AT",
+        }
+    },
+    {
+        desc => 'address with dependent road',
+        data => { results => [ { LPI => {
+            SUB_BUILDING_NAME => "",
+            BUILDING_NAME => "",
+            BUILDING_NUMBER => "22",
+            DEPENDENT_THOROUGHFARE_NAME => "DEPENDENT ROAD",
+            THOROUGHFARE_NAME => "TEST ROAD",
+            POST_TOWN => "TEST TOwN",
+            POSTCODE => "TA1 1AT",
+        } } ] },
+        address => {
+            address1 => "22",
+            address2 => "Dependent Road, Test Road",
+            town => "Test Town",
+            postcode => "TA1 1AT",
+        }
+    },
+    {
+        desc => 'name with flat',
+        data => { results => [ { LPI => {
+            SUB_BUILDING_NAME => "FLAT 2",
+            BUILDING_NAME => "TEST HOUSE",
+            BUILDING_NUMBER => "",
+            DEPENDENT_THOROUGHFARE_NAME => "",
+            THOROUGHFARE_NAME => "TEST ROAD",
+            POST_TOWN => "TEST TOwN",
+            POSTCODE => "TA1 1AT",
+        } } ] },
+        address => {
+            address1 => "Flat 2, Test House",
+            address2 => "Test Road",
+            town => "Test Town",
+            postcode => "TA1 1AT",
+        }
+    },
+) {
+    subtest $test->{desc} => sub {
+        is_deeply $cb->get_address_details_from_nlpg($test->{data}), $test->{address}, "correctly parsed address";
+    };
+}
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
