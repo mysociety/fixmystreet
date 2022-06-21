@@ -1553,6 +1553,6 @@ fixmystreet.maps.controls = [
     new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
 ];
 /* Linking back to around from report page, keeping track of map moves */
-if ( fixmystreet.page == 'report' ) {
+if ( fixmystreet.page == 'report' && document.getElementById('key-tool-problems-nearby')) {
     fixmystreet.maps.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
 }
