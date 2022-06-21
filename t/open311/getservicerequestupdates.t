@@ -997,6 +997,44 @@ subtest 'check that external_status_code triggers auto-responses' => sub {
     is $problem->comments->first->text, "Thank you for your report. We will provide an update within 24 hours.", "correct external status code on first comment";
 };
 
+subtest 'check that no external_status_code and no state change does not trigger incorrect template' => sub {
+    $problem->state('action scheduled');
+    $problem->set_extra_metadata(external_status_code => '123');
+    $problem->update;
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>action_scheduled</status>
+    <description></description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    <external_status_code></external_status_code>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'comment is still created after fetching updates';
+    is $problem->comments->first->state, 'hidden', '...but it is hidden';
+};
+
 foreach my $test ( {
         desc => 'check that closed and then open comment results in correct state',
         dt1  => $dt->clone->subtract( hours => 1 ),
