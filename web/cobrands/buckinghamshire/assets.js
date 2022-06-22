@@ -203,6 +203,21 @@ fixmystreet.assets.add(labeled_defaults, {
     asset_item: 'sign'
 });
 
+fixmystreet.assets.add(labeled_defaults, {
+    http_options: {
+        params: {
+            TYPENAME: "BusStops"
+        }
+    },
+    asset_group: "Bus stop/shelter issue",
+    construct_asset_name: null,
+    asset_item: 'bus stop',
+    asset_id_field: 'feature_id',
+    attributes: {
+        bus_stop_number: 'feature_id'
+    }
+});
+
 // When the auto-asset selection of a layer occurs, the data for inspections
 // may not have loaded. So make sure we poke for a check when the data comes
 // in.
