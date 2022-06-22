@@ -5,9 +5,11 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strcoll);
+use List::MoreUtils qw(uniq);
 use mySociety::EmailUtil qw(is_valid_email_list);
 use FixMyStreet::MapIt;
 use FixMyStreet::SendReport;
+use FixMyStreet::Cobrand;
 
 =head1 NAME
 
@@ -185,6 +187,9 @@ sub body_form_dropdowns : Private {
 
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } sort keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
+
+    my @cobrands = uniq sort map { $_->{moniker} } FixMyStreet::Cobrand->available_cobrand_classes;
+    $c->stash->{cobrands} = \@cobrands;
 }
 
 sub check_for_super_user : Private {
@@ -458,12 +463,13 @@ sub body_params : Private {
     my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
     $c->forward('check_body_params', [ \%params ]);
 
-    my @extras = qw/fetch_all_problems/;
+    my @extras = qw/fetch_all_problems cobrand/;
     my $cobrand_extras = $c->cobrand->call_hook('body_extra_fields');
     push @extras, @$cobrand_extras if $cobrand_extras;
 
     %defaults = map { $_ => '' } @extras;
     my %extras = map { $_ => $c->get_param("extra[$_]") || $defaults{$_} } @extras;
+    $c->forward('check_body_extras', [ \%extras ]);
     return { params => \%params, extras => \%extras };
 }
 
@@ -474,6 +480,20 @@ sub check_body_params : Private {
 
     unless ($params->{name}) {
         $c->stash->{body_errors}->{name} = _('Please enter a name for this body');
+    }
+}
+
+sub check_body_extras : Private {
+    my ( $self, $c, $extras ) = @_;
+
+    $c->stash->{body_errors} ||= {};
+
+    return unless $extras->{cobrand};
+    if ($c->model('DB::Body')->find({
+        id => { '!=', $c->stash->{body_id} },
+        extra => { like => '%T7:cobrand,T' . length($extras->{cobrand}) . ':' . $extras->{cobrand} . '%'},
+    })) {
+        $c->stash->{body_errors}->{cobrand} = _('This cobrand is already assigned to another body.');
     }
 }
 

@@ -543,4 +543,81 @@ subtest 'check hardcoded contact renaming' => sub {
     };
 };
 
+
+subtest 'check setting cobrand on body' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        'ALLOWED_COBRANDS' => [ 'oxfordshire' ],
+    }, sub {
+        subtest 'staff user cannot see/set cobrand' => sub {
+            $mech->log_in_ok( $user->email );
+            $mech->get_ok('/admin/bodies');
+            $mech->content_lacks('Select a cobrand');
+            $mech->log_out_ok;
+        };
+
+        $mech->log_in_ok( $superuser->email );
+
+        subtest "superuser can set body's cobrand" => sub {
+            is $body->get_extra_metadata('cobrand'), undef;
+
+            $mech->get_ok('/admin/body/' . $body->id);
+            $mech->content_contains('Select a cobrand');
+
+            $mech->form_number(3);
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        'extra[cobrand]' => 'oxfordshire'
+                    }
+                }
+            );
+            $mech->content_contains('Values updated');
+
+            $body->discard_changes;
+            is $body->get_extra_metadata('cobrand'), 'oxfordshire';
+        };
+
+        subtest "superuser can unset body's cobrand" => sub {
+            $mech->get_ok('/admin/body/' . $body->id);
+            $mech->form_number(3);
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        'extra[cobrand]' => undef
+                    }
+                }
+            );
+            $mech->content_contains('Values updated');
+
+            $body->discard_changes;
+            is $body->get_extra_metadata('cobrand'), ''; # XXX should this actually be unset?
+        };
+
+        subtest "cannot use the same cobrand for multiple bodies" => sub {
+            $body2->set_extra_metadata('cobrand', 'oxfordshire');
+            $body2->update;
+
+            $mech->get_ok('/admin/body/' . $body->id);
+            $mech->form_number(3);
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        'extra[cobrand]' => 'oxfordshire'
+                    }
+                }
+            );
+            $mech->content_lacks('Values updated');
+            $mech->content_contains('This cobrand is already assigned to another body.');
+
+            $body->discard_changes;
+            is $body->get_extra_metadata('cobrand'), ''; # XXX should this actually be unset?
+            $body2->discard_changes;
+            is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
+        };
+    };
+};
+
+
+
 done_testing();
