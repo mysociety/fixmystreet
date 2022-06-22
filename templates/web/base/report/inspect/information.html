@@ -53,7 +53,7 @@
         [% END %]
         [% # Peterborough staff only %]
         [% IF c.cobrand.moniker == 'peterborough' && c.user_exists && (c.user.from_body || c.user.is_superuser) %]
-          [% land_type = problem.land_type(); IF land_type %]
+          [% land_type = c.cobrand.land_type_for_problem(problem); IF land_type %]
           <p>
               <strong>[% loc('Land:') %]</strong>
               [% land_type.ucfirst %]

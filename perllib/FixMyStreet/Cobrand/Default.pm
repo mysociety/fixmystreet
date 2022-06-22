@@ -467,6 +467,26 @@ sub map_type {
     return;
 }
 
+=item land_type_for_problem
+
+Return whether the land for the given problem is public or private.
+Currently only applies to Peterborough graffiti & fly-tipping.
+
+=cut
+
+sub land_type_for_problem {
+    my ( $self, $problem, $update ) = @_;
+
+    my $handler_cobrand
+        = $self->call_hook( get_body_handler_for_problem => $problem );
+
+    return
+        unless $handler_cobrand
+        && $handler_cobrand->moniker eq 'peterborough';
+
+    return $handler_cobrand->land_type_for_problem( $problem, $update );
+}
+
 =item reports_per_page
 
 The number of reports to show per page on all reports page.

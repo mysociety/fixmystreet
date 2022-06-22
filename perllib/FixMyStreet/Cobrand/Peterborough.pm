@@ -84,7 +84,7 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    my $land_type = $p->land_type;
+    my $land_type = $self->land_type_for_problem($p);
     return 'blue' if $land_type eq 'public';
     return 'orange' if $land_type eq 'private';
     return 'yellow';
@@ -209,17 +209,16 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params);
 };
 
-# Stores land_type in extra_metadata if not previously stored or force_lookup
-# flag is passed
-sub land_type {
-    my ($self, $problem, $force_lookup) = @_;
+# Stores land_type in extra_metadata if not previously stored, or update
+# flag is passed. For flytipping & graffiti only.
+sub land_type_for_problem {
+    my ($self, $problem, $update) = @_;
 
-    # For flytipping & graffiti only
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     return '' unless $flytipping_cats{$problem->category};
 
     my $land_type;
-    unless ($force_lookup) {
+    unless ($update) {
         $land_type = $problem->get_extra_metadata('land_type');
         return $land_type if defined $land_type;
     }
@@ -285,7 +284,7 @@ sub land_type {
 sub get_body_sender {
     my ( $self, $body, $problem ) = @_;
 
-    my $land_type = $self->land_type($problem);
+    my $land_type = $self->land_type_for_problem($problem);
 
     my $emails = $self->feature('open311_email');
     if ( $land_type eq 'private' && $emails->{flytipping} ) {
