@@ -137,7 +137,6 @@ if ($opt->test_fixtures) {
         { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
         { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting', 'Grass cutting', 'Hedge problem'], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
         { area_id => 53822, categories => [ 'Grass cutting', 'Hedge problem' ], name => 'Adstock Parish Council' }, # Buckinghamshire parish council
-        { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council', cobrand => 'hounslow' },
         { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council', cobrand => 'hackney' },
