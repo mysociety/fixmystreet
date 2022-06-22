@@ -847,7 +847,7 @@ FixMyStreet::override_config {
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
         $mech->content_lacks( "ddfirstamount", 'no direct debit first payment amount');
         $mech->content_like( qr/ddstartdate[^>]*"2022-07-04"/, 'direct debit start date correct');
-        $mech->content_like( qr/ddplanspecification[^>]*"Yearly,3,1"/, 'direct debit plan correct');
+        $mech->content_like( qr/ddplanspecification[^>]*"Yearly,March,1"/, 'direct debit plan correct');
         $mech->content_like( qr/4 July 2022, and annually on 1 March thereafter/, 'direct debit summary correct');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
@@ -909,7 +909,7 @@ FixMyStreet::override_config {
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
         $mech->content_lacks( "ddfirstamount", 'no direct debit first payment amount');
         $mech->content_like( qr/ddstartdate[^>]*"2022-07-06"/, 'direct debit start date correct');
-        $mech->content_like( qr/ddplanspecification[^>]*"Yearly,3,1"/, 'direct debit plan correct');
+        $mech->content_like( qr/ddplanspecification[^>]*"Yearly,March,1"/, 'direct debit plan correct');
         $mech->content_like( qr/6 July 2022, and annually on 1 March thereafter/, 'direct debit summary correct');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
@@ -971,7 +971,7 @@ FixMyStreet::override_config {
         $mech->content_like( qr/ddregularamount[^>]*"40.00"/, 'payment amount correct');
         $mech->content_lacks( "ddfirstamount", 'no direct debit first payment amount');
         $mech->content_like( qr/ddstartdate[^>]*"2022-07-04"/, 'direct debit start date correct');
-        $mech->content_like( qr/ddplanspecification[^>]*"Yearly,3,1"/, 'direct debit plan correct');
+        $mech->content_like( qr/ddplanspecification[^>]*"Yearly,March,1"/, 'direct debit plan correct');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
