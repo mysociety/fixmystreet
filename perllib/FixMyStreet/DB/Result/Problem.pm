@@ -296,7 +296,8 @@ before update => sub {
     if (   exists $dirty_columns{longitude}
         || exists $dirty_columns{latitude} )
     {
-        $self->land_type(1);
+        # TODO What if no cobrand_logged?
+        $self->get_cobrand_logged->land_type_for_problem( $self, 1 );
     }
 };
 
@@ -1268,24 +1269,6 @@ sub set_duplicate_of {
     push @$dupes_duplicates, $self->id;
     $dupe->set_extra_metadata( duplicates => $dupes_duplicates );
     $dupe->update;
-}
-
-# Stores land_type in extra_metadata if not previously stored or force_lookup
-# flag is passed.
-# Currently for Peterborough only.
-sub land_type {
-    my ( $self, $force_lookup ) = @_;
-
-    my $logged_cobrand = $self->get_cobrand_logged;
-    my $handler_cobrand
-        = $logged_cobrand->call_hook( get_body_handler_for_problem => $self );
-
-    # TODO What if no cobrand/handler?
-    return
-        unless $handler_cobrand
-        && $handler_cobrand->moniker eq 'peterborough';
-
-    return $handler_cobrand->land_type( $self, $force_lookup );
 }
 
 has duplicate_of => (
