@@ -907,8 +907,8 @@ subtest 'updating of waste reports' => sub {
             waste => { kingston => 1 }
         },
     }, sub {
-        my @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
-            category => 'Report missed collection',
+        my @reports = $mech->create_problems_for_body(2, $body->id, 'Garden Subscription', {
+            category => 'Garden Subscription',
             cobrand_data => 'waste',
         });
         $reports[1]->update({ external_id => 'something-else' }); # To test loop

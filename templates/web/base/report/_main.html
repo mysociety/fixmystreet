@@ -4,9 +4,7 @@ can_moderate = permissions.moderate OR c.user.can_moderate(problem, staff = perm
 can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
 %]
 
-<a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
-    class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
-
+[% INCLUDE 'report/_back_to_all.html' %]
 [% INCLUDE 'report/banner.html' %]
 
 <div class="problem-header clearfix

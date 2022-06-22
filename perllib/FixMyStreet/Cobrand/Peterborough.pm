@@ -97,14 +97,6 @@ sub lookup_site_code_config { {
     accept_types => { Polygon => 1 },
 } }
 
-# We want to send confirmation emails only for Waste reports
-sub report_sent_confirmation_email {
-    my ($self, $report) = @_;
-    my $contact = $report->contact or return;
-    return 'id' if $report->contact->get_extra_metadata('waste_only');
-    return '';
-}
-
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -384,35 +376,6 @@ sub category_change_force_resend {
 Functions specific to the waste product & Bartec integration.
 
 =cut 
-
-=head2 munge_around_category_where, munge_reports_category_list, munge_report_new_contacts
-
-These filter out waste-related categories from the main FMS report flow.
-TODO: Are these small enough to be here or should they be in a Role?
-
-=cut 
-
-sub munge_around_category_where {
-    my ($self, $where) = @_;
-    $where->{extra} = [ undef, { -not_like => '%T10:waste_only,I1:1%' } ];
-}
-
-sub munge_reports_category_list {
-    my ($self, $categories) = @_;
-    @$categories = grep { !$_->get_extra_metadata('waste_only') } @$categories;
-}
-
-sub munge_report_new_contacts {
-    my ($self, $categories) = @_;
-
-    if ($self->{c}->action =~ /^waste/) {
-        @$categories = grep { $_->get_extra_metadata('waste_only') } @$categories;
-        return;
-    }
-
-    @$categories = grep { !$_->get_extra_metadata('waste_only') } @$categories;
-    $self->SUPER::munge_report_new_contacts($categories);
-}
 
 sub _premises_for_postcode {
     my $self = shift;

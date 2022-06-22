@@ -57,6 +57,7 @@ $mech->create_contact_ok(
     email => 'missed',
     send_method => 'Open311',
     endpoint => 'waste-endpoint',
+    extra => { type => 'waste' },
     group => ['Waste'],
 );
 

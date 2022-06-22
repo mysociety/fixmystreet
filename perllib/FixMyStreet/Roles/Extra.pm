@@ -74,18 +74,19 @@ sub unset_extra_metadata {
 
     my $metadata = $problem->get_extra_metadata;
     my $overdue = $problem->get_extra_metadata('overdue');
+    my $type = $problem->get_extra_metadata('type', '');
 
 =cut
 
 my $META_FIELD = '_fields';
 
 sub get_extra_metadata {
-    my ($self, $key) = @_;
+    my ($self, $key, $default) = @_;
     my $extra = $self->get_extra();
 
     my %extra = %$extra;
     delete $extra{$META_FIELD};
-    return $key ? $extra{$key} : \%extra;
+    return $key ? ($extra{$key} // $default) : \%extra;
 };
 
 =head2 get_extra_fields

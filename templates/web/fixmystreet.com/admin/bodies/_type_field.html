@@ -1,0 +1,22 @@
+[% SET type = contact.get_extra_metadata('type') %]
+<fieldset>
+    <legend>Category type</legend>
+    <div class="form-check form-check--inline">
+        <input type="radio" name="type" id="type-standard" aria-describedby="type-standard-hint" value="standard"[% ' checked' IF type == '' %]>
+        <label for="type-standard">Standard</label>
+        <p class="form-hint" id="type-standard-hint">A normal FixMyStreet category</p>
+    </div>
+    <div class="form-check form-check--inline">
+        <input type="radio" name="type" id="type-waste" value="waste"[% ' checked' IF type == 'waste' %]>
+        <label for="type-waste">WasteWorks</label>
+    </div>
+    <div class="form-check form-check--inline">
+        <input type="radio" name="type" id="type-claim" value="claim"[% ' checked' IF type == 'claim' %]>
+        <label for="type-claim">Red claim</label>
+    </div>
+    <div class="form-check form-check--inline">
+        <input type="radio" name="type" id="type-noise" aria-describedby="type-noise-hint" value="noise"[% ' checked' IF type == 'noise' %]>
+        <label for="type-noise">Noise</label>
+        <p class="form-hint" id="type-noise-hint">No longer used</p>
+    </div>
+</fieldset>

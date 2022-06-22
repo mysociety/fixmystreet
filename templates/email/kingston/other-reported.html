@@ -76,7 +76,13 @@ INCLUDE '_email_top.html';
   </p>
 [% END %]
 
-[% IF type == 'new' OR type == 'renew' ~%]
+[% IF type == 'new' ~%]
+  <p style="[% p_style %]">
+    Your subscription will last for 12 months and starts after your first collection date.
+  </p>
+[% END %]
+
+[% IF type == 'renew' ~%]
   <p style="[% p_style %]">
     Your subscription will last for 12 months and starts from the following collection date
     [% IF new_bins > 0 %]

@@ -37,6 +37,8 @@
     </p>
     <input type="text" class="form-control" id="destination" aria-describedby="destination-hint" name="email" size="30" value="[% contact.email | html %]" required>
 
+    [% TRY %][% PROCESS 'admin/bodies/_type_field.html' %][% CATCH file %][% END %]
+
     <fieldset>
         <legend>[% loc('State') %]</legend>
         <div class="form-check form-check--inline">

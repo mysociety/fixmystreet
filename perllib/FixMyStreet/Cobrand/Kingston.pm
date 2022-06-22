@@ -24,6 +24,17 @@ sub send_questionnaires { 0 }
 
 sub abuse_reports_only { 1 }
 
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    $rs = $self->next::method($rs);
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    $rs = $rs->search({
+        "$table.cobrand_data" => 'waste',
+    });
+    return $rs;
+}
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
@@ -60,45 +71,6 @@ sub open311_post_send {
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
     }
-}
-
-# We want to send confirmation emails only for Waste reports
-sub report_sent_confirmation_email {
-    my ($self, $report) = @_;
-    my $contact = $report->contact or return;
-    return 'id' if grep { $_ eq 'Waste' } @{$contact->groups};
-    return '';
-}
-
-sub munge_around_category_where {
-    my ($self, $where) = @_;
-    $where->{extra} = [ undef, { -not_like => '%Waste%' } ];
-}
-
-sub munge_reports_category_list {
-    my ($self, $categories) = @_;
-    my $c = $self->{c};
-    return if $c->action eq 'dashboard/heatmap';
-
-    unless ( $c->user_exists && $c->user->from_body && $c->user->has_permission_to('report_mark_private', $self->body->id) ) {
-        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
-    }
-}
-
-sub munge_report_new_contacts {
-    my ($self, $categories) = @_;
-
-    if ($self->{c}->action =~ /^waste/) {
-        @$categories = grep { grep { $_ eq 'Waste' } @{$_->groups} } @$categories;
-        return;
-    }
-
-    if ($self->{c}->stash->{categories_for_point}) {
-        # Have come from an admin tool
-    } else {
-        @$categories = grep { grep { $_ ne 'Waste' } @{$_->groups} } @$categories;
-    }
-    $self->SUPER::munge_report_new_contacts($categories);
 }
 
 sub updates_disallowed {
@@ -755,6 +727,20 @@ sub garden_waste_dd_redirect_url {
     my $c = $self->{c};
 
     return $c->cobrand->base_url_with_lang . "/waste/dd_complete";
+}
+
+sub garden_waste_dd_check_success {
+    my ($self, $c) = @_;
+
+    # check if the bank details have been verified
+    if ( lc $c->get_param('verificationapplied') eq 'true' ) {
+        # and if they have and verification has failed then redirect
+        # to the cancelled page
+        if ( lc $c->get_param('status') eq 'false') {
+            $c->forward('direct_debit_error');
+            $c->detach();
+        }
+    }
 }
 
 sub garden_waste_dd_get_redirect_params {
