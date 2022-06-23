@@ -44,7 +44,7 @@
     padding: 2em 1em;
     background-color: $front_main_background;
 
-    h1, h2 {
+    h1, h4 {
         color: $primary_b;
     }
     h1 {
@@ -62,6 +62,20 @@
 
     a {
         color: $primary_b;
+    }
+
+    .front-main-other-issues-wrapper {
+        padding: 1em;
+        background: $bathens-cyan;
+        max-width: 500px;
+        margin: 1em auto;
+
+        a {
+            &:hover {
+                color: $bathnes-navy;
+                text-decoration: none;
+            }
+        }
     }
 }
 
