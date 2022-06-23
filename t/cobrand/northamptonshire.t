@@ -10,7 +10,7 @@ my $mech = FixMyStreet::TestMech->new;
 use open ':std', ':encoding(UTF-8)'; 
 
 my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1 });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1 }, { cobrand => 'northamptonshire' });
 my $wnc = $mech->create_body_ok(164186, 'West Northamptonshire Council');
 
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $nh);

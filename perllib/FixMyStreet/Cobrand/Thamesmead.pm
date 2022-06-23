@@ -44,12 +44,6 @@ sub reopening_disallowed {
     }
 }
 
-sub body {
-    my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->search({ name => 'Thamesmead' })->first;
-    return $body;
-}
-
 sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;

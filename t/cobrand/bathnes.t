@@ -9,7 +9,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 
-my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council');
+my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {}, { cobrand => 'bathnes' });
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
 for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");

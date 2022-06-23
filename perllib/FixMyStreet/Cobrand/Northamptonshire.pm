@@ -31,12 +31,6 @@ sub categories_restriction {
     return $rs->search( { 'body.name' => [ $self->council_name, 'National Highways' ] } );
 }
 
-sub body {
-    # Overridden because UKCouncils::body won't match because council_area_id is an arrayref
-    FixMyStreet::DB->resultset('Body')->search({ name => 'Northamptonshire Highways' })->first;
-}
-
-
 sub send_questionnaires { 0 }
 
 sub on_map_default_status { 'open' }

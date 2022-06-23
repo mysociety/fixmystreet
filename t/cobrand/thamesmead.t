@@ -7,7 +7,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2494, 'Thamesmead'); # Using Bexley as area
+my $body = $mech->create_body_ok(2494, 'Thamesmead', {}, { cobrand => 'thamesmead' }); # Using Bexley as area
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Overgrown shrub beds', email => 'shrubs@example.org');
 
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');

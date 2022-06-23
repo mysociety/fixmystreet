@@ -86,11 +86,6 @@ sub about_hook {
     }
 }
 
-sub body {
-    # Overridden because UKCouncils::body excludes TfL
-    FixMyStreet::DB->resultset('Body')->search({ name => 'TfL' })->first;
-}
-
 # These need to be overridden so the method in UKCouncils doesn't create
 # a fixmystreet.com link (because of the false-returning owns_problem call)
 sub relative_url_for_report { "" }

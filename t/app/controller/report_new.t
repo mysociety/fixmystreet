@@ -19,14 +19,15 @@ for my $body (
     { area_id => 2651, name => 'City of Edinburgh Council' },
     { area_id => 2226, name => 'Gloucestershire County Council' },
     { area_id => 2326, name => 'Cheltenham Borough Council' },
-    { area_id => 2482, name => 'Bromley Council' },
-    { area_id => 2227, name => 'Hampshire County Council' },
-    { area_id => 2333, name => 'Hart Council' },
+    { area_id => 2482, name => 'Bromley Council', cobrand => 'bromley' },
+    { area_id => 2227, name => 'Hampshire County Council', cobrand => 'hampshire' },
+    { area_id => 2333, name => 'Hart Council', cobrand => 'hart' },
     { area_id => 2535, name => 'Sandwell Borough Council' },
-    { area_id => 1000, name => 'National Highways' },
-    { area_id => 2483, name => 'Hounslow Borough Council' },
+    { area_id => 1000, name => 'National Highways', cobrand => 'highwaysengland' },
+    { area_id => 2483, name => 'Hounslow Borough Council', cobrand => 'hounslow' },
 ) {
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
+    my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, $extra);
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 

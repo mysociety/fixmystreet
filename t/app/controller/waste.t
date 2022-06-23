@@ -13,7 +13,7 @@ $uk->mock('_fetch_url', sub { '{}' });
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2482, 'Bromley Council');
+my $body = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 $user->update({ phone => "07123 456789" });
 my $nameless_user = $mech->create_user_ok('nameless@example.net', name => '');

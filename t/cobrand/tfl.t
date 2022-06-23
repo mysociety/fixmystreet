@@ -14,7 +14,7 @@ my $tilma = t::Mock::Tilma->new;
 LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
 
-my $body = $mech->create_body_ok(2482, 'TfL');
+my $body = $mech->create_body_ok(2482, 'TfL', {}, { cobrand => 'tfl' });
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2483, # Hounslow
     body_id => $body->id,
@@ -43,7 +43,7 @@ $staffuser->user_body_permissions->create({
 });
 my $user = $mech->create_user_ok('londonresident@example.com');
 
-my $bromley = $mech->create_body_ok(2482, 'Bromley');
+my $bromley = $mech->create_body_ok(2482, 'Bromley', {}, { cobrand => 'bromley' });
 my $bromleyuser = $mech->create_user_ok('bromleyuser@bromley.example.com', name => 'Bromley Staff', from_body => $bromley);
 $mech->create_contact_ok(
     body_id => $bromley->id,
@@ -65,7 +65,7 @@ $mech->create_contact_ok(
     group => ['Street cleaning'],
 );
 
-my $hackney = $mech->create_body_ok(2508, 'Hackney Council');
+my $hackney = $mech->create_body_ok(2508, 'Hackney Council', {}, { cobrand => 'hackney' });
 $mech->create_contact_ok(
     body_id => $hackney->id,
     category => 'Abandoned Vehicle',

@@ -50,14 +50,6 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
-# UK cobrands assume that each MapIt area ID maps both ways with one
-# body. Except TfL and National Highways.
-sub body {
-    my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'National Highways', 'Environment Agency'] } })->first;
-    return $body;
-}
-
 sub cut_off_date { '' }
 
 sub problems_restriction {

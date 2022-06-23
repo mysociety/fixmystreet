@@ -129,7 +129,7 @@ subtest 'check lat/lng for Maidenhead code' => sub {
 
 my $body_edin = $mech->create_body_ok(2651, 'City of Edinburgh Council');
 my $body_edin_id = $body_edin->id;
-my $body_west = $mech->create_body_ok(2504, 'Westminster City Council');
+my $body_west = $mech->create_body_ok(2504, 'Westminster City Council', {}, { cobrand => 'westminster' });
 
 my @edinburgh_problems = $mech->create_problems_for_body( 5, $body_edin_id, 'Around page', {
     postcode  => 'EH1 1BB',

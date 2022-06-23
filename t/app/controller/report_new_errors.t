@@ -33,17 +33,18 @@ subtest "test that bare requests to /report/new get redirected" => sub {
 my %body_ids;
 for my $body (
     { area_id => 2226, name => 'Gloucestershire County Council' },
-    { area_id => 2504, name => 'Westminster City Council' },
-    { area_id => 2482, name => 'Bromley Council' },
-    { area_id => 163793, name => 'Buckinghamshire Council' },
-    { area_id => 2232, name => 'Lincolnshire County Council' },
-    { area_id => 2237, name => 'Oxfordshire County Council' },
-    { area_id => 2600, name => 'Rutland County Council' },
-    { area_id => 164186, name => 'Northamptonshire Highways' },
-    { area_id => 2566, name => 'Peterborough City Council' },
-    { area_id => 2508, name => 'Hackney Council' },
+    { area_id => 2504, name => 'Westminster City Council', cobrand => 'westminster' },
+    { area_id => 2482, name => 'Bromley Council', cobrand => 'bromley' },
+    { area_id => 163793, name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
+    { area_id => 2232, name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
+    { area_id => 2237, name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
+    { area_id => 2600, name => 'Rutland County Council', cobrand => 'rutland' },
+    { area_id => 164186, name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
+    { area_id => 2566, name => 'Peterborough City Council', cobrand => 'peterborough' },
+    { area_id => 2508, name => 'Hackney Council', cobrand => 'hackney' },
 ) {
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
+    my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, $extra);
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 
