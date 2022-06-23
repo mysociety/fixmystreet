@@ -5,12 +5,9 @@
 #
 # This script should be invoked through the .forward mechanism. It
 # processes bounce messages and replies and deals with them accordingly.
-#
-# Copyright (c) 2016 UK Citizens Online Democracy. All rights reserved.
 
-use strict;
+use v5.14;
 use warnings;
-require 5.8.0;
 
 BEGIN {
     use File::Basename qw(dirname);
@@ -20,12 +17,7 @@ BEGIN {
 }
 
 use Getopt::Long;
-use Path::Tiny;
-use FixMyStreet;
-use FixMyStreet::Cobrand;
-use FixMyStreet::DB;
-use FixMyStreet::Email;
-use mySociety::HandleMail;
+use FixMyStreet::Email::Incoming;
 use mySociety::SystemMisc qw(print_log);
 
 # Don't print diagnostics to standard error, as this can result in bounce
@@ -41,200 +33,10 @@ my $bouncemgr = FixMyStreet->config('CONTACT_EMAIL');
 GetOptions ("cobrand=s" => \$cobrand,
             "bouncemgr=s" => \$bouncemgr);
 
-my %data = mySociety::HandleMail::get_message();
-my @lines = @{$data{lines}};
-my $token = get_envelope_token();
-my $verp = $token !~ /DO-NOT-REPLY/i;
-my ($type, $object) = get_object_from_token();
-
-if ($data{is_bounce_message}) {
-    if ($object) {
-        handle_bounce_to_verp_address();
-    } else {
-        print_log('info', "bounce received for don't-care email");
-    }
-} else {
-    # This is not a bounce message. If it's to a VERP address, pass it on to
-    # the message sender; otherwise send an auto-reply
-    if ($object) {
-        handle_non_bounce_to_verp_address();
-    } else {
-        handle_non_bounce_to_null_address();
-    }
-}
+my $incoming = FixMyStreet::Email::Incoming->new({
+    cobrand => $cobrand,
+    bouncemgr => $bouncemgr,
+});
+$incoming->process;
 
 exit(0);
-
-# ---
-
-sub get_envelope_token {
-    my $m = $data{message};
-
-    # If we have a special suffix header for the local part suffix, use that.
-    # This is set by our exim so we have access to it through the domain name
-    # forwarding and routers.
-    my $suffix = $m->head()->get("X-Delivered-Suffix");
-    if ($suffix) {
-        chomp $suffix;
-        return substr($suffix, 1);
-    }
-
-    # Otherwise, fall back to To header
-    my $a = mySociety::HandleMail::get_bounce_recipient($m);
-
-    my $token = mySociety::HandleMail::get_token($a,
-        'fms-', FixMyStreet->config('EMAIL_DOMAIN')
-    );
-    exit 0 unless $token; # Don't care unless we have a token
-
-    return $token;
-}
-
-sub get_object_from_token {
-    return unless $verp;
-
-    my ($type, $id) = FixMyStreet::Email::check_verp_token($token);
-    exit 0 unless $type;
-
-    my $rs;
-    if ($type eq 'report') {
-        $rs = FixMyStreet::DB->resultset('Problem');
-    } elsif ($type eq 'alert') {
-        $rs = FixMyStreet::DB->resultset('Alert');
-    }
-
-    my $object = $rs->find({ id => $id });
-    exit(0) unless $object;
-
-    return ($type, $object);
-}
-
-sub handle_permanent_bounce {
-    if ($type eq 'alert') {
-        print_log('info', "Received bounce for alert " . $object->id . ", unsubscribing");
-        $object->disable();
-    } elsif ($type eq 'report') {
-        print_log('info', "Received bounce for report " . $object->id . ", forwarding to support");
-        forward_on_to($bouncemgr);
-    }
-}
-
-sub is_out_of_office {
-    my (%attributes) = @_;
-    return 1 if $attributes{problem} && $attributes{problem} == mySociety::HandleMail::ERR_OUT_OF_OFFICE;
-    my $head = $data{message}->head();
-    return 1 if $head->get('X-Autoreply') || $head->get('X-Autorespond');
-    my $mc = $head->get('X-POST-MessageClass') || '';
-    return 1 if $mc eq '9; Autoresponder';
-    my $auto_submitted = $head->get("Auto-Submitted") || '';
-    return 1 if $auto_submitted && $auto_submitted !~ /no/;
-    my $precedence = $head->get("Precedence") || '';
-    return 1 if $precedence =~ /auto_reply/;
-    my $subject = $head->get("Subject");
-    return 1 if $subject =~ /Auto(matic|mated)?[ -_]?(reply|response|responder)|Thank[ _]you[ _]for[ _](your[ _]email|contacting)|Out of (the )?Office|away from the office|This office is closed until|^Re: (Problem Report|New updates)|^Auto: |^E-Mail Response$|^Message Received:|have received your email|Acknowledgement of your email|away from my desk|We got your email/i;
-    return 0;
-}
-
-sub handle_bounce_to_verp_address {
-    my %attributes = mySociety::HandleMail::parse_bounce(\@lines);
-    my $info = '';
-    if ($attributes{is_dsn}) {
-        # If permanent failure, but not mailbox full
-        return handle_permanent_bounce() if $attributes{status} =~ /^5\./ && $attributes{status} ne '5.2.2';
-        $info = ", Status $attributes{status}";
-    } elsif ($attributes{problem}) {
-        my $err_type = mySociety::HandleMail::error_type($attributes{problem});
-        return handle_permanent_bounce() if $err_type == mySociety::HandleMail::ERR_TYPE_PERMANENT;
-        $info = ", Bounce type $attributes{problem}";
-    }
-
-    # Check if the Subject looks like an auto-reply rather than a delivery bounce.
-    # If so, treat as if it were a normal email
-    if (is_out_of_office(%attributes)) {
-        print_log('info', "Treating bounce for $type " . $object->id . " as auto-reply to sender");
-        handle_non_bounce_to_verp_address();
-    } elsif (!$info) {
-        print_log('info', "Unparsed bounce received for $type " . $object->id . ", forwarding to support");
-        forward_on_to($bouncemgr);
-    } else {
-        print_log('info', "Ignoring bounce received for $type " . $object->id . $info);
-    }
-}
-
-sub handle_non_bounce_to_verp_address {
-    if ($type eq 'alert' && !is_out_of_office()) {
-        print_log('info', "Received non-bounce for alert " . $object->id . ", forwarding to support");
-        forward_on_to($bouncemgr);
-    } elsif ($type eq 'report') {
-        my $contributed_as = $object->get_extra_metadata('contributed_as') || '';
-        if ($contributed_as eq 'body' || $contributed_as eq 'anonymous_user') {
-            print_log('info', "Received non-bounce for report " . $object->id . " to anon report, dropping");
-        } else {
-            print_log('info', "Received non-bounce for report " . $object->id . ", forwarding to report creator");
-            forward_on_to($object->user->email);
-        }
-    }
-}
-
-sub handle_non_bounce_to_null_address {
-    # Don't send a reply to out of office replies...
-    if (is_out_of_office()) {
-        print_log('info', "Received non-bounce auto-reply to null address, ignoring");
-        return;
-    }
-
-    # Send an automatic response
-    print_log('info', "Received non-bounce to null address, auto-replying");
-
-    my ( $cobrand, $from_addr, $from_name ) = get_config_for_autoresponse();
-
-    my $template = path(FixMyStreet->path_to("templates", "email", $cobrand, 'reply-autoresponse'))->slurp_utf8;
-
-    # We generate this as a bounce.
-    my ($rp) = $data{return_path} =~ /^\s*<(.*)>\s*$/;
-    my $mail = FixMyStreet::Email::construct_email({
-        'Auto-Submitted' => 'auto-replied',
-        From => [ $from_addr, $from_name ],
-        To => $rp,
-        _body_ => $template,
-    });
-    send_mail($mail, $rp);
-}
-
-# Based on the address the incoming message was sent to, we might want to
-# use a cobrand's own reply-autoresponse template.
-sub get_config_for_autoresponse {
-    # cobrand might have been set from command line, so prefer that if so.
-    if ( defined $cobrand ) {
-        return ( $cobrand, FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') );
-    }
-
-    # Try and find a matching email address in the COBRAND_FEATURES config
-    my $recipient = mySociety::HandleMail::get_bounce_recipient($data{message})->address;
-    my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
-    my $cobrands = $features->{do_not_reply_email} || {};
-    for my $moniker ( keys %$cobrands ) {
-        if ( $cobrands->{$moniker} eq $recipient ) {
-            my $cb = FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new();
-            return ( $moniker, $cb->contact_email, $cb->contact_name );
-        }
-    }
-
-    # No match found, so use default cobrand
-    return ( "default", FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') );
-}
-
-sub forward_on_to {
-    my $recipient = shift;
-    my $text = join("\n", @lines) . "\n";
-    send_mail($text, $recipient);
-}
-
-sub send_mail {
-    my ($email, $recipient) = @_;
-    unless (FixMyStreet::Email::Sender->try_to_send(
-        $email, { from => '<>', to => $recipient }
-    )) {
-        exit(75);
-    }
-}

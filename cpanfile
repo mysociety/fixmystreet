@@ -188,6 +188,7 @@ requires 'Test::LongString';
 requires 'Test::MockTime';
 requires 'Test::More', '0.88';
 requires 'Test::Output';
+requires 'Test::Trap';
 requires 'Test::Warn';
 requires 'Test::WWW::Mechanize::Catalyst', '0.62';
 requires 'Web::Scraper';
