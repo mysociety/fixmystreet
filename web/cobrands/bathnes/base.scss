@@ -64,6 +64,19 @@
         margin: 0;
         font-size: 1.1em;
     }
+
+    #geolocate_link {
+        background-color: $bathnes-white;
+
+        &:hover {
+            background-color:  lighten($bathnes-primary, 45%);
+            color: lighten($bathnes-black, 15%);
+        }
+
+        &:focus {
+            background-color: $bathnes-yellow;
+        }
+    }
 }
 
 #front-main #postcodeForm {
