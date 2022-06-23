@@ -68,7 +68,22 @@
 
 #front-main #postcodeForm {
     margin-top: 1em;
+
     label {
-        color: #fff;
+        color: $primary_b;
     }
+
+    .form-hint {
+        color: #313131;
+    }
+}
+
+// Stats homepage
+
+ol.big-numbers>li:before {
+    color: $stats-colour;
+}
+
+#front_stats {
+    background: $stats-colour;
 }

@@ -24,10 +24,12 @@ $primary_text: #fff;
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
 
-$base_bg: white;
+$base_bg: $bathnes-white;
 $base_fg: #0b0c0c;
 
-$nav_background_colour: #fff;
+$stats-colour: $bathnes-navy;
+
+$nav_background_colour: $bathnes-white;
 $nav_colour: #000;
 $nav_hover_background_colour: #eee;
 

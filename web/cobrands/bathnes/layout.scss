@@ -42,8 +42,9 @@
 
 #front-main {
     background-color: $front_main_background;
+
     h1, h2 {
-        color: #fff;
+        color: $primary_b;
     }
     h1 {
         font-weight: bold;
@@ -56,6 +57,10 @@
     #postcodeForm {
         margin-top: 0;
         padding: 0;
+    }
+
+    a {
+        color: $primary_b;
     }
 }
 
@@ -79,4 +84,14 @@ body.mappage {
 
 body.twothirdswidthpage .content .sticky-sidebar aside {
     top: 12em;
+}
+
+// Stats homepage
+
+#front_stats {
+    border-color: $stats-colour;
+
+    big {
+        color: $stats-colour;
+    }
 }
