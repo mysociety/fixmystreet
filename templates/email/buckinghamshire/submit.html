@@ -42,7 +42,10 @@ of a local problem that they believe might require your attention.</p>
       </tr>
     [%~ END %]
   </table>
-  <p style="[% p_style %] margin-top: 0.5em;">Replies to this message will go directly to [% report.name | html %], the user who reported the problem.</p>
+  <p style="[% p_style %] margin-top: 0.5em;">
+    Replies to this email will go to FixMyStreet and updated according to the
+    SC code used in the Subject line.
+  </p>
   [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]

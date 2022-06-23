@@ -419,6 +419,8 @@ sub disable_phone_number_entry { 1 }
 
 sub report_sent_confirmation_email { 'external_id' }
 
+sub handle_email_status_codes { 1 }
+
 sub is_council_with_case_management { 1 }
 
 # Try OSM for Bucks as it provides better disamiguation descriptions.

@@ -42,7 +42,8 @@ View OpenStreetMap of this location: [% osm_url %]
 
 [% closest_address %]----------
 
-Replies to this email will go to the user who submitted the problem.
+Replies to this email will go to FixMyStreet and updated according to the SC
+code used in the Subject line.
 
 [% signature %]
 

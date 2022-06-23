@@ -168,6 +168,9 @@ sub handle_non_bounce_to_verp_address {
         print_log('info', "Received non-bounce for alert " . $self->object->id . ", forwarding to support");
         $self->forward_on_to($self->bouncemgr);
     } elsif ($self->type eq 'report') {
+        my $ret = $self->check_for_status_code;
+        return if $ret;
+
         my $contributed_as = $self->object->get_extra_metadata('contributed_as') || '';
         if ($contributed_as eq 'body' || $contributed_as eq 'anonymous_user') {
             print_log('info', "Received non-bounce for report " . $self->object->id . " to anon report, dropping");
@@ -176,6 +179,70 @@ sub handle_non_bounce_to_verp_address {
             $self->forward_on_to($self->object->user->email);
         }
     }
+}
+
+sub check_for_status_code {
+    my $self = shift;
+    my $head = $self->data->{message}->head();
+    my $subject = $head->get("Subject");
+
+    my $problem = $self->object;
+    my $cobrand = $problem->get_cobrand_logged;
+    $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $problem) || $cobrand;
+    return 0 unless $cobrand->call_hook('handle_email_status_codes');
+
+    my ($code) = $subject =~ /SC(\d+)/i;
+    return $self->_status_code_bounce($cobrand, "no SC code") unless $code;
+
+    my $body = $cobrand->body;
+    my $updates = Open311::GetServiceRequestUpdates->new(
+        system_user => $body->comment_user,
+        current_body => $body,
+        blank_updates_permitted => 1,
+    );
+    my $templates = FixMyStreet::DB->resultset("ResponseTemplate")->search({
+        'me.body_id' => $body->id,
+        'contact.category' => [ $problem->category, undef ],
+    }, {
+        order_by => 'contact.category', # So nulls are last
+        join => { 'contact_response_templates' => 'contact' },
+    });
+    my $template = $templates->search({
+        auto_response => 1,
+        external_status_code => $code,
+    })->first;
+
+    return $self->_status_code_bounce($cobrand, "bad code SC$code") unless $template;
+
+    print_log('info', "Received SC code in subject, updating report");
+
+    my $text = $template->text;
+    my $request = {
+        service_request_id => $problem->id,
+        update_id => $head->get("Message-ID"),
+        comment_time => DateTime->now,
+        status => $template->state || 'fixed - council',
+        external_status_code => $code,
+        description => $text,
+    };
+    $updates->process_update($request, $problem);
+    return 1;
+}
+
+sub _status_code_bounce {
+    my ($self, $cobrand, $line) = @_;
+    $line = "Report #" . $self->object->id . ", email subject had $line";
+    print_log('info', $line);
+    my ($rp) = $self->data->{return_path} =~ /^\s*<(.*)>\s*$/;
+    my $mail = FixMyStreet::Email::construct_email({
+        'Auto-Submitted' => 'auto-replied',
+        From => [ $cobrand->contact_email, $cobrand->contact_name ],
+        To => $rp,
+        Subject => $line,
+        _body_ => $line,
+    });
+    send_mail($mail, $rp);
+    return 1;
 }
 
 sub handle_non_bounce_to_null_address {
