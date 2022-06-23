@@ -168,6 +168,10 @@ sub handle_non_bounce_to_verp_address {
         print_log('info', "Received non-bounce for alert " . $self->object->id . ", forwarding to support");
         $self->forward_on_to($self->bouncemgr);
     } elsif ($self->type eq 'report') {
+        if ($self->object->to_body_named('Buckinghamshire')) {
+            my $ret = $self->check_for_status_code($self->object);
+            return if $ret;
+        }
         my $contributed_as = $self->object->get_extra_metadata('contributed_as') || '';
         if ($contributed_as eq 'body' || $contributed_as eq 'anonymous_user') {
             print_log('info', "Received non-bounce for report " . $self->object->id . " to anon report, dropping");
@@ -176,6 +180,33 @@ sub handle_non_bounce_to_verp_address {
             $self->forward_on_to($self->object->user->email);
         }
     }
+}
+
+sub check_for_status_code {
+    my $self = shift;
+    my $head = $self->data->{message}->head();
+    my $subject = $head->get("Subject");
+    if (my ($code) = $subject =~ /SC(\d+)/) {
+        my $problem = $self->object;
+        foreach my $body (values %{$problem->bodies}) {
+            my $user = $body->comment_user or next;
+            my $updates = Open311::GetServiceRequestUpdates->new(
+                system_user => $user,
+                current_body => $body,
+                blank_updates_permitted => 1,
+            );
+            my $request = {
+                service_request_id => $problem->id,
+                update_id => $head->get("Message-ID"),
+                comment_time => DateTime->now,
+                status => 'fixed - council',
+                external_status_code => $code,
+            };
+            $updates->process_update($request, $problem);
+        }
+        return 1;
+    }
+    return 0;
 }
 
 sub handle_non_bounce_to_null_address {

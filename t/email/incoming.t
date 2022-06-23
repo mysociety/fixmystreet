@@ -5,7 +5,8 @@ use FixMyStreet::Email;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council');
+my $user = $mech->create_user_ok('systemuser@example.org');
+my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', { comment_user => $user });
 my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title');
 my $alert = FixMyStreet::DB->resultset("Alert")->create({
     alert_type => 'new_updates',
@@ -218,6 +219,24 @@ EOF
         isnt $alert->whendisabled, undef;
     };
 
+    subtest 'Bucks status code' => sub {
+        FixMyStreet::DB->resultset("ResponseTemplate")->create({
+            body => $body,
+            auto_response => 1,
+            external_status_code => '123',
+            title => '123 fixed',
+            text => 'Text of template',
+        });
+        my $email = email_from_template(RETURNPATH => 1, SUBJECT => "SC123", TOKEN => $token_report);
+        process($email);
+        is $trap->stderr, "";
+        $mech->email_count_is(0);
+        $p->discard_changes;
+        is $p->state, 'fixed - council';
+        is $p->comments->count, 1;
+        is $p->comments->first->text, "Text of template";
+        is $p->comments->first->problem_state, "fixed - council";
+    };
 };
 
 done_testing;
