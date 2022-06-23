@@ -41,6 +41,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "external_status_code",
   { data_type => "text", is_nullable => 1 },
+  "email_text",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("response_templates_body_id_title_key", ["body_id", "title"]);

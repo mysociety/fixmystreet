@@ -333,7 +333,7 @@ sub _add_confirmed_update {
         );
 
         my $template = $problem->response_template_for('confirmed', 'dummy', '', '');
-        my $description = $updates->comment_text_for_request($template, {}, $problem);
+        my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
         next unless $description;
 
         my $request = {
@@ -343,6 +343,7 @@ sub _add_confirmed_update {
             # which uses current_timestamp (and thus microseconds) whilst this update
             # is rounded down to the nearest second
             comment_time => DateTime->now->add( seconds => 1 ),
+            email_text => $email_text,
             status => 'open',
             description => $description,
         };

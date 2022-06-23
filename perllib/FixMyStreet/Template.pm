@@ -190,13 +190,14 @@ it all to text.
 
 sub email_sanitize_text : Fn('email_sanitize_text') {
     my $update = shift;
+    my $column = shift;
 
-    my $text = $update->{item_text};
+    my $text = $column ? $update->{$column} : $update->{item_text};
     my $extra = $update->{item_extra};
     utf8::encode($extra) if $extra;
     $extra = $extra ? RABX::wire_rd(new IO::String($extra)) : {};
 
-    my $staff = $extra->{is_superuser} || $extra->{is_body_user};
+    my $staff = $extra->{is_superuser} || $extra->{is_body_user} || $column;
 
     return $text unless $staff;
 
@@ -250,13 +251,14 @@ in updates from staff/superusers.
 
 sub email_sanitize_html : Fn('email_sanitize_html') {
     my $update = shift;
+    my $column = shift;
 
-    my $text = $update->{item_text};
+    my $text = $column ? $update->{$column} : $update->{item_text};
     my $extra = $update->{item_extra};
     utf8::encode($extra) if $extra;
     $extra = $extra ? RABX::wire_rd(new IO::String($extra)) : {};
 
-    my $staff = $extra->{is_superuser} || $extra->{is_body_user};
+    my $staff = $extra->{is_superuser} || $extra->{is_body_user} || $column;
 
     return _staff_html_markup($text, $staff);
 }

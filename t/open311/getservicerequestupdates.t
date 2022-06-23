@@ -32,7 +32,7 @@ my %bodies = (
         endpoint => 'endpoint',
         comment_user_id => $user->id,
         blank_updates_permitted => 1,
-        extra => { cobrand => 'bromley' } 
+        extra => { cobrand => 'bromley' }
     }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );
@@ -53,6 +53,7 @@ my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
 my $response_template = $bodies{2482}->response_templates->create({
     title => "investigating template",
     text => "We are investigating this report.",
+    email_text => "Thank you - we're looking into this now",
     auto_response => 1,
     state => "investigating"
 });
@@ -710,7 +711,7 @@ subtest 'using start and end date' => sub {
     my $end_dt = $start_dt->clone;
     $start_dt->subtract( days => 1 );
 
-    my $update = Open311::GetServiceRequestUpdates->new( 
+    my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
         start_date => $start_dt,
         end_date => $end_dt,
@@ -1019,47 +1020,71 @@ subtest 'check that external_status_code is stored correctly' => sub {
     is $problem->get_extra_metadata('external_status_code'), '', "external status code unset";
 };
 
-subtest 'check that external_status_code triggers auto-responses' => sub {
-    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
-    <service_requests_updates>
-    <request_update>
-    <update_id>638344</update_id>
-    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
-    <status>open</status>
-    <description></description>
-    <updated_datetime>UPDATED_DATETIME</updated_datetime>
-    <external_status_code>060</external_status_code>
-    </request_update>
-    </service_requests_updates>
+for my $test (
+        {
+            template_options => {
+                title => "Acknowledgement",
+                text => "Thank you for your report. We will provide an update within 24 hours.",
+                email_text => "Thank you for your report. This is the email text template text.",
+                auto_response => 1,
+                state => '',
+                external_status_code => "060"
+            },
+            result => "Thank you for your report. This is the email text template text.",
+            test_comment => 'Template email_text attached to comment'
+        },
+        {
+            template_options => {
+                title => "Acknowledgement",
+                text => "Thank you for your report. We will provide an update within 24 hours.",
+                auto_response => 1,
+                state => '',
+                external_status_code => "060"
+            },
+            result => undef,
+            test_comment => 'No template email_text attached to comment'
+        },
+) {
+    subtest 'check that external_status_code triggers auto-responses' => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638344</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <status>open</status>
+        <description></description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        <external_status_code>060</external_status_code>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        my $response_template = $bodies{2482}->response_templates->create($test->{ template_options });
+        $problem->comments->delete;
+        $problem->set_extra_metadata('external_status_code', '');
+        $problem->update;
+
+        $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $bodies{2482},
+        );
+
+        $update->process_body;
+
+        $problem->discard_changes;
+
+        is $problem->comments->count, 1, 'one comment after fetching updates';
+
+        is $problem->comments->first->text, "Thank you for your report. We will provide an update within 24 hours.", "correct external status code on first comment";
+        is $problem->comments->first->private_email_text, $test->{ result }, $test->{ test_comment };
+        $response_template->delete;
     };
-
-    my $response_template = $bodies{2482}->response_templates->create({
-        title => "Acknowledgement",
-        text => "Thank you for your report. We will provide an update within 24 hours.",
-        auto_response => 1,
-        state => '',
-        external_status_code => "060"
-    });
-
-    $problem->comments->delete;
-
-    $requests_xml =~ s/UPDATED_DATETIME/$dt/;
-
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
-    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
-
-    my $update = Open311::GetServiceRequestUpdates->new(
-        system_user => $user,
-        current_open311 => $o,
-        current_body => $bodies{2482},
-    );
-
-    $update->process_body;
-
-    $problem->discard_changes;
-    is $problem->comments->count, 1, 'one comment after fetching updates';
-
-    is $problem->comments->first->text, "Thank you for your report. We will provide an update within 24 hours.", "correct external status code on first comment";
 };
 
 subtest 'check that no external_status_code and no state change does not trigger incorrect template' => sub {

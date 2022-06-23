@@ -56,7 +56,58 @@ subtest "test resending does not leave another initial auto-update" => sub {
     $report->discard_changes;
     $report->update({ whensent => undef });
     FixMyStreet::Script::Reports::send(0, 0, 1);
-    is +FixMyStreet::DB->resultset('Comment')->count, 1;
+    my $comments = FixMyStreet::DB->resultset('Comment');
+    is $comments->count, 1;
+    $comments->delete;
+    $report->delete;
+};
+
+$template->update({ email_text => 'Thanks for your report.
+
+This is the email <a href="https://google.com">alternative</a>.',
+});
+
+subtest "test report creation with initial auto-update and alternative email text" => sub {
+
+    my $report = make_report();
+    my $report_id = $report->id;
+    $mech->clear_emails_ok;
+
+    my $user3 = $mech->log_in_ok('test-3@example.com');
+    $mech->log_in_ok($user3->email);
+    $mech->get_ok("/report/$report_id");
+    $mech->submit_form_ok({ button => 'alert', with_fields => { type => 'updates' } });
+    $mech->log_out_ok;
+
+    FixMyStreet::Script::Alerts::send_updates();
+
+    my @emails = $mech->get_email;
+
+    is scalar @emails, 2, 'Two alerts sent';
+
+    my ($email_for_reporter) = grep { $_->header('To') =~ /test-2/ } @emails;
+    my ($email_for_subscriber) = grep { $_->header('To') =~ /test-3/ } @emails;
+
+    is $mech->get_text_body_from_email($email_for_subscriber) =~ /Thanks for your report. We will investigate within 5 working days./, 1, "Text template sent to subscriber";
+    is $mech->get_text_body_from_email($email_for_reporter) =~ /This is the email alternative \[https:\/\/google.com\]/, 1, "Email template sent to reporter";
+    is $mech->get_html_body_from_email($email_for_reporter) =~ /<p style="margin: 0 0 16px 0;">\r\nThis is the email <a href\="https:\/\/google\.com">alternative<\/a>.<\/p>/, 1, "Email template text in paragraphs";
+
+    my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, is_superuser => 1);
+    $mech->log_in_ok($counciluser->email);
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains('This is the email ', "Extra template email text displayed");
+    my $update_id = $report->comments->first->id;
+    $mech->get_ok("/admin/update_edit/$update_id");
+    $mech->content_contains("Template email response:", "Template email input present");
+    $mech->content_contains("This is the email ", "Template email input populated");
+    $report->comments->first->delete;
+    $update_id = $mech->create_comment_for_problem($report, $comment_user, 'User', 'Non-template update', 0, 'confirmed', 'confirmed')->id;
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_contains("Non-template update", 'Standard update text visible');
+    $mech->content_lacks("Template email response:", 'Template email munged text not added');
+    $mech->get_ok("/admin/update_edit/$update_id");
+    $mech->content_contains("Text:", 'Text box shown for standard update');
+    $mech->content_lacks("Template email response:", 'Email text box not shown for standard update');
 };
 
 done_testing;

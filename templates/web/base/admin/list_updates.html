@@ -39,7 +39,12 @@
         </td>
     </tr>
     <tr>
-        <td colspan=5>[% update.text | html %]</td>
+        <td colspan=5>[% update.text | html %]
+        [% IF update.private_email_text %]
+            <hr />
+            [% loc('Template email response:') %] [% update.private_email_text | html %]
+        [% END %]
+        </td>
     </tr>
 [% END -%]
 </table>

@@ -150,6 +150,7 @@ sub find_problem {
 
 sub process_update {
     my ($self, $request, $p) = @_;
+
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
 
@@ -161,7 +162,10 @@ sub process_update {
     my $template = $p->response_template_for(
         $state, $old_state, $external_status_code, $old_external_status_code
     );
-    my $text = $self->comment_text_for_request($template, $request, $p);
+    my ($text, $email_text) = $self->comment_text_for_request($template, $request, $p);
+    if (!$email_text && $request->{email_text}) {
+        $email_text = $request->{email_text};
+    };
     my $comment = $self->schema->resultset('Comment')->new(
         {
             problem => $p,
@@ -171,6 +175,7 @@ sub process_update {
             text => $text,
             confirmed => $request->{comment_time},
             created => $request->{comment_time},
+            private_email_text => $email_text,
         }
     );
 
@@ -265,22 +270,23 @@ sub process_update {
 sub comment_text_for_request {
     my ($self, $template, $request, $problem) = @_;
 
+    my $template_email_text = $template->email_text if $template;
     $template = $template->text if $template;
 
     my $desc = $request->{description} || '';
     if ($desc && (!$template || ($template !~ /\{\{description}}/ && !$request->{prefer_template}))) {
-        return $desc;
+        return ($desc, undef);
     }
 
     if ($template) {
         $template =~ s/\{\{description}}/$desc/;
-        return $template;
+        return ($template, $template_email_text);
     }
 
-    return "" if $self->blank_updates_permitted;
+    return ("", undef) if $self->blank_updates_permitted;
 
     print STDERR "Couldn't determine update text for $request->{update_id} (report " . $problem->id . ")\n";
-    return "";
+    return ("", undef);
 }
 
 1;

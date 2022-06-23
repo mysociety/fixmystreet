@@ -13,6 +13,11 @@
 <li><label for='detail'>[% loc('Text:') %]</label>
 <textarea class="form-control" name='text' id='text' cols=60 rows=10>[% update.text | html %]</textarea></li>
 
+[% IF update.private_email_text %]
+<li><label for='email_detail'>[% loc('Template email response:') %]</label>
+<textarea class='form-control' name='email_detail' id='email_detail' cols=60 rows=10 readonly>[% update.private_email_text | html %]</textarea></li>
+[% END %]
+
 <li><label for="anonymous">[% loc('Anonymous:') %]</label>
 <select class="form-control" name="anonymous" id="anonymous">
 <option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>

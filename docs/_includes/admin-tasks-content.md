@@ -872,6 +872,12 @@ will automatically be added as a first update to any new report created that
 matches the template (ie. in the relevant category if assigned). This lets
 you give e.g. estimated timescales or other useful information up front.
 
+If you enter text in the ‘Text for email alert field’, the template text will update
+the report on the website and the email text will be sent to the user if they have
+opted into alerts.
+
+
+
 #### Editing or deleting a template
 
 Click on ‘Templates’ in the admin menu. You will see a table of existing templates. Click on ‘Edit’

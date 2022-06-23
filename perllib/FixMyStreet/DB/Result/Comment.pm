@@ -72,6 +72,8 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
   "send_state",
   { data_type => "text", default_value => "unprocessed", is_nullable => 0 },
+  "private_email_text",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(

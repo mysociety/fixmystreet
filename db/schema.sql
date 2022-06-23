@@ -368,7 +368,8 @@ create table comment (
     send_fail_count integer not null default 0,
     send_fail_reason text,
     send_fail_timestamp timestamp,
-    whensent timestamp
+    whensent timestamp,
+    private_email_text text
 );
 
 create index comment_user_id_idx on comment(user_id);
@@ -532,6 +533,7 @@ create table response_templates (
     body_id int references body(id) not null,
     title text not null,
     text text not null,
+    email_text text,
     created timestamp not null default current_timestamp,
     auto_response boolean NOT NULL DEFAULT 'f',
     state text,

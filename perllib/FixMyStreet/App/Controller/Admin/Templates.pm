@@ -98,7 +98,12 @@ sub edit : Path : Args(2) {
                 $c->stash->{errors}->{title} = _("There is already a template with that title.");
             }
 
+            if ($c->get_param('email') && !$c->get_param('text') ) {
+                $c->stash->{errors}->{email_text} = _("There must be template text if there is alternative email text.");
+            };
             $template->text( $c->get_param('text') );
+            $template->email_text( $c->get_param('email') || '');
+
             $template->state( $c->get_param('state') );
 
             my $ext_code = $c->cobrand->call_hook('admin_templates_external_status_code_hook');

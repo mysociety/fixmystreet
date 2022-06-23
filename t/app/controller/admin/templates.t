@@ -328,6 +328,27 @@ subtest "templates that set state and external_status_code can't be added" => su
     is $oxfordshire->response_templates->count, 0, "Invalid response template wasn't added";
 };
 
+subtest "templates that set private email text but not public text can't be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    my $fields = {
+        title => "Report marked fixed - all cats",
+        text => "",
+        email => "Thank you for your report. This problems has been fixed.",
+        auto_response => 'on',
+        state => 'fixed - council',
+        external_status_code => '100',
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
+    $mech->content_contains( 'Please correct the errors below' );
+    $mech->content_contains( 'There must be template text if there is alternative email text.' );
+
+    is $oxfordshire->response_templates->count, 0, "Invalid response template wasn't added";
+};
+
 subtest "category groups are shown" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
