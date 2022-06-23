@@ -39,6 +39,8 @@ $border-radius: 25px;
 //way to spacious for page with no much elements.
 $container-max-width: 1024px;
 
+$dropzone-button-text: $white;
+
 @mixin kingston-form-input($margin: 0.5em 0, $padding: 5px) {
     margin-right: 5px;
     padding: $padding;
