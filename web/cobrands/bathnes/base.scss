@@ -8,6 +8,15 @@
 @import "pattern-lib/navigation";
 @import "pattern-lib/footer";
 
+// Links
+
+a, .fake-link {
+    &:focus {
+        background-color: $bathnes-yellow;
+        outline: 3px solid $bathnes-yellow;
+    }
+}
+
 // Header
 
 #site-header {
