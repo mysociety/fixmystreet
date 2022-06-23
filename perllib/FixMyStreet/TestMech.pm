@@ -651,12 +651,16 @@ sub create_contact_ok {
 }
 
 sub create_body_ok {
-    my ( $self, $area_id, $name, $params ) = @_;
+    my ( $self, $area_id, $name, $params, $extra ) = @_;
 
     $params->{name} = $name;
 
     my $body = FixMyStreet::DB->resultset('Body');
     $body = $body->find_or_create( $params );
+    if ($extra) {
+        $body->extra($extra);
+        $body->update;
+    }
     ok $body, "found/created body $name";
 
     $body->body_areas->delete;

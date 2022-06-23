@@ -30,7 +30,7 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
 };
-my $isleofwight = $mech->create_body_ok(2636, 'Isle of Wight Council', $params);
+my $isleofwight = $mech->create_body_ok(2636, 'Isle of Wight Council', $params, { cobrand => 'isleofwight' });
 my $contact = $mech->create_contact_ok(
     body_id => $isleofwight->id,
     category => 'Potholes',

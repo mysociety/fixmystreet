@@ -16,12 +16,6 @@ sub hide_areas_on_reports { 1 }
 
 sub all_reports_single_body { { name => 'National Highways' } }
 
-sub body {
-    my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->search({ name => 'National Highways' })->first;
-    return $body;
-}
-
 # Copying of functions from UKCouncils that are needed here also - factor out to a role of some sort?
 sub cut_off_date { '2020-11-09' }
 sub problems_restriction { FixMyStreet::Cobrand::UKCouncils::problems_restriction($_[0], $_[1]) }

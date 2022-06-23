@@ -15,7 +15,7 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
 };
-my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
+my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
 my $contact = $mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );

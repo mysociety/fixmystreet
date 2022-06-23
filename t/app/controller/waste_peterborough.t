@@ -21,7 +21,7 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
 };
-my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
+my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });

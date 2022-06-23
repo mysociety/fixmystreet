@@ -12,7 +12,7 @@ my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 $oxfordshireuser->user_body_permissions->create({ body => $oxfordshire, permission_type => 'category_edit' });
 

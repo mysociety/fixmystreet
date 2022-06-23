@@ -16,7 +16,7 @@ $cobrand->mock('lookup_site_code', sub {
 });
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' }, { cobrand => 'westminster' });
 my $superuser = $mech->create_user_ok(
     'superuser@example.com',
     name => 'Test Superuser',
