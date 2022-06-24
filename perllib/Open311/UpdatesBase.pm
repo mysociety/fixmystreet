@@ -158,16 +158,17 @@ sub process_update {
     my $external_status_code = $request->{external_status_code} || '';
     my $customer_reference = $request->{customer_reference} || '';
     my $old_external_status_code = $p->get_extra_metadata('external_status_code') || '';
+    my $template = $p->response_template_for(
+        $state, $old_state, $external_status_code, $old_external_status_code
+    );
+    my $text = $self->comment_text_for_request($template, $request, $p);
     my $comment = $self->schema->resultset('Comment')->new(
         {
             problem => $p,
             user => $self->system_user,
             external_id => $request->{update_id},
             send_state => 'processed',
-            text => $self->comment_text_for_request(
-                $request, $p, $state, $old_state,
-                $external_status_code, $old_external_status_code
-            ),
+            text => $text,
             confirmed => $request->{comment_time},
             created => $request->{comment_time},
         }
@@ -262,34 +263,9 @@ sub process_update {
 }
 
 sub comment_text_for_request {
-    my ($self, $request, $problem, $state, $old_state,
-        $ext_code, $old_ext_code) = @_;
+    my ($self, $template, $request, $problem) = @_;
 
-    # Response templates are only triggered if the state/external status has changed.
-    # And treat any fixed state as fixed.
-    my $state_changed = $state ne $old_state
-        && !( $problem->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} );
-    my $ext_code_changed = $ext_code && $ext_code ne $old_ext_code;
-    my $template;
-    if ($state_changed || $ext_code_changed) {
-        my $order;
-        my $state_params = {};
-        if ($state_changed) {
-            $state_params->{'me.state'} = $state;
-        }
-        if ($ext_code_changed) {
-            $state_params->{'me.external_status_code'} = $ext_code;
-            # make sure that empty string/nulls come last.
-            $order = { order_by => \"me.external_status_code DESC NULLS LAST" };
-        };
-
-        if (my $t = $problem->response_templates->search({
-            auto_response => 1,
-            -or => $state_params,
-        }, $order )->first) {
-            $template = $t->text;
-        }
-    }
+    $template = $template->text if $template;
 
     my $desc = $request->{description} || '';
     if ($desc && (!$template || ($template !~ /\{\{description}}/ && !$request->{prefer_template}))) {

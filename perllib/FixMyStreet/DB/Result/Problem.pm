@@ -828,6 +828,35 @@ sub response_templates {
     );
 }
 
+sub response_template_for {
+    my ($self, $state, $old_state, $ext_code, $old_ext_code) = @_;
+
+    # Response templates are only triggered if the state/external status has changed.
+    # And treat any fixed state as fixed.
+    my $state_changed = $state ne $old_state
+        && !( $self->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} );
+    my $ext_code_changed = $ext_code && $ext_code ne $old_ext_code;
+    my $template;
+    if ($state_changed || $ext_code_changed) {
+        my $order;
+        my $state_params = {};
+        if ($state_changed) {
+            $state_params->{'me.state'} = $state;
+        }
+        if ($ext_code_changed) {
+            $state_params->{'me.external_status_code'} = $ext_code;
+            # make sure that empty string/nulls come last.
+            $order = { order_by => \"me.external_status_code DESC NULLS LAST" };
+        };
+
+        $template = $self->response_templates->search({
+            auto_response => 1,
+            -or => $state_params,
+        }, $order )->first;
+    }
+    return $template;
+}
+
 =head2 response_priorities
 
 Returns all ResponsePriorities attached to this problem's category/contact, in
