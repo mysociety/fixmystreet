@@ -388,6 +388,14 @@ sub munge_contacts_to_bodies {
     FixMyStreet::Cobrand::Buckinghamshire::munge_contacts_to_bodies($self, $contacts, $report);
 }
 
+sub post_report_sent {
+    my ($self, $report) = @_;
+
+    # Run Buckinghamshire-specific code
+    my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
+    $bucks->post_report_sent($report);
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
