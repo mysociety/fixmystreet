@@ -281,21 +281,6 @@ with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Translatable',
      'FixMyStreet::Roles::PhotoSet';
 
-before update => sub {
-    my $self = shift;
-
-    # Force another lookup of land type if lat or lon have changed (currently
-    # only for Peterborough)
-    my %dirty_columns = $self->get_dirty_columns;
-
-    if (   exists $dirty_columns{longitude}
-        || exists $dirty_columns{latitude} )
-    {
-        # TODO What if no cobrand_logged?
-        $self->get_cobrand_logged->land_type_for_problem( $self, 1 );
-    }
-};
-
 =head2
 
     @states = FixMyStreet::DB::Problem::open_states();

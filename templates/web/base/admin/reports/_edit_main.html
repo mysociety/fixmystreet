@@ -30,15 +30,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</small>
 </li>
 
-[% # Peterborough staff only %]
-[% IF c.cobrand.moniker == 'peterborough' && c.user_exists && (c.user.from_body || c.user.is_superuser) %]
-  [% land_type = c.cobrand.land_type_for_problem(problem); IF land_type %]
-  <li>
-      [% loc('Land:') %]
-      [% land_type.ucfirst %]
-  </li>
-  [% END %]
-[% END %]
+[% TRY %][% INCLUDE 'land_type.html' admin_page = 1 %][% CATCH file %][% END %]
 
 <li>[% loc('Bodies') %]:
   [% IF problem.bodies_str %]
