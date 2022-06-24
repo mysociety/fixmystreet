@@ -163,6 +163,21 @@ sub report_new_munge_before_insert {
     $report->category('Flytipping (off-road)');
 }
 
+sub post_report_sent {
+    my ($self, $report) = @_;
+
+    my @parishes = $self->parish_bodies->all;
+    my @parish_ids = map { $_->id } @parishes;
+
+    foreach my $body_id (@{$report->bodies_str_ids}) {
+        if (grep { $body_id == $_ } @parish_ids) {
+            # Report is to a Bucks parish, mark as internal referral by default
+            $report->state('internal referral');
+            $report->update;
+        }
+    }
+}
+
 sub filter_report_description {
     my ($self, $description) = @_;
 
