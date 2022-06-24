@@ -7,6 +7,7 @@ use warnings;
 use Integrations::Bartec;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
+use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Utils;
 
@@ -38,9 +39,22 @@ sub disambiguate_location {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    my $land_type = $self->land_type_for_problem($p);
-    return 'blue' if $land_type eq 'public';
-    return 'orange' if $land_type eq 'private';
+
+    my $c = $self->{c};
+    my $is_staff
+        = $c
+        && $c->user_exists
+        && (
+            ( $c->user->from_body && $c->user->from_body->name eq council_name() )
+            || $c->user->is_superuser
+        );
+
+    if ($is_staff) {
+        my $land_type = $self->land_type_for_problem($p);
+        return 'blue'   if $land_type eq 'public';
+        return 'orange' if $land_type eq 'private';
+    }
+
     return 'yellow';
 }
 
@@ -139,37 +153,33 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params);
 };
 
-# Stores land_type in extra_metadata if not previously stored, or update
-# flag is passed. For flytipping & graffiti only.
+# Looks up & sets land_type in extra_metadata if not previously set, or
+# lat or lon have been changed. For flytipping & graffiti only.
 sub land_type_for_problem {
-    my ($self, $problem, $update) = @_;
+    my ( $self, $problem ) = @_;
 
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
-    return '' unless $flytipping_cats{$problem->category};
+    return '' unless $flytipping_cats{ $problem->category };
 
+    my %dirty_columns = $problem->get_dirty_columns;
     my $land_type;
-    unless ($update) {
-        $land_type = $problem->get_extra_metadata('land_type');
-        return $land_type if defined $land_type;
-    }
+    $land_type = $problem->get_extra_metadata('land_type')
+        if !exists $dirty_columns{longitude}
+        && !exists $dirty_columns{latitude};
 
-    # Perform lookup with URLs if land_type not yet stored, or update flag
-    # has been provided
-    my ($x, $y) = Utils::convert_latlon_to_en(
-        $problem->latitude,
-        $problem->longitude,
-        'G'
-    );
+    return $land_type if defined $land_type;
+
+    my ( $x, $y )
+        = Utils::convert_latlon_to_en( $problem->latitude,
+        $problem->longitude, 'G' );
 
     # Council land
     my $features = $self->_fetch_features(
-        {
-            type => 'arcgis',
-            url => 'https://peterborough.assets/4/query?',
+        {   type   => 'arcgis',
+            url    => 'https://peterborough.assets/4/query?',
             buffer => 1,
         },
-        $x,
-        $y,
+        $x, $y,
     );
 
     $land_type = 'public' if $features && @$features;
@@ -177,13 +187,11 @@ sub land_type_for_problem {
     unless ($land_type) {
         # Leased land - count as 'private' (i.e. not dealt with in Bartec)
         $features = $self->_fetch_features(
-            {
-                type => 'arcgis',
-                url => 'https://peterborough.assets/3/query?',
+            {   type   => 'arcgis',
+                url    => 'https://peterborough.assets/3/query?',
                 buffer => 1,
             },
-            $x,
-            $y,
+            $x, $y,
         );
 
         $land_type = 'private' if $features && @$features;
@@ -192,13 +200,11 @@ sub land_type_for_problem {
     unless ($land_type) {
         # Adopted road - count as 'public'
         $features = $self->_fetch_features(
-            {
-                type => 'arcgis',
-                url => 'https://peterborough.assets/7/query?',
+            {   type   => 'arcgis',
+                url    => 'https://peterborough.assets/7/query?',
                 buffer => 1,
             },
-            $x,
-            $y,
+            $x, $y,
         );
 
         $land_type = 'public' if $features && @$features;
@@ -206,7 +212,24 @@ sub land_type_for_problem {
 
     $land_type = 'private' unless $land_type;
 
-    $problem->set_extra_metadata( land_type => $land_type );
+    # We want to save the land type on extra_metadata, but need to make sure
+    # we don't save other fields that may have been changed on the original
+    # problem outside this method. So we fetch a fresh version of the problem
+    # from the DB and update the extra_metadata on that.
+    my $problem_clean = FixMyStreet::DB->resultset('Problem')
+        ->find( { id => $problem->id } );
+
+    if ( $problem_clean ) {
+        $problem_clean->set_extra_metadata( land_type => $land_type );
+        $problem_clean->update;
+    }
+    else {
+        # Ideally, the caller should provide a problem that already
+        # exists in the DB. But in case it doesn't, just set
+        # extra_metadata on the problem object. In this case, we leave it to
+        # the caller to save to the DB.
+        $problem->set_extra_metadata( land_type => $land_type );
+    }
 
     return $land_type;
 }

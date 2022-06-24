@@ -42,15 +42,7 @@
             [% problem.nearest_address() %]
         </p>
         [% END %]
-        [% # Peterborough staff only %]
-        [% IF c.cobrand.moniker == 'peterborough' && c.user_exists && (c.user.from_body || c.user.is_superuser) %]
-          [% land_type = c.cobrand.land_type_for_problem(problem); IF land_type %]
-          <p>
-              <strong>[% loc('Land:') %]</strong>
-              [% land_type.ucfirst %]
-          </p>
-          [% END %]
-        [% END %]
+        [% TRY %][% INCLUDE 'land_type.html' %][% CATCH file %][% END %]
         <p>
           <a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
         </p>
