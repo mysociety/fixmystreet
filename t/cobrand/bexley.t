@@ -357,8 +357,8 @@ EOF
     is $cobrand->_is_out_of_hours(), 1, 'out of hours at weekends';
     set_fixed_time('2019-12-25T12:00:00Z');
     is $cobrand->_is_out_of_hours(), 1, 'out of hours on bank holiday';
-    set_fixed_time('2021-12-24T12:00:00Z');
-    is $cobrand->_is_out_of_hours(), 1, 'out of hours on Christmas Eve 2021';
+    set_fixed_time('2022-12-28T12:00:00Z');
+    is $cobrand->_is_out_of_hours(), 1, 'out of hours on special day 2022';
 };
 
 
