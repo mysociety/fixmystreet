@@ -134,9 +134,11 @@ sub pay {
                     'scpbase:country' => $args->{country},
                     'scpbase:postcode' => $args->{postcode},
                 ),
-                'scpbase:contact' => {
-                    'scpbase:email' => $args->{email},
-                }
+                $args->{email} ? (
+                    'scpbase:contact' => {
+                        'scpbase:email' => $args->{email},
+                    }
+                ) : (),
             ),
         },
         'sale' => ixhash(
