@@ -56,6 +56,8 @@ $transport->mock(send_receive => sub {
 
          my ($method) = ( $args{envelope} =~ /Body><(\w*)/ );
 
+         $sent{$method} = $args{envelope};
+
         my $action = \&{ $method };
         my $resp = $action->(%args);
         return gen_full_response( $resp );
@@ -87,6 +89,24 @@ subtest "check get redirect" => sub {
 
     is $res->{transactionState}, "COMPLETE", 'transaction complete';
     is $res->{invokeResult}->{redirectUrl}, 'http://example.org/redirect', 'got redirect';
+};
+
+subtest "check field length" => sub {
+    my $res = $integration->pay({
+        returnUrl => 'http://example.org/return',
+        backUrl => 'http://example.org/back',
+        ref => time(),
+        request_id => time(),
+        description => 'This is a test',
+        amount => '1000',
+        name => "This is a name that is more than 50 characters long XXX",
+        address1 => "This is address1 that is more than 50 characters long XXX",
+        address2 => "This is address2 that is more than 50 characters long XXX",
+    });
+
+    ok $sent{scpSimpleInvokeRequest} =~ />This is a name that is more than 50 characters lon</, "name truncated";
+    ok $sent{scpSimpleInvokeRequest} =~ />This is address1 that is more than 50 characters l</, "address1 truncated";
+    ok $sent{scpSimpleInvokeRequest} =~ />This is address2 that is more than 50 characters l</, "address2 truncated";
 };
 
 

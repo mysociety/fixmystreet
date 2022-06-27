@@ -80,6 +80,10 @@ sub pay {
     my $credentials = $self->credentials($args);
     my $entry_method = $args->{staff} ? 'CNP' : 'ECOM';
 
+    for my $field( qw/name address1 address2/ ) {
+        $args->{$field} = substr($args->{$field}, 0, 50) if $args->{$field};
+    }
+
     my @items;
     my $total = 0;
     foreach (@{$args->{items}}) {
