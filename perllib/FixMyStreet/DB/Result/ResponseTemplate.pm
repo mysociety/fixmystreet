@@ -63,5 +63,28 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->many_to_many( contacts => 'contact_response_templates', 'contact' );
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+use Utils;
+
+# Trim whitespace for external_status_code
+
+sub new {
+    my ( $self, $attrs ) = @_;
+
+    $attrs->{external_status_code}
+        = Utils::trim_text( $attrs->{external_status_code} )
+        if $attrs->{external_status_code};
+
+    return $self->next::method($attrs);
+}
+
+sub set_column {
+    my ( $self, $column, $new_value ) = @_;
+
+    if ( $column eq 'external_status_code' ) {
+        $new_value = Utils::trim_text($new_value);
+    }
+
+    $self->next::method( $column, $new_value );
+};
+
 1;
