@@ -497,6 +497,25 @@ subtest 'All reports pages for parishes' => sub {
     is $mech->uri->path, '/reports/Adstock';
 };
 
+subtest 'Reports to parishes are closed by default' => sub {
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test Dirty signs report",
+            detail => 'Test report details.',
+            category => 'Dirty signs',
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+
+    FixMyStreet::Script::Reports::send();
+
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test Dirty signs report', 'Got the correct report';
+    ok $report->is_closed, 'parish report is automatically marked as closed';
+};
+
 };
 
 done_testing();
