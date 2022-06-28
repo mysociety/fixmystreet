@@ -48,6 +48,11 @@ sub geocoder_munge_results {
 
 sub on_map_default_status { ('open', 'fixed') }
 
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+    $params->{states}->{'internal referral'} = 1;
+}
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     # updated to match Oxon CC
