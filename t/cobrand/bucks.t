@@ -526,6 +526,9 @@ subtest 'Reports to parishes are closed by default' => sub {
     ok $report, "Found the report";
     is $report->title, 'Test Dirty signs report 2', 'Got the correct report';
     is $report->state, 'internal referral', 'parish report is automatically marked as closed';
+
+    my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
+    like $json->{reports_list}, qr/Test Dirty signs report 2/;
 };
 
 };
