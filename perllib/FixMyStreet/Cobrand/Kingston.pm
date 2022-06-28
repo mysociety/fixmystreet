@@ -733,7 +733,8 @@ sub garden_waste_dd_check_success {
     my ($self, $c) = @_;
 
     # check if the bank details have been verified
-    if ( lc $c->get_param('verificationapplied') eq 'true' ) {
+    my $applied = lc $c->get_param('verificationapplied') || '';
+    if ( $applied eq 'true' ) {
         # and if they have and verification has failed then redirect
         # to the cancelled page
         if ( lc $c->get_param('status') eq 'false') {

@@ -18,9 +18,7 @@
     </div>
   </fieldset>
 
-  [% IF NOT staff_payments_allowed OR c.cobrand.waste_staff_choose_payment_method %]
-  [% PROCESS form override_fields=['payment_method'] %]
-  [% END %]
+  [% PROCESS 'waste/garden/_payment_field.html' %]
 
   [% IF property %]
   <dl class="waste__address">

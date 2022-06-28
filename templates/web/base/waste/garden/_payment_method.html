@@ -1,4 +1,5 @@
 [% IF data.payment_method == 'credit_card' %]Debit or Credit Card
 [%~ ELSIF data.payment_method == 'direct_debit' %]Direct Debit
 [%~ ELSIF data.payment_method == 'cheque' %]Cheque
+    [% IF data.cheque_reference %](reference [% data.cheque_reference %])[% END %]
 [%~ END %]

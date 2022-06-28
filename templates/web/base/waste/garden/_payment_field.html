@@ -1,0 +1,13 @@
+[% IF NOT staff_payments_allowed OR c.cobrand.waste_staff_choose_payment_method %]
+
+  [% PROCESS form override_fields=['payment_method', 'cheque_reference'] %]
+
+<script nonce="[% csp_nonce %]">
+(function(){
+    var id;
+    id = document.getElementById('form-cheque_reference-row');
+    if (id) { id.className += ' hidden-js'; }
+})();
+</script>
+
+[% END %]

@@ -1182,7 +1182,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
-        $mech->content_lacks('cheque');
+        $mech->content_lacks('"cheque"');
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
             name => 'Test McTest',
@@ -1601,6 +1601,10 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
+        $mech->content_contains("Cheque reference field is required");
+        $mech->submit_form_ok({ with_fields => {
+            cheque_reference => 'Cheque123',
+        } });
         $mech->content_contains('£20.00');
         $mech->content_contains('1 bin');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1610,6 +1614,7 @@ FixMyStreet::override_config {
 
         check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');
         is $report->get_extra_field_value('LastPayMethod'), 4, 'correct echo payment method field';
+        is $report->get_extra_metadata('chequeReference'), 'Cheque123', 'cheque reference saved';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
     };
