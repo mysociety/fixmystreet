@@ -501,7 +501,7 @@ subtest 'Reports to parishes are closed by default' => sub {
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
     $mech->submit_form_ok({
         with_fields => {
-            title => "Test Dirty signs report",
+            title => "Test Dirty signs report 2",
             detail => 'Test report details.',
             category => 'Dirty signs',
         }
@@ -512,8 +512,11 @@ subtest 'Reports to parishes are closed by default' => sub {
 
     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
-    is $report->title, 'Test Dirty signs report', 'Got the correct report';
-    ok $report->is_closed, 'parish report is automatically marked as closed';
+    is $report->title, 'Test Dirty signs report 2', 'Got the correct report';
+    is $report->state, 'internal referral', 'parish report is automatically marked as closed';
+
+    my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
+    like $json->{reports_list}, qr/Test Dirty signs report 2/;
 };
 
 };
