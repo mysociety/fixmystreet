@@ -7,7 +7,7 @@
               [% loc('Save with a public update') %]
             </label>
           </p>
-          <div id="public_update_form_fields">
+          <div id="public_update_form_fields"[% ' class="hidden-js"' IF NOT public_update_defaulted %]>
           [% INCLUDE report/form/photo_upload.html %]
           <p>
             <label for="public_update">[% loc('Public update:') %]</label>
