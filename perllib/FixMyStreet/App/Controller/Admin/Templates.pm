@@ -105,7 +105,8 @@ sub edit : Path : Args(2) {
             $ext_code ||= $c->get_param('external_status_code');
             $template->external_status_code($ext_code);
 
-            if ( $template->state && $template->external_status_code ) {
+            # Bucks can set both state and external state for the special 'email-in' templates
+            if ( $template->state && $template->external_status_code && $c->cobrand->moniker ne 'buckinghamshire' ) {
                 $c->stash->{errors} ||= {};
                 $c->stash->{errors}->{state} = _("State and external status code cannot be used simultaneously.");
                 $c->stash->{errors}->{external_status_code} = _("State and external status code cannot be used simultaneously.");

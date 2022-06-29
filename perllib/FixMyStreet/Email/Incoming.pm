@@ -168,10 +168,9 @@ sub handle_non_bounce_to_verp_address {
         print_log('info', "Received non-bounce for alert " . $self->object->id . ", forwarding to support");
         $self->forward_on_to($self->bouncemgr);
     } elsif ($self->type eq 'report') {
-        if ($self->object->to_body_named('Buckinghamshire')) {
-            my $ret = $self->check_for_status_code($self->object);
-            return if $ret;
-        }
+        my $ret = $self->check_for_status_code($self->object);
+        return if $ret;
+
         my $contributed_as = $self->object->get_extra_metadata('contributed_as') || '';
         if ($contributed_as eq 'body' || $contributed_as eq 'anonymous_user') {
             print_log('info', "Received non-bounce for report " . $self->object->id . " to anon report, dropping");
@@ -182,28 +181,41 @@ sub handle_non_bounce_to_verp_address {
     }
 }
 
+# For Bucks only to begin with
 sub check_for_status_code {
     my $self = shift;
     my $head = $self->data->{message}->head();
     my $subject = $head->get("Subject");
-    if (my ($code) = $subject =~ /SC(\d+)/) {
+    if (my ($code) = $subject =~ /SC(\d+)/i) {
+        print_log('info', "Received SC code in subject, updating report");
         my $problem = $self->object;
-        foreach my $body (values %{$problem->bodies}) {
-            my $user = $body->comment_user or next;
-            my $updates = Open311::GetServiceRequestUpdates->new(
-                system_user => $user,
-                current_body => $body,
-                blank_updates_permitted => 1,
-            );
-            my $request = {
-                service_request_id => $problem->id,
-                update_id => $head->get("Message-ID"),
-                comment_time => DateTime->now,
-                status => 'fixed - council',
-                external_status_code => $code,
-            };
-            $updates->process_update($request, $problem);
-        }
+        my $body = FixMyStreet::DB->resultset("Body")->find({ name => 'Buckinghamshire Council' });
+        #foreach my $body (values %{$problem->bodies}) {
+            # TODO If a Bucks parish, set to Bucks instead
+        #}
+        my $user = $body->comment_user or next;
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_body => $body,
+            blank_updates_permitted => 1,
+        );
+        my $templates = FixMyStreet::DB->resultset("ResponseTemplate")->search({
+            body_id => $body->id,
+        });
+        my $template = $templates->search({
+            auto_response => 1,
+            external_status_code => $code,
+        })->first;
+        my $text = $template->text if $template;
+        my $request = {
+            service_request_id => $problem->id,
+            update_id => $head->get("Message-ID"),
+            comment_time => DateTime->now,
+            status => $template->state || 'fixed - council',
+            external_status_code => $code,
+            description => $text,
+        };
+        $updates->process_update($request, $problem);
         return 1;
     }
     return 0;

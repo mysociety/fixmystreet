@@ -1844,7 +1844,8 @@ sub create_related_things : Private {
             blank_updates_permitted => 1,
         );
 
-        my $description = $updates->comment_text_for_request({}, $problem, 'confirmed', 'dummy', '', '');
+        my $template = $problem->response_template_for('confirmed', 'dummy', '', '');
+        my $description = $updates->comment_text_for_request($template, {}, $problem);
         next unless $description;
 
         my $request = {
