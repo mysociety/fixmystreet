@@ -467,6 +467,9 @@ sub _lookup_site_name {
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
+    # Do not want the user's email to be the Reply-To
+    delete $params->{'Reply-To'};
+
     if ($row->category eq 'Claim') {
         # Update subject
         my $type = $row->get_extra_metadata('what');

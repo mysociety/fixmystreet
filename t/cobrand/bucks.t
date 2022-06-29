@@ -48,7 +48,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         open311_email => {
             buckinghamshire => {
-                flytipping => 'flytipping@example.org',
+                flytipping => 'flytipping@example.com',
                 flood => 'floods@example.org',
             }
         },
@@ -89,7 +89,8 @@ my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
 subtest 'flytipping on road sent to extra email' => sub {
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    is $email[0]->header('To'), 'TfB <flytipping@example.org>';
+    is $email[0]->header('To'), 'TfB <flytipping@example.com>';
+    is $email[0]->header('Reply-To'), undef, 'No reply-to header';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
     $report->discard_changes;
     is $report->external_id, 248, 'Report has right external ID';
