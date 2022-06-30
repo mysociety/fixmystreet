@@ -38,11 +38,24 @@
     [% IF permissions.report_edit_category OR permissions.report_inspect OR permissions.triage %]
       <div class="inspect-section">
         <p>
-            <strong>Holding category:</strong> [% problem.category %]
+            <strong>
+                [%~ IF c.cobrand.moniker == 'isleofwight' ~%]
+              Holding category:
+                [%~ ELSIF c.cobrand.moniker == 'buckinghamshire' ~%]
+              Current category:
+                [%~ END ~%]
+            </strong>
+            [% problem.category %]
         </p>
 
         <p>
-          <label for="category">CONFIRM Subject</label>
+          <label for="category">
+              [%~ IF c.cobrand.moniker == 'isleofwight' ~%]
+                CONFIRM Subject
+              [%~ ELSIF c.cobrand.moniker == 'buckinghamshire' ~%]
+                New category
+              [%~ END ~%]
+          </label>
           [% PROCESS category_list category_groups=end_groups field_name="category" categories_hash=end_categories category_options=end_options %]
         </p>
 
