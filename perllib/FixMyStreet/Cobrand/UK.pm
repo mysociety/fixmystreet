@@ -358,12 +358,12 @@ sub report_check_for_errors {
 
 =head2 get_body_handler_for_problem
 
-Returns a cobrand for the body that a problem was logged against.
+Returns a cobrand for the body that a problem was sent to.
 
     my $handler = $cobrand->get_body_handler_for_problem($row);
     my $handler = $cobrand_class->get_body_handler_for_problem($row);
 
-If the UK council in bodies_str has a FMS.com cobrand then an instance of that
+If body in bodies_str has a cobrand set in its extra metadata then an instance of that
 cobrand class is returned, otherwise the default FixMyStreet cobrand is used.
 
 =cut
@@ -371,23 +371,15 @@ cobrand class is returned, otherwise the default FixMyStreet cobrand is used.
 sub get_body_handler_for_problem {
     my ($self, $row) = @_;
 
-    if ($row->to_body_named('TfL')) {
-        return FixMyStreet::Cobrand::TfL->new;
-    }
-    if ($row->to_body_named('Thamesmead')) {
-        return FixMyStreet::Cobrand::Thamesmead->new;
-    }
-    if ($row->to_body_named('Northamptonshire Highways')) {
-        return FixMyStreet::Cobrand::Northamptonshire->new;
-    }
     # Do not do anything for National Highways here, as we don't want it to
     # treat this as a cobrand for e.g. submit report emails made on .com
+    my @bodies = grep { $_->name !~ /National Highways/ } values %{$row->bodies};
 
-    my @bodies = values %{$row->bodies};
-    my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|National Highways/ } @bodies;
+    for my $body ( @bodies ) {
+        my $cobrand = $body->get_cobrand_handler;
+        return $cobrand if $cobrand;
+    }
 
-    my $cobrand = FixMyStreet::Cobrand->body_handler(\%areas);
-    return $cobrand if $cobrand;
     return ref $self ? $self : $self->new;
 }
 

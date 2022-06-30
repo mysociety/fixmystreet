@@ -153,21 +153,4 @@ sub exists {
     return 0;
 }
 
-sub body_handler {
-    my ($class, $areas) = @_;
-
-    foreach my $avail ( $class->available_cobrand_classes ) {
-        my $cobrand = $class->get_class_for_moniker($avail->{moniker})->new({});
-        next unless $cobrand->can('council_area_id');
-
-        # The majority of cobrands only cover a single area, but e.g. Northamptonshire
-        # covers multiple so we need to handle that situation.
-        my $council_area_ids = $cobrand->council_area_id;
-        $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
-        foreach (@$council_area_ids) {
-            return $cobrand if $areas->{$_};
-        }
-    }
-}
-
 1;

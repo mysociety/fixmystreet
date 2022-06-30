@@ -339,6 +339,9 @@ FixMyStreet::override_config {
 }, sub {
 
 subtest 'allow anonymous reporting' => sub {
+    $body->discard_changes;
+    $body->set_extra_metadata(cobrand => "anonallowedbycategory");
+    $body->update;
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
         anonymous_allowed => 1,
@@ -347,6 +350,8 @@ subtest 'allow anonymous reporting' => sub {
     $mech->content_contains('Values updated');
     my $contact = $body->contacts->find({ category => 'test category' });
     is $contact->get_extra_metadata('anonymous_allowed'), 1, 'Anonymous reports allowed flag set';
+    $body->unset_extra_metadata('cobrand');
+    $body->update;
 };
 
 };

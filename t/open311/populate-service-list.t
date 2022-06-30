@@ -7,7 +7,7 @@ sub council_area_id { 1 }
 
 package main;
 
-use FixMyStreet::Test;
+use FixMyStreet::TestMech;
 use FixMyStreet::DB;
 use Test::Warn;
 use utf8;
@@ -15,31 +15,17 @@ use utf8;
 use_ok( 'Open311::PopulateServiceList' );
 use_ok( 'Open311' );
 
+my $mech = FixMyStreet::TestMech->new;
 
 my $processor = Open311::PopulateServiceList->new();
 ok $processor, 'created object';
 
-my $body = FixMyStreet::DB->resultset('Body')->create({
-    name => 'Body Numero Uno',
-} );
-$body->body_areas->create({
-    area_id => 1
-} );
+my $body = $mech->create_body_ok(1, 'Body Numero Uno', {}, { cobrand => 'tester' });
 
 my $BROMLEY = 'Bromley Council';
-my $bromley = FixMyStreet::DB->resultset('Body')->create( {
-    name => $BROMLEY,
-} );
-$bromley->body_areas->create({
-    area_id => 2482
-} );
+my $bromley = $mech->create_body_ok(2482, $BROMLEY, {}, { cobrand => 'bromley' });
 
-my $bucks = FixMyStreet::DB->resultset('Body')->create({
-    name => 'Buckinghamshire Council',
-});
-$bucks->body_areas->create({
-    area_id => 163793
-});
+my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
 
 for my $test (
     { desc => 'groups not set for new contacts', enable_groups => 0, groups => 0, delete => 1 },
@@ -1140,7 +1126,11 @@ subtest 'check Bromley skip code' => sub {
 
     is_deeply $contact->get_extra_fields, $extra, 'only non std bromley meta data saved';
 
-    $processor->_current_body( $body );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tester' ],
+    }, sub {
+        $processor->_current_body( $body );
+    };
     Open311->_inject_response('/services/100.xml', $meta_xml);
     $processor->_add_meta_to_contact( $contact );
 
