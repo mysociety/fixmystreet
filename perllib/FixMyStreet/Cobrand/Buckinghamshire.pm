@@ -64,6 +64,25 @@ sub path_to_pin_icons {
 
 sub admin_user_domain { ( 'buckscc.gov.uk', 'buckinghamshire.gov.uk' ) }
 
+sub admin_pages {
+    my $self = shift;
+    my $pages = $self->next::method();
+    $pages->{triage} = [ undef, undef ];
+    return $pages;
+}
+
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Problems}->{triage} = "Triage reports";
+
+    return $perms;
+}
+
+# Assume that any category change means the report should be resent
+sub category_change_force_resend { 1 }
+
 sub send_questionnaires {
     return 0;
 }
