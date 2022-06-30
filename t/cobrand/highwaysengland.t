@@ -46,13 +46,15 @@ my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method 
 $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole', group => 'National Highways');
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'highwaysengland',
+    ALLOWED_COBRANDS => [ 'highwaysengland', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     CONTACT_EMAIL => 'fixmystreet@example.org',
     COBRAND_FEATURES => {
         contact_email => { highwaysengland => 'highwaysengland@example.org' },
     },
 }, sub {
+    ok $mech->host('highwaysengland.example.org');
+
     subtest "check where heard from saved" => sub {
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'M1, J16', } }, "submit location" );
@@ -84,6 +86,22 @@ FixMyStreet::override_config {
         like $body, qr/Heard from: Facebook/, 'where hear included in email';
         like $body, qr/Road: M1/, 'road data included in email';
         like $body, qr/Area: Area 1/, 'area data included in email';
+        unlike $body, qr/Never retype another FixMyStreet report/, 'FMS not mentioned in email';
+    };
+
+    subtest "Reports from FMS cobrand use correct branding in email" => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        ok $report, "Found the report";
+        $report->whensent(undef);
+        $report->cobrand("fixmystreet");
+        $report->update;
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Never retype another FixMyStreet report/, 'FMS template used for email';
     };
 
     my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title');

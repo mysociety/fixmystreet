@@ -208,7 +208,13 @@ e.g.
 
 sub get_cobrand_handler {
     my $self = shift;
-    return FixMyStreet::Cobrand->body_handler($self->areas);
+    my $moniker = $self->get_extra_metadata('cobrand');
+
+    # Need the exists() check because get_class_for_moniker falls back to
+    # returning ::Default which isn't what we want here.
+    return unless $moniker && FixMyStreet::Cobrand->exists($moniker);
+
+    return FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new;
 }
 
 =item

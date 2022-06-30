@@ -40,6 +40,7 @@ my %standard_open311_parameters = (
 test_overrides oxfordshire =>
     {
         body_name => 'Oxfordshire',
+        body_cobrand => 'oxfordshire',
         area_id   => 2237,
         row_data  => {
             postcode => 'OX1 1AA',
@@ -89,6 +90,7 @@ my $bromley_check =
 test_overrides bromley =>
     {
         body_name => 'Bromley',
+        body_cobrand => 'bromley',
         area_id   => 2482,
         row_data  => {
             postcode => 'BR1 1AA',
@@ -107,6 +109,7 @@ test_overrides bromley =>
 test_overrides fixmystreet =>
     {
         body_name => 'Bromley',
+        body_cobrand => 'bromley',
         area_id   => 2482,
         row_data  => {
             postcode => 'BR1 1AA',
@@ -123,6 +126,7 @@ test_overrides fixmystreet =>
 test_overrides greenwich =>
     {
         body_name => 'Greenwich',
+        body_cobrand => 'greenwich',
         area_id   => 2493,
     },
     superhashof({
@@ -138,6 +142,7 @@ test_overrides greenwich =>
 test_overrides hackney =>
     {
         body_name => 'Hackney',
+        body_cobrand => 'hackney',
         area_id   => 2508,
         extra => {
             url => 'http://example.com/1234',
@@ -173,6 +178,7 @@ test_overrides hackney =>
 test_overrides fixmystreet =>
     {
         body_name => 'West Berkshire',
+        body_cobrand => 'westberkshire',
         area_id   => 2619,
         row_data  => {
             postcode => 'RG1 1AA',
@@ -192,6 +198,7 @@ test_overrides fixmystreet =>
 test_overrides fixmystreet =>
     {
         body_name => 'Cheshire East',
+        body_cobrand => 'cheshireeast',
         area_id   => 21069,
         row_data  => {
             postcode => 'CW11 1HZ',
@@ -229,7 +236,9 @@ sub test_overrides {
             my $body = $db->resultset('Body')->find_or_create($params);
             $body->body_areas->find_or_create({ area_id => $input->{area_id} });
             ok $body, "found/created body " . $input->{body_name};
-            $body->update({ can_be_devolved => 1 });
+            $body->set_extra_metadata(cobrand => $input->{body_cobrand});
+            $body->can_be_devolved(1);
+            $body->update;
 
             my $contact = $body->contacts->find_or_create(
                 state => 'confirmed',
