@@ -592,7 +592,7 @@ sub waste_garden_sub_params {
 
     # 2022 renewals need to end in March 2023
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    if ($type && $type == $c->stash->{garden_subs}->{Renew} && $now->ymd("") < '20220701') {
+    if ($type && $type == $c->stash->{garden_subs}->{Renew} && $now->ymd("") < '20220801') {
         $c->set_param('End_Date', '31/03/2023');
     }
 }

@@ -235,9 +235,9 @@ fixmystreet.staff_set_up = {
         var $checkbox = $(this);
         var toggle_public_update = function() {
             if ($checkbox.prop('checked')) {
-                $('#public_update_form_fields').show();
+                $('#public_update_form_fields').removeClass('hidden-js');
             } else {
-                $('#public_update_form_fields').hide();
+                $('#public_update_form_fields').addClass('hidden-js');
             }
         };
         $checkbox.on('change', function() {
