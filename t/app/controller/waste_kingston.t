@@ -1737,6 +1737,32 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($new_report);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
+
+    subtest 'check CSV export' => sub {
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'a user 2',
+            email => 'a_user_2@example.net',
+            payment_method => 'credit_card',
+            current_bins => 1,
+            bins_wanted => 2,
+        }});
+        $mech->content_contains('40.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
+
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_lacks("Garden Subscription\n\n");
+        $mech->content_contains('"a user"');
+        $mech->content_contains(1000000002);
+        $mech->content_contains('a_user@example.net');
+        $mech->content_contains('credit_card,54321,2000,,,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('"a user 2"');
+        $mech->content_contains('a_user_2@example.net');
+        $mech->content_contains('unconfirmed');
+        $mech->content_contains('4000,,1500,26,1,2'); # Fee/fee/fee/bin/current/sub
+    };
 };
 
 sub get_report_from_redirect {

@@ -792,4 +792,58 @@ sub admin_templates_external_status_code_hook {
     return $code;
 }
 
+# Include unconfirmed and hidden reports in CSV export
+sub dashboard_export_include_all_states { 1 }
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->modify_csv_header( Detail => 'Address' );
+
+    $csv->add_csv_columns(
+        uprn => 'UPRN',
+        user_email => 'User Email',
+        user_phone => 'User Phone',
+        payment_method => 'Payment method',
+        payment_reference => 'Payment reference',
+        payment => 'Payment',
+        pro_rata => 'Pro rata payment',
+        admin_fee => 'Admin fee',
+        container => 'Subscription container',
+        current_bins => 'Bin count declared',
+        quantity => 'Subscription quantity',
+    );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email', 'user.phone'],
+        join => 'user',
+    });
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my @fields = @{ $report->get_extra_fields() };
+        my %fields = map { $_->{name} => $_->{value} } @fields;
+
+        my $detail = $report->detail;
+        $detail =~ s/^.*?\n\n//; # Remove waste category
+
+        return {
+            detail => $detail,
+            uprn => $fields{uprn},
+            user_name_display => $report->name,
+            user_email => $report->user->email || '',
+            user_phone => $report->user->phone || '',
+            payment_method => $fields{payment_method} || '',
+            payment_reference => $fields{PaymentCode} || $report->get_extra_metadata('chequeReference') || '',
+            payment => $fields{payment},
+            pro_rata => $fields{pro_rata},
+            admin_fee => $fields{admin_fee},
+            container => $fields{Subscription_Details_Containers},
+            current_bins => $fields{current_containers},
+            quantity => $fields{Subscription_Details_Quantity},
+        };
+    });
+}
+
 1;
