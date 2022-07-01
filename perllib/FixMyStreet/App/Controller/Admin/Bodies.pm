@@ -489,11 +489,11 @@ sub check_body_extras : Private {
     $c->stash->{body_errors} ||= {};
 
     return unless $extras->{cobrand};
-    if ($c->model('DB::Body')->find({
+    if (my $b = $c->model('DB::Body')->find({
         id => { '!=', $c->stash->{body_id} },
         extra => { like => '%T7:cobrand,T' . length($extras->{cobrand}) . ':' . $extras->{cobrand} . '%'},
     })) {
-        $c->stash->{body_errors}->{cobrand} = _('This cobrand is already assigned to another body.');
+        $c->stash->{body_errors}->{cobrand} = _('This cobrand is already assigned to another body: ' . $b->name);
     }
 }
 
