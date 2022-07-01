@@ -227,7 +227,8 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
-# Returns true if the cobrand owns the problem.
+# Returns true if the cobrand owns the problem, i.e. it was sent to the body
+# associated with this cobrand.
 sub owns_problem {
     my ($self, $report) = @_;
     my @bodies;
@@ -238,13 +239,9 @@ sub owns_problem {
     } else { # Object
         @bodies = values %{$report->bodies};
     }
-    # Want to ignore the TfL body that covers London councils, and HE that is all England
-    my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|National Highways/ } @bodies;
 
-    my $council_area_ids = $self->council_area_id;
-    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
-    foreach (@$council_area_ids) {
-        return 1 if $areas{$_};
+    foreach (@bodies) {
+        return 1 if $_->get_extra_metadata('cobrand', '') eq $self->moniker;
     }
 }
 
