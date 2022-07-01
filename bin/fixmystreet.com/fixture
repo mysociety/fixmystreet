@@ -28,6 +28,7 @@ my ($opt, $usage) = describe_options(
     '%c %o',
     [ 'area-id=i', "MapIt area ID to create body for", { required => 1 } ],
     [ 'name:s', "Name of body to use (defaults to MapIt area name)" ],
+    [ 'cobrand:s', "Name of cobrand to assign to body" ],
     [ 'empty', "Empty all tables of the database first" ],
     [ 'commit', "Actually commit changes to the database" ],
     [ 'nonrandom', "Output things in a fixed manner, for testing" ],
@@ -67,6 +68,10 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
     categories => $categories,
     $opt->name ? (name => $opt->name) : (),
 });
+if ($opt->cobrand) {
+    $body->set_extra_metadata(cobrand => $opt->cobrand);
+    $body->update;
+}
 
 say "Created body " . $body->name . " for MapIt area ID " . $opt->area_id . ', categories ' . join(', ', @$categories);
 
@@ -108,28 +113,34 @@ if ($opt->test_fixtures) {
         categories => ['Fallen sign', 'Driver on phone']
     };
     $bodies->{HE} = FixMyStreet::DB::Factory::Body->find_or_create($params);
+    $bodies->{HE}->set_extra_metadata(cobrand => 'highwaysengland');
+    $bodies->{HE}->update;
     my $cats = join(', ', @{$params->{categories}});
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
 
     foreach (
-        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council' },
-        { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council' },
-        { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways' },
-        { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council' },
+        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council', cobrand => 'westminster' },
+        { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council', cobrand => 'bromley' },
+        { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
+        { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting'], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
         { area_id => 2257, categories => ['Flytipping', 'Graffiti'], name => 'Chiltern District Council' },
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
-        { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council' },
-        { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council' },
-        { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council' },
-        { area_id => 2232, categories => ['Damaged/missing cats eye'], name => 'Lincolnshire County Council' },
-        { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council' },
-        { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks', 'Other (TfL)' ], name => 'TfL' },
-        { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council' },
-        { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council' },
-        { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council' },
-        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council' },
+        { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council', cobrand => 'hounslow' },
+        { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council', cobrand => 'hackney' },
+        { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council', cobrand => 'isleofwight' },
+        { area_id => 2232, categories => ['Damaged/missing cats eye'], name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
+        { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council', cobrand => 'peterborough' },
+        { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks', 'Other (TfL)' ], name => 'TfL', cobrand => 'tfl' },
+        { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
+        { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
+        { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council', cobrand => 'shropshire' },
+        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council', cobrand => 'merton' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
+        if ($_->{cobrand}) {
+            $bodies->{$_->{area_id}}->set_extra_metadata(cobrand => $_->{cobrand});
+            $bodies->{$_->{area_id}}->update;
+        }
         my $cats = join(', ', @{$_->{categories}});
         say "Created body $_->{name} for MapIt area ID $_->{area_id}, categories $cats";
         if ($_->{name} eq 'TfL') {
