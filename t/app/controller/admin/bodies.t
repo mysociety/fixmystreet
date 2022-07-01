@@ -15,7 +15,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 $mech->log_in_ok( $superuser->email );
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
-my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
 
 my $user = $mech->create_user_ok('user@example.com', name => 'OCC User', from_body => $body2);
 $user->user_body_permissions->create({ body => $body2, permission_type => 'category_edit' });
@@ -564,9 +564,11 @@ subtest 'check setting cobrand on body' => sub {
         $mech->log_in_ok( $superuser->email );
 
         subtest "superuser can set body's cobrand" => sub {
-            is $body->get_extra_metadata('cobrand'), undef;
+            $body2->discard_changes;
+            $body2->unset_extra_metadata('cobrand');
+            $body2->update;
 
-            $mech->get_ok('/admin/body/' . $body->id);
+            $mech->get_ok('/admin/body/' . $body2->id);
             $mech->content_contains('Select a cobrand');
 
             $mech->form_number(3);
@@ -579,12 +581,12 @@ subtest 'check setting cobrand on body' => sub {
             );
             $mech->content_contains('Values updated');
 
-            $body->discard_changes;
-            is $body->get_extra_metadata('cobrand'), 'oxfordshire';
+            $body2->discard_changes;
+            is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
         };
 
         subtest "superuser can unset body's cobrand" => sub {
-            $mech->get_ok('/admin/body/' . $body->id);
+            $mech->get_ok('/admin/body/' . $body2->id);
             $mech->form_number(3);
             $mech->submit_form_ok(
                 {
@@ -595,8 +597,8 @@ subtest 'check setting cobrand on body' => sub {
             );
             $mech->content_contains('Values updated');
 
-            $body->discard_changes;
-            is $body->get_extra_metadata('cobrand'), ''; # XXX should this actually be unset?
+            $body2->discard_changes;
+            is $body2->get_extra_metadata('cobrand'), '';
         };
 
         subtest "cannot use the same cobrand for multiple bodies" => sub {
@@ -613,10 +615,10 @@ subtest 'check setting cobrand on body' => sub {
                 }
             );
             $mech->content_lacks('Values updated');
-            $mech->content_contains('This cobrand is already assigned to another body.');
+            $mech->content_contains('This cobrand is already assigned to another body: Oxfordshire County Council');
 
             $body->discard_changes;
-            is $body->get_extra_metadata('cobrand'), ''; # XXX should this actually be unset?
+            is $body->get_extra_metadata('cobrand'), undef;
             $body2->discard_changes;
             is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
         };

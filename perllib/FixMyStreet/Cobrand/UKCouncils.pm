@@ -290,7 +290,7 @@ sub admin_allow_user {
     return undef unless defined $user->from_body;
     # Make sure TfL staff can't access other London cobrand admins
     return undef if $user->from_body->name eq 'TfL';
-    return $user->from_body->areas->{$self->council_area_id};
+    return $user->from_body->get_extra_metadata('cobrand', '') eq $self->moniker;
 }
 
 sub admin_show_creation_graph { 0 }

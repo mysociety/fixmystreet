@@ -179,6 +179,8 @@ subtest "Check admin index page redirects" => sub {
         ALLOWED_COBRANDS => [ 'oxfordshireuta' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
+        $oxfordshire->set_extra_metadata(cobrand => 'oxfordshireuta');
+        $oxfordshire->update;
         ok $mech->get('/admin/bodies');
         is $mech->uri->path, '/admin/body/' . $oxfordshire->id, 'body redirects okay';
     };
