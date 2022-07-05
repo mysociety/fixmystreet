@@ -164,10 +164,16 @@ END
     [ 'Cheque reference', 'chequeReference', 1 ],
     [ 'DD reference', 'payerReference', 1 ],
     [ 'SCP reference', 'scpReference', 1 ],
-    [ 'Last payment method', 'LastPayMethod' ],
     [ 'Payment code', 'PaymentCode' ],
     [ 'DD collection date', 'dd_date', 1 ],
 ] %]
+[%
+SET payment_method = problem.get_extra_field_value('LastPayMethod');
+IF payment_method;
+    '<li>Last payment method: ';
+    PROCESS 'waste/garden/_payment_method.html';
+END;
+%]
 </ul>
 
 <ul class="plain-list">
