@@ -4,9 +4,13 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
+var tilma_url = "https://" + wfs_host + "/mapserver/tfl";
+var streetmanager_url = "https://" + wfs_host + "/streetmanager.php";
+
 var defaults = {
     http_options: {
-        url: "https://tilma.mysociety.org/mapserver/tfl",
+        url: tilma_url,
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -128,7 +132,7 @@ function to_ddmmyyyy(date) {
 
 fixmystreet.assets.add(asset_defaults, {
     http_options: {
-        url: "https://tilma.mysociety.org/streetmanager.php",
+        url: streetmanager_url,
         params: {
             points: 1,
             end_date: new Date().toISOString().slice(0, 10)
@@ -285,7 +289,6 @@ function is_a13dbfo_category(category, bodies) {
 
 var red_routes_layer = fixmystreet.assets.add(defaults, {
     http_options: {
-        url: "https://tilma.mysociety.org/mapserver/tfl",
         params: {
             TYPENAME: "RedRoutes"
         }
@@ -330,7 +333,6 @@ if (red_routes_layer) {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
-        url: "https://tilma.staging.mysociety.org/mapserver/tfl",
         params: {
             TYPENAME: "A13TLRN_DBFO"
         }
@@ -349,7 +351,7 @@ fixmystreet.assets.add(defaults, {
             if (fixmystreet.cobrand !== 'tfl') {
                 return;
             }
-            // "Other (TfL)" has a stopper message set in the admin" 
+            // "Other (TfL)" has a stopper message set in the admin"
             $('#js-category-stopper').remove();
             var category = fixmystreet.reporting.selectedCategory().category;
             if (is_a13dbfo_category(category, fixmystreet.bodies)) {
