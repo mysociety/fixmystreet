@@ -1363,7 +1363,13 @@ fixmystreet.message_controller = (function() {
                 responsibility_off(layer, 'road');
             } else {
                 fixmystreet.body_overrides.do_not_send(layer.fixmystreet.body);
+                var selected = fixmystreet.reporting.selectedCategory();
                 if (is_only_body(layer.fixmystreet.body)) {
+                    responsibility_on(layer, 'road', msg_id);
+                }
+                else if (layer.fixmystreet.body == 'Buckinghamshire Council' &&
+                    selected.group == 'Grass, hedges and weeds') {
+                    // Special case for Bucks' 'Grass' layer
                     responsibility_on(layer, 'road', msg_id);
                 }
             }
@@ -1379,7 +1385,7 @@ fixmystreet.message_controller = (function() {
             } else if (fixmystreet.assets.selectedFeature()) {
                 fixmystreet.body_overrides.allow_send(layer.fixmystreet.body);
                 responsibility_off(layer, 'road');
-            } else if (is_only_body(layer.fixmystreet.body) || (criterion && criterion())) {
+            } else if ( (criterion && criterion()) || is_only_body(layer.fixmystreet.body) ) {
                 responsibility_on(layer, 'road');
             }
         },
