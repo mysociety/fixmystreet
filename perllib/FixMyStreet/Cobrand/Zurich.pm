@@ -806,6 +806,7 @@ sub admin_report_edit {
              and $problem->state =~ /^(external|wish)$/)
         {
             my $external = $problem->external_body;
+            return $self->admin_report_edit_done if !$external;
             my $external_body = $c->model('DB::Body')->find($external)
                 or die "Body $external not found";
 
