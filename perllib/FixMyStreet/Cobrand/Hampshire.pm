@@ -28,7 +28,7 @@ sub disambiguate_location {
 
 sub lookup_site_code_config { {
     buffer => 200, # metres
-    url => "https://tilma.staging.mysociety.org/mapserver/hampshire",
+    url => "https://tilma.mysociety.org/mapserver/hampshire",
     srsname => "urn:ogc:def:crs:EPSG::27700",
     typename => "Road_Sections",
     property => "SITE_CODE",

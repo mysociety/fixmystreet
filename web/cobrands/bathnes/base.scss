@@ -8,6 +8,15 @@
 @import "pattern-lib/navigation";
 @import "pattern-lib/footer";
 
+// Links
+
+a, .fake-link {
+    &:focus {
+        background-color: $bathnes-yellow;
+        outline: 3px solid $bathnes-yellow;
+    }
+}
+
 // Header
 
 #site-header {
@@ -64,11 +73,39 @@
         margin: 0;
         font-size: 1.1em;
     }
+
+    #geolocate_link {
+        background-color: $bathnes-white;
+
+        &:hover {
+            background-color:  lighten($bathnes-primary, 45%);
+            color: lighten($bathnes-black, 15%);
+        }
+
+        &:focus {
+            background-color: $bathnes-yellow;
+        }
+    }
 }
 
 #front-main #postcodeForm {
     margin-top: 1em;
+
     label {
-        color: #fff;
+        color: $primary_b;
     }
+
+    .form-hint {
+        color: #313131;
+    }
+}
+
+// Stats homepage
+
+ol.big-numbers>li:before {
+    color: $stats-colour;
+}
+
+#front_stats {
+    background: $stats-colour;
 }

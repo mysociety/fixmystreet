@@ -188,14 +188,6 @@ select.form-error {
   background-color: rgba(164, 214, 94, 0.5);
 }
 
-.dz-clickable:hover, .dz-drag-hover {
-  border-color: $light-green;
-}
-
-.dz-clickable:hover .dz-message u, .dz-drag-hover .dz-message u {
-  color: $green;
-}
-
 .sso-staff-sign-in {
   font-size: 0.9em;
   margin: 1em 0;

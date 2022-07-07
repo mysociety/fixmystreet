@@ -1,9 +1,13 @@
-$dropzone-link-color: $link-color;
+$dropzone-border-colour: $primary !default;
+$dropzone-button-text: $primary_text !default;
+$dropzone-button-background: $primary !default;
+$dropzone-button-border: $primary !default;
+
 $dropzone-link-color--awakened: $link-hover-color;
 $dropzone-border-color--awakened: $dropzone-link-color--awakened;
 $dropzone-border-color--full: #bf002a;
-$dropzone-background-color: #fff;
-$dropzone-background-color--awakened: mix($dropzone-link-color, $dropzone-background-color, 10%);
+$dropzone-background-color: transparentize($dropzone-button-background, 0.85);
+$dropzone-background-color--awakened: mix($dropzone-button-background, $dropzone-background-color, 10%);
 $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%);
 
 // To prevent a horizontal scrollbar in RTL
@@ -12,11 +16,15 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
 }
 
 .dropzone {
-  @extend .form-control;
+  //@extend .form-control;
   @include clearfix;
   background-color: $dropzone-background-color;
   padding: 1.5em;
+  margin-bottom: 0.5em;
   text-align: center;
+  border-color: $dropzone-border-colour;
+  border-style: dashed;
+  border-radius: 4px;
 }
 
 .dz-clickable {
@@ -31,10 +39,27 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   .dz-remove,
   .dz-cancel {
     cursor: pointer;
+    font-weight: 600;
   }
 
   .dz-message u {
-    color: $dropzone-link-color;
+    padding: 0.75em 1em;
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: baseline;
+    margin-left: 3px;
+    font-weight: 400;
+    border-radius: 4px;
+    background: $dropzone-button-background;
+    color: $dropzone-button-text;
+    border: 1px solid $dropzone-button-border;
+    white-space: nowrap;
+
+    &:hover, &:focus {
+      background: $dropzone-button-text;
+      color: $dropzone-button-background;
+      border-color: $dropzone-border-colour;
+    }
   }
 }
 
@@ -46,10 +71,6 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   .dz-remove,
   .dz-cancel {
     border-color: $dropzone-background-color--awakened;
-  }
-
-  .dz-message u {
-    color: $dropzone-link-color--awakened;
   }
 }
 

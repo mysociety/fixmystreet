@@ -8,6 +8,7 @@ $shropshire-royal-blue: #2266CA; // links
 $shropshire-blue: #2A79AB; // primary brand colour
 $shropshire-blue-l1:#2583c5; // border
 $shropshire-pale-blue: #87CEEB; // footer links
+$shropshire-white: #fff;
 
 $shropshire-green: #00873f; // CTA buttons in body content
 $shropshire-mid-grey: #555555; // headings and paragraphs
@@ -23,7 +24,7 @@ $base_bg: #f4f4f4;
 $base_fg: $shropshire-mid-grey;
 
 $nav_background_colour: $shropshire-dark-blue;
-$nav_colour: #fff;
+$nav_colour: $shropshire-white;
 $nav_hover_background_colour: $shropshire-dark-blue;
 
 $header-top-border: false;
@@ -37,6 +38,8 @@ $heading-font: 'myriad-pro', 'Helvetica Neue', Arial, Helvetica, 'Segoe UI', san
 $meta-font: $body-font;
 
 $mappage-header-height: 64px;
+
+$dropzone-button-text: $shropshire-white;
 
 @mixin shropshire-form-input($margin: 0.5em 0, $padding: 5px) {
     margin: $margin;

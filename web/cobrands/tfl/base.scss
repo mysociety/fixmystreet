@@ -61,7 +61,7 @@ h3 {
     @include tflbutton;
 }
 
-.form-control, .dropzone {
+.form-control {
     @include tflfield;
 }
 
