@@ -595,7 +595,7 @@ $.extend(fixmystreet.utils, {
             }
         } else {
             value = $el.val();
-            if (value) {
+            if (value.length) {
                 qs[key] = (typeof value === 'string') ? value : fixmystreet.utils.array_to_csv_line(value);
             } else {
                 delete qs[key];
