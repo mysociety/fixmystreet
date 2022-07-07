@@ -245,6 +245,7 @@ sub output_requests : Private {
     my %statusmap = (
         map( { $_ => 'open' } FixMyStreet::DB::Result::Problem->open_states() ),
         map( { $_ => 'closed' } FixMyStreet::DB::Result::Problem->fixed_states() ),
+        map( { $_ => 'closed' } FixMyStreet::DB::Result::Problem->closed_states() ),
         'closed' => 'closed'
     );
 
@@ -353,9 +354,12 @@ sub get_requests : Private {
         my $op  = $rules{$param}[0];
         my $key = $rules{$param}[1];
         if ( 'status' eq $param ) {
+            my $visible = FixMyStreet::DB::Result::Problem->visible_states;
+            my $open = [ grep { $visible->{$_} } FixMyStreet::DB::Result::Problem->open_states() ];
+            my $closed = [ grep { $visible->{$_} } FixMyStreet::DB::Result::Problem->fixed_states(), FixMyStreet::DB::Result::Problem->closed_states() ];
             $value = {
-                'open' => [ FixMyStreet::DB::Result::Problem->open_states() ],
-                'closed' => [ FixMyStreet::DB::Result::Problem->fixed_states(), FixMyStreet::DB::Result::Problem->closed_states() ],
+                'open' => $open,
+                'closed' => $closed,
             }->{$value};
         } elsif ( 'has_photo' eq $param ) {
             $value = undef;
