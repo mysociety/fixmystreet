@@ -492,7 +492,7 @@ sub get_param_list {
     my ($c, $param, $allow_commas) = @_;
     die unless wantarray;
     my $value = $c->req->params->{$param};
-    return () unless defined $value;
+    return () unless length $value;
     my @value = ref $value ? @$value : ($value);
     if ($allow_commas) {
         my $csv = Text::CSV->new;
