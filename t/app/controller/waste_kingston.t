@@ -1182,7 +1182,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
-        $mech->content_lacks('cheque');
+        $mech->content_lacks('"cheque"');
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
             name => 'Test McTest',
@@ -1601,6 +1601,10 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
+        $mech->content_contains("Cheque reference field is required");
+        $mech->submit_form_ok({ with_fields => {
+            cheque_reference => 'Cheque123',
+        } });
         $mech->content_contains('£20.00');
         $mech->content_contains('1 bin');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1610,6 +1614,7 @@ FixMyStreet::override_config {
 
         check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');
         is $report->get_extra_field_value('LastPayMethod'), 4, 'correct echo payment method field';
+        is $report->get_extra_metadata('chequeReference'), 'Cheque123', 'cheque reference saved';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
     };
@@ -1736,6 +1741,32 @@ FixMyStreet::override_config {
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
         check_extra_data_post_confirm($new_report);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+    };
+
+    subtest 'check CSV export' => sub {
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'a user 2',
+            email => 'a_user_2@example.net',
+            payment_method => 'credit_card',
+            current_bins => 1,
+            bins_wanted => 2,
+        }});
+        $mech->content_contains('40.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
+
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_lacks("Garden Subscription\n\n");
+        $mech->content_contains('"a user"');
+        $mech->content_contains(1000000002);
+        $mech->content_contains('a_user@example.net');
+        $mech->content_contains('credit_card,54321,2000,,,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('"a user 2"');
+        $mech->content_contains('a_user_2@example.net');
+        $mech->content_contains('unconfirmed');
+        $mech->content_contains('4000,,1500,26,1,2'); # Fee/fee/fee/bin/current/sub
     };
 };
 

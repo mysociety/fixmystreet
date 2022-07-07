@@ -5,6 +5,10 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Catalyst::Test 'FixMyStreet::App';
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 set_fixed_time('2019-10-16T17:00:00Z'); # Out of hours
 
 use_ok 'FixMyStreet::Cobrand::Bexley';
@@ -150,7 +154,9 @@ FixMyStreet::override_config {
             }
 
             if (my $t = $test->{email}) {
-                my $email = $mech->get_email;
+                my @emails = $mech->get_email;
+                # User is getting a report_sent_confirmation_email now and the ordering is random
+                my ($email) = grep { $mech->get_text_body_from_email($_) =~ /Dear London Borough of Bexley/ } @emails;
                 $t = join('@[^@]*', @$t);
                 is $email->header('From'), '"Test User" <do-not-reply@example.org>';
                 like $email->header('To'), qr/^[^@]*$t@[^@]*$/;
@@ -164,7 +170,7 @@ FixMyStreet::override_config {
                 }
                 $mech->clear_emails_ok;
             } else {
-                $mech->email_count_is(0);
+                $mech->email_count_is(1);
             }
         };
     }
@@ -271,6 +277,40 @@ FixMyStreet::override_config {
     subtest 'phishing warning is shown on report pages' => sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('if asked for personal information, please do not respond');
+    };
+
+    subtest "test ID in update email" => sub {
+        $mech->clear_emails_ok;
+        (my $report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
+            category => 'Lamp post', cobrand => 'bexley',
+            latitude => 51.408484, longitude => 0.074653, areas => '2494',
+        });
+        my $id = $report->id;
+        my $user = $mech->log_in_ok('super@example.org');
+        $user->update({ from_body => $body, is_superuser => 1, name => 'Staff User' });
+        $mech->get_ok("/report/$id");
+        $mech->submit_form_ok({
+                with_fields => {
+                    form_as => 'Another User',
+                    username => 'test@email.com',
+                    name => 'Test user',
+                    update => 'Example update',
+                },
+        }, "submit details");
+        like $mech->get_text_body_from_email, qr/The report's reference number is $id/, 'Update confirmation email contains id number';
+};
+
+subtest 'test ID in questionnaire email' => sub {
+        $mech->clear_emails_ok;
+        (my $report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
+            category => 'Lamp post', cobrand => 'bexley',
+            latitude => 51.408484, longitude => 0.074653, areas => '2494',
+            whensent => DateTime->now->subtract(years => 1),
+        });
+        FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires();
+        my $text = $mech->get_text_body_from_email;
+        my $id = $report->id;
+        like $text, qr/The report's reference number is $id/, 'Questionnaire email contains id number';
     };
 };
 

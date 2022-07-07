@@ -20,6 +20,7 @@
         - Inspector dropdown list doesn't show anonymised users, removing blank options #3873
         - Fix report unassignment so it works for users who did not create the report #3903
         - [Open311] External code removal is not a change.
+        - Trim whitespace on extra status codes for response templates
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794

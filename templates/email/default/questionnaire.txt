@@ -20,5 +20,7 @@ Your report was as follows:
 
 [% report.detail %]
 
+[% TRY %][% INCLUDE '_questionnaire-report-id.txt' %][% CATCH file %][% END %]
+
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

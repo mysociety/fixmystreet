@@ -119,10 +119,13 @@ sub construct_rs_filter {
     $where{"$table_name.category"} = $self->category
         if $self->category;
 
+    my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
     if ( $self->state && FixMyStreet::DB::Result::Problem->fixed_states->{$self->state} ) { # Probably fixed - council
         $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $self->state ) {
         $where{"$table_name.state"} = $self->state;
+    } elsif ($all_states) {
+        # Do nothing, want all states
     } else {
         $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->visible_states() ];
     }
@@ -132,7 +135,12 @@ sub construct_rs_filter {
         end_date => $self->end_date,
         formatter => FixMyStreet::DB->schema->storage->datetime_parser,
     );
-    $where{"$table_name.confirmed"} = $range->sql;
+    if ($all_states) {
+        # Has to use created, because unconfirmed ones won't have a confirmed timestamp
+        $where{"$table_name.created"} = $range->sql;
+    } else {
+        $where{"$table_name.confirmed"} = $range->sql;
+    }
 
     my $rs = $self->on_updates ? $self->cobrand->updates : $self->cobrand->problems;
     my $objects_rs = $rs->to_body($self->body)->search( \%where );
