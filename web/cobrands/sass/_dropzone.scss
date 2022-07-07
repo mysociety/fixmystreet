@@ -45,7 +45,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   .dz-message u {
     padding: 0.75em 1em;
     text-decoration: none;
-    display: inline;
+    display: inline-block;
     vertical-align: baseline;
     margin-left: 3px;
     font-weight: 400;
@@ -53,6 +53,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
     background: $dropzone-button-background;
     color: $dropzone-button-text;
     border: 1px solid $dropzone-button-border;
+    white-space: nowrap;
 
     &:hover, &:focus {
       background: $dropzone-button-text;
