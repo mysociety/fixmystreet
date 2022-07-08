@@ -504,8 +504,15 @@ FixMyStreet::override_config {
         $mech->log_in_ok('superuser@example.com');
         $mech->get_ok('/admin/templates/' . $body->id . '/new');
         $mech->submit_form_ok({ with_fields => {
-            title => 'Wrong bin',
+            title => 'Wrong bin (generic)',
             text => 'We could not collect your waste as it was not correctly presented.',
+            resolution_code => 187,
+            task_state => 'Completed',
+        } });
+        $mech->get_ok('/admin/templates/' . $body->id . '/new');
+        $mech->submit_form_ok({ with_fields => {
+            title => 'Wrong bin (refuse)',
+            text => 'We could not collect your refuse waste as it was not correctly presented.',
             resolution_code => 187,
             task_type => 3216,
             task_state => 'Completed',
@@ -516,7 +523,7 @@ FixMyStreet::override_config {
     subtest 'test reporting before/after completion' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('May, at 10:00am');
-        $mech->content_contains('We could not collect your waste as it was not correctly presented.');
+        $mech->content_contains('We could not collect your refuse waste as it was not correctly presented.');
         $mech->content_lacks('Report a paper &amp; cardboard collection');
         $mech->content_contains('Report a non-recyclable refuse collection');
         set_fixed_time('2020-05-28T12:00:00Z');
