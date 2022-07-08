@@ -12,11 +12,11 @@ has_page intro => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        $data->{garden_sacks} = $c->stash->{garden_sacks};
+        $data->{_garden_sacks} = $c->stash->{garden_sacks};
         return {};
     },
     next => sub {
-        return 'choice' if $_[0]->{garden_sacks};
+        return 'choice' if $_[0]->{_garden_sacks};
         'existing';
     }
 );
