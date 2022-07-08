@@ -217,6 +217,15 @@ sub process_update {
     $comment->state('hidden') unless $comment->text || $comment->photo
         || ($comment->problem_state && $state ne $old_state);
 
+    # Hide if the new comment is the same as the latest comment
+    my $latest = $comment->problem->comments->search({ state => 'confirmed' }, {
+        order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ],
+        rows => 1,
+    })->first;
+    if ($latest && $latest->text eq $comment->text && $latest->user_id == $comment->user_id && $latest->problem_state eq $comment->problem_state) {
+        $comment->state('hidden');
+    }
+
     my $cobrand = $body->get_cobrand_handler;
     $cobrand->call_hook(open311_get_update_munging => $comment)
         if $cobrand;

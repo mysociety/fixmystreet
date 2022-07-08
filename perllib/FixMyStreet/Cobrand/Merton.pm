@@ -90,19 +90,6 @@ sub open311_extra_data_include {
     return [];
 }
 
-sub open311_get_update_munging {
-    my ($self, $comment) = @_;
-
-    my $latest = $comment->problem->comments->search({ state => 'confirmed' }, {
-        order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ],
-        rows => 1,
-    })->first;
-    # If last update has same text and is the system user, hide it
-    if ($latest && $latest->text eq $comment->text && $latest->user_id == $comment->user_id) {
-        $comment->state('hidden');
-    }
-}
-
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 

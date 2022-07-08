@@ -39,6 +39,7 @@
         - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
     - Open311 improvements:
         - Increase default timeout.
+        - Check for an identical latest update when adding a new one.
 
 * v4.0 (3rd December 2021)
     - Front end improvements:

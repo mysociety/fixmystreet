@@ -787,6 +787,59 @@ subtest 'check that existing comments are not duplicated' => sub {
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
 
+subtest "hides duplicate updates from endpoint" => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>UPDATE_1</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>IN_PROGRESS</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+    my $requests_xml2 = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>UPDATE_2</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>IN_PROGRESS</status>
+    <description>This is a note</description>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+
+    $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
+    $requests_xml2 =~ s/UPDATED_DATETIME/$update_dt/g;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+    $update->process_body;
+    $problem->discard_changes;
+    is $problem->comments->count, 1;
+    is $problem->comments->search({ state => 'confirmed' })->count, 1;
+
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml2);
+    $update->process_body;
+    $problem->discard_changes;
+    is $problem->comments->count, 2;
+    is $problem->comments->search({ state => 'confirmed' })->count, 1;
+
+};
+
 subtest 'check that can limit fetching to a body' => sub {
     my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
     <service_requests_updates>
