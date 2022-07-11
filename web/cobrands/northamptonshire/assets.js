@@ -56,6 +56,7 @@ var layers = [
   ],
   "layer_name": "Tree",
   "styleid": '5d481376fe2ad8059ce44ef2',
+  "snap_threshold": 0
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
@@ -145,7 +146,12 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
     },
     asset_not_found: function() {
       $("#overlapping_features_msg").addClass('hidden');
-      fixmystreet.message_controller.asset_not_found.call(this);
+      if (this.fixmystreet.snap_threshold === 0) {
+          // Not a typo, asset selection is not mandatory
+          fixmystreet.message_controller.asset_found.call(this);
+      } else {
+          fixmystreet.message_controller.asset_not_found.call(this);
+      }
     }
   }
 });
