@@ -24,7 +24,7 @@ my $contacts = [
     { category => 'Hedge problem', extra_metadata => { prefer_if_multiple => 1, group => 'Grass, hedges and weeds' } },
     { category => 'Dirty signs', extra_metadata => { prefer_if_multiple => 1, group => 'Road and street Signs' } },
     {
-        category => 'Fly posting',
+        category => 'Flyposting',
         extra_metadata => { prefer_if_multiple => 1 },
         extra_fields => [
             {
