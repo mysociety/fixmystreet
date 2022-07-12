@@ -59,5 +59,10 @@ jobs:
       if: success()
       run: local-coverage/bin/cover --report codecov
       env:
-        PERL5LIB: 'local-coverage/lib/perl5:perllib'
+        PERL5LIB: 'perllib:local-coverage/lib/perl5'
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    - uses: codecov/codecov-action@v3
+      if: success()
+      with:
+        files: ./coverage.json
