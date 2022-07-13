@@ -159,6 +159,8 @@ sub html_paragraph_email_factory : FilterFactory('html_para_email') {
 sub sanitize {
     my $text = shift;
 
+    return '' unless defined $text;
+
     # In case of markdown variant style of <https://www.google.com>
     $text =~ s/<\s*(https?[^\s>]+)\s*>/$1/g;
 
