@@ -4,8 +4,10 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var host = fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/lincs" : "https://tilma.mysociety.org/mapserver/lincs";
+
 var defaults = {
-    wfs_url: "https://tilma.mysociety.org/mapserver/lincs",
+    wfs_url: host,
     asset_type: 'spot',
     max_resolution: 2.388657133579254,
     asset_id_field: 'Confirm_CA',
