@@ -116,8 +116,8 @@ $mech->content_contains( '18 North Bridge, Edinburgh' );
 
 $report->delete();
 
-my $council = $mech->create_body_ok(2333, 'Hart Council');
-my $county = $mech->create_body_ok(2227, 'Hampshire Council');
+my $council = $mech->create_body_ok(2333, 'Hart Council', {}, { cobrand => 'hart' });
+my $county = $mech->create_body_ok(2227, 'Hampshire Council', {}, { cobrand => 'hampshire' });
 
 my ($report_to_council) = $mech->create_problems_for_body(1, $council->id, '', {
         user => $user1,

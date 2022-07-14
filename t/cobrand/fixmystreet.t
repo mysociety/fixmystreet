@@ -15,8 +15,8 @@ my $mech = FixMyStreet::TestMech->new;
 my $resolver = Test::MockModule->new('Email::Valid');
 $resolver->mock('address', sub { $_[1] });
 
-my $body = $mech->create_body_ok( 2514, 'Birmingham' );
-$mech->create_body_ok( 2482, 'Bromley' );
+my $body = $mech->create_body_ok( 2514, 'Birmingham', {}, { cobrand => 'birmingham' } );
+$mech->create_body_ok( 2482, 'Bromley', {}, { cobrand => 'bromley' });
 
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -233,8 +233,8 @@ FixMyStreet::override_config {
         );
 
         my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
-            latitude => 52.236251,
-            longitude => -0.892052,
+            latitude => 52.236252,
+            longitude => -0.892053,
             cobrand => 'fixmystreet',
             category => 'Graffiti',
         });

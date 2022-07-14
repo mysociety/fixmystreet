@@ -231,7 +231,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     }
 
     my $lookups;
-    my $cobrand_body = $c->cobrand->can('body') && $c->cobrand->body;
+    my $cobrand_body = $c->cobrand->body;
     foreach (@{$c->stash->{contacts}}) {
         my $category = $_->category;
         my $unresponsive = $c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL};

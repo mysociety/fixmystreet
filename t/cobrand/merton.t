@@ -13,13 +13,15 @@ my $merton = $mech->create_body_ok(2500, 'Merton Council', {
     jurisdiction => 'merton',
     endpoint => 'http://endpoint.example.org',
     send_method => 'Open311',
+}, {
+    cobrand => 'merton'
 });
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
 for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org");
 }
 
-my $hackney = $mech->create_body_ok(2508, 'Hackney Council');
+my $hackney = $mech->create_body_ok(2508, 'Hackney Council', {}, { cobrand => 'hackney' });
 for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $hackney->id, category => $contact, email => "\L$contact\@hackney.example.org");
 }

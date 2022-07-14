@@ -19,7 +19,7 @@ my $user3 =
   ->find_or_create( { email => 'bystander@example.com', name => 'Bystander' } );
 ok $user3, "created bystander";
 
-my $body = $mech->create_body_ok(2504, 'Westminster');
+my $body = $mech->create_body_ok(2504, 'Westminster', {}, { cobrand => 'westminster' });
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -333,7 +333,7 @@ foreach my $test (
     };
 }
 
-my $hart = $mech->create_body_ok(2333, 'Hart');
+my $hart = $mech->create_body_ok(2333, 'Hart', {}, { cobrand => 'hart' });
 
 my $ward_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {

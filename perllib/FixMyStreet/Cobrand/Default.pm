@@ -974,6 +974,15 @@ sub _fallback_body_sender {
     return { method => 'Email', contact => $contact };
 };
 
+sub body {
+    my $self = shift;
+
+    my $cobrand = $self->moniker;
+    return FixMyStreet::DB->resultset("Body")->find({
+        extra => { like => '%T7:cobrand,T' . length($cobrand) . ':' . $cobrand . '%'},
+    })
+}
+
 sub example_places {
     # uncoverable branch true
     FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
@@ -1135,7 +1144,7 @@ sub allow_anonymous_reports {
     return 0 unless $category_name;
 
     return $lookup->{$category_name} if defined $lookup->{$category_name};
-    if ( $self->can('body') and $self->body ) {
+    if ( $self->body ) {
         my $category_rs = FixMyStreet::DB->resultset("Contact")->search({
             body_id => $self->body->id,
             category => $category_name
@@ -1353,7 +1362,6 @@ Emergency message, if one has been set in the admin.
 sub emergency_message {
     my $self = shift;
     my $type = shift;
-    return unless $self->can('body');
     my $body = $self->body;
     return unless $body;
     my $field = 'emergency_message';

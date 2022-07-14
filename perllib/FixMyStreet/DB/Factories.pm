@@ -204,7 +204,7 @@ use FixMyStreet::MapIt;
 
 __PACKAGE__->resultset(FixMyStreet::DB->resultset("Body"));
 
-__PACKAGE__->exclude(['area_id', 'categories']);
+__PACKAGE__->exclude(['area_id', 'categories', 'cobrand']);
 
 __PACKAGE__->fields({
     name => __PACKAGE__->callback(sub {

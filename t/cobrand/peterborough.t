@@ -15,7 +15,7 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
 };
-my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
+my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
 my $contact = $mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
 my $hazardous_flytipping_contact = $mech->create_contact_ok(email => 'HAZ', body_id => $peterborough->id, category => 'Hazardous fly tipping');
 my $offensive_graffiti_contact = $mech->create_contact_ok(

@@ -14,6 +14,8 @@ my $body = $mech->create_body_ok( 21069, 'Cheshire East Council', {
     endpoint => 'endpoint',
     api_key => 'key',
     jurisdiction => 'cheshireeast_confirm',
+}, {
+    cobrand => 'cheshireeast',
 });
 
 my $contact = $mech->create_contact_ok(

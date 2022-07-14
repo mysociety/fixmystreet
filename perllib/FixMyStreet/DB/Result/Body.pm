@@ -208,7 +208,13 @@ e.g.
 
 sub get_cobrand_handler {
     my $self = shift;
-    return FixMyStreet::Cobrand->body_handler($self->areas);
+    my $moniker = $self->get_extra_metadata('cobrand');
+
+    # Need the exists() check because get_class_for_moniker falls back to
+    # returning ::Default which isn't what we want here.
+    return unless $moniker && FixMyStreet::Cobrand->exists($moniker);
+
+    return FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new;
 }
 
 =item
@@ -231,6 +237,9 @@ sub cobrand_name {
     # If the current body is TfL then we always want to show TfL as the cobrand name.
     return $self->name if $self->name eq 'TfL' || $self->name eq 'National Highways' || $self->name eq 'Environment Agency';
 
+
+    # Some cobrands, e.g. Hounslow, set a display name which is different to the
+    # body name in the DB, so ensure that we respect that here.
     my $handler = $self->get_cobrand_handler;
     if ($handler && $handler->can('council_name')) {
         return $handler->council_name;

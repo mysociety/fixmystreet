@@ -132,7 +132,7 @@ around look_up_property => sub {
     if ($cfg->{nlpg} && $data->{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
         $uprn_data = JSON::MaybeXS->new->decode($uprn_data);
-        if ($uprn_data->{results}[0]{DPA}{LOCAL_CUSTODIAN_CODE_DESCRIPTION} ne 'KINGSTON UPON THAMES') {
+        if ($uprn_data->{results}[0]{LPI}{LOCAL_CUSTODIAN_CODE_DESCRIPTION} ne 'KINGSTON UPON THAMES') {
             $self->{c}->stash->{template} = 'waste/missing.html';
             $self->{c}->detach;
         }

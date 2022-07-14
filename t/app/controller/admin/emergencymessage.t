@@ -2,7 +2,7 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
 my $user = $mech->create_user_ok('user@example.com', name => 'Test User', from_body => $body);
 
 $mech->log_in_ok( $user->email );

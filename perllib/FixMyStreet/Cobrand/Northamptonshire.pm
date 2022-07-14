@@ -8,7 +8,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
 
-sub council_area_id { 2234 }
+sub council_area_id { [ 164185, 164186 ] }
 sub council_area { 'Northamptonshire' }
 sub council_name { 'Northamptonshire Highways' }
 sub council_url { 'northamptonshire' }

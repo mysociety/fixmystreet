@@ -84,6 +84,21 @@
         </select>
     </p>
 
+    [% IF body_errors.cobrand %]
+      <div class="fms-admin-warning">
+        [% body_errors.cobrand %]
+      </div>
+    [% END %]
+    <p>
+        <label for="send_method">[% loc('Cobrand') %]</label>
+        <select class="form-control" name="extra[cobrand]" id="cobrand">
+            <option value="">[% loc(' -- Select a cobrand -- ') %]</option>
+              [% FOR cobrand IN cobrands %]
+                <option value="[% cobrand %]"[% ' selected' IF body.get_extra_metadata('cobrand') == cobrand %]>[% cobrand %]</option>
+              [% END %]
+        </select>
+    </p>
+
     <p>
         <label for="external_url">[% loc('External URL') %]</label>
         <input type="text" class="form-control" name="external_url" id="external_url" value="[% body.external_url | html %]" size="50">

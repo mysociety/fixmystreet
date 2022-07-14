@@ -8,8 +8,8 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', {
-    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 });
+my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
+    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);

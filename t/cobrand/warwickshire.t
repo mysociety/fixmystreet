@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use FixMyStreet::Test;
+use FixMyStreet::TestMech;
 use FixMyStreet::DB;
 
 use_ok( 'Open311::PopulateServiceList' );
@@ -9,10 +9,9 @@ use_ok( 'Open311' );
 my $processor = Open311::PopulateServiceList->new();
 ok $processor, 'created object';
 
-my $warks = FixMyStreet::DB->resultset('Body')->create({
-    name => 'Warwickshire County Council',
-});
-$warks->body_areas->create({ area_id => 2243 });
+my $mech = FixMyStreet::TestMech->new;
+
+my $warks = $mech->create_body_ok(2243, 'Warwickshire County Council', {}, { cobrand => 'warwickshire' });
 
 subtest 'check Warwickshire override' => sub {
     my $processor = Open311::PopulateServiceList->new();

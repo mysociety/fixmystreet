@@ -1,6 +1,7 @@
 use Test::MockModule;
 
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
 
 use_ok 'FixMyStreet::Cobrand::Northamptonshire';
@@ -9,26 +10,40 @@ my $mech = FixMyStreet::TestMech->new;
 
 use open ':std', ':encoding(UTF-8)'; 
 
-my $ncc = $mech->create_body_ok(2234, 'Northamptonshire Highways', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1 });
-my $nbc = $mech->create_body_ok(2397, 'Northampton Borough Council');
+my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'northamptonshire' });
+my $wnc = $mech->create_body_ok(164186, 'West Northamptonshire Council');
+my $po = $mech->create_body_ok(164186, 'Northamptonshire Police');
 
-my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $ncc);
+my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $nh);
 my $user = $mech->create_user_ok('user@example.com', name => 'User');
 
-my $ncc_contact = $mech->create_contact_ok(
-    body_id => $ncc->id,
+my $nh_contact = $mech->create_contact_ok(
+    body_id => $nh->id,
     category => 'Trees',
-    email => 'trees-2234@example.com',
+    email => 'trees-nh@example.com',
 );
 
-my $nbc_contact = $mech->create_contact_ok(
-    body_id => $nbc->id,
+$mech->create_contact_ok(
+    body_id => $nh->id,
+    category => 'Hedges',
+    email => 'hedges-nh@example.com',
+    send_method => 'Email',
+);
+
+my $wnc_contact = $mech->create_contact_ok(
+    body_id => $wnc->id,
     category => 'Flytipping',
-    email => 'flytipping-2397@example.com',
+    email => 'flytipping-west-northants@example.com',
 );
 
-my ($report) = $mech->create_problems_for_body(1, $ncc->id, 'Defect Problem', {
+my $po_contact = $mech->create_contact_ok(
+    body_id => $po->id,
+    category => 'Abandoned vehicles',
+    email => 'vehicles-northants-police@example.com',
+);
+
+my ($report) = $mech->create_problems_for_body(1, $nh->id, 'Defect Problem', {
     whensent => DateTime->now()->subtract( minutes => 5 ),
     external_id => 1,
     send_method_used => 'Open311',
@@ -47,7 +62,7 @@ my $comment = FixMyStreet::DB->resultset('Comment')->create( {
     cobrand => 'default',
 } );
 
-$ncc->update( { comment_user_id => $counciluser->id } );
+$nh->update( { comment_user_id => $counciluser->id } );
 
 
 subtest 'Check district categories hidden on cobrand' => sub {
@@ -298,5 +313,58 @@ subtest 'check pin colour / reference shown' => sub {
         $mech->content_contains('ref:&nbsp;' . $report->id);
     };
 };
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS=> [ 'northamptonshire', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'Check report emails to county use correct branding' => sub {
+        my ($wnc_report) = $mech->create_problems_for_body(1, $wnc->id, 'West Northants Problem', {
+            cobrand => 'fixmystreet',
+            category => 'Flytipping',
+        });
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Dear West Northamptonshire Council,/;
+        like $body, qr/http:\/\/www\.example\.org/, 'correct link';
+        like $body, qr/Never retype another FixMyStreet report/, 'Has FMS promo text';
+    };
+
+    subtest 'Check report emails to police use correct branding' => sub {
+        my ($po_report) = $mech->create_problems_for_body(1, $po->id, 'Northants Police Problem', {
+            cobrand => 'fixmystreet',
+            category => 'Abandoned vehicles',
+        });
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Dear Northamptonshire Police,/;
+        like $body, qr/http:\/\/www\.example\.org/, 'correct link';
+        like $body, qr/Never retype another FixMyStreet report/, 'Has FMS promo text';
+    };
+
+    subtest 'Check report emails to highways use correct branding' => sub {
+        my ($nh_report) = $mech->create_problems_for_body(1, $nh->id, 'Northants Highways Problem', {
+            cobrand => 'fixmystreet',
+            category => 'Hedges',
+        });
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[0]);
+        like $body, qr/Dear Northamptonshire Highways,/;
+        like $body, qr/http:\/\/northamptonshire\.example\.org/, 'correct link';
+        unlike $body, qr/Never retype another FixMyStreet report/, 'Doesn\'t have FMS promo text';
+
+        $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Your report to Northamptonshire Highways has been logged on FixMyStreet\./;
+    };
+};
+
 
 done_testing();

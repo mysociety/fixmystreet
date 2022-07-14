@@ -7,6 +7,8 @@ use Open311::PopulateServiceList;
 my $body = $mech->create_body_ok( 2561, 'Bristol County Council', {
     send_method => 'Open311',
     can_be_devolved => 1
+}, {
+    cobrand => 'bristol',
 });
 
 my $open311_contact = $mech->create_contact_ok(

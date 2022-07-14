@@ -7,7 +7,7 @@ use lib '.'; # For the mock MapIt module
 use Getopt::Long ':config' => qw(pass_through auto_help);
 
 my ($run_server, $run_cypress, $vagrant, $wsl, $node, $config_file);
-my ($cobrand, $coords, $area_id, $name, $mapit_url, $coverage);
+my ($cobrand, $coords, $area_id, $name, $body_cobrand, $mapit_url, $coverage);
 
 BEGIN {
     $config_file = 'conf/general.yml-example';
@@ -33,6 +33,7 @@ BEGIN {
     $coords = '51.532851,-2.284277';
     $area_id = 2608;
     $name = 'Borsetshire';
+    $body_cobrand = 'borsetshire';
     $mapit_url = 'https://mapit.uk/';
     $node = 'C:\Program Files\nodejs\node.exe';
 
@@ -48,6 +49,7 @@ BEGIN {
         'coords=s' => \$coords,
         'area_id=s' => \$area_id,
         'name=s' => \$name,
+        'body_cobrand=s' => \$body_cobrand,
         'mapit_url=s' => \$mapit_url,
     );
     $cobrand = [ split(',', join(',', @$cobrand)) ];
@@ -152,7 +154,16 @@ sub run {
 
         # Set up, and load in some data
         system('bin/make_css', map { $_ eq 'fixmystreet' ? 'fixmystreet.com' : $_ } @$cobrand);
-        system('bin/fixmystreet.com/fixture', '--test_fixtures', '--nonrandom', '--coords', $coords, '--name', $name, '--area-id', $area_id, '--commit');
+        system(
+            'bin/fixmystreet.com/fixture',
+            '--test_fixtures',
+            '--nonrandom',
+            '--coords', $coords,
+            '--name', $name,
+            '--cobrand', $body_cobrand,
+            '--area-id', $area_id,
+            '--commit'
+        );
     }
 
     my $pid;
@@ -213,6 +224,7 @@ browser-tests [running options] [fixture options] [cypress options]
    --coords         Default co-ordinates for created reports
    --area_id        Area ID to use for created body
    --name           Name to use for created body
+   --body_cobrand   Cobrand to assign to created body
    --mapit_url      MapIt URL to use, default mock
 
 Use browser-tests instead of running cypress directly, so that a clean

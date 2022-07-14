@@ -28,7 +28,7 @@ my $params = {
     can_be_devolved => 1,
 };
 
-my $hackney = $mech->create_body_ok(2508, 'Hackney Council', $params);
+my $hackney = $mech->create_body_ok(2508, 'Hackney Council', $params, { cobrand => 'hackney' });
 my $contact = $mech->create_contact_ok(
     body_id => $hackney->id,
     category => 'Potholes & stuff',

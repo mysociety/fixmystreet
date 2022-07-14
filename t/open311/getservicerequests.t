@@ -11,13 +11,13 @@ use Test::MockObject::Extends;
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('system_user@example.com', name => 'test users');
-my $body = $mech->create_body_ok(2482, 'Bromley');
+my $body = $mech->create_body_ok(2482, 'Bromley', {}, { cobrand => 'bromley' });
 my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'Sidewalk and Curb Issues', email => 'sidewalks' );
 
-my $body2 = $mech->create_body_ok(2217, 'Buckinghamshire');
+my $body2 = $mech->create_body_ok(163793, 'Buckinghamshire', {}, { cobrand => 'buckinghamshire' });
 my $contact2 = $mech->create_contact_ok( body_id => $body2->id, category => 'Sidewalk and Curb Issues', email => 'sidewalks' );
 
-my $hounslow = $mech->create_body_ok(2483, 'Hounslow');
+my $hounslow = $mech->create_body_ok(2483, 'Hounslow', {}, { cobrand => 'hounslow' });
 my $hounslowcontact = $mech->create_contact_ok( body_id => $hounslow->id, category => 'Sidewalk and Curb Issues', email => 'sidewalks' );
 
 my $dtf = DateTime::Format::W3CDTF->new;
@@ -595,7 +595,7 @@ for my $test (
         );
 
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ 'FixMyStreet', 'Buckinghamshire' ],
+            ALLOWED_COBRANDS => [ 'fixmystreet', 'buckinghamshire' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $update->create_problems( $o, $body2 );

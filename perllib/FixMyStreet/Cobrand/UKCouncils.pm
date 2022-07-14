@@ -50,14 +50,6 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
-# UK cobrands assume that each MapIt area ID maps both ways with one
-# body. Except TfL and National Highways.
-sub body {
-    my $self = shift;
-    my $body = FixMyStreet::DB->resultset('Body')->for_areas($self->council_area_id)->search({ name => { 'not_in', ['TfL', 'National Highways', 'Environment Agency'] } })->first;
-    return $body;
-}
-
 sub cut_off_date { '' }
 
 sub problems_restriction {
@@ -176,10 +168,15 @@ sub area_check {
     return 1 if FixMyStreet->staging_flag('skip_checks');
 
     my $councils = $params->{all_areas};
-    my $council_match = defined $councils->{$self->council_area_id};
-    if ($council_match) {
-        return 1;
+
+    # The majority of cobrands only cover a single area, but e.g. Northamptonshire
+    # covers multiple so we need to handle that situation.
+    my $council_area_ids = $self->council_area_id;
+    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+    foreach (@$council_area_ids) {
+        return 1 if defined $councils->{$_};
     }
+
     return ( 0, $self->area_check_error_message($params, $context) );
 }
 
@@ -236,13 +233,8 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
-sub area_ids_for_problems {
-    my ($self) = @_;
-
-    return $self->council_area_id;
-}
-
-# Returns true if the cobrand owns the problem.
+# Returns true if the cobrand owns the problem, i.e. it was sent to the body
+# associated with this cobrand.
 sub owns_problem {
     my ($self, $report) = @_;
     my @bodies;
@@ -253,11 +245,9 @@ sub owns_problem {
     } else { # Object
         @bodies = values %{$report->bodies};
     }
-    # Want to ignore the TfL body that covers London councils, and HE that is all England
-    my %areas = map { %{$_->areas} } grep { $_->name !~ /TfL|National Highways/ } @bodies;
 
-    foreach my $area_id ($self->area_ids_for_problems) {
-        return 1 if $areas{$area_id};
+    foreach (@bodies) {
+        return 1 if $_->get_extra_metadata('cobrand', '') eq $self->moniker;
     }
 }
 
@@ -306,7 +296,7 @@ sub admin_allow_user {
     return undef unless defined $user->from_body;
     # Make sure TfL staff can't access other London cobrand admins
     return undef if $user->from_body->name eq 'TfL';
-    return $user->from_body->areas->{$self->council_area_id};
+    return $user->from_body->get_extra_metadata('cobrand', '') eq $self->moniker;
 }
 
 sub admin_show_creation_graph { 0 }
