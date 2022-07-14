@@ -206,7 +206,7 @@ FixMyStreet::override_config {
         return $lwp->original('get')->(@_) unless $url =~ /example.com/;
         my ($uprn, $area) = (1000000002, "KINGSTON UPON THAMES");
         ($uprn, $area) = (1000000004, "SUTTON") if $url =~ /1000000004/;
-        my $j = '{ "results": [ { "DPA": { "UPRN": ' . $uprn . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "' . $area . '" } } ] }';
+        my $j = '{ "results": [ { "LPI": { "UPRN": ' . $uprn . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "' . $area . '" } } ] }';
         return HTTP::Response->new(200, 'OK', [], $j);
     });
     my $echo = Test::MockModule->new('Integrations::Echo');
