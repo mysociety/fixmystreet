@@ -1174,6 +1174,58 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+            payment_method => 'credit_card',
+            current_bins => 0,
+            bins_wanted => 1,
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£20.00');
+        $mech->content_contains('£15.00');
+        $mech->content_contains('1 bin');
+        $mech->submit_form_ok({ with_fields => { goto => 'details' } });
+        $mech->content_contains('<span id="cost_pa">20.00');
+        $mech->content_contains('<span id="cost_now">35.00');
+        $mech->content_contains('<span id="cost_now_admin">15.00');
+        $mech->submit_form_ok({ with_fields => {
+            payment_method => 'credit_card',
+            current_bins => 0,
+            bins_wanted => 1,
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        # external redirects make Test::WWW::Mechanize unhappy so clone
+        # the mech for the redirect
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
+        check_extra_data_pre_confirm($new_report);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        check_extra_data_post_confirm($new_report);
+
+        $mech->content_contains('Your garden waste bin will');
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?35.00/;
     };
 
     subtest 'sacks, subscribing' => sub {

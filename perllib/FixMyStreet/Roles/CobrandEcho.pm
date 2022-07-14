@@ -187,6 +187,65 @@ sub _parse_schedules {
     };
 }
 
+sub waste_task_resolutions {
+    my ($self, $tasks, $task_ref_to_row) = @_;
+
+    return unless $task_ref_to_row;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    foreach (@$tasks) {
+        my $ref = join(',', @{$_->{Ref}{Value}{anyType}});
+        my $completed = construct_bin_date($_->{CompletedDate});
+        my $state = $_->{State}{Name} || '';
+        my $task_type_id = $_->{TaskTypeId} || '';
+
+        my $orig_resolution = $_->{Resolution}{Name} || '';
+        my $resolution = $orig_resolution;
+        my $resolution_id = $_->{Resolution}{Ref}{Value}{anyType};
+        if ($resolution_id) {
+            my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
+                'me.body_id' => $self->body->id,
+                'me.external_status_code' => [
+                    "$resolution_id,$task_type_id,$state",
+                    "$resolution_id,$task_type_id,",
+                    "$resolution_id,,$state",
+                    "$resolution_id,,",
+                    $resolution_id,
+                ],
+            }, {
+                # Order by descending length so more specific
+                # external_status_codes match over less specific
+                order_by => \'length(me.external_status_code) desc',
+            })->first;
+            $resolution = $template->text if $template;
+        }
+
+        my $row = $task_ref_to_row->{$ref};
+        $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
+        $row->{last}{completed} = $completed;
+        $row->{last}{resolution} = $resolution;
+
+        # Special handling if last instance is today
+        if ($row->{last}{date}->ymd eq $now->ymd) {
+            # If it's before 5pm and outstanding, show it as in progress
+            if ($state eq 'Outstanding' && $now->hour < 17) {
+                $row->{next} = $row->{last};
+                $row->{next}{state} = 'In progress';
+                delete $row->{last};
+            }
+            if (!$completed && $now->hour < 17) {
+                $row->{report_allowed} = 0;
+            }
+        }
+
+        # If the task is ended and could not be done, do not allow reporting
+        if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution eq 'Excess Waste')) {
+            $row->{report_allowed} = 0;
+            $row->{report_locked_out} = 1;
+        }
+    }
+}
+
 sub bin_future_collections {
     my $self = shift;
 

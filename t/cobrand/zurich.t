@@ -637,6 +637,7 @@ subtest "external report triggers email" => sub {
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->form_with_fields( 'publish_response' );
+    my $mech2 = $mech->clone; # For later
     $mech->submit_form_ok( {
         button => 'publish_response',
         with_fields => {
@@ -659,6 +660,16 @@ subtest "external report triggers email" => sub {
     like $email->body, qr/$EXTERNAL_MESSAGE/, 'external_message was passed on';
     unlike $email->body, qr/test\@example.com/, 'body does not contain email address';
     $mech->clear_emails_ok;
+
+    subtest 'Test the form being resubmitted' => sub {
+        # Perhaps one person changed it to Extern directly, so no external body, and second then submitted open form
+        $report->update({ external_body => undef });
+        $mech2->submit_form_ok( {
+            button => 'publish_response',
+            with_fields => {
+                external_message => $EXTERNAL_MESSAGE,
+            } });
+    };
 
     subtest "Test third_personal boolean setting" => sub {
         $mech->get_ok( '/admin' );

@@ -19,6 +19,8 @@ sub council_name { return 'Lincolnshire County Council'; }
 sub council_url { return 'lincolnshire'; }
 sub is_two_tier { 1 }
 
+sub on_map_default_status { 'open' }
+
 sub send_questionnaires { 0 }
 sub report_sent_confirmation_email { 'external_id' }
 

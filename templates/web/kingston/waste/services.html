@@ -26,12 +26,13 @@
         <span class="govuk-warning-text__assistive">Warning</span>
         <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is now overdue.</h3>    
         We’ve paused your garden waste collections. They’ll start again when you renew.
-        [% IF ( ( unit.garden_due && current_payment_method != 'direct_debit' ) || unit.garden_overdue ) %]
+        [% IF current_payment_method == 'direct_debit' %]
+            <p>This property may have an existing direct debit subscription which will renew automatically, please check before renewing.</p>
+        [% END %]
         <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
           <input type="hidden" name="token" value="[% csrf_token %]">
           <input type="submit" value="Renew your subscription" class="govuk-button">
         </form>
-        [% END %]
     </div>
   </div>
 
@@ -77,15 +78,16 @@
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>   
-        [% IF ( ( unit.garden_due && current_payment_method != 'direct_debit' ) || unit.garden_overdue ) %]
-        <dd class="govuk-summary-list__value renewal-status">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %][% ' Cancellation in progress' IF pending_cancellation %][% ', soon due for renewal.' IF unit.garden_due && !unit.garden_overdue %][% ', subscription overdue.' IF unit.garden_overdue %]</dd>
-        [% ELSE %]
-        <dd class="govuk-summary-list__value">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %][% ' Cancellation in progress' IF pending_cancellation %][% ', soon due for renewal.' IF unit.garden_due && !unit.garden_overdue %][% ', subscription overdue.' IF unit.garden_overdue %]</dd>
-        [% END %]
+        <dd class="govuk-summary-list__value
+        [%~ ' renewal-status' IF current_payment_method != 'direct_debit' && ( unit.garden_due || unit.garden_overdue ) ~%]
+        ">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %][% ' Cancellation in progress' IF pending_cancellation %][% ', soon due for renewal.' IF unit.garden_due && !unit.garden_overdue %][% ', subscription overdue.' IF unit.garden_overdue %]</dd>
       </div>
     </dl>
 
   [% IF ( ( unit.garden_due && current_payment_method != 'direct_debit' ) || unit.garden_overdue ) %]
+      [% IF current_payment_method == 'direct_debit' %]
+        <p>This property may have an existing direct debit subscription which will renew automatically, please check before renewing.</p>
+      [% END %]
   <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Renew your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">

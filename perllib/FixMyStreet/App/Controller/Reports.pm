@@ -728,6 +728,7 @@ sub stash_report_filter_status : Private {
     @status = ($c->stash->{page} eq 'my' ? 'all' : $c->cobrand->on_map_default_status) unless @status;
     $c->cobrand->call_hook(hook_report_filter_status => \@status);
 
+    my $visible = FixMyStreet::DB::Result::Problem->visible_states();
     my %status = map { $_ => 1 } @status;
     my %filter_problem_states;
     my %filter_status;
@@ -752,9 +753,8 @@ sub stash_report_filter_status : Private {
     }
 
     if ($status{all}) {
-        my $s = FixMyStreet::DB::Result::Problem->visible_states();
         # %filter_status = ();
-        %filter_problem_states = %$s;
+        %filter_problem_states = %$visible;
     }
 
     if ($status{shortlisted}) {
@@ -769,7 +769,7 @@ sub stash_report_filter_status : Private {
     my $staff_user = $c->user_exists && ($c->user->is_superuser || $body_user);
     if ($staff_user || $c->cobrand->call_hook('filter_show_all_states')) {
         $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
-        foreach my $state (FixMyStreet::DB::Result::Problem->visible_states()) {
+        foreach my $state (keys %$visible) {
             if ($status{$state}) {
                 $filter_problem_states{$state} = 1;
                 $filter_status{$state} = 1;
@@ -785,6 +785,8 @@ sub stash_report_filter_status : Private {
       my $s = FixMyStreet::DB::Result::Problem->open_states();
       %filter_problem_states = (%filter_problem_states, %$s);
     }
+
+    %filter_problem_states = map { $_ => 1 } grep { $visible->{$_} } keys %filter_problem_states;
 
     $c->stash->{filter_problem_states} = \%filter_problem_states;
     $c->stash->{filter_status} = \%filter_status;
