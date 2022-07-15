@@ -651,6 +651,52 @@ sub council_rss_alert_options {
 sub car_park_wfs_query {
     my ($self, $row) = @_;
 
+    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer");
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => "BC_CAR_PARKS",
+        VERSION => "1.1.0",
+        propertyName => 'OBJECTID,Shape',
+    );
+
+    try {
+        return $self->_get($self->_wfs_uri($row, $uri));
+    } catch {
+        # Ignore WFS errors.
+        return {};
+    };
+}
+
+sub speed_limit_wfs_query {
+    my ($self, $row) = @_;
+
+    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer");
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed",
+        VERSION => "1.1.0",
+        propertyName => 'OBJECTID,Shape,speed',
+    );
+
+    try {
+        return $self->_get($self->_wfs_uri($row, $uri));
+    } catch {
+        # Ignore WFS errors.
+        return {};
+    };
+}
+
+sub _wfs_uri {
+    my ($self, $row, $base_uri) = @_;
+
+    # This fn may be called before cobrand has been set in the
+    # reporting flow and local_coords needs it to be set
+    $row->cobrand('buckinghamshire') if !$row->cobrand;
+
     my ($x, $y) = $row->local_coords;
     my $buffer = 50; # metres
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
@@ -667,30 +713,14 @@ sub car_park_wfs_query {
     </ogc:Filter>";
     $filter =~ s/\n\s+//g;
 
-    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer");
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "BC_CAR_PARKS",
-        VERSION => "1.1.0",
-        propertyName => 'OBJECTID,Shape',
-    );
-
     # URI encodes ' ' as '+' but arcgis wants it to be '%20'
     # Putting %20 into the filter string doesn't work because URI then escapes
     # the '%' as '%25' so you get a double encoding issue.
     #
-    # Avoid all of that and just put the filter on the end of the $uri
+    # Avoid all of that and just put the filter on the end of the $base_uri
     $filter = URI::Escape::uri_escape_utf8($filter);
-    $uri = "$uri&filter=$filter";
 
-    try {
-        return $self->_get($uri);
-    } catch {
-        # Ignore WFS errors.
-        return {};
-    };
+    return "$base_uri&filter=$filter";
 }
 
 # Wrapper around LWP::Simple::get to make mocking in tests easier.
@@ -726,17 +756,27 @@ around 'report_validation' => sub {
 };
 
 # Route grass cutting reports to the parish if the user answers 'no' to the
-# question 'Is the speed limit on this road 30mph or greater?'
+# question 'Is the speed limit greater than 30mph?'
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
     return unless $report->category eq 'Grass cutting';
 
     my $greater_than_30 = $report->get_extra_field_value('speed_limit_greater_than_30');
-    return unless $greater_than_30;
 
-    # This is called from FixMyStreet.pm as well, so avoid $self.
-    my $area_id = FixMyStreet::Cobrand::Buckinghamshire::council_area_id;
+    if (!$greater_than_30) {
+        # Look up the report's location on the speed limit WFS server
+        my $speed_limit_xml = $self->speed_limit_wfs_query($report);
+        my $speed_limit = $1 if $speed_limit_xml =~ /<OS_Highways_Speed:speed>([\.\d]+)<\/OS_Highways_Speed:speed>/;
+
+        if ($speed_limit) {
+            $greater_than_30 = $speed_limit > 30 ? 'yes' : 'no';
+        } else {
+            $greater_than_30 = 'dont_know';
+        }
+    }
+
+    my $area_id = $self->council_area_id;
 
     if ($greater_than_30 eq 'no') {
         # Route to the parish

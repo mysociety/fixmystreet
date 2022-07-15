@@ -42,26 +42,13 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', emai
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grassparish@example.org', send_method => 'Email');
 $contact->set_extra_fields({
     code => 'speed_limit_greater_than_30',
-    description => 'Is the speed limit on this road 30mph or greater?',
-    datatype => 'singlevaluelist',
+    description => 'Is the speed limit greater than 30mph?',
+    datatype => 'string',
     order => 1,
     variable => 'true',
     required => 'true',
     protected => 'false',
-    values => [
-        {
-            key => 'yes',
-            name => 'Yes',
-        },
-        {
-            key => 'no',
-            name => 'No',
-        },
-        {
-            key => 'dont_know',
-            name => "Don't know",
-        },
-    ],
+    automated => 'hidden_field',
 });
 $contact->update;
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Dirty signs', email => 'signs@example.org', send_method => 'Email');
@@ -484,6 +471,61 @@ subtest 'sends grass cutting reports on roads 30mph or more to the council' => s
     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 2', 'Got the correct report';
+    is $report->bodies_str, $body->id, 'Report was sent to council';
+};
+
+subtest "server side speed limit lookup for council grass cutting report" => sub {
+    $bucks->mock('_get', sub { "<OS_Highways_Speed:speed>60.00000000</OS_Highways_Speed:speed>" });
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 3",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+            speed_limit_greater_than_30 => '',
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 3', 'Got the correct report';
+    is $report->bodies_str, $body->id, 'Report was sent to council';
+};
+
+subtest "server side speed limit lookup for parish grass cutting report" => sub {
+    $bucks->mock('_get', sub { "<OS_Highways_Speed:speed>30.00000000</OS_Highways_Speed:speed>" });
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 4",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 4', 'Got the correct report';
+    is $report->bodies_str, $parish->id, 'Report was sent to parish';
+};
+
+subtest "server side speed limit lookup with unknown speed limit" => sub {
+    $bucks->mock('_get', sub { '' });
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 5",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+        }
+    }, "submit details");
+    $mech->content_contains('Your issue is on its way to the council');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 5', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
 };
 

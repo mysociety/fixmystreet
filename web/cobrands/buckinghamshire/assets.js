@@ -505,4 +505,43 @@ fixmystreet.assets.add(defaults, {
     protocol_class: OpenLayers.Protocol.BuckinghamshireHTTP
 });
 
+// The maximum speed for reports to be sent to the parish council.
+var parish_speed_threshold = 30;
+
+fixmystreet.assets.add(defaults, {
+    http_options: {
+        url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer',
+        params: {
+            propertyName: 'speed,shape',
+            TYPENAME: "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed"
+        }
+    },
+    actions: {
+        found: function(layer, feature, criterion, msg_id) {
+            // Answer speed limit question based on speed limit of the road.
+            var $question = $('#form_speed_limit_greater_than_30');
+            if (feature.attributes.speed && feature.attributes.speed <= parish_speed_threshold) {
+                $question.val('no');
+            } else {
+                $question.val('yes');
+            }
+            // Fire the change event so the council text is updated.
+            $question.trigger('change');
+        },
+        not_found: function(layer) {
+            $('#form_speed_limit_greater_than_30').val('dont_know').trigger('change');
+        }
+    },
+    no_asset_msg_id: '#js-not-a-road',
+    asset_category: "Grass cutting",
+    non_interactive: true,
+    road: true,
+    asset_item: 'road',
+    asset_type: 'road',
+    stylemap: fixmystreet.assets.stylemap_invisible,
+
+    // Want to use this for parish categories as well as Bucks, so skip body checks.
+    body: null
+});
+
 })();

@@ -259,25 +259,12 @@ if ($opt->test_fixtures) {
     $child_cat->set_extra_fields({
         code => 'speed_limit_greater_than_30',
         description => 'Is the speed limit greater than 30mph?',
-        datatype => 'singlevaluelist',
+        datatype => 'string',
         order => 1,
         variable => 'true',
         required => 'true',
         protected => 'false',
-        values => [
-            {
-                key => 'yes',
-                name => 'Yes',
-            },
-            {
-                key => 'no',
-                name => 'No',
-            },
-            {
-                key => 'dont_know',
-                name => "Don't know",
-            },
-        ],
+        automated => 'hidden_field',
     });
     $child_cat->update;
 
