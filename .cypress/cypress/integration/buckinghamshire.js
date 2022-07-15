@@ -53,36 +53,58 @@ describe('buckinghamshire cobrand', function() {
     cy.nextPageReporting();
     cy.contains('The road you have selected is on a regular gritting route').should('be.visible');
   });
+});
 
-  describe("Parish grass cutting category speed limit question", function() {
-    var speedGreaterThan30 = '#form_speed_limit_greater_than_30';
+describe("Parish grass cutting category speed limit question", function() {
+  var speedGreaterThan30 = '#form_speed_limit_greater_than_30';
 
-    beforeEach(function() {
-      cy.get('#map_box').click(290, 307);
-      cy.wait('@report-ajax');
-      cy.pickCategory('Grass, hedges and weeds');
-      cy.nextPageReporting();
-      cy.pickSubcategory('Grass hedges and weeds', 'Grass cutting');
-      cy.wait('@around-ajax');
-      cy.nextPageReporting();
-    });
+  beforeEach(function() {
+    cy.server();
+    cy.route('**mapserver/bucks*Whole_Street*', 'fixture:roads.xml').as('roads-layer');
+    cy.route('**mapserver/bucks*WinterRoutes*', 'fixture:roads.xml').as('winter-routes');
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route('/around\?ajax*').as('update-results');
+    cy.route('/around/nearby*').as('around-ajax');
+  });
 
-    it('displays the parish name if answer is "no"', function() {
-      cy.get(speedGreaterThan30).select('no');
+  function parishGrassCuttingSetup(fixtureFile, callback) {
+    cy.route('/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer**', 'fixture:' + fixtureFile).as('speed-limits');
+    cy.visit('http://buckinghamshire.localhost:3001/');
+    cy.contains('Buckinghamshire');
+    cy.get('[name=pc]').type('SL9 0NX');
+    cy.get('[name=pc]').parents('form').submit();
+    cy.wait('@update-results');
+    cy.get('#map_box').click(290, 307);
+    cy.wait('@report-ajax');
+    cy.pickCategory('Grass, hedges and weeds');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Grass hedges and weeds', 'Grass cutting');
+    cy.wait('@around-ajax');
+    cy.wait('@speed-limits');
+    callback();
+  }
+
+  it('displays the parish name if answer is "no"', function() {
+    parishGrassCuttingSetup('bucks_speed_limits_30.xml', function() {
+      cy.get(speedGreaterThan30).should('have.value', 'no');
       cy.nextPageReporting();
       cy.nextPageReporting();
       cy.contains('sent to Adstock Parish Council and also published online').should('be.visible');
     });
+  });
 
-    it('displays the council name if answer is "yes"', function() {
-      cy.get(speedGreaterThan30).select('yes');
+  it('displays the council name if answer is "yes"', function() {
+    parishGrassCuttingSetup('bucks_speed_limits_60.xml', function() {
+      cy.get(speedGreaterThan30).should('have.value', 'yes');
       cy.nextPageReporting();
       cy.nextPageReporting();
       cy.contains('sent to Buckinghamshire Council and also published online').should('be.visible');
     });
+  });
 
-    it('displays the council name if answer is "dont_know"', function() {
-      cy.get(speedGreaterThan30).select('dont_know');
+  it('displays the council name if answer is "dont_know"', function() {
+    parishGrassCuttingSetup('bucks_speed_limits_none.xml', function() {
+      cy.get(speedGreaterThan30).should('have.value', 'dont_know');
       cy.nextPageReporting();
       cy.nextPageReporting();
       cy.contains('sent to Buckinghamshire Council and also published online').should('be.visible');
