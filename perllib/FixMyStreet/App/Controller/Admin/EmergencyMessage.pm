@@ -33,7 +33,8 @@ sub edit_emergency_message :Private {
     if ( $c->req->method eq 'POST' ) {
         $c->forward('/auth/check_csrf_token');
 
-        foreach my $field (qw(emergency_message emergency_message_waste)) {
+        foreach my $type ("", "_waste", "_reporting") {
+            my $field = "emergency_message$type";
             my $message = FixMyStreet::Template::sanitize($c->get_param($field));
             $message =~ s/^\s+|\s+$//g;
 
@@ -49,12 +50,33 @@ sub edit_emergency_message :Private {
     }
 
     $c->forward('/auth/get_csrf_token');
-    foreach my $field (qw(emergency_message emergency_message_waste)) {
+    foreach my $type ("", "_waste", "_reporting") {
+        my $field = "emergency_message$type";
         $c->stash->{$field} = $body->get_extra_metadata($field);
     }
 
     $c->stash->{body} = $body;
     $c->stash->{template} = 'admin/emergencymessage/edit.html';
+
+    # Check cobrand for body
+    my $cobrand = $body->get_cobrand_handler;
+    return unless $cobrand;
+    $c->stash->{body_cobrand} = $cobrand;
+
+    my $file = "report/new/form_after_heading.html";
+    foreach my $dir_templates (@{$cobrand->path_to_web_templates}) {
+        if (-e "$dir_templates/$file") {
+            # Cannot use render_fragment as it uses current cobrand, and falls back to base
+            my $tt = FixMyStreet::Template->new({
+                INCLUDE_PATH => [$dir_templates],
+            });
+            my $var;
+            $tt->process($file, {}, \$var);
+            $c->stash->{hardcoded_reporting_message} = $var;
+            last;
+        }
+    }
+
 }
 
 1;

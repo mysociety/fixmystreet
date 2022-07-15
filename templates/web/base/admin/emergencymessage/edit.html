@@ -3,6 +3,8 @@
 
 [% INCLUDE status_message %]
 
+<h2>Homepage</h2>
+
 <p>[% loc('This emergency message will be shown on the homepage.') %]</p>
 
 <form method="post"
@@ -17,7 +19,8 @@
         <textarea name="emergency_message" class="form-control" rows="10">[% emergency_message %]</textarea>
     </p>
 
-  [% IF body.get_cobrand_handler.feature('waste') %]
+  [% IF body_cobrand.feature('waste') %]
+    <h2>WasteWorks</h2>
     <p>The waste message will be shown on all waste pages.</p>
 
     <p>
@@ -26,9 +29,22 @@
     </p>
   [% END %]
 
+    <h2>Reporting page</h2>
+
+  [% IF hardcoded_reporting_message %]
+    <p>Your reporting page message is currently hard-coded and will display at all times.</p>
+    <pre>[% hardcoded_reporting_message %]</pre>
+  [% ELSE %]
+    <p>[% loc('The reporting message will be shown on reporting pages.') %]</p>
+    <p>
+        <strong>[% loc('Reporting message') %]:</strong>
+        <textarea name="emergency_message_reporting" class="form-control" rows="10">[% emergency_message_reporting %]</textarea>
+    </p>
+  [% END %]
+
     <p>
     <input type="hidden" name="token" value="[% csrf_token %]" >
-    <input type="submit" class="btn" value="[% emergency_message OR emergency_message_waste ? loc('Update message') : loc('Create message') %]" >
+    <input type="submit" class="btn" value="[% emergency_message OR emergency_message_waste OR emergency_message_reporting ? loc('Update message') : loc('Create message') %]" >
     </p>
 </form>
 
