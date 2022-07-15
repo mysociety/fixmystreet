@@ -384,8 +384,13 @@ sub report_new_munge_before_insert {
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
-    # Make sure Bucks grass cutting reports are routed correctly
-    FixMyStreet::Cobrand::Buckinghamshire::munge_contacts_to_bodies($self, $contacts, $report);
+    my %bodies = map { $_->body->name => 1 } @$contacts;
+
+    if ($bodies{'Buckinghamshire Council'}) {
+        # Make sure Bucks grass cutting reports are routed correctly
+        my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
+        $bucks->munge_contacts_to_bodies($contacts, $report);
+    }
 }
 
 sub get_body_handler_for_problem {

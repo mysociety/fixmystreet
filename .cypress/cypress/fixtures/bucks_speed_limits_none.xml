@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wfs:FeatureCollection xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:OS_Highways_Speed="https://maps.buckscc.gov.uk/arcgis/services/OS_Highways_Speed/MapServer/WFSServer"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" timeStamp="2022-07-18T16:53:44Z" numberOfFeatures="123" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd https://maps.buckscc.gov.uk/arcgis/services/OS_Highways_Speed/MapServer/WFSServer https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer?service=wfs%26version=1.1.0%26request=DescribeFeatureType">
+  <gml:boundedBy>
+    <gml:Envelope srsName="urn:ogc:def:crs:EPSG::27700">
+      <gml:lowerCorner>0.00000000 0.00000000</gml:lowerCorner>
+      <gml:upperCorner>0.00000000 0.00000000</gml:upperCorner>
+    </gml:Envelope>
+  </gml:boundedBy>
+</wfs:FeatureCollection>
