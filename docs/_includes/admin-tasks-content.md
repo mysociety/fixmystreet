@@ -965,7 +965,8 @@ particular date range:
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Add/edit emergency message’ must be ticked.</span>
 
-This features allows you to set an emergency message which will be displayed on the homepage.
+This feature allows you to set emergency messages which will be displayed on
+the homepage or reporting pages; you can have different messages for in/out of hours.
 
 Certain HTML tags can be used for formatting purposes. These are limited to the same set as described
 in ["HTML content in notices"](#html-content-in-notices). You should not use block-level HTML elements
@@ -979,5 +980,12 @@ To clear the message simply delete any contents in the box.
 
 <img alt="An emergency message can be shown to users on the FixMyStreet homepage."
     src="/assets/img/pro-user-guide/emergency-message-example.png" class="admin-screenshot" />
+
+You can set the time periods that will count as out of hours on the same page. For example,
+if your out of hours were 6pm to 8am Monday to Friday, all day weekends and Bank Holidays,
+plus Christmas Eve, you would set it up as the following screenshot:
+
+<img alt="Saturday, Sunday, Bank Holidays, and a special Christmas Eve, 00:00-24:00; Monday to Friday 00:00-08:00 and 18:00-24:00."
+    src="/assets/img/pro-user-guide/emergency-message-time-periods.png" class="admin-screenshot">
 
 </div>

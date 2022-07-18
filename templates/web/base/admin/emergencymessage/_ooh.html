@@ -1,0 +1,79 @@
+[%
+IF i == 0;
+    SET vh = "";
+ELSE;
+    SET vh = ' class=visuallyhidden';
+END;
+~%]
+
+<fieldset class="js-metadata-item" data-i="[% i %]">
+    <legend class="visuallyhidden">Out of hours row [% i %]</legend>
+
+    <div id="metadata-fieldset-[% i %]" style="display:flex; gap: 1em; align-items: flex-end;">
+        <div class="form-group">
+            <label for="ooh-[% i %]-day"[% vh %]>Day</label>
+            <select class="form-control" name="ooh[[% i %]].day" id="ooh-[% i %]-day">
+                <option value="" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF NOT ooh.0 %]>---
+                <option value="1" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 1 %]>Sunday
+                <option value="2" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 2 %]>Monday
+                <option value="3" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 3 %]>Tuesday
+                <option value="4" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 4 %]>Wednesday
+                <option value="5" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 5 %]>Thursday
+                <option value="6" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 6 %]>Friday
+                <option value="7" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 7 %]>Saturday
+                <option value="8" data-hide="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0 == 8 %]>Bank Holidays
+                <option value="x" data-show="#ooh-[% i %]-special-group"
+                    [%~ ' selected' IF ooh.0.match('^\d\d\d\d-\d\d-\d\d$') %]>Special day
+            </select>
+        </div>
+
+        <div class="form-group" id="ooh-[% i %]-special-group">
+            <label for="ooh-[% i %]-special"[% vh %]>[% loc('Date') %]</label>
+            <input class="form-control" name="ooh[[% i %]].special" id="ooh-[% i %]-special" type=date value="[% ooh.0 IF ooh.0.match('^\d\d\d\d-\d\d-\d\d$') %]">
+        </div>
+
+        <div class="form-group">
+            <label for="ooh-[% i %]-start"[% vh %]>[% loc('Start time') %]</label>
+            <select class="form-control" name="ooh[[% i %]].start" id="ooh-[% i %]-start">
+                <option value=""[%~ ' selected' IF NOT ooh.1 %]>---
+              [% FOR h IN ["00","01","02","03","04","05","06","07","08","09",10,11,12,13,14,15,16,17,18,19,20,21,22,23] %]
+              [% FOR m IN ["00",15,30,45] %]
+                <option value="[% h * 60 + m %]"[% ' selected' IF ooh.1 == h * 60 + m %]>[% h %]:[% m %]
+              [% END %]
+              [% END %]
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ooh-[% i %]-end"[% vh %]>[% loc('End time') %]</label>
+            <select class="form-control" name="ooh[[% i %]].end" id="ooh-[% i %]-end">
+              <option value=""[%~ ' selected' IF NOT ooh.2 %]>---
+              <option value="15"[% ' selected' IF ooh.2 == 15 %]>00:15
+              <option value="30"[% ' selected' IF ooh.2 == 30 %]>00:30
+              <option value="45"[% ' selected' IF ooh.2 == 45 %]>00:45
+              [% FOR h IN ["01","02","03","04","05","06","07","08","09",10,11,12,13,14,15,16,17,18,19,20,21,22,23] %]
+              [% FOR m IN ["00",15,30,45] %]
+                <option value="[% h * 60 + m %]"[% ' selected' IF ooh.2 == h * 60 + m %]>[% h %]:[% m %]
+              [% END %]
+              [% END %]
+              <option value="1440"[% ' selected' IF ooh.2 == 1440 %]>24:00
+            </select>
+        </div>
+
+        <div class="form-group" id="ooh-[% i %]-description-group">
+            <button style="margin-bottom:0.5em" type="button" class="btn btn--small js-metadata-item-remove">[% loc('Remove time period') %]</button>
+        </div>
+
+    </div>
+</fieldset>
+
+

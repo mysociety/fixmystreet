@@ -507,6 +507,12 @@ sub _fetch_url {
     $ua->get($url)->content;
 }
 
+sub ooh_times {
+    my ($self, $body) = @_;
+    my $times = $body->get_extra_metadata("ooh_times");
+    return FixMyStreet::OutOfHours->new(times => $times, holidays => public_holidays());
+}
+
 # UK council dashboard summary/heatmap access
 
 sub dashboard_body {

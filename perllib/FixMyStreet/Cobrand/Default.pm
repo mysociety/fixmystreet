@@ -7,6 +7,7 @@ use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Geocode::Address;
 use FixMyStreet::Geocode::Bing;
+use FixMyStreet::OutOfHours;
 use DateTime;
 use List::MoreUtils 'none';
 use URI;
@@ -1366,7 +1367,20 @@ sub emergency_message {
     return unless $body;
     my $field = 'emergency_message';
     $field .= "_$type" if $type;
-    FixMyStreet::Template::SafeString->new($body->get_extra_metadata($field));
+
+    my $ooh = $self->ooh_times($body);
+    my $msg = $body->get_extra_metadata($field);
+    if ($ooh->active) {
+        $field .= "_ooh";
+        $msg = $body->get_extra_metadata($field) || $msg;
+    }
+    FixMyStreet::Template::SafeString->new($msg);
+}
+
+sub ooh_times {
+    my ($self, $body) = @_;
+    my $times = $body->get_extra_metadata("ooh_times");
+    return FixMyStreet::OutOfHours->new(times => $times);
 }
 
 # Report if cobrand denies updates by user

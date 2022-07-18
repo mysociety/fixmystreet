@@ -34,15 +34,24 @@ sub edit_emergency_message :Private {
         $c->forward('/auth/check_csrf_token');
 
         foreach my $type ("", "_waste", "_reporting") {
-            my $field = "emergency_message$type";
-            my $message = FixMyStreet::Template::sanitize($c->get_param($field));
-            $message =~ s/^\s+|\s+$//g;
+            foreach my $ooh ("", "_ooh") {
+                my $field = "emergency_message$type$ooh";
+                my $message = FixMyStreet::Template::sanitize($c->get_param($field), 1);
+                $message =~ s/^\s+|\s+$//g;
 
-            if ( $message ) {
-                $body->set_extra_metadata($field => $message);
-            } else {
-                $body->unset_extra_metadata($field);
+                if ( $message ) {
+                    $body->set_extra_metadata($field => $message);
+                } else {
+                    $body->unset_extra_metadata($field);
+                }
             }
+        }
+
+        my $ooh = $c->forward('parse_ooh_form');
+        if (@$ooh) {
+            $body->set_extra_metadata(ooh_times => $ooh);
+        } else {
+            $body->unset_extra_metadata('ooh_times');
         }
 
         $body->update;
@@ -51,8 +60,10 @@ sub edit_emergency_message :Private {
 
     $c->forward('/auth/get_csrf_token');
     foreach my $type ("", "_waste", "_reporting") {
-        my $field = "emergency_message$type";
-        $c->stash->{$field} = $body->get_extra_metadata($field);
+        foreach my $ooh ("", "_ooh") {
+            my $field = "emergency_message$type$ooh";
+            $c->stash->{$field} = $body->get_extra_metadata($field);
+        }
     }
 
     $c->stash->{body} = $body;
@@ -77,6 +88,31 @@ sub edit_emergency_message :Private {
         }
     }
 
+    my $ooh = $cobrand->ooh_times($body);
+    $c->stash->{ooh_times} = $ooh->times;
+}
+
+sub parse_ooh_form : Private {
+    my ($self, $c) = @_;
+
+    my @indices = grep { /^ooh\[\d+\]\.day/ } keys %{ $c->req->params };
+    @indices = map { /(\d+)/ } @indices;
+    my @days;
+    foreach my $i (@indices) {
+        my $day = $c->get_param("ooh[$i].day");
+        next unless $day;
+        if ($day eq 'x') {
+            $day = $c->get_param("ooh[$i].special");
+            next unless $day;
+        }
+        push @days, [
+            $day,
+            int $c->get_param("ooh[$i].start"),
+            int $c->get_param("ooh[$i].end"),
+        ];
+    }
+    @days = sort { $a->[0] <=> $b->[0] or $a->[1] <=> $b->[1] } @days;
+    return \@days;
 }
 
 1;
