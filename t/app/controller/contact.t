@@ -535,7 +535,7 @@ for my $test (
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ 'buckinghamshire' ],
         }, sub {
-            my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council');
+            my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
             my ($problem) = $mech->create_problems_for_body(1, $bucks->id, 'Test');
             $mech->get_ok( '/contact?id=' . $problem->id, 'can visit for abuse report' );
             $mech->submit_form_ok( { with_fields => $test->{fields} } );
