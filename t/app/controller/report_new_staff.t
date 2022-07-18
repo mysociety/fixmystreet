@@ -8,11 +8,11 @@ my $mech = FixMyStreet::TestMech->new;
 
 my %body_ids;
 for my $body (
-    { area_id => 2651, name => 'City of Edinburgh Council' },
-    { area_id => 2482, name => 'Bromley Council' },
-    { area_id => 2237, name => 'Oxfordshire County Council' },
+    { area_id => 2651, name => 'City of Edinburgh Council', cobrand => undef },
+    { area_id => 2482, name => 'Bromley Council', cobrand => 'bromley' },
+    { area_id => 2237, name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
 ) {
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name});
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, { cobrand => $body->{cobrand} });
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 
