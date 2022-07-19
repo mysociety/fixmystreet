@@ -2,3 +2,8 @@
 The report's reference number is [% sent_confirm_id_ref %]. Please quote this
 if you need to contact the council about this report.
 [%~ END %]
+
+[% IF cobrand_handler.moniker == 'buckinghamshire' AND problem.body != 'Buckinghamshire Council' %]
+For any further enquiries regarding this report, please contact [% problem.body %]
+[%~ IF problem.contact.email %] at [% problem.contact.email %][% END %].
+[%~ END %]
