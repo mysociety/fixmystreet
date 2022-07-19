@@ -100,6 +100,7 @@ sub _create_vars {
     my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
     $h{report} = $row;
     $h{cobrand} = $self->cobrand;
+    $h{cobrand_handler} = $self->cobrand_handler;
     map { $h{$_} = $row->user->$_ || '' } qw/email phone/;
     $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) )
         if $row->confirmed;

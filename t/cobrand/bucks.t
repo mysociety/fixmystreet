@@ -446,6 +446,30 @@ subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub 
     like $mech->get_text_body_from_email($email[1]), qr/please contact Adstock Parish Council at grassparish\@example.org/;
 };
 
+subtest '.com reports get the logged email too' => sub {
+    ok $mech->host("www.fixmystreet.com"), "change host to www";
+    $mech->clear_emails_ok;
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
+    $mech->submit_form_ok({
+        with_fields => {
+            title => "Test grass cutting report 1b",
+            detail => 'Test report details.',
+            category => 'Grass cutting',
+            speed_limit_greater_than_30 => 'no', # Is the speed limit greater than 30mph?
+        }
+    }, "submit details");
+    $mech->content_contains('Thank you for reporting');
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    ok $report, "Found the report";
+    is $report->title, 'Test grass cutting report 1b', 'Got the correct report';
+    is $report->bodies_str, $parish->id, 'Report was sent to parish';
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    $mech->email_count_is(2);
+    like $mech->get_text_body_from_email($email[1]), qr/please contact Adstock Parish Council at grassparish\@example.org/;
+    ok $mech->host("buckinghamshire.fixmystreet.com"), "change host to bucks";
+};
+
 subtest 'sends grass cutting reports on roads 30mph or more to the council' => sub {
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
