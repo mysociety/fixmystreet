@@ -1204,6 +1204,7 @@ fixmystreet.message_controller = (function() {
             $div.appendTo('#map_box');
         } else {
             $("#js-roads-responsibility").removeClass("hidden");
+            $("#js-roads-responsibility")[0].scrollIntoView();
         }
         $(id).removeClass("hidden");
     }

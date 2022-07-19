@@ -1,6 +1,8 @@
 [% PROCESS 'report/new/form_heading.html' %]
 
+<div id="js-roads-responsibility" class="box-warning hidden" aria-live="polite">
 [% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
+</div>
 
 <fieldset>
     <div id="problem_form">

@@ -11,12 +11,15 @@ describe("Oxfordshire cobrand", function() {
     cy.pickCategory('Lamp Out of Light');
     cy.wait('@street-lights-layer');
     cy.wait('@empty-street-lights-layer');
+    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('circle').eq(1).click(); // Click a public light
     cy.get("#category_meta_message_LampOutofLight").should('not.contain', 'private street light asset');
+    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
     cy.get('circle').eq(0).click(); // Click a private light
     cy.get("#category_meta_message_LampOutofLight").should('contain', 'private street light asset');
+    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
   });
 
