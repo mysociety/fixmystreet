@@ -388,12 +388,23 @@ sub munge_contacts_to_bodies {
     FixMyStreet::Cobrand::Buckinghamshire::munge_contacts_to_bodies($self, $contacts, $report);
 }
 
-sub post_report_sent {
-    my ($self, $report) = @_;
+sub get_body_handler_for_problem {
+    my ($self, $row) = @_;
 
-    # Run Buckinghamshire-specific code
+    # Have a parish handled by Buckinghamshire to use its
+    # post_report_sent and report_sent_confirmation_email
     my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
-    $bucks->post_report_sent($report);
+    my @parishes = $bucks->parish_bodies->all;
+    my @parish_ids = map { $_->id } @parishes;
+
+    foreach my $body_id (@{$row->bodies_str_ids}) {
+        if (grep { $body_id == $_ } @parish_ids) {
+            # Report is to a Bucks parish
+            return $bucks;
+        }
+    }
+
+    return $self->next::method($row);
 }
 
 around 'munge_sendreport_params' => sub {
