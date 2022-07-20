@@ -681,6 +681,16 @@ sub garden_waste_dd_munge_form_details {
         $c->stash->{form_name} = $c->stash->{payment_details}->{staff_form_name};
     }
 
+    my $report = $c->stash->{report};
+    my $type = $report->get_extra_field_value('Request_Type');
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    if ($type && $type == $self->waste_subscription_types->{Renew} && $now->ymd("") < '20220701') {
+        $c->stash->{month} = 3;
+        $c->stash->{month_name} = 'March';
+        $c->stash->{day} = 1;
+        $c->stash->{initial_ad_hoc} = 1;
+    }
+
     my $cfg = $self->feature('echo');
     if ($cfg->{nlpg} && $c->stash->{property}{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $c->stash->{property}{uprn}));
@@ -769,6 +779,33 @@ sub garden_waste_dd_complete {
     my ($self, $report) = @_;
     $report->set_extra_metadata('ddsubmitted', 1);
     $report->update();
+
+    my $type = $report->get_extra_field_value('Request_Type');
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    if ($type && $type == $self->waste_subscription_types->{Renew} && $now->ymd("") < '20220701') {
+        my $i = $self->get_dd_integration;
+        my $mandate = $i->get_mandate_from_reference( $self->{c}->get_param("ddPlanReference") );
+        my $mandate_id = $mandate->{id};
+
+        $report->set_extra_metadata( dd_contact_id => $mandate->{payerId});
+        $report->set_extra_metadata( dd_mandate_id => $mandate_id );
+        $report->update;
+
+        my $total = $report->get_extra_field_value('payment');
+        if ( $report->get_extra_field_value('admin_fee') ) {
+            $total += $report->get_extra_field_value('admin_fee');
+        }
+        my $res = $i->one_off_payment( {
+                orig_sub => $report,
+                amount =>  sprintf('%.2f', $total / 100),
+                date => $mandate->{restrictedDate},
+                reference => $report->id
+        } );
+
+        if ( $res == 0 ) {
+            $self->{c}->stash->{error} = "Could not create initial payment.";
+        }
+    }
 }
 
 sub waste_dd_payment_ref {
