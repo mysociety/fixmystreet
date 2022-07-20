@@ -675,6 +675,12 @@ sub waste_payment_ref_council_code { "RBK" }
 sub garden_waste_dd_munge_form_details {
     my ($self, $c) = @_;
 
+    $c->stash->{form_name} = $c->stash->{payment_details}->{form_name};
+
+    if ( $c->stash->{staff_payments_allowed} ) {
+        $c->stash->{form_name} = $c->stash->{payment_details}->{staff_form_name};
+    }
+
     my $cfg = $self->feature('echo');
     if ($cfg->{nlpg} && $c->stash->{property}{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $c->stash->{property}{uprn}));
