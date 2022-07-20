@@ -4,7 +4,7 @@ $societyworks-footer-padding: 2em 0 !default;
 $societyworks-footer-font-family: inherit !default;
 $societyworks-footer-font-size: 14px !default;
 $societyworks-footer-line-height: 1 !default;
-$societyworks-footer-logo-vertical-align: -5px !default;
+$societyworks-footer-logo-vertical-align: -7px !default;
 
 .societyworks-footer {
     padding: $societyworks-footer-padding;
@@ -36,9 +36,9 @@ $societyworks-footer-logo-vertical-align: -5px !default;
 }
 
 .societyworks-footer__logo--fms-pro {
-    padding-top: 20px;
-    width: 146px;
-    background-size: 146px 20px;
+    padding-top: 23px;
+    width: 123px;
+    background-size: 123px 23px;
     @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro');
     vertical-align: $societyworks-footer-logo-vertical-align;
 }
