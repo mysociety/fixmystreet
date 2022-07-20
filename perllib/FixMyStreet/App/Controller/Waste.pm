@@ -406,6 +406,8 @@ sub populate_dd_details : Private {
     $c->stash->{month_name} = $dt->month_name;
     $c->stash->{year} = $dt->year;
 
+    $c->cobrand->call_hook( 'garden_waste_dd_munge_form_details' => $c );
+
     $c->stash->{redirect} = $c->cobrand->call_hook( 'garden_waste_dd_redirect_url' => $p ) || '';
 }
 
@@ -1422,7 +1424,7 @@ sub process_garden_data : Private {
         $p->update;
         $c->forward('confirm_subscription', [ undef ]);
     } else {
-        if ( $data->{payment_method} eq 'direct_debit' ) {
+        if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');

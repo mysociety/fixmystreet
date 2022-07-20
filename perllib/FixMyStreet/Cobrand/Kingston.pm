@@ -672,6 +672,43 @@ sub _waste_cc_line_item_ref {
 
 sub waste_payment_ref_council_code { "RBK" }
 
+sub garden_waste_dd_munge_form_details {
+    my ($self, $c) = @_;
+
+    my $cfg = $self->feature('echo');
+    if ($cfg->{nlpg} && $c->stash->{property}{uprn}) {
+        my $uprn_data = get(sprintf($cfg->{nlpg}, $c->stash->{property}{uprn}));
+        $uprn_data = JSON::MaybeXS->new->decode($uprn_data);
+        my $address = $self->get_address_details_from_nlpg($uprn_data);
+        if ( $address ) {
+            $c->stash->{address1} = $address->{address1};
+            $c->stash->{address2} = $address->{address2};
+            $c->stash->{town} = $address->{town};
+            $c->stash->{postcode} = $address->{postcode};
+        }
+    }
+}
+
+sub get_address_details_from_nlpg {
+    my ( $self, $uprn_data) = @_;
+
+    my $address;
+    my $property = $uprn_data->{results}->[0]->{LPI};
+    if ( $property ) {
+        $address = {};
+        $address->{address1} .= ( FixMyStreet::Template::title($property->{$_}) . ", " || '' ) for qw/SUB_BUILDING_NAME BUILDING_NAME BUILDING_NUMBER/;
+
+        $address->{address1} = join(", ", grep {/.+/} map { FixMyStreet::Template::title($property->{$_}) } qw/SUB_BUILDING_NAME BUILDING_NAME BUILDING_NUMBER/);
+
+        $address->{address2} = FixMyStreet::Template::title($property->{THOROUGHFARE_NAME});
+        $address->{address2} = join(", ", grep { /.+/ } map { FixMyStreet::Template::title($property->{$_}) } qw/DEPENDENT_THOROUGHFARE_NAME THOROUGHFARE_NAME/);
+        $address->{town} = FixMyStreet::Template::title($property->{POST_TOWN});
+        $address->{postcode} = $property->{POSTCODE};
+    }
+
+    return $address;
+}
+
 sub garden_waste_dd_redirect_url {
     my ($self, $p) = @_;
 
@@ -683,9 +720,12 @@ sub garden_waste_dd_redirect_url {
 sub garden_waste_dd_check_success {
     my ($self, $c) = @_;
 
+    if ( defined( $c->get_param('stage') ) && $c->get_param('stage') == 0 ) {
+        # something has gone wrong and the form has not recorded correctly
+        $c->forward('direct_debit_error');
+        $c->detach();
     # check if the bank details have been verified
-    my $applied = lc $c->get_param('verificationapplied') || '';
-    if ( $applied eq 'true' ) {
+    } elsif ( $c->get_param('verificationapplied') && lc $c->get_param('verificationapplied') eq 'true' ) {
         # and if they have and verification has failed then redirect
         # to the cancelled page
         if ( lc $c->get_param('status') eq 'false') {
