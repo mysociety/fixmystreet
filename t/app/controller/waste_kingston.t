@@ -405,7 +405,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Subscribe to garden waste collection', 'Subscribe link not present for active sub');
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Subscribe to garden waste collection', 'Subscribe link not present if in renew window');
+        $mech->content_contains('Subscribe to garden waste collection', 'Subscribe link present if expired at all');
         set_fixed_time('2021-05-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Subscribe to garden waste collection', 'Subscribe link present if expired');
@@ -415,9 +415,9 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345?1');
-        $mech->content_contains('Garden Waste');
+        $mech->content_contains('Subscribe to garden waste collection');
         $mech->content_lacks('Modify your garden waste subscription');
-        $mech->content_contains('Your subscription is now overdue', "overdue link if after expired");
+        $mech->content_lacks('Your subscription is now overdue', "No overdue link if after expired");
         set_fixed_time('2021-03-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
@@ -1004,40 +1004,8 @@ FixMyStreet::override_config {
     subtest 'renew credit card sub after end of sub' => sub {
         set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('subscription is now overdue');
-        $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
-        $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
-        $mech->content_lacks('garden_modify', 'modify link not on expired subs');
-
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_renew');
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 1,
-            bins_wanted => 1,
-            payment_method => 'credit_card',
-            name => 'Test McTest',
-            email => 'test@example.net',
-        } });
-        $mech->content_contains('20.00');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-        check_extra_data_pre_confirm($new_report, new_bins => 0);
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-        check_extra_data_post_confirm($new_report);
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        unlike $body, qr/Bins to be delivered/;
-        like $body, qr/Total:.*?20.00/;
+        $mech->content_lacks('subscription is now overdue');
+        $mech->content_lacks('Renew your garden waste subscription', 'renew link still on expired subs');
     };
 
     remove_test_subs( $p->id );
@@ -1107,28 +1075,8 @@ FixMyStreet::override_config {
     subtest 'renew credit card sub after end of sub increasing bins' => sub {
         set_fixed_time('2021-04-01T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('subscription is now overdue');
-        $mech->content_contains('Renew your garden waste subscription', 'renew link still on expired subs');
-        $mech->content_lacks('garden_cancel', 'cancel link not on expired subs');
-        $mech->content_lacks('garden_modify', 'modify link not on expired subs');
-
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_renew');
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 1,
-            bins_wanted => 2,
-            payment_method => 'credit_card',
-            name => 'Test McTest',
-            email => 'test@example.net',
-        } });
-        $mech->content_contains('40.00');
-        $mech->content_contains('15.00');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
-        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        check_extra_data_pre_confirm($new_report, quantity => 2);
+        $mech->content_lacks('subscription is now overdue');
+        $mech->content_lacks('Renew your garden waste subscription', 'renew link still on expired subs');
     };
 
     subtest 'cancel credit card sub' => sub {

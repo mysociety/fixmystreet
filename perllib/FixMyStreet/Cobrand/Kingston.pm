@@ -295,7 +295,6 @@ sub bin_services_for_address {
     my @to_fetch;
     my %schedules;
     my @task_refs;
-    my %expired;
     foreach (@$result) {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
@@ -312,7 +311,6 @@ sub bin_services_for_address {
             #}
 
             my $schedules = _parse_schedules($task);
-            $expired{$service_id} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
             next unless $schedules->{next} or $schedules->{last};
             $schedules{$service_id} = $schedules;
@@ -333,9 +331,9 @@ sub bin_services_for_address {
         foreach my $task (@$servicetasks) {
             my $service_id = $task->{TaskTypeId};
             my $service_name = $self->service_name_override($service_id);
-            next unless $schedules{$service_id} || ( $service_name eq 'Garden Waste' && $expired{$service_id} );
+            next unless $schedules{$service_id};
 
-            my $schedules = $schedules{$service_id} || $expired{$service_id};
+            my $schedules = $schedules{$service_id};
 
             my $containers = $service_to_containers{$service_id};
             my ($open_request) = grep { $_ } map { $events->{request}->{$_} } @$containers;
@@ -347,7 +345,7 @@ sub bin_services_for_address {
             my $garden_container;
             my $garden_cost = 0;
             my $garden_due = $self->waste_sub_due($schedules->{end_date});
-            my $garden_overdue = $expired{$service_id};
+            my $garden_overdue = 0; # No 'overdue' notice
             if ($service_name eq 'Garden Waste') {
                 $garden = 1;
                 my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
