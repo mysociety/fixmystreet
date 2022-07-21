@@ -1,0 +1,12 @@
+Subject: Your [% site_name %] account details
+
+Please click on the link below to confirm your email address.
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+Once you've done this, you'll be able to view or amend your subscription.
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

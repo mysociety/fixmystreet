@@ -1,0 +1,40 @@
+[%- FOR problem IN problems %]
+    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
+        <td class="record-id">
+            <a href="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]">[% problem.id %]</a>
+        </td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
+        <td>
+            [% PROCESS value_or_nbsp value=problem.name %]
+            <br>[% PROCESS value_or_nbsp value=problem.user.email %]
+            <br>[% PROCESS value_or_nbsp value=problem.user.phone_display %]
+        </td>
+        <td>
+            [% PROCESS value_or_nbsp value=problem.category_display %]
+            <br>
+            [% assigned_user = problem.shortlisted_user.name OR problem.shortlisted_user.username %]
+            [%
+                IF c.user.has_body_permission_to('assign_report_to_user')
+                && assigned_user
+            %] [%# see report's assigned user %]
+                <span>[% loc('Assigned to') %]: </span>
+                <span>
+                    [%- assigned_user -%]
+                </span>
+            [%- END -%]
+        </td>
+        <td>[% prettify_state(problem.state, 1) %]<br><small>
+            [% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
+            <br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %]
+            [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
+            [%- IF problem.is_fixed %]<br>[% prettify_state('fixed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
+            [%- IF problem.is_closed %]<br>[% prettify_state('closed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
+            [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
+        </small></td>
+        <td>
+            [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
+                <a href="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]">[% loc('Edit') %]</a>
+            [% END %]
+        </td>
+    </tr>
+[%- END -%]
