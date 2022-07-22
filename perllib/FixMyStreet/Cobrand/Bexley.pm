@@ -82,6 +82,10 @@ sub on_map_default_status { 'open' }
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
+    if ($comment->problem->get_extra_field_value('NSGRef')) {
+        $params->{nsg_ref} = $comment->problem->get_extra_field_value('NSGRef');
+    }
+
     $params->{service_request_id_ext} = $comment->problem->id;
 }
 
