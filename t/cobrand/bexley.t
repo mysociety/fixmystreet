@@ -295,6 +295,25 @@ FixMyStreet::override_config {
         $mech->content_contains('Posted anonymously by a non-staff user');
     };
 
+    subtest 'update on report with NSGRef sends nsg_ref argument to open311' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        $report->set_extra_fields({name => 'NSGRef', description => 'NSG Ref', value => '123/456'});
+        $report->update;
+        my $comment = $mech->create_comment_for_problem($report, $report->user, 'Commenter', 'Normal update', 't', 'confirmed', 'confirmed');
+        $comment->discard_changes;
+        my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
+        my $o = Open311->new(
+          fixmystreet_body => $body,
+        );
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
+        $o->post_service_request_update($comment);
+
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new( $req->content );
+
+        is $c->param('nsg_ref'), '123/456', 'nsg included in update';
+    };
+
     subtest 'dead animal url changed for staff users' => sub {
         $mech->get_ok('/report/new/ajax?latitude=51.466707&longitude=0.181108');
         $mech->content_lacks('http://public.example.org/dead_animals');
