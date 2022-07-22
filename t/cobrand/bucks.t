@@ -553,7 +553,7 @@ subtest 'body filter on dashboard' => sub {
 
 subtest 'All reports pages for parishes' => sub {
     $mech->get_ok('/reports/Buckinghamshire');
-    $mech->content_contains('View reports sent to parishes');
+    $mech->content_contains('View reports sent to Parish/Town Councils');
 
     $mech->get_ok('/about/parishes');
     $mech->content_contains('Adstock Parish Council');
