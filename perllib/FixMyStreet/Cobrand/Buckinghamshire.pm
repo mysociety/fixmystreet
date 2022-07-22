@@ -234,12 +234,15 @@ sub dashboard_extra_bodies {
 
 sub _parish_ids {
     # This is a list of all Parish Councils within Buckinghamshire,
-    # taken from https://mapit.mysociety.org/area/2217/covers.json?type=CPC
+    # taken from https://mapit.mysociety.org/area/163793/children.json?type=CPC
     return [
         "135493",
         "135494",
         "148713",
         "148714",
+        "164523",
+        "164562",
+        "164563",
         "53319",
         "53360",
         "53390",
@@ -389,7 +392,6 @@ sub _parish_ids {
         "62296",
         "62311",
         "62321",
-        "62431",
         "62454",
         "62640",
         "62657",
