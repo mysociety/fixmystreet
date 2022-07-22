@@ -321,6 +321,51 @@ subtest 'Private comments on updates are added to open311 description' => sub {
     };
 };
 
+subtest 'Updates on waste reports don\'t have munged params' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+    }, sub {
+        $report->comments->delete;
+
+        Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>43</update_id></request_update></service_request_updates>');
+
+        $mech->log_out_ok;
+        $mech->log_in_ok($staffuser->email);
+        $mech->host('bromley.fixmystreet.com');
+
+
+        $mech->get_ok('/report/' . $report->id);
+
+        $mech->submit_form_ok( {
+                with_fields => {
+                    submit_update => 1,
+                    update => 'Test',
+                    fms_extra_title => 'DR',
+                    first_name => 'Bromley',
+                    last_name => 'Council',
+                },
+            },
+            'update form submitted'
+        );
+
+        is $report->comments->count, 1, 'comment was added';
+        my $comment = $report->comments->first;
+
+        $report->update({ cobrand_data => 'waste' });
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('update_id'), $comment->id;
+        is $c->param('update_id_ext'), undef;
+        is $c->param('service_request_id_ext'), undef;
+        is $c->param('public_anonymity_required'), undef;
+
+        $report->update({ cobrand_data => '' });
+    };
+};
+
 for my $test (
     {
         cobrand => 'bromley',
