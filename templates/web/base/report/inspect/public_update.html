@@ -1,5 +1,9 @@
 [% IF NOT public_update_defaulted.defined %]
+  [% IF c.cobrand.can('public_update_default_checked') %]
+    [% public_update_defaulted = c.cobrand.public_update_default_checked %]
+  [% ELSE %]
     [% public_update_defaulted = 1 %]
+  [% END %]
 [% END %]
           <p>
             <label class="label-containing-checkbox">
