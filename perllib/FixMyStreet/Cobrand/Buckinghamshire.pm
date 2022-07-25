@@ -762,6 +762,9 @@ sub munge_contacts_to_bodies {
 
     return unless $report->category eq 'Grass cutting';
 
+    # If there's only one contact then we just want to use that, so skip filtering.
+    return if scalar @{$contacts} < 2;
+
     my $greater_than_30 = $report->get_extra_field_value('speed_limit_greater_than_30');
 
     if (!$greater_than_30) {
