@@ -157,4 +157,47 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'cheshireeast', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+    $staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_inspect' });
+
+    ok $mech->host("cheshireeast.fixmystreet.com"), "change host to cheshireeast";
+    $mech->log_in_ok($staff_user->email);
+
+    $report->comments->delete_all;
+
+    subtest 'inspector form defaults to not creating a public update on CE cobrand', sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "" } });
+        $mech->content_lacks("Please provide a public update for this report.");
+        is $report->comments->count, 0, "No updates on report";
+
+        $mech->get_ok('/report/' . $report->id);
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This text should be ignored" } });
+        $mech->content_lacks("This text should be ignored");
+        is $report->comments->count, 0, "No updates on report";
+    };
+
+    subtest 'inspector form does still let you leave public update on CE cobrand', sub {
+        $mech->get_ok('/report/' . $report->id);
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This text should be included", include_update => 1 } });
+        $mech->content_contains("This text should be included");
+        is $report->comments->count, 1, "Created an update on report";
+    };
+
+    subtest 'inspector form defaults to leaving public update on FMS cobrand', sub {
+        $report->comments->delete_all;
+        ok $mech->host("www.fixmystreet.com"), "change host to fixmystreet";
+
+        $mech->get_ok('/report/' . $report->id);
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This update text will be added" } });
+        $mech->content_contains("This update text will be added");
+        is $report->comments->count, 1, "Created an update on report";
+    };
+
+};
+
 done_testing();
