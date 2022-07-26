@@ -167,7 +167,7 @@ FixMyStreet::override_config {
     ok $mech->host("cheshireeast.fixmystreet.com"), "change host to cheshireeast";
     $mech->log_in_ok($staff_user->email);
 
-    $report->comments->delete_all;
+    ($report) = $mech->create_problems_for_body( 1, $body->id, 'Test', { category => 'Zebra Crossing' } );
 
     subtest 'inspector form defaults to not creating a public update on CE cobrand', sub {
         $mech->get_ok('/report/' . $report->id);
