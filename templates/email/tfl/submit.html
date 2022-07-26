@@ -57,6 +57,9 @@ of a local problem that they believe might require your attention.</p>
     [% IF report.get_extra_field_value('site') %]
       <p style="[% secondary_p_style %]"><strong>Signal site number:</strong> [% report.get_extra_field_value('site') | html %]</p>
     [% END %]
+    [% IF report.category == "Abandoned Santander Cycle" %]
+      <p style="[% secondary_p_style %]"><strong>Bike number:</strong> [% report.get_extra_field_value('Question') | html %]</p>
+    [% END %]
     [% report.detail | html_para_email(secondary_p_style) %]
     <p style="[% secondary_p_style %]">
       <strong>Location:</strong>

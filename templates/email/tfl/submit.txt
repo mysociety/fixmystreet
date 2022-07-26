@@ -27,6 +27,8 @@ Category: [% report.category %]
 [% END %]
 [% IF report.get_extra_field_value('site') %]Signal site number: [% report.get_extra_field_value('site') %]
 [% END %]
+[% IF report.category == "Abandoned Santander Cycle" %]Bike number: [% report.get_extra_field_value('Question') %]
+[% END %]
 Subject: [% report.title %]
 
 Details: [% report.detail %]

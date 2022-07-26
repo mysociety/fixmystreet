@@ -202,6 +202,11 @@ $mech->create_contact_ok(
     category => 'Countdown - not working',
     email => 'countdown@example.net',
 );
+$mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Abandoned Santander Cycle',
+    email => 'lonelybikes@example.net',
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet'],
@@ -435,6 +440,19 @@ subtest "Countdown reports sent from different email" => sub {
     is $email[0]->header('From'), '"TfL Street Care" <fms-tfl-DO-NOT-REPLY@example.com>';
     $mech->clear_emails_ok;
     $report->update({ category => "Bus stops" });
+};
+
+subtest "Abandoned bike reports contain bike number" => sub {
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Abandoned bike', { category => "Abandoned Santander Cycle", cobrand => 'tfl' });
+    $report->set_extra_fields({ name => 'Question', value => '123456' });
+    $report->update;
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    like $mech->get_text_body_from_email($email[0]), qr/Bike number: 123456/, "Bike number in TfL email";
+    my $body = $mech->get_html_body_from_email($email[0]);
+    like $body, qr/Bike number:<\/strong> 123456/;
+    $mech->clear_emails_ok;
+    $report->delete;
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
@@ -820,6 +838,7 @@ for my $test (
         lat => 51.4039,
         lon => 0.018697,
         expected => [
+            'Abandoned Santander Cycle',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
             'Countdown - not working',
@@ -838,6 +857,7 @@ for my $test (
         lat => 51.4021,
         lon => 0.01578,
         expected => [
+            'Abandoned Santander Cycle',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
             'Countdown - not working',
@@ -855,6 +875,7 @@ for my $test (
         lat => 51.4039,
         lon => 0.018697,
         expected => [
+            'Abandoned Santander Cycle',
             'Bus stops',
             'Countdown - not working',
             'Flooding',
@@ -871,6 +892,7 @@ for my $test (
         lat => 51.4021,
         lon => 0.01578,
         expected => [
+            'Abandoned Santander Cycle',
             'Bus stops',
             'Countdown - not working',
             'Flooding',
@@ -887,6 +909,7 @@ for my $test (
         lat => 51.4039,
         lon => 0.018697,
         expected => [
+            'Abandoned Santander Cycle',
             'Accumulated Litter',
             'Bus stops',
             'Countdown - not working',
@@ -905,6 +928,7 @@ for my $test (
         lat => 51.4021,
         lon => 0.01578,
         expected => [
+            'Abandoned Santander Cycle',
             'Accumulated Litter',
             'Bus stops',
             'Countdown - not working',
@@ -922,6 +946,7 @@ for my $test (
         lat => 51.552287,
         lon => -0.063326,
         expected => [
+            'Abandoned Santander Cycle',
             'Bus stops',
             'Countdown - not working',
             'Flooding',
