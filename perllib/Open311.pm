@@ -461,7 +461,7 @@ sub _populate_service_request_update_params {
     }
 
     # The following will only set by UK in Bromley/Bromley cobrands
-    if ( $comment->extra && $comment->extra->{title} ) {
+    if ( $comment->extra && $comment->extra->{title} && ( $comment->problem->cobrand_data || '' ) ne 'waste' ) {
         $params->{'email_alerts_requested'}
             = $comment->extra->{email_alerts_requested} ? 'TRUE' : 'FALSE';
         $params->{'title'} = $comment->extra->{title};

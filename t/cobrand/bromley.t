@@ -361,6 +361,7 @@ subtest 'Updates on waste reports don\'t have munged params' => sub {
         is $c->param('update_id_ext'), undef;
         is $c->param('service_request_id_ext'), undef;
         is $c->param('public_anonymity_required'), undef;
+        is $c->param('email_alerts_requested'), undef;
 
         $report->update({ cobrand_data => '' });
     };
