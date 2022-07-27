@@ -233,6 +233,20 @@ FixMyStreet::override_config {
         ], 'Request had multiple photos';
     };
 
+    subtest 'sends nsg_ref parameter with Open311 updates' => sub {
+        my $user = $mech->create_user_ok('test@example.org');
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', { category => 'Flytipping', user => $user, external_id => '42' });
+        $report->push_extra_fields({ name => 'NSGRef', value => '12345' });
+        $report->update;
+        my $comment = $mech->create_comment_for_problem($report, $user, 'Test User', 'Test Comment', 't', 'confirmed', undef, { confirmed  => DateTime->now() });
+
+        my $o = Open311->new( fixmystreet_body => $body );
+        $o->post_service_request_update($comment);
+        my $c = CGI::Simple->new($o->test_req_used->content);
+
+        is $c->param('nsg_ref'), '12345', 'nsg_ref set';
+    };
+
     subtest 'anonymous update message' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
         my $staffuser = $mech->create_user_ok('super@example.org');
