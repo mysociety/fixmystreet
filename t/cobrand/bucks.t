@@ -11,7 +11,10 @@ END { FixMyStreet::App->log->enable('info'); }
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
-my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
+my $parish2 = $mech->create_body_ok(58815, 'Aylesbury Town Council');
+my $deleted_parish = $mech->create_body_ok(58815, 'Aylesbury Parish Council');
+$deleted_parish->update({ deleted => 1 });
+my $other_body = $mech->create_body_ok(1234, 'Aylesbury Vale District Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'triage' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
@@ -582,6 +585,10 @@ subtest 'All reports pages for parishes' => sub {
     $mech->get_ok('/reports/Adstock');
     $mech->content_contains('Adstock Parish Council');
     is $mech->uri->path, '/reports/Adstock';
+
+    $mech->get_ok('/reports/Aylesbury');
+    $mech->content_contains('Aylesbury Town Council');
+    is $mech->uri->path, '/reports/Aylesbury';
 };
 
 subtest 'Reports to parishes are closed by default' => sub {
