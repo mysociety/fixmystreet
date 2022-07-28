@@ -254,7 +254,7 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
         ($c->stash->{area}) = values %$areas;
     } else {
         foreach (keys %$areas) {
-            if (lc($areas->{$_}->{name}) eq lc($area) || $areas->{$_}->{name} =~ /^\Q$area\E (Borough|City|District|County) Council$/i) {
+            if (lc($areas->{$_}->{name}) eq lc($area) || $areas->{$_}->{name} =~ /^\Q$area\E (Borough|City|District|County|Parish|Town) Council$/i) {
                 $c->stash->{area} = $areas->{$_};
             }
         }
@@ -365,13 +365,16 @@ sub body_find : Private {
     my ($self, $c, $q_body) = @_;
 
     # We must now have a string to check
-    my @bodies = $c->model('DB::Body')->search( { name => { -like => "$q_body%" } } )->all;
+    my @bodies = $c->model('DB::Body')->search(
+        { name => { -like => "$q_body%" } },
+        { order_by => 'deleted' } # Prefer active over deleted
+    )->all;
 
     if (@bodies == 1) {
         return $bodies[0];
     } else {
         foreach (@bodies) {
-            if (lc($_->name) eq lc($q_body) || $_->name =~ /^\Q$q_body\E (Borough|City|District|County) Council$/i) {
+            if (lc($_->name) eq lc($q_body) || $_->name =~ /^\Q$q_body\E (Borough|City|District|County|Parish|Town) Council$/i) {
                 return $_;
             }
         }
