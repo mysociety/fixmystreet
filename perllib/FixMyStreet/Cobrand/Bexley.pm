@@ -166,8 +166,13 @@ sub admin_user_domain { 'bexley.gov.uk' }
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
 
-    # Check Open311 was successful
-    return unless $row->external_id;
+    # Check Open311 was successful, or if this was the first time a Symology report failed
+    if ($sender->contact->email !~ /^(Confirm|Uniform)/) { # it's a Symology report
+        # failed at least once, assume email was sent on first failure
+        return if $row->send_fail_count;
+    } else {
+        return unless $row->external_id;
+    }
 
     my @lighting = (
         'Lamp post',

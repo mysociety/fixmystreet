@@ -1,8 +1,10 @@
 use CGI::Simple;
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::SendReport::Open311;
 use Catalyst::Test 'FixMyStreet::App';
 
 # disable info logs for this test run
@@ -231,6 +233,54 @@ FixMyStreet::override_config {
             'http://bexley.example.org/photo/' . $report->id . '.0.full.jpeg?74e33622',
             'http://bexley.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',
         ], 'Request had multiple photos';
+    };
+
+    subtest 'testing sending P1 emails even if Symology down', sub {
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
+            category => 'Damaged road', cobrand => 'bexley',
+            latitude => 51.408484, longitude => 0.074653, areas => '2494',
+        });
+        $report->set_extra_fields({ 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' });
+        $report->update;
+
+        # I have no idea where `erequests.xml` comes from, but that's what
+        # the path appears to be when _make_request is called in FixMyStreet/Test.pm
+        Open311->_inject_response('erequests.xml', 'Failure', 400);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+
+        $report->discard_changes;
+        is $report->whensent, undef, 'Report not marked as sent';
+        is $report->send_method_used, undef, 'Report not sent via Open311';
+        is $report->external_id, undef, 'Report has no external ID';
+        is $report->send_fail_count, 1, 'Report marked as failed to send';
+
+        my $email = $mech->get_email;
+        my $t = join('@[^@]*', ('p1', 'outofhours', 'ooh2'));
+        is $email->header('From'), '"Test User" <do-not-reply@example.org>';
+        like $email->header('To'), qr/^[^@]*$t@[^@]*$/;
+        like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
+
+        # check that it doesn't send email again on subsequent open311 failure
+        Open311->_inject_response('erequests.xml', 'Failure', 400);
+        $mech->clear_emails_ok;
+        stderr_like { # capture stderr output because debug is on
+            FixMyStreet::Script::Reports::send(0, 0, 1); # debug so it attempts to resend immediately
+        } qr/request failed: 400 Bad Request/;
+        $report->discard_changes;
+        is $report->send_fail_count, 2, 'Send fail count increased';
+        is $report->whensent, undef, 'Report not marked as sent';
+        ok $mech->email_count_is(0), "Email wasn't sent";
+
+        # check that open311 send success doesn't result in email being sent again
+        FixMyStreet::Script::Reports::send(0, 0, 1); # debug so it attempts to resend immediately
+        $report->discard_changes;
+        is $report->send_fail_count, 2, 'Send fail count didn\'t increase';
+        ok $report->whensent, 'Report has been sent';
+        ok $report->external_id, 'Report has an external ID';
+        ok $mech->email_count_is(1), "1 email was sent";
+        like $mech->get_text_body_from_email($mech->get_email), qr/Your report to London Borough of Bexley has been logged on FixMyStreet./, 'Confirmation email sent to reporter';
     };
 
     subtest 'anonymous update message' => sub {
