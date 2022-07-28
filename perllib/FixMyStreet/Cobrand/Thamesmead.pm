@@ -57,6 +57,8 @@ sub problems_on_map_restriction { $_[0]->problems_restriction($_[1]) }
 sub problems_sql_restriction { FixMyStreet::Cobrand::UKCouncils::problems_sql_restriction($_[0], $_[1]) }
 sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0], $_[1]) }
 sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction($_[0], $_[1]) }
+sub site_key { FixMyStreet::Cobrand::UKCouncils::site_key($_[0], $_[1]) }
+sub all_reports_single_body { FixMyStreet::Cobrand::UKCouncils::all_reports_single_body($_[0], $_[1]) }
 
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
