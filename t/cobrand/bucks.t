@@ -544,9 +544,12 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
     ok $report, "Found the report";
     is $report->title, 'Test Dirty signs report', 'Got the correct report';
 
+    $mech->create_comment_for_problem($report, $publicuser, 'Public User', 'Some update text', 'f', 'confirmed');
+
     # Check that the report can be accessed via the cobrand
     my $report_id = $report->id;
     $mech->get_ok("/report/$report_id");
+    $mech->content_contains('Some update text');
 };
 
 subtest 'body filter on dashboard' => sub {

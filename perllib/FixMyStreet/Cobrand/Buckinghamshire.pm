@@ -842,6 +842,13 @@ sub problems_restriction_bodies {
     return [$self->body->id, @parish_ids];
 }
 
+sub updates_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    my $bodies = $self->problems_restriction_bodies;
+    return $rs->to_body($bodies);
+}
+
 # Redirect to .com if not Bucks or a parish
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
