@@ -47,6 +47,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Gulley covers', emai
 $mech->create_contact_ok(body_id => $body->id, category => 'Damaged road', email => "ROAD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flooding in the road', email => "ConfirmFLOD");
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "UniformFLY");
+$mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => "GRAF");
 my $da = $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
 $mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and litter', email => "STREET");
 $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG", group => 'Danger things');
@@ -131,6 +132,7 @@ FixMyStreet::override_config {
         { category => 'Lamp post', code => 'StreetLightingLAMP', email => ['thirdparty', 'another'],
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Flytipping', code => 'UniformFLY', email => ['eh'] },
+        { category => 'Graffiti', code => 'GRAF', email => ['p1'], extra => { 'name' => 'offensive', description => 'Is the graffiti racist or offensive?', 'value' => 'Yes' } },
         { category => 'Flooding in the road', code => 'ConfirmFLOD', email => ['flooding'] },
     ) {
         ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
