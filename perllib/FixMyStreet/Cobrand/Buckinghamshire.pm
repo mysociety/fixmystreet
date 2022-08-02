@@ -671,6 +671,10 @@ sub speed_limit_wfs_query {
 sub _wfs_uri {
     my ($self, $row, $base_uri) = @_;
 
+    # This fn may be called before cobrand has been set in the
+    # reporting flow and local_coords needs it to be set
+    $row->cobrand('buckinghamshire') if !$row->cobrand;
+
     my ($x, $y) = $row->local_coords;
     my $buffer = 50; # metres
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
