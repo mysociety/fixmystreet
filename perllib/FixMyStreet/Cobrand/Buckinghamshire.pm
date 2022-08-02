@@ -426,7 +426,7 @@ sub get_geocoder { 'OSM' }
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-
+    return $rs if $self->{c}->stash->{categories_for_point}; # Admin page
     return $rs->search( { category => { '!=', 'Flytipping (off-road)'} } );
 }
 

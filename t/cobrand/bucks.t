@@ -11,6 +11,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+$counciluser->user_body_permissions->create({ body => $body, permission_type => 'triage' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
 
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "FLY");
@@ -143,10 +144,20 @@ subtest 'Flytipping not on a road on .com gets recategorised' => sub {
         }
     }, "submit details");
     $mech->content_contains('on its way to the council right now');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
     ok $mech->host("buckinghamshire.fixmystreet.com"), "change host to bucks";
+};
+
+subtest 'Can triage an on-road flytipping to off-road' => sub {
+    $mech->log_in_ok( $counciluser->email );
+    $report->update({ state => 'for triage' });
+    $mech->get_ok('/admin/triage');
+    $mech->content_contains('Test Report');
+    $mech->get_ok('/report/' . $report->id);
+    $mech->content_contains('<option value="Flytipping (off-road)"');
+    $report->update({ state => 'confirmed' });
 };
 
 subtest 'Flytipping not on a road going to HE does not get recategorised' => sub {
