@@ -10,20 +10,18 @@
   <li><a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice#additional-bins-9-0">Request an additional bin</a></li>
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
-  [% END %]  
+  [% END %]
   [% UNLESS waste_features.request_disabled %]
-    [%#
     <li>
-        <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) % ]?bags_only=1">
-            <input type="hidden" name="token" value="[% csrf_token % ]">
+        <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?bags_only=1">
+            <input type="hidden" name="token" value="[% csrf_token %]">
             <input type="hidden" name="container-428" value="1">
             <input type="hidden" name="quantity-428" value="1">
             <input type="hidden" name="process" value="request">
             <input type="submit" value="Request more food bags" class="waste-service-descriptor waste-service-link">
           </form>
     </li>
-    %]
-  [% END %]  
+  [% END %]
   [% IF any_report_allowed AND NOT on_day_pre_5pm %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
