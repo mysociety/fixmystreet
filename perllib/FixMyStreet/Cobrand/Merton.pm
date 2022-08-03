@@ -30,9 +30,16 @@ sub report_validation {
 
     my @extra_fields = @{ $report->get_extra_fields() };
 
+    my %max = (
+        vehicle_registration_number => 15,
+        vehicle_make_model => 50,
+        vehicle_colour => 50,
+    );
+
     foreach my $extra ( @extra_fields ) {
-        if ( length($extra->{value}) > 255 ) {
-            $errors->{'x' . $extra->{name}} = qq+Your answer to the question: "$extra->{description}" is too long. Please use a maximum of 255 characters.+;
+        my $max = $max{$extra->{name}} || 100;
+        if ( length($extra->{value}) > $max ) {
+            $errors->{'x' . $extra->{name}} = qq+Your answer to the question: "$extra->{description}" is too long. Please use a maximum of $max characters.+;
         }
     }
 

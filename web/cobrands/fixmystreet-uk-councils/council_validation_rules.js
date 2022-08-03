@@ -36,24 +36,24 @@ body_validation_rules = {
         // additional category questions for:
         // Abandoned Vehicles
         vehicle_registration_number: {
-          maxlength: 255
+          maxlength: 15
         },
         vehicle_make_model: {
-          maxlength: 255
+          maxlength: 50
         },
         vehicle_colour: {
-          maxlength: 255
+          maxlength: 50
         },
         time_present: {
-          maxlength: 255
+          maxlength: 100
         },
         // Clinical Waste on Street
         waste_type: {
-          maxlength: 255
+          maxlength: 100
         },
         // Fly-Tipping
         evidence: {
-          maxlength: 255
+          maxlength: 100
         },
     },
     'Northamptonshire Highways': {
