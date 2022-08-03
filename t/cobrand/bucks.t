@@ -449,7 +449,8 @@ subtest 'Can triage parish reports' => sub {
     $mech->get_ok('/admin/triage');
     $mech->content_contains('Test grass cutting report 1');
     $mech->get_ok('/report/' . $report->id);
-    $mech->content_contains('value="Grass cutting"');
+    $mech->content_contains('Grass cutting (grass@example.org)');
+    $mech->content_contains('Grass cutting (grassparish@example.org)');
     $report->update({ state => 'confirmed' });
 };
 
