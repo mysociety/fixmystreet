@@ -16,11 +16,11 @@ else
     $DIR/vendor/bin/carton install --deployment --without uk --without zurich --without kiitc
 fi
 
-if ! perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
+if ! bin/cron-wrapper perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
 then
     read -p "Image::Magick is not installed. Do you want to attempt to install it?" yn
     case $yn in 
-        [Yy]* ) $DIR/vendor/bin/carton install Image::Magick;;
-        * ) echo 'You will need to install it for FixMyStreet to work';;
+        [Yy]* ) $DIR/bin/cpanm -l local Image::Magick;;
+        * ) echo 'You will need to install it for FixMyStreet image handling to work';;
     esac
 fi
