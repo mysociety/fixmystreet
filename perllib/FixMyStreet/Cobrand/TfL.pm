@@ -231,6 +231,7 @@ sub dashboard_export_problems_add_columns {
     $csv->modify_csv_header( Ward => 'Borough' );
 
     $csv->add_csv_columns(
+        bike_number => "Bike number",
         agent_responsible => "Agent responsible",
         safety_critical => "Safety critical",
         delivered_to => "Delivered to",
@@ -271,6 +272,7 @@ sub dashboard_export_problems_add_columns {
         my $user_name_display = $report->anonymous
             ? '(anonymous ' . $report->id . ')' : $report->name;
 
+        my $bike_number = $report->get_extra_field_value('Question') || '';
         my $safety_critical = $report->get_extra_field_value('safety_critical') || 'no';
         my $delivered_to = $report->get_extra_metadata('sent_to') || [];
         my $closure_email_at = $report->get_extra_metadata('closure_alert_sent_at') || '';
@@ -286,6 +288,7 @@ sub dashboard_export_problems_add_columns {
             closure_email_at => $closure_email_at,
             reassigned_at => $reassigned_at,
             reassigned_by => $reassigned_by,
+            bike_number => $bike_number,
         };
         foreach (@{$report->get_extra_fields}) {
             next if $_->{name} eq 'safety_critical';

@@ -494,6 +494,12 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains($dt . ',,,confirmed,51.4021');
     $mech->content_contains(',,,yes,countdown@example.net,,' . $dt . ',"Council User"');
+
+    $report->set_extra_fields({ name => 'Question', value => '12345' });
+    $report->update;
+
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains(',12345,,no,countdown@example.net,,', "Bike number added to csv");
 };
 
 subtest 'Inspect form state choices' => sub {
