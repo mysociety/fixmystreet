@@ -375,15 +375,26 @@ Returns 1 if category changed, 0 if no change.
 =cut
 
 sub edit_category : Private {
-    my ($self, $c, $problem, $no_comment) = @_;
+    my ($self, $c, $problem, $no_comment, $contact) = @_;
 
-    my $category = $c->get_param('category');
-    return 0 if $category eq $problem->category;
+    my $category;
+    if ($contact) {
+        $category = $contact->category;
+        return 0 if $contact->id == $problem->contact->id;
+    } else {
+        $category = $c->get_param('category');
+        return 0 if $category eq $problem->category;
+    }
 
     my $category_old = $problem->category;
     $problem->category($category);
 
-    my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+    my @contacts;
+    if ($contact) {
+        @contacts = ($contact);
+    } else {
+        @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+    }
 
     check_resend($c, $category_old, $problem, \@contacts);
 

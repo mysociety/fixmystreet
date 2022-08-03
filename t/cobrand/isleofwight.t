@@ -363,7 +363,7 @@ subtest "comment recording triage details is not sent" => sub {
         $mech->get_ok($report_url);
         $mech->submit_form_ok( {
                 with_fields => {
-                    category => 'Potholes',
+                    category => $contact->id,
                     include_update => 0,
                 }
             },
