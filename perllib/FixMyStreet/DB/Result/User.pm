@@ -387,7 +387,7 @@ sub moderating_user_name {
 
     $belongs_to_body = $user->belongs_to_body( $bodies );
 
-Returns true if the user belongs to the comma seperated list of body ids passed in
+Returns true if the user belongs to the arrayref or comma seperated list of body ids passed in
 
 =cut
 
@@ -397,7 +397,8 @@ sub belongs_to_body {
 
     return 0 unless $bodies && $self->from_body;
 
-    my %bodies = map { $_ => 1 } split ',', $bodies;
+    $bodies = [ split ',', $bodies ] unless ref $bodies eq 'ARRAY';
+    my %bodies = map { $_ => 1 } @$bodies;
 
     return 1 if $bodies{ $self->from_body->id };
     return 0;
@@ -489,7 +490,8 @@ sub permissions {
         return { map { %$_ } values %$perms };
     }
 
-    my $body_id = $problem->bodies_str;
+    my $body_id = $problem->bodies_str_ids;
+    $body_id = $cobrand->call_hook(permission_body_override => $body_id) || $body_id;
 
     return {} unless $self->belongs_to_body($body_id);
 
@@ -510,8 +512,9 @@ sub has_permission_to {
     return 1 if $self->is_superuser;
     return 0 if !$body_ids || (ref $body_ids eq 'ARRAY' && !@$body_ids);
     $body_ids = [ $body_ids ] unless ref $body_ids eq 'ARRAY';
-    my %body_ids = map { $_ => 1 } @$body_ids;
+    $body_ids = $cobrand->call_hook(permission_body_override => $body_ids) || $body_ids;
 
+    my %body_ids = map { $_ => 1 } @$body_ids;
     foreach (@{$self->body_permissions}) {
         return 1 if $_->{permission} eq $permission_type && $body_ids{$_->{body_id}};
     }

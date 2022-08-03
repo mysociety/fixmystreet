@@ -85,6 +85,22 @@ sub available_permissions {
     return $perms;
 }
 
+=head2 permission_body_override
+
+If a parish body ID is provided, return our body ID instead.
+This is so Bucks staff users have permissions on parish reports.
+
+=cut
+
+sub permission_body_override {
+    my ($self, $body_ids) = @_;
+
+    my %parish_ids = map { $_->id => 1 } $self->parish_bodies->all;
+    my @out = map { $parish_ids{$_} ? $self->body->id : $_ } @$body_ids;
+
+    return \@out;
+}
+
 # Assume that any category change means the report should be resent
 sub category_change_force_resend { 1 }
 
@@ -826,7 +842,7 @@ sub owns_problem {
 sub parish_bodies {
     my ($self) = @_;
 
-    return FixMyStreet::DB->resultset('Body')->search(
+    return $self->{parish_bodies} //= FixMyStreet::DB->resultset('Body')->search(
         { 'body_areas.area_id' => { -in => $self->_parish_ids } },
         { join => 'body_areas', order_by => 'name' }
     )->active;

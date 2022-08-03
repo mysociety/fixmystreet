@@ -448,6 +448,8 @@ subtest 'Can triage parish reports' => sub {
     $report->update({ state => 'for triage' });
     $mech->get_ok('/admin/triage');
     $mech->content_contains('Test grass cutting report 1');
+    $mech->get_ok('/report/' . $report->id);
+    $mech->content_contains('value="Grass cutting"');
     $report->update({ state => 'confirmed' });
 };
 
