@@ -89,10 +89,7 @@ sub setup_categories : Private {
     my ( $self, $c ) = @_;
 
     if ( $c->stash->{problem}->state eq 'for triage' ) {
-        $c->stash->{holding_options} = [ grep { $_->send_method && $_->send_method eq 'Triage' } @{$c->stash->{category_options}} ];
-        $c->stash->{holding_categories} = { map { $_->category => 1 } @{$c->stash->{holding_options}} };
-        $c->stash->{end_options} = [ grep { !$_->send_method || $_->send_method ne 'Triage' } @{$c->stash->{category_options}} ];
-        $c->stash->{end_categories} = { map { $_->category => 1 } @{$c->stash->{end_options}} };
+        $c->stash->{end_options} = [ grep { !$_->send_method || $_->send_method ne 'Triage' } @{$c->stash->{contacts}} ];
         delete $c->stash->{categories_hash};
         my %category_groups = ();
         for my $category (@{$c->stash->{end_options}}) {
