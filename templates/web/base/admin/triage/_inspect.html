@@ -10,14 +10,14 @@
                     [% IF group_select == 0 AND problem.category == group.name %]
                         [% selected = 1; group_select = 1 %]
                     [% END %]
-                    <option value="[% cat_op.category | html %]"[% ' selected' IF selected OR problem.category == cat_op.category %]>[% cat_op.category_display | html %] ([% cat_op.email | html %])</option>
+                    <option value="[% cat_op.id %]"[% ' selected' IF selected OR problem.category == cat_op.category %]>[% cat_op.category_display %] ([% cat_op.email %])</option>
                     [% selected = 0 %]
                 [%~ END ~%]
                 [% IF group.name %]</optgroup>[% END %]
             [%~ END =%]
         [% ELSE %]
               [% FOREACH cat IN category_options %]
-                <option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
+                <option value="[% cat.id %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display %]</option>
               [% END %]
       [% END %]
   [% END %]
@@ -68,7 +68,7 @@
           [% NEXT IF field.name == 'urgent' %]
           <p>
               <label for="[% field.name %]">[% field.description %]</label>
-              <input class="form-control" name="[% field.name %]" type="text" value="[% field.value | html %]" disabled>
+              <input class="form-control" name="[% field.name %]" type="text" value="[% field.value %]" disabled>
           </p>
           [% END %]
 

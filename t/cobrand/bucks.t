@@ -39,7 +39,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email =>
 $mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => "graffiti\@chiltern", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping (off-road)', email => "districts_flytipping", send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', email => 'parking@example.org', send_method => 'Email', group => 'Car park issue');
-$mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
+my $grass_bucks = $mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Hedge problem', email => 'hedges@example.org', send_method => 'Email');
 
 # Create another Grass cutting category for a parish.
@@ -440,7 +440,8 @@ subtest 'Can triage parish reports' => sub {
     $mech->get_ok('/report/' . $report->id);
     $mech->content_contains('Grass cutting (grass@example.org)');
     $mech->content_contains('Grass cutting (grassparish@example.org)');
-    $report->update({ state => 'confirmed' });
+    $mech->submit_form_ok({ with_fields => { category => $grass_bucks->id } });
+    $report->update({ whensent => \'current_timestamp' });
 };
 
 subtest '.com reports get the logged email too' => sub {

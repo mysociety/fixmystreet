@@ -112,9 +112,9 @@ sub update : Private {
     my $problem = $c->stash->{problem};
 
     my $current_category = $problem->category;
-    my $new_category = $c->get_param('category');
+    my $new_category_id = $c->get_param('category');
 
-    if (!$new_category) {
+    if (!$new_category_id) {
         my $errors = $c->stash->{errors} || [];
         push @$errors, _"Please choose a category";
         $c->stash->{errors} = $errors;
@@ -122,7 +122,10 @@ sub update : Private {
         $c->detach;
     }
 
-    my $changed = $c->forward('/admin/reports/edit_category', [ $problem, 1 ] );
+    my $contact = FixMyStreet::DB->resultset("Contact")->find($new_category_id);
+    my $new_category = $contact->category;
+
+    my $changed = $c->forward('/admin/reports/edit_category', [ $problem, 1, $contact ] );
 
     if ( $changed ) {
         $c->stash->{problem}->update( { state => 'confirmed' } );
