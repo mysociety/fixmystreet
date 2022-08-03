@@ -57,28 +57,27 @@ which it's much simpler to install via a packaging system.
 
 ##### i. MacPorts
 
-{% highlight bash %}
-$ port install gettext jhead libpng openssl p5-locale-gettext p5-perlmagick postgresql91-server
-{% endhighlight %}
+You will need to install gettext, jhead, libpng, openssl (perhaps version 1.1),
+p5-locale-gettext, p5-perlmagick, and postgresql13-server.
 
 ##### ii. HomeBrew
 
-**Note:** perlmagick is no longer included in HomeBrew, so you will need to
-find an alternative way to install ImageMagick.
-
 {% highlight bash %}
-$ brew install gettext jhead libpng openssl@1.1 perlmagick postgresql
-$ brew link gettext --force
+$ brew install perl pkg-config gettext jhead libpng openssl@1.1 imagemagick postgresql
 {% endhighlight %}
 
-<div class="attention-box">
-gettext needs to be linked for the Locale::gettext Perl module to install; you
-can unlink gettext once everything is installed.
-</div>
+Some Perl modules may fail to install without certain packages and paths in place.
+Hopefully the following variables should deal with all of them:
+
+{% highlight bash %}
+$ export OPENSSL_PREFIX=$HOMEBREW_PREFIX/opt/openssl@1.1
+$ export CPATH=$HOMEBREW_PREFIX/include
+$ export LIBRARY_PATH=$HOMEBREW_PREFIX/lib
+{% endhighlight %}
 
 #### c. Other
 
-You need Perl 5.8, ImageMagick with the perl bindings, and gettext.
+You need Perl 5.14, ImageMagick with the perl bindings, and gettext.
 If you're expecting a lot of traffic it's recommended that you install memcached: <http://memcached.org/>
 
 ### 3. Create a new PostgreSQL database
@@ -122,8 +121,8 @@ feel free to continue with further steps whilst it's running.
 <pre><code>C_INCLUDE_PATH=/opt/local/include LIBRARY_PATH=/opt/local/lib bin/install_perl_modules</code></pre>
 -->
 <p>It is possible you may need to install some source packages to allow some of
-the included modules to be built, including expat (libexpat1-dev), postgresql
-(postgresql-server-dev-8.4), or the GMP math library (libgmp3-dev).</p>
+the included modules to be built, including expat (libexpat1-dev), postgresql,
+or the GMP math library (libgmp3-dev).</p>
 </div>
 
 As well as installing dependencies, this script compiles our CSS (using
@@ -132,32 +131,12 @@ and compiles any translation `.mo` files (using `commonlib/bin/gettext-makemo`).
 
 #### macOS troubleshooting
 
-Some Perl modules may fail to install without certain packages and paths in place.
-
-First make sure you have installed any [prerequisite packages](#pre-req-pkg-mac).
-
-For any **SSL-related modules**, you may need to create symlinks to folders Perl modules will recognise:
+When the script above asks to install Image::Magick, it may fail depending on
+where imagemagick was installed.  In this case, if you've installed with
+homebrew, then the following should hopefully work:
 
 {% highlight bash %}
-$ sudo mkdir /usr/local/lib
-$ sudo ln -s $HOMEBREW_PREFIX/opt/openssl@1.1/lib/libssl.1.1.dylib /usr/local/lib/libssl.dylib
-$ sudo ln -s $HOMEBREW_PREFIX/opt/openssl@1.1/lib/libcrypto.1.1.dylib /usr/local/lib/libcrypto.dylib
-{% endhighlight %}
-
-You may also need to set one or more of the following env variables:
-
-{% highlight bash %}
-$ export OPENSSL_PREFIX=$HOMEBREW_PREFIX/opt/openssl@1.1
-$ export PKG_CONFIG_PATH="$HOMEBREW_PREFIX/opt/openssl@1.1/lib/pkgconfig"
-$ export LDFLAGS="-L$HOMEBREW_PREFIX/opt/openssl@1.1/lib"
-$ export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/openssl@1.1/include"
-{% endhighlight %}
-
-For **Locale::gettext** you may need to set one or more of the following:
-
-{% highlight bash %}
-$ export CPATH=$HOMEBREW_PREFIX/include
-$ export LIBRARY_PATH=$HOMEBREW_PREFIX/lib
+$ CPATH=$HOMEBREW_PREFIX/include/ImageMagick-7 LIBRARY_PATH=$HOMEBREW_PREFIX/lib bin/cpanm -l local Image::Magick
 {% endhighlight %}
 
 ### 5. Set up config
