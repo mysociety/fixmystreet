@@ -420,6 +420,7 @@ subtest 'Allows car park reports to be made in a car park' => sub {
     $mech->content_contains('Your issue is on its way to the council');
 };
 
+$report = undef;
 subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub {
     FixMyStreet::Script::Reports::send();
     $mech->clear_emails_ok;
@@ -433,13 +434,21 @@ subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub 
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 1', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
     like $mech->get_text_body_from_email($email[1]), qr/please contact Adstock Parish Council at grassparish\@example.org/;
+};
+
+subtest 'Can triage parish reports' => sub {
+    $mech->log_in_ok( $counciluser->email );
+    $report->update({ state => 'for triage' });
+    $mech->get_ok('/admin/triage');
+    $mech->content_contains('Test grass cutting report 1');
+    $report->update({ state => 'confirmed' });
 };
 
 subtest '.com reports get the logged email too' => sub {
