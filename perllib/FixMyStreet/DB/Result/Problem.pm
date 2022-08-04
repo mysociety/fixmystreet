@@ -838,15 +838,14 @@ sub response_template_for {
     my $ext_code_changed = $ext_code && $ext_code ne $old_ext_code;
     my $template;
     if ($state_changed || $ext_code_changed) {
-        my $order;
-        my $state_params = {};
+        # make sure that empty string/nulls come last.
+        my $order = { order_by => \"me.external_status_code DESC NULLS LAST" };
+        my $state_params = [];
         if ($state_changed) {
-            $state_params->{'me.state'} = $state;
+            push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };
         }
         if ($ext_code_changed) {
-            $state_params->{'me.external_status_code'} = $ext_code;
-            # make sure that empty string/nulls come last.
-            $order = { order_by => \"me.external_status_code DESC NULLS LAST" };
+            push @$state_params, { 'me.state' => '', 'me.external_status_code' => $ext_code };
         };
 
         $template = $self->response_templates->search({

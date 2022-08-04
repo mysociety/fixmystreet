@@ -1027,6 +1027,7 @@ subtest 'check that external_status_code triggers auto-responses' => sub {
         title => "Acknowledgement",
         text => "Thank you for your report. We will provide an update within 24 hours.",
         auto_response => 1,
+        state => '',
         external_status_code => "060"
     });
 
@@ -1190,6 +1191,7 @@ for my $test (
             title => "Acknowledgement 2",
             text => "Thank you for your report. We will provide an update within 24 hours.",
             auto_response => 1,
+            state => '',
             external_status_code => $test->{external_code}
         });
 
@@ -1222,6 +1224,60 @@ for my $test (
         $response_template->delete;
     };
 }
+$response_template_in_progress->delete;
+
+subtest 'check an email template does not match incorrectly' => sub {
+    my $email_template = $bodies{2482}->response_templates->create({
+        title => "Acknowledgement 1",
+        text => "An email template of some sort",
+        auto_response => 1,
+        external_status_code => 123,
+        state => "in progress"
+    });
+    my $response_template = $bodies{2482}->response_templates->create({
+        title => "Acknowledgement 2",
+        text => "A normal in progress response template",
+        auto_response => 1,
+        external_status_code => '',
+        state => "in progress"
+    });
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>in_progress</status>
+    <external_status_code>456</external_status_code>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+    $requests_xml =~ s/UPDATED_DATETIME/@{[$dt->clone->subtract( minutes => 62 )]}/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    $problem->state( 'confirmed' );
+    $problem->lastupdate( $dt->clone->subtract( hours => 1 ) );
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'one comment after fetching updates';
+    is $problem->state, 'in progress', 'correct problem status';
+    is $problem->comments->first->text, 'A normal in progress response template';
+
+    $problem->comments->delete;
+    $email_template->delete;
+    $response_template->delete;
+};
 
 subtest 'check that first comment always updates state'  => sub {
     my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
