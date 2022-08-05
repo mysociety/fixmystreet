@@ -116,14 +116,14 @@ sub edit : Path : Args(2) {
             if ($template->auto_response) {
                 my @check_contact_ids = @new_contact_ids;
                 # If the new template has not specific categories (i.e. it
-                # applies to all categories) then we need to check each of those
-                # category ids for existing auto-response templates.
+                # applies to all categories) then we only need to check for
+                # other any-category auto-response templates.
                 if (!scalar @check_contact_ids) {
-                    @check_contact_ids = @live_contact_ids;
+                    @check_contact_ids = (undef);
                 }
                 my $query = {
                     'auto_response' => 1,
-                    'contact.id' => [ @check_contact_ids, undef ],
+                    'contact.id' => [ @check_contact_ids ],
                     -or => {
                         $template->state ? ('me.state' => $template->state) : (),
                         $template->external_status_code ? ('me.external_status_code' => $template->external_status_code) : (),

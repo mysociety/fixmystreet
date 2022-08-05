@@ -838,8 +838,8 @@ sub response_template_for {
     my $ext_code_changed = $ext_code && $ext_code ne $old_ext_code;
     my $template;
     if ($state_changed || $ext_code_changed) {
-        # make sure that empty string/nulls come last.
-        my $order = { order_by => \"me.external_status_code DESC NULLS LAST" };
+        # make sure that empty string/nulls come last, and templates for a category come earlier.
+        my $order = { order_by => \"me.external_status_code DESC NULLS LAST, contact.category" };
         my $state_params = [];
         if ($state_changed) {
             push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };

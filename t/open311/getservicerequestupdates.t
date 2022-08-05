@@ -40,6 +40,16 @@ $bodies{2237}->body_areas->create({ area_id => 2237 });
 $bodies{2494}->body_areas->create({ area_id => 2494 });
 $bodies{2636}->body_areas->create({ area_id => 2636 });
 
+my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
+    state => 'confirmed',
+    editor => 'Test',
+    whenedited => \'current_timestamp',
+    note => 'Created for test',
+    body_id => $bodies{2482}->id,
+    category => 'Potholes',
+    email => 'potholes@example.com',
+});
+
 my $response_template = $bodies{2482}->response_templates->create({
     title => "investigating template",
     text => "We are investigating this report.",
@@ -1277,6 +1287,70 @@ subtest 'check an email template does not match incorrectly' => sub {
     $problem->comments->delete;
     $email_template->delete;
     $response_template->delete;
+};
+
+subtest 'check any-category and certain category templates co-exist' => sub {
+    my $in_progress_template = $bodies{2482}->response_templates->create({
+        title => "Acknowledgement 1",
+        text => "An in progress template for all categories",
+        auto_response => 1,
+        state => "in progress"
+    });
+    my $in_progress_template_cat = $bodies{2482}->response_templates->create({
+        title => "Acknowledgement 2",
+        text => "An in progress template for one category",
+        auto_response => 1,
+        state => "in progress"
+    });
+    $in_progress_template_cat->contact_response_templates->find_or_create({
+        contact_id => $contact->id,
+    });
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>in_progress</status>
+    <external_status_code>456</external_status_code>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    </request_update>
+    </service_requests_updates>
+    };
+    $requests_xml =~ s/UPDATED_DATETIME/@{[$dt->clone->subtract( minutes => 62 )]}/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    for ({
+        category => $contact->category,
+        template => 'An in progress template for one category',
+    }, {
+        category => 'Other',
+        template => 'An in progress template for all categories',
+    }) {
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+        $problem->state( 'confirmed' );
+        $problem->lastupdate( $dt->clone->subtract( hours => 1 ) );
+        $problem->category($_->{category});
+        $problem->update;
+        $update->process_body;
+
+        $problem->discard_changes;
+        is $problem->comments->count, 1, 'one comment after fetching updates';
+        is $problem->state, 'in progress', 'correct problem status';
+        is $problem->comments->first->text, $_->{template};
+
+        $problem->comments->delete;
+    }
+
+    $in_progress_template->delete;
+    $in_progress_template_cat->contact_response_templates->delete;
+    $in_progress_template_cat->delete;
 };
 
 subtest 'check that first comment always updates state'  => sub {

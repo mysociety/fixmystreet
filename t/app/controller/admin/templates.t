@@ -181,7 +181,6 @@ subtest "auto-response templates that duplicate all categories can't be added" =
         text => "Thank you for your report. This problem has been fixed.",
         auto_response => 'on',
         state => 'fixed - council',
-        "contacts[".$oxfordshirecontact->id."]" => 1,
     };
     $mech->submit_form_ok( { with_fields => $fields } );
     is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
@@ -192,7 +191,35 @@ subtest "auto-response templates that duplicate all categories can't be added" =
     is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
 };
 
-subtest "all-category auto-response templates that duplicate a single category can't be added" => sub {
+subtest "auto-response templates for a particular category with existing all categories can be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    $oxfordshire->response_templates->create({
+        title => "Report investigating - all cats",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 1,
+        state => 'fixed - council',
+    });
+    is $oxfordshire->response_templates->count, 1, "Initial response template was created";
+
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    # There's already a response template for all categories and this state, so
+    # this new template won't be allowed.
+    my $fields = {
+        title => "Report investigating - single cat",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 'on',
+        state => 'fixed - council',
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+    is $oxfordshire->response_templates->count, 2, "Duplicate response template wasn't added";
+};
+
+subtest "all-category auto-response templates that duplicate a single category can be added" => sub {
     $mech->delete_response_template($_) for $oxfordshire->response_templates;
     my $template = $oxfordshire->response_templates->create({
         title => "Report fixed - potholes",
@@ -210,7 +237,7 @@ subtest "all-category auto-response templates that duplicate a single category c
     $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
 
     # This response template is implicitly for all categories, but there's
-    # already a template for a specific category in this state, so it won't be
+    # already a template for a specific category in this state, so it will be
     # allowed.
     my $fields = {
         title => "Report marked fixed - all cats",
@@ -219,11 +246,8 @@ subtest "all-category auto-response templates that duplicate a single category c
         state => 'fixed - council',
     };
     $mech->submit_form_ok( { with_fields => $fields } );
-    is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
-    $mech->content_contains( 'Please correct the errors below' );
-    $mech->content_contains( 'There is already an auto-response template for this category/state.' );
 
-    is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
+    is $oxfordshire->response_templates->count, 2, "Duplicate response template wasn't added";
 };
 
 subtest "auto-response templates that duplicate external_status_code can't be added" => sub {
@@ -247,6 +271,7 @@ subtest "auto-response templates that duplicate external_status_code can't be ad
         text => "Thank you for your report. This problem has been fixed.",
         auto_response => 'on',
         external_status_code => '100',
+        "contacts[".$oxfordshirecontact->id."]" => 1,
     };
     $mech->submit_form_ok( { with_fields => $fields } );
     is $mech->uri->path, '/admin/templates/' . $oxfordshire->id . '/new', 'not redirected';
@@ -254,6 +279,33 @@ subtest "auto-response templates that duplicate external_status_code can't be ad
     $mech->content_contains( 'There is already an auto-response template for this category/state.' );
 
     is $oxfordshire->response_templates->count, 1, "Duplicate response template wasn't added";
+};
+
+subtest "any-category auto-response templates that duplicate external_status_code can be added" => sub {
+    $mech->delete_response_template($_) for $oxfordshire->response_templates;
+    my $template = $oxfordshire->response_templates->create({
+        title => "Report fixed - potholes",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 1,
+        external_status_code => '100',
+    });
+    $template->contact_response_templates->find_or_create({
+        contact_id => $oxfordshirecontact->id,
+    });
+    is $oxfordshire->response_templates->count, 1, "Initial response template was created";
+
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
+
+    my $fields = {
+        title => "Report marked fixed - all cats",
+        text => "Thank you for your report. This problem has been fixed.",
+        auto_response => 'on',
+        external_status_code => '100',
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+    is $oxfordshire->response_templates->count, 2, "Duplicate response template wasn't added";
 };
 
 subtest "templates that set state and external_status_code can't be added" => sub {
