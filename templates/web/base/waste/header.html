@@ -1,7 +1,8 @@
 [% SET bodyclass = 'waste' %]
 [% extra_js = [
+    version('/vendor/accessible-autocomplete.min.js'),
     version('/js/waste.js')
-] ~%]
+] -%]
 [% INCLUDE header.html %]
 
 [% emergency_message = c.cobrand.emergency_message('waste') %]

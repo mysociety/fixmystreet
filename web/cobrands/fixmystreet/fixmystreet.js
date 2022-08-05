@@ -524,7 +524,7 @@ $.extend(fixmystreet.set_up, {
             selectElement: this,
             displayMenu: 'overlay',
             required: true,
-            // showAllValues: true, // Currently undismissable on iOS
+            showAllValues: true,
             defaultValue: ''
         });
     });

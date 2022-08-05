@@ -98,9 +98,8 @@ sub address_list_form {
             address => {
                 required => 1,
                 type => 'Select',
-                widget => 'RadioGroup',
                 label => 'Select an address',
-                tags => { last_differs => 1, small => 1 },
+                tags => { last_differs => 1, small => 1, autocomplete => 1 },
                 options => $addresses,
             },
             go => {

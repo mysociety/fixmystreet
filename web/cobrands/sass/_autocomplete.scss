@@ -183,3 +183,34 @@
 .js .js-autocomplete {
     display: none;
 }
+
+/* WasteWorks */
+
+.autocomplete__wrapper {
+  // The icon is outside input. This code allow us to locate 
+  // the icon inside the input field.
+  max-width: 27em;
+  input[type="text"] {
+    max-width: none;
+  }
+
+  span {
+    // This erase the fictional placeholder created by autocomplete when
+    // using autocomplete + dropdown.
+    // See issue here: https://github.com/alphagov/accessible-autocomplete/issues/259
+    opacity: 0;
+  }
+}
+
+.autocomplete__input--show-all-values {
+  //Overrides base.scss and prevent the icon to overlap the input text.
+  padding-right: 40px !important;
+}
+
+
+.autocomplete__dropdown-arrow-down {
+  // This overrides the -1 value, which is causing
+  // the drowdown icon to not be displayed the icon.
+  z-index: 1;
+  pointer-events: none;
+}

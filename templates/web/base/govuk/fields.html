@@ -268,7 +268,8 @@
         <span class="govuk-visually-hidden">Error:</span> [% error %]
     </span>
   [% END %]
-  <select class="govuk-select" id="[% field.id %]" name="[% field.html_name %]">
+  <select class="govuk-select[% ' js-autocomplete' IF field.get_tag('autocomplete') %]" id="[% field.id %]" name="[% field.html_name %]">
+    [% '<option value=""></option>' IF field.get_tag('autocomplete') %]
     [% FOR item IN field.options %]
       <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
 	[% END %]
