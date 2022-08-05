@@ -545,6 +545,7 @@ sub _cleaning_categories { [
     'Fly-Posting',
     'Graffiti',
     'Litter or Weeds on a Street',
+    'Faulty Christmas Lights',
 ] }
 
 sub _cleaning_groups { [ 'Street cleaning', 'Street Cleansing', 'Fly-tipping' ] }
