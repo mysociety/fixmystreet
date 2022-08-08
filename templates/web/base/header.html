@@ -20,7 +20,7 @@
 
     </head>
     [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
-    <body class="[% bodyclass | html IF bodyclass %]">
+    <body class="[% bodyclass | html IF bodyclass %] [% IF pwa_platform %]pwa pwa-[% pwa_platform %][% END %]">
 
         <a class="skiplink" href="#content">[% loc('Skip to main content') %]</a>
 
