@@ -28,6 +28,7 @@ sub service_worker : Path("/service-worker.js") {
 
 sub fallback : Local {
     my ($self, $c) = @_;
+    $c->res->headers->header('Cache-Control' => 'no-cache, no-store, max-age=0');
 }
 
 sub manifest: Path("/.well-known/manifest.webmanifest") {
