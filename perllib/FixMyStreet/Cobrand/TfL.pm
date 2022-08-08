@@ -453,6 +453,15 @@ sub munge_red_route_categories {
     }
 }
 
+sub validate_contact_email {
+    my ( $self, $email ) = @_;
+
+    my $email_addresses = $self->feature('borough_email_addresses');
+    for my $borough_email (keys %$email_addresses) {
+        return 1 if $borough_email eq $email;
+    };
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 

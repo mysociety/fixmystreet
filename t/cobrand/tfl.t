@@ -1186,4 +1186,36 @@ subtest 'TfL staff cannot access Bromley admin' => sub {
 
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'tfl' ],
+    BASE_URL => 'http://www.example.org',
+    COBRAND_FEATURES => {
+        internal_ips => { tfl => [ '127.0.0.1' ] }, # To avoid 2-factor for test
+        borough_email_addresses => { tfl => {
+            'asset-operations-area-team' => [
+                {
+                    email => 'nothing@example.com',
+                    areas => [ 2483 ],
+                }]
+        }},
+        anonymous_account => { tfl => 'anonymous' }, # To remove uninitialised warning
+    }
+}, sub {
+
+subtest 'check contact creation allows email from borough email addresses' => sub {
+
+    $mech->log_in_ok($staffuser->email);
+    $mech->get_ok('/admin/body/' . $body->id);
+
+    $mech->submit_form_ok( { with_fields => {
+        category   => 'test category',
+        title_hint => 'example in test category',
+        email      => 'asset-operations-area-team',
+        state => 'confirmed',
+    } } );
+
+    $mech->content_lacks( 'Please enter a valid email' );
+
+}};
+
 done_testing();
