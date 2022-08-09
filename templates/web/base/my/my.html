@@ -76,7 +76,7 @@ li .my-account-buttons a {
     </p>
 </li>
 [% current_pref = c.user.get_extra_metadata('alert_notify') %]
-<li>[% loc('Receive alert notifications by') %]:
+<li>[% loc('Receive local alert notifications by') %]:
     <p class="segmented-control segmented-control--radio">
       [% IF c.user.email_verified %]
         <input type="radio" name="alert_notify" id="alert_notify_email" value="email"[% ' checked' IF current_pref == 'email' OR NOT current_pref %]>
