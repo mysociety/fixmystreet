@@ -79,13 +79,20 @@ sub anonymous_account {
     };
 }
 
-# TODO These values may not be accurate
+=head2 lookup_site_code_config
+
+If the client does not send us a nearest street, we try and look one up in
+Cheshire East's WFS server, for including in the data sent to Confirm.
+
+=cut
+
 sub lookup_site_code_config { {
     buffer => 200, # metres
-    url => "https://tilma.mysociety.org/mapserver/cheshireeast",
+    url => "https://maps.cheshireeast.gov.uk/geoserver/CEFixMyStreet/wfs",
     srsname => "urn:ogc:def:crs:EPSG::27700",
-    typename => "AdoptedRoads",
+    typename => "TN_S_CODAdoptedStreetSections_LINE_CURRENT",
     property => "site_code",
+    outputformat => 'application/json',
     accept_feature => sub { 1 }
 } }
 
