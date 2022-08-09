@@ -32,13 +32,11 @@ sub index :Path : Args(0) {
         my $user_rs = FixMyStreet::DB->resultset("User")->search({ id => \@uids });
         if ( $c->get_param('remove-staff') ) {
             foreach my $user ($user_rs->all) {
+                $user->remove_staff;
                 $user->update({
-                    from_body => undef,
                     email_verified => 0,
                     phone_verified => 0,
                 });
-                $user->user_roles->delete;
-                $user->admin_user_body_permissions->delete;
             }
         } else {
             my @role_ids = $c->get_param_list('roles');
@@ -349,9 +347,7 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
 
         if (!$user->from_body) {
             # Non-staff users aren't allowed any permissions or to be in an area
-            $user->admin_user_body_permissions->delete;
-            $user->user_roles->delete;
-            $user->area_ids(undef);
+            $user->remove_staff;
             delete $c->stash->{areas};
             delete $c->stash->{roles};
             delete $c->stash->{fetched_areas_body_id};
