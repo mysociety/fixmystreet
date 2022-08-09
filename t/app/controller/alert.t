@@ -9,7 +9,8 @@ $mech->get_ok('/alert');
 $mech->title_like(qr/^Local RSS feeds and email alerts/);
 $mech->content_contains('Local RSS feeds and email alerts');
 $mech->content_contains('html class="no-js" lang="en-gb"');
-
+$mech->create_body_ok(2651, 'TfL');
+$mech->create_body_ok(2651, 'National Highways');
 my $body = $mech->create_body_ok(2651, 'Edinburgh');
 $mech->create_body_ok(2504, 'Birmingham City Council');
 $mech->create_body_ok(2226, 'Gloucestershire County Council');
@@ -36,8 +37,8 @@ FixMyStreet::override_config {
     $mech->content_contains('Problems within City Centre ward');
     $mech->content_contains('/rss/reports/Edinburgh');
     $mech->content_contains('/rss/reports/Edinburgh/City+Centre');
-    $mech->content_contains('council:' . $body->id . ':Edinburgh');
-    $mech->content_contains('ward:' . $body->id . ':20728:Edinburgh:City_Centre');
+    $mech->content_contains('council:' . $body->id . ':Edinburgh', 'Council feed contains Edinburgh id and details');
+    $mech->content_contains('ward:' . $body->id . ':20728:Edinburgh:City_Centre', 'Ward feed contains Edinburgh id and details');
 
     subtest "Test Nominatim lookup" => sub {
         $mech->get_ok('/alert/list?pc=High Street');

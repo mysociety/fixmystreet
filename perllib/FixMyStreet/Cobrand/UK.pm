@@ -207,7 +207,10 @@ sub council_rss_alert_options {
     my ( @options, @reported_to_options );
     if ( $num_councils == 1 or $num_councils == 2 ) {
         my ($council, $ward);
-        my $body = FixMyStreet::DB->resultset('Body')->active->search({ name => { '!=' => 'TfL' } })->for_areas(keys %$all_areas)->first;
+        my $body = FixMyStreet::DB->resultset('Body')->active->search(
+            {
+                name => { -not_in => ['TfL', 'National Highways'] }
+            })->for_areas(keys %$all_areas)->first;
         foreach (values %$all_areas) {
             if ($councils{$_->{type}}) {
                 $council = $_;
