@@ -178,6 +178,25 @@ sub Premises_Get {
     return \@premises;
 }
 
+sub Premises_FutureWorkpacks_Get {
+    my ( $self, %args ) = @_;
+
+    my $res = $self->call(
+        'Premises_FutureWorkpacks_Get',
+        token    => $self->token,
+        UPRN     => $args{uprn},
+        DateFrom => $args{date_from},
+        DateTo   => $args{date_to},
+    );
+
+    # Already seem to be returned from Bartec in date ascending order, but
+    # we'll sort just in case
+    my $workpacks = force_arrayref( $res, 'Premises_FutureWorkPack' );
+    @$workpacks
+        = sort { $a->{WorkPackDate} cmp $b->{WorkPackDate} } @$workpacks;
+    return $workpacks;
+}
+
 sub Jobs_Get {
     my ($self, $uprn) = @_;
 

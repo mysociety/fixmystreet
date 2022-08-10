@@ -4,6 +4,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use utf8;
 use strict;
 use warnings;
+use DateTime;
 use Integrations::Bartec;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
@@ -24,6 +25,23 @@ sub default_map_zoom { 5 }
 sub send_questionnaires { 0 }
 
 sub max_title_length { 50 }
+
+sub service_name_override {
+    return {
+        "Empty Bin 240L Black"      => "Black Bin",
+        "Empty Bin 240L Brown"      => "Brown Bin",
+        "Empty Bin 240L Green"      => "Green Bin",
+        "Empty Black 240l Bin"      => "Black Bin",
+        "Empty Brown 240l Bin"      => "Brown Bin",
+        "Empty Green 240l Bin"      => "Green Bin",
+        "Empty Bin Recycling 1100l" => "Recycling Bin",
+        "Empty Bin Recycling 240l"  => "Recycling Bin",
+        "Empty Bin Recycling 660l"  => "Recycling Bin",
+        "Empty Bin Refuse 1100l"    => "Refuse",
+        "Empty Bin Refuse 240l"     => "Refuse",
+        "Empty Bin Refuse 660l"     => "Refuse",
+    };
+}
 
 sub disambiguate_location {
     my $self    = shift;
@@ -476,25 +494,66 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+# TODO
+# ✔️ Find black bin days
+# ✔️ for next 90 days
+# ✔️ for given premise (UPRN?)
+# and return earliest 4 slots
+# that are free
+
+# OTHER TODOS
+# Error handling
+# Tests
+# (Skeleton) page for booking
+sub find_available_bulky_slots {
+    my ( $self, $property ) = @_;
+
+    my $bartec = $self->feature('bartec');
+    $bartec = Integrations::Bartec->new(%$bartec);
+
+    my $date_from
+        = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+
+    my $days_window = 90;
+    my $date_to     = $date_from->clone->add( days => $days_window );
+    my $fmt         = '%Y-%m-%d';
+
+    # CHECKME Is DateTo inclusive?
+    my $workpacks = $bartec->Premises_FutureWorkpacks_Get(
+        date_from => $date_from->strftime($fmt),
+        date_to   => $date_to->strftime($fmt),
+        uprn      => $property->{uprn},
+    );
+
+    # Get black bin days
+
+    # TODO Do we need to limit to 4 here, or leave that to JS layer?
+    my @available_slots;
+    for my $workpack (@$workpacks) {
+        # Can be an arrayref or a hashref
+        my $action_data = $workpack->{Actions}{Action};
+        $action_data = [$action_data] if ref $action_data eq 'HASH';
+
+        # TODO Get bulky collection count
+        # TODO Check which bulky collections are pending, open
+        for my $action (@$action_data) {
+            my $action_name
+                = service_name_override()->{ $action->{ActionName} } // '';
+            next unless $action_name eq 'Black Bin';
+
+            push @available_slots => {
+                date                   => $workpack->{WorkPackDate},
+                workpack_id            => $workpack->{id},
+            };
+        }
+    }
+
+    return \@available_slots;
+}
 
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
-
-    my %service_name_override = (
-        "Empty Bin 240L Black" => "Black Bin",
-        "Empty Bin 240L Brown" => "Brown Bin",
-        "Empty Bin 240L Green" => "Green Bin",
-        "Empty Black 240l Bin" => "Black Bin",
-        "Empty Brown 240l Bin" => "Brown Bin",
-        "Empty Green 240l Bin" => "Green Bin",
-        "Empty Bin Recycling 1100l" => "Recycling Bin",
-        "Empty Bin Recycling 240l" => "Recycling Bin",
-        "Empty Bin Recycling 660l" => "Recycling Bin",
-        "Empty Bin Refuse 1100l" => "Refuse",
-        "Empty Bin Refuse 240l" => "Refuse",
-        "Empty Bin Refuse 660l" => "Refuse",
-    );
 
     $self->{c}->stash->{containers} = {
         # For new containers
@@ -645,7 +704,7 @@ sub bin_services_for_address {
             id => $_->{JobID},
             last => $last_obj,
             next => $next_obj,
-            service_name => $service_name_override{$name} || $name,
+            service_name => service_name_override()->{$name} || $name,
             schedule => $schedules{$name}->{Frequency},
             service_id => $container_id,
             request_containers => $container_request_ids{$container_id},
