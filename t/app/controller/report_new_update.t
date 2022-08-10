@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::Reports;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -36,8 +37,9 @@ my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
 });
 ok $template, 'Template created';
 
+my $report;
 subtest "test report creation with initial auto-update" => sub {
-    my $report = make_report();
+    $report = make_report();
     my $comment = FixMyStreet::DB->resultset('Comment')->single;
     is $comment->text, 'Thanks for your report. We will investigate within 5 working days.';
     is $comment->problem->id, $report->id;
@@ -45,8 +47,16 @@ subtest "test report creation with initial auto-update" => sub {
     is $comment->external_id, 'auto-internal';
     is $comment->name, 'Glos Council';
 
+    $mech->clear_emails_ok;
     FixMyStreet::Script::Alerts::send_updates();
     my $email = $mech->get_email;
+};
+
+subtest "test resending does not leave another initial auto-update" => sub {
+    $report->discard_changes;
+    $report->update({ whensent => undef });
+    FixMyStreet::Script::Reports::send(0, 0, 1);
+    is +FixMyStreet::DB->resultset('Comment')->count, 1;
 };
 
 done_testing;
@@ -70,6 +80,8 @@ sub make_report {
 
     my $report = $user->problems->first;
     ok $report, "Found the report";
+
+    FixMyStreet::Script::Reports::send();
 
     return $report;
 }

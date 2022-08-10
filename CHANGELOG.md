@@ -11,6 +11,7 @@
         - Hide 'Assigned to' text if a report is not assigned to anyone
         - Hide 'Assign to' dropdown if no available assignees
         - Allow 'Asset ID' (part of optional extra data displayed for a report) to be customisable for all cobrands
+        - Add initial update template on report sending, not creation.
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704

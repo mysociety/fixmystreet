@@ -308,10 +308,44 @@ sub _post_send {
             $self->h->{sent_confirm_id_ref} = $self->report->$send_confirmation_email;
             $self->_send_report_sent_email;
         }
+        $self->_add_confirmed_update;
         $self->cobrand_handler->post_report_sent($self->report);
         $self->log("Send successful");
     } else {
         $self->log("Send failed");
+    }
+}
+
+sub _add_confirmed_update {
+    my $self = shift;
+
+    # If there is a special template, create a comment using that
+    my $problem = $self->report;
+    my $existing = $problem->comments->search({ external_id => 'auto-internal' })->first;
+    return if $existing;
+    foreach my $body (values %{$problem->bodies}) {
+        my $user = $body->comment_user or next;
+
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_body => $body,
+            blank_updates_permitted => 1,
+        );
+
+        my $description = $updates->comment_text_for_request({}, $problem, 'confirmed', 'dummy', '', '');
+        next unless $description;
+
+        my $request = {
+            service_request_id => $problem->id,
+            update_id => 'auto-internal',
+            # Add a second so it is definitely later than problem confirmed timestamp,
+            # which uses current_timestamp (and thus microseconds) whilst this update
+            # is rounded down to the nearest second
+            comment_time => DateTime->now->add( seconds => 1 ),
+            status => 'open',
+            description => $description,
+        };
+        $updates->process_update($request, $problem);
     }
 }
 

@@ -1830,32 +1830,6 @@ sub redirect_or_confirm_creation : Private {
 sub create_related_things : Private {
     my ( $self, $c, $problem ) = @_;
 
-    # If there is a special template, create a comment using that
-    foreach my $body (values %{$problem->bodies}) {
-        my $user = $body->comment_user or next;
-
-        my $updates = Open311::GetServiceRequestUpdates->new(
-            system_user => $user,
-            current_body => $body,
-            blank_updates_permitted => 1,
-        );
-
-        my $description = $updates->comment_text_for_request({}, $problem, 'confirmed', 'dummy', '', '');
-        next unless $description;
-
-        my $request = {
-            service_request_id => $problem->id,
-            update_id => 'auto-internal',
-            # Add a second so it is definitely later than problem confirmed timestamp,
-            # which uses current_timestamp (and thus microseconds) whilst this update
-            # is rounded down to the nearest second
-            comment_time => DateTime->now->add( seconds => 1 ),
-            status => 'open',
-            description => $description,
-        };
-        $updates->process_update($request, $problem);
-    }
-
     # And now the reporter alert
     return if $c->stash->{no_reporter_alert};
     return if $c->cobrand->call_hook('suppress_reporter_alerts');
