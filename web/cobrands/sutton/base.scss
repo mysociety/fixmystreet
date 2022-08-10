@@ -74,6 +74,10 @@ a,
     padding-top: 1em;
 }
 
+.sutton-gradient {
+    background: linear-gradient(45deg,$green 5%,#00715a 20%,$green 60%,$green-l2);
+}
+
 // HEADER
 
 #site-header {
@@ -104,6 +108,15 @@ a,
 }
 
 // GENERAL
+
+.page-title-wrapper {
+    padding: 1em 1em;
+    h1 {
+        color: $white;
+        margin-bottom: 0;
+        margin-top: 0;
+    }
+}
 
 .olButton:focus {
     z-index: 1; // pull forward, so entire outline is visible
@@ -381,7 +394,7 @@ body.twothirdswidthpage .content .sticky-sidebar {
     text-align: center;
 }
 
-//WASTEWORKS
+// WASTEWORKS
 .waste {
     .content[role="main"] {
         background-color: $white;
@@ -405,6 +418,7 @@ body.twothirdswidthpage .content .sticky-sidebar {
     }
 
     form.waste {
+        display: flex;
         flex-direction: row;
         align-items: end;
 
@@ -449,9 +463,4 @@ input[type="text"], input[type="email"], textarea {
     li {
         list-style: none;
     }
-}
-
-form.waste {
-    display: flex;
-    flex-direction: column;
 }

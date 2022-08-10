@@ -2,7 +2,7 @@
 @import "../sass/layout";
 
 body {
-    background: linear-gradient(45deg,#00856a 5%,#00715a 20%,#00856a 60%,#40a360);
+    background-color: $white;
 }
 
 #site-header {
@@ -69,7 +69,6 @@ body {
         max-width: none;
         background: $white;
         padding: 4%;
-        border-top: 4px solid $green;
     }
 
     #postcodeForm {
