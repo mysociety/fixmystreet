@@ -8,7 +8,7 @@ use_ok 'FixMyStreet::Cobrand::Northamptonshire';
 
 my $mech = FixMyStreet::TestMech->new;
 
-use open ':std', ':encoding(UTF-8)'; 
+use open ':std', ':encoding(UTF-8)';
 
 my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'northamptonshire' });
@@ -45,7 +45,8 @@ my $po_contact = $mech->create_contact_ok(
 
 my ($report) = $mech->create_problems_for_body(1, $nh->id, 'Defect Problem', {
     whensent => DateTime->now()->subtract( minutes => 5 ),
-    external_id => 1,
+    cobrand => 'northamptonshire',
+    external_id => 'CRM123',
     send_method_used => 'Open311',
     user => $counciluser
 });
@@ -366,5 +367,18 @@ FixMyStreet::override_config {
     };
 };
 
+subtest 'Dashboard CSV extra columns' => sub {
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $nh, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'northamptonshire',
+    }, sub {
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('"Site Used","Reported As","External ID"');
+    $mech->content_contains('northamptonshire,,' . $report->external_id);
+};
 
 done_testing();

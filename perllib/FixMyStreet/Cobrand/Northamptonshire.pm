@@ -121,4 +121,20 @@ sub staff_ignore_form_disable_form {
         && $c->user->belongs_to_body( $self->body->id );
 }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        external_id => 'External ID',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            external_id => $report->external_id,
+        };
+    });
+}
+
 1;
