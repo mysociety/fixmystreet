@@ -98,7 +98,7 @@ sub disambiguate_location {
 
     my $results = {
         %{ $self->SUPER::disambiguate_location() },
-        centre => 51.4981168,0.1054538,
+        centre => '51.4981168,0.1054538',
         string => $string,
         town => $town,
     };
