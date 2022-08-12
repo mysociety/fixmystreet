@@ -810,10 +810,11 @@ cobrand's area_types_children type.
 =cut
 
 sub fetch_area_children {
-    my ($self, $area_id) = @_;
+    my ($self, $area_id, $all_generations) = @_;
 
     return FixMyStreet::MapIt::call('area/children', $area_id,
-        type => $self->area_types_children
+        type => $self->area_types_children,
+        $all_generations ? (min_generation => 1) : (),
     );
 }
 

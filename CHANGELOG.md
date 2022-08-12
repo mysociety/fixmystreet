@@ -24,6 +24,7 @@
         - Trim whitespace on extra status codes for response templates
         - The permission default_to_body now also affects updates. #3317
         - Decouple the permission to manage shortlist from default_to_body. #3317
+	- For CSV export, fetch children of all generations.
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794

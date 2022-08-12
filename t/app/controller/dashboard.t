@@ -46,6 +46,7 @@ my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal
 my $body_id = $body->id;
 my $area_id = '60705';
 my $alt_area_id = '62883';
+my $old_area_id = '58805';
 
 my $last_month = DateTime->now->subtract(months => 2);
 $mech->create_problems_for_body(2, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fat' });
@@ -183,7 +184,7 @@ FixMyStreet::override_config {
         $mech->create_problems_for_body(1, $body->id, 'Title', {
             detail => "this report\nis split across\nseveral lines",
             category => 'Problem one',
-            areas => ",$alt_area_id,2651,",
+            areas => ",$old_area_id,2651,",
         });
         $mech->get_ok('/dashboard?export=1');
         my @rows = $mech->content_as_csv;
@@ -221,6 +222,7 @@ FixMyStreet::override_config {
         is $rows[5]->[15], 'Trowbridge', 'Ward column is name not ID';
         is $rows[5]->[16], '529025', 'Correct Easting conversion';
         is $rows[5]->[17], '179716', 'Correct Northing conversion';
+        is $rows[18]->[15], 'Bishops Cannings', 'Can see old ward';
     };
 
     subtest 'export updates as csv' => sub {

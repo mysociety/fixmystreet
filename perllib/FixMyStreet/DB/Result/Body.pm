@@ -186,14 +186,14 @@ sub areas {
 }
 
 sub first_area_children {
-    my ( $self ) = @_;
+    my ( $self, $all_generations ) = @_;
 
     my $body_area = $self->body_areas->first;
     return unless $body_area;
 
     my $cobrand = $self->result_source->schema->cobrand;
 
-    return $cobrand->fetch_area_children($body_area->area_id);
+    return $cobrand->fetch_area_children($body_area->area_id, $all_generations);
 }
 
 =head2 get_cobrand_handler

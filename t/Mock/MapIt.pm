@@ -186,8 +186,8 @@ sub dispatch_request {
         }
     },
 
-    sub (GET + /area/*/children) {
-        my ($self, $area) = @_;
+    sub (GET + /area/*/children + ?*) {
+        my ($self, $area, $query) = @_;
         if ($area eq '2514') {
             return $self->output({
                 151907 => {parent_area => 2514, id => 151907, name => "Bordesley & Highgate", type => "MTW"},
@@ -204,6 +204,9 @@ sub dispatch_request {
             "60705" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 60705, "codes" => { "ons" => "00HY226", "gss" => "E04011842", "unit_id" => "17101" }, "name" => "Trowbridge", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },
             "62883" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 62883, "codes" => { "ons" => "00HY026", "gss" => "E04011642", "unit_id" => "17205" }, "name" => "Bradford-on-Avon", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },
         };
+        if ($query->{min_generation}) {
+            $response->{"58805"} = { "parent_area" => 2245, "generation_high" => 10, "id" => 58805, "name" => "Bishops Cannings", "generation_low" => 1, "type" => "CPC" };
+        }
         return $self->output($response);
     },
 
