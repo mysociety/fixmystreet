@@ -5,6 +5,7 @@ use utf8;
 use strict;
 use warnings;
 use DateTime;
+use DateTime::Format::Strptime;
 use Integrations::Bartec;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
@@ -41,6 +42,12 @@ sub service_name_override {
         "Empty Bin Refuse 240l"     => "Refuse",
         "Empty Bin Refuse 660l"     => "Refuse",
     };
+}
+
+sub bulky_collection_window_days     {90}
+sub max_daily_bulky_collection_slots {40}
+sub bulky_workpack_name {
+    qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
 }
 
 sub disambiguate_location {
@@ -495,60 +502,93 @@ sub image_for_unit {
 }
 
 # TODO
-# ✔️ Find black bin days
-# ✔️ for next 90 days
-# ✔️ for given premise (UPRN?)
-# and return earliest 4 slots
-# that are free
-
-# OTHER TODOS
 # Error handling
-# Tests
-# (Skeleton) page for booking
+# Holidays, bank holidays?
+# Monday limit, Tuesday limit etc.?
+# Check which bulky collections are pending, open
+# Check if collection is free or chargeable
 sub find_available_bulky_slots {
     my ( $self, $property ) = @_;
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
-    my $date_from
-        = DateTime->today( time_zone => FixMyStreet->local_time_zone );
-
-    my $days_window = 90;
-    my $date_to     = $date_from->clone->add( days => $days_window );
-    my $fmt         = '%Y-%m-%d';
-
-    # CHECKME Is DateTo inclusive?
+    my $window    = _bulky_collection_window();
     my $workpacks = $bartec->Premises_FutureWorkpacks_Get(
-        date_from => $date_from->strftime($fmt),
-        date_to   => $date_to->strftime($fmt),
+        date_from => $window->{date_from},
+        date_to   => $window->{date_to},
         uprn      => $property->{uprn},
     );
 
-    # Get black bin days
-
-    # TODO Do we need to limit to 4 here, or leave that to JS layer?
     my @available_slots;
+
+    my $suffix_date_parser
+        = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
+    my $workpack_date_parser
+        = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+
     for my $workpack (@$workpacks) {
         # Can be an arrayref or a hashref
         my $action_data = $workpack->{Actions}{Action};
         $action_data = [$action_data] if ref $action_data eq 'HASH';
 
-        # TODO Get bulky collection count
-        # TODO Check which bulky collections are pending, open
-        for my $action (@$action_data) {
-            my $action_name
-                = service_name_override()->{ $action->{ActionName} } // '';
-            next unless $action_name eq 'Black Bin';
+        my %action_hash = map {
+            my $action_name = $_->{ActionName} // '';
+            $action_name = service_name_override()->{$action_name}
+                // $action_name;
 
-            push @available_slots => {
-                date                   => $workpack->{WorkPackDate},
-                workpack_id            => $workpack->{id},
-            };
+            $action_name => $_;
+        } @$action_data;
+
+        # We only want dates that coincide with black bin collections
+        next if !exists $action_hash{'Black Bin'};
+
+        my $workpacks_for_day
+            = $bartec->WorkPacks_Get( $workpack->{WorkPackDate} );
+
+        my $workpack_dt = $workpack_date_parser->parse_datetime(
+            $workpack->{WorkPackDate} );
+
+        my $jobs_total = 0;
+
+        for my $wpfd (@$workpacks_for_day) {
+            next if $wpfd->{Name} !~ bulky_workpack_name();
+
+            # Ignore workpacks with names with faulty date suffixes
+            my $suffix_dt
+                = $suffix_date_parser->parse_datetime( $+{date_suffix} );
+
+            next
+                if !$workpack_dt
+                || !$suffix_dt
+                || $workpack_dt->date ne $suffix_dt->date;
+
+            my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
+            $jobs_total += @$jobs;
         }
+
+        # Only include if max jobs not already reached
+        push @available_slots => {
+            workpack_id => $workpack->{id},
+            date        => $workpack->{WorkPackDate},
+            }
+            if $jobs_total < max_daily_bulky_collection_slots();
     }
 
     return \@available_slots;
+}
+
+sub _bulky_collection_window {
+    my $date_from
+        = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+    my $date_to
+        = $date_from->clone->add( days => bulky_collection_window_days() );
+
+    my $fmt = '%F';
+    return {
+        date_from => $date_from->strftime($fmt),
+        date_to   => $date_to->strftime($fmt),
+    };
 }
 
 sub bin_services_for_address {

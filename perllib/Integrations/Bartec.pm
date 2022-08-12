@@ -197,6 +197,27 @@ sub Premises_FutureWorkpacks_Get {
     return $workpacks;
 }
 
+sub WorkPacks_Get {
+    my ( $self, $date ) = @_;
+
+    my $res = $self->call(
+        'WorkPacks_Get',
+        token => $self->token,
+        Date  => {
+            MinimumDate => {
+                attr  => { xmlns => "http://www.bartec-systems.com" },
+                value => $date,
+            },
+            MaximumDate => {
+                attr  => { xmlns => "http://www.bartec-systems.com" },
+                value => $date,
+            },
+        },
+    );
+
+    return force_arrayref( $res, 'WorkPack' );
+}
+
 sub Jobs_Get {
     my ($self, $uprn) = @_;
 
@@ -222,6 +243,18 @@ sub Jobs_Get {
     my $jobs = force_arrayref($res, 'Jobs');
     @$jobs = sort { $a->{ScheduledStart} cmp $b->{ScheduledStart} } map { $_->{Job} } @$jobs;
     return $jobs;
+}
+
+sub Jobs_Get_for_workpack {
+    my ( $self, $workpack_id ) = @_;
+
+    my $res = $self->call(
+        'Jobs_Get',
+        token      => $self->token,
+        WorkPackID => $workpack_id,
+    );
+
+    return force_arrayref( $res, 'Jobs' );
 }
 
 sub Jobs_FeatureScheduleDates_Get {
