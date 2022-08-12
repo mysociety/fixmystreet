@@ -29,6 +29,7 @@
         - Make map pan/zoom controls keyboard-accessible. #3751
     - Admin improvements:
         - Admin 'add user' form now always creates staff users
+	- Make sure staff permissions removed when anonymized.
     - Development improvements:
         - Default make_css to `web/cobrands` rather than `web`.
         - Ability to pass custom arguments (eg: SSL config) to server when running via Docker

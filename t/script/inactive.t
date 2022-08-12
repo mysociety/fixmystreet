@@ -20,6 +20,7 @@ my $comment_user = $mech->create_user_ok('commentuser@example.com');
 $comment_user->last_active($t);
 $comment_user->update;
 my $body = $mech->create_body_ok(2237, 'Oxfordshire Council', { comment_user_id => $comment_user->id });
+$user->update({ from_body => $body });
 
 my @problems;
 for (my $m = 1; $m <= 12; $m++) {
@@ -106,6 +107,7 @@ subtest 'Anonymization of inactive users' => sub {
 
     $user->discard_changes;
     is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
+    is $user->from_body, undef;
 
     stdout_is { $in->users } '', 'No output second time';
 

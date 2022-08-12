@@ -16,6 +16,7 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 $mech->log_in_ok( $superuser->email );
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
 my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
 
 my $user = $mech->create_user_ok('user@example.com', name => 'OCC User', from_body => $body2);
 $user->user_body_permissions->create({ body => $body2, permission_type => 'category_edit' });
@@ -625,6 +626,28 @@ subtest 'check setting cobrand on body' => sub {
     };
 };
 
+subtest 'check parishes work on Bucks okay' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => [ "buckinghamshire" ],
+    }, sub {
+        $mech->get_ok('/admin/body/' . $bucks->id);
+        # Form has 2508 and 53319 in it, unselected
+        $mech->submit_form_ok({ with_fields => { area_ids => 53319 } });
+        # Body now has 2217 (kept) and 53319
+        is $bucks->body_areas->count, 2;
+    };
 
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => [ "fixmystreet" ],
+    }, sub {
+        $mech->get_ok('/admin/body/' . $bucks->id);
+        # Form has only 2508 in it, unselected
+        $mech->submit_form_ok({ with_fields => { name => 'Bucks' } });
+        # Body has 2217 and 53319 kept
+        is $bucks->body_areas->count, 2;
+    };
+};
 
 done_testing();

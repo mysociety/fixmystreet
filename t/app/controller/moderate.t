@@ -10,6 +10,10 @@ use parent 'FixMyStreet::Cobrand::Default';
 
 sub moderate_permission_title { 0 }
 
+package FixMyStreet::Cobrand::TestAnon;
+use parent 'FixMyStreet::Cobrand::Default';
+sub anonymous_account { { name => "Anonymous", email => 'anonymous@example.org' } }
+
 package main;
 
 use Path::Tiny;
@@ -280,6 +284,24 @@ subtest 'Problem moderation' => sub {
             $report->discard_changes;
             is $report->title, 'Good bad good';
             is $report->detail, 'Changed detail';
+        }
+    };
+
+    subtest 'Moderate anon report' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'testanon'
+        }, sub {
+	    $report->user->update({ email => 'anonymous@example.org' });
+	    $report->update({ cobrand => 'testanon' });
+            $mech->clear_emails_ok;
+            $mech->get_ok($REPORT_URL);
+            $mech->submit_form_ok({ with_fields => {
+                problem_detail => 'Changed detail again',
+            }});
+            $mech->base_like( qr{\Q$REPORT_URL\E} );
+            $report->discard_changes;
+            is $report->detail, 'Changed detail again';
+            ok $mech->email_count_is(0), "Email wasn't sent";
         }
     };
 

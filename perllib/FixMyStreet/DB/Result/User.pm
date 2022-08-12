@@ -421,6 +421,14 @@ sub split_name {
     return { first => $first || '', last => $last || '' };
 }
 
+sub remove_staff {
+    my $self = shift;
+    $self->user_roles->delete;
+    $self->admin_user_body_permissions->delete;
+    $self->from_body(undef);
+    $self->area_ids(undef);
+}
+
 sub can_moderate {
     my ($self, $object, $perms) = @_;
 
@@ -597,6 +605,7 @@ sub anonymize_account {
     $self->comments->update({ anonymous => 1, name => '' });
     $self->alerts->update({ whendisabled => \'current_timestamp' });
     $self->password('', 1);
+    $self->remove_staff;
     $self->update({
         email => 'removed-' . $self->id . '@' . FixMyStreet->config('EMAIL_DOMAIN'),
         email_verified => 0,
@@ -607,7 +616,6 @@ sub anonymize_account {
         twitter_id => undef,
         facebook_id => undef,
         oidc_ids => undef,
-        from_body => undef,
     });
 }
 

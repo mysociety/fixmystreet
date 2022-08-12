@@ -409,6 +409,7 @@ sub update_body : Private {
 
     $c->forward('check_for_super_user');
     $c->forward('/auth/check_csrf_token');
+    $c->forward('body_form_dropdowns');
 
     my $values = $c->forward('body_params');
     return if %{$c->stash->{body_errors}};
@@ -426,7 +427,11 @@ sub update_body : Private {
             for keys %{$values->{extras}};
         $body->update;
     }
+
+    my %possible = map { $_->{id} => 1 } @{$c->stash->{areas}};
     my @current = $body->body_areas->all;
+    # Don't want to remove any that weren't present in the list
+    @current = grep { $possible{$_->area_id} } @current;
     my %current = map { $_->area_id => 1 } @current;
     my @area_ids = $c->get_param_list('area_ids');
     foreach (@area_ids) {

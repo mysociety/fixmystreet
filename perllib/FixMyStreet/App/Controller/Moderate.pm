@@ -189,7 +189,9 @@ sub report_moderate_audit : Private {
 
     $c->forward('moderate_log_entry', [ 'problem', @types ]);
 
-    if ($problem->user->email_verified && $c->cobrand->send_moderation_notifications) {
+    my $cobrand = $problem->get_cobrand_logged;
+    my $anon = $cobrand->anonymous_account && $problem->user->email eq $cobrand->anonymous_account->{email};
+    if ($problem->user->email_verified && $c->cobrand->send_moderation_notifications && !$anon) {
         my $token = $c->model("DB::Token")->create({
             scope => 'moderation',
             data => { id => $problem->id }
