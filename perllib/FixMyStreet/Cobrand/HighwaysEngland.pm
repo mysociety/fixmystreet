@@ -96,13 +96,6 @@ sub anonymous_account {
     };
 }
 
-sub updates_disallowed {
-    my ($self, $problem) = @_;
-    return 1 if $problem->is_fixed || $problem->is_closed;
-    return 1 if $problem->get_extra_metadata('closed_updates');
-    return 0;
-}
-
 # Bypass photo requirement, we have none
 sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;

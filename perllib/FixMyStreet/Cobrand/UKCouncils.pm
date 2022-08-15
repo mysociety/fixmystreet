@@ -548,24 +548,28 @@ sub updates_disallowed {
     my ($problem) = @_;
     my $c = $self->{c};
 
+    # If closed due to problem/category closure, want that to take precedence
+    my $parent = $self->next::method(@_);
+    return $parent if $parent;
+
     my $cfg = $self->feature('updates_allowed') || '';
     if ($cfg eq 'none') {
-        return 1;
+        return $cfg;
     } elsif ($cfg eq 'staff') {
         # Only staff and superusers can leave updates
         my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
         my $superuser = $c->user_exists && $c->user->is_superuser;
-        return 1 unless $staff || $superuser;
+        return $cfg unless $staff || $superuser;
     }
 
     if ($cfg =~ /reporter/) {
-        return 1 if !$c->user_exists || $c->user->id != $problem->user->id;
+        return $cfg if !$c->user_exists || $c->user->id != $problem->user->id;
     }
     if ($cfg =~ /open/) {
-        return 1 if $problem->is_fixed || $problem->is_closed;
+        return $cfg if $problem->is_fixed || $problem->is_closed;
     }
 
-    return $self->next::method(@_);
+    return '';
 }
 
 # Report if cobrand denies updates by user

@@ -522,9 +522,9 @@ if the report's category has its "updates_disallowed" flag set.
 
 sub updates_disallowed {
     my ($self, $problem) = @_;
-    return 1 if $problem->get_extra_metadata('closed_updates');
-    return 1 if $problem->contact && $problem->contact->get_extra_metadata('updates_disallowed');
-    return 0;
+    return 'problem-closed' if $problem->get_extra_metadata('closed_updates');
+    return 'category-closed' if $problem->contact && $problem->contact->get_extra_metadata('updates_disallowed');
+    return '';
 }
 
 =item reopening_disallowed
