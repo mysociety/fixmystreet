@@ -107,16 +107,35 @@ subtest "only original reporter can comment" => sub {
         ALLOWED_COBRANDS => 'isleofwight',
         COBRAND_FEATURES => { updates_allowed => { isleofwight => 'reporter' } },
     }, sub {
+        my $category = $reports[0]->category;
+        $reports[0]->update({ category => 'Potholes' });
+
         $mech->get_ok('/report/' . $reports[0]->id);
         $mech->content_contains('Only the original reporter may leave updates');
+
+        $contact->set_extra_metadata(updates_disallowed => 1);
+        $contact->update;
+        $mech->get_ok('/report/' . $reports[0]->id);
+        $mech->content_lacks('Only the original reporter may leave updates');
+        $mech->content_contains('closed to updates');
+        $contact->unset_extra_metadata('updates_disallowed');
+        $contact->update;
 
         $mech->log_in_ok('user@example.org');
         $mech->get_ok('/report/' . $reports[0]->id);
         $mech->content_lacks('Only the original reporter may leave updates');
+
+        $contact->set_extra_metadata(updates_disallowed => 1);
+        $contact->update;
+        $mech->get_ok('/report/' . $reports[0]->id);
+        $mech->content_lacks('Only the original reporter may leave updates');
+        $mech->content_contains('closed to updates');
+        $contact->unset_extra_metadata('updates_disallowed');
+        $contact->update;
     };
 };
 
-subtest "only original reporter can comment" => sub {
+subtest "only original reporter can comment (.com)" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'fixmystreet',

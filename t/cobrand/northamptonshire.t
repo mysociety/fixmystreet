@@ -116,7 +116,7 @@ subtest 'check updates sent for non defects' => sub {
 my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
 
 subtest 'check updates disallowed correctly' => sub {
-    is $cobrand->updates_disallowed($report), 0;
+    is $cobrand->updates_disallowed($report), '';
     $report->update({ state => 'closed' });
     is $cobrand->updates_disallowed($report), 1;
     $report->update({ state => 'confirmed', user => $counciluser });

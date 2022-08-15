@@ -41,14 +41,6 @@ sub disambiguate_location {
     };
 }
 
-sub updates_disallowed {
-    my ($self, $problem) = @_;
-
-    my $c = $self->{c};
-    return 0 if $c->user_exists && $c->user->id eq $problem->user->id;
-    return 1;
-}
-
 # Island Roads don't want any reports made before their go-live date visible on
 # their cobrand at all.
 sub cut_off_date { '2019-09-30' }

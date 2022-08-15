@@ -288,26 +288,30 @@ sub updates_disallowed {
     my ($problem) = @_;
     my $c = $self->{c};
 
+    # If closed due to problem/category closure, want that to take precedence
+    my $parent = $self->next::method(@_);
+    return $parent if $parent;
+
     my ($type, $body) = $self->per_body_config('updates_allowed', $problem);
     $type //= '';
 
     if ($type eq 'none') {
-        return 1;
+        return $type;
     } elsif ($type eq 'staff') {
         # Only staff and superusers can leave updates
         my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
         my $superuser = $c->user_exists && $c->user->is_superuser;
-        return 1 unless $staff || $superuser;
+        return $type unless $staff || $superuser;
     }
 
     if ($type =~ /reporter/) {
-        return 1 if !$c->user_exists || $c->user->id != $problem->user->id;
+        return $type if !$c->user_exists || $c->user->id != $problem->user->id;
     }
     if ($type =~ /open/) {
-        return 1 if $problem->is_fixed || $problem->is_closed;
+        return $type if $problem->is_fixed || $problem->is_closed;
     }
 
-    return $self->next::method(@_);
+    return '';
 }
 
 sub body_disallows_state_change {
