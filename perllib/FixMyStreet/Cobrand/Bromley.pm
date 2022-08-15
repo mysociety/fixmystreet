@@ -865,6 +865,21 @@ sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_payment_ref_council_code { "LBB" }
 
+sub waste_cc_payment_line_item_ref {
+    my ($self, $p) = @_;
+    return "GGW" . $p->get_extra_field_value('uprn');
+}
+
+sub waste_cc_payment_admin_fee_line_item_ref {
+    my ($self, $p) = @_;
+    return "GGW" . $p->get_extra_field_value('uprn');
+}
+
+sub waste_cc_payment_sale_ref {
+    my ($self, $p) = @_;
+    return "GGW" . $p->get_extra_field_value('uprn');
+}
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};

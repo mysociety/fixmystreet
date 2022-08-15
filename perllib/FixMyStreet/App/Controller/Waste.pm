@@ -218,20 +218,20 @@ sub pay : Path('pay') : Args(0) {
         amount => $amount,
         reference => $payment->config->{customer_ref},
         description => $p->title,
-        lineId => $c->cobrand->call_hook(waste_cc_payment_line_item_ref => $p) || "GGW$uprn",
+        lineId => $c->cobrand->waste_cc_payment_line_item_ref($p),
     });
     if ($admin_fee) {
         push @items, {
             amount => $admin_fee,
             reference => $payment->config->{customer_ref_admin_fee},
             description => 'Admin fee',
-            lineId => $c->cobrand->call_hook(waste_cc_payment_admin_fee_line_item_ref => $p) || "GGW$uprn",
+            lineId => $c->cobrand->waste_cc_payment_admin_fee_line_item_ref($p),
         };
     }
     my $result = $payment->pay({
         returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
         backUrl => $backUrl,
-        ref => 'GGW' . $uprn,
+        ref => $c->cobrand->waste_cc_payment_sale_ref($p),
         request_id => $p->id,
         description => $p->title,
         name => $p->name,
@@ -1237,7 +1237,6 @@ sub setup_garden_sub_params : Private {
         $service_id = $c->cobrand->garden_service_id;
     }
     $c->set_param('service_id', $service_id);
-    $c->set_param('client_reference', 'GGW' . $c->stash->{property}->{uprn});
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
     # Either the user picked in the form, or it was staff and so will be credit card (or overridden to csc if that used)

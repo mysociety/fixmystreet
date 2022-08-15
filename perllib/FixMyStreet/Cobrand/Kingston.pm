@@ -637,6 +637,11 @@ sub _waste_cc_line_item_ref {
     return "$id-$name-$str";
 }
 
+sub waste_cc_payment_sale_ref {
+    my ($self, $p) = @_;
+    return "GGW" . $p->get_extra_field_value('uprn');
+}
+
 sub waste_payment_ref_council_code { "RBK" }
 
 sub garden_waste_dd_munge_form_details {
