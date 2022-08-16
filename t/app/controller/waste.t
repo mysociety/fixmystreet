@@ -22,6 +22,7 @@ $staff_user->user_body_permissions->create({ body => $body, permission_type => '
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'can_pay_with_csc' });
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
 my $staff_non_payuser = $mech->create_user_ok('staff_no_pay@example.org', from_body => $body, name => 'Staff No Pay User');
 $staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
@@ -344,6 +345,9 @@ FixMyStreet::override_config {
         is $report->user->email, $user->email;
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_field_value('Source'), 9, 'Correct source';
+
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->content_contains('Created By:');
     };
     subtest "General enquiry, staff doesn't change name" => sub {
         my $original_name = $staff_user->name;

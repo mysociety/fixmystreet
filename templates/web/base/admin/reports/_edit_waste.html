@@ -91,6 +91,15 @@
   [% IF c.cobrand.moniker == 'bromley' %]
     <li>Source: [% problem.get_extra_field_value('Source') %]
   [% END %]
+
+  [%~ IF extra_fields.size ~%]
+    [%~ FOREACH field IN extra_fields ~%]
+        [% IF field.code == 'contributed_by' %]
+            <li>[%~ field.name ~%]: [% field.val ~%]</li>
+        [% END %]
+    [% END %]
+  [% END %]
+
 </ul>
 
 [%

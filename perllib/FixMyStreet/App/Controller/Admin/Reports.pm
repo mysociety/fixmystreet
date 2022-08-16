@@ -231,6 +231,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
                 my $uri = $c->uri_for_action('admin/users/index', { search => $u->email } );
                 push @fields, {
                     name => _('Created By'),
+                    code => 'contributed_by',
                     val => FixMyStreet::Template::SafeString->new( "<a href=\"$uri\">@{[$u->name]} (@{[$u->email]})</a>" )
                 };
                 if ( $u->from_body ) {
@@ -239,7 +240,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
                     push @fields, { name => _('Created Body'), val => _('Superuser') };
                 }
             } else {
-                push @fields, { name => 'contributed_by', val => $extra->{contributed_by} };
+                push @fields, { name => 'contributed_by', code => 'contributed_by', val => $extra->{contributed_by} };
             }
             delete $extra->{contributed_by};
         }
