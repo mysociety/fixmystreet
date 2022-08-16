@@ -96,33 +96,4 @@ sub waste_payment_type {
     return ($category, $sub_type);
 }
 
-sub _process_reference {
-    my ($self, $payer) = @_;
-
-    my ($id, $uprn) = $payer =~ /^@{[$self->waste_payment_ref_council_code()]}-(\d+)-(\d+)/;
-
-    return (undef, undef) unless $id;
-    my $origin = FixMyStreet::DB->resultset('Problem')->find($id);
-
-    if ( !$origin ) {
-        $self->log("no matching origin sub for id $id");
-        return (undef, undef);
-    }
-
-    $uprn = $origin->get_extra_field_value('uprn');
-    my $len = length($payer);
-    $self->log( "extra query is " . '%payerReference,T' . $len . ':'. $payer . '%' );
-    my $rs = FixMyStreet::DB->resultset('Problem')->search({
-        -or => [
-            id => $id,
-            extra => { like => '%payerReference,T' . $len . ':'. $payer . '%' },
-        ]
-    },
-    {
-            order_by => { -desc => 'created' }
-    })->to_body( $self->body );
-
-    return ($uprn, $rs);
-}
-
 1;

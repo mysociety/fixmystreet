@@ -723,12 +723,6 @@ sub garden_waste_dd_complete {
     $report->update();
 }
 
-sub waste_dd_payment_ref {
-    my ($self, $p) = @_;
-
-    return substr($self->waste_payment_ref_council_code . '-' . $p->id . '-' . $p->get_extra_field_value('uprn'), 0, 18);
-}
-
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};

@@ -1324,7 +1324,8 @@ FixMyStreet::override_config {
     $p->category('Garden Subscription');
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
-    $p->set_extra_metadata('payerReference', 'GGW1000000002');
+    my $dd_ref = 'LBB-' . $p->id . '-1000000002';
+    $p->set_extra_metadata('payerReference', $dd_ref);
     $p->update;
 
     subtest 'check modify sub direct debit payment' => sub {
@@ -1357,14 +1358,14 @@ FixMyStreet::override_config {
         my $ad_hoc_payment_date = '2021-01-15T17:00:00';
 
         is_deeply $dd_sent_params->{one_off_payment}, {
-            payer_reference => 'GGW1000000002',
+            payer_reference => $dd_ref,
             amount => '7.50',
             reference => $new_report->id,
             comments => '',
             date => $ad_hoc_payment_date,
         }, "correct direct debit ad hoc payment params sent";
         is_deeply $dd_sent_params->{amend_plan}, {
-            payer_reference => 'GGW1000000002',
+            payer_reference => $dd_ref,
             amount => '40.00',
         }, "correct direct debit amendment params sent";
         $new_report->delete;
@@ -1397,7 +1398,7 @@ FixMyStreet::override_config {
 
         is $dd_sent_params->{one_off_payment}, undef, "no one off payment if reducing bin count";
         is_deeply $dd_sent_params->{amend_plan}, {
-            payer_reference => 'GGW1000000002',
+            payer_reference => $dd_ref,
             amount => '20.00',
         }, "correct direct debit amendment params sent";
     };
@@ -1454,7 +1455,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'unconfirmed', 'report confirmed';
 
         is_deeply $dd_sent_params->{cancel_plan}, {
-            payer_reference => 'GGW1000000002',
+            payer_reference => $dd_ref,
         }, "correct direct debit cancellation params sent";
 
         $mech->get_ok('/waste/12345');

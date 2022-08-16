@@ -1188,6 +1188,7 @@ subtest 'check direct debit reconcilliation' => sub {
         'property_id' => '94325',
         'uprn' => '954325',
     });
+    my $ad_hoc_skipped_ref = "LBB-" . $ad_hoc_skipped->id . "-954325";
     $ad_hoc_skipped->state('unconfirmed');
     $ad_hoc_skipped->update;
 
@@ -1198,6 +1199,7 @@ subtest 'check direct debit reconcilliation' => sub {
         'property_id' => '54399',
         'uprn' => '554399',
     });
+    my $hidden_ref = "LBB-" . $hidden->id . "-554399";
     $hidden->state('hidden');
     $hidden->update;
 
@@ -1210,6 +1212,64 @@ subtest 'check direct debit reconcilliation' => sub {
     });
     $cc_to_ignore->state('unconfirmed');
     $cc_to_ignore->update;
+
+    my $new_sub = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '54323',
+        'uprn' => '654321',
+    });
+    $new_sub->state('unconfirmed');
+    $new_sub->update;
+
+    my $renewal_from_cc_sub = setup_dd_test_report({
+        'Subscription_Type' => 2,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '154323',
+        'uprn' => '1654321',
+    });
+    my $renewal_from_cc_sub_ref = "LBB-" . $renewal_from_cc_sub->id . "-1654321";
+    $renewal_from_cc_sub->state('unconfirmed');
+    $renewal_from_cc_sub->set_extra_metadata('payerReference' => $renewal_from_cc_sub_ref);
+    $renewal_from_cc_sub->update;
+
+    my $sub_for_subsequent_renewal_from_cc_sub = setup_dd_test_report({
+        'Subscription_Type' => 2,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '154323',
+        'uprn' => '3654321',
+    });
+    my $sub_for_subsequent_renewal_from_cc_sub_ref = "LBB-" . $sub_for_subsequent_renewal_from_cc_sub->id . "-3654321";
+    $sub_for_subsequent_renewal_from_cc_sub->set_extra_metadata('payerReference' => $sub_for_subsequent_renewal_from_cc_sub_ref);
+    $sub_for_subsequent_renewal_from_cc_sub->update;
+
+    my $sub_for_unprocessed_cancel = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '84324',
+        'uprn' => '854325',
+    });
+    my $unprocessed_cancel = setup_dd_test_report({
+        'payment_method' => 'direct_debit',
+        'property_id' => '84324',
+        'uprn' => '854325',
+    });
+    $unprocessed_cancel->state('unconfirmed');
+    $unprocessed_cancel->category('Cancel Garden Subscription');
+    $unprocessed_cancel->update;
+
+    my $renewal_nothing_in_echo = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '74321',
+        'uprn' => '754322',
+    });
+    my $renewal_nothing_in_echo_ref = "LBB-" . $renewal_nothing_in_echo->id . "-754322";
 
     my $integ = Test::MockModule->new('Integrations::Pay360');
     $integ->mock('config', sub { return { dd_sun => 'sun', dd_client_id => 'client' }; } );
@@ -1235,7 +1295,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW654321",
+                            PayerReference => "LBB-" . $new_sub->id . "-654321",
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1265,7 +1325,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW554399",
+                            PayerReference => $hidden_ref,
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1281,7 +1341,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW654326",
+                            PayerReference => "LBB-" . $ad_hoc_processed->id . "-654326",
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1341,7 +1401,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW754322",
+                            PayerReference => $renewal_nothing_in_echo_ref,
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1371,7 +1431,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW3654321",
+                            PayerReference => $sub_for_subsequent_renewal_from_cc_sub_ref,
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1386,7 +1446,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW1654321",
+                            PayerReference => $renewal_from_cc_sub_ref,
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1402,7 +1462,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW654325",
+                            PayerReference => "LBB-" . $ad_hoc->id . "-654325",
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1417,7 +1477,7 @@ subtest 'check direct debit reconcilliation' => sub {
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => "GGW954325",
+                            PayerReference => $ad_hoc_skipped_ref,
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1474,7 +1534,7 @@ subtest 'check direct debit reconcilliation' => sub {
                                     PayerAccountHoldersName => "A Payer",
                                     PayerAccountNumber => 123,
                                     PayerName => "A Payer",
-                                    Reference => "GGW854325",
+                                    Reference => "LBB-" . $unprocessed_cancel->id . "-854325",
                                     PayerSortCode => "12345",
                                     ProductName => "Garden Waste",
                                     Status => "Processed",
@@ -1566,53 +1626,6 @@ subtest 'check direct debit reconcilliation' => sub {
     $failed_new_sub->created(\" created - interval '2' second");
     $failed_new_sub->update;
 
-    my $new_sub = setup_dd_test_report({
-        'Subscription_Type' => 1,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '54323',
-        'uprn' => '654321',
-    });
-    $new_sub->state('unconfirmed');
-    $new_sub->update;
-
-    my $renewal_from_cc_sub = setup_dd_test_report({
-        'Subscription_Type' => 2,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '154323',
-        'uprn' => '1654321',
-    });
-    $renewal_from_cc_sub->state('unconfirmed');
-    $renewal_from_cc_sub->set_extra_metadata('payerReference' => 'GGW1654321');
-    $renewal_from_cc_sub->update;
-
-    my $sub_for_subsequent_renewal_from_cc_sub = setup_dd_test_report({
-        'Subscription_Type' => 2,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '154323',
-        'uprn' => '3654321',
-    });
-    $sub_for_subsequent_renewal_from_cc_sub->set_extra_metadata('payerReference' => 'GGW3654321');
-    $sub_for_subsequent_renewal_from_cc_sub->update;
-
-    my $sub_for_unprocessed_cancel = setup_dd_test_report({
-        'Subscription_Type' => 1,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '84324',
-        'uprn' => '854325',
-    });
-    my $unprocessed_cancel = setup_dd_test_report({
-        'payment_method' => 'direct_debit',
-        'property_id' => '84324',
-        'uprn' => '854325',
-    });
-    $unprocessed_cancel->state('unconfirmed');
-    $unprocessed_cancel->category('Cancel Garden Subscription');
-    $unprocessed_cancel->update;
-
     my $sub_for_processed_cancel = setup_dd_test_report({
         'Subscription_Type' => 1,
         'Subscription_Details_Quantity' => 1,
@@ -1629,14 +1642,6 @@ subtest 'check direct debit reconcilliation' => sub {
     });
     $processed_renewal->set_extra_metadata('dd_date' => '16/03/2021');
     $processed_renewal->update;
-
-    my $renewal_nothing_in_echo = setup_dd_test_report({
-        'Subscription_Type' => 1,
-        'Subscription_Details_Quantity' => 1,
-        'payment_method' => 'direct_debit',
-        'property_id' => '74321',
-        'uprn' => '754322',
-    });
 
     my $sub_for_cancel_nothing_in_echo = setup_dd_test_report({
         'Subscription_Type' => 1,
@@ -1660,21 +1665,21 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits;
     } [
         "no matching record found for Garden Subscription payment with id GGW554321\n",
-        "no matching record found for Garden Subscription payment with id GGW554399\n",
-        "no matching service to renew for GGW754322\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "no matching service to renew for $renewal_nothing_in_echo_ref\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
-        "no matching record found for Garden Subscription payment with id GGW954325\n",
+        "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
     ], "warns if no matching record";
 
     $new_sub->discard_changes;
     is $new_sub->state, 'confirmed', "New report confirmed";
-    is $new_sub->get_extra_metadata('payerReference'), "GGW654321", "payer reference set";
-    is $new_sub->get_extra_field_value('PaymentCode'), "GGW654321", 'correct echo payment code field';
+    is $new_sub->get_extra_metadata('payerReference'), "LBB-" . $new_sub->id . "-654321", "payer reference set";
+    is $new_sub->get_extra_field_value('PaymentCode'), "LBB-" . $new_sub->id . "-654321", 'correct echo payment code field';
     is $new_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     $renewal_from_cc_sub->discard_changes;
     is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-    is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW1654321", 'correct echo payment code field';
+    is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), $renewal_from_cc_sub_ref, 'correct echo payment code field';
     is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'From CC Renewal has correct type';
     is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'From CC Renewal has correct container type';
     is $renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Renewal has correct service id';
@@ -1690,7 +1695,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $subsequent_renewal_from_cc_sub->count, 2, "two record for subsequent renewal property";
     $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
     is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-    is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), "GGW3654321", 'correct echo payment code field';
+    is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), $sub_for_subsequent_renewal_from_cc_sub_ref, 'correct echo payment code field';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Subsequent Renewal has correct type';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'Subsequent Renewal has correct container type';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Subsequent Renewal has correct service id';
@@ -1703,7 +1708,7 @@ subtest 'check direct debit reconcilliation' => sub {
     $ad_hoc->discard_changes;
     is $ad_hoc->state, 'confirmed', "ad hoc report confirmed";
     is $ad_hoc->get_extra_metadata('dd_date'), "16/03/2021", "dd date set for ad hoc";
-    is $ad_hoc->get_extra_field_value('PaymentCode'), "GGW654325", 'correct echo payment code field';
+    is $ad_hoc->get_extra_field_value('PaymentCode'), "LBB-" . $ad_hoc->id . "-654325", 'correct echo payment code field';
     is $ad_hoc->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
 
     $ad_hoc_skipped->discard_changes;
@@ -1774,22 +1779,24 @@ subtest 'check direct debit reconcilliation' => sub {
     is $unprocessed_cancel->get_extra_metadata('dd_date'), "21/02/2021", "dd date set for unprocessed cancelled";
 
     $failed_new_sub->discard_changes;
-    is $failed_new_sub->state, 'hidden', 'failed sub not hidden';
+    is $failed_new_sub->state, 'unconfirmed', 'failed sub not hidden, no reference to match';
 
     warnings_are {
         $c->waste_reconcile_direct_debits;
     } [
         "no matching record found for Garden Subscription payment with id GGW554321\n",
-        "no matching record found for Garden Subscription payment with id GGW554399\n",
-        "no matching service to renew for GGW754322\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "no matching service to renew for $renewal_nothing_in_echo_ref\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
-        "no matching record found for Garden Subscription payment with id GGW954325\n",
+        "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
     ], "warns if no matching record";
 
     $failed_new_sub->discard_changes;
-    is $failed_new_sub->state, 'hidden', 'failed sub still hidden on second run';
+    is $failed_new_sub->state, 'unconfirmed', 'failed sub still unconfirmed on second run';
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
+
+};
 
 };
 
@@ -1840,7 +1847,7 @@ subtest 'Garden Waste new subs alert update emails contain bin collection days l
         $found = any { $_ =~ m"recyclingservices\.bromley\.gov\.uk/waste/$property_id" } @uris;
         ok $found, 'Found bin day URL in HTML part of alert email';
     }
-}; };
+};
 
 sub setup_dd_test_report {
     my $extras = shift;

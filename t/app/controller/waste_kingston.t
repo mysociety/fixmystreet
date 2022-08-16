@@ -1626,7 +1626,7 @@ FixMyStreet::override_config {
     $p->category('Garden Subscription');
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
-    $p->set_extra_metadata('payerReference', 'GGW1000000002');
+    $p->set_extra_metadata('payerReference', 'RBK-' . $p->id . '1000000002');
     $p->set_extra_metadata('dd_mandate_id', '100');
     $p->set_extra_metadata('dd_contact_id', '101');
     $p->update;

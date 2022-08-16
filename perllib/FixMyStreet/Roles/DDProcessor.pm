@@ -316,14 +316,37 @@ sub _duplicate_waste_report {
 sub _process_reference {
     my ($self, $payer) = @_;
 
-    (my $uprn = $payer) =~ s/^GGW//;
-
-    my $len = length($uprn);
-    my $rs = FixMyStreet::DB->resultset('Problem')->search({
-        extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
-    },
-    {
+    # Old style GGW references
+    if ((my $uprn = $payer) =~ s/^GGW//) {
+        my $len = length($uprn);
+        my $rs = FixMyStreet::DB->resultset('Problem')->search({
+            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+        }, {
             order_by => { -desc => 'created' }
+        })->to_body( $self->body );
+        return ($uprn, $rs);
+    }
+
+    my ($id, $uprn) = $payer =~ /^@{[$self->waste_payment_ref_council_code()]}-(\d+)-(\d+)/;
+
+    return (undef, undef) unless $id;
+    my $origin = FixMyStreet::DB->resultset('Problem')->find($id);
+
+    if ( !$origin ) {
+        $self->log("no matching origin sub for id $id");
+        return (undef, undef);
+    }
+
+    $uprn = $origin->get_extra_field_value('uprn');
+    my $len = length($payer);
+    $self->log( "extra query is " . '%payerReference,T' . $len . ':'. $payer . '%' );
+    my $rs = FixMyStreet::DB->resultset('Problem')->search({
+        -or => [
+            id => $id,
+            extra => { like => '%payerReference,T' . $len . ':'. $payer . '%' },
+        ]
+    }, {
+        order_by => { -desc => 'created' }
     })->to_body( $self->body );
 
     return ($uprn, $rs);

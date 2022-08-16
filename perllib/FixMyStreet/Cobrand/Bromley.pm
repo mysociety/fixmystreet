@@ -863,6 +863,8 @@ sub garden_waste_cost_pa {
 
 sub garden_waste_new_bin_admin_fee { 0 }
 
+sub waste_payment_ref_council_code { "LBB" }
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};

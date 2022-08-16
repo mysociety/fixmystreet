@@ -396,7 +396,7 @@ sub populate_dd_details : Private {
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
     $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
-    $c->stash->{reference} = $c->cobrand->call_hook( 'waste_dd_payment_ref' => $p ) || 'GGW' . $c->stash->{property}{uprn};
+    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
     $c->stash->{lookup} = $reference;
     $c->stash->{payment_date} = $dt;
     $c->stash->{start_date} = $dt->ymd;
