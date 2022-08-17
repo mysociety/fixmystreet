@@ -102,6 +102,10 @@ sub waste_reconcile_direct_debits {
                 next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+                    # already processed - need this because a Renewal report
+                    # may have been switched to a New if the backend
+                    # subscription had expired
+                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
                     $self->log("is a matching new report") if !$p;
                     $p = $cur if !$p;
                 } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
@@ -323,7 +327,7 @@ sub _process_reference {
         my $rs = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
         }, {
-            order_by => { -desc => 'created' }
+            order_by => [ { -desc => 'created' }, { -desc => 'id' } ],
         })->to_body( $self->body );
         return ($uprn, $rs);
     }

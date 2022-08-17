@@ -1743,6 +1743,12 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->cobrand_data, 'waste';
     is $p->state, 'confirmed';
 
+    # Assume that this has now had to go through as New, rather than Renewal
+    # Should not be any extra warning output later on
+    $p->update_extra_field({ name => "Subscription_Type", value => 1 });
+    $p->title("Garden Subscription - New");
+    $p->update;
+
     my $renewal_too_recent = FixMyStreet::DB->resultset('Problem')->search({
             extra => { like => '%uprn,T5:value,I6:654329%' }
         },
