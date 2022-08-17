@@ -955,7 +955,8 @@ fixmystreet.assets = {
 
         fixmystreet.assets.layers.push(asset_layer);
         if (options.always_visible) {
-            asset_layer.setVisibility(true);
+            var visibility = fixmystreet.bodies && options.body ? fixmystreet.bodies.indexOf(options.body) != -1 : true;
+            asset_layer.setVisibility(visibility);
         }
         return asset_layer;
     },
