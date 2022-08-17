@@ -2,6 +2,7 @@ package FixMyStreet::Queue::Item::Report;
 
 use Moo;
 use DateTime::Format::Pg;
+use Time::HiRes;
 
 use Utils::OpenStreetMap;
 
@@ -339,10 +340,7 @@ sub _add_confirmed_update {
         my $request = {
             service_request_id => $problem->id,
             update_id => 'auto-internal',
-            # Add a second so it is definitely later than problem confirmed timestamp,
-            # which uses current_timestamp (and thus microseconds) whilst this update
-            # is rounded down to the nearest second
-            comment_time => DateTime->now->add( seconds => 1 ),
+            comment_time => DateTime->from_epoch( epoch => Time::HiRes::time ),
             email_text => $email_text,
             status => 'open',
             description => $description,
