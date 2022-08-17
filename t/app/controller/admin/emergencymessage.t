@@ -1,12 +1,14 @@
+use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
+my $bexley = $mech->create_body_ok(2494, 'Bexley Council', {}, { cobrand => 'bexley' });
 my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
 my $user = $mech->create_user_ok('user@example.com', name => 'Test User', from_body => $body);
 
 $mech->log_in_ok( $user->email );
-ok $mech->host('oxfordshire.fixmystreet.com');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire' ],
@@ -70,6 +72,79 @@ FixMyStreet::override_config {
         $mech->content_lacks('Testing emergency waste message');
         $mech->get_ok('/waste');
         $mech->content_lacks('Testing emergency waste message');
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'oxfordshire' ],
+}, sub {
+    subtest 'setting reporting message' => sub {
+        $mech->get_ok('/admin/emergencymessage');
+        $mech->content_contains('hard-coded');
+    }
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'bexley' ],
+    MAPIT_URL => 'http://mapit.uk',
+}, sub {
+    subtest 'setting reporting message' => sub {
+        $user->update({ from_body => $bexley });
+        $user->user_body_permissions->create({
+            body => $bexley,
+            permission_type => 'emergency_message_edit',
+        });
+
+        $mech->get_ok('/admin/emergencymessage');
+        $mech->submit_form_ok({ with_fields => { emergency_message_reporting => 'Testing reporting message' } });
+        $mech->content_contains('Testing reporting message');
+        $mech->get_ok('/report/new?latitude=51.45556&longitude=0.15356');
+        $mech->content_contains('Testing reporting message');
+
+        # Check removing message
+        $mech->get_ok('/admin/emergencymessage');
+        $mech->submit_form_ok({ with_fields => { emergency_message_reporting => '' } });
+        $mech->content_lacks('Testing reporting message');
+        $mech->get_ok('/report/new?latitude=51.45556&longitude=0.15356');
+        $mech->content_lacks('Testing reporting message');
+    };
+
+    my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+    $ukc->mock('_get_bank_holiday_json', sub {
+        {
+            "england-and-wales" => {
+                "events" => [
+                    { "date" => "2019-12-25", "title" => "Christmas Day" }
+                ]
+            }
+        }
+    });
+
+    subtest 'setting OOH messages' => sub {
+        my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
+        $mech->post_ok('/admin/emergencymessage', {
+            emergency_message => 'Testing message',
+            emergency_message_ooh => 'This is an OOH message',
+            # Tuesdays, midnight-noon
+            'ooh[0].day' => 3,
+            'ooh[0].start' => 0,
+            'ooh[0].end' => 12*60,
+            # Bank Holidays all day
+            'ooh[1].day' => 8,
+            'ooh[1].start' => 0,
+            'ooh[1].end' => 24*60,
+            token => $csrf,
+        });
+        $mech->content_contains('This is an OOH message');
+        set_fixed_time('2022-07-19T04:00:00Z');
+        $mech->get_ok('/');
+        $mech->content_contains('This is an OOH message');
+        set_fixed_time('2022-07-19T14:00:00Z');
+        $mech->get_ok('/');
+        $mech->content_contains('Testing message');
+        set_fixed_time('2019-12-25T14:00:00Z');
+        $mech->get_ok('/');
+        $mech->content_contains('This is an OOH message');
     };
 };
 

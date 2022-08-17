@@ -3,6 +3,16 @@
 
 [% INCLUDE status_message %]
 
+<style>
+.two-col {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+}
+</style>
+
+<h2>Homepage</h2>
+
 <p>[% loc('This emergency message will be shown on the homepage.') %]</p>
 
 <form method="post"
@@ -12,23 +22,72 @@
     [% IF errors.emergency_message %]
         <div class="form-error">[% errors.emergency_message %]</div>
     [% END %]
+    <div class="two-col">
     <p>
         <strong>[% loc('Message') %]:</strong>
         <textarea name="emergency_message" class="form-control" rows="10">[% emergency_message %]</textarea>
     </p>
+    <p>
+        <strong>[% loc('Out of hours') %]:</strong>
+        <textarea name="emergency_message_ooh" class="form-control" rows="10">[% emergency_message_ooh %]</textarea>
+    </p>
+    </div>
 
-  [% IF body.get_cobrand_handler.feature('waste') %]
+  [% IF body_cobrand.feature('waste') %]
+    <h2>WasteWorks</h2>
     <p>The waste message will be shown on all waste pages.</p>
-
+    <div class="two-col">
     <p>
         <strong>Waste message:</strong>
         <textarea name="emergency_message_waste" class="form-control" rows="10">[% emergency_message_waste %]</textarea>
     </p>
+    <p>
+        <strong>[% loc('Out of hours') %]:</strong>
+        <textarea name="emergency_message_waste_ooh" class="form-control" rows="10">[% emergency_message_waste_ooh %]</textarea>
+    </p>
+    </div>
   [% END %]
+
+    <h2>Reporting page</h2>
+
+  [% IF hardcoded_reporting_message %]
+    <p>Your reporting page message is currently hard-coded and will display at all times.</p>
+    <pre>[% hardcoded_reporting_message %]</pre>
+  [% ELSE %]
+    <p>[% loc('The reporting message will be shown on reporting pages.') %]</p>
+    <div class="two-col">
+    <p>
+        <strong>[% loc('Reporting message') %]:</strong>
+        <textarea name="emergency_message_reporting" class="form-control" rows="10">[% emergency_message_reporting %]</textarea>
+    </p>
+    <p>
+        <strong>[% loc('Out of hours') %]:</strong>
+        <textarea name="emergency_message_reporting_ooh" class="form-control" rows="10">[% emergency_message_reporting_ooh %]</textarea>
+    </p>
+    </div>
+  [% END %]
+
+<h2>Out of hours periods</h2>
+
+<p>
+If there is no out of hours message, the normal message is shown at all times.
+</p>
+
+<div class="extra-metadata-form js-metadata-items">
+  [% FOR ooh IN ooh_times %]
+    [% INCLUDE 'admin/emergencymessage/_ooh.html' i=loop.index %]
+  [% END %]
+</div>
+
+<div class="hidden-js" id="js-template-extra-metadata-item">
+  [% INCLUDE 'admin/emergencymessage/_ooh.html' ooh={} i=9999 %]
+</div>
+
+<button style="margin-bottom:2em" type="button" class="btn btn--small js-metadata-item-add hidden-nojs">[% loc('Add time period') %]</button>
 
     <p>
     <input type="hidden" name="token" value="[% csrf_token %]" >
-    <input type="submit" class="btn" value="[% emergency_message OR emergency_message_waste ? loc('Update message') : loc('Create message') %]" >
+    <input type="submit" class="btn" value="[% emergency_message OR emergency_message_waste OR emergency_message_reporting ? loc('Update message') : loc('Create message') %]" >
     </p>
 </form>
 

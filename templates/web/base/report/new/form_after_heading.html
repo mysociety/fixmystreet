@@ -1,0 +1,5 @@
+[% emergency_message = c.cobrand.emergency_message('reporting') %]
+[% IF emergency_message %]
+    [% emergency_message | safe %]
+[% END %]
+
