@@ -1740,6 +1740,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'renewal has correct container type';
     is $p->get_extra_field_value('service_id'), 545, 'renewal has correct service id';
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $p->cobrand_data, 'waste';
     is $p->state, 'confirmed';
 
     my $renewal_too_recent = FixMyStreet::DB->resultset('Problem')->search({

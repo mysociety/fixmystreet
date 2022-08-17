@@ -302,6 +302,7 @@ sub _duplicate_waste_report {
         anonymous => $report->anonymous,
         state => 'unconfirmed',
         non_public => 1,
+        cobrand_data => 'waste',
     });
 
     $extra->{$self->garden_subscription_container_field} ||= $report->get_extra_field_value($self->garden_subscription_container_field);
