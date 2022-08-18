@@ -6,10 +6,11 @@ if (!fixmystreet.maps) {
 
 var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
 var tilma_url = "https://" + wfs_host + "/mapserver/thamesmead";
+var wfs_url = "https://maps.peabody.org.uk/getows.ashx?mapsource=mapsources/maplayers";
 
 var defaults = {
     http_options: {
-        url: tilma_url,
+        url: wfs_url,
         params: {
             SERVICE: "WFS",
             VERSION: "1.1.0",
@@ -18,10 +19,6 @@ var defaults = {
         }
     },
     asset_type: 'area',
-    asset_id_field: 'fid',
-    attributes: {
-        central_asset_id: 'fid',
-    },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
     non_interactive: true,
@@ -72,6 +69,7 @@ fixmystreet.assets.add(defaults, {
 
 fixmystreet.assets.add(defaults, {
     http_options: {
+        url: tilma_url,
         params: {
             TYPENAME: "treegroups"
         }
