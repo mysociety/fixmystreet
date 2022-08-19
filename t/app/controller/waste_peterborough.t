@@ -72,7 +72,7 @@ FixMyStreet::override_config {
         $mech->content_contains('can’t find your address', "Missing message found");
     };
     subtest 'Address lookup' => sub {
-        set_fixed_time('2021-08-06T10:00:00Z');
+        set_fixed_time('2021-08-05T21:00:00Z');
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
         $mech->content_contains('1 Pope Way, Peterborough, PE1 3NA');
@@ -81,10 +81,10 @@ FixMyStreet::override_config {
         $mech->content_contains('Every two weeks');
         $mech->content_contains('Thursday, 5th August 2021');
         $mech->content_contains('Report a recycling bin collection as missed');
-        set_fixed_time('2021-08-09T10:00:00Z');
+        set_fixed_time('2021-08-06T10:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('Report a recycling bin collection as missed');
-        set_fixed_time('2021-08-09T14:00:00Z');
+        set_fixed_time('2021-08-06T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('Report a recycling bin collection as missed');
     };

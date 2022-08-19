@@ -375,7 +375,7 @@ sub category_change_force_resend {
 
 Functions specific to the waste product & Bartec integration.
 
-=cut 
+=cut
 
 sub _premises_for_postcode {
     my $self = shift;
@@ -640,7 +640,7 @@ sub bin_services_for_address {
             report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
         };
         if ($row->{report_allowed}) {
-            # We only get here if we're within the 2.5 day window after the collection.
+            # We only get here if we're within the 1.5 day window after the collection.
             # Set this so missed food collections can always be reported, as they don't
             # have their own collection event.
             $self->{c}->stash->{any_report_allowed} = 1;
@@ -673,7 +673,7 @@ sub bin_services_for_address {
 
     # Some need to be added manually as they don't appear in Bartec responses
     # as they're not "real" collection types (e.g. requesting all bins)
-    
+
     my $bags_only = $self->{c}->get_param('bags_only');
     my $skip_bags = $self->{c}->get_param('skip_bags');
 
@@ -739,7 +739,7 @@ sub _waste_report_allowed {
     #  A bin not collected on Thursday can be rung through up to noon Monday
 
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    $dt = $wd->add_days($dt, 2);
+    $dt = $wd->add_days($dt, 1);
     $dt->set( hour => 12, minute => 0, second => 0 );
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     return $now <= $dt;
