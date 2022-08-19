@@ -26,6 +26,8 @@ sub report_sent_confirmation_email { 'external_id' }
 
 sub admin_user_domain { 'lincolnshire.gov.uk' }
 
+sub default_map_zoom { 5 }
+
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a Lincolnshire postcode, street name and area, or check an existing report number';
