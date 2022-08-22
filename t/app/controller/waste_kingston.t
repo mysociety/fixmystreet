@@ -65,11 +65,11 @@ package main;
 sub garden_waste_no_bins {
     return [ {
         Id => 1001,
-        ServiceId => 355,
+        ServiceId => 405,
         ServiceName => 'Food waste collection',
         ServiceTasks => { ServiceTask => {
             Id => 400,
-            TaskTypeId => 1903,
+            TaskTypeId => 2238,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -97,11 +97,11 @@ sub garden_waste_no_bins {
 sub garden_waste_only_refuse_sacks {
     return [ {
         Id => 1001,
-        ServiceId => 355,
+        ServiceId => 405,
         ServiceName => 'Refuse collection',
         ServiceTasks => { ServiceTask => {
             Id => 400,
-            TaskTypeId => 1904,
+            TaskTypeId => 2242,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
