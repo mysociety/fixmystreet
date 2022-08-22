@@ -237,6 +237,27 @@ EOF
         is $email->header('Subject'), "Report #$id, email subject had bad code SC101";
     };
 
+    subtest 'Bucks status code, auto-reply' => sub {
+        my $email = email_from_template(RETURNPATH => 1, SUBJECT => "Auto-Reply", TOKEN => $token_report);
+        process($email);
+        is $trap->stderr, "incoming.t: Received non-bounce for report $id, forwarding to report creator\n";
+        my $env = $mech->get_email_envelope;
+        is $env->{to}[0], $p->user->email;
+        $email = $mech->get_email;
+        is $email->header('Subject'), "Auto-Reply Re: Problem report";
+        like $email->as_string, qr/This is the contents/;
+        $mech->clear_emails_ok;
+    };
+
+    subtest 'Bucks status code, just a reply' => sub {
+        my $email = email_from_template(RETURNPATH => 1, SUBJECT => "", TOKEN => $token_report);
+        process($email);
+        is $trap->stderr, "incoming.t: Report #$id, email subject had no SC code\n";
+        $email = $mech->get_email;
+        $mech->clear_emails_ok;
+        is $email->header('Subject'), "Report #$id, email subject had no SC code";
+    };
+
     subtest 'Bucks status code, fixed default' => sub {
         FixMyStreet::DB->resultset("ResponseTemplate")->create({
             body => $body,

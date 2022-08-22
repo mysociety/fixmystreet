@@ -130,7 +130,8 @@ sub is_out_of_office {
     my $precedence = $head->get("Precedence") || '';
     return 1 if $precedence =~ /auto_reply/;
     my $subject = $head->get("Subject");
-    return 1 if $subject =~ /Auto(matic|mated)?[ -_]?(reply|response|responder)|Thank[ _]you[ _]for[ _](your[ _]email|contacting)|Out of (the )?Office|away from the office|This office is closed until|^Re: (Problem Report|New updates)|^Auto: |^E-Mail Response$|^Message Received:|have received your email|Acknowledgement of your email|away from my desk|We got your email/i;
+    return 1 if $subject =~ /Auto(matic|mated)?[ -_]?(reply|response|responder)|Thank[ _]you[ _]for[ _](your[ _]email|contacting)|Out of (the )?Office|away from the office|This office is closed until|^Auto: |^E-Mail Response$|^Message Received:|have received your email|Acknowledgement of your email|away from my desk|We got your email/i;
+    return 1 if $subject =~ /^Re: (Problem Report|New updates)/i && !$attributes{no_replies};
     return 0;
 }
 
@@ -192,6 +193,7 @@ sub check_for_status_code {
     return 0 unless $cobrand->call_hook('handle_email_status_codes');
 
     my ($code) = $subject =~ /SC(\d+)/i;
+    return 0 if !$code && $self->is_out_of_office(no_replies => 1);
     return $self->_status_code_bounce($cobrand, "no SC code") unless $code;
 
     my $body = $cobrand->body;
