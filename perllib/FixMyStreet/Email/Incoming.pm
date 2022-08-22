@@ -200,9 +200,17 @@ sub check_for_status_code {
         current_body => $body,
         blank_updates_permitted => 1,
     );
+
+    my %body_ids = map { $_ => 1 } @{$problem->bodies_str_ids};
+    my $categories = [ $problem->category, undef ];
+    if (!$body_ids{$body->id}) {
+        # Not to the body we're using for templates, so don't match on a category
+        $categories = undef;
+    }
+
     my $templates = FixMyStreet::DB->resultset("ResponseTemplate")->search({
         'me.body_id' => $body->id,
-        'contact.category' => [ $problem->category, undef ],
+        'contact.category' => $categories,
     }, {
         order_by => 'contact.category', # So nulls are last
         join => { 'contact_response_templates' => 'contact' },

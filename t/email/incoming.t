@@ -7,7 +7,11 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('systemuser@example.org');
 my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', { comment_user => $user, send_extended_statuses => 1 }, { cobrand => 'buckinghamshire' });
-my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title');
+my $parish = $mech->create_body_ok(58815, 'Aylesbury Town Council');
+my $body_hedge = $mech->create_contact_ok( body_id => $body->id, category => 'Hedge problem', email => 'hedges@example.com' );
+$mech->create_contact_ok( body_id => $parish->id, category => 'Hedge problem', email => 'hedges@parish.example.com' );
+
+my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', { category => 'Hedge problem' });
 my $alert = FixMyStreet::DB->resultset("Alert")->create({
     alert_type => 'new_updates',
     user_id => $p->user_id,
@@ -273,7 +277,43 @@ EOF
         is $p->comments->count, 1;
         is $p->comments->first->text, "Text of template";
         is $p->comments->first->problem_state, "closed";
+        $p->comments->delete;
     };
+
+    subtest 'Parish report, fallback template' => sub {
+        my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
+            body => $body,
+            auto_response => 1,
+            external_status_code => '789',
+            title => '789 (for the category)',
+            text => 'This is a message from the body',
+        });
+        $template->contact_response_templates->find_or_create({
+            contact_id => $body_hedge->id,
+        });
+        # And one with no contacts, which is the fallback
+        FixMyStreet::DB->resultset("ResponseTemplate")->create({
+            body => $body,
+            auto_response => 1,
+            external_status_code => '789',
+            title => '789 (fallback)',
+            text => 'This is a message from the parish',
+        });
+
+        my ($p) = $mech->create_problems_for_body(1, $parish->id, 'Title', { category => 'Hedge problem', cobrand => 'buckinghamshire' });
+        my $id = $p->id;
+        my $token_report = FixMyStreet::Email::generate_verp_token('report', $id);
+
+        my $email = email_from_template(RETURNPATH => 1, SUBJECT => "SC789", TOKEN => $token_report);
+        process($email);
+        is $trap->stderr, "incoming.t: Received SC code in subject, updating report\n";
+        $mech->email_count_is(0);
+        $p->discard_changes;
+        is $p->comments->count, 1;
+        is $p->comments->first->text, "This is a message from the parish";
+        $p->comments->delete;
+    };
+
 };
 
 done_testing;
