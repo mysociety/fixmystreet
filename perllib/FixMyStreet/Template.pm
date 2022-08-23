@@ -228,8 +228,8 @@ sub _sanitize_elt {
         $list_type = $_->tag, $list_num = 1 if $_->tag eq 'ol' || $_->tag eq 'ul';
         _sanitize_elt($_);
         $_->replace_with("\n") if $_->tag eq 'br';
-        $_->replace_with('[image: ', $_->attr('alt'), ']') if $_->tag eq 'img';
-        $_->replace_with($_->as_text, ' [', $_->attr('href'), ']') if $_->tag eq 'a';
+        $_->replace_with('[image: ', $_->attr('alt') || '', ']') if $_->tag eq 'img';
+        $_->replace_with($_->as_text, ' [', $_->attr('href') || '', ']') if $_->tag eq 'a';
         $_->replace_with_content if $_->tag eq 'span' || $_->tag eq 'font';
         $_->replace_with_content if $_->tag eq 'ul' || $_->tag eq 'ol';
         if ($_->tag eq 'li') {
