@@ -79,6 +79,12 @@ sub get_geocoder { 'OSM' }
 
 sub map_type { 'Northamptonshire' }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+}
+
 sub open311_extra_data_exclude { [ 'emergency' ] }
 
 sub open311_get_update_munging {
