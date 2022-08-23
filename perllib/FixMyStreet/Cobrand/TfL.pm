@@ -547,7 +547,7 @@ sub _cleaning_categories { [
     'Litter or Weeds on a Street',
 ] }
 
-sub _cleaning_groups { [ 'Street cleaning', 'Fly-tipping' ] }
+sub _cleaning_groups { [ 'Street cleaning', 'Street Cleansing', 'Fly-tipping' ] }
 
 sub _tfl_council_categories { [
     'General Litter / Rubbish Collection',
