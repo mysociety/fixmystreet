@@ -527,10 +527,25 @@ sub find_available_bulky_slots {
     my $workpack_date_parser
         = DateTime::Format::Strptime->new( pattern => '%FT%T' );
 
+    my $last_workpack_date;
     for my $workpack (@$workpacks) {
-        # Can be an arrayref or a hashref
-        my $action_data = $workpack->{Actions}{Action};
-        $action_data = [$action_data] if ref $action_data eq 'HASH';
+        # Depending on the Collective API version (R1531 or R1611),
+        # $workpack->{Actions} can be an arrayref or a hashref.
+        # If a hashref, it may be an action structure of the form
+        # { 'ActionName' => ... },
+        # or it may have the key {Action}.
+        # $workpack->{Actions}{Action} can also be an arrayref or hashref.
+        # From this variety of structures, we want to get an arrayref of
+        # action hashrefs of the form [ { 'ActionName' => ... }, {...} ].
+        my $action_data = $workpack->{Actions};
+        if ( ref $action_data eq 'HASH' ) {
+            if ( exists $action_data->{Action} ) {
+                $action_data = $action_data->{Action};
+                $action_data = [$action_data] if ref $action_data eq 'HASH';
+            } else {
+                $action_data = [$action_data];
+            }
+        }
 
         my %action_hash = map {
             my $action_name = $_->{ActionName} // '';
@@ -543,6 +558,10 @@ sub find_available_bulky_slots {
         # We only want dates that coincide with black bin collections
         next if !exists $action_hash{'Black Bin'};
 
+        # This case shouldn't occur, but in case there are multiple black bin
+        # workpacks for the same date, we only take the first into account
+        next if $workpack->{WorkPackDate} eq ( $last_workpack_date // '' );
+
         my $workpacks_for_day
             = $bartec->WorkPacks_Get( $workpack->{WorkPackDate} );
 
@@ -551,6 +570,7 @@ sub find_available_bulky_slots {
 
         my $jobs_total = 0;
 
+        my %jobs_per_uprn;
         for my $wpfd (@$workpacks_for_day) {
             next if $wpfd->{Name} !~ bulky_workpack_name();
 
@@ -564,15 +584,23 @@ sub find_available_bulky_slots {
                 || $workpack_dt->date ne $suffix_dt->date;
 
             my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
-            $jobs_total += @$jobs;
+
+            # Group jobs by UPRN. For a bulky workpack, a UPRN/premises may
+            # have multiple jobs (equivalent to item slots); these all count
+            # as a single bulky collection slot.
+            $jobs_per_uprn{ $_->{Job}{UPRN} }++ for @$jobs;
         }
+
+        my $total_collection_slots = keys %jobs_per_uprn;
 
         # Only include if max jobs not already reached
         push @available_slots => {
             workpack_id => $workpack->{id},
             date        => $workpack->{WorkPackDate},
             }
-            if $jobs_total < max_daily_bulky_collection_slots();
+            if $total_collection_slots < max_daily_bulky_collection_slots();
+
+        $last_workpack_date = $workpack->{WorkPackDate};
     }
 
     return \@available_slots;

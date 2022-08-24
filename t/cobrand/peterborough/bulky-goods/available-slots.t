@@ -57,6 +57,9 @@ subtest 'find_available_bulky_slots' => sub {
             {   date        => '2022-09-30T00:00:00',
                 workpack_id => 75500,
             },
+            {   date        => '2022-10-07T00:00:00',
+                workpack_id => 75600,
+            },
         ],
     );
 };
@@ -68,18 +71,8 @@ sub _future_workpacks {
         {   'id'           => 57127,
             'WorkPackDate' => '2022-07-29T00:00:00',
             'WorkPackName' => 'Waste-Round 2 Garden-290722',
-            'Actions'      => {
-                'Action' => {
-                    'Action' => {
-                        'ActionID'      => '5016',
-                        'ActionName'    => 'Empty Bin 240L Brown',
-                        'JobsCount'     => '679',
-                        'JobsVolume'    => '0.000',
-                        'JobsWeight'    => '65184.000',
-                        'PremisesCount' => '641',
-                    },
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Brown' } },
         },
 
         {   'id'           => 75474,
@@ -87,21 +80,8 @@ sub _future_workpacks {
             'WorkPackName' => 'Waste-Round 16-050822',
             'Actions'      => {
                 'Action' => [
-                    {   'ActionID'      => '4998',
-                        'ActionName'    => 'Empty 1100l Refuse',
-                        'JobsCount'     => '2',
-                        'JobsVolume'    => '0.000',
-                        'JobsWeight'    => '0.000',
-                        'PremisesCount' => '1',
-                    },
-
-                    {   'ActionID'      => '4722',
-                        'ActionName'    => 'Empty Bin 240L Black',
-                        'JobsCount'     => '1788',
-                        'JobsVolume'    => '0.000',
-                        'JobsWeight'    => '171648.000',
-                        'PremisesCount' => '1785',
-                    }
+                    { 'ActionName' => 'Empty 1100l Refuse' },
+                    { 'ActionName' => 'Empty Bin 240L Black' }
                 ],
             },
         },
@@ -109,121 +89,73 @@ sub _future_workpacks {
         {   'id'           => 75481,
             'WorkPackDate' => '2022-08-12T00:00:00',
             'WorkPackName' => 'Waste-Round 16-120822',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Black 240l Bin',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      => [
+                { 'ActionName' => 'Empty 1100l Refuse' },
+                { 'ActionName' => 'Empty Bin 240L Black' }
+            ],
         },
 
         {   'id'           => 75488,
             'WorkPackDate' => '2022-08-19T00:00:00',
             'WorkPackName' => 'Waste-Round 16-190822',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
 
         {   'id'           => 75495,
             'WorkPackDate' => '2022-08-26T23:59:59',
             'WorkPackName' => 'Waste-Round 16-260822',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
 
         {   'id'           => 75496,
             'WorkPackDate' => '2022-09-02T00:00:00',
             'WorkPackName' => 'Waste-Round 16-020922',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      => { 'ActionName' => 'Empty Bin 240L Black' },
         },
 
         {   'id'           => 75497,
             'WorkPackDate' => '2022-09-09T00:00:00',
             'WorkPackName' => 'Waste-Round 16-090922',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
 
         {   'id'           => 75498,
             'WorkPackDate' => '2022-09-16T00:00:00',
             'WorkPackName' => 'Waste-Round 16-160922',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
 
         {   'id'           => 75499,
             'WorkPackDate' => '2022-09-23T00:00:00',
             'WorkPackName' => 'Waste-Round 16-230922',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
 
         {   'id'           => 75500,
             'WorkPackDate' => '2022-09-30T00:00:00',
             'WorkPackName' => 'Waste-Round 16-300922',
-            'Actions'      => {
-                'Action' => {
-                    'ActionID'      => '4722',
-                    'ActionName'    => 'Empty Bin 240L Black',
-                    'JobsCount'     => '1788',
-                    'JobsVolume'    => '0.000',
-                    'JobsWeight'    => '171648.000',
-                    'PremisesCount' => '1785',
-                },
-            },
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+
+        # In reality this shouldn't happen, but test for two black bin WPs
+        # for the same day
+        {   'id'           => 75600,
+            'WorkPackDate' => '2022-10-07T00:00:00',
+            'WorkPackName' => 'Waste-Round 16-071022',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+        {   'id'           => 75700,
+            'WorkPackDate' => '2022-10-07T00:00:00',
+            'WorkPackName' => 'Waste-Round 17-071022',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
     ];
 }
@@ -325,6 +257,13 @@ sub _workpacks_by_date {
                 'RecordStamp' => {},
             },
         ],
+
+        '2022-10-07T00:00:00' => [
+            {   'ID'          => '710221',
+                'Name'        => 'Waste-BULKY WASTE-071022',
+                'RecordStamp' => {},
+            },
+        ],
     };
 }
 
@@ -341,7 +280,7 @@ sub _jobs_by_workpack_id {
 
         # 'WHITES' & 'BULKY WASTE' that together make max jobs
         2608221 => _jobs_arrayref(10),
-        2608222 => _jobs_arrayref(30),
+        2608222 => _jobs_arrayref( 30, 20001 ),
 
         # Connected to faulty workpack names so limit ignored
         209221 => _jobs_arrayref(40),
@@ -350,18 +289,21 @@ sub _jobs_by_workpack_id {
 
         # Limit not reached:
 
-        909221 => _jobs_arrayref(39),
+        # Same UPRN for all jobs so counts as single bulky collection
+        909221 => [ ( { Job => { UPRN => 10001 } } ) x 40 ],
 
         1609221 => _jobs_arrayref(39),
 
-        3009221 => _jobs_arrayref(24),
-        3009222 => _jobs_arrayref(15),
+        3009221 => _jobs_arrayref(25),
+        # Same UPRN for all jobs so counts as single bulky collection
+        3009222 => [ ( { Job => { UPRN => 10001 } } ) x 15 ],
     };
 }
 
 sub _jobs_arrayref {
-    my $job_count = shift;
-    [ ( { Job => {} } ) x $job_count ];
+    my ( $job_count, $uprn ) = @_;
+    $uprn //= 10001;
+    return [ map { { Job => { UPRN => $uprn++ } } } 1 .. $job_count ];
 }
 
 done_testing;
