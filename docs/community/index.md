@@ -35,9 +35,9 @@ first.</p>
 <h3>IRC</h3>
 
 <p>If you would like to discuss things in a chat room, the <a
-href="irc://irc.freenode.net/fixmystreet">#fixmystreet</a> channel on
-irc.freenode.net allows for just that (<a
-href="irc/">web IRC interface</a>).</p>
+href="ircs://irc.libera.chat:6697/fixmystreet">#fixmystreet</a> channel on
+irc.libera.chat allows for just that (<a
+href="https://web.libera.chat/#fixmystreet">web IRC interface</a>).</p>
 
 </div>
 <div class="column">
