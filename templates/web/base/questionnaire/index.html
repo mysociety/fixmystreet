@@ -69,10 +69,13 @@
 </p>
 [% END %]
 
-<p>3. [% loc('If you wish to leave a public update on the problem, please enter it here
-(please note it will not be sent to the council).') %]</p>
+<p><label class="inline-text" for="update">
+3. [% loc('If you wish to leave a public update on the problem, please enter it here
+(please note it will not be sent to the council).') %]
+</label>
+</p>
 
-<p><textarea class="form-control" name="update" rows="7" cols="30">[% update | html %]</textarea></p>
+<p><textarea class="form-control" id="update" name="update" rows="7" cols="30">[% update | html %]</textarea></p>
 
 [% INCLUDE report/form/photo_upload.html %]
 
