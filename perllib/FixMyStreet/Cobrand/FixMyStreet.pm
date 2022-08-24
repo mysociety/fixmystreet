@@ -124,7 +124,8 @@ sub munge_report_new_bodies {
     }
 
     if ( $bodies{'Thamesmead'} ) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+        my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
+        $thamesmead->munge_thamesmead_body($bodies);
     }
 }
 
@@ -144,6 +145,11 @@ sub munge_report_new_contacts {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
+    }
+
+    if ( $bodies{'Thamesmead'} ) {
+        my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
+        $thamesmead->munge_categories($contacts);
     }
 
 }

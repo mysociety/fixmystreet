@@ -1,6 +1,10 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::UpdateAllReports;
+use t::Mock::Tilma;
+
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -191,7 +195,7 @@ FixMyStreet::override_config {
     ok (scalar @glendales == 2, "Finds only Glendale Ways with Bexley or Thamesmead in the address");
 };
 
-subtest "Thamesmead categories don't appear on council cobrands or FMS" => sub {
+subtest "Thamesmead categories replace cobrand categories on FMS when on Thamesmead asset" => sub {
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bexley' ],
@@ -200,15 +204,12 @@ subtest "Thamesmead categories don't appear on council cobrands or FMS" => sub {
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
         $mech->content_contains('Bexley graffiti');
         $mech->content_lacks('Thamesmead graffiti');
-    };
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'thamesmead' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
-        $mech->content_lacks('Bexley graffiti');
+
+        $mech->get_ok("/report/new/ajax?latitude=51.512868&longitude=0.125436");
         $mech->content_contains('Thamesmead graffiti');
+        $mech->content_lacks('Bexley graffiti');
     };
+
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
         MAPIT_URL => 'http://mapit.uk/',
@@ -216,6 +217,26 @@ subtest "Thamesmead categories don't appear on council cobrands or FMS" => sub {
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
         $mech->content_contains('Bexley graffiti');
         $mech->content_lacks('Thamesmead graffiti');
+
+        $mech->get_ok("/report/new/ajax?latitude=51.512868&longitude=0.125436");
+        $mech->content_contains('Thamesmead graffiti');
+        $mech->content_lacks('Bexley graffiti');
+    };
+};
+
+subtest "Thamesmead categories appear on thamesmead whether asset location or not" => sub {
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'thamesmead' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
+        $mech->content_contains('Thamesmead graffiti');
+        $mech->content_lacks('Bexley graffiti');
+
+        $mech->get_ok("/report/new/ajax?latitude=51.512868&longitude=0.125436");
+        $mech->content_contains('Thamesmead graffiti');
+        $mech->content_lacks('Bexley graffiti');
     };
 };
 

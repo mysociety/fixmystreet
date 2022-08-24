@@ -11,6 +11,7 @@ use LWP::Simple;
 use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
+use XML::Simple;
 
 sub is_council {
     1;
@@ -370,7 +371,8 @@ sub munge_report_new_bodies {
     }
 
     if ( $bodies{'Thamesmead'} ) {
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+        my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
+        $thamesmead->munge_thamesmead_body($bodies);
     }
 }
 
@@ -393,6 +395,11 @@ sub munge_report_new_contacts {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
         $tfl->munge_red_route_categories($contacts);
+    }
+
+    if ( $bodies{'Thamesmead'} ) {
+        my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
+        $thamesmead->munge_categories($contacts);
     }
 }
 
@@ -437,7 +444,7 @@ sub lookup_site_code {
 }
 
 sub _fetch_features {
-    my ($self, $cfg, $x, $y) = @_;
+    my ($self, $cfg, $x, $y, $xml) = @_;
 
     # default to a buffered bounding box around the given point unless
     # a custom filter parameter has been specified.
@@ -449,17 +456,31 @@ sub _fetch_features {
 
     my $uri = $self->_fetch_features_url($cfg);
     my $response = get($uri) or return;
-
-    my $j = JSON->new->utf8->allow_nonref;
-    try {
-        $j = $j->decode($response);
-    } catch {
-        # There was either no asset found, or an error with the WFS
-        # call - in either case let's just proceed without the USRN.
-        return;
-    };
-
-    return $j->{features};
+    if (!$xml) {
+        my $j = JSON->new->utf8->allow_nonref;
+        try {
+            $j = $j->decode($response);
+        } catch {
+            # There was either no asset found, or an error with the WFS
+            # call - in either case let's just proceed without the USRN.
+            return;
+        };
+        return $j->{features};
+    } else {
+        my $x = XML::Simple->new(
+            ForceArray => [ 'gml:featureMember' ],
+            KeyAttr => {},
+            SuppressEmpty => undef,
+        );
+        try {
+            $x = $x->parse_string($response);
+        } catch {
+            # There was either no asset found, or an error with the WFS
+            # call - in either case we'll respond with no asset found
+            return;
+        };
+        return $x->{'gml:featureMember'};
+    }
 }
 
 sub _fetch_features_url {

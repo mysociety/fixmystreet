@@ -115,4 +115,64 @@ sub geocoder_munge_results {
 
 }
 
+my @categories = qw( hardsurfaces grass water treegroups planting );
+my %category_titles = (
+    hardsurfaces => 'Hard surfaces/paths/road (Peabody)',
+    grass => 'Grass and grass areas (Peabody)',
+    water => 'Water areas (Peabody)',
+    treegroups => 'Trees (Peabody)',
+    planting => 'Planters and flower beds (Peabody)',
+);
+my %cat_idx = map { $categories[$_] => $_ } 0..$#categories;
+
+sub area_type_for_point {
+    my ( $self ) = @_;
+
+    my ($x, $y) = Utils::convert_latlon_to_en(
+        $self->{c}->stash->{latitude},
+        $self->{c}->stash->{longitude},
+        'G'
+    );
+
+    my $filter = "(<Filter><Contains><PropertyName>Extent</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>)";
+    my $cfg = {
+        url => "https://tilma.mysociety.org/mapserver/thamesmead",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => join(',', @categories),
+        filter => $filter x 5,
+        outputformat => "GML3",
+    };
+
+    my $features = FixMyStreet::Cobrand::UKCouncils->new->_fetch_features($cfg, $x, $y, 'xml');
+    # Want the feature in the 'highest' category
+    my @sort;
+    foreach (@$features) {
+        my $type = (keys %$_)[0];
+        $type =~ s/ms://;
+        push @sort, [ $cat_idx{$type}, $type ];
+    }
+    @sort = sort { $b->[0] <=> $a->[0] } @sort;
+    return $sort[0][1];
+}
+
+sub munge_thamesmead_body {
+    my ($self, $bodies) = @_;
+
+    if ( my $category = $self->area_type_for_point ) {
+        $self->{c}->stash->{'thamesmead_category'} = $category;
+        %$bodies = map { $_->id => $_ } grep { $_->name eq 'Thamesmead' } values %$bodies;
+    } else {
+        $self->{c}->stash->{'thamesmead_category'} = '';
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+    }
+}
+
+sub munge_categories {
+    my ($self, $categories) = @_;
+
+    if ($self->{c}->stash->{'thamesmead_category'}) {
+        $self->{c}->stash->{'preselected_categories'} = { 'category' => $category_titles{ $self->{c}->stash->{'thamesmead_category'} }, 'subcategory' => '' };
+    }
+}
+
 1;

@@ -268,6 +268,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         $top_message ? (top_message => $top_message) : (),
         unresponsive => $c->stash->{unresponsive}->{ALL} || '',
         by_category => \%by_category,
+        $c->stash->{'preselected_categories'} ? (preselected => $c->stash->{'preselected_categories'} ) : (),
     };
     $c->forward('send_json_response');
 }

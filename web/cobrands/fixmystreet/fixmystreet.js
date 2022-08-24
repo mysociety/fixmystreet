@@ -874,7 +874,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   label_accessibility_update: function() {
-    // Replace unnecessary labels with a span and include a 
+    // Replace unnecessary labels with a span and include a
     // proper aria-label to improve accessibility.
     function replace_label(id, sibling_class, sibling_child, str) {
         $(id).siblings(sibling_class).children(sibling_child).attr('aria-label', str);
@@ -1547,7 +1547,11 @@ fixmystreet.fetch_reporting_data = function() {
 
         $('#form_category_row').html(data.category);
         $('#form_subcategory_row').html(data.subcategories);
-        re_select(old_category_group, old_category);
+        if (data.preselected && (data.preselected.category || data.preselected.subcategory)) {
+            re_select(data.preselected.category, data.preselected.subcategory);
+        } else {
+            re_select(old_category_group, old_category);
+        }
         fixmystreet.reporting.topLevelPoke();
 
         fixmystreet.set_up.fancybox_images(); // In case e.g. top_message has pulled in a fancybox
