@@ -767,9 +767,24 @@ textarea.form-error {
 // to make space for the #report-a-problem-sidebar.
 #side-form, #side {
   .with-notes & {
-    width: 27em;
+    width: 27em; // LUCAS CHECK IF WE WILL NEED THIS
   }
 }
+
+// Styling when editing the report as an admin
+.admin-report-data {
+  background-color: #E9F2FF;
+  padding: 1em;
+  margin: 1em -1em;
+  ul {
+    @include list-reset-soft;
+    margin-bottom: 1em;
+    li {
+      margin-bottom: 0.5em;
+    }
+  }
+}
+
 
 // Notes presented alongside the reporting form
 .sidebar, #report-a-problem-sidebar {

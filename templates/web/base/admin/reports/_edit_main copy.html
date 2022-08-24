@@ -1,80 +1,5 @@
 <div id="side">
-  [% uri = c.uri_for_email( '/report', problem.id ) %]
-  <a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a>
-  <div class="admin-report-data">
-    <ul>
-      [% IF problem.bodies_missing %]
-      <li>[% loc('Missing bodies:') %] [% problem.bodies_missing | html %]</li>
-      [% END %]
-      [% IF problem.extra.address %]
-      <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
-      [% END %]
 
-      <li class="sm">[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
-      <li class="sm">[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
-      <li class="sm">[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
-        [% IF problem.send_method_used %]
-          ([% problem.send_method_used %])
-        [% END %]
-        [% IF problem.state == 'confirmed' AND problem.whensent AND NOT c.cobrand.disable_resend_button %]
-          <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend report') %]">
-        [% ELSIF NOT problem.whensent %]
-          <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
-        [% END %]
-      </li>
-      [% IF c.user.is_superuser AND problem.send_fail_count > 0 %]
-      <li class="sm">[% loc('Send Fail Count:') %] [% problem.send_fail_count %]</li>
-      <li class="sm">[% loc('Last failure:') %] [% PROCESS format_time time=problem.send_fail_timestamp %]</li>
-      <li class="sm truncate_height">[% loc('Reason:') %] [% problem.send_fail_reason | html %]</li>
-      [% END %]
-      <li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
-    </ul>
-
-    <ul>
-      <li>
-        [% loc('Co-ordinates:') %]
-        <a href="[% c.config.MAPIT_URL %][%
-            '/' UNLESS c.config.MAPIT_URL.search('/$')
-        %]point/4326/[% problem.longitude %],[% problem.latitude %].html"
-        class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
-
-        [% SET local_coords = problem.local_coords;
-          IF local_coords %]
-            ([% local_coords.0 %], [% local_coords.1 %])
-        [% END %]
-
-        <small>([%
-            postcode_safe = problem.postcode | html;
-            tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
-        %],
-        [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])
-        </small>
-      </li>
-      <li>[% loc('Bodies') %]:
-        [% IF problem.bodies_str %]
-          [% FOREACH body IN problem.bodies.values %]
-            [% SET body_printed = 1 %]
-            <a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ]) %]">[% body.name | html %]</a>
-            [%- ',' IF NOT loop.last %]
-          [% END %]
-          [% IF NOT body_printed %]
-            <em>[% problem.bodies_str %]</em>
-          [% END %]
-        [% ELSE %]
-          <em>[% loc('None' ) %]</em>
-        [% END %]
-        <small>([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) | replace(',', ', ') %])</small>
-      </li>
-    </ul>
-
-    <ul>
-      <li>[% loc('Alerts:') %] [% alert_count %]</li>
-      <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
-      <li>[% loc('Cobrand:') %] [% problem.cobrand %]
-      <br><small>[% loc('Cobrand data:') %] [% problem.cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>
-      </li>
-    </ul>
-  </div>
 <form method="post" action="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
@@ -84,8 +9,42 @@
     <p align="center"><input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]"></p>
 
     <ul>
+         [% uri = c.uri_for_email( '/report', problem.id ) %]
+    <li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
 
+<li>[% loc('Co-ordinates:') %]
+<a href="[% c.config.MAPIT_URL %][%
+    '/' UNLESS c.config.MAPIT_URL.search('/$')
+%]point/4326/[% problem.longitude %],[% problem.latitude %].html"
+class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 
+[% SET local_coords = problem.local_coords;
+   IF local_coords %]
+    ([% local_coords.0 %], [% local_coords.1 %])
+[% END %]
+
+<small>([%
+    postcode_safe = problem.postcode | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
+%],
+[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</small>
+</li>
+
+<li>[% loc('Bodies') %]:
+  [% IF problem.bodies_str %]
+    [% FOREACH body IN problem.bodies.values %]
+      [% SET body_printed = 1 %]
+      <a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ]) %]">[% body.name | html %]</a>
+      [%- ',' IF NOT loop.last %]
+    [% END %]
+    [% IF NOT body_printed %]
+      <em>[% problem.bodies_str %]</em>
+    [% END %]
+  [% ELSE %]
+    <em>[% loc('None' ) %]</em>
+  [% END %]
+  <small>([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) | replace(',', ', ') %])</small>
+</li>
 [% IF problem.bodies_missing %]
 <li>[% loc('Missing bodies:') %] [% problem.bodies_missing | html %]</li>
 [% END %]
@@ -93,7 +52,23 @@
 <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
 [% END %]
 
-
+<li class="sm">[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<li class="sm">[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
+<li class="sm">[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
+  [% IF problem.send_method_used %]
+    ([% problem.send_method_used %])
+  [% END %]
+  [% IF problem.state == 'confirmed' AND problem.whensent AND NOT c.cobrand.disable_resend_button %]
+    <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend report') %]">
+  [% ELSIF NOT problem.whensent %]
+    <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
+  [% END %]
+</li>
+[% IF c.user.is_superuser AND problem.send_fail_count > 0 %]
+<li class="sm">[% loc('Send Fail Count:') %] [% problem.send_fail_count %]</li>
+<li class="sm">[% loc('Last failure:') %] [% PROCESS format_time time=problem.send_fail_timestamp %]</li>
+<li class="sm truncate_height">[% loc('Reason:') %] [% problem.send_fail_reason | html %]</li>
+[% END %]
 <li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
 <li>[% loc('Alerts:') %] [% alert_count %]</li>
 <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
