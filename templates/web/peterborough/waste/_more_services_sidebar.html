@@ -34,6 +34,11 @@
           </form>
     </li>
   [% END %]
+  [% UNLESS waste_features.bulky_disabled %]
+    <li>
+        <a href="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">Book bulky goods collection</a>
+    </li>
+  [% END %]
 </ul>
 
 <h3>Help</h3>

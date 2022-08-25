@@ -14,6 +14,7 @@ use FixMyStreet::App::Form::Waste::Request::Peterborough;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
+use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
@@ -986,6 +987,24 @@ sub check_if_staff_can_pay : Private {
 
     return 1;
 }
+
+sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    if ($c->stash->{waste_features}->{bulky_disabled}) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+}
+
+sub bulky : Chained('bulky_setup') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
+    $c->forward('form');
+}
+
 
 sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
