@@ -18,6 +18,7 @@ before _process_page_array => sub {
 # Add some functions to the form to pass through to the current page
 has '+current_page' => (
     handles => {
+        intro_template => 'intro',
         title => 'title',
         template => 'template',
     }

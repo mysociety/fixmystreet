@@ -1,0 +1,20 @@
+[%
+title = 'Submit bulky goods collection booking';
+thing = 'bulky goods collection booking';
+summary_title = 'Bulky goods collection';
+step1 = 'report';
+%]
+
+[% BLOCK answers %]
+  [% FOR item IN data.keys.grep('^item') %]
+    [% NEXT UNLESS data.$item %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% item %]</dt>
+        <dd class="govuk-summary-list__value">
+          [%~ data.$item ~%]
+        </dd>
+    </div>
+  [% END %]
+[% END %]
+
+[% PROCESS waste/summary.html %]

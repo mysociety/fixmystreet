@@ -4,6 +4,7 @@
   [% PROCESS back %]
   [% PROCESS errors %]
   [% PROCESS title %]
+
   [% IF form.current_page.name == 'about_you' %]
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -15,9 +16,13 @@
       </div>
     </div>
   [% END %]
+
   [% IF property %]
     [% INCLUDE 'waste/_address_display.html' %]
   [% END %]
+
+  [% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
+
   <form class="waste" method="post">
     [% UNLESS property %]
     <div class="govuk-grid-row">

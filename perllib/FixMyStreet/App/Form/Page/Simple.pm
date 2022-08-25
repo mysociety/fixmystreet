@@ -5,6 +5,9 @@ extends 'HTML::FormHandler::Page';
 # What page to go to after successful submission of this page
 has next => ( is => 'ro', isa => 'Str|CodeRef' );
 
+# Optional template to display at the top of this page
+has intro => ( is => 'ro', isa => 'Str' );
+
 # A function that will be called to generate an update_field_list parameter
 has update_field_list => (
     is => 'ro',

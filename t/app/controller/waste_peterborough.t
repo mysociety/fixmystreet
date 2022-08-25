@@ -629,6 +629,115 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => {
+            sample_data => 1,
+        } },
+        waste => { peterborough => 1 },
+    },
+}, sub {
+    my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+
+    subtest 'Bulky goods not available if feature flag not set' => sub {
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks("Book bulky goods collection");
+
+        $mech->get_ok('/waste/PE1%203NA:100090215480/bulky');
+        is $mech->res->code, 200, "got 200";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+        is $mech->uri->path, '/waste/PE1%203NA:100090215480', 'redirected to property page';
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => {
+            sample_data => 1,
+        } },
+        waste => { peterborough => 1 },
+        waste_features => { peterborough => {
+            bulky_enabled => 1,
+        } },
+    },
+}, sub {
+    my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+
+    subtest 'Bulky goods collection booking' => sub {
+        # XXX NB Currently, these tests do not describe the correct
+        # behaviour of the system. They are here to remind us to update them as
+        # we break them by implementing the correct behaviour :)
+
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+
+        subtest 'Intro page' => sub {
+            $mech->content_contains('Book bulky goods collection');
+            $mech->content_contains('Before you start your booking');
+            # XXX make this dynamic according to config in DB
+            $mech->content_contains('You can request up to <strong>5 items per collection');
+            # XXX and this one too
+            $mech->content_contains('You can cancel your booking anytime up until 23:55 the day before the collection is scheduled');
+            $mech->submit_form_ok;
+        };
+
+        subtest 'Residency check page' => sub {
+            $mech->content_contains('Are you the resident of this property or booking on behalf of the property resident?');
+            $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+            # XXX need to check 'No' behaviour too
+        };
+
+        subtest 'About you page' => sub {
+            $mech->content_contains('About you');
+            $mech->content_contains('Aragon Direct Services may contact you to obtain more');
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        };
+
+        subtest 'Choose date page' => sub {
+            $mech->content_contains('Choose date for collection');
+            $mech->content_contains('Available dates');
+            $mech->content_contains('2022-08-25');
+            $mech->content_contains('2022-08-26');
+            $mech->content_contains('2022-08-27');
+            $mech->content_contains('2022-08-28');
+            $mech->submit_form_ok({ with_fields => { chosen_date => '20220828' }});
+        };
+
+        subtest 'Add items page' => sub {
+            $mech->content_contains('Add items for collection');
+            $mech->content_contains('Item 1');
+            $mech->content_contains('Item 2');
+            $mech->content_contains('Item 3');
+            $mech->content_contains('Item 4');
+            $mech->content_contains('Item 5');
+            $mech->content_contains('<option value="chair">Armchair</option>');
+            $mech->submit_form_ok({ with_fields => {
+                item1 => 'fridge',
+                item2 => 'chair',
+                item3 => 'sofa',
+                item4 => 'table',
+                item5 => 'fridge',
+            }});
+        };
+
+        subtest 'Summary page' => sub {
+            $mech->content_contains('Submit bulky goods collection booking');
+            $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
+            $mech->content_contains('<dd class="govuk-summary-list__value">table</dd>');
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        };
+
+        # XXX payment tests here!
+
+        subtest 'Confirmation page' => sub {
+            $mech->content_contains('Collection booked');
+        };
+
+    };
+};
+
 sub shared_bartec_mocks {
         my $b = Test::MockModule->new('Integrations::Bartec');
     $b->mock('Authenticate', sub {
