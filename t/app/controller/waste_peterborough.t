@@ -387,6 +387,15 @@ FixMyStreet::override_config {
         $mech->content_lacks('service-FOOD_BINS');
         $b->mock('ServiceRequests_Get', sub { [] }); # reset
     };
+    subtest 'No food bag request if open request' => sub {
+        $b->mock('ServiceRequests_Get', sub { [
+            { ServiceType => { ID => 428 }, ServiceStatus => { Status => "OPEN" } },
+        ] });
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_lacks('container-428');
+        $mech->content_contains('Food bags order pending');
+        $b->mock('ServiceRequests_Get', sub { [] }); # reset
+    };
     subtest 'Report assisted collection' => sub {
         $b->mock('Premises_Attributes_Get', sub { [
             { AttributeDefinition => { Name => 'ASSISTED COLLECTION' } },
