@@ -52,7 +52,7 @@ if ($use_stdout) {
     $fh = $file->openw_utf8;
 }
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand);
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
 FixMyStreet::DB->schema->cobrand($cobrand);
 
 my $user = FixMyStreet::DB->resultset("User")->find($opts->user) if $opts->user;
