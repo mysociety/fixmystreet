@@ -637,8 +637,7 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
 
 sub bin_day_deny : Private {
     my ($self, $c) = @_;
-    my $council = $c->cobrand->council_area;
-    my $msg = "Please note that for security and privacy reasons $council have limited the number of different properties you can look up on the waste collection schedule in a 24-hour period.  You should be able to continue looking up against properties you have already viewed.  For other locations please try again after 24 hours.  If you are still seeing this message after that time please try refreshing the page.";
+    my $msg = "Please note that for security and privacy reasons we have limited the number of different properties you can look up on the waste collection schedule in a 24-hour period.  You should be able to continue looking up properties you have already viewed.  For other properties please try again after 24 hours.  If you are still seeing this message after that time please try refreshing the page.";
     $c->detach('/page_error_403_access_denied', [ $msg ]);
 }
 
