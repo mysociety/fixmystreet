@@ -467,11 +467,11 @@ sub look_up_property {
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};
-    my $base = '/cobrands/peterborough/images';
+    my $base = '/i/waste-containers';
     my $images = {
-        6533 => "$base/black-bin",
-        6534 => "$base/green-bin",
-        6579 => "$base/brown-bin",
+        6533 => "$base/bin-black",
+        6534 => "$base/bin-green",
+        6579 => "$base/bin-brown",
     };
     return $images->{$service_id};
 }

@@ -142,17 +142,17 @@ around look_up_property => sub {
 
 sub image_for_unit {
     my ($self, $unit) = @_;
-    my $base = '/cobrands/kingston/container-images';
+    my $base = '/i/waste-containers';
     if (my $container = $unit->{garden_container}) {
-        return "$base/garden-waste-bin" if $container == 26;
+        return "$base/bin-grey-green-lid-recycling" if $container == 26;
         return "";
     }
     my $service_id = $unit->{service_id};
     my $images = {
-        1906 => "$base/black-bin-blue-lid", # paper and card
-        1903 => "$base/black-bin", # refuse
-        1908 => "$base/brown-bin", # food
-        1909 => "$base/green-bin", # dry mixed
+        1906 => "$base/bin-grey-blue-lid-recycling", # paper and card
+        1903 => "$base/bin-black", # refuse
+        1908 => "$base/bin-brown", # food
+        1909 => "$base/bin-green", # dry mixed
     };
     return $images->{$service_id};
 }
