@@ -238,6 +238,24 @@ __PACKAGE__->has_many(
   },
 );
 
+__PACKAGE__->might_have(
+  contributed_by => "FixMyStreet::DB::Result::User",
+  sub {
+    my $args = shift;
+    return {
+        "$args->{self_alias}.extra" => { like => '%contributed_by%' }, # makes it more performant(!)
+        -and => [
+            \[ "substring($args->{self_alias}.extra from 'T14:contributed_by,I\\d+:(\\d+)')::integer = $args->{foreign_alias}.id" ],
+        ]
+    };
+  },
+  {
+    join_type => "LEFT",
+    on_delete => "NO ACTION",
+    on_update => "NO ACTION",
+  },
+);
+
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');

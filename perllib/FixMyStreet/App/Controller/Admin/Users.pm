@@ -449,7 +449,7 @@ sub log : Chained('user') : PathPart('log') : Args(0) {
     foreach ($user->admin_logs->all) {
         push @{$time{$_->whenedited->epoch}}, { type => 'log', date => $_->whenedited, log => $_ };
     }
-    foreach ($c->cobrand->problems->search({ extra => { like => '%contributed_by%' . $user->id . '%' } })->all) {
+    foreach ($c->cobrand->problems->search({ 'contributed_by.id' => $user->id }, { join => 'contributed_by' })->all) {
         next unless $_->get_extra_metadata('contributed_by') == $user->id;
         push @{$time{$_->created->epoch}}, { type => 'problemContributedBy', date => $_->created, obj => $_ };
     }

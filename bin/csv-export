@@ -34,6 +34,7 @@ my ($opts, $usage) = describe_options(
     ['wards=s', 'Ward area IDs to restrict export to'],
     ['category=s', 'Category to restrict export to'],
     ['state=s', 'State to restrict export to'],
+    ['role_id=i', 'Role ID to restrict export to'],
     ['start_date=s', 'Start date for export (default 30 days ago)'],
     ['end_date=s', 'End date for export'],
 
@@ -64,6 +65,7 @@ my $reporting = FixMyStreet::Reporting->new(
     user => $user,
     category => $opts->category,
     state => $opts->state,
+    role_id => $opts->role_id,
     wards => $wards,
     body => $body,
     $opts->start_date ? (start_date => $opts->start_date) : (),

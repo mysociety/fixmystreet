@@ -118,6 +118,8 @@ sub index : Path : Args(0) {
     if ($body) {
         $c->stash->{body_name} = $body->name;
 
+        $c->stash->{roles} = [ $body->roles->all ];
+
         my $children = $c->stash->{children} = $body->first_area_children;
 
         $c->forward('/admin/fetch_contacts');
@@ -127,6 +129,7 @@ sub index : Path : Args(0) {
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = $c->get_param('category');
         $c->stash->{ward} = [ $c->get_param_list('ward') ];
+
         if ($c->user_exists) {
             if (my @areas = @{$c->user->area_ids || []}) {
                 $c->stash->{ward} = $c->user->area_ids;
@@ -147,6 +150,7 @@ sub index : Path : Args(0) {
     $c->stash->{start_date} = $c->get_param('start_date') || $days30->strftime('%Y-%m-%d');
     $c->stash->{end_date} = $c->get_param('end_date');
     $c->stash->{q_state} = $c->get_param('state') || '';
+    $c->stash->{q_role} = $c->get_param('role') || undef;
 
     my $reporting = $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
@@ -185,6 +189,7 @@ sub construct_rs_filter : Private {
         body => $c->stash->{body} || undef,
         start_date => $c->stash->{start_date},
         end_date => $c->stash->{end_date},
+        role_id => $c->stash->{q_role},
         user => $c->user_exists ? $c->user->obj : undef,
     );
 
