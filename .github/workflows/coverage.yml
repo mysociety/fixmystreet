@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     name: Run coverage tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
@@ -27,13 +27,13 @@ jobs:
       uses: actions/cache@v2
       with:
         path: local
-        key: ${{ runner.os }}-carton-${{ hashFiles('cpanfile.snapshot') }}
+        key: ubuntu-22-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (coverage)
       uses: actions/cache@v2
       with:
         path: local-coverage
-        key: ${{ runner.os }}-coverage-v2
+        key: ubuntu-22-coverage
 
     - name: Install packages
       run: |

@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     name: Run Cypress tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: local
-        key: ${{ runner.os }}-carton-${{ hashFiles('cpanfile.snapshot') }}
+        key: ubuntu-22-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (cypress)
       uses: actions/cache@v2
@@ -29,7 +29,7 @@ jobs:
         path: |
           ~/.npm
           node_modules
-        key: ${{ runner.os }}-node-8-cypress-3.8.3-coverage
+        key: ubuntu-22-node-8-cypress-3.8.3-coverage
 
     - name: Install packages
       run: |

@@ -1110,10 +1110,10 @@ DISTRIBUTIONS
       File::Spec 0
       Symbol 0
       perl 5.008001
-  Crypt-OpenSSL-RSA-0.31
-    pathname: T/TO/TODDR/Crypt-OpenSSL-RSA-0.31.tar.gz
+  Crypt-OpenSSL-RSA-0.33
+    pathname: T/TO/TODDR/Crypt-OpenSSL-RSA-0.33.tar.gz
     provides:
-      Crypt::OpenSSL::RSA 0.31
+      Crypt::OpenSSL::RSA 0.33
     requirements:
       Crypt::OpenSSL::Random 0
       ExtUtils::MakeMaker 0

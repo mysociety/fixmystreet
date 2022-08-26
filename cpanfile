@@ -29,6 +29,8 @@ requires 'Net::Server', '2.009';
   requires 'MooseX::Role::Parameterised', '1.10';
   requires 'CatalystX::Component::Traits', '0.19';
   requires 'MooseX::Traits::Pluggable', '0.12';
+# For OpenSSL 3 support
+  requires 'Crypt::OpenSSL::RSA', '0.33';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.90124';
