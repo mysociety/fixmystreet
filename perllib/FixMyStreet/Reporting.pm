@@ -28,6 +28,7 @@ has start_date => ( is => 'ro',
     }
 );
 has end_date => ( is => 'ro', isa => Maybe[Str] );
+has role_id => ( is => 'ro', isa => Maybe[Int] );
 
 # Things needed for cobrand specific extra data or checks
 
@@ -95,6 +96,7 @@ has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
         end_date => $self->end_date,
     );
     $where{body} = $self->body->id if $self->body;
+    $where{role} = $self->role_id if $self->role_id;
     my $host = URI->new($self->cobrand->base_url)->host;
     join '-',
         $host,
@@ -144,6 +146,15 @@ sub construct_rs_filter {
 
     my $rs = $self->on_updates ? $self->cobrand->updates : $self->cobrand->problems;
     my $objects_rs = $rs->to_body($self->body)->search( \%where );
+
+    if ($self->role_id) {
+        $objects_rs = $objects_rs->search({
+            'user_roles.role_id' => $self->role_id,
+        }, {
+            join => { contributed_by => 'user_roles' },
+        });
+    }
+
     $self->_set_objects_rs($objects_rs);
     return {
         params => \%where,
@@ -360,7 +371,7 @@ sub kick_off_process {
     foreach (qw(type category state start_date end_date)) {
         $cmd .= " --$_ " . quotemeta($self->$_) if $self->$_;
     }
-    foreach (qw(body user)) {
+    foreach (qw(body user role_id)) {
         $cmd .= " --$_ " . $self->$_->id if $self->$_;
     }
     $cmd .= " --wards " . join(',', map { quotemeta } @{$self->wards}) if @{$self->wards};

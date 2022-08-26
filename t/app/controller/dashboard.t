@@ -41,6 +41,12 @@ for my $contact ( @cats ) {
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body,
+    name => 'Role A',
+    permissions => ['report_inspect', 'planned_reports'],
+});
+$counciluser->add_to_roles($role);
 my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal User');
 
 my $body_id = $body->id;
@@ -67,6 +73,7 @@ foreach my $problem (@scheduled_problems) {
 }
 
 foreach my $problem (@fixed_problems) {
+    $problem->set_extra_metadata(contributed_by => $counciluser->id);
     $problem->update({ state => 'fixed - council' });
     $mech->create_comment_for_problem($problem, $counciluser, 'Title', 'text', 0, 'confirmed', 'fixed');
 }
@@ -178,6 +185,12 @@ FixMyStreet::override_config {
         test_table($mech->content, 3, 7, 4, 3, 17);
         $mech->get_ok("/dashboard?start_date=2000-01-01&group_by=month");
         test_table($mech->content, 0, 17, 17, 3, 0, 3, 3, 17, 20);
+    };
+
+    subtest 'test roles' => sub {
+        # All the fixed (Pothole) reports only
+        $mech->get_ok("/dashboard?group_by=category&role=" . $role->id);
+        test_table($mech->content, 0, 0, 4, 0, 4);
     };
 
     subtest 'export as csv' => sub {

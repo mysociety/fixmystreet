@@ -85,6 +85,17 @@
           [% END %]
         </select>
     </p>
+    [% IF roles.size %]
+    <p>
+      <label for="role">[% loc('Role:') %]</label>
+      <select class="form-control" name="role" id="role">
+          <option value=''>[% loc('All') %]</option>
+        [% FOR role IN roles %]
+          <option [% 'selected ' IF role.id == q_role %] value="[% role.id %]">[% role.name %]</option>
+        [% END %]
+      </select>
+    </p>
+    [% END %]
     <p>
         <label for="start_date">[% loc('Start Date') %]</label>
         <input name="start_date" id="start_date" type="date" value="[% start_date | html %]" class="form-control">
