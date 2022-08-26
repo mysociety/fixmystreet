@@ -73,9 +73,7 @@ sub lookup_by_ref {
     my ($self, $ref) = @_;
 
     if ( $ref =~ /^ENQ/ ) {
-        my $len = length($ref);
-        my $filter = "%T18:customer_reference,T$len:$ref,%";
-        return { 'extra' => { -like => $filter } };
+        return { extra => { '@>' => '{"customer_reference":"' . $ref . '"}' } };
     }
 
     return 0;
@@ -234,7 +232,7 @@ sub open311_filter_contacts_for_deletion {
     # open311-populate-service-list, and this flag is used to stop them
     # being deleted when that script runs.
     return $contacts->search({
-        extra => { -not_like => '%T15:open311_protect,I1:1%' },
+        -not => { extra => { '@>' => '{"open311_protect":1}' } },
     });
 }
 

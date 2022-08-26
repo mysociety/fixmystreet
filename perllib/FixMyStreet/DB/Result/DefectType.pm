@@ -30,8 +30,6 @@ __PACKAGE__->add_columns(
   "description",
   { data_type => "text", is_nullable => 0 },
   "extra",
-  { data_type => "text", is_nullable => 1 },
-  "extra_json",
   { data_type => "jsonb", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -60,9 +58,6 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cep31JGvLRMAxKLSb4jSfA
 
 __PACKAGE__->many_to_many( contacts => 'contact_defect_types', 'contact' );
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('extra');
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];

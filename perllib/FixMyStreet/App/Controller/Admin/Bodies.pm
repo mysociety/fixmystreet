@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strcoll);
+use JSON::MaybeXS;
 use List::MoreUtils qw(uniq);
 use mySociety::EmailUtil qw(is_valid_email_list);
 use FixMyStreet::MapIt;
@@ -503,7 +504,7 @@ sub check_body_extras : Private {
     return unless $extras->{cobrand};
     if (my $b = $c->model('DB::Body')->find({
         id => { '!=', $c->stash->{body_id} },
-        extra => { like => '%T7:cobrand,T' . length($extras->{cobrand}) . ':' . $extras->{cobrand} . '%'},
+        extra => { '@>' => encode_json({ "cobrand" => $extras->{cobrand} }) },
     })) {
         $c->stash->{body_errors}->{cobrand} = _('This cobrand is already assigned to another body: ' . $b->name);
     }

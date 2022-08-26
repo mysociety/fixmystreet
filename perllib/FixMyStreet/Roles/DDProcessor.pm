@@ -21,6 +21,7 @@ package FixMyStreet::Roles::DDProcessor;
 
 use Moo::Role;
 use Utils;
+use JSON::MaybeXS;
 use strict;
 use warnings;
 
@@ -361,9 +362,8 @@ sub _process_reference {
 
     # Old style GGW references
     if ((my $uprn = $payer) =~ s/^GGW//) {
-        my $len = length($payer);
         my $rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%payerReference,T' . $len . ':'. $payer . '%' },
+            extra => { '@>' => encode_json({ payerReference => $payer }) },
         }, {
             order_by => [ { -desc => 'created' }, { -desc => 'id' } ],
         })->to_body( $self->body );
@@ -381,12 +381,11 @@ sub _process_reference {
     }
 
     $uprn = $origin->get_extra_field_value('uprn');
-    my $len = length($payer);
-    $self->log( "extra query is " . '%payerReference,T' . $len . ':'. $payer . '%' );
+    $self->log( "extra query is {payerReference: $payer" );
     my $rs = FixMyStreet::DB->resultset('Problem')->search({
         -or => [
             id => $id,
-            extra => { like => '%payerReference,T' . $len . ':'. $payer . '%' },
+            extra => { '@>' => encode_json({ payerReference => $payer }) },
         ]
     }, {
         order_by => { -desc => 'created' }

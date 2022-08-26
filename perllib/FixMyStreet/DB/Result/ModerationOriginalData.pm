@@ -42,8 +42,6 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
   },
   "extra",
-  { data_type => "text", is_nullable => 1 },
-  "extra_json",
   { data_type => "jsonb", is_nullable => 1 },
   "category",
   { data_type => "text", is_nullable => 1 },
@@ -83,9 +81,6 @@ use Data::Dumper;
 with 'FixMyStreet::Roles::Extra',
      'FixMyStreet::Roles::PhotoSet';
 
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('extra');
 
 # Comments use 'text' rather than 'detail'
 sub text { shift->detail }

@@ -9,6 +9,7 @@ use FixMyStreet::Geocode::Address;
 use FixMyStreet::Geocode::Bing;
 use FixMyStreet::OutOfHours;
 use DateTime;
+use JSON::MaybeXS;
 use List::MoreUtils 'none';
 use URI;
 use Digest::MD5 qw(md5_hex);
@@ -1005,7 +1006,7 @@ sub body {
 
     my $cobrand = $self->moniker;
     return FixMyStreet::DB->resultset("Body")->find({
-        extra => { like => '%T7:cobrand,T' . length($cobrand) . ':' . $cobrand . '%'},
+        extra => { '@>' => encode_json({ "cobrand" => $cobrand }) },
     })
 }
 

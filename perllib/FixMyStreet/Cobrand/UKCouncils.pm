@@ -332,7 +332,10 @@ sub report_sent_confirmation_email {
 
 sub munge_around_category_where {
     my ($self, $where) = @_;
-    $where->{extra} = [ undef, { -not_like => '%,T4:type,T5:waste,%' } ];
+    $where->{'-or'} = [
+        extra => undef,
+        -not => { extra => { '@>' => '{"type":"waste"}' } }
+    ];
 }
 
 sub munge_reports_category_list {

@@ -5,6 +5,8 @@
         - Include requirements for redeeming the link in the email change confirmation mail. #4422
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
+    - Development improvements:
+        - Extra data columns now stored as JSON, not RABX. #3216
 
 * v5.0 (10th May 2023)
     - Front end improvements:

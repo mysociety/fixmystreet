@@ -191,6 +191,10 @@ if ($downgrade) {
                 my @statements = get_statements($path);
                 run_statements(@statements);
             }
+
+            if ( $commit && $version eq '0082' ) {
+                system("bin/one-off-update-rabx-to-json --reverse --commit");
+            }
         } else {
             warn "No downgrade to $version\n";
         }
@@ -219,6 +223,8 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0084' if column_type_equals('problem', 'extra', 'jsonb');
+    return '0083' if column_not_null('token', 'data_json');
     return '0082' if column_exists('problem', 'extra_json');
     return '0081' if constraint_delete_cascade('alert_sent_alert_id_fkey');
     return '0080' if column_exists('roles', 'extra');
@@ -319,6 +325,16 @@ sub table_exists {
 sub column_exists {
     my ( $table, $column ) = @_;
     return $db->dbh->selectrow_array('select count(*) from pg_class, pg_attribute WHERE pg_class.relname=? AND pg_attribute.attname=? AND pg_class.oid=pg_attribute.attrelid AND pg_attribute.attnum > 0', {}, $table, $column);
+}
+
+sub column_type_equals {
+    my ( $table, $column, $type ) = @_;
+    return $db->dbh->selectrow_array('select count(*) from pg_class, pg_attribute, pg_type WHERE pg_class.relname=? AND pg_attribute.attname=? AND pg_type.typname=? AND pg_class.oid=pg_attribute.attrelid AND pg_attribute.attnum > 0 AND pg_type.oid = pg_attribute.atttypid', {}, $table, $column, $type);
+}
+
+sub column_not_null {
+    my ( $table, $column ) = @_;
+    return $db->dbh->selectrow_array('select count(*) from pg_class, pg_attribute WHERE pg_class.relname=? AND pg_attribute.attname=? AND pg_class.oid=pg_attribute.attrelid AND pg_attribute.attnum > 0 AND attnotnull', {}, $table, $column);
 }
 
 # Returns true if a column of a row in a table contains some text

@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use Test::Warn;
 use DateTime;
+use JSON::MaybeXS;
 use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;

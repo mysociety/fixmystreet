@@ -98,23 +98,23 @@ sub GetTasks {
         my %lookup = map { $_->[0] . ',' . $_->[1] => 1 } @_;
         my $data = [];
         push @$data, {
-            Ref => { Value => { anyType => [ 123, 456 ] } },
+            Ref => { Value => { anyType => [ '123', '456' ] } },
             State => { Name => 'Completed' },
-            Resolution => { Ref => { Value => { anyType => 187 } }, Name => 'Wrong Bin Out' },
-            TaskTypeId => 3216,
+            Resolution => { Ref => { Value => { anyType => '187' } }, Name => 'Wrong Bin Out' },
+            TaskTypeId => '3216',
             CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
         } if $lookup{"123,456"};
         push @$data, {
-            Ref => { Value => { anyType => [ 234, 567 ] } },
+            Ref => { Value => { anyType => [ '234', '567' ] } },
             State => { Name => 'Outstanding' },
             CompletedDate => undef
         } if $lookup{"234,567"};
         push @$data, {
-            Ref => { Value => { anyType => [ 345, 678 ] } },
+            Ref => { Value => { anyType => [ '345', '678' ] } },
             State => { Name => 'Not Completed' }
         } if $lookup{"345,678"};
         push @$data, {
-            Ref => { Value => { anyType => [ 456, 789 ] } },
+            Ref => { Value => { anyType => [ '456', '789' ] } },
             CompletedDate => undef
         } if $lookup{"456,789"};
         return $data;
@@ -155,7 +155,7 @@ sub GetPointAddress {
     my $type = shift || 'Id';
     my $obj = _id_ref($id, 'PointAddress', $type);
     return {
-        Id => $type eq 'Id' ? $id : 12345,
+        Id => $type eq 'Id' ? $id : '12345',
         SharedRef => { Value => { anyType => $type eq 'Uprn' ? $id : '1000000002' } },
         PointType => 'PointAddress',
         PointAddressType => { Name => 'House' },
@@ -184,11 +184,11 @@ sub FindPoints {
         $obj->{TypeRefs} = \@types;
     }
     return [
-        { Description => '1 Example Street, Bromley, BR1 1AA', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
-        { Description => '2 Example Street, Bromley, BR1 1AA', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
-        $cfg->{address_types} ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => 1000000003 } } }),
-        { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
-        { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => 1000000005 } } },
+        { Description => '1 Example Street, Bromley, BR1 1AA', Id => '11345', SharedRef => { Value => { anyType => '1000000001' } } },
+        { Description => '2 Example Street, Bromley, BR1 1AA', Id => '12345', SharedRef => { Value => { anyType => '1000000002' } } },
+        $cfg->{address_types} ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => '1000000003' } } }),
+        { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => '1000000004' } } },
+        { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => '1000000005' } } },
     ] if $self->sample_data;
     my $res = $self->call('FindPoints', query => $obj);
     return force_arrayref($res, 'PointInfo');
@@ -201,11 +201,11 @@ sub GetServiceUnitsForObject {
     my $obj = _id_ref($id, 'PointAddress', $type);
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->add(days => -20);
     return [ {
-        Id => 1001,
-        ServiceId => 531,
+        Id => '1001',
+        ServiceId => '531',
         ServiceName => 'Non-Recyclable Refuse',
         ServiceTasks => { ServiceTask => {
-            Id => 401,
+            Id => '401',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
                 ScheduleDescription => 'every Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -217,16 +217,16 @@ sub GetServiceUnitsForObject {
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 123, 456 ] } },
+                    Ref => { Value => { anyType => [ '123', '456' ] } },
                 },
             } },
         } },
     }, {
-        Id => 1002,
-        ServiceId => 537,
+        Id => '1002',
+        ServiceId => '537',
         ServiceName => 'Paper recycling collection',
         ServiceTasks => { ServiceTask => {
-            Id => 402,
+            Id => '402',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
                 ScheduleDescription => 'every other Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -238,16 +238,16 @@ sub GetServiceUnitsForObject {
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 234, 567 ] } },
+                    Ref => { Value => { anyType => [ '234', '567' ] } },
                 },
             } },
         } },
     }, {
-        Id => 1003,
-        ServiceId => 535,
+        Id => '1003',
+        ServiceId => '535',
         ServiceName => 'Domestic Container Mix Collection',
         ServiceTasks => { ServiceTask => {
-            Id => 403,
+            Id => '403',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
                 ScheduleDescription => 'every other Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -259,16 +259,16 @@ sub GetServiceUnitsForObject {
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 345, 678 ] } },
+                    Ref => { Value => { anyType => [ '345', '678' ] } },
                 },
             } },
         } },
     }, {
-        Id => 1004,
-        ServiceId => 542,
+        Id => '1004',
+        ServiceId => '542',
         ServiceName => 'Food waste collection',
         ServiceTasks => { ServiceTask => {
-            Id => 404,
+            Id => '404',
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2019-01-01T00:00:00Z' },
@@ -288,7 +288,7 @@ sub GetServiceUnitsForObject {
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 456, 789 ] } },
+                    Ref => { Value => { anyType => [ '456', '789' ] } },
                 },
             }, {
                 # Some bad data, future schedule, with past last instance
@@ -298,24 +298,24 @@ sub GetServiceUnitsForObject {
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 456, 789 ] } },
+                    Ref => { Value => { anyType => [ '456', '789' ] } },
                 },
             } ] },
         } },
     }, {
-        Id => 1005,
-        ServiceId => 545,
+        Id => '1005',
+        ServiceId => '545',
         ServiceName => 'Garden waste collection',
         ServiceTasks => { ServiceTask => {
-            Id => 405,
+            Id => '405',
             Data => { ExtensibleDatum => [ {
                 DatatypeName => 'LBB - GW Container',
                 ChildData => { ExtensibleDatum => [ {
                     DatatypeName => 'Quantity',
-                    Value => 1,
+                    Value => '1',
                 }, {
                     DatatypeName => 'Container',
-                    Value => 44,
+                    Value => '44',
                 } ] },
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
@@ -336,7 +336,7 @@ sub GetServiceUnitsForObject {
                 LastInstance => {
                     OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
                     CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 567, 890 ] } },
+                    Ref => { Value => { anyType => [ '567', '890' ] } },
                 },
             } ] },
         } },
@@ -368,12 +368,12 @@ sub GetServiceTaskInstances {
         To => dt_to_hash($end),
     );
     return [
-        { ServiceTaskRef => { Value => { anyType => 401 } },
+        { ServiceTaskRef => { Value => { anyType => '401' } },
             Instances => { ScheduledTaskInfo => [
                 { CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
             ] }
         },
-        { ServiceTaskRef => { Value => { anyType => 402 } },
+        { ServiceTaskRef => { Value => { anyType => '402' } },
             Instances => { ScheduledTaskInfo => [
                 { CurrentScheduledDate => { DateTime => '2020-07-08T00:00:00Z' } },
             ] }
@@ -408,32 +408,32 @@ sub GetEventsForObject {
     if ($self->sample_data) {
         return [ {
             # Missed collection for service 542 (food waste)
-            EventTypeId => 2100,
+            EventTypeId => '2100',
             EventDate => { DateTime => "2020-05-18T17:00:00Z" },
-            ServiceId => 542,
+            ServiceId => '542',
         }, { # And a gate not closed
-            EventTypeId => 2118,
-            ServiceId => 542,
+            EventTypeId => '2118',
+            ServiceId => '542',
         }, {
             # Request for a new paper container, currently out of stock
-            EventTypeId => 2104,
+            EventTypeId => '2104',
             Data => { ExtensibleDatum => [
-                { Value => 2, DatatypeName => 'Source' },
+                { Value => '2', DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
-                        { Value => 1, DatatypeName => 'Action' },
-                        { Value => 12, DatatypeName => 'Container Type' },
+                        { Value => '1', DatatypeName => 'Action' },
+                        { Value => '12', DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
-            ServiceId => 535,
-            ResolutionCodeId => 584,
+            ServiceId => '535',
+            ResolutionCodeId => '584',
         } ] if $type eq 'PointAddress';
         return [ {
             # Missed collection for service 537 (paper)
-            EventTypeId => 2099,
+            EventTypeId => '2099',
             EventDate => { DateTime => "2020-05-27T16:00:00Z" },
-            ServiceId => 537,
+            ServiceId => '537',
         } ] if $type eq 'ServiceUnit' && $id == 1002;
         return [];
     }

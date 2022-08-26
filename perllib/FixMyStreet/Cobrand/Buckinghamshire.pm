@@ -4,6 +4,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use JSON::MaybeXS;
 use Path::Tiny;
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
@@ -972,8 +973,7 @@ sub enter_postcode_text {
 sub lookup_by_ref {
     my ($self, $ref) = @_;
     if (my ($id) = $ref =~ /^\s*(40\d{6})\s*$/) {
-        my $filter = "%T17:confirm_reference,I8:$id,%";
-        return { 'extra' => { -like => $filter } };
+        return { 'extra' => { '@>' => encode_json({ confirm_reference => $id }) } };
     }
     return 0;
 }

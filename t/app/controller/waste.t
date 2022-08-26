@@ -666,8 +666,8 @@ FixMyStreet::override_config {
         $integ->mock(call => sub {
             return SOAP::Result->new(result => {
                 PointInfo => [
-                    { Description => '1 Example Street', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
-                    { Description => '2 Example Street', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
+                    { Description => '1 Example Street', Id => '11345', SharedRef => { Value => { anyType => '1000000001' } } },
+                    { Description => '2 Example Street', Id => '12345', SharedRef => { Value => { anyType => '1000000002' } } },
                 ],
             });
         });
@@ -823,7 +823,7 @@ FixMyStreet::override_config {
         category => 'Garden Subscription',
     });
     $p->title('Garden Subscription - New');
-    $p->update_extra_field({ name => 'property_id', value => 12345});
+    $p->update_extra_field({ name => 'property_id', value => '12345'});
     $p->update;
     $user->update({ phone => "" });
 
@@ -1255,8 +1255,8 @@ FixMyStreet::override_config {
 
         my ($token, $report_id) = ( $mech->content =~ m#reference\*\|\*([^*]*)\*\|\*report_id\*\|\*(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
-                id => $report_id,
-                extra => { like => '%redirect_id,T18:'. $token . '%' }
+            id => $report_id,
+            extra => { '@>' => '{"redirect_id":"' . $token . '"}' },
         } )->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
@@ -1617,8 +1617,8 @@ FixMyStreet::override_config {
 
         my ($token, $report_id) = ( $mech->content =~ m#reference\*\|\*([^*]*)\*\|\*report_id\*\|\*(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
-                id => $report_id,
-                extra => { like => '%redirect_id,T18:'. $token . '%' }
+            id => $report_id,
+            extra => { '@>' => '{"redirect_id":"' . $token . '"}' },
         } )->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
@@ -1989,7 +1989,7 @@ FixMyStreet::override_config {
     my $report = FixMyStreet::DB->resultset("Problem")->search({
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
-        extra => { like => '%property_id,T5:value,I5:12345%' }
+        extra => { '@>' => '{"_fields":[{"name":"property_id","value":"12345"}]}' },
     },
     {
         order_by => { -desc => 'id' }

@@ -5,7 +5,6 @@ use namespace::autoclean;
 use JSON::MaybeXS;
 use List::MoreUtils qw(any);
 use Path::Tiny;
-use RABX;
 use FixMyStreet::MapIt;
 
 BEGIN { extends 'Catalyst::Controller'; }

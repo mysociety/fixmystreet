@@ -56,8 +56,6 @@ __PACKAGE__->add_columns(
   "deleted",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "extra",
-  { data_type => "text", is_nullable => 1 },
-  "extra_json",
   { data_type => "jsonb", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
@@ -141,9 +139,6 @@ __PACKAGE__->has_many(
 
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:03:44
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pi2NwZG3X/etd5CQHqT61w
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('extra');
 
 use Moo;
 use namespace::clean;

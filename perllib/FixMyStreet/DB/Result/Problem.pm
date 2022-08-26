@@ -86,14 +86,10 @@ __PACKAGE__->add_columns(
   "send_questionnaire",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "extra",
-  { data_type => "text", is_nullable => 1 },
-  "extra_json",
   { data_type => "jsonb", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "geocode",
-  { data_type => "bytea", is_nullable => 1 },
-  "geocode_json",
   { data_type => "jsonb", is_nullable => 1 },
   "response_priority_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -247,12 +243,8 @@ __PACKAGE__->might_have(
   contributed_by => "FixMyStreet::DB::Result::User",
   sub {
     my $args = shift;
-    return {
-        "$args->{self_alias}.extra" => { like => '%contributed_by%' }, # makes it more performant(!)
-        -and => [
-            \[ "substring($args->{self_alias}.extra from 'T14:contributed_by,I\\d+:(\\d+)')::integer = $args->{foreign_alias}.id" ],
-        ]
-    };
+    return
+        \[ "($args->{self_alias}.extra ->> 'contributed_by')::integer = $args->{foreign_alias}.id" ];
   },
   {
     join_type => "LEFT",
@@ -260,10 +252,6 @@ __PACKAGE__->might_have(
     on_update => "NO ACTION",
   },
 );
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('extra');
-__PACKAGE__->rabx_column('geocode');
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
@@ -273,19 +261,8 @@ use FixMyStreet::Template;
 use FixMyStreet::Template::SafeString;
 use List::Util qw/any uniq/;
 use LWP::Simple qw($ua);
-use RABX;
 use URI;
 use URI::QueryParam;
-
-# XXX Temporary for RABX migration
-around geocode => sub {
-    my ($orig, $self) = (shift, shift);
-    if (@_) {
-        $self->geocode_json(@_);
-    }
-    return $self->$orig(@_);
-};
-# XXX Temporary for RABX migration
 
 my $IM = eval {
     require Image::Magick;

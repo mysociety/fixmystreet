@@ -7,6 +7,7 @@ use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
 use Integrations::Bartec;
+use JSON::MaybeXS;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::Email;
@@ -545,11 +546,7 @@ sub find_pending_bulky_collection {
     return FixMyStreet::DB->resultset('Problem')->to_body( $self->body )
         ->find(
         {   category => 'Bulky collection',
-            extra    => {
-                      like => '%T4:uprn,T5:value,I'
-                    . length( $property->{uprn} ) . ':'
-                    . $property->{uprn} . '%',
-            },
+            extra    => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $property->{uprn} } ] }) },
             state =>
                 { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
         },
@@ -811,12 +808,7 @@ sub bulky_cancellation_report {
     # A cancelled collection will have a corresponding cancellation report
     # linked via external_id / ORIGINAL_SR_NUMBER
     return FixMyStreet::DB->resultset('Problem')->find(
-        {   extra => {
-                      like => '%T18:ORIGINAL_SR_NUMBER,T5:value,T'
-                    . length($original_sr_number) . ':'
-                    . $original_sr_number . '%',
-            },
-        },
+        { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] }) } },
     );
 }
 

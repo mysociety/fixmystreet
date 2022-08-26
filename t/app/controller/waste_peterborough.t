@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use JSON::MaybeXS;
 use Path::Tiny;
 use File::Temp 'tempdir';
 use CGI::Simple;
@@ -1442,11 +1443,7 @@ FixMyStreet::override_config {
                 subtest 'cancellation report' => sub {
                     $cancellation_report
                         = FixMyStreet::DB->resultset('Problem')->find(
-                        {   extra => {
-                                like =>
-                                    '%T18:ORIGINAL_SR_NUMBER,T5:value,T10:SR00100001%',
-                            },
-                        }
+                            { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
                         );
                     is $cancellation_report->category, 'Bulky cancel',
                         'Correct category';
@@ -1732,11 +1729,7 @@ FixMyStreet::override_config {
 
             my $cancellation_report
                 = FixMyStreet::DB->resultset('Problem')->find(
-                {   extra => {
-                        like =>
-                            '%T18:ORIGINAL_SR_NUMBER,T5:value,T10:SR00100001%',
-                    },
-                }
+                    { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
             );
             like $cancellation_report->detail,
                 qr/Original report ID: ${\$report->id}/,

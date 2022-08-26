@@ -1,4 +1,5 @@
 use utf8;
+use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
@@ -844,7 +845,7 @@ FixMyStreet::override_config {
     my $report = FixMyStreet::DB->resultset("Problem")->search({
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
-        extra => { like => '%property_id,T5:value,I5:12345%' }
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => 12345 } ] }) },
     },
     {
         order_by => { -desc => 'id' }

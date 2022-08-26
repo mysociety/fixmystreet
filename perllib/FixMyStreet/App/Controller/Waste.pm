@@ -149,17 +149,12 @@ sub get_pending_subscription : Private {
     my ($self, $c) = @_;
 
     my $uprn = $c->stash->{property}{uprn};
-    my $len = length $uprn;
     my $subs = $c->model('DB::Problem')->search({
         state => 'unconfirmed',
         created => { '>=' => \"current_timestamp-'20 days'::interval" },
         category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
-        -or => [
-                title => 'Garden Subscription - Renew',
-                title => 'Garden Subscription - New',
-                title => 'Garden Subscription - Cancel',
-        ],
-        extra => { like => '%uprn,T5:value,I' . $len . ':'. $c->stash->{property}{uprn} . '%' }
+        title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
     })->to_body($c->cobrand->body);
 
     my ($new, $cancel);
@@ -1430,7 +1425,7 @@ sub get_original_sub : Private {
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-        extra => { like => '%property_id,T5:value,I_:'. $c->stash->{property}{id} . '%' },
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
         state => { '!=' => 'hidden' },
     },
     {

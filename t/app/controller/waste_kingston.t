@@ -1,4 +1,5 @@
 use utf8;
+use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
@@ -684,7 +685,7 @@ FixMyStreet::override_config {
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
                 id => $report_id,
-                extra => { like => '%redirect_id,T18:'. $token . '%' }
+                extra => { '@>' => encode_json({ redirect_id => $token }) }
         } )->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
@@ -742,7 +743,7 @@ FixMyStreet::override_config {
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
                 id => $report_id,
-                extra => { like => '%redirect_id,T18:'. $token . '%' }
+                extra => { '@>' => encode_json({ redirect_id => $token }) }
         } )->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
@@ -1060,7 +1061,7 @@ FixMyStreet::override_config {
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
                 id => $report_id,
-                extra => { like => '%redirect_id,T18:'. $token . '%' }
+                extra => { '@>' => encode_json({ redirect_id => $token }) }
         } )->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
@@ -1135,7 +1136,7 @@ FixMyStreet::override_config {
     my $report = FixMyStreet::DB->resultset("Problem")->search({
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
-        extra => { like => '%property_id,T5:value,I5:12345%' }
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => 12345 } ] }) }
     },
     {
         order_by => { -desc => 'id' }
@@ -1460,7 +1461,7 @@ FixMyStreet::override_config {
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
         my $new_report = FixMyStreet::DB->resultset('Problem')->search( {
                 id => $report_id,
-                extra => { like => '%redirect_id,T18:'. $token . '%' }
+                extra => { '@>' => encode_json({ redirect_id => $token }) }
         } )->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';

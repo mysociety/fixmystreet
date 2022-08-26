@@ -9,7 +9,7 @@ use Math::Trig qw(great_circle_distance deg2rad);
 
 use FixMyStreet::Gaze;
 use FixMyStreet::MapIt;
-use RABX;
+use JSON::MaybeXS;
 
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
@@ -457,8 +457,7 @@ sub _get_address_from_geocode {
     my $geocode = shift;
 
     return '' unless defined $geocode;
-    my $h = new IO::String($geocode);
-    my $data = RABX::wire_rd($h);
+    my $data = JSON->new->decode($geocode);
 
     my $str = '';
 

@@ -62,8 +62,6 @@ __PACKAGE__->add_columns(
   "external_id",
   { data_type => "text", is_nullable => 1 },
   "extra",
-  { data_type => "text", is_nullable => 1 },
-  "extra_json",
   { data_type => "jsonb", is_nullable => 1 },
   "send_state",
   { data_type => "text", default_value => "unprocessed", is_nullable => 0 },
@@ -102,9 +100,6 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:09:58
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8R6NBLI7UWER4zQ6sM7G5Q
 #
-
-__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
-__PACKAGE__->rabx_column('extra');
 
 use Moo;
 use FixMyStreet::Template::SafeString;
