@@ -6,7 +6,7 @@ use Moo;
 
 Given a list of public holiday dates, creates an object that can be used to
 add/subtract days from a date, only counting working days (excluding public
-holidays and weekends).
+holidays and weekends or Sundays).
 
 =over
 
@@ -14,9 +14,16 @@ holidays and weekends).
 
 has public_holidays => (
     is => 'ro',
+    default => sub { [] },
     coerce => sub {
         return { map { $_ => 1 } @{$_[0]} };
     },
+);
+
+# Set to true if Saturdays are a working day
+has saturdays => (
+    is => 'ro',
+    default => 0,
 );
 
 =item add_days
@@ -32,7 +39,11 @@ sub add_days {
     while ( $days > 0 ) {
         $dt->add ( days => $subtract ? -1 : 1 );
         next if $self->is_public_holiday($dt);
-        next if $self->is_weekend($dt);
+        if ($self->saturdays) {
+            next if $self->is_sunday($dt);
+        } else {
+            next if $self->is_weekend($dt);
+        }
         $days--;
     }
     return $dt;
@@ -59,6 +70,17 @@ Given a DateTime object, return true if it is a public holiday.
 sub is_public_holiday {
     my ($self, $dt) = @_;
     return $self->public_holidays->{$dt->ymd};
+}
+
+=item is_sunday
+
+Given a DateTime object, return true if it is a Sunday.
+
+=cut
+
+sub is_sunday {
+    my ($self, $dt) = @_;
+    return $dt->dow == 7;
 }
 
 =item is_weekend
