@@ -321,6 +321,7 @@ sub social_auth_disabled { 1 }
 # only for Waste reports
 sub report_sent_confirmation_email {
     my ($self, $report) = @_;
+    return 'Report ID if WasteWorks report' unless $report; # no report passed when called from /admin/config template
     my $contact = $report->contact or return;
     return 'id' if $report->contact->get_extra_metadata('type', '') eq 'waste';
     return '';

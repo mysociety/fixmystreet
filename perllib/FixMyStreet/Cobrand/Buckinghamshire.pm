@@ -451,6 +451,7 @@ sub disable_phone_number_entry { 1 }
 
 sub report_sent_confirmation_email {
     my ($self, $report) = @_;
+    return 'FMS ID if emailed, external ID otherwise' unless $report; # for /admin/config
     return $report->external_id ? 'external_id' : 'id';
 }
 
