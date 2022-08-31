@@ -1,5 +1,6 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::UpdateAllReports;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -228,7 +229,7 @@ subtest "Thamesmead staff comments are ascribed to Peabody" => sub {
         user => $user1});
 
         my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
-            problem_state => 'confirmed',
+            problem_state => 'fixed - council',
             problem_id => $problem->id,
             user_id    => $staff_user->id,
             name       => 'User',
@@ -240,6 +241,12 @@ subtest "Thamesmead staff comments are ascribed to Peabody" => sub {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_contains("Posted by <strong>Peabody</strong>");
     };
+};
+
+subtest 'Check Thamesmead not in summary stats' => sub {
+    my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
+    is_deeply $data->{top_five_bodies}, [];
+    is_deeply $data->{top_five_categories}, [];
 };
 
 done_testing();
