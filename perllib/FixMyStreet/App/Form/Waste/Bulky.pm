@@ -1,6 +1,7 @@
 package FixMyStreet::App::Form::Waste::Bulky;
 
 use utf8;
+use DateTime::Format::Strptime;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
@@ -83,17 +84,33 @@ has_field resident => (
 );
 
 has_field chosen_date => (
-    type => 'Select',
-    widget => 'RadioGroup',
+    type     => 'Select',
+    widget   => 'RadioGroup',
     required => 1,
-    label => 'Available dates',
-    options => [
-        # XXX look these up dynamically
-        { value => '20220825', label => '2022-08-25' },
-        { value => '20220826', label => '2022-08-26' },
-        { value => '20220827', label => '2022-08-27' },
-        { value => '20220828', label => '2022-08-28' },
-    ],
+    label    => 'Available dates',
+    options_method => sub {
+        my $self = shift;
+        my $c    = $self->form->c;
+
+        my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+
+        my @dates = grep {$_} map {
+            my $dt = $parser->parse_datetime( $_->{date} );
+            $dt ? {
+                label => $dt->strftime('%d %B'),
+                value => $_->{date},
+            } : undef
+        } @{
+            $c->cobrand->call_hook(
+                find_available_bulky_slots => $c->stash->{property}
+            )
+        };
+
+        # XXX Display message if no options
+        # XXX Hide additional dates with JS(?)
+
+        return \@dates;
+    },
 );
 
 has_field tandc => (

@@ -44,6 +44,7 @@ sub service_name_override {
     };
 }
 
+# XXX Use config to set max daily slots etc.
 sub bulky_collection_window_days     {90}
 sub max_daily_bulky_collection_slots {40}
 sub bulky_workpack_name {
@@ -501,7 +502,7 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
-# TODO
+# XXX
 # Error handling
 # Holidays, bank holidays?
 # Monday limit, Tuesday limit etc.?
@@ -562,15 +563,12 @@ sub find_available_bulky_slots {
         # workpacks for the same date, we only take the first into account
         next if $workpack->{WorkPackDate} eq ( $last_workpack_date // '' );
 
+        my %jobs_per_uprn;
         my $workpacks_for_day
             = $bartec->WorkPacks_Get( $workpack->{WorkPackDate} );
-
         my $workpack_dt = $workpack_date_parser->parse_datetime(
             $workpack->{WorkPackDate} );
 
-        my $jobs_total = 0;
-
-        my %jobs_per_uprn;
         for my $wpfd (@$workpacks_for_day) {
             next if $wpfd->{Name} !~ bulky_workpack_name();
 

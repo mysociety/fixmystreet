@@ -700,11 +700,14 @@ FixMyStreet::override_config {
         subtest 'Choose date page' => sub {
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
-            $mech->content_contains('2022-08-25');
-            $mech->content_contains('2022-08-26');
-            $mech->content_contains('2022-08-27');
-            $mech->content_contains('2022-08-28');
-            $mech->submit_form_ok({ with_fields => { chosen_date => '20220828' }});
+            $mech->content_contains('05 August');
+            $mech->content_contains('12 August');
+            $mech->content_contains('19 August');
+            $mech->content_contains('26 August');
+            $mech->content_contains('02 September');
+            $mech->content_lacks('31 February');
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2022-08-26T00:00:00' } } );
         };
 
         subtest 'Add items page' => sub {
@@ -835,7 +838,7 @@ FixMyStreet::override_config {
 
 
 sub shared_bartec_mocks {
-        my $b = Test::MockModule->new('Integrations::Bartec');
+    my $b = Test::MockModule->new('Integrations::Bartec');
     $b->mock('Authenticate', sub {
         { Token => { TokenString => "TOKEN" } }
     });
@@ -866,8 +869,40 @@ sub shared_bartec_mocks {
     $b->mock('Streets_Events_Get', sub { [
         # No open events at present
     ] });
+    $b->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
+    $b->mock( 'WorkPacks_Get',                [] );
+    $b->mock( 'Jobs_Get_for_workpack',        [] );
 
     return $b, $jobs_fsd_get;
+}
+
+sub _future_workpacks {
+    [   {   'WorkPackDate' => '2022-08-05T00:00:00',
+            'Actions'      => {
+                'Action' => [ { 'ActionName' => 'Empty Bin 240L Black' } ],
+            },
+        },
+        {   'WorkPackDate' => '2022-08-12T00:00:00',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Black 240l Bin' } },
+        },
+        {   'WorkPackDate' => '2022-08-19T00:00:00',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+        {   'WorkPackDate' => '2022-08-26T00:00:00',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+        {   'WorkPackDate' => '2022-09-02T00:00:00',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+        {   'WorkPackDate' => '2022-02-31T00:00:00', # Invalid date
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+    ];
 }
 
 done_testing;
