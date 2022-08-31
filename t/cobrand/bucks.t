@@ -572,6 +572,12 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
     my $report_id = $report->id;
     $mech->get_ok("/report/$report_id");
     $mech->content_contains('Some update text');
+
+    subtest 'Internal referral reports are seen in duplicates' => sub {
+        $report->update({ state => 'internal referral' });
+        my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
+        like $json->{reports_list}, qr/Test Dirty signs report/;
+    };
 };
 
 subtest 'body filter on dashboard' => sub {
@@ -602,28 +608,6 @@ subtest 'All reports pages for parishes' => sub {
     $mech->get_ok('/reports/Aylesbury');
     $mech->content_contains('Aylesbury Town Council');
     is $mech->uri->path, '/reports/Aylesbury';
-};
-
-subtest 'Reports to parishes are closed by default' => sub {
-    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
-    $mech->submit_form_ok({
-        with_fields => {
-            title => "Test Dirty signs report 2",
-            detail => 'Test report details.',
-            category => 'Dirty signs',
-        }
-    }, "submit details");
-    $mech->content_contains('Your issue is on its way to the council');
-
-    FixMyStreet::Script::Reports::send();
-
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-    ok $report, "Found the report";
-    is $report->title, 'Test Dirty signs report 2', 'Got the correct report';
-    is $report->state, 'internal referral', 'parish report is automatically marked as closed';
-
-    my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
-    like $json->{reports_list}, qr/Test Dirty signs report 2/;
 };
 
 subtest "Only the contact with prefer_if_multiple is returned for the Hedge Problem category" => sub {

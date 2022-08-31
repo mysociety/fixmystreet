@@ -397,7 +397,7 @@ sub get_body_handler_for_problem {
     my ($self, $row) = @_;
 
     # Have a parish handled by Buckinghamshire to use its
-    # post_report_sent and report_sent_confirmation_email
+    # report_sent_confirmation_email
     my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
     my @parishes = $bucks->parish_bodies->all;
     my @parish_ids = map { $_->id } @parishes;
