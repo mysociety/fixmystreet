@@ -9,6 +9,9 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(2494, 'Thamesmead', {}, { cobrand => 'thamesmead' }); # Using Bexley as area
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Overgrown shrub beds', email => 'shrubs@example.org');
+$mech->create_contact_ok(body_id => $body->id, category => 'Thamesmead graffiti', email => 'thamesmead@example.org');
+my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+$mech->create_contact_ok(body_id => $bexley->id, category => 'Bexley graffiti', email => 'bexley@example.org');
 
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
 my $user2 = $mech->create_user_ok('user2@example.org', email_verified => 1, name => 'User 2');
@@ -101,73 +104,77 @@ $osm->mock('cache', sub {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'thamesmead' ],
 }, sub {
-    $mech->log_in_ok($user1->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->submit_form_ok({ with_fields => {update => 'Still not fixed'} }, 'Reporter can update report');
+    subtest 'Check updating a normal report' => sub {
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->submit_form_ok({ with_fields => {update => 'Still not fixed'} }, 'Reporter can update report');
 
-    $mech->log_in_ok($user2->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Other user can not update report');
+        $mech->log_in_ok($user2->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Other user can not update report');
 
-    $mech->log_in_ok($staff_user->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->submit_form_ok({ with_fields => {update => 'Confirm this is still not fixed'} }, 'Staff user can update report');
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->submit_form_ok({ with_fields => {update => 'Confirm this is still not fixed'} }, 'Staff user can update report');
 
-    $mech->log_in_ok($superuser->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->submit_form_ok({ with_fields => {update => 'Re-confirm this is still not fixed'} }, 'Superuser can update report');
+        $mech->log_in_ok($superuser->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->submit_form_ok({ with_fields => {update => 'Re-confirm this is still not fixed'} }, 'Superuser can update report');
+    };
+    subtest 'Check updating a closed_updates report' => sub {
+        $problem->set_extra_metadata('closed_updates' => 1);
+        $problem->update;
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Reporter can not update reports with closed updates');
 
-    $problem->set_extra_metadata('closed_updates' => 1);
-    $problem->update;
-    $mech->log_in_ok($user1->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Reporter can not update reports with closed updates');
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Staff user can not update reports with closed updates');
 
-    $mech->log_in_ok($staff_user->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Staff user can not update reports with closed updates');
-    
-    $mech->log_in_ok($superuser->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Superuser can not update reports with closed updates');
+        $mech->log_in_ok($superuser->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Superuser can not update reports with closed updates');
+    };
+    subtest 'Check updating an updates_disallowed report' => sub {
+        $problem->set_extra_metadata('closed_updates' => undef);
+        $problem->update;
+        $contact->set_extra_metadata('updates_disallowed' => 1);
+        $contact->update;
 
-    $problem->set_extra_metadata('closed_updates' => undef);
-    $problem->update;
-    $contact->set_extra_metadata('updates_disallowed' => 1);
-    $contact->update;
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Reporter can not update reports with updates disallowed');
 
-    $mech->log_in_ok($user1->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Reporter can not update reports with updates disallowed');
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Staff user can not update reports with updates disallowed');
 
-    $mech->log_in_ok($staff_user->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Staff user can not update reports with updates disallowed');
-    
-    $mech->log_in_ok($superuser->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('This report is now closed to updates', 'Superuser can not update reports with updates disallowed');
+        $mech->log_in_ok($superuser->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('This report is now closed to updates', 'Superuser can not update reports with updates disallowed');
+    };
+    subtest 'Check updating a fixed report' => sub {
+        $contact->set_extra_metadata('updates_disallowed' => undef);
+        $contact->update;
+        $problem->update({ state => 'fixed'});
 
-    $contact->set_extra_metadata('updates_disallowed' => undef);
-    $contact->update;
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('form_reopen', 'Reporter can check reopen box on closed report');
 
-    $problem->update({ state => 'fixed'});
-    $mech->log_in_ok($user1->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('form_reopen', 'Reporter can check reopen box on closed report');
+        $mech->log_in_ok($user2->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_lacks('form_reopen', 'Other user can not check reopen box on closed report');
 
-    $mech->log_in_ok($user2->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_lacks('form_reopen', 'Other user can not check reopen box on closed report');
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('option value="confirmed"', 'Staff user can select "Open" on closed report');
 
-    $mech->log_in_ok($staff_user->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('option value="confirmed"', 'Staff user can select "Open" on closed report');
-
-    $mech->log_in_ok($superuser->email);
-    $mech->get_ok('/report/' . $problem->id);
-    $mech->content_contains('option value="confirmed"', 'Superuser can select "Open" on closed report');
-
+        $mech->log_in_ok($superuser->email);
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_contains('option value="confirmed"', 'Superuser can select "Open" on closed report');
+    };
 };
 
 FixMyStreet::override_config {
@@ -184,10 +191,6 @@ FixMyStreet::override_config {
 };
 
 subtest "Thamesmead categories don't appear on council cobrands or FMS" => sub {
-
-    my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
-    my $bexley_contact = $mech->create_contact_ok(body_id => $bexley->id, category => 'Bexley graffiti', email => 'bexley@example.org');
-    my $thamesmead_contact = $mech->create_contact_ok(body_id => $body->id, category => 'Thamesmead graffiti', email => 'thamesmead@example.org');
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'bexley' ],
