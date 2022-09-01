@@ -1,0 +1,31 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('WasteWorks Configuration for %s'), body.name) -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% INCLUDE status_message %]
+
+<form method="post">
+    [% IF errors %]
+        <p class="error">[% loc('Please correct the errors below') %]</p>
+    [% END %]
+
+    <p>
+        <label for="body_config">JSON:</label>
+        <small>Use <code>0</code>/<code>1</code> instead of <code>false</code>/<code>true</code>.</small>
+        [% IF errors.body_config %]
+            <div class="form-error">[% errors.body_config %]</div>
+        [% END %]
+        <textarea cols="80" rows="15" required name="body_config" class="code">
+            [%~ body_config_json ~%]
+        </textarea>
+    </p>
+    <p>
+        <input type="hidden" name="token" value="[% csrf_token %]" >
+        <input type="submit" class="btn" value="Save changes" />
+    </p>
+</form>
+
+<p>
+    <a href="[% c.uri_for_action('admin/waste/index') %]">[% loc("&larr; Back") %]</a>
+</p>
+
+[% INCLUDE 'admin/footer.html' %]

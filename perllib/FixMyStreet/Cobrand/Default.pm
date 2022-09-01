@@ -728,6 +728,9 @@ sub admin_pages {
     if ( $user->has_body_permission_to('emergency_message_edit') ) {
         $pages->{emergencymessage} = [ _('Emergency message'), 12 ];
     }
+    if ( $user->has_body_permission_to('wasteworks_config') ) {
+        $pages->{waste} = [ _('WasteWorks config'), 14];
+    }
 
     return $pages;
 }

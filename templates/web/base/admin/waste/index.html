@@ -1,0 +1,11 @@
+[% INCLUDE 'admin/header.html' title=loc('WasteWorks Configuration') -%]
+
+<ul>
+    [% FOR body IN bodies %]
+        <li>
+            <a href="[% c.uri_for_action('admin/waste/edit', [ body.id ]) %]">[% body.name %]</a>
+        </li>
+    [% END %]
+</ul>
+
+[% INCLUDE 'admin/footer.html' %]

@@ -22,9 +22,11 @@ my $params = {
     can_be_devolved => 1,
 };
 my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
+my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -737,6 +739,93 @@ FixMyStreet::override_config {
 
     };
 };
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'peterborough', 'bromley' ],
+    COBRAND_FEATURES => {
+        bartec => { peterborough => {
+            sample_data => 1,
+        } },
+        waste => {
+            peterborough => 1,
+            bromley => 1
+        },
+        waste_features => {
+            peterborough => {
+                admin_config_enabled => 1
+            }
+        }
+    },
+}, sub {
+
+    subtest 'WasteWorks configuration editing' => sub {
+        ok $mech->host('peterborough.fixmystreet.com');
+
+        subtest 'Only cobrands with feature enabled are visible' => sub {
+            $mech->log_in_ok($super->email);
+            $mech->get_ok('/admin/waste');
+            $mech->content_contains("<a href=\"waste/" . $body->id . "\">Peterborough City Council</a>");
+            $mech->content_lacks("<a href=\"waste/" . $bromley->id . "\">Bromley Council</a>");
+            $mech->log_out_ok;
+        };
+
+        subtest 'Permission required to access page' => sub {
+            $mech->log_in_ok($staff->email);
+
+            $mech->get('/admin/waste/' . $body->id);
+            is $mech->res->code, 404, 'cannot access page';
+
+            $staff->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
+
+            $mech->get_ok('/admin/waste/' . $body->id);
+        };
+
+        subtest 'Submitting JSON with invalid syntax shows error' => sub {
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+
+            $mech->submit_form_ok({ with_fields => { body_config => '{"foo": "bar",}' } });
+            $mech->content_contains("Please correct the errors below");
+            $mech->content_contains("Not a valid JSON string: &#39;&quot;&#39; expected, at character offset 14 (before &quot;}&quot;)");
+
+            $body->discard_changes;
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+        };
+
+        subtest 'Submitting invalid JSON shows error' => sub {
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+
+            $mech->submit_form_ok({ with_fields => { body_config => '1234' } });
+            $mech->content_contains("Please correct the errors below");
+            $mech->content_contains("Not a valid JSON string: JSON text must be an object or array (but found number, string, true, false or null, use allow_nonref to allow this)");
+
+            $body->discard_changes;
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+        };
+
+        subtest 'Submitting valid JSON but not an object shows error' => sub {
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+
+            $mech->submit_form_ok({ with_fields => { body_config => '[1,2,3,4]' } });
+            $mech->content_contains("Config must be a JSON object literal, not array.");
+
+            $body->discard_changes;
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+        };
+
+        subtest 'Submitting valid JSON object gets stored OK' => sub {
+            is $body->get_extra_metadata('wasteworks_config'), undef;
+
+            $mech->submit_form_ok({ with_fields => { body_config => '{"base_price": 2350, "daily_slots": 40}' } });
+            $mech->content_contains("Updated!");
+
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), { base_price => 2350, daily_slots => 40 };
+        };
+
+    };
+
+};
+
 
 sub shared_bartec_mocks {
         my $b = Test::MockModule->new('Integrations::Bartec');
