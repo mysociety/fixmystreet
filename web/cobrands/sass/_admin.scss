@@ -323,3 +323,8 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     max-height: initial;
   }
 }
+
+textarea.code {
+    font-family: monospace;
+    max-width: initial;
+}

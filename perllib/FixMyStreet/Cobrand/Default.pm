@@ -728,6 +728,9 @@ sub admin_pages {
     if ( $user->has_body_permission_to('emergency_message_edit') ) {
         $pages->{emergencymessage} = [ _('Emergency message'), 12 ];
     }
+    if ( $user->has_body_permission_to('wasteworks_config') ) {
+        $pages->{waste} = [ _('WasteWorks config'), 14];
+    }
 
     return $pages;
 }
@@ -789,6 +792,7 @@ sub available_permissions {
             template_edit => _("Add/edit response templates"),
             responsepriority_edit => _("Add/edit response priorities"),
             emergency_message_edit => _("Add/edit emergency message"),
+            wasteworks_config => _("Edit WasteWorks configuration"), # XXX limit to admin_config_enabled feature flag?
         },
     };
 }
