@@ -27,7 +27,7 @@ has_page about_you => (
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 has_page choose_date => (
-    fields => ['continue', 'chosen_date'],
+    fields => [ 'continue', 'chosen_date' ],
     title => 'Choose date for collection',
     next => 'add_items',
 );
@@ -106,8 +106,14 @@ has_field chosen_date => (
             )
         };
 
-        # XXX Display message if no options
         # XXX Hide additional dates with JS(?)
+
+        # XXX Do we want to let the user know there are no available dates
+        # much earlier in the journey?
+        if ( !@dates ) {
+            $self->inactive(1);
+            $self->form->field('continue')->inactive(1);
+        }
 
         return \@dates;
     },
