@@ -108,7 +108,7 @@ sub path_to_pin_icons {
 
 sub pin_hover_title {
     my ($self, $problem, $title) = @_;
-    my $state = FixMyStreet::DB->resultset("State")->display($problem->state, 1);
+    my $state = FixMyStreet::DB->resultset("State")->display($problem->state, 1, 'oxfordshire');
     return "$state: $title";
 }
 

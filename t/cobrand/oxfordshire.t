@@ -251,6 +251,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_contains('Investigation complete');
 
+        $mech->get_ok('/reports/Oxfordshire?ajax=1&status=closed');
+        $mech->content_contains('Investigation complete');
+
         FixMyStreet::Script::Alerts::send_updates();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
