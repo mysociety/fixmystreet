@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/northamptonshire?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Bus_Stop&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <gml:boundedBy>
+    <gml:Envelope srsName="EPSG:3857">
+      <gml:lowerCorner>-100574.605627 6841693.143025</gml:lowerCorner>
+      <gml:upperCorner>-98090.169842 6844081.205904</gml:upperCorner>
+    </gml:Envelope>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <ms:Bus_Stop gml:id="Bus_Stop.219672">
+      <gml:boundedBy>
+        <gml:Envelope srsName="EPSG:3857">
+          <gml:lowerCorner>-99076.230040 6843610.496782</gml:lowerCorner>
+          <gml:upperCorner>-99076.230040 6843610.496782</gml:upperCorner>
+        </gml:Envelope>
+      </gml:boundedBy>
+      <ms:msGeometry>
+        <gml:Point srsName="EPSG:3857">
+          <gml:pos>-99076.230040 6843610.496782</gml:pos>
+        </gml:Point>
+      </ms:msGeometry>
+      <ms:asset_id>219672</ms:asset_id>
+    </ms:Bus_Stop>
+  </gml:featureMember>
+</wfs:FeatureCollection>

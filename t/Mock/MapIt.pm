@@ -58,6 +58,7 @@ my @PLACES = (
     [ 'NN1 2NS', 52.238301, -0.889992, 164186, 'West Northamptonshire Council', 'UTA' ],
     [ '?', 52.238827, -0.894970, 164186, 'West Northamptonshire Council', 'UTA' ],
     [ '?', 52.23025, -1.015826, 164186, 'West Northamptonshire Council', 'UTA' ],
+    [ '?', 52.239694, -0.889992, 164186, 'West Northamptonshire Council', 'UTA' ],
     # FixMyStreet::munge_sendreport_params depends on a call to generation 36:
     [ '?', 52.236252, -0.892053, 2234, 'Northamptonshire County Council', 'CTY', 2397, 'Northampton Borough Council', 'DIS' ],
     [ 'E8 1DY', 51.552267, -0.063316, 2508, 'Hackney Borough Council', 'LBO' ],

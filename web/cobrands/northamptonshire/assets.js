@@ -4,12 +4,6 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var base_url = fixmystreet.staging ?
-      "https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://northants.staging/${layerid}/${x}/${y}/${z}/cluster" :
-      "https://tilma.mysociety.org/resource-proxy/proxy.php?https://northants.assets/${layerid}/${x}/${y}/${z}/cluster";
-
-var url_with_style = base_url + '?styleIds=${styleid}';
-
 var layers = [
 {
   "categories": [
@@ -21,32 +15,26 @@ var layers = [
   ],
   "item_name": "drain",
   "layer_name": "Gully",
-  "styleid": '5d480b8ffe2ad809d85a78ff',
   "max_resolution": 0.5971642833948135
 },
 {
   "categories": [ "Grit Bin - damaged/replacement", "Grit Bin - empty/refill" ],
   "item_name": "grit bin",
-  "layer_name": "Grit Bins",
-  "styleid": '5d480942fe2ad809d85a78ad',
+  "layer_name": "GritBins"
 },
 {
   "categories": [ "Highway Bridges - Damaged/Unsafe" ],
-  "asset_type": 'area',
   "item_name": 'bridge',
-  "layer_name": "Structures",
-  "styleid": '5d4809fffe2ad8059ce44bbe',
+  "layer_name": "Structures"
 },
 {
   "categories": [ "Damaged / Missing / Facing Wrong Way", "Obscured by vegetation or Dirty" ],
   "item_name": "sign",
-  "layer_name": "Signs",
-  "styleid": '5d480a8ffe2ad809d85a78d3',
+  "layer_name": "Sign"
 },
 {
   "categories": [ "Shelter Damaged", "Sign/Pole Damaged" ],
-  "layer_name": "Bus Stop",
-  "styleid": '5d4812dffe2ad809d85a7a72',
+  "layer_name": "Bus_Stop"
 },
 {
   "categories": [
@@ -55,61 +43,78 @@ var layers = [
       "Restricted Visibility"
   ],
   "layer_name": "Tree",
-  "styleid": '5d481376fe2ad8059ce44ef2',
   "snap_threshold": 0
 },
 {
   "categories": [ "Safety Bollard - Damaged/Missing" ],
-  "layer_name": "Safety Bollard",
-  "styleid": "5d481446fe2ad8059ce44f02",
+  "layer_name": "Safety_Bollard"
 },
-];
-
-var prow_assets = [
 {
   "categories": [ "Bridge-Damaged/ Missing" ],
   "item_name": "bridge or right of way",
-  "layer_name": "BRIDGES",
-  "styleid": "5d48161ffe2ad809d85a7add"
+  "layer_name": "Bridges"
 },
 {
   "categories": [ "Gate - Damaged/ Missing" ],
   "item_name": "gate or right of way",
-  "layer_name": "GATE",
-  "styleid": "5d481906fe2ad8059ce450b4",
+  "layer_name": "Gates"
 },
 {
   "categories": [ "Stile-Damaged/Missing" ],
   "item_name": "stile or right of way",
-  "layer_name": "STILE",
-  "styleid": "5d481a05fe2ad8059ce45121",
+  "layer_name": "Stile"
 },
 {
   "categories": [ "Sign/Waymarking - Damaged/Missing" ],
   "item_name": "waymarking or right of way",
-  "layer_name": "WAYMARK POST",
-  "styleid": "5d481a4ffe2ad809d85a7b90&styleIds=5d481742fe2ad809d85a7b05"
+  "layer_name": "Waymarker"
 },
+{
+  "categories": [
+    "Damaged/Exposed Wiring / Vandalised",
+    "Lamp/Bulb Failure",
+    "Signal Failure",
+    "Signal Failure all out",
+    "Signal Stuck",
+    "Signal Head Failure",
+    "Request Timing Review",
+    "Damaged Control box",
+    "Signal Failure/Damaged - Toucan/Pelican"
+  ],
+  "item_name": "signal or crossing",
+  "layer_name": "Traffic_Signal_Junction"
+},
+{
+  "categories": [ "Pedestrian Barriers - Damaged / Missing" ],
+  "item_name": "pedestrian barrier",
+  "layer_name": "Pedestrian_Barrier"
+}
 ];
 
-var highway_layer = 'layers_highwayAssetsCustom_5d4806b0fe2ad809d85a774f';
-var prow_asset_layer = 'layers_pRoWAssets_5d48157cfe2ad809d85a7abc';
-var signal_asset_layer = 'layers_nETCOM_5d483dd7fe2ad809d85a8fab';
+// This is required so that the found/not found actions are fired on category
+// select and pin move rather than just on asset select/not select.
+OpenLayers.Layer.NorthamptonshireVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+  initialize: function(name, options) {
+      OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+      $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+      $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
+  },
+
+  CLASS_NAME: 'OpenLayers.Layer.NorthamptonshireVectorAsset'
+});
 
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
-var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
-  class: OpenLayers.Layer.AlloyVectorAsset,
-  protocol_class: OpenLayers.Protocol.AlloyV2,
-  http_options: {
-      base: url_with_style,
-      layerid: highway_layer
-  },
+var northants_defaults = {
+  wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/northamptonshire" : "https://tilma.mysociety.org/mapserver/northamptonshire",
+  geometryName: 'msGeometry',
+  srsName: "EPSG:3857",
+  strategy_class: OpenLayers.Strategy.FixMyStreet,
   non_interactive: false,
   body: "Northamptonshire Highways",
   attributes: {
-    asset_resource_id: "itemId"
+    asset_resource_id: "asset_id"
   },
   select_action: true,
   actions: {
@@ -128,8 +133,7 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
       if (overlapping_features.length > 1) {
           // TODO: In an ideal world we'd be able to show the user a photo of each
           // of the assets and ask them to pick one.
-          // However the Alloy API requires authentication for photos which we
-          // don't have in FMS JS. Instead, we tell the user there are multiple things here
+          // Instead, we tell the user there are multiple things here
           // and ask them to describe the asset in the description field.
           var $p = $("#overlapping_features_msg");
           if (!$p.length) {
@@ -154,62 +158,33 @@ var northants_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
       }
     }
   }
-});
+};
 
-fixmystreet.alloy_add_layers(northants_defaults, layers);
-
-var prow_defaults = $.extend(true, {}, northants_defaults, {
-  http_options: {
-    layerid: prow_asset_layer
+$.each(layers, function(_index, layer) {
+  if (!layer.item_name) {
+    layer.item_name = layer.layer_name.replace(/_/g, ' ').toLowerCase();
   }
-});
-
-fixmystreet.alloy_add_layers(prow_defaults, prow_assets);
-
-var signals_defaults = $.extend(true, {}, northants_defaults, {
-  http_options: {
-    layerid: signal_asset_layer
-  }
-});
-
-
-fixmystreet.assets.add(signals_defaults, {
-  http_options: {
-    layer_id: signal_asset_layer,
-    styleid: "5d484093fe2ad809d85a9139&styleIds=5d483f6cfe2ad8059ce464de",
-  },
-  asset_category: [
-    "Damaged/Exposed Wiring / Vandalised",
-    "Lamp/Bulb Failure",
-    "Signal Failure",
-    "Signal Failure all out",
-    "Signal Stuck",
-    "Signal Head Failure",
-    "Request Timing Review",
-    "Damaged Control box",
-    "Signal Failure/Damaged - Toucan/Pelican"
-  ],
-  asset_item: "signal or crossing"
+  var options = $.extend(true, {}, northants_defaults, {
+    // Declare the class here rather than in the defaults above so it doesn't
+    // affect the road defaults below, which can use the default roads class.
+    class: OpenLayers.Layer.NorthamptonshireVectorAsset,
+    wfs_feature: layer.layer_name,
+    asset_category: layer.categories,
+    asset_item: layer.item_name
+  });
+  fixmystreet.assets.add(options, layer);
 });
 
 // NCC roads layers which prevent report submission unless we have selected
 // an asset.
-var northants_road_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
-    protocol_class: OpenLayers.Protocol.AlloyV2,
-    http_options: {
-        base: url_with_style,
-        layerid: highway_layer
-    },
-    body: "Northamptonshire Highways",
+var northants_road_defaults = $.extend(true, {}, northants_defaults, {
     road: true,
     always_visible: false,
     non_interactive: true,
     no_asset_msg_id: '#js-not-a-road',
     usrn: {
+        attribute: 'asset_id',
         field: 'asset_resource_id'
-    },
-    getUSRN: function(feature) {
-      return feature.fid;
     },
     actions: {
         found: fixmystreet.message_controller.road_found,
@@ -217,40 +192,13 @@ var northants_road_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
     }
 });
 
-
 fixmystreet.assets.add(northants_road_defaults, {
-    http_options: {
-      // Traffic Calming
-      styleid: "5d481403fe2ad8059ce44efd",
-    },
+    wfs_feature: "Traffic_Calming",
     no_asset_msg_id: '#js-not-an-asset',
     asset_item: 'speed hump',
     asset_type: "area",
     asset_category: [
         "Damaged Speed Humps"
-    ]
-});
-
-var barrier_style = new OpenLayers.Style({
-    fill: false,
-    strokeColor: "#555555",
-    strokeOpacity: 1,
-    strokeWidth: 4
-});
-
-fixmystreet.assets.add(northants_road_defaults, {
-    // Pedestrian Guardrail
-    http_options: {
-      styleid: "5d4813c1fe2ad8059ce44ef6",
-    },
-    stylemap: new OpenLayers.StyleMap({
-        'default': barrier_style
-    }),
-    no_asset_msg_id: '#js-not-an-asset',
-    asset_item: 'pedestrian barrier',
-    asset_type: 'area',
-    asset_category: [
-        "Pedestrian Barriers - Damaged / Missing"
     ]
 });
 
@@ -262,11 +210,7 @@ var highways_style = new OpenLayers.Style({
 });
 
 fixmystreet.assets.add(northants_road_defaults, {
-    protocol_class: OpenLayers.Protocol.AlloyV2,
-    // Carriageways
-    http_options: {
-      styleid: "5d480710fe2ad8059ce44a1d",
-    },
+    wfs_feature: "Carriageway",
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
     }),
@@ -297,54 +241,6 @@ fixmystreet.assets.add(northants_road_defaults, {
     ]
 });
 
-
-function ncc_match_prow_type(f, styleId) {
-    return f &&
-           f.attributes &&
-           f.attributes.styleId &&
-           f.attributes.styleId == styleId;
-}
-
-function ncc_prow_is_fp(f) {
-    return ncc_match_prow_type(f, '5d483b84fe2ad809d85a8dab' );
-}
-
-function ncc_prow_is_bw(f) {
-    return ncc_match_prow_type(f, '5d483b84fe2ad809d85a8dac');
-}
-
-function ncc_prow_is_boat(f) {
-    return ncc_match_prow_type(f, '5d483b84fe2ad809d85a8dad');
-}
-
-var rule_footpath = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: ncc_prow_is_fp
-    }),
-    symbolizer: {
-        strokeColor: "#800000",
-    }
-});
-var rule_boat = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: ncc_prow_is_boat
-    }),
-    symbolizer: {
-        strokeColor: "#964b00",
-    }
-});
-var rule_bridleway = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: ncc_prow_is_bw
-    }),
-    symbolizer: {
-        strokeColor: "#008000",
-    }
-});
-
 var prow_style = new OpenLayers.Style({
     fill: false,
     strokeColor: "#115511",
@@ -352,14 +248,8 @@ var prow_style = new OpenLayers.Style({
     strokeWidth: 7
 });
 
-prow_style.addRules([rule_footpath, rule_boat, rule_bridleway]);
-
 fixmystreet.assets.add(northants_road_defaults, {
-    http_options: {
-      // PRoW Network
-      base: base_url,
-      layerid: 'layers_pRoWType_5d483b2ffe2ad809d85a8d9a'
-    },
+    wfs_feature: "PRoW_Network",
     stylemap: new OpenLayers.StyleMap({
         'default': prow_style
     }),

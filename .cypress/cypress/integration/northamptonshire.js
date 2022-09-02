@@ -5,8 +5,7 @@ it('loads the right front page', function() {
 
 it('prevents clicking unless asset selected, desktop flow', function() {
   cy.server();
-  cy.route('**/northants.staging/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
-  cy.route('**/32602/21575/**', 'fixture:bus_stops.json').as('bus_stops-layer');
+  cy.route('POST', '**mapserver/northamptonshire*', 'fixture:bus_stops.xml').as('bus_stops-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 1NS');
@@ -18,15 +17,13 @@ it('prevents clicking unless asset selected, desktop flow', function() {
   cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
-  cy.wait('@empty-bus_stops-layer');
   cy.contains(/Please select a.*bus stop.*from the map/).should('be.visible');
   cy.get('.js-reporting-page--next:visible').should('be.disabled');
 });
 
 it('prevents clicking unless asset selected, mobile flow', function() {
   cy.server();
-  cy.route('**/northants.staging/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
-  cy.route('**/32602/21575/**', 'fixture:bus_stops.json').as('bus_stops-layer');
+  cy.route('POST', '**mapserver/northamptonshire*', 'fixture:bus_stops.xml').as('bus_stops-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.viewport(480, 800);
   cy.visit('http://northamptonshire.localhost:3001/');
@@ -40,7 +37,6 @@ it('prevents clicking unless asset selected, mobile flow', function() {
   cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
-  cy.wait('@empty-bus_stops-layer');
   cy.contains(/Please select a.*bus stop.*from the map/).should('not.be.visible');
   cy.nextPageReporting();
   cy.get('.mobile-map-banner').should('be.visible');
@@ -50,22 +46,20 @@ it('prevents clicking unless asset selected, mobile flow', function() {
 
 it('selecting an asset allows a report, mobile flow', function() {
   cy.server();
-  cy.route('**/northants.staging/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
-  cy.route('**/32603/21575/**', 'fixture:bus_stops.json').as('bus_stops-layer');
+  cy.route('POST', '**mapserver/northamptonshire*', 'fixture:bus_stops.xml').as('bus_stops-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.viewport(480, 800);
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');
   cy.get('[name=pc]').parents('form').submit();
 
-  cy.get('#map_box').click();
+  cy.get('#map_box').click(240, 315);
   cy.wait('@report-ajax');
   cy.get('#mob_ok').click();
 
   cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
-  cy.wait('@empty-bus_stops-layer');
   cy.contains(/Please select a.*bus stop.*from the map/).should('not.be.visible');
   cy.nextPageReporting();
   cy.get('.mobile-map-banner').should('be.visible');
@@ -76,20 +70,18 @@ it('selecting an asset allows a report, mobile flow', function() {
 
 it('selecting an asset allows a report, desktop flow', function() {
   cy.server();
-  cy.route('**/northants.staging/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
-  cy.route('**/32602/21575/**', 'fixture:bus_stops.json').as('bus_stops-layer');
+  cy.route('POST', '**mapserver/northamptonshire*', 'fixture:bus_stops.xml').as('bus_stops-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');
   cy.get('[name=pc]').parents('form').submit();
 
-  cy.get('#map_box').click();
+  cy.get('#map_box').click(268, 225);
   cy.wait('@report-ajax');
 
   cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
-  cy.wait('@empty-bus_stops-layer');
 
   cy.nextPageReporting();
   cy.nextPageReporting(); // No photo
@@ -98,22 +90,18 @@ it('selecting an asset allows a report, desktop flow', function() {
 
 it('detects multiple assets at same location', function() {
   cy.server();
-  cy.route('**/northants.staging/**', 'fixture:bus_stops_none.json').as('empty-bus_stops-layer');
-  cy.route('**/32602/21575/**', 'fixture:bus_stops.json').as('bus_stops-layer');
-  cy.route('**/32602/21576/**', 'fixture:bus_stops.json').as('bus_stops-layer2');
+  cy.route('POST', '**mapserver/northamptonshire*', 'fixture:bus_stops_multiple.xml').as('bus_stops_multiple-layer');
   cy.route('/report/new/ajax*').as('report-ajax');
   cy.visit('http://northamptonshire.localhost:3001/');
   cy.get('[name=pc]').type('NN1 2NS');
   cy.get('[name=pc]').parents('form').submit();
 
-  cy.get('#map_box').click();
+  cy.get('#map_box').click(268, 225);
   cy.wait('@report-ajax');
 
   cy.pickCategory('Shelter Damaged');
 
-  cy.wait('@bus_stops-layer');
-  cy.wait('@bus_stops-layer2');
-  cy.wait('@empty-bus_stops-layer');
+  cy.wait('@bus_stops_multiple-layer');
   cy.nextPageReporting();
 
   cy.contains('more than one bus stop at this location').should('be.visible');
