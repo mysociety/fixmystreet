@@ -637,6 +637,9 @@ function construct_protocol_options(options) {
         if (options.propertyNames) {
             protocol_options.propertyNames = options.propertyNames;
         }
+        if (options.wfs_featureNS) {
+            protocol_options.featureNS = options.wfs_featureNS;
+        }
     }
     return protocol_options;
 }

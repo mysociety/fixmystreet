@@ -4,29 +4,31 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
-var tilma_url = "https://" + wfs_host + "/mapserver/shropshire";
-
 var defaults = {
-    http_options: {
-        url: tilma_url,
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
     asset_type: 'spot',
-    asset_id_field: 'CentralAssetId',
-    attributes: {
-        central_asset_id: 'CentralAssetId',
-    },
-    geometryName: 'msGeometry',
     srsName: "EPSG:27700",
     body: "Shropshire Council",
     strategy_class: OpenLayers.Strategy.FixMyStreet
 };
+
+var tilma_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
+var tilma_defaults = $.extend(true, {}, defaults, {
+    wfs_url: "https://" + tilma_host + "/mapserver/shropshire",
+    asset_id_field: 'CentralAssetId',
+    attributes: {
+        central_asset_id: 'CentralAssetId',
+    },
+    geometryName: 'msGeometry'
+});
+
+var shrop_defaults = $.extend(true, {}, defaults, {
+    wfs_url: 'https://gis.shropshire.gov.uk/arcgis/services/AGOL/FMSfeeds/MapServer/WFSServer',
+    asset_id_field: 'ASSET_ID',
+    attributes: {
+        central_asset_id: 'ASSET_ID',
+    },
+    geometryName: 'Shape'
+});
 
 var highways_style = new OpenLayers.Style({
     fill: false,
@@ -35,12 +37,8 @@ var highways_style = new OpenLayers.Style({
     strokeWidth: 7
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Street_Gazetteer"
-        }
-    },
+fixmystreet.assets.add(tilma_defaults, {
+    wfs_feature: "Street_Gazetteer",
     stylemap: new OpenLayers.StyleMap({
          'default': highways_style
      }),
@@ -115,19 +113,15 @@ var streetlight_stylemap = new OpenLayers.StyleMap({
     'hover': sc_hover
 });
 
-fixmystreet.assets.add(defaults, {
+fixmystreet.assets.add(shrop_defaults, {
     stylemap: streetlight_stylemap,
-    http_options: {
-        params: {
-            TYPENAME: "Lights_Union"
-        }
-    },
+    wfs_feature: ["Street_lights", "Parish_Street_lights"],
+    // This next line is here to prevent GML's readNode from trying to set
+    // featureType automatically and then breaking the two features
+    wfs_featureNS: 'https://gis.shropshire.gov.uk/arcgis/services/AGOL/FMSfeeds/MapServer/WFSServer',
+    propertyNames: ['Shape', 'ASSET_ID', 'OWNER', 'FEAT_LABEL', 'PART_NIGHT'],
     asset_group: "Streetlights",
     asset_item: 'streetlight',
-    asset_id_field: 'ASSET_ID',
-    attributes: {
-        central_asset_id: 'ASSET_ID',
-    },
     select_action: true,
     actions: {
         asset_found: function(asset) {
@@ -152,12 +146,8 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Traffic_Signal_Areas"
-        }
-    },
+fixmystreet.assets.add(tilma_defaults, {
+    wfs_feature: "Traffic_Signal_Areas",
     asset_id_field: 'ASSET_ID',
     attributes: {
         central_asset_id: 'ASSET_ID',
@@ -166,46 +156,27 @@ fixmystreet.assets.add(defaults, {
     asset_item: 'traffic signal'
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Illuminated_Bollards"
-        }
-    },
+fixmystreet.assets.add(shrop_defaults, {
+    wfs_feature: 'Iluminated_signs',
+    propertyNames: ['Shape', 'ASSET_ID'],
     asset_group: 'Illuminated signs',
-    asset_item: 'bollard',
-    asset_id_field: 'ASSET_ID',
-    attributes: {
-        central_asset_id: 'ASSET_ID',
-    }
+    asset_item: 'bollard'
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Grit_Bins"
-        }
-    },
+fixmystreet.assets.add(tilma_defaults, {
+    wfs_feature: "Grit_Bins",
     asset_category: ["Salt bins replenish"],
     asset_item: 'salt bin'
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Cattle_Grids"
-        }
-    },
+fixmystreet.assets.add(tilma_defaults, {
+    wfs_feature: "Cattle_Grids",
     asset_category: ["Cattle Grid"],
     asset_item: 'cattle grid'
 });
 
-fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Bridges"
-        }
-    },
+fixmystreet.assets.add(tilma_defaults, {
+    wfs_feature: "Bridges",
     asset_category: ["Bridge"],
     asset_item: 'bridge'
 });
