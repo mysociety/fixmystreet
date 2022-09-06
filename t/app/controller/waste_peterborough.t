@@ -704,8 +704,7 @@ FixMyStreet::override_config {
             $mech->content_contains('12 August');
             $mech->content_contains('19 August');
             $mech->content_contains('26 August');
-            $mech->content_contains('02 September');
-            $mech->content_lacks('31 February');
+            $mech->content_lacks('02 September'); # Max of 4 dates fetched
             $mech->submit_form_ok(
                 { with_fields => { chosen_date => '2022-08-26T00:00:00' } } );
         };
@@ -895,10 +894,6 @@ sub _future_workpacks {
                 { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
         {   'WorkPackDate' => '2022-09-02T00:00:00',
-            'Actions'      =>
-                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
-        },
-        {   'WorkPackDate' => '2022-02-31T00:00:00', # Invalid date
             'Actions'      =>
                 { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },

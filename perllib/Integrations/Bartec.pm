@@ -245,6 +245,7 @@ sub Jobs_Get {
     return $jobs;
 }
 
+# TODO Merge with Jobs_Get() above
 sub Jobs_Get_for_workpack {
     my ( $self, $workpack_id ) = @_;
 

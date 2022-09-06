@@ -27,9 +27,12 @@ has_page about_you => (
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 has_page choose_date => (
-    fields => [ 'continue', 'chosen_date' ],
+    fields => [ 'continue', 'chosen_date', 'show_later_dates' ],
     title => 'Choose date for collection',
-    next => 'add_items',
+    template => 'waste/bulky/choose_date.html',
+    next => sub {
+        $_[0]->{continue} ? 'add_items' : 'choose_date';
+    },
 );
 
 has_page add_items => (
@@ -84,10 +87,9 @@ has_field resident => (
 );
 
 has_field chosen_date => (
-    type     => 'Select',
-    widget   => 'RadioGroup',
-    required => 1,
-    label    => 'Available dates',
+    type           => 'Select',
+    widget         => 'RadioGroup',
+    label          => 'Available dates',
     options_method => sub {
         my $self = shift;
         my $c    = $self->form->c;
@@ -96,27 +98,41 @@ has_field chosen_date => (
 
         my @dates = grep {$_} map {
             my $dt = $parser->parse_datetime( $_->{date} );
-            $dt ? {
+            $dt
+                ? {
                 label => $dt->strftime('%d %B'),
                 value => $_->{date},
-            } : undef
-        } @{
+                }
+                : undef
+            } @{
             $c->cobrand->call_hook(
-                find_available_bulky_slots => $c->stash->{property}
+                'find_available_bulky_slots', $c->stash->{property},
+                $c->stash->{start_date},
             )
-        };
-
-        # XXX Hide additional dates with JS(?)
+            };
 
         # XXX Do we want to let the user know there are no available dates
         # much earlier in the journey?
         if ( !@dates ) {
             $self->inactive(1);
             $self->form->field('continue')->inactive(1);
+            $self->form->field('show_later_dates')->inactive(1);
+        }
+        elsif ( !$c->stash->{start_date} ) {
+            $c->stash->{start_date} = $dates[-1]{value};
+        } else {
+            $self->form->field('show_later_dates')->inactive(1);
         }
 
         return \@dates;
     },
+);
+
+has_field show_later_dates => (
+    type => 'Submit',
+    value => 'Show later dates',
+    element_attr => { class => 'govuk-button' },
+    order => 998,
 );
 
 has_field tandc => (
@@ -188,5 +204,12 @@ has_field item2 => item_field(2);
 has_field item3 => item_field(3);
 has_field item4 => item_field(4);
 has_field item5 => item_field(5);
+
+sub validate {
+   my $self = shift;
+   $self->field('chosen_date')->add_error('Available dates field is required')
+       if( $self->field('continue')->input &&
+           !$self->field('chosen_date')->has_value);
+}
 
 1;

@@ -1,4 +1,6 @@
+use DateTime::Format::Strptime;
 use FixMyStreet::Cobrand::Peterborough;
+use Test::Fatal;
 use Test::MockModule;
 use Test::MockTime 'set_fixed_time';
 use Test::More;
@@ -20,7 +22,6 @@ use Test::More;
 subtest 'find_available_bulky_slots' => sub {
     my $dummy_property = { uprn => 123456789 };
     my $mock_bartec    = Test::MockModule->new('Integrations::Bartec');
-    $mock_bartec->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
     $mock_bartec->mock(
         'WorkPacks_Get',
         sub {
@@ -36,6 +37,7 @@ subtest 'find_available_bulky_slots' => sub {
         },
     );
 
+    $mock_bartec->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
     is_deeply(
         FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
             $dummy_property),
@@ -51,7 +53,17 @@ subtest 'find_available_bulky_slots' => sub {
             {   date        => '2022-09-16T00:00:00',
                 workpack_id => 75498,
             },
-            {   date        => '2022-09-23T00:00:00',
+        ],
+    );
+
+    my $start_date = '2022-09-17';
+    $mock_bartec->mock( 'Premises_FutureWorkpacks_Get',
+        &_future_workpacks($start_date) );
+    is_deeply(
+        FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
+            $dummy_property, $start_date
+        ),
+        [   {   date        => '2022-09-23T00:00:00',
                 workpack_id => 75499,
             },
             {   date        => '2022-09-30T00:00:00',
@@ -60,13 +72,28 @@ subtest 'find_available_bulky_slots' => sub {
             {   date        => '2022-10-07T00:00:00',
                 workpack_id => 75600,
             },
+            {   date        => '2022-10-08T00:00:00',
+                workpack_id => 75800,
+            },
+            {   date        => '2022-10-09T00:00:00',
+                workpack_id => 75900,
+            },
         ],
+    );
+
+    like(
+        exception {
+            FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
+                $dummy_property, '17-09-22' )
+        },
+        qr/Invalid start date/,
     );
 };
 
 # For Premises_FutureWorkpacks_Get() calls
 sub _future_workpacks {
-    [
+    my $start_date = shift;
+    my $fw = [
         # No black bin - ignored
         {   'id'           => 57127,
             'WorkPackDate' => '2022-07-29T00:00:00',
@@ -157,7 +184,37 @@ sub _future_workpacks {
             'Actions'      =>
                 { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
         },
+
+        # Extra workpacks, to test that the number of available slot dates is
+        # not limited if a start date is provided to
+        # find_available_bulky_slots()
+        {   'id'           => 75800,
+            'WorkPackDate' => '2022-10-08T00:00:00',
+            'WorkPackName' => 'Waste-Round 16-081022',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
+        {   'id'           => 75900,
+            'WorkPackDate' => '2022-10-09T00:00:00',
+            'WorkPackName' => 'Waste-Round 16-091022',
+            'Actions'      =>
+                { 'Action' => { 'ActionName' => 'Empty Bin 240L Black' } },
+        },
     ];
+
+    if ($start_date) {
+        return [
+            grep {
+                my $parser
+                    = DateTime::Format::Strptime->new( pattern => '%F' );
+                $parser->parse_datetime( $_->{WorkPackDate} )
+                    >= $parser->parse_datetime($start_date);
+            } @$fw
+        ];
+    }
+    else {
+        return $fw;
+    }
 }
 
 # For WorkPacks_Get() calls
