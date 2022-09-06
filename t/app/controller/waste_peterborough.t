@@ -256,7 +256,8 @@ FixMyStreet::override_config {
     subtest 'Request a new bin' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'cracked' }});
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'cracked' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
@@ -286,8 +287,9 @@ FixMyStreet::override_config {
         $mech->content_lacks("(Other - PD STAFF)");
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
+        $mech->submit_form_ok({ with_fields => { 'container-425' => 1 }});
         $mech->content_contains("(Other - PD STAFF)");
-        $mech->submit_form_ok({ with_fields => { 'container-425' => 1, 'request_reason' => 'other_staff' }});
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'other_staff' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
@@ -299,7 +301,8 @@ FixMyStreet::override_config {
     };
     subtest 'Request food bins' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1, request_reason => 'lost_stolen' }});
+        $mech->submit_form_ok({ with_fields => { 'container-424' => 1, 'container-423' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'lost_stolen' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
@@ -341,7 +344,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-420' => 1 } });
         $mech->content_contains('name="container-420" value="1"');
         $mech->content_contains('Black Bin');
-        $mech->content_contains('Why do you need new bins?');
         $mech->content_contains('Food bins');
         $mech->content_contains('food caddy');
         $mech->content_lacks('Food bags');
