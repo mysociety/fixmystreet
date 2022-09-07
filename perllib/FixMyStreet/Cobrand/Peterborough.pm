@@ -1065,45 +1065,12 @@ sub waste_munge_problem_form_fields {
 
 }
 
-sub waste_munge_request_form_fields {
-    my ($self, $field_list) = @_;
-
-    unless ($self->{c}->get_param('bags_only')) {
-        my $reasons = [
-            { label => 'Cracked bin', value => 'cracked', data_hide => '#request_reason-item-hint' },
-            { label => 'Lost/stolen bin', value => 'lost_stolen', data_hide => '#request_reason-item-hint' },
-            {
-                label => 'New build',
-                value => 'new_build',
-                hint => 'To reduce the number of bins being stolen or damaged, bins must only be ordered within 2 weeks prior to your move in date.',
-                hint_class => 'hidden-js',
-                data_show => '#request_reason-item-hint',
-            },
-        ];
-        if ( $self->{c}->user && $self->{c}->user->from_body
-             && $self->{c}->user->from_body->name eq $self->council_name ) {
-                push @$reasons, { label => '(Other - PD STAFF)', value => 'other_staff', data_hide => '#request_reason-item-hint' };
-        }
-        push @$field_list, "request_reason" => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            required => 1,
-            label => 'Why do you need new bins?',
-            options => $reasons,
-        };
-        push @$field_list, "extra_detail" => {
-            type => 'Text',
-            widget => 'Textarea',
-            label => 'Please supply any additional information.',
-            maxlength => 1_000,
-            messages => {
-                text_maxlength => 'Please use 1000 characters or less for additional information.',
-            },
-        };
-    }
-
-    $self->{c}->stash->{form_title} = 'Which bins do you need?';
+sub waste_request_form_first_next {
+    my $self = shift;
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Peterborough';
+    $self->{c}->stash->{form_title} = 'Which bins do you need?';
+    return 'replacement' unless $self->{c}->get_param('bags_only');
+    return 'about_you';
 }
 
 sub _format_address {

@@ -6,24 +6,6 @@ extends 'FixMyStreet::App::Form::Waste';
 
 # First page has dynamic fields, so is set in code
 
-has_page replacement => (
-    fields => ['replacement_reason', 'continue'],
-    title => 'Reason for replacement',
-    next => 'about_you',
-);
-
-has_field replacement_reason => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Why do you need a replacement garden waste container?',
-    options => [
-        { value => 'damaged', label => 'Damaged' },
-        { value => 'stolen', label => 'Stolen' },
-        { value => 'taken', label => 'Taken by crew' },
-    ],
-);
-
 has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
     title => 'About you',
@@ -56,6 +38,7 @@ has_field continue => (
     type => 'Submit',
     value => 'Continue',
     element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 has_field submit => (
