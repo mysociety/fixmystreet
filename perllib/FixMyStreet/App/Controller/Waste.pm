@@ -686,7 +686,7 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless ( $_->{next} && !$_->{request_open} ) || $_->{request_only};
+        next unless $_->{next} || $_->{request_only};
         my $service = $_;
         my $name = $_->{service_name};
         my $containers = $_->{request_containers};
@@ -704,6 +704,7 @@ sub construct_bin_request_form {
                 label => $name,
                 option_label => $c->stash->{containers}->{$id},
                 tags => { toggle => "form-quantity-$id-row" },
+                disabled => $_->{request_open} ? 1 : 0,
             };
             $name = ''; # Only on first container
             if ($max == 1) {
