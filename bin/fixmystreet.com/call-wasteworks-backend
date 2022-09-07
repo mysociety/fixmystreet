@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
-# call-echo
-# Call the Echo API in parallel
+# call-wasteworks-backend
+# Call the Echo or Bartec API in parallel
 
 use v5.14;
 use warnings;
@@ -17,22 +17,26 @@ use Getopt::Long::Descriptive;
 use JSON::MaybeXS;
 use Storable;
 use Integrations::Echo;
+use Integrations::Bartec;
 use FixMyStreet::Cobrand;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['cobrand=s', 'which cobrand configuration to use'],
+    ['backend=s', 'which backend type (echo/bartec)'],
     ['out=s', 'where to output data'],
     ['calls=s', 'JSON of what API calls to make'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
-$usage->die unless $opts->cobrand && $opts->out && $opts->calls;
+$usage->die unless $opts->cobrand && $opts->out && $opts->calls && $opts->backend;
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
-my $cfg = $cobrand->feature('echo');
-my $echo = Integrations::Echo->new(%$cfg);
+my $cfg = $cobrand->feature($opts->backend);
+
+my $class = $opts->backend eq 'echo' ? 'Integrations::Echo' : 'Integrations::Bartec';
+my $integration = $class->new(%$cfg);
 
 my $calls = decode_json($opts->calls);
-$calls = $echo->_parallel_api_calls(@$calls);
+$calls = $integration->_parallel_api_calls(@$calls);
 Storable::store($calls, $opts->out);
