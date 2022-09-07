@@ -12,6 +12,7 @@ use LWP::Simple;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::Bottomline';
+with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2480; }
 sub council_area { return 'Kingston'; }
