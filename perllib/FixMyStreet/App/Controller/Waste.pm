@@ -23,7 +23,6 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe;
 use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 use Open311::GetServiceRequestUpdates;
-use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
 use Memcached;
 
@@ -193,89 +192,15 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
-    my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
+    my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
-    my $payment = Integrations::SCP->new({
-        config => $c->cobrand->feature('payment_gateway')
-    });
-
-    my $p = $c->stash->{report};
-    my $uprn = $p->get_extra_field_value('uprn');
-
-    my $amount = $p->get_extra_field_value( 'pro_rata' );
-    unless ($amount) {
-        $amount = $p->get_extra_field_value( 'payment' );
-    }
-    my $admin_fee = $p->get_extra_field_value('admin_fee');
-
-    my $redirect_id = mySociety::AuthToken::random_token();
-    $p->set_extra_metadata('redirect_id', $redirect_id);
-    $p->update;
-
-    my $address = $c->stash->{property}{address};
-    my @parts = split ',', $address;
-
-    my @items = ({
-        amount => $amount,
-        reference => $payment->config->{customer_ref},
-        description => $p->title,
-        lineId => $c->cobrand->waste_cc_payment_line_item_ref($p),
-    });
-    if ($admin_fee) {
-        push @items, {
-            amount => $admin_fee,
-            reference => $payment->config->{customer_ref_admin_fee},
-            description => 'Admin fee',
-            lineId => $c->cobrand->waste_cc_payment_admin_fee_line_item_ref($p),
-        };
-    }
-    my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
-        backUrl => $backUrl,
-        ref => $c->cobrand->waste_cc_payment_sale_ref($p),
-        request_id => $p->id,
-        description => $p->title,
-        name => $p->name,
-        email => $p->user->email,
-        uprn => $uprn,
-        address1 => shift @parts,
-        address2 => shift @parts,
-        country => 'UK',
-        postcode => pop @parts,
-        items => \@items,
-        staff => $c->stash->{staff_payments_allowed} eq 'cnp',
-    });
-
-    if ( $result ) {
-        $c->stash->{xml} = $result;
-
-        # GET back
-        # requestId - should match above
-        # scpReference - transaction Ref, used later for query
-        # transactionState - in progress/complete
-        # invokeResult/status - SUCCESS/INVALID_REQUEST/ERROR
-        # invokeResult/redirectURL - what is says
-        # invokeResult/errorDetails - what it says
-        #
-        if ( $result->{transactionState} eq 'IN_PROGRESS' &&
-             $result->{invokeResult}->{status} eq 'SUCCESS' ) {
-
-             $p->set_extra_metadata('scpReference', $result->{scpReference});
-             $p->update;
-
-             # need to save scpReference against request here
-             my $redirect = $result->{invokeResult}->{redirectUrl};
-             $c->res->redirect( $redirect );
-             $c->detach;
-         } else {
-             # XXX - should this do more?
-            (my $error = $result->{invokeResult}->{status}) =~ s/_/ /g;
-            $c->stash->{error} = $error;
-            $c->stash->{template} = 'waste/pay.html';
-            $c->detach;
-         }
-     } else {
-        $c->stash->{error} = 'Unknown error';
+    if ( $redirect_url ) {
+        $c->res->redirect( $redirect_url );
+        $c->detach;
+    } else {
+        unless ( $c->stash->{error} ) {
+            $c->stash->{error} = 'Unknown error';
+        }
         $c->stash->{template} = 'waste/pay.html';
         $c->detach;
     }
@@ -288,36 +213,15 @@ sub pay_complete : Path('pay_complete') : Args(2) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
     my $p = $c->stash->{report};
 
-    # need to get some ID Things which I guess we stored in pay
-    my $scpReference = $p->get_extra_metadata('scpReference');
-    $c->detach( '/page_error_404_not_found' ) unless $scpReference;
+    my $ref = $c->cobrand->garden_cc_check_payment_status($c, $p);
 
-    my $payment = Integrations::SCP->new(
-        config => $c->cobrand->feature('payment_gateway')
-    );
-
-    my $resp = $payment->query({
-        scpReference => $scpReference,
-    });
-
-    if ($resp->{transactionState} eq 'COMPLETE') {
-        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
-            # create sub in echo
-            my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
-            $c->stash->{title} = 'Payment successful';
-            $c->stash->{reference} = $ref;
-            $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
-            $c->forward( 'confirm_subscription', [ $ref ] );
-        # It is not clear to me that it's possible to get to this with a redirect
-        } else {
-            $c->stash->{template} = 'waste/pay.html';
-            $c->stash->{error} = $resp->{paymentResult}->{status};
-            $c->detach;
-        }
+    if ( $ref ) {
+        $c->stash->{title} = 'Payment successful';
+        $c->stash->{reference} = $ref;
+        $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
+        $c->forward( 'confirm_subscription', [ $ref ] );
     } else {
-        # again, I am not sure it's possible for this to ever happen
         $c->stash->{template} = 'waste/pay.html';
-        $c->stash->{error} = $resp->{transactionState};
         $c->detach;
     }
 }

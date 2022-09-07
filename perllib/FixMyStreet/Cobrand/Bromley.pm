@@ -10,6 +10,7 @@ use BromleyParks;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
+with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
