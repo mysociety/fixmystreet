@@ -26,20 +26,6 @@ Run by: <a href="http://www.openlocal.org.au/">Open Local</a>
 
 <h2>Europe</h2>
 
-<h3>France</h3>
-Site: <a href="http://www.fixmystreet.fr/">FixMyStreet.fr</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://www.fixmystreet-france.fr/">FixMyStreet-France</a>
-
-<h3>Ireland</h3>
-Site: <a href="http://fixmystreet.ie/">FixMyStreet.ie</a>
-<br>
-Launched: 2012
-<br>
-Run by: <a href="http://mygov.ie/">mygov.ie</a>
-
 <h3>Kosovo</h3>
 Site: <a href="https://ndreqe.com">ndreqe.</a>
 <br>
@@ -143,3 +129,17 @@ Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
 Launched: 2015
 <br>
 Run by: <a href="http://www.kyopol.net">La Asociación KYOPOL</a>
+
+<h3>France</h3>
+Site: <a href="http://www.fixmystreet.fr/">FixMyStreet.fr</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://www.fixmystreet-france.fr/">FixMyStreet-France</a>
+
+<h3>Ireland</h3>
+Site: <a href="http://fixmystreet.ie/">FixMyStreet.ie</a>
+<br>
+Launched: 2012
+<br>
+Run by: <a href="http://mygov.ie/">mygov.ie</a>
