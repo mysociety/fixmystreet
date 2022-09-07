@@ -11,10 +11,9 @@
 @import "../sass/mixins";
 @import "../sass/base";
 
+// Northamptonshire have asked for the logos to be removed from the header,
 #site-logo {
-    width: 190px;
-    background: url(/cobrands/northamptonshire/img/NorthAndWestLogo.png) 0 50% no-repeat;
-    background-size: contain;
+    background: none;
 }
 
 #postcodeForm .form-hint {
