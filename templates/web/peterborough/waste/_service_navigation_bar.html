@@ -1,0 +1,12 @@
+<div role="navigation" aria-label="Service navigation bar" class="services-navbar">
+    <h3>Browse services</h3>
+    [% FOR unit IN service_data %]
+    [% UNLESS unit.request_only %]
+        <a href="#[% unit.service_name %]">[% unit.service_name %]</a>
+    [% END %]
+    [% END %]
+    <a href="#bulky-waste">Bulky Waste<span class="highlight-label">New</span></a>
+    <hr>
+    <a href="#more-services">More services</a>
+    <a href="#help">Help</a>
+</div>

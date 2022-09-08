@@ -242,3 +242,23 @@ h1, h2 {
       }
     }
   }
+
+// Icons for WW
+// Waste icons
+.icon-link {
+    background-repeat: no-repeat;
+    background-size: 22px;
+    background-position: left 0 center;
+    color: $primary_b;
+    padding: 0.5em;
+    padding-left: 30px;
+
+    &.is--calendar {
+        @include svg-background-image('/cobrands/peterborough/images/calendar');
+        background-size: 22px;
+
+        &:hover, &:focus {
+            @include svg-background-image('/cobrands/peterborough/images/calendar-hover');
+        }
+    }
+}

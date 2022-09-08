@@ -38,7 +38,11 @@
     <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input type="hidden" name="service-[% unit.service_id %]" value="1">
-      <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
+      [% IF waste_features.bulky_enabled %]
+        <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a [% unit.service_name FILTER lower %] collection as missed" value="Report a missed collection" class="waste-service-descriptor waste-service-link">
+      [% ELSE %]
+        <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
+      [% END %]
     </form>
   [% ELSE %]
     [% IF unit.next AND unit.next.date.ymd == date.format(date.now, "%Y-%m-%d") %]
@@ -52,7 +56,11 @@
 [% UNLESS waste_features.problem_disabled OR (open_service_requests.422 AND unit.service_id == 6533) %]
   <form method="post" action="[% c.uri_for_action('waste/problem', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" value="Report a problem with a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+    [% IF waste_features.bulky_enabled %]
+      <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a problem with a [% unit.service_name FILTER lower %]" value="Report a problem" class="waste-service-descriptor waste-service-link">
+    [% ELSE %]
+      <input type="submit" value="Report a problem with a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+    [% END %]
   </form>
 [% END %]
 
@@ -67,7 +75,11 @@
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
       <input type="hidden" name="skip_bags" value="1">
-      <input type="submit" value="Request a new [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+      [% IF waste_features.bulky_enabled %]
+        <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Request a new [% unit.service_name FILTER lower %]" value="Request a new bin" class="waste-service-descriptor waste-service-link">
+      [% ELSE %]
+        <input type="submit" value="Request a new [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+      [% END %]
     </form>
   [% END %]
 [% END %]

@@ -1,0 +1,13 @@
+<div class="govuk-warning-text due">
+    <div style="margin-right: 15px" class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    </div>
+    <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Warning</span>
+            <p class="govuk-!-margin-bottom-0">You need to sign in to see the full details of this property.</p>
+        <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
+            <input type="hidden" name="token" value="[% csrf_token %]">
+            <input type="submit" value="Sign in" class="govuk-button">
+        </form>
+    </div>
+</div>

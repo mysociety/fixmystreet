@@ -547,6 +547,11 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
 
     return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
 
+    # Bulky goods has a new design for the bin days page
+    if ($cfg->{bulky_enabled}) {
+        $c->stash->{template} = 'waste/bin_days_bulky.html';
+    }
+
     # Allow lookups of max_per_day different properties per day
     my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
     my $ip = $c->req->address;

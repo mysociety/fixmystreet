@@ -1,0 +1,226 @@
+[% USE date(format = c.cobrand.bin_day_format) %]
+[% PROCESS 'waste/header.html' %]
+
+
+[% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
+<h1 class="govuk-heading-xl">Your bin days</h1>
+
+[% INCLUDE 'waste/_address_display.html' %]
+[% TRY %][% PROCESS waste/_announcement.html %][% CATCH file %][% END %]
+<div class="waste__collections">
+  <div class="govuk-!-margin-bottom-8">
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
+    [% IF service_data.size %]
+      [% TRY %][% PROCESS waste/_calendar.html %][% CATCH file %]
+      <a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar (.ics file)</a>
+      [% END %]
+    [% END %]
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    [% DEFAULT any_report_allowed = 0 ~%]
+    [% SET any_request_allowed = 0 ~%]
+    [% IF NOT waste_features.garden_disabled AND pending_subscription %]
+        <p>You have a pending
+            [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
+                garden subscription renewal.
+            [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
+                garden subscription.
+            [%~ END %]
+        </p>
+    [% END %]
+    [% FOR unit IN service_data %]
+    [% UNLESS unit.request_only %]
+  <div class="govuk-grid-row waste-service-wrapper">
+  [% SET image = c.cobrand.image_for_unit(unit) ~%]
+  [% IF image %]
+    <div class="govuk-grid-column-one-quarter text-centered">
+      <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+      <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+  [% ELSE %]
+    <div class="govuk-grid-column-full">
+      <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+  [% END %]
+    [% IF !unit.garden_overdue %]
+
+    [% IF unit.garden_due AND NOT waste_features.garden_disabled %]
+
+    <div class="govuk-warning-text due">
+      <div class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      </div>
+      <div class="govuk-warning-text__content">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is soon due for renewal.</h3>
+          Avoid disruption to your service.
+          [% IF current_payment_method == 'direct_debit' %]
+            <p>This property may have an existing direct debit subscription which will renew automatically.</p>
+          [% ELSE %]
+          <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
+            <input type="hidden" name="token" value="[% csrf_token %]">
+            <input type="submit" value="Renew subscription today" class="govuk-button">
+          </form>
+          [% END %]
+      </div>
+    </div>
+
+    [% END %]
+      <hr>
+      <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Frequency</dt>
+          <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Next collection</dt>
+          <dd class="govuk-summary-list__value">
+            [% IF unit.next %]
+              [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+              [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
+              [% IF unit.next.state %]([% unit.next.state %])[% END %]
+            [% ELSE %]
+              <i>None</i>
+            [% END %]
+          </dd>
+        </div>
+      [% IF unit.last AND unit.last.date.year > 2000 %][%# Bartec uses 1900-01-01T00:00:00 for jobs that have no previous collection %]
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Last collection</dt>
+          <dd class="govuk-summary-list__value">
+              [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
+              [%~ IF unit.last.completed %], at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%][% END %]
+              [% IF unit.last.changed %](this collection was adjusted from its usual time)[% END %]
+              [% IF unit.last.state %]([% unit.last.state %])[% END %]
+              [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
+          </dd>
+        </div>
+      [% END %]
+      </dl>
+    [% END %]
+      <hr>
+      <div class="waste-services-launch-panel" id="panel-[% unit.service_id %]">
+          [% PROCESS waste/services.html %]
+      </div>
+      <hr>
+    </div>
+  </div>
+[% END %]
+[% END %]
+  <div class="govuk-grid-row waste-service-wrapper">
+    <div class="govuk-grid-column-one-quarter text-centered">
+      <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
+      <img src="/cobrands/peterborough/images/bulky-waste.png" alt="" class="waste-service-image">
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+        <hr>
+        [% IF commercial_property # XXX %]
+          <!-- #08 Only visible when address is commercial -->
+          [% TRY %][% PROCESS waste/_bulky_waste_message.html %][% CATCH file %][% END %]
+          <!-- END #08 -->
+        [% END %]
+        [% IF existing_booking AND NOT c.user_exists # XXX %]
+          <!-- #09 Should be displayed when: When user HASN'T signed in -->
+          [% TRY %][% PROCESS waste/_bulky_not_signed_user.html %][% CATCH file %][% END %]
+          <!-- END #09 -->
+        [% END %]
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Cost</dt>
+            <dd class="govuk-summary-list__value">
+              [% IF free_collection_available # XXX %]
+                <!-- #03 Should only display when: There is a free collection option and
+                  the property hasn't had a collection on this tax year. -->
+                <!-- I know we are not implementing this at the moment, so feel free
+                to delete it -->
+                <p class="label is--low-priority govuk-!-margin-bottom-1">Free</p>
+                <p class="govuk-!-margin-bottom-2"><strong>One free</strong> collection per tax year.</p>
+                <!-- END #03 -->
+                <!-- #02 Always visible EXCEPT when address is commercial-->
+                <p class="govuk-!-margin-bottom-0"><strong>From £23.50</strong> Afterwards.</p>
+                <!-- END #02 -->
+              [% ELSE %]
+                [% UNLESS commercial_property # XXX %]
+                  <p class="govuk-!-margin-bottom-0"><strong>£23.50</strong></p>
+                [% END %]
+              [% END %]
+            </dd>
+          </div>
+          [% IF existing_booking AND user_owns_existing_booking # XXX %]
+            <!-- #01 Should only display when: There IS a booking AND is a signed user -->
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Next collection</dt>
+              <dd class="govuk-summary-list__value"> Friday, 9th September 2022 </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Reference number</dt>
+              <dd class="govuk-summary-list__value"> XXXXXXXXXXX </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Items to be collected</dt>
+              <dd class="govuk-summary-list__value">
+                <p class="govuk-!-margin-bottom-0"> 3 requested items </p>
+                <small>(2 remaining slots)</small>
+              </dd>
+            </div>
+            <!-- END #01 -->
+          [% END %]
+          [% IF c.user_exists AND NOT existing_booking # XXX %]
+            <!-- #04 Should only display when: There is NO booking AND is a signed user -->
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Next collection</dt>
+              <dd class="govuk-summary-list__value"> None booked </dd>
+            </div>
+            <!-- END #04 -->
+          [% END %]
+        </dl>
+        <hr>
+        <div class="waste-services-launch-panel">
+          [% IF existing_booking AND user_owns_existing_booking # XXX %]
+            <!-- #05 Should only display when: There IS a booking AND is a signed user -->
+            <form method="post" action="https://peterborough.localhost:3000/waste/PE7%208GS:10008060131/report">
+              <input type="hidden" name="token" value="1662715863-O65oVPqXX8CumEyA2nWAsVaeYgM">
+              <input type="hidden" name="service-6534" value="1">
+              <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Check collection details" value="Check collection details">
+            </form>
+            <form method="post" action="https://peterborough.localhost:3000/waste/PE7%208GS:10008060131/problem">
+              <input type="hidden" name="token" value="1662715863-O65oVPqXX8CumEyA2nWAsVaeYgM">
+              <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Cancel your booking" value="Cancel your booking">
+            </form>
+            <!-- END #05 -->
+          [% END %]
+          [% UNLESS c.user_exists %]
+            <!-- #07 Should be displayed when: user HASN'T signed in -->
+            <a class="btn btn-primary govuk-!-margin-bottom-2" href="">Sign in</a>
+            <!-- END #07 -->
+          [% END %]
+          [% UNLESS existing_booking AND user_owns_existing_booking # XXX %]
+            <!-- #06 Should NOT be displayed when: there is a signed user with a booking request -->
+            <form method="post" action="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">
+              <input type="hidden" name="token" value="[% csrf_token %]">
+              <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Book a collection" value="Book a collection">
+            </form>
+            <!-- END #06 -->
+          [% END %]
+        </div>
+        <hr>
+    </div>
+
+  </div>
+[% IF NOT service_data.size %]
+    [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
+    <p>This property has no collections.</p>
+    [% END %]
+[% END %]
+
+        [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
+
+    </div>
+  </div>
+  <div id="more-services">
+    [% INCLUDE waste/bin_days_sidebar.html %]
+  </div>
+</div>
+[% INCLUDE footer.html %]
+

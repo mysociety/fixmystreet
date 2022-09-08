@@ -1,6 +1,7 @@
 [% USE date(format = c.cobrand.bin_day_format) %]
 [% PROCESS 'waste/header.html' %]
 
+[% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
 [% IF c.cobrand.moniker != 'sutton' %]
 <h1 class="govuk-heading-xl">Your bin days</h1>
 [% END %]

@@ -1,0 +1,15 @@
+<div class="govuk-warning-text due">
+    <div style="margin-right: 15px" class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    </div>
+    <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Warning</span>
+            <p>Your address is listed as a commercial premises. Unfortunately the bulky waste collection service is only available for household waste.</p>
+            <p class="govuk-!-margin-bottom-4">For  more information about commercial / business waste please see the <a href="https://www.peterborough.gov.uk/business/business-waste">Business Waste webpage</a></p>
+            <p class="govuk-!-margin-bottom-0">Press the button below if you want to request a bulky waste collection for another address</p>
+        <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
+            <input type="hidden" name="token" value="[% csrf_token %]">
+            <input type="submit" value="Change your address" class="govuk-button">
+        </form>
+    </div>
+</div>

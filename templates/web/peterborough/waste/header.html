@@ -1,4 +1,10 @@
-[% SET bodyclass = 'waste govuk' %]
+[%
+IF waste_features.bulky_enabled;
+  SET bodyclass = 'waste govuk bulky';
+ELSE;
+  SET bodyclass = 'waste govuk';
+END;
+%]
 [% extra_js = [
     version('/vendor/accessible-autocomplete.min.js'),
     version('/js/waste.js'),
