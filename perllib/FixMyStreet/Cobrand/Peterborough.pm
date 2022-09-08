@@ -414,6 +414,15 @@ sub clear_cached_lookups_postcode {
     delete $self->{c}->session->{$key};
 }
 
+sub clear_cached_lookups_property {
+    my ($self, $uprn) = @_;
+
+    foreach ( qw/look_up_property bin_services_for_address property_attributes/ ) {
+        delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
+    }
+}
+
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
