@@ -192,16 +192,23 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
-    my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
+    if ( $c->cobrand->can('waste_cc_get_redirect_url') ) {
+        my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
-    if ( $redirect_url ) {
-        $c->res->redirect( $redirect_url );
-        $c->detach;
-    } else {
-        unless ( $c->stash->{error} ) {
-            $c->stash->{error} = 'Unknown error';
+        if ( $redirect_url ) {
+            $c->res->redirect( $redirect_url );
+            $c->detach;
+        } else {
+            unless ( $c->stash->{error} ) {
+                $c->stash->{error} = 'Unknown error';
+            }
+            $c->stash->{template} = 'waste/pay.html';
+            $c->detach;
         }
-        $c->stash->{template} = 'waste/pay.html';
+    } else {
+        $c->forward('populate_cc_details');
+        $c->cobrand->call_hook('garden_waste_cc_munge_form_details' => $c);
+        $c->stash->{template} = 'waste/cc.html';
         $c->detach;
     }
 }
@@ -265,7 +272,7 @@ sub cancel_subscription : Private {
     $c->detach;
 }
 
-sub populate_dd_details : Private {
+sub populate_payment_details : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
@@ -289,6 +296,36 @@ sub populate_dd_details : Private {
     $c->stash->{town} = pop @parts;
     $c->stash->{address3} = join ', ', @parts;
 
+    my $payment_details = $c->cobrand->feature('payment_gateway');
+    $c->stash->{payment_details} = $payment_details;
+    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
+    $c->stash->{lookup} = $reference;
+}
+
+sub populate_cc_details : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_payment_details');
+
+    my $p = $c->stash->{report};
+    my $payment = $p->get_extra_field_value('pro_rata');
+    unless ($payment) {
+        $payment = $p->get_extra_field_value('payment');
+    }
+    my $admin_fee = $p->get_extra_field_value('admin_fee');
+    if ( $admin_fee ) {
+        $payment = $admin_fee + $payment;
+    }
+    $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
+}
+
+sub populate_dd_details : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_payment_details');
+
+    my $p = $c->stash->{report};
+
     my $dt = $c->cobrand->waste_get_next_dd_day;
 
     my $payment = $p->get_extra_field_value('payment');
@@ -297,12 +334,7 @@ sub populate_dd_details : Private {
         my $first_payment = $admin_fee + $payment;
         $c->stash->{firstamount} = sprintf( '%.2f', $first_payment / 100 );
     }
-
-    my $payment_details = $c->cobrand->feature('payment_gateway');
-    $c->stash->{payment_details} = $payment_details;
     $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
-    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
-    $c->stash->{lookup} = $reference;
     $c->stash->{payment_date} = $dt;
     $c->stash->{start_date} = $dt->ymd;
     $c->stash->{day} = $dt->day;

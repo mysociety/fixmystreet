@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
+use Digest::SHA qw(sha1_hex);
 
 sub council_area_id { return 2498; }
 sub council_area { return 'Sutton'; }
@@ -17,7 +18,7 @@ sub waste_check_staff_payment_permissions {
 
     return unless $c->stash->{is_staff};
 
-    $c->stash->{staff_payments_allowed} = 'cnp';
+    $c->stash->{staff_payments_allowed} = 'paye';
 }
 
 has lpi_value => ( is => 'ro', default => 'SUTTON' );
@@ -47,6 +48,88 @@ sub image_for_unit {
         2250 => "$base/large-communal-green", # Communal recycling
     };
     return $images->{$service_id};
+}
+
+sub garden_waste_cc_munge_form_details {
+    my ($self, $c) = @_;
+
+    my $sha_passphrase = $self->feature('payment_gateway')->{sha_passphrase};
+
+    $c->stash->{payment_amount} = $c->stash->{amount} * 100;
+
+    my $url = $c->uri_for(
+        'pay_complete',
+        $c->stash->{report}->id,
+        $c->stash->{report}->get_extra_metadata('redirect_id')
+    );
+
+    $c->stash->{redirect_url} = $url;
+
+    my $form_params = {
+        'PSPID' => $c->stash->{payment_details}->{pspid},
+        'ORDERID' => $c->stash->{reference},
+        'AMOUNT' => $c->stash->{payment_amount},
+        'CURRENCY' => 'GBP',
+        'LANGUAGE' => 'en_GB',
+        'CN' => $c->stash->{first_name} . " " . $c->stash->{last_name},
+        'EMAIL' => $c->stash->{email},
+        'OWNERZIP' => $c->stash->{postcode},
+        'OWNERADDRESS' => $c->stash->{address1},
+        'OWNERCTY' => 'UK',
+        'OWNERTOWN' => $c->stash->{town},
+        'OWNERTELNO' => $c->stash->{phone},
+        'ACCEPTURL' => $url,
+        'DECLINEURL' => $url,
+        'EXCEPTIONURL' => $url,
+        'CANCELURL' => $url,
+    };
+
+    my $sha = $self->garden_waste_generate_sig( $form_params, $sha_passphrase );
+    $c->stash->{cc_sha} = $sha;
+}
+
+sub garden_waste_generate_sig {
+    my ($self, $params, $passphrase) = @_;
+
+    my $str = "";
+    for my $param ( sort { uc($a) cmp uc($b) } keys %$params ) {
+        next unless defined $params->{$param} && length $params->{$param}; # Want any 0s
+        $str .= uc($param) . "=" . $params->{$param} . $passphrase;
+    }
+
+    my $sha = sha1_hex( $str );
+    return uc $sha;
+}
+
+sub garden_cc_check_payment_status {
+    my ($self, $c, $p) = @_;
+
+    my $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase};
+    if ( $passphrase ) {
+        my $sha = $c->get_param('SHASIGN');
+
+        my %params = %{$c->req->params};
+        delete $params{SHASIGN};
+        my $check = $self->garden_waste_generate_sig( \%params, $passphrase );
+        if ( $check != $sha ) {
+            $c->stash->{error} = "Failed security check";
+            return undef;
+        }
+    }
+
+    my $status = $c->get_param('STATUS');
+    if ( $status == 9 ) {
+        return $c->get_param('PAYID');
+    } else {
+        my $error = "Unknown error";
+        if ( $status == 1 ) {
+            $error = "Payment cancelled";
+        } elsif ( $status == 2 ) {
+            $error = "Payment declined";
+        }
+        $c->stash->{error} = $error;
+        return undef;
+    }
 }
 
 1;

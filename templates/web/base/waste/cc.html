@@ -1,0 +1,33 @@
+[% INCLUDE 'waste/header.html' %]
+
+<h1 class="govuk-heading-xl">Credit Card Details</h1>
+
+<div class="waste__summary">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Amount
+        </dt>
+        <dd class="govuk-summary-list__value">
+                £[% amount %]
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Billing Address
+        </dt>
+        <dd class="govuk-summary-list__value">
+            [% address1 %]<br>
+            [% address2 %][% '<br>' IF address2 %]
+            [% address3 %][% '<br>' IF address3 %]
+            [% postcode %]<br>
+            [% town %]
+        </dd>
+      </div>
+    </dl>
+</div>
+
+[% BLOCK form_extra %][% END %]
+[% INCLUDE 'waste/cc_form.html' button_text="Continue to Card Payment" %]
+
+[% INCLUDE footer.html %]
