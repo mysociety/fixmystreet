@@ -60,7 +60,7 @@ sub _parallel_api_calls {
         $pm->start and next;
         my $result = $self->$call(@$args);
         my $key = "$call @$args";
-        $key = $call if $call eq 'GetTasks';
+        $key = $call if ( $call eq 'GetTasks' && $self->backend_type eq 'echo' );
         $pm->finish(0, { $key => $result });
     }
     $pm->wait_all_children;

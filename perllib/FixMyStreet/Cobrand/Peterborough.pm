@@ -562,13 +562,27 @@ sub bin_services_for_address {
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
-    # TODO parallelize these calls if performance is an issue
-    my $jobs = $bartec->Jobs_Get($property->{uprn});
-    my $schedules = $bartec->Features_Schedules_Get($property->{uprn});
-    my $job_dates = relevant_jobs($bartec, $property->{uprn}, $schedules);
-    my $events_uprn = $bartec->Premises_Events_Get($property->{uprn});
-    my $events_usrn = $bartec->Streets_Events_Get($property->{usrn});
-    my $open_requests = $self->open_service_requests_for_uprn($property->{uprn}, $bartec);
+    my $uprn = $property->{uprn};
+
+    my @calls = (
+        Jobs_Get => [ $uprn ],
+        Features_Schedules_Get => [ $uprn ],
+        Jobs_FeatureScheduleDates_Get => [ $uprn ],
+        Premises_Events_Get => [ $uprn ],
+        Streets_Events_Get => [ $property->{usrn} ],
+        ServiceRequests_Get => [ $uprn ],
+    );
+    my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, @calls);
+
+    my $jobs = $results->{"Jobs_Get $uprn"};
+    my $schedules = $results->{"Features_Schedules_Get $uprn"};
+    my $jobs_featureschedules = $results->{"Jobs_FeatureScheduleDates_Get $uprn"};
+    my $events_uprn = $results->{"Premises_Events_Get $uprn"};
+    my $events_usrn = $results->{"Streets_Events_Get " . $property->{usrn}};
+    my $requests = $results->{"ServiceRequests_Get $uprn"};
+
+    my $job_dates = relevant_jobs($jobs_featureschedules, $uprn, $schedules);
+    my $open_requests = $self->open_service_requests_for_uprn($uprn, $requests);
 
     my %feature_to_workpack;
     foreach (@$jobs) {
@@ -728,8 +742,7 @@ sub bin_services_for_address {
 }
 
 sub relevant_jobs {
-    my ($bartec, $uprn, $schedules) = @_;
-    my $jobs = $bartec->Jobs_FeatureScheduleDates_Get($uprn);
+    my ($jobs, $uprn, $schedules) = @_;
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
     my @jobs = grep {
         my $name = $_->{JobName};
@@ -762,7 +775,8 @@ sub bin_future_collections {
 
     my $uprn = $self->{c}->stash->{property}{uprn};
     my $schedules = $bartec->Features_Schedules_Get($uprn);
-    my $jobs = relevant_jobs($bartec, $uprn, $schedules);
+    my $jobs_featureschedules = $bartec->Jobs_FeatureScheduleDates_Get($uprn);
+    my $jobs = relevant_jobs($jobs_featureschedules, $uprn, $schedules);
 
     my $events = [];
     foreach (@$jobs) {
@@ -773,9 +787,7 @@ sub bin_future_collections {
 }
 
 sub open_service_requests_for_uprn {
-    my ($self, $uprn, $bartec) = @_;
-
-    my $requests = $bartec->ServiceRequests_Get($uprn);
+    my ($self, $uprn, $requests) = @_;
 
     my %open_requests;
     foreach (@$requests) {

@@ -9,6 +9,7 @@ use Moo;
 use FixMyStreet;
 
 with 'FixMyStreet::Roles::SOAPIntegration';
+with 'FixMyStreet::Roles::ParallelAPI';
 
 has attr => ( is => 'ro', default => 'http://bartec-systems.com/' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
@@ -55,6 +56,8 @@ has token => (
         return $token;
     },
 );
+
+has backend_type => ( is => 'ro', default => 'bartec' );
 
 sub call {
     my ($self, $method, @params) = @_;
