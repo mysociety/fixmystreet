@@ -237,13 +237,15 @@ fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
 // List of categories which are Curo Group's responsibility
 var curo_categories = [
     'Allotment issue',
-    'Obstructive vegetation',
-    'Play area safety issue',
-    'Trees and woodland',
     'Dead animals',
     'Dog fouling',
     'Excessive or dangerous littering',
-    'Needles'
+    'Litter bin damaged',
+    'Litter bin full',
+    'Needles',
+    'Obstructive vegetation',
+    'Play area safety issue',
+    'Trees and woodland'
 ];
 
 fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
