@@ -29,7 +29,7 @@ my ($opts, $usage) = describe_options(
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
-$usage->die unless $opts->cobrand && $opts->out && $opts->calls && $opts->backend;
+$usage->die unless $opts->cobrand && $opts->calls && $opts->backend;
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
 my $cfg = $cobrand->feature($opts->backend);
@@ -39,4 +39,8 @@ my $integration = $class->new(%$cfg);
 
 my $calls = decode_json($opts->calls);
 $calls = $integration->_parallel_api_calls(@$calls);
-Storable::store($calls, $opts->out);
+if ($opts->out) {
+    Storable::store($calls, $opts->out);
+} else {
+    print encode_json($calls);
+}
