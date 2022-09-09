@@ -14,6 +14,8 @@ sub restriction { { cobrand => shift->moniker } }
 
 sub hide_areas_on_reports { 1 }
 
+sub send_questionnaires { 0 }
+
 sub all_reports_single_body { { name => 'National Highways' } }
 
 # Copying of functions from UKCouncils that are needed here also - factor out to a role of some sort?
