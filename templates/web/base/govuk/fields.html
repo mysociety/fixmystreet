@@ -54,9 +54,12 @@
         </h2>
         <div class="govuk-error-summary__body">
             <ul class="govuk-list govuk-error-summary__list">
-              [% FOR error IN form.errors %]
+              [% FOR error IN form.all_form_errors %]
+                <li>[% error %]</li>
+              [% END %]
+              [% FOR error IN form.errors_by_id.pairs %]
                 <li>
-                    <a href="#">[% error %]</a>
+                    <a href="#form-[% error.key %]-row">[% error.value.join('; ') %]</a>
                 </li>
               [% END %]
             </ul>
