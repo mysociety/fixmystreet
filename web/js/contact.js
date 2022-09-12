@@ -1,6 +1,6 @@
 $('[name=dest]').on('change', function() {
     var err = $('.form-error--' + this.value),
-        inputs = $(this).closest('form').find('input[type=text], input[type=submit]');
+        inputs = $(this).closest('form').find('input[type=text], input[type=submit], textarea');
     $('.form-error__box').addClass('hidden');
     if (err.length) {
         $('#dest-error').removeClass('hidden');
