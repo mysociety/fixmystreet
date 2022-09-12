@@ -233,7 +233,7 @@ FixMyStreet::override_config {
             tfl => 'anonymous'
         },
         contact_name => {
-            tfl => 'TfL Street Care',
+            tfl => 'TfL Streetcare',
         },
         do_not_reply_email => {
             tfl => 'fms-tfl-DO-NOT-REPLY@example.com',
@@ -424,7 +424,7 @@ subtest "extra information included in email" => sub {
     my $body = $mech->get_html_body_from_email($email[0]);
     unlike $body, qr/Please do not reply/;
     is $email[1]->header('To'), $report->user->email;
-    is $email[1]->header('From'), '"TfL Street Care" <fms-tfl-DO-NOT-REPLY@example.com>';
+    is $email[1]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
     $mech->clear_emails_ok;
 
@@ -437,7 +437,7 @@ subtest "Countdown reports sent from different email" => sub {
     $report->update({ whensent => undef, category => "Countdown - not working" });
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    is $email[0]->header('From'), '"TfL Street Care" <fms-tfl-DO-NOT-REPLY@example.com>';
+    is $email[0]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
     $mech->clear_emails_ok;
     $report->update({ category => "Bus stops" });
 };
@@ -718,7 +718,7 @@ for my $host ( 'www.fixmystreet.com', 'tfl.fixmystreet.com' ) {
         my $text = $mech->get_text_body_from_email;
         like $text, qr/This is an update/, 'Right email';
         like $text, qr/street.tfl/, 'Right url';
-        like $text, qr/Street Care/, 'Right name';
+        like $text, qr/Streetcare/, 'Right name';
         like $email->as_string, qr/iEYI87gX6Upb\+tKYzrSmN83pTnv606AOtahHTepSm/, 'Right logo';
     };
 }
@@ -1136,10 +1136,10 @@ FixMyStreet::override_config {
 
     subtest 'RSS feed has correct name' => sub {
         $mech->get_ok('/rss/xsl');
-        $mech->content_contains('RSS feed from the Street Care website');
+        $mech->content_contains('RSS feed from the Streetcare website');
         $mech->content_lacks('FixMyStreet');
         $mech->get_ok('/rss/problems');
-        $mech->content_contains('New problems on Street Care');
+        $mech->content_contains('New problems on Streetcare');
         $mech->content_lacks('FixMyStreet');
     };
 };

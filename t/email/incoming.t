@@ -83,7 +83,7 @@ FixMyStreet::override_config {
         my $email = email_from_template(RETURNPATH => 1, TOKEN => 'tfl-do-not-reply');
         process($email);
         is $trap->stderr, "incoming.t: Received non-bounce to null address, auto-replying\n";
-        like $mech->get_text_body_from_email, qr/from TfL Street Care/;
+        like $mech->get_text_body_from_email, qr/from TfL Streetcare/;
     };
 
     subtest 'An OOO email to the do-not-reply address' => sub {

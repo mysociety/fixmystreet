@@ -222,8 +222,8 @@ subtest "can delete theme" => sub {
 subtest "can't edit another cobrand's theme" => sub {
     FixMyStreet::DB->resultset('ManifestTheme')->create({
         cobrand => "tfl",
-        name => "Transport for London Street Care",
-        short_name => "TfL Street Care",
+        name => "Transport for London Streetcare",
+        short_name => "TfL Streetcare",
     });
 
     $mech->get("/admin/manifesttheme/tfl");
@@ -241,8 +241,8 @@ subtest "fms cobrand lets you view all manifest themes" => sub {
 
     is $mech->uri->path, '/admin/manifesttheme', "taken to list page";
 
-    $mech->content_contains("Transport for London Street Care");
-    $mech->content_contains("TfL Street Care");
+    $mech->content_contains("Transport for London Streetcare");
+    $mech->content_contains("TfL Streetcare");
 
 };
 
