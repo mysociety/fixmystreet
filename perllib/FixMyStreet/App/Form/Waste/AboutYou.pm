@@ -6,7 +6,7 @@ use FixMyStreet::SMS;
 
 has_field name => (
     type => 'Text',
-    label => 'Your name',
+    label => 'Full name',
     required => 1,
     validate_method => sub {
         my $self = shift;
