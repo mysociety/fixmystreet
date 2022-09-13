@@ -408,7 +408,7 @@ When you make a report
     Personal details will automatically be removed from the database after two
     years of inactivity of the associated account.
   [% IF c.cobrand.moniker == 'cheshireeast' %]
-    <a href="[% contact_us_href %]">Contact us</a>
+    <a href="[% c.cobrand.feature('contact_us_url') %]">Contact us</a>
   [% ELSIF c.cobrand.feature('contact_us_url') %]
     Please <a href="[% c.cobrand.feature('contact_us_url') %]">contact us</a>
   [% ELSE %]
