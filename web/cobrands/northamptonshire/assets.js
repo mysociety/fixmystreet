@@ -91,18 +91,6 @@ var layers = [
 }
 ];
 
-// This is required so that the found/not found actions are fired on category
-// select and pin move rather than just on asset select/not select.
-OpenLayers.Layer.NorthamptonshireVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
-  initialize: function(name, options) {
-      OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
-      $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
-      $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
-  },
-
-  CLASS_NAME: 'OpenLayers.Layer.NorthamptonshireVectorAsset'
-});
-
 // default options for northants assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
@@ -167,7 +155,7 @@ $.each(layers, function(_index, layer) {
   var options = $.extend(true, {}, northants_defaults, {
     // Declare the class here rather than in the defaults above so it doesn't
     // affect the road defaults below, which can use the default roads class.
-    class: OpenLayers.Layer.NorthamptonshireVectorAsset,
+    class: OpenLayers.Layer.VectorAssetMove,
     wfs_feature: layer.layer_name,
     asset_category: layer.categories,
     asset_item: layer.item_name

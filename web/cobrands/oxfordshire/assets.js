@@ -508,7 +508,7 @@ var layers = [
 // b) preventing submission unless an asset is selected
 var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   stylemap: streetlight_stylemap,
-  class: OpenLayers.Layer.AlloyVectorAsset,
+  class: OpenLayers.Layer.VectorAssetMove,
   protocol_class: OpenLayers.Protocol.AlloyV2,
   http_options: {
       base: url_with_style,

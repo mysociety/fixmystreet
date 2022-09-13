@@ -244,6 +244,18 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
     CLASS_NAME: 'OpenLayers.Layer.VectorAsset'
 });
 
+// This is required so that the found/not found actions are fired on category
+// select and pin move rather than just on asset select/not select.
+OpenLayers.Layer.VectorAssetMove = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+    initialize: function(name, options) {
+        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
+    },
+
+    CLASS_NAME: 'OpenLayers.Layer.VectorAssetMove'
+});
+
 // Handles layers such as USRN, TfL roads, and the like
 OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
     selected_feature: null,

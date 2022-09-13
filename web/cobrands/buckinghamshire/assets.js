@@ -16,18 +16,6 @@ OpenLayers.Protocol.BuckinghamshireHTTP = OpenLayers.Class(OpenLayers.Protocol.H
     CLASS_NAME: "OpenLayers.Protocol.BuckinghamshireHTTP"
 });
 
-// This is required so that the found/not found actions are fired on category
-// select and pin move rather than just on asset select/not select.
-OpenLayers.Layer.BuckinghamshireVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
-    initialize: function(name, options) {
-        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
-        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
-        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.BuckinghamshireVectorAsset'
-});
-
 var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
 var tilma_url = "https://" + wfs_host + "/mapserver/bucks";
 var drains_proxy_url = "https://" + wfs_host + "/proxy/bcc/drains/wfs";
@@ -103,7 +91,7 @@ fixmystreet.assets.add(labeled_defaults, {
             TYPENAME: "StreetLights_Union"
         }
     },
-    class: OpenLayers.Layer.BuckinghamshireVectorAsset,
+    class: OpenLayers.Layer.VectorAssetMove,
     asset_category: [
         'Light on during the day',
         'Street light dim',
@@ -483,7 +471,7 @@ fixmystreet.assets.add(defaults, {
             TYPENAME: "BC_CAR_PARKS"
         }
     },
-    class: OpenLayers.Layer.BuckinghamshireVectorAsset,
+    class: OpenLayers.Layer.VectorAssetMove,
     select_action: true,
     actions: {
         asset_found: fixmystreet.message_controller.asset_found,

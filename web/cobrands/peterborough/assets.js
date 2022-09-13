@@ -70,23 +70,11 @@ fixmystreet.assets.add(arcgis_defaults, {
     name: "Adopted Highways"
 });
 
-// This is required so that the found/not found actions are fired on category
-// select and pin move rather than just on asset select/not select.
-OpenLayers.Layer.PeterboroughVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
-    initialize: function(name, options) {
-        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
-        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
-        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.PeterboroughVectorAsset'
-});
-
 var NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
 var UNKNOWN_LIGHT_CATEGORY_NAME = 'Problem with a light not shown on map';
 
 var trees_defaults = $.extend(true, {}, tilma_defaults, {
-    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    class: OpenLayers.Layer.VectorAssetMove,
     select_action: true,
     actions: {
         asset_found: fixmystreet.message_controller.asset_found,
@@ -157,7 +145,7 @@ var light_defaults = $.extend(true, {}, tilma_defaults, {
 });
 
 fixmystreet.assets.add(light_defaults, {
-    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    class: OpenLayers.Layer.VectorAssetMove,
     stylemap: streetlight_stylemap,
     feature_code: 'UNITNO',
     attributes: {
@@ -202,7 +190,7 @@ var bin_defaults = $.extend(true, {}, arcgis_defaults, {
             outFields: 'OBJECTID,Reference,Location',
         }
     },
-    class: OpenLayers.Layer.PeterboroughVectorAsset,
+    class: OpenLayers.Layer.VectorAssetMove,
     select_action: true,
     actions: {
         asset_found: fixmystreet.message_controller.asset_found,

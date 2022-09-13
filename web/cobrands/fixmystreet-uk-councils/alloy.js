@@ -185,18 +185,6 @@ OpenLayers.Strategy.AlloyV2 = OpenLayers.Class(OpenLayers.Strategy.Alloy, {
     }
 });
 
-// This is required so that the found/not found actions are fired on category
-// select and pin move rather than just on asset select/not select.
-OpenLayers.Layer.AlloyVectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
-    initialize: function(name, options) {
-        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
-        $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
-        $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
-    },
-
-    CLASS_NAME: 'OpenLayers.Layer.AlloyVectorAsset'
-});
-
 OpenLayers.Layer.AlloyVectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorNearest, {
     feature_table: {},
     initialize: function(name, options) {
