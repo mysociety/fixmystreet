@@ -468,7 +468,6 @@ $(function() {
 });
 
 // Alloy street lighting stuff from here
-// TODO: Further reduce duplicate between here & Northamptonshire
 
 var streetlight_select = $.extend({
     label: "${title}",
@@ -480,40 +479,51 @@ var streetlight_select = $.extend({
     fontWeight: 'bold'
 }, fixmystreet.assets.style_default_select.defaultStyle);
 
+function oxfordshire_light(f) {
+    return f && f.attributes && !f.attributes.private;
+}
+function oxfordshire_light_not(f) {
+    return !oxfordshire_light(f);
+}
+
+var light_default_style = new OpenLayers.Style(occ_default);
+var rule_light_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: oxfordshire_light
+    })
+});
+var rule_light_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: oxfordshire_light_not
+    }),
+    symbolizer: {
+        fillColor: "#868686",
+        strokeWidth: 1,
+        pointRadius: 4
+    }
+});
+light_default_style.addRules([ rule_light_owned, rule_light_not_owned ]);
+
 var streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': occ_default,
+  'default': light_default_style,
   'select': new OpenLayers.Style(streetlight_select),
   'hover': occ_hover
 });
 
-var street_lighting_layer = 'layers_streetLightingAssets';
 var base_host = fixmystreet.staging ?  "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
 var base_proxy_url = fixmystreet.staging ? "https://oxfordshire.staging" : "https://oxfordshire.assets";
-var base_url = base_host + "/resource-proxy/proxy.php?" + base_proxy_url + "/${layerid}/${x}/${y}/${z}/cluster";
-var base_light_url = base_host + "/resource-proxy/alloy-light.php?url=" + base_proxy_url + "&id=";
-var url_with_style = base_url + '?styleIds=${styleid}';
-
-var layers = [
-    {
-        categories: lighting_categories,
-        max_resolution: 1.194328566789627,
-        item_name: "street light",
-        layer_name: "Street Lights",
-        styleid: '5e0e0edfca31500efc379151',
-    }
-];
+var base_light_url = base_host + "/alloy/oxfordshire-lights.php?url=" + base_proxy_url;
 
 // default options for these assets include
 // a) checking for multiple assets in same location
 // b) preventing submission unless an asset is selected
-var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
-  stylemap: streetlight_stylemap,
+var oxfordshire_defaults = {
+  format_class: OpenLayers.Format.GeoJSON,
+  srsName: "EPSG:4326",
+  strategy_class: OpenLayers.Strategy.FixMyStreet,
   class: OpenLayers.Layer.VectorAssetMove,
-  protocol_class: OpenLayers.Protocol.AlloyV2,
-  http_options: {
-      base: url_with_style,
-      layerid: street_lighting_layer
-  },
   non_interactive: false,
   body: "Oxfordshire County Council",
   attributes: {
@@ -536,29 +546,14 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   },
   actions: {
     asset_found: function(asset) {
-      if (fixmystreet.message_controller.asset_found.call(this)) {
+      fixmystreet.assets.named_select_action_found.call(this, asset);
+      if (asset.attributes.private) {
+          fixmystreet.message_controller.asset_not_found.call(this);
+          return;
+      } else if (fixmystreet.message_controller.asset_found.call(this)) {
           return;
       }
 
-      var layer = this;
-
-      // Fetch item info
-      fixmystreet.maps.loading_spinner.show();
-      $.get(base_light_url + asset.attributes.itemId)
-        .then(function(data) {
-            asset.attributes.private = data.private;
-            asset.attributes.unit_type = data.unit_type;
-            var controller_fn = data.private ? 'asset_not_found' : 'asset_found';
-            // Prevent/allow report creation
-            fixmystreet.message_controller[controller_fn].call(layer);
-            // Update message now we have attribute information
-            fixmystreet.assets.named_select_action_found.call(layer, asset);
-            // Update hidden fields with any new attribute information
-            layer.setAttributeFields(asset);
-        })
-        .always(fixmystreet.maps.loading_spinner.hide);
-
-      fixmystreet.assets.named_select_action_found.call(this, asset);
       var lonlat = asset.geometry.getBounds().getCenterLonLat();
       // Features considered overlapping if within 1M of each other
       // TODO: Should zoom/marker size be considered when determining if markers overlap?
@@ -592,8 +587,15 @@ var oxfordshire_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
       fixmystreet.assets.named_select_action_not_found.call(this);
     }
   }
-});
+};
 
-fixmystreet.alloy_add_layers(oxfordshire_defaults, layers);
+fixmystreet.assets.add(oxfordshire_defaults, {
+  http_options: { url: base_light_url },
+  stylemap: streetlight_stylemap,
+  asset_category: lighting_categories,
+  max_resolution: 1.194328566789627,
+  asset_item: "street light",
+  asset_type: "spot"
+});
 
 })();

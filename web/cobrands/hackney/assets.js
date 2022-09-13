@@ -56,103 +56,84 @@ var layers = [
   {
     "categories": ["Street Lighting", "Lamposts"],
     "item_name": "street light",
-    "layer_name": "Street Lights",
-    "styleid": "5d308d57fe2ad8046c67cdb5",
-    "layerid": "layers_streetLightingAssets"
+    "layerid": "designs_streetLights"
   },
   {
     "categories": ["Illuminated Bollards", "Non-illuminated Bollards"],
     "item_name": "bollard",
-    "layer_name": "Bollards",
-    "styleid": "5d308d57fe2ad8046c67cdb9",
-    "layerid": "layers_streetLightingAssets"
+    "layerid": "designs_bollards"
   },
   {
     "categories": ["Benches"],
     "item_name": "bench",
-    "layer_name": "Bench",
-    "styleid": "5e8b16f0ca31500f60b3f589",
-    "layerid": "layers_bench_5e8b15f0ca31500f60b3f568"
+    "layerid": "designs_bench1000793_5d31996bfe2ad80354bb9f25"
   },
   {
     "categories": ["Potholes"],
     "item_name": "road",
-    "layer_name": "Carriageway",
-    "styleid": "5d53d28bfe2ad80fc4573184",
-    "layerid": "layers_carriageway_5d53cc74fe2ad80c3403b77d"
+    "layerid": "designs_carriageway_5d53cc6afe2ad80fc4572c23"
   },
   {
     "categories": ["Road Markings / Lines"],
     "item_name": "road",
-    "layer_name": "Markings",
-    "styleid": "5d308dd7fe2ad8046c67da33",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_markings"
   },
   {
     "categories": ["Pavement"],
     "item_name": "pavement",
-    "layer_name": "Footways",
-    "styleid": "5d308dd6fe2ad8046c67da2a",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_footways"
   },
   {
     "categories": ["Cycle Tracks"],
     "item_name": "cycle track",
-    "layer_name": "Cycle Tracks",
-    "styleid": "5d308dd6fe2ad8046c67da29",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_cycleTracks"
   },
   {
     "categories": ["Drains and gutters"],
     "item_name": "drain",
-    "layer_name": "Gullies",
-    "styleid": "5d308dd6fe2ad8046c67da2e",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_gullies"
   },
   {
     "categories": ["Verges"],
     "item_name": "verge",
-    "layer_name": "Verges",
-    "styleid": "5d308dd7fe2ad8046c67da36",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_verges"
   },
   {
     "categories": ["Road Hump Fault / Damage"],
     "item_name": "road hump",
-    "layer_name": "Traffic Calming",
-    "styleid": "5d308dd7fe2ad8046c67da35",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_trafficCalmings"
   },
   {
     "categories": ["Broken or Faulty Barrier Gates"],
     "item_name": "barrier gate",
-    "layer_name": "Gates",
-    "styleid": "5d308dd6fe2ad8046c67da2c",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_gates"
   },
   {
     "categories": ["Belisha Beacon"],
     "item_name": "beacon",
-    "layer_name": "Belisha Beacon",
-    "styleid": "5d308d57fe2ad8046c67cdb6",
-    "layerid": "layers_streetLightingAssets"
+    "layerid": "designs_belishaBeacons"
   },
   {
     "categories": ["Loose or Damaged Kerb Stones"],
     "item_name": "kerb",
-    "layer_name": "Kerbs",
-    "styleid": "5d308dd6fe2ad8046c67da30",
-    "layerid": "layers_highwayAssets"
+    "layerid": "designs_kerbs"
+  },
+  {
+    "host": 'https://hackney-env.assets',
+    "categories": ["Gully"],
+    "item_name": "gully",
+    "layerid": "designs_gullies"
   }
 ];
 
-var base = fixmystreet.staging ? "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
-var hackney_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
+var tilma_host = fixmystreet.staging ? "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
+var tilma_url = tilma_host + "/alloy/layer.php?url=";
+
+var hackney_defaults = $.extend(true, {}, {
+  format_class: OpenLayers.Format.GeoJSON,
+  srsName: "EPSG:4326",
   class: OpenLayers.Layer.VectorAssetMove,
-  protocol_class: OpenLayers.Protocol.AlloyV2,
-  http_options: {
-    base: base + "/resource-proxy/proxy.php?https://hackney.assets/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
-  },
+  strategy_class: OpenLayers.Strategy.FixMyStreet,
   non_interactive: false,
   body: "Hackney Council",
   attributes: {
@@ -160,22 +141,16 @@ var hackney_defaults = $.extend(true, {}, fixmystreet.alloyv2_defaults, {
   }
 });
 
-fixmystreet.alloy_add_layers(hackney_defaults, layers);
-
-var environment_layers = [
-  {
-    "categories": ["Gully"],
-    "item_name": "gully",
-    "layer_name": "Gullies",
-    "styleid": "5ea81c3eca31500e24de3b45",
-    "layerid": "layers_gullies_5ea81c09ca315000b0da4ffa"
-  },
-];
-var environment_defaults = $.extend(true, {}, hackney_defaults, {
-  http_options: {
-    base: base + "/resource-proxy/proxy.php?https://hackney-env.assets/${layerid}/${x}/${y}/${z}/cluster?styleIds=${styleid}"
-  },
+$.each(layers, function(_index, layer) {
+  var host = layer.host ? layer.host : 'https://hackney.assets';
+  var options = $.extend(true, {}, hackney_defaults, {
+    http_options: {
+      url: tilma_url + host + '&layer=' + layer.layerid
+    },
+    asset_category: layer.categories,
+    asset_item: layer.item_name
+  });
+  fixmystreet.assets.add(options, layer);
 });
-fixmystreet.alloy_add_layers(environment_defaults, environment_layers);
 
 })();
