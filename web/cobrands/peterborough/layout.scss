@@ -88,3 +88,28 @@ body.mappage #site-header {
         border: none;
     }
 }
+
+// Waste
+.govuk-warning-text__img {
+    // This corrects the horizontal spacing disparity when you have 
+    // consecutive warning messages.
+    flex-basis: 0;
+    margin-right: 1em;
+}
+
+// Bulky Goods/Waste
+.bulky__summary {
+    // This should increase the gap on desktop.
+    // It is currently too tight and it makes it hard to scan the content.
+    $gap: 2em;
+    .govuk-grid-column-two-thirds {
+        padding-right: $gap;
+    }
+    .govuk-grid-column-one-third {
+        padding-left: $gap;
+    }
+
+    .item-summary-table {
+        width: 85%;
+    }
+}

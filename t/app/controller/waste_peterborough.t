@@ -903,16 +903,16 @@ FixMyStreet::override_config {
 
         my $mech2;
         subtest 'Summary page' => sub {
-            $mech->content_contains('Submit bulky goods collection booking');
-            $mech->content_contains('Please review the information');
-            $mech->content_contains('provided before you submit your bulky goods collection booking.');
-            $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
+            $mech->content_contains('Booking Summary');
+            $mech->content_contains('Please read carefully all the details');
             $mech->content_contains('You will be redirected to the council’s card payments provider.');
-            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Amplifiers/s);
-            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*High chairs/s);
-            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Wardrobes/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Amplifiers/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*High chairs/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
             # Extra text for wardrobes
-            $mech->content_like(qr/Please dismantle/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
+            $mech->content_contains('behind the hedge in the front garden');
+            $mech->content_contains('£23.50');
 
             # external redirects make Test::WWW::Mechanize unhappy so clone
             # the mech for the redirect

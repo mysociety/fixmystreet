@@ -1158,6 +1158,7 @@ sub bulky_total_cost {
         }
         $data->{"extra_payment_method"} = "credit_card";
     }
+    return $c->stash->{payment};
 }
 
 sub waste_cc_payment_line_item_ref {
