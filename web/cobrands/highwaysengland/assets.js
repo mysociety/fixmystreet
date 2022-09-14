@@ -74,16 +74,19 @@ fixmystreet.assets.add(defaults, {
                     return false;
                 }
             }, '#js-dbfo-road');
+            change_header('maintenance');
         },
         not_found: function(layer) {
-          fixmystreet.message_controller.road_not_found(layer);
-          $('#js-top-message').hide();
-          $('.js-reporting-page--category').addClass('hidden-js');
+            fixmystreet.message_controller.road_not_found(layer);
+            $('#js-top-message').hide();
+            $('.js-reporting-page--category').addClass('hidden-js');
+            change_header('maintenance');
         }
     }
 });
 
 fixmystreet.assets.add(defaults, {
+    wfs_url: "https://tilma.mysociety.org/mapserver/highways?litter",
     wfs_feature: "Highways_litter_pick",
     stylemap: highways_stylemap,
     always_visible: true,
@@ -91,7 +94,7 @@ fixmystreet.assets.add(defaults, {
     road: true,
     nearest_radius: 50,
     asset_type: 'road',
-    no_asset_msg_id: '#js-not-he-road',
+    no_asset_msg_id: '#js-not-litter-pick-road',
     no_asset_msgs_class: '.js-roads-he',
     all_categories: true,
     actions: {
@@ -103,6 +106,7 @@ fixmystreet.assets.add(defaults, {
                     return true;
                 });
             }
+            change_header('maintenance');
         },
         not_found: function(layer) {
             if (fixmystreet.assets.layers[0].selected_feature) {
@@ -113,12 +117,26 @@ fixmystreet.assets.add(defaults, {
                         fixmystreet.message_controller.road_not_found(layer);
                         $('#js-top-message').hide();
                         $('.js-reporting-page--category').addClass('hidden-js');
+                        change_header('litter');
+                    } else {
+                        $('.js-reporting-page--category').removeClass('hidden-js');
+                        change_header('maintenance');
                     }
                 }
             }
         }
     }
 });
+
+function change_header(header) {
+    if (header === 'maintenance') {
+        $('#he_maintenance_heading').show();
+        $('#he_litter_heading').hide();
+    } else if (header === 'litter') {
+        $('#he_maintenance_heading').hide();
+        $('#he_litter_heading').show();
+    }
+}
 
 })();
 
