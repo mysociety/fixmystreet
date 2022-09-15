@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use DateTime::Format::W3CDTF;
 
 sub council_area_id { 2500 }
 sub council_area { 'Merton' }
@@ -161,5 +162,12 @@ sub cut_off_date { '2021-12-13' } # Merton cobrand go-live
 sub report_age { '3 months' }
 
 sub abuse_reports_only { 1 }
+
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $comment->text($comment->text . "\n\nThis comment created on FMS at $now");
+}
 
 1;
