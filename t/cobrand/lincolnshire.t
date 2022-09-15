@@ -1,0 +1,168 @@
+use FixMyStreet::TestMech;
+use Open311::GetServiceRequests;
+use FixMyStreet::DB;
+use Open311;
+
+my $mech = FixMyStreet::TestMech->new;
+
+my $params = {
+    send_method => 'Open311',
+    send_comments => 1,
+    api_key => 'KEY',
+    endpoint => 'endpoint',
+    jurisdiction => 'home',
+    can_be_devolved => 1,
+};
+my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params, { cobrand => 'lincolnshire' });
+my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
+my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
+my $superuser_email = $superuser->email;
+my $user_email = 'john.smith@example.com';
+
+my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+my $update = Open311::GetServiceRequests->new(
+    system_user => $lincs_user,
+);
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'lincolnshire',
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_SITE => 0,
+}, sub {
+    subtest "custom homepage text" => sub {
+        $mech->get_ok('/');
+        $mech->content_contains('like potholes, broken paving slabs, or street lighting');
+    };
+
+    subtest "fetching problems from Open311 includes user information" => sub {
+        my $requests_xml = xml_reports({ id => 123, name => 'John Smith', email => $user_email });
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        $update->create_problems( $o, $body );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-123' },
+            { prefetch => 'user' },
+        )->first;
+
+        ok $p, 'Found problem';
+        is $p->name, 'John Smith', 'Name set on problem';
+        is $p->user->name, 'John Smith', 'correct user associated with problem';
+        is $p->user->email, $user_email, 'correct email associated with problem';
+
+        # Check user has been sent the logged email
+        my $email = $mech->get_email;
+        is $email->header('To'), $p->user->email, 'email sent to correct address';
+        is $email->header('Subject'), 'Your report has been logged: Street light not working problem', 'email has correct subject';
+        my $problem_id = $p->id;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Your report to Lincolnshire County Council has been logged/;
+        like $body, qr/lincs-123/;
+        like $body, qr{http://[^/]+/report/$problem_id}, 'email contains correct link';
+
+        $mech->get_ok("/report/" . $p->id, 'Problem page loaded');
+        $mech->content_lacks('John Smith', 'Name not shown on problem page');
+
+        $mech->delete_user($user_email);
+    };
+
+    subtest "ignores user information if name is missing" => sub {
+        my $requests_xml = xml_reports({ id => 456, name => '', email => $user_email });
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        $update->create_problems( $o, $body );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-456' },
+            { prefetch => 'user' },
+        )->first;
+
+        ok $p, 'Found problem';
+        is $p->name, $lincs_user->name, 'Name set on problem';
+        is $p->user->name, $lincs_user->name, 'correct user associated with problem';
+        is $p->user->email, $lincs_user->email, 'correct email associated with problem';
+
+        $p->delete;
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'lincolnshire',
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_SITE => 1,
+}, sub {
+    subtest "fetching problems from Open311 on staging doesn't include private user information" => sub {
+        my $requests_xml = xml_reports({ id => 123, name => 'John Smith', email => $user_email });
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        $update->create_problems( $o, $body );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-123' },
+            { prefetch => 'user' },
+        )->first;
+        ok $p, 'Found problem';
+        is $p->name, $lincs_user->name, 'Name set on problem';
+        is $p->user->name, $lincs_user->name, 'correct user associated with problem';
+        is $p->user->email, $lincs_user->email, 'correct email associated with problem';
+
+        is(FixMyStreet::DB->resultset('User')->search({ email => $user_email })->count, 0, "User wasn't created");
+    };
+
+    subtest 'fetching problems from Open311 on staging stores user info for @lincolnshire.gov.uk addresses' => sub {
+        my $requests_xml = xml_reports({ id => 124, name => 'Simon Neil', email => 'blackhole@lincolnshire.gov.uk' });
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        $update->create_problems( $o, $body );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-124' },
+            { prefetch => 'user' },
+        )->first;
+        ok $p, 'Found problem';
+        is $p->name, "Simon Neil", 'Name set on problem';
+        is $p->user->name, "Simon Neil", 'correct user associated with problem';
+        is $p->user->email, 'blackhole@lincolnshire.gov.uk', 'correct email associated with problem';
+    };
+
+    subtest 'fetching problems from Open311 on staging stores user info for extant superusers' => sub {
+        my $requests_xml = xml_reports({ id => 125, name => 'Super Duper', email => $superuser_email });
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        $update->create_problems( $o, $body );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-125' },
+            { prefetch => 'user' },
+        )->first;
+        ok $p, 'Found problem';
+        is $p->name, "Super User", "Existing user's name set on problem";
+        is $p->user->name, "Super User", "Super user's name not changed";
+        is $p->user->email, $superuser_email, 'correct email associated with problem';
+    };
+};
+
+sub xml_reports {
+    my @reports = map { xml_report($_) } @_;
+    my $requests_xml = '<?xml version="1.0" encoding="UTF-8"?><service_requests>'
+        . join('', @reports) . '</service_requests>';
+    my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
+    $requests_xml =~ s/DATETIME/$dt/gm;
+    return $requests_xml;
+}
+
+sub xml_report {
+    my $data = shift;
+    return qq{
+    <request>
+        <service_request_id>lincs-$data->{id}</service_request_id>
+        <contact_name>$data->{name}</contact_name>
+        <contact_email>$data->{email}</contact_email>
+        <status>open</status>
+        <service_name>Street light not working</service_name>
+        <description>Street light not working</description>
+        <requested_datetime>DATETIME</requested_datetime>
+        <updated_datetime>DATETIME</updated_datetime>
+        <address>1 Street</address>
+        <lat>52.656144</lat>
+        <long>-0.502566</long>
+    </request>
+    };
+}
+
+done_testing();

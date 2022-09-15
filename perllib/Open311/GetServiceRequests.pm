@@ -4,6 +4,7 @@ use Moo;
 use Open311;
 use FixMyStreet::DB;
 use FixMyStreet::MapIt;
+use FixMyStreet::Map;
 use DateTime::Format::W3CDTF;
 
 has system_user => ( is => 'rw' );
@@ -167,32 +168,40 @@ sub create_problems {
         my $non_public = $request->{non_public} ? 1 : 0;
         $non_public ||= $contacts[0] ? $contacts[0]->non_public : 0;
 
-        my $problem = $self->schema->resultset('Problem')->new(
-            {
-                user => $self->system_user,
-                external_id => $request_id,
-                detail => $request->{description} || $request->{service_name} . ' problem',
-                title => $request->{title} || $request->{service_name} . ' problem',
-                anonymous => 0,
-                name => $self->system_user->name,
-                confirmed => $created_time,
-                created => $created_time,
-                lastupdate => $updated_time,
-                whensent => $created_time,
-                state => $state,
-                postcode => '',
-                used_map => 1,
-                latitude => $latitude,
-                longitude => $longitude,
-                areas => ',' . $body->id . ',',
-                bodies_str => $body->id,
-                send_method_used => 'Open311',
-                category => $contact,
-                send_questionnaire => 0,
-                service => 'Open311',
-                non_public => $non_public,
-            }
-        );
+        my $params = {
+            user => $self->system_user,
+            external_id => $request_id,
+            detail => $request->{description} || $request->{service_name} . ' problem',
+            title => $request->{title} || $request->{service_name} . ' problem',
+            anonymous => 0,
+            name => $self->system_user->name,
+            confirmed => $created_time,
+            created => $created_time,
+            lastupdate => $updated_time,
+            whensent => $created_time,
+            state => $state,
+            postcode => '',
+            used_map => 1,
+            latitude => $latitude,
+            longitude => $longitude,
+            areas => ',' . $body->id . ',',
+            bodies_str => $body->id,
+            send_method_used => 'Open311',
+            category => $contact,
+            send_questionnaire => 0,
+            service => 'Open311',
+            non_public => $non_public,
+        };
+
+        # Figure out which user to associate with this report.
+        my $user_from_cobrand = $cobrand && $cobrand->call_hook('open311_get_user', $request);
+        if ($user_from_cobrand) {
+            $params->{user} = $user_from_cobrand;
+            $params->{name} = $user_from_cobrand->name;
+            $params->{anonymous} = 1;
+        }
+
+        my $problem = $self->schema->resultset('Problem')->new($params);
 
         next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
 
@@ -200,6 +209,28 @@ sub create_problems {
             if $request->{media_url};
 
         $problem->insert();
+
+        $problem->discard_changes;
+
+        if ($user_from_cobrand) {
+            $cobrand->set_lang_and_domain($problem->lang, 1);
+            FixMyStreet::Map::set_map_class($cobrand);
+
+            # Send confirmation email to user
+            $problem->send_logged_email({
+                report => $problem,
+                cobrand => $cobrand,
+            }, 0, $cobrand);
+
+            # Sign the user up for alerts on the problem
+            $self->schema->resultset('Alert')->create({
+                alert_type => 'new_updates',
+                parameter => $problem->id,
+                user => $problem->user,
+                cobrand => $cobrand->moniker,
+                whensubscribed => $created_time,
+            })->confirm;
+        }
     }
 
     return 1;

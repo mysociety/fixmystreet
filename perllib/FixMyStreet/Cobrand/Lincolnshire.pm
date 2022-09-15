@@ -20,6 +20,7 @@ use LWP::Simple;
 use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
+use FixMyStreet::DB;
 
 use Moo;
 
@@ -193,5 +194,37 @@ around 'open311_config' => sub {
     $params->{upload_files} = 1;
     $self->$orig($row, $h, $params);
 };
+
+# Find or create a user to associate with externally created Open311 reports.
+sub open311_get_user {
+    my ($self, $request) = @_;
+
+    return unless $request->{contact_name} && $request->{contact_email};
+
+    if (FixMyStreet->config("STAGING_SITE")) { {
+        # In staging we don't want to store private contact information
+        # so only return a user if the email address is @lincolnshire.gov.uk
+        # or a superuser with the email address already exists.
+        my $domain = $self->admin_user_domain;
+        last if $request->{contact_email} =~ /[@]$domain$/;
+        last if FixMyStreet::DB->resultset('User')->find({
+            email => $request->{contact_email},
+            email_verified => 1,
+            is_superuser => 1,
+        });
+        return;
+    } }
+
+    my $user = FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            name => $request->{contact_name},
+            email => $request->{contact_email},
+            email_verified => 1,
+        },
+        { key => 'users_email_verified_key' },
+    );
+
+    return $user;
+}
 
 1;

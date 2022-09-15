@@ -494,6 +494,20 @@ sub confirm {
     return 1;
 }
 
+sub send_logged_email {
+    my ($self, $h, $nomail, $cobrand) = @_;
+    FixMyStreet::Email::send_cron(
+        $self->result_source->schema,
+        'confirm_report_sent.txt',
+        $h,
+        { To => $self->user->email },
+        undef,
+        $nomail,
+        $cobrand,
+        $self->lang,
+    );
+}
+
 sub category_display {
     my $self = shift;
     my $contact = $self->contact;

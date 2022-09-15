@@ -358,18 +358,7 @@ sub _send_report_sent_email {
     my $contributed_as = $self->report->get_extra_metadata('contributed_as') || '';
     return if $contributed_as eq 'body' || $contributed_as eq 'anonymous_user';
 
-    FixMyStreet::Email::send_cron(
-        $self->report->result_source->schema,
-        'confirm_report_sent.txt',
-        $self->h,
-        {
-            To => $self->report->user->email,
-        },
-        undef,
-        $self->nomail,
-        $self->cobrand,
-        $self->report->lang,
-    );
+    $self->report->send_logged_email($self->h, $self->nomail, $self->cobrand);
 }
 
 sub log {
