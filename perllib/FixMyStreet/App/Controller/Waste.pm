@@ -980,7 +980,7 @@ sub garden : Chained('garden_setup') : Args(0) {
         max_bins => $c->stash->{quantity_max}->{$service}
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
-    if ($c->cobrand->moniker eq 'kingston') {
+    if ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe';
     }
     $c->forward('form');
@@ -999,10 +999,15 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach( '/auth/redirect' );
     }
 
-    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) { # XXX Kingston sack
-        my $payment_method = 'credit_card';
-        $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase';
+    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) {
+        if ($c->cobrand->moniker eq 'kingston') {
+            my $payment_method = 'credit_card';
+            $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
+            $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase';
+        } else {
+            $c->res->redirect('/waste/' . $c->stash->{property}{id});
+            $c->detach;
+        }
     } else {
         my $pick = $c->get_param('task') || '';
         if ($pick eq 'cancel') {
@@ -1084,7 +1089,10 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         bins => $service->{garden_bins},
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
-    if ($c->cobrand->moniker eq 'kingston' && $c->stash->{garden_sacks}) {
+    if (
+           ( $c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton' ) &&
+            $c->stash->{garden_sacks}
+        ) {
         $c->stash->{first_page} = 'sacks_choice';
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Renew';
     }
