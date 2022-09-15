@@ -73,6 +73,7 @@ sub export {
         push @{$out{templates}}, {
             title => $_->title,
             text => $_->text,
+            email_text => $_->email_text,
             state => $_->state,
             categories => [ sort map { $_->category } $_->contacts->all ],
             auto_response => $_->auto_response,
@@ -141,6 +142,7 @@ sub import {
         my $template = $body->response_templates->update_or_new({
             title => $_->{title},
             text => $_->{text},
+            email_text => $_->{email_text},
             state => $_->{state},
             auto_response => $_->{auto_response},
             external_status_code => $_->{external_status_code},
