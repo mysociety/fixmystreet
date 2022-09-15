@@ -467,9 +467,8 @@ around 'munge_sendreport_params' => sub {
 
     $self->$orig($row, $h, $params);
 
-    if ($row->category eq "Countdown - not working") {
-        $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
-    }
+    $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
+    delete $params->{'Reply-To'} if $params->{'Reply-To'};
 };
 
 sub is_hardcoded_category {
