@@ -13,12 +13,6 @@ please visit the following link:
 
 [% has_photo %]----------
 
-Name: [% report.name %]
-
-Email: [% report.user.email OR 'None provided' %]
-
-Phone: [% report.user.phone OR 'None provided' %]
-
 Report reference: FMS[% report.id %]
 
 Category: [% report.category %]
@@ -44,6 +38,3 @@ Longitude: [% report.longitude %]
 View OpenStreetMap of this location: [% osm_url %]
 
 [% closest_address %]----------
-
-Replies to this email will go to the user who submitted the problem.
-
