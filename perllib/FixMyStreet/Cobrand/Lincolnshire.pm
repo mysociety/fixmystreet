@@ -8,6 +8,7 @@ use LWP::Simple;
 use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
+use FixMyStreet::DB;
 
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
@@ -93,5 +94,21 @@ around 'open311_config' => sub {
     $params->{upload_files} = 1;
     $self->$orig($row, $h, $params);
 };
+
+# Find or create a user to associate with externally created Open311 reports.
+sub open311_get_user {
+    my ($self, $request) = @_;
+
+    return unless $request->{contact_name} && $request->{contact_email};
+
+    return FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            name => $request->{contact_name},
+            email => $request->{contact_email},
+            email_verified => 1,
+        },
+        { key => 'users_email_verified_key' },
+    );
+}
 
 1;

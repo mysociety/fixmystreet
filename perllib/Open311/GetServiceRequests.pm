@@ -167,32 +167,40 @@ sub create_problems {
         my $non_public = $request->{non_public} ? 1 : 0;
         $non_public ||= $contacts[0] ? $contacts[0]->non_public : 0;
 
-        my $problem = $self->schema->resultset('Problem')->new(
-            {
-                user => $self->system_user,
-                external_id => $request_id,
-                detail => $request->{description} || $request->{service_name} . ' problem',
-                title => $request->{title} || $request->{service_name} . ' problem',
-                anonymous => 0,
-                name => $self->system_user->name,
-                confirmed => $created_time,
-                created => $created_time,
-                lastupdate => $updated_time,
-                whensent => $created_time,
-                state => $state,
-                postcode => '',
-                used_map => 1,
-                latitude => $latitude,
-                longitude => $longitude,
-                areas => ',' . $body->id . ',',
-                bodies_str => $body->id,
-                send_method_used => 'Open311',
-                category => $contact,
-                send_questionnaire => 0,
-                service => 'Open311',
-                non_public => $non_public,
-            }
-        );
+        my $params = {
+            user => $self->system_user,
+            external_id => $request_id,
+            detail => $request->{description} || $request->{service_name} . ' problem',
+            title => $request->{title} || $request->{service_name} . ' problem',
+            anonymous => 0,
+            name => $self->system_user->name,
+            confirmed => $created_time,
+            created => $created_time,
+            lastupdate => $updated_time,
+            whensent => $created_time,
+            state => $state,
+            postcode => '',
+            used_map => 1,
+            latitude => $latitude,
+            longitude => $longitude,
+            areas => ',' . $body->id . ',',
+            bodies_str => $body->id,
+            send_method_used => 'Open311',
+            category => $contact,
+            send_questionnaire => 0,
+            service => 'Open311',
+            non_public => $non_public,
+        };
+
+        # Figure out which user to associate with this report.
+        my $user_from_cobrand = $cobrand && $cobrand->call_hook('open311_get_user', $request);
+        if ($user_from_cobrand) {
+            $params->{user} = $user_from_cobrand;
+            $params->{name} = $user_from_cobrand->name;
+            $params->{anonymous} = 1;
+        }
+
+        my $problem = $self->schema->resultset('Problem')->new($params);
 
         next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
 
