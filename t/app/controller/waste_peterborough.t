@@ -706,7 +706,10 @@ FixMyStreet::override_config {
             $mech->content_contains('26 August');
             $mech->content_lacks('02 September'); # Max of 4 dates fetched
             $mech->submit_form_ok(
-                { with_fields => { chosen_date => '2022-08-26T00:00:00' } } );
+                {   with_fields =>
+                        { chosen_date => '2022-08-26T00:00:00' }
+                }
+            );
         };
 
         subtest 'Add items page' => sub {

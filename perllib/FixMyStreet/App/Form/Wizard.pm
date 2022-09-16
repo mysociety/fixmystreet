@@ -50,7 +50,10 @@ sub next {
     my $self = shift;
     my $next = $self->current_page->next;
     if (ref $next eq 'CODE') {
-        $next = $next->($self->saved_data);
+        $next = $next->(
+            $self->saved_data,
+            $self->c->req->params,
+        );
     }
     return $next;
 }

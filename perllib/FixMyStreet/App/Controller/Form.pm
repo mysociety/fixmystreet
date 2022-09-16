@@ -65,6 +65,8 @@ sub form : Private {
 
     $c->forward('pre_form');
 
+    # XXX This double form load means double API calls in
+    # Cobrand/Peterborough.pm, for example
     my $form = $self->load_form($c);
     if ($c->get_param('process') && !$c->stash->{override_no_process}) {
         # A claim form will quite possibly have people logging in part-way

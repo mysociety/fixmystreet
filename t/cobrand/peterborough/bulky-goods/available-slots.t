@@ -86,7 +86,7 @@ subtest 'find_available_bulky_slots' => sub {
             FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
                 $dummy_property, '17-09-22' )
         },
-        qr/Invalid start date/,
+        qr/Invalid date provided/,
     );
 };
 

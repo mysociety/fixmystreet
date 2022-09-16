@@ -510,12 +510,12 @@ sub image_for_unit {
 # Check which bulky collections are pending, open
 # Check if collection is free or chargeable
 sub find_available_bulky_slots {
-    my ( $self, $property, $start_date_str ) = @_;
+    my ( $self, $property, $last_earlier_date_str ) = @_;
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
-    my $window    = _bulky_collection_window($start_date_str);
+    my $window    = _bulky_collection_window($last_earlier_date_str);
     if ( $window->{error} ) {
         # XXX Handle error gracefully
         die $window->{error};
@@ -605,11 +605,11 @@ sub find_available_bulky_slots {
 
         $last_workpack_date = $workpack->{WorkPackDate};
 
-        # Provision of $start_date_str implies we want to fetch all
+        # Provision of $last_earlier_date_str implies we want to fetch all
         # remaining available slots in the given window, so we ignore the
         # limit
         last
-            if !$start_date_str
+            if !$last_earlier_date_str
             && @available_slots == max_bulky_collection_dates();
     }
 
@@ -617,14 +617,18 @@ sub find_available_bulky_slots {
 }
 
 sub _bulky_collection_window {
-    my $start_date_str = shift;
-    my $fmt = '%F';
+    my $last_earlier_date_str = shift;
+    my $fmt            = '%F';
 
-    if ($start_date_str) {
-        my $start_date
+    my $start_date;
+    if ($last_earlier_date_str) {
+        $start_date
             = DateTime::Format::Strptime->new( pattern => $fmt )
-            ->parse_datetime($start_date_str);
-        return { error => 'Invalid start date' } unless $start_date;
+            ->parse_datetime($last_earlier_date_str);
+
+        return { error => 'Invalid date provided' } unless $start_date;
+
+        $start_date->add( days => 1 );
     }
 
     my $today = DateTime->today( time_zone => FixMyStreet->local_time_zone );
@@ -632,8 +636,8 @@ sub _bulky_collection_window {
         = $today->clone->add( days => bulky_collection_window_days() );
 
     return {
-        date_from => $start_date_str
-        ? $start_date_str
+        date_from => $start_date
+        ? $start_date->strftime($fmt)
         : $today->strftime($fmt),
         date_to => $date_to->strftime($fmt),
     };
