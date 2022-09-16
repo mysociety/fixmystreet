@@ -468,6 +468,7 @@ around 'munge_sendreport_params' => sub {
     $self->$orig($row, $h, $params);
 
     $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
+    delete $params->{'Reply-To'} if $params->{'Reply-To'};
 };
 
 sub is_hardcoded_category {

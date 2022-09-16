@@ -412,8 +412,9 @@ subtest "extra information included in email" => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    is $email[1]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
+    is $email[0]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
     is $email[0]->header('To'), 'TfL <busstops@example.com>';
+    is $email[0]->header('Reply-To'), undef;
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
     like $mech->get_text_body_from_email($email[0]), qr/Stop number: 12345678/, "Bus stop code in TfL email";
     unlike $mech->get_text_body_from_email($email[0]), qr/Joe Bloggs/;
