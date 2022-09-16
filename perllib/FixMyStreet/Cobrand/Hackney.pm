@@ -204,7 +204,7 @@ sub problem_is_within_area_type {
     my ($x, $y) = $problem->local_coords;
 
     my $cfg = {
-        url => "https://map.hackney.gov.uk/geoserver/wfs",
+        url => "https://map2.hackney.gov.uk/geoserver/wfs",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => $layer,
         outputformat => "json",
