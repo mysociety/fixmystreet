@@ -457,8 +457,6 @@ sub report_sent_confirmation_email {
 
 sub handle_email_status_codes { 1 }
 
-sub is_council_with_case_management { 1 }
-
 # Try OSM for Bucks as it provides better disamiguation descriptions.
 sub get_geocoder { 'OSM' }
 

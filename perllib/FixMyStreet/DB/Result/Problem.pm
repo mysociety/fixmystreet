@@ -923,10 +923,6 @@ sub duration_string {
     my $body = $cobrand->call_hook( link_to_council_cobrand => $problem )
         || $problem->body(1);
     my $handler = $cobrand->call_hook(get_body_handler_for_problem => $problem);
-    if ( $handler && $handler->call_hook('is_council_with_case_management') ) {
-        my $s = sprintf(_('Received by %s moments later'), $body);
-        return FixMyStreet::Template::SafeString->new($s);
-    }
     return unless $problem->whensent;
     my $s = sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
