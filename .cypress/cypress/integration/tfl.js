@@ -40,6 +40,9 @@ it('shows TfL roadworks', function() {
 });
 
 it('does not show TfL categories outside London on .com', function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.visit('http://fixmystreet.localhost:3001/');
     cy.visit('http://fixmystreet.localhost:3001/report/new?latitude=51.345714&longitude=-0.227959');
     cy.contains('We do not yet have details').should('be.visible');
 });
