@@ -626,8 +626,9 @@ sub construct_bin_request_form {
         my $service = $_;
         my $name = $_->{service_name};
         my $containers = $_->{request_containers};
-        my $max = $_->{request_max};
+        my $maximum = $_->{request_max};
         foreach my $id (@$containers) {
+            my $max = ref $maximum ? $maximum->{$id} : $maximum;
             push @$field_list, "container-$id" => {
                 type => 'Checkbox',
                 apply => [

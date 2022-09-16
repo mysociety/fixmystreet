@@ -322,19 +322,22 @@ sub bin_services_for_address {
             $self->{c}->stash->{communal_property} = 1 if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
 
             my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
-            my ($container, $quantity);
+            my ($containers, $request_max);
             foreach (@$data) {
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                my ($container, $quantity);
                 foreach (@$moredata) {
                     $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
                     $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
                 }
+                if ($container && $quantity) {
+                    push @$containers, $container;
+                    # The most you can request is the amount you have
+                    $request_max->{$container} = $quantity;
+                }
             }
 
-            my $open_request = $events->{request}->{$container};
-
-            # The most you can request is the amount you have
-            my $request_max = $quantity;
+            my ($open_request) = grep { $_ } map { $events->{request}->{$_} } @$containers;
 
             my $garden = 0;
             my $garden_bins;
@@ -347,8 +350,9 @@ sub bin_services_for_address {
                 foreach (@$data) {
                     next unless $_->{DatatypeName} eq $self->garden_echo_container_name; # DatatypeId 3346
                     my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                    $garden_container = $container;
-                    $garden_bins = $quantity;
+                    # Assume garden will only have one container data
+                    $garden_container = $containers->[0];
+                    $garden_bins = $request_max->{$containers->[0]};
                     if ($garden_container == 28) {
                         $garden_cost = $self->garden_waste_sacks_cost_pa() / 100;
                     } else {
@@ -374,7 +378,7 @@ sub bin_services_for_address {
                 garden_overdue => $garden_overdue,
                 request_allowed => $request_max && $schedules->{next},
                 request_open => $open_request,
-                request_containers => [ $container ],
+                request_containers => $containers,
                 request_max => $request_max,
                 service_task_id => $task->{Id},
                 schedule => $schedules->{description},
