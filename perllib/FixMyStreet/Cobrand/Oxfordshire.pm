@@ -38,11 +38,6 @@ sub report_validation {
     return $errors;
 }
 
-sub is_council_with_case_management {
-    # XXX Change this to return 1 when OCC FMSfC goes live.
-    return FixMyStreet->config('STAGING_SITE');
-}
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter an Oxfordshire postcode, or street name and area';
