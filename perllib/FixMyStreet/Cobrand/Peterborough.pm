@@ -447,8 +447,12 @@ sub clear_cached_lookups_property {
     foreach ( qw/look_up_property bin_services_for_address property_attributes/ ) {
         delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
     }
-}
 
+    for (qw/earlier later/) {
+        delete $self->{c}
+            ->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};
+    }
+}
 
 sub bin_addresses_for_postcode {
     my $self = shift;
@@ -511,6 +515,12 @@ sub image_for_unit {
 # Check if collection is free or chargeable
 sub find_available_bulky_slots {
     my ( $self, $property, $last_earlier_date_str ) = @_;
+
+    my $key
+        = 'peterborough:bartec:available_bulky_slots:'
+        . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
+        . $property->{uprn};
+    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
@@ -612,6 +622,8 @@ sub find_available_bulky_slots {
             if !$last_earlier_date_str
             && @available_slots == max_bulky_collection_dates();
     }
+
+    $self->{c}->session->{$key} = \@available_slots;
 
     return \@available_slots;
 }

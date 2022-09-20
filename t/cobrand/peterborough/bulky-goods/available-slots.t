@@ -2,6 +2,7 @@ use DateTime::Format::Strptime;
 use FixMyStreet::Cobrand::Peterborough;
 use Test::Fatal;
 use Test::MockModule;
+use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
 use Test::More;
 
@@ -37,10 +38,14 @@ subtest 'find_available_bulky_slots' => sub {
         },
     );
 
+    my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
+    $cobrand->{c} = Test::MockObject->new;
+    my %session_hash;
+    $cobrand->{c}->mock( session => sub { \%session_hash } );
+
     $mock_bartec->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
     is_deeply(
-        FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
-            $dummy_property),
+        $cobrand->find_available_bulky_slots($dummy_property),
         [   {   date        => '2022-08-05T00:00:00',
                 workpack_id => 75474,
             },
@@ -60,9 +65,7 @@ subtest 'find_available_bulky_slots' => sub {
     $mock_bartec->mock( 'Premises_FutureWorkpacks_Get',
         &_future_workpacks($start_date) );
     is_deeply(
-        FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
-            $dummy_property, $start_date
-        ),
+        $cobrand->find_available_bulky_slots( $dummy_property, $start_date ),
         [   {   date        => '2022-09-23T00:00:00',
                 workpack_id => 75499,
             },
@@ -81,10 +84,19 @@ subtest 'find_available_bulky_slots' => sub {
         ],
     );
 
+    is_deeply(
+        [ sort keys %session_hash ],
+        [   'peterborough:bartec:available_bulky_slots:earlier:123456789',
+            'peterborough:bartec:available_bulky_slots:later:123456789',
+        ],
+        'cache keys should be set',
+    );
+
+    %session_hash = ();
     like(
         exception {
-            FixMyStreet::Cobrand::Peterborough->find_available_bulky_slots(
-                $dummy_property, '17-09-22' )
+            $cobrand->find_available_bulky_slots( $dummy_property,
+                '17-09-22' )
         },
         qr/Invalid date provided/,
     );
@@ -93,7 +105,7 @@ subtest 'find_available_bulky_slots' => sub {
 # For Premises_FutureWorkpacks_Get() calls
 sub _future_workpacks {
     my $start_date = shift;
-    my $fw = [
+    my $fw         = [
         # No black bin - ignored
         {   'id'           => 57127,
             'WorkPackDate' => '2022-07-29T00:00:00',
@@ -211,8 +223,7 @@ sub _future_workpacks {
                     >= $parser->parse_datetime($start_date);
             } @$fw
         ];
-    }
-    else {
+    } else {
         return $fw;
     }
 }
