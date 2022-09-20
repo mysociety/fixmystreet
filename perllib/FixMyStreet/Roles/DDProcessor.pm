@@ -38,6 +38,8 @@ sub waste_dd_paid {
 sub waste_reconcile_direct_debits {
     my ($self, $params) = @_;
 
+    my $user = $self->body->comment_user;
+
     $log_level = "DEBUG" if $params->{verbose};
 
     my $today = DateTime->now;
@@ -137,7 +139,7 @@ sub waste_reconcile_direct_debits {
                 $renew->confirm;
                 $renew->insert;
                 $self->log("created new confirmed report: " . $renew->id);
-                $handled = 1;
+                $handled = $renew->id;
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
         # a record in the database as they are the result of user action
@@ -175,12 +177,13 @@ sub waste_reconcile_direct_debits {
                         $self->log("confirming matching report " . $cur->id);
                         $cur->confirm;
                         $cur->update;
-                        $handled = 1;
+                        $handled = $cur->id;
                     } elsif ( $cur->state eq 'unconfirmed' ) {
-                        $self->log("hiding matching report " . $cur->id);
+                        $self->log("hiding matching report $handled");
                         # if we've pulled out more that one record, e.g. because they
                         # failed to make a payment then skip remaining ones.
                         $cur->state('hidden');
+                        $cur->add_to_comments( { text => "Hiding report as handled elsewhere by report $handled", user => $user, problem_state => $cur->state } );
                         $cur->update;
                     } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date)  {
                         $self->log("skipping matching report " . $cur->id);
@@ -258,6 +261,7 @@ sub waste_reconcile_direct_debits {
                 } else {
                     $self->log("hiding report");
                     $r->state('hidden');
+                    $r->add_to_comments( { text => 'Hiding report as no existing service', user => $user, problem_state => $r->state } );
                     $r->update;
                 }
             } else {
