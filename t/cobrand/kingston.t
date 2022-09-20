@@ -728,16 +728,61 @@ FixMyStreet::override_config {
         $cancel_nothing_in_echo->update;
         $id_replacements->{CANCEL_NOTHING_IN_ECHO} = $cancel_nothing_in_echo->id;
 
+        my $hidden_ref = "RBK-$id_replacements->{HIDDEN}-554399";
+        my $renewal_nothing_ref = "RBK-$id_replacements->{RENEWAL_NOTHING_IN_ECHO}-754322";
+        my $skipped_ref = "RBK-$id_replacements->{AD_HOC_SKIPPED}-954325";
+        my $warnings = [
+            "\n",
+            "looking at payment RBK-3000-554321\n",
+            "payment date: 16/03/2021\n",
+            "category: Garden Subscription\n",
+            "no matching origin sub for id 3000\n",
+            "no matching record found for Garden Subscription payment with id RBK-3000-554321\n",
+            "done looking at payment RBK-3000-554321\n",
+            "\n",
+            "looking at payment $hidden_ref\n",
+            "payment date: 16/03/2021\n",
+            "category: Garden Subscription\n",
+            "extra query is %payerReference,T" . length($hidden_ref) . ":$hidden_ref%\n",
+            "is a new/ad hoc\n",
+            "looking at potential match $id_replacements->{HIDDEN}\n",
+            "potential match is a dd payment\n",
+            "potential match type is 1\n",
+            "found matching report $id_replacements->{HIDDEN} with state hidden\n",
+            "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+            "done looking at payment $hidden_ref\n",
+            "\n",
+            "looking at payment $renewal_nothing_ref\n",
+            "payment date: 16/03/2021\n",
+            "category: Garden Subscription\n",
+            "extra query is %payerReference,T" . length($renewal_nothing_ref) . ":$renewal_nothing_ref%\n",
+            "is a renewal\n",
+            "looking at potential match $id_replacements->{RENEWAL_NOTHING_IN_ECHO} with state confirmed\n",
+            "is a matching new report\n",
+            "no matching service to renew for $renewal_nothing_ref\n",
+            "\n",
+            "looking at payment RBK-4000-854324\n",
+            "payment date: 16/03/2021\n",
+            "category: Garden Subscription\n",
+            "no matching origin sub for id 4000\n",
+            "no matching record found for Garden Subscription payment with id RBK-4000-854324\n",
+            "done looking at payment RBK-4000-854324\n",
+            "\n",
+            "looking at payment $skipped_ref\n",
+            "payment date: 16/03/2021\n",
+            "category: Garden Subscription\n",
+            "extra query is %payerReference,T" . length($skipped_ref) . ":$skipped_ref%\n",
+            "is a new/ad hoc\n",
+            "looking at potential match $id_replacements->{AD_HOC_SKIPPED}\n",
+            "potential match is a dd payment\n",
+            "potential match type is 3\n",
+            "no matching record found for Garden Subscription payment with id $skipped_ref\n",
+            "done looking at payment $skipped_ref\n",
+        ];
         my $c = FixMyStreet::Cobrand::Kingston->new;
         warnings_are {
             $c->waste_reconcile_direct_debits;
-        } [
-            "no matching record found for Garden Subscription payment with id RBK-3000-554321\n",
-            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{HIDDEN} . "-554399\n",
-            "no matching service to renew for RBK-" . $id_replacements->{RENEWAL_NOTHING_IN_ECHO} . "-754322\n",
-            "no matching record found for Garden Subscription payment with id RBK-4000-854324\n",
-            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{AD_HOC_SKIPPED} . "-954325\n",
-        ], "warns if no matching record";
+        } $warnings, "warns if no matching record";
 
         $new_sub->discard_changes;
         is $new_sub->state, 'confirmed', "New report confirmed";
@@ -852,13 +897,7 @@ FixMyStreet::override_config {
 
         warnings_are {
             $c->waste_reconcile_direct_debits;
-        } [
-            "no matching record found for Garden Subscription payment with id RBK-3000-554321\n",
-            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{HIDDEN} . "-554399\n",
-            "no matching service to renew for RBK-" . $id_replacements->{RENEWAL_NOTHING_IN_ECHO} . "-754322\n",
-            "no matching record found for Garden Subscription payment with id RBK-4000-854324\n",
-            "no matching record found for Garden Subscription payment with id RBK-" . $id_replacements->{AD_HOC_SKIPPED} . "-954325\n",
-        ], "warns if no matching record";
+        } $warnings, "warns if no matching record";
 
         $failed_new_sub->discard_changes;
         is $failed_new_sub->state, 'unconfirmed', 'failed sub still unconfirmed on second run';

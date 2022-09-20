@@ -1660,16 +1660,59 @@ subtest 'check direct debit reconcilliation' => sub {
     $cancel_nothing_in_echo->category('Cancel Garden Subscription');
     $cancel_nothing_in_echo->update;
 
+    my $warnings = [
+        "\n",
+        "looking at payment GGW554321\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription\n",
+        "is a new/ad hoc\n",
+        "no matching record found for Garden Subscription payment with id GGW554321\n",
+        "done looking at payment GGW554321\n",
+        "\n",
+        "looking at payment $hidden_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription\n",
+        "extra query is %payerReference,T" . length($hidden_ref) . ":$hidden_ref%\n",
+        "is a new/ad hoc\n",
+        "looking at potential match " . $hidden->id . "\n",
+        "potential match is a dd payment\n",
+        "potential match type is 1\n",
+        "found matching report " . $hidden->id . " with state hidden\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "done looking at payment $hidden_ref\n",
+        "\n",
+        "looking at payment $renewal_nothing_in_echo_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription\n",
+        "extra query is %payerReference,T" . length($renewal_nothing_in_echo_ref) . ":$renewal_nothing_in_echo_ref%\n",
+        "is a renewal\n",
+        "looking at potential match " . $renewal_nothing_in_echo->id . " with state confirmed\n",
+        "is a matching new report\n",
+        "no matching service to renew for $renewal_nothing_in_echo_ref\n",
+        "\n",
+        "looking at payment GGW854324\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription\n",
+        "is a renewal\n",
+        "no matching record found for Garden Subscription payment with id GGW854324\n",
+        "done looking at payment GGW854324\n",
+        "\n",
+        "looking at payment $ad_hoc_skipped_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription\n",
+        "extra query is %payerReference,T" . length($ad_hoc_skipped_ref) . ":$ad_hoc_skipped_ref%\n",
+        "is a new/ad hoc\n",
+        "looking at potential match " . $ad_hoc_skipped->id . "\n",
+        "potential match is a dd payment\n",
+        "potential match type is 3\n",
+        "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
+        "done looking at payment $ad_hoc_skipped_ref\n",
+    ];
+
     my $c = FixMyStreet::Cobrand::Bromley->new;
     warnings_are {
         $c->waste_reconcile_direct_debits;
-    } [
-        "no matching record found for Garden Subscription payment with id GGW554321\n",
-        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
-        "no matching service to renew for $renewal_nothing_in_echo_ref\n",
-        "no matching record found for Garden Subscription payment with id GGW854324\n",
-        "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
-    ], "warns if no matching record";
+    } $warnings, "warns if no matching record";
 
     $new_sub->discard_changes;
     is $new_sub->state, 'confirmed', "New report confirmed";
@@ -1790,13 +1833,7 @@ subtest 'check direct debit reconcilliation' => sub {
 
     warnings_are {
         $c->waste_reconcile_direct_debits;
-    } [
-        "no matching record found for Garden Subscription payment with id GGW554321\n",
-        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
-        "no matching service to renew for $renewal_nothing_in_echo_ref\n",
-        "no matching record found for Garden Subscription payment with id GGW854324\n",
-        "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
-    ], "warns if no matching record";
+    } $warnings, "warns if no matching record";
 
     $failed_new_sub->discard_changes;
     is $failed_new_sub->state, 'unconfirmed', 'failed sub still unconfirmed on second run';

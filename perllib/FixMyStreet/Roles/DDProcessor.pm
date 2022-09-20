@@ -51,8 +51,8 @@ sub waste_reconcile_direct_debits {
     });
 
     RECORD: for my $payment ( @$recent ) {
-
-        $self->log( "\nlooking at payment " . $payment->{$self->referenceField} );
+        $self->clear_log;
+        $self->log( "looking at payment " . $payment->{$self->referenceField} );
 
         my $date = $payment->{$self->paymentDateField};
 
@@ -119,7 +119,8 @@ sub waste_reconcile_direct_debits {
             if ( $p ) {
                 my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
                 unless ($service) {
-                    warn "no matching service to renew for $payer\n";
+                    $self->log("no matching service to renew for $payer");
+                    $self->output_log(1);
                     next;
                 }
                 my $renew = $self->_duplicate_waste_report($p, 'Garden Subscription', {
@@ -149,7 +150,7 @@ sub waste_reconcile_direct_debits {
             while ( my $cur = $rs->next ) {
                 $self->log("looking at potential match " . $cur->id);
                 next unless $self->waste_is_dd_payment($cur);
-                $self->log("potentual match is a dd payment");
+                $self->log("potential match is a dd payment");
                 if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
                     $self->log("found matching report " . $cur->id . " with state " . $cur->state);
                     if ( $cur->state eq 'unconfirmed' && !$handled) {
@@ -190,11 +191,11 @@ sub waste_reconcile_direct_debits {
         }
 
         unless ( $handled ) {
-            $self->log("no matching record found for $category payment with id $payer\n");
-            warn "no matching record found for $category payment with id $payer\n";
+            $self->log("no matching record found for $category payment with id $payer");
         }
 
         $self->log( "done looking at payment " . $payment->{$self->referenceField} );
+        $self->output_log(!$handled);
     }
 
     # There's two options with a cancel payment. If the user has cancelled it outside of
@@ -216,10 +217,12 @@ sub waste_reconcile_direct_debits {
         return;
     }
 
-    $self->log("\n\nProcessing Cancelled payments");
+    $self->clear_log;
+    $self->log("Processing Cancelled payments");
+    $self->output_log;
     CANCELLED: for my $payment ( @$cancelled ) {
-
-        $self->log("\nlooking at payment " . $payment->{$self->cancelReferenceField});
+        $self->clear_log;
+        $self->log("looking at payment " . $payment->{$self->cancelReferenceField});
 
         my $date = $payment->{$self->cancelledDateField};
         next unless $date;
@@ -264,6 +267,7 @@ sub waste_reconcile_direct_debits {
             }
         }
         $self->log("finished looking at payment " . $payment->{$self->cancelReferenceField});
+        $self->output_log;
     }
 }
 
@@ -388,13 +392,27 @@ sub waste_get_sub_quantity {
     return $quantity;
 }
 
+my @current_log;
+
 sub log {
     my ($self, $message, $level) = @_;
-
     $level ||= 'DEBUG';
+    push @current_log, [ $message, $level ];
+}
 
-    print $message . "\n" if
-        $self->logging_levels->{$level} >= $self->logging_levels->{$self->log_level};
+sub output_log {
+    my ($self, $warn) = @_;
+
+    foreach (@current_log) {
+        my ($message, $level) = @$_;
+        print "$message\n" if
+            $self->logging_levels->{$level} >= $self->logging_levels->{$self->log_level};
+        warn "$message\n" if $warn;
+    }
+}
+
+sub clear_log {
+    @current_log = (["", "DEBUG"]);
 }
 
 1;
