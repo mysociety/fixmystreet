@@ -26,8 +26,9 @@ subtest 'find_available_bulky_slots' => sub {
     $mock_bartec->mock(
         'WorkPacks_Get',
         sub {
-            my ( undef, $date ) = @_;
-            return _workpacks_by_date()->{$date};
+            my ( undef, %args ) = @_;
+            my $wp = _workpacks_by_date()->{ $args{date_from} };
+            return $wp ? $wp : _workpacks_by_date()->{ $args{date_to} };
         },
     );
     $mock_bartec->mock(

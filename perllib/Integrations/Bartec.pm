@@ -198,7 +198,7 @@ sub Premises_FutureWorkpacks_Get {
 }
 
 sub WorkPacks_Get {
-    my ( $self, $date ) = @_;
+    my ( $self, %args ) = @_;
 
     my $res = $self->call(
         'WorkPacks_Get',
@@ -206,11 +206,11 @@ sub WorkPacks_Get {
         Date  => {
             MinimumDate => {
                 attr  => { xmlns => "http://www.bartec-systems.com" },
-                value => $date,
+                value => $args{date_from},
             },
             MaximumDate => {
                 attr  => { xmlns => "http://www.bartec-systems.com" },
-                value => $date,
+                value => $args{date_to},
             },
         },
     );

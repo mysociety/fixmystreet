@@ -540,8 +540,10 @@ sub find_available_bulky_slots {
 
     my $suffix_date_parser
         = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
+    my $workpack_date_pattern = '%FT%T';
     my $workpack_date_parser
-        = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+        = DateTime::Format::Strptime->new(
+        pattern => $workpack_date_pattern );
 
     my $last_workpack_date;
     for my $workpack (@$workpacks) {
@@ -578,12 +580,24 @@ sub find_available_bulky_slots {
         # workpacks for the same date, we only take the first into account
         next if $workpack->{WorkPackDate} eq ( $last_workpack_date // '' );
 
-        my %jobs_per_uprn;
-        my $workpacks_for_day
-            = $bartec->WorkPacks_Get( $workpack->{WorkPackDate} );
         my $workpack_dt = $workpack_date_parser->parse_datetime(
             $workpack->{WorkPackDate} );
+        next unless $workpack_dt;
 
+        my $date_from
+            = $workpack_dt->clone->set( hour => 0, minute => 0, second => 0 )
+            ->strftime($workpack_date_pattern);
+        my $date_to = $workpack_dt->clone->set(
+            hour   => 23,
+            minute => 59,
+            second => 59,
+        )->strftime($workpack_date_pattern);
+        my $workpacks_for_day = $bartec->WorkPacks_Get(
+            date_from => $date_from,
+            date_to   => $date_to,
+        );
+
+        my %jobs_per_uprn;
         for my $wpfd (@$workpacks_for_day) {
             next if $wpfd->{Name} !~ bulky_workpack_name();
 
@@ -592,8 +606,7 @@ sub find_available_bulky_slots {
                 = $suffix_date_parser->parse_datetime( $+{date_suffix} );
 
             next
-                if !$workpack_dt
-                || !$suffix_dt
+                if !$suffix_dt
                 || $workpack_dt->date ne $suffix_dt->date;
 
             my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
