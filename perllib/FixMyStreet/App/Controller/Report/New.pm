@@ -82,6 +82,7 @@ sub report_new : Path : Args(0) {
 
     # create the report - loading a partial if available
     $c->forward('initialize_report');
+
     $c->forward('/auth/get_csrf_token');
 
     my @shortlist = grep { /^shortlist-(add|remove)-(\d+)$/ } keys %{$c->req->params};
@@ -180,6 +181,10 @@ sub send_json_response : Private {
 
 sub report_form_ajax : Path('ajax') : Args(0) {
     my ( $self, $c ) = @_;
+
+    if ($c->req->params->{he_referral}) {
+        $c->stash->{he_referral} = 1;
+    };
 
     $c->forward('/set_app_cors_header');
     $c->forward('initialize_report');

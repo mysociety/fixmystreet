@@ -56,7 +56,22 @@ describe('National Highways litter picking test', function() {
     });
 });
 
-describe('National Highways cobrand mobile tests', function() {
+describe('National Highways litter picking test', function() {
+    beforeEach(function() {
+        cy.server();
+        cy.route('**/mapserver/highways*', 'fixture:highways_a_road.xml').as('highways-tilma');
+        cy.route('**/report/new/ajax*', 'fixture:highways-ajax.json').as('report-ajax');
+    });
+    it('filters to litter options on FMS', function() {
+        cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-2.6030503&latitude=51.4966133&he_referral=1');
+        cy.wait('@report-ajax');
+        cy.wait('@highways-tilma');
+        cy.contains('most appropriate option for the litter or flytipping');
+        cy.contains('National Highways: Subcategory');
+        });
+});
+
+ describe('National Highways cobrand mobile tests', function() {
     it('does not allow reporting on DBFO roads on mobile either', function() {
         cy.server();
         cy.route('POST', '**/mapserver/highways', 'fixture:highways.xml').as('highways-tilma');

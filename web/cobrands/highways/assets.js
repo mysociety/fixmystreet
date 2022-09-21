@@ -112,6 +112,14 @@ function he_selected() {
     fixmystreet.body_overrides.allow_send('National Highways');
     regenerate_category(true);
     $(fixmystreet).trigger('report_new:highways_change');
+    if (window.location.href.indexOf('&he_referral=1') != -1) {
+        $('#problem_form .js-reporting-page--next').click();
+        var message = "<div class='box-warning' id='national-highways-referral'>Please select the local council's most appropriate option for the litter or flytipping issue you would like to report.</div>";
+        $('#js-top-message').append(message);
+        $('.js-reporting-page--next').on('click', function() {
+            $('#national-highways-referral').remove();
+        });
+    }
 }
 
 function he_council_litter_cat_selected() {

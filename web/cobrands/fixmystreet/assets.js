@@ -1202,13 +1202,18 @@ fixmystreet.message_controller = (function() {
             asset_strings.html(asset_strings.data('original'));
         }
         $('.js-update-coordinates').attr('href', function(i, href) {
+            var he_arg;
             if (href.indexOf('?') != -1) {
+                he_arg = href.indexOf('&he_referral=1');
                 href = href.substring(0, href.indexOf('?'));
             }
             href += '?' + OpenLayers.Util.getParameterString({
                 latitude: $('#fixmystreet\\.latitude').val(),
                 longitude: $('#fixmystreet\\.longitude').val()
             });
+            if (he_arg != -1) {
+                href += '&he_referral=1';
+            }
             return href;
         });
         if ($('html').hasClass('mobile')) {

@@ -168,6 +168,7 @@ sub munge_unmixed_category_groups {
 
 sub munge_mixed_category_groups {
     my ($self, $list) = @_;
+
     my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
     $nh->national_highways_cleaning_groups($list);
 }

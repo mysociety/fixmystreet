@@ -409,6 +409,15 @@ FixMyStreet::override_config {
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees');
         $mech->content_contains('Flytipping');
+
+        # A-road where NH not responsible for litter, referred to FMS from National Highways
+        # ajax call filters NH category to contain only litter related council subcategories
+        mock_road("A34", 0);
+        my $j = $mech->get_ok_json("/report/new/ajax?w=1&longitude=-0.912160&latitude=51.015143&he_referral=1");
+        my $tree = HTML::TreeBuilder->new_from_content($j->{subcategories});
+        my @elements = $tree->find('input');
+        is @elements, 1, 'Only one subcategory in National Highways category';
+        is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping';
     };
 };
 

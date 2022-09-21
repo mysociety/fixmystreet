@@ -16,6 +16,10 @@
     <div id="js-not-litter-pick-road" class="hidden js-responsibility-message js-roads-he">
         The road selected is maintained by National Highways, but litter issues on this road are handled by the local council.
         Please follow this link to
-        <a class="js-update-coordinates" href="https://www.fixmystreet.com/report/new?latitude=[% latitude %]&amp;longitude=[% longitude %]">FixMyStreet</a> to continue reporting your issue.
+        [% IF c.config.STAGING_SITE %]
+         <a class="js-update-coordinates" href="https://staging.fixmystreet.com/report/new?latitude=[% latitude %]&amp;longitude=[% longitude %]&amp;he_referral=1">FixMyStreet</a> to continue reporting your issue.
+        [% ELSE %]
+         <a class="js-update-coordinates" href="https://www.fixmystreet.com/report/new?latitude=[% latitude %]&amp;longitude=[% longitude %]&amp;he_referral=1">FixMyStreet</a> to continue reporting your issue.
+        [% END %]
         </p>
     </div>

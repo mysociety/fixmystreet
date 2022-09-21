@@ -193,8 +193,11 @@ sub national_highways_cleaning_groups {
     return unless $not_he_litter;
 
     # NH do not want flytipping or litter reports on these roads, take them out
-    @{$nh_group->{categories}} = grep { $_->category_display !~ /Flytipping|Litter/ } @{$nh_group->{categories}};
-
+    if (defined $c->stash->{he_referral}) {
+        @{$nh_group->{categories}} = ();
+    } else {
+        @{$nh_group->{categories}} = grep { $_->category_display !~ /Flytipping|Litter/ } @{$nh_group->{categories}};
+    }
     # Put any council street cleaning categories we can find into the NH group,
     # so they'll still appear if "on the HE road" is picked
     my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
