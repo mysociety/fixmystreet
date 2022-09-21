@@ -54,13 +54,15 @@ sub waste_reconcile_direct_debits {
 
     RECORD: for my $payment ( @$recent ) {
         $self->clear_log;
-        $self->log( "looking at payment " . $payment->{$self->referenceField} );
 
+        my $payer = $payment->{$self->referenceField};
         my $date = $payment->{$self->paymentDateField};
 
+        $self->log( "looking at payment $payer" );
         $self->log( "payment date: $date" );
 
         next unless $self->waste_dd_paid($date);
+        next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
 
         my ($category, $type) = $self->waste_payment_type(
             $payment->{$self->paymentTypeField},
@@ -69,11 +71,11 @@ sub waste_reconcile_direct_debits {
 
         next unless $category && $date;
 
-        $self->log( "category: $category" );
-
-        my $payer = $payment->{$self->referenceField};
+        $self->log( "category: $category ($type)" );
 
         my ($uprn, $rs) = $self->_process_reference($payer);
+        next unless $rs;
+        $rs = $rs->search({ category => 'Garden Subscription' });
 
         my $handled;
 
@@ -87,10 +89,8 @@ sub waste_reconcile_direct_debits {
         # If we're a renew payment then find the initial subscription payment, also
         # checking if we've already processed this payment. If we've not processed it
         # create a renewal record using the original subscription as a basis.
-        if ( $rs && $type && $type eq $self->waste_subscription_types->{Renew} ) {
-            next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
+        if ( $type eq $self->waste_subscription_types->{Renew} ) {
             $self->log("is a renewal");
-            $rs = $rs->search({ category => 'Garden Subscription' });
             my $p;
             # loop over all matching records and pick the most recent new sub or renewal
             # record. This is where we get the details of the renewal from. There should
@@ -143,12 +143,10 @@ sub waste_reconcile_direct_debits {
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
         # a record in the database as they are the result of user action
-        } elsif ($rs) {
-            next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
+        } else {
             $self->log("is a new/ad hoc");
             # we fetch the confirmed ones as well as we explicitly want to check for
             # processed reports so we can warn on those we are missing.
-            $rs = $rs->search({ category => 'Garden Subscription' });
             while ( my $cur = $rs->next ) {
                 $self->log("looking at potential match " . $cur->id);
                 next unless $self->waste_is_dd_payment($cur);
@@ -225,50 +223,51 @@ sub waste_reconcile_direct_debits {
     $self->output_log;
     CANCELLED: for my $payment ( @$cancelled ) {
         $self->clear_log;
-        $self->log("looking at payment " . $payment->{$self->cancelReferenceField});
-
-        my $date = $payment->{$self->cancelledDateField};
-        next unless $date;
 
         my $payer = $payment->{$self->cancelReferenceField};
+        my $date = $payment->{$self->cancelledDateField};
+
+        $self->log("looking at payment $payer");
+
+        next unless $date;
+
         my ($uprn, $rs) = $self->_process_reference($payer);
+        next unless $rs;
 
-        if ( $rs ) {
-            $rs = $rs->search({ category => 'Cancel Garden Subscription' });
-            my $r;
-            while ( my $cur = $rs->next ) {
-                $self->log("looking at report " . $cur->id);
-                if ( $cur->state eq 'unconfirmed' ) {
-                    $self->log("found matching report " . $cur->id);
-                    $r = $cur;
-                # already processed
-                } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
-                    $self->log("skipping report " . $cur->id);
-                    next CANCELLED;
-                }
+        $rs = $rs->search({ category => 'Cancel Garden Subscription' });
+        my $r;
+        while ( my $cur = $rs->next ) {
+            $self->log("looking at report " . $cur->id);
+            if ( $cur->state eq 'unconfirmed' ) {
+                $self->log("found matching report " . $cur->id);
+                $r = $cur;
+            # already processed
+            } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+                $self->log("skipping report " . $cur->id);
+                next CANCELLED;
             }
+        }
 
-            if ( $r ) {
-                $self->log("processing matched report " . $r->id);
-                my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
-                # if there's not a service then it's fine as it's already been cancelled
-                if ( $service ) {
-                    $r->set_extra_metadata('dd_date', $date);
-                    $self->log("confirming report");
-                    $r->confirm;
-                    $r->update;
-                # there's no service but we don't want to be processing the report all the time.
-                } else {
-                    $self->log("hiding report");
-                    $r->state('hidden');
-                    $r->add_to_comments( { text => 'Hiding report as no existing service', user => $user, problem_state => $r->state } );
-                    $r->update;
-                }
+        if ( $r ) {
+            $self->log("processing matched report " . $r->id);
+            my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
+            # if there's not a service then it's fine as it's already been cancelled
+            if ( $service ) {
+                $r->set_extra_metadata('dd_date', $date);
+                $self->log("confirming report");
+                $r->confirm;
+                $r->update;
+            # there's no service but we don't want to be processing the report all the time.
             } else {
-                # We don't do anything with DD cancellations that don't have
-                # associated Cancel reports, so no need to warn on them
-                # warn "no matching record found for Cancel payment with id $payer\n";
+                $self->log("hiding report");
+                $r->state('hidden');
+                $r->add_to_comments( { text => 'Hiding report as no existing service', user => $user, problem_state => $r->state } );
+                $r->update;
             }
+        } else {
+            # We don't do anything with DD cancellations that don't have
+            # associated Cancel reports, so no need to warn on them
+            # warn "no matching record found for Cancel payment with id $payer\n";
         }
         $self->log("finished looking at payment " . $payment->{$self->cancelReferenceField});
         $self->output_log;
