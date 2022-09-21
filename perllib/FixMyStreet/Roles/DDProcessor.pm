@@ -305,7 +305,7 @@ sub _duplicate_waste_report {
         longitude => $report->longitude,
         cobrand => $report->cobrand,
         bodies_str => $report->bodies_str,
-        title => $report->title,
+        title => 'Garden Subscription - Renew',
         detail => $report->detail,
         postcode => $report->postcode,
         used_map => $report->used_map,
