@@ -135,6 +135,7 @@ sub waste_reconcile_direct_debits {
                     PaymentCode => $payer,
                     payment_method => 'direct_debit',
                 } );
+                $renew->set_extra_metadata('payerReference', $payer);
                 $renew->set_extra_metadata('dd_date', $date);
                 $renew->confirm;
                 $renew->insert;
