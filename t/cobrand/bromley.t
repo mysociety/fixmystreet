@@ -1605,6 +1605,8 @@ subtest 'check direct debit reconcilliation' => sub {
         'property_id' => '54321',
         'uprn' => '654322',
     });
+    $sub_for_renewal->set_extra_metadata(payerReference => 'GGW654322');
+    $sub_for_renewal->update;
 
     my $sub_for_cancel = setup_dd_test_report({
         'Subscription_Type' => 1,
@@ -1641,6 +1643,7 @@ subtest 'check direct debit reconcilliation' => sub {
         'uprn' => '654324',
     });
     $processed_renewal->set_extra_metadata('dd_date' => '16/03/2021');
+    $processed_renewal->set_extra_metadata(payerReference => 'GGW654324');
     $processed_renewal->update;
 
     my $sub_for_cancel_nothing_in_echo = setup_dd_test_report({
@@ -1658,6 +1661,7 @@ subtest 'check direct debit reconcilliation' => sub {
     });
     $cancel_nothing_in_echo->state('unconfirmed');
     $cancel_nothing_in_echo->category('Cancel Garden Subscription');
+    $cancel_nothing_in_echo->set_extra_metadata(payerReference => 'GGW954324');
     $cancel_nothing_in_echo->update;
 
     my $warnings = [

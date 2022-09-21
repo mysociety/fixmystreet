@@ -331,9 +331,9 @@ sub _process_reference {
 
     # Old style GGW references
     if ((my $uprn = $payer) =~ s/^GGW//) {
-        my $len = length($uprn);
+        my $len = length($payer);
         my $rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { like => '%uprn,T5:value,I' . $len . ':'. $uprn . '%' },
+            extra => { like => '%payerReference,T' . $len . ':'. $payer . '%' },
         }, {
             order_by => [ { -desc => 'created' }, { -desc => 'id' } ],
         })->to_body( $self->body );
