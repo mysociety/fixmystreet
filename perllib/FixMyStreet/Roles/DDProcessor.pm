@@ -117,21 +117,19 @@ sub waste_reconcile_direct_debits {
                 next unless $self->waste_is_dd_payment($cur);
                 # only confirmed records are valid.
                 next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
+                # already processed
+                next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date;
+                next if $p;
+
                 my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
+                next unless $sub_type eq $self->waste_subscription_types->{New} || $sub_type eq $self->waste_subscription_types->{Renew};
+
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    # already processed - need this because a Renewal report
-                    # may have been switched to a New if the backend
-                    # subscription had expired
-                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date;
-                    $self->log("is a matching new report") if !$p;
-                    $p = $cur if !$p;
+                    $self->log("is a matching new report");
                 } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
-                    # already processed
-                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date;
-                    # if it's a renewal of a DD where the initial setup was as a renewal
-                    $self->log("is a matching renewal report") if !$p;
-                    $p = $cur if !$p;
+                    $self->log("is a matching renewal report");
                 }
+                $p = $cur;
             }
             if ( $p ) {
                 my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
@@ -178,12 +176,9 @@ sub waste_reconcile_direct_debits {
         $self->output_log(!$handled);
     }
 
-    # There's two options with a cancel payment. If the user has cancelled it outside of
-    # WasteWorks then we need to find the original sub and generate a new cancel subscription
-    # report.
-    #
-    # If it's been cancelled inside WasteWorks then we'll have an unconfirmed cancel report
-    # which we need to confirm.
+    # There's two options with a cancel payment. If the user has cancelled it outside
+    # of WasteWorks then we do nothing. If it's been cancelled inside WasteWorks then
+    # we'll have an unconfirmed cancel report which we need to confirm.
 
     my $cancelled = $i->get_cancelled_payers({
         start => $start,
