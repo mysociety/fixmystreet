@@ -134,6 +134,7 @@ sub waste_reconcile_direct_debits {
                     LastPayMethod => $self->bin_payment_types->{direct_debit},
                     PaymentCode => $payer,
                     payment_method => 'direct_debit',
+                    property_id => $p->get_extra_field_value('property_id'),
                 } );
                 $renew->set_extra_metadata('payerReference', $payer);
                 $renew->set_extra_metadata('dd_date', $date);

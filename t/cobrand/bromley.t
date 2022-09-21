@@ -1786,9 +1786,13 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'renewal has correct container type';
     is $p->get_extra_field_value('service_id'), 545, 'renewal has correct service id';
+    is $p->get_extra_field_value('property_id'), '54321';
     is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $p->get_extra_metadata('dd_date'), '16/03/2021';
+    is $p->get_extra_metadata('payerReference'), 'GGW654322';
     is $p->cobrand_data, 'waste';
     is $p->state, 'confirmed';
+    is $p->title, 'Garden Subscription - Renew';
 
     # Assume that this has now had to go through as New, rather than Renewal
     # Should not be any extra warning output later on
