@@ -5,6 +5,30 @@ use DateTime::Format::Strptime;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
+# XXX Use cobrand hook
+use constant ITEMS_MASTER_LIST =>
+    FixMyStreet::Cobrand::Peterborough->bulky_items_master_list;
+
+sub _format_name {
+    my $str = shift;
+    return lc $str =~ s/\W+/_/gr;
+}
+
+sub _formatted_category_to_original {
+    my %hash;
+
+    for my $item ( @{ +ITEMS_MASTER_LIST } ) {
+        my $cat = $item->{category};
+
+        $hash{ _format_name($cat) } = $cat;
+    }
+
+    return \%hash;
+}
+
+use constant FORMATTED_CATEGORY_TO_ORIGINAL =>
+    _formatted_category_to_original();
+
 has_page intro => (
     title => 'Book bulky goods collection',
     intro => 'bulky/intro.html',
@@ -55,9 +79,10 @@ has_page choose_date_later => (
 );
 
 has_page add_items => (
-    fields => ['continue', 'item1', 'item2', 'item3', 'item4', 'item5'], # XXX build list dynamically
-    title => 'Add items for collection',
-    next => 'location',
+    fields   => [ 'continue', map {"item_$_"} ( 1 .. 5 ) ],
+    template => 'waste/bulky/items.html',
+    title    => 'Add items for collection',
+    next     => 'location',
 );
 
 has_page location => (
@@ -65,7 +90,6 @@ has_page location => (
     fields => ['location', 'location_photo', 'continue'],
     next => 'summary',
 );
-
 
 has_page summary => (
     fields => ['submit', 'tandc'],
@@ -172,43 +196,73 @@ has_field show_earlier_dates => (
     order => 998,
 );
 
-sub validate {
-    my $self = shift;
+# XXX Validation
+### Make sure only one item type selected per compound item field
+### Make sure selected item matches category
+### Make sure at least one item provided
+# XXX Passing only selected params
+# XXX Uploading images
+### Only one image per item
+# XXX Proof-of-concept Javascript?
+# XXX Tests
 
-    if ( $self->current_page->name =~ /choose_date/ ) {
-        my $next_page
-            = $self->current_page->next->( undef, $self->c->req->params );
+for my $num ( 1 .. 5 ) {
+    has_field "item_$num" => (
+        type     => 'Compound',
+        label    => "Item $num",
+        do_label => 1,
+        id       => "item_$num",
+    );
 
-        if ( $next_page eq 'add_items' ) {
-            $self->field('chosen_date')
-                ->add_error('Available dates field is required')
-                if !$self->field('chosen_date')->value;
-        }
+    has_field "item_$num.category" => (
+        type    => 'Select',
+        label   => 'Category',
+        id => "item_$num.category",
+        options => _item_category_options(),
+    );
+
+    for my $cat ( map { $_->{category} } @{ +ITEMS_MASTER_LIST } ) {
+        my $cat_formatted = _format_name($cat);
+        has_field "item_$num.$cat_formatted" => (
+            type           => 'Select',
+            label => "Item for $cat",
+            id => "item_$num.$cat_formatted",
+            options_method => sub {
+                my $self = shift;
+
+                my $items;
+                for ( @{ +ITEMS_MASTER_LIST } ) {
+                    if ( $cat eq $_->{category} ) {
+                        $items = $_->{items};
+                        last;
+                    }
+                }
+
+                return [
+                    { label => 'Please select', value => 0 },
+                    map { label => $_, value => $_ },
+                    @$items
+                ];
+            },
+        );
     }
+
+    has_field "item_$num.images" => (
+        type  => 'Upload',
+        label => 'Images',
+    );
 }
 
-after 'process' => sub {
-    my $self = shift;
-
-    # XXX Do we want to let the user know there are no available dates
-    # much earlier in the journey?
-
-    # Hide certain fields if no date options
-    if ( $self->current_page->name eq 'choose_date_earlier'
-        && !@{ $self->field('chosen_date')->options } )
-    {
-        $self->field('chosen_date')->inactive(1);
-        $self->field('show_later_dates')->inactive(1);
-        $self->field('continue')->inactive(1);
-    }
-
-    if ( $self->current_page->name eq 'choose_date_later'
-        && !@{ $self->field('chosen_date')->options } )
-    {
-        $self->field('chosen_date')->inactive(1);
-        $self->field('continue')->inactive(1);
-    }
-};
+sub _item_category_options {
+    return [
+        { label => 'Please select', value => 0 },
+        map {
+            my $cat       = $_->{category};
+            my $cat_value = _format_name($cat);
+            { label => $cat, value => $cat_value };
+        } @{ +ITEMS_MASTER_LIST }
+    ];
+}
 
 has_field tandc => (
     type => 'Checkbox',
@@ -254,30 +308,42 @@ has_field location_photo => (
     label => 'Help us by attaching a photo of where the items will be left for collection.',
 );
 
-# XXX yuck
-sub item_field {
-    my $i = shift;
-    (
-        type => 'Select',
-        widget => 'Select',
-        label => 'Item ' . $i,
-        required => $i == 1 ? 1 : 0,
-        tags => { last_differs => 1, small => 1, autocomplete => 1 },
-        options => [
-            # XXX look these up dynamically
-            { value => 'chair', label => 'Armchair' },
-            { value => 'sofa', label => 'Sofa' },
-            { value => 'table', label => 'Table' },
-            { value => 'fridge', label => 'Fridge' },
-        ],
-    )
+sub validate {
+    my $self = shift;
+
+    if ( $self->current_page->name =~ /choose_date/ ) {
+        my $next_page
+            = $self->current_page->next->( undef, $self->c->req->params );
+
+        if ( $next_page eq 'add_items' ) {
+            $self->field('chosen_date')
+                ->add_error('Available dates field is required')
+                if !$self->field('chosen_date')->value;
+        }
+    }
 }
 
-# XXX yuck yuck
-has_field item1 => item_field(1);
-has_field item2 => item_field(2);
-has_field item3 => item_field(3);
-has_field item4 => item_field(4);
-has_field item5 => item_field(5);
+after 'process' => sub {
+    my $self = shift;
+
+    # XXX Do we want to let the user know there are no available dates
+    # much earlier in the journey?
+
+    # Hide certain fields if no date options
+    if ( $self->current_page->name eq 'choose_date_earlier'
+        && !@{ $self->field('chosen_date')->options } )
+    {
+        $self->field('chosen_date')->inactive(1);
+        $self->field('show_later_dates')->inactive(1);
+        $self->field('continue')->inactive(1);
+    }
+
+    if ( $self->current_page->name eq 'choose_date_later'
+        && !@{ $self->field('chosen_date')->options } )
+    {
+        $self->field('chosen_date')->inactive(1);
+        $self->field('continue')->inactive(1);
+    }
+};
 
 1;

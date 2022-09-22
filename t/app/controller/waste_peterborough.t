@@ -719,14 +719,19 @@ FixMyStreet::override_config {
             $mech->content_contains('Item 3');
             $mech->content_contains('Item 4');
             $mech->content_contains('Item 5');
-            $mech->content_contains('<option value="chair">Armchair</option>');
-            $mech->submit_form_ok({ with_fields => {
-                item1 => 'fridge',
-                item2 => 'chair',
-                item3 => 'sofa',
-                item4 => 'table',
-                item5 => 'fridge',
-            }});
+            $mech->content_like(
+                qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'item_1.category' => 'audio_visual_elec_equipment',
+                        'item_1.audio_visual_elec_equipment' => 'Amplifiers',
+
+                        'item_2.category' => 'baby_toddler',
+                        # XXX Should fail once validation implemented
+                        'item_2.audio_visual_elec_equipment' => 'Amplifiers',
+                    },
+                },
+            );
         };
 
         subtest 'Location details page' => sub {
@@ -739,7 +744,7 @@ FixMyStreet::override_config {
         subtest 'Summary page' => sub {
             $mech->content_contains('Submit bulky goods collection booking');
             $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
-            $mech->content_contains('<dd class="govuk-summary-list__value">table</dd>');
+            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Category: Audio \/ Visual Elec\. equipment.*Item: Amplifiers/s);
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         };
 
