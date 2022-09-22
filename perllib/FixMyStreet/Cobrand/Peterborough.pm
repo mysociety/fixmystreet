@@ -671,6 +671,56 @@ sub _bulky_collection_window {
     };
 }
 
+sub bulky_items_master_list {
+    # XXX Need to fetch from DB
+    return [
+        {   bartec_id => '1001',
+            category  => 'Audio / Visual Elec. equipment',
+            message   => '',
+            name      => 'Amplifiers',
+            price     => '',
+        },
+        {   bartec_id => '1001',
+            category  => 'Audio / Visual Elec. equipment',
+            message   => '',
+            name      => 'DVD/BR Video players',
+            price     => '',
+        },
+        {   bartec_id => '1001',
+            category  => 'Audio / Visual Elec. equipment',
+            message   => '',
+            name      => 'HiFi Stereos',
+            price     => '',
+        },
+
+        {   bartec_id => '1002',
+            category  => 'Baby / Toddler',
+            message   => '',
+            name      => 'Childs bed / cot',
+            price     => '',
+        },
+        {   bartec_id => '1002',
+            category  => 'Baby / Toddler',
+            message   => '',
+            name      => 'High chairs',
+            price     => '',
+        },
+
+        {   bartec_id => '1003',
+            category  => 'Bedroom',
+            message   => '',
+            name      => 'Chest of drawers',
+            price     => '',
+        },
+        {   bartec_id => '1003',
+            category  => 'Bedroom',
+            message   => 'Please dismantle',
+            name      => 'Wardrobes',
+            price     => '',
+        },
+    ];
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;

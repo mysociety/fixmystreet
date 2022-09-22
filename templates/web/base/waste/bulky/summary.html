@@ -6,12 +6,18 @@ step1 = 'report';
 %]
 
 [% BLOCK answers %]
-  [% FOR item IN data.keys.grep('^item') %]
-    [% NEXT UNLESS data.$item %]
+  [% FOR item_key IN data.keys.grep('^item').sort %]
+    [% item = data.$item_key; NEXT UNLESS item %]
     <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% item %]</dt>
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% item_key.ucfirst.replace( '_', ' ' )  %]</dt>
         <dd class="govuk-summary-list__value">
-          [%~ data.$item ~%]
+          [% item.item %]
+          <br>
+          [% extra_text = form.items_extra_text.${item.item}; IF extra_text %]
+            Notes: [% extra_text %]
+            <br>
+          [% END %]
+          Image: TODO
         </dd>
     </div>
   [% END %]
