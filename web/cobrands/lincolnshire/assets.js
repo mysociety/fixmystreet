@@ -17,7 +17,6 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     body: "Lincolnshire County Council"
 };
 

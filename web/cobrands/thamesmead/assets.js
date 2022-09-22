@@ -26,7 +26,6 @@ var defaults = {
     display_zoom_message: true,
     nearest_radius: 0.1,
     body: "Thamesmead",
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     asset_item_message: 'Please pick a highlighted area from the map to report an issue to Thamesmead/Peabody.',
     actions: {
         found: fixmystreet.message_controller.road_found,

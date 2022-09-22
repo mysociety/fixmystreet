@@ -39,8 +39,7 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
-    body: "Buckinghamshire Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Buckinghamshire Council"
 };
 
 fixmystreet.assets.add(defaults, {

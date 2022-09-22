@@ -17,8 +17,7 @@ var defaults = {
     max_resolution: 4.777314267158508,
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    body: "London Borough of Bexley",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "London Borough of Bexley"
 };
 
 var streetlight_stylemap = new OpenLayers.StyleMap({

@@ -19,8 +19,7 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
-    body: "Hampshire County Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Hampshire County Council"
 };
 
 fixmystreet.assets.add(defaults, {

@@ -19,7 +19,6 @@ fixmystreet.maps.banes_defaults = {
     },
     format_class: OpenLayers.Format.GeoJSON,
     format_options: {ignoreExtraDims: true},
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     asset_category: "",
     asset_item: "asset",
     asset_type: 'spot',

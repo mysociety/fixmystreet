@@ -19,8 +19,7 @@ var defaults = {
     max_resolution: 9.554628534317017,
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    body: "Central Bedfordshire Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Central Bedfordshire Council"
 };
 var proxy_defaults = $.extend(true, {}, defaults, {
     http_options: {

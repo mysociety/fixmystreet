@@ -26,7 +26,6 @@ var defaults = {
     max_resolution: 40,
     min_resolution: 0.0001,
     srsName: "EPSG:3857",
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     body: 'National Highways'
 };
 

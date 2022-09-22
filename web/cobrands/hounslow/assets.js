@@ -23,7 +23,6 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     body: "Hounslow Borough Council"
 };
 

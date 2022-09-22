@@ -21,7 +21,6 @@ var wfs_defaults = {
   attributes: {},
   geometryName: 'geom',
   srsName: "EPSG:27700",
-  strategy_class: OpenLayers.Strategy.FixMyStreet,
   body: "Hackney Council",
   asset_item: "item"
 };
@@ -133,7 +132,6 @@ var hackney_defaults = $.extend(true, {}, {
   format_class: OpenLayers.Format.GeoJSON,
   srsName: "EPSG:4326",
   class: OpenLayers.Layer.VectorAssetMove,
-  strategy_class: OpenLayers.Strategy.FixMyStreet,
   non_interactive: false,
   body: "Hackney Council",
   attributes: {

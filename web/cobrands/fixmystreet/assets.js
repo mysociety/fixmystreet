@@ -662,7 +662,7 @@ function construct_protocol_class(options) {
 }
 
 function construct_layer_options(options, protocol) {
-    var StrategyClass = options.strategy_class || OpenLayers.Strategy.BBOX;
+    var StrategyClass = options.strategy_class || OpenLayers.Strategy.FixMyStreet;
 
     var max_resolution = options.max_resolution;
     if (typeof max_resolution === 'object') {

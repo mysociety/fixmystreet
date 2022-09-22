@@ -48,7 +48,6 @@ var parkOptions = $.extend(true, {}, base_options, {
     asset_id_field: 'SITE_CODE',
     srsName: "EPSG:3857",
     stylemap: park_style_map,
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     road: true,
     non_interactive: true,
     actions: {

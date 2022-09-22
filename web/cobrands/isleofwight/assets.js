@@ -22,7 +22,6 @@ var defaults = {
     asset_id_field: 'asset_id',
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
-    strategy_class: OpenLayers.Strategy.FixMyStreet,
     body: "Isle of Wight Council"
 };
 

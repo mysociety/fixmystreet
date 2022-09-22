@@ -24,8 +24,7 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
-    body: "Shropshire Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Shropshire Council"
 };
 
 var highways_style = new OpenLayers.Style({

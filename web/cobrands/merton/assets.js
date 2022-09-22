@@ -7,8 +7,7 @@ if (!fixmystreet.maps) {
 var defaults = {
     max_resolution: 4.777314267158508,
     srsName: "EPSG:27700",
-    body: "Merton Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Merton Council"
 };
 
 var tilma_host = fixmystreet.staging ? "https://tilma.staging.mysociety.org/" : "https://tilma.mysociety.org/";

@@ -98,7 +98,6 @@ var northants_defaults = {
   wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/northamptonshire" : "https://tilma.mysociety.org/mapserver/northamptonshire",
   geometryName: 'msGeometry',
   srsName: "EPSG:3857",
-  strategy_class: OpenLayers.Strategy.FixMyStreet,
   non_interactive: false,
   body: "Northamptonshire Highways",
   attributes: {

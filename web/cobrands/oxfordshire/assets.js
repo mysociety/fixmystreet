@@ -43,8 +43,7 @@ var defaults = {
     max_resolution: 4.777314267158508,
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    body: "Oxfordshire County Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Oxfordshire County Council"
 };
 
 var asset_fillColor = fixmystreet.cobrand === "oxfordshire" ? "#007258" : "#FFFF00";
@@ -513,7 +512,6 @@ var base_light_url = base_host + "/alloy/oxfordshire-lights.php?url=" + base_pro
 var oxfordshire_defaults = {
   format_class: OpenLayers.Format.GeoJSON,
   srsName: "EPSG:4326",
-  strategy_class: OpenLayers.Strategy.FixMyStreet,
   class: OpenLayers.Layer.VectorAssetMove,
   non_interactive: false,
   body: "Oxfordshire County Council",

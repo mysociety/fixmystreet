@@ -21,8 +21,7 @@ var defaults = {
     asset_type: 'spot',
     max_resolution: 2.388657133579254,
     geometryName: 'msGeometry',
-    srsName: "EPSG:3857",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    srsName: "EPSG:3857"
 };
 if (fixmystreet.cobrand === 'tfl') {
     // On .com we change the categories depending on where is clicked; on the

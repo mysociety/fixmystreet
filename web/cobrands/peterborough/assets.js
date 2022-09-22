@@ -18,8 +18,7 @@ OpenLayers.Protocol.Peterborough = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 var defaults = {
     max_resolution: 4.777314267158508,
     srsName: "EPSG:3857",
-    body: "Peterborough City Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Peterborough City Council"
 };
 
 var tilma_defaults = $.extend(true, {}, defaults, {

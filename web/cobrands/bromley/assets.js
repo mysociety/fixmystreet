@@ -20,8 +20,7 @@ var defaults = {
     asset_id_field: 'CENTRAL_AS',
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
-    body: "Bromley Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Bromley Council"
 };
 
 fixmystreet.assets.add(defaults, {

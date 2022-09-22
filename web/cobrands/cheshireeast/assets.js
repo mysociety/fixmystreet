@@ -16,8 +16,7 @@ var defaults = {
     },
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
-    body: "Cheshire East Council",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    body: "Cheshire East Council"
 };
 
 var streetlight_stylemap = new OpenLayers.StyleMap({

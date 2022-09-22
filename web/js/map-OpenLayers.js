@@ -1228,7 +1228,9 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
             mapBounds = this.getMapBounds();
         }
         this.bounds = mapBounds;
-    }
+    },
+
+    CLASS_NAME: "OpenLayers.Strategy.FixMyStreet"
 });
 
 /* This strategy additionally does not update on load, as we already have the data. */

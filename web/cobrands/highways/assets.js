@@ -18,8 +18,7 @@ var defaults = {
     // this covers zoomed right out on Cumbrian sections of
     // the M6
     max_resolution: 20,
-    srsName: "EPSG:900913",
-    strategy_class: OpenLayers.Strategy.FixMyStreet
+    srsName: "EPSG:900913"
 };
 
 fixmystreet.assets.add(defaults, {
