@@ -4,13 +4,13 @@
 <input type="hidden" name="ORDERID" value="[% reference %]">
 <input type="hidden" name="AMOUNT" value="[% payment_amount %]">
 <input type="hidden" name="CURRENCY" value="GBP">
-<input type="hidden" name="LANGUAGE" value="en_GB">
+<input type="hidden" name="LANGUAGE" value="en_US">
 <input type="hidden" name="CN" value="[% first_name %] [% last_name %]">
 <input type="hidden" name="EMAIL" value="[% email %]">
-<input type="hidden" name="OWNERZIP" value="[% postcode %]">
+<input type="hidden" name="OWNERZIP" value="[% postcode | trim %]">
 <input type="hidden" name="OWNERADDRESS" value="[% address1 %]">
 <input type="hidden" name="OWNERCTY" value="UK">
-<input type="hidden" name="OWNERTOWN" value="[% town %]">
+<input type="hidden" name="OWNERTOWN" value="[% town | trim %]">
 <input type="hidden" name="OWNERTELNO" value="[% phone %]">
 
 <input type="hidden" name="SHASIGN" value="[% cc_sha %]">
