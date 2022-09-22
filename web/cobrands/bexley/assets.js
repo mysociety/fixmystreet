@@ -5,15 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 var defaults = {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/bexley",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
-        }
-    },
+    http_wfs_url: "https://tilma.mysociety.org/mapserver/bexley",
     max_resolution: 4.777314267158508,
     geometryName: 'msGeometry',
     srsName: "EPSG:3857",
@@ -48,11 +40,7 @@ var road_defaults = $.extend(true, {}, defaults, {
 });
 
 fixmystreet.assets.add(road_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Streets",
-        }
-    },
+    wfs_feature: "Streets",
     nearest_radius: 100,
     usrn: [
         {
@@ -71,12 +59,7 @@ fixmystreet.assets.add(road_defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/bexley",
-        params: {
-            TYPENAME: "Trees"
-        }
-    },
+    wfs_feature: "Trees",
     asset_id_field: 'central_as',
     attributes: {
         central_asset_id: 'central_as',
@@ -88,33 +71,21 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Bollards"
-        }
-    },
+    wfs_feature: "Bollards",
     asset_category: ["Traffic bollard"],
     asset_item_message: 'Select the <b class="asset-spot"></b> on the map to pinpoint the exact location of a damaged traffic bollard.',
     asset_item: 'bollard'
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Lighting"
-        }
-    },
+    wfs_feature: "Lighting",
     asset_category: ["Lamp post", "Light in park or open space", "Underpass light", "Light in multi-storey car park", "Light in outside car park"],
     asset_item_message: 'Please pinpoint the exact location for the street lighting fault.',
     asset_item: 'street light'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Toilets"
-        }
-    },
+    wfs_feature: "Toilets",
     asset_type: 'spot',
     asset_category: ["Public toilets"],
     asset_item: 'public toilet'

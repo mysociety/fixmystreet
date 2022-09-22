@@ -5,15 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 var defaults = {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/hounslow",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    http_wfs_url: "https://tilma.mysociety.org/mapserver/hounslow",
     asset_type: 'spot',
     max_resolution: 1.194328566789627,
     asset_id_field: 'CentralAssetId',
@@ -27,11 +19,7 @@ var defaults = {
 };
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "bins"
-        }
-    },
+    wfs_feature: "bins",
     asset_category: "Litter Bins",
     asset_item: 'bin'
 }));
@@ -39,11 +27,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 // Disabled for now as the data is quite out of date and causing problems
 // sending reports.
 // fixmystreet.assets.add($.extend(true, {}, defaults, {
-//     http_options: {
-//         params: {
-//             TYPENAME: "trees"
-//         }
-//     },
+//     wfs_feature: "trees",
 //     asset_id_field: 'central_asset_id',
 //     attributes: {
 //         central_asset_id: 'central_asset_id',
@@ -74,11 +58,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 // }));
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "signs"
-        }
-    },
+    wfs_feature: "signs",
     asset_category: [
         "Sign Obstructed: Vegetation",
         "Missing sign",
@@ -95,11 +75,7 @@ fixmystreet.assets.add($.extend(true, {}, defaults, {
 //  confident that the inventory is accurate."
 // https://3.basecamp.com/4020879/buckets/10951425/todos/1780668464
 // fixmystreet.assets.add($.extend(true, {}, defaults, {
-//     http_options: {
-//         params: {
-//             TYPENAME: "gulleys"
-//         }
-//     },
+//     wfs_feature: "gulleys",
 //     asset_category: [
 //         "Bad smell",
 //         "Flooding",
@@ -146,11 +122,7 @@ var labeled_defaults = $.extend(true, {}, defaults, {
 });
 
 fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "lighting"
-        }
-    },
+    wfs_feature: "lighting",
     asset_category: [
         "Damage to paintwork",
         "Damage to paintwork/ column",
@@ -173,11 +145,7 @@ fixmystreet.assets.add($.extend(true, {}, labeled_defaults, {
 }));
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "streets"
-        }
-    },
+    wfs_feature: "streets",
     max_resolution: 4.777314267158508,
     always_visible: true,
     non_interactive: true,

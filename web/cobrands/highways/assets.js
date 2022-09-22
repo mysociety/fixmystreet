@@ -5,28 +5,16 @@ if (!fixmystreet.maps) {
 }
 
 var defaults = {
-    http_options: {
-        url: "https://tilma.mysociety.org/mapserver/highways",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
-        }
-    },
+    http_wfs_url: "https://tilma.mysociety.org/mapserver/highways",
     asset_type: 'area',
     // this covers zoomed right out on Cumbrian sections of
     // the M6
     max_resolution: 20,
-    srsName: "EPSG:900913"
+    srsName: "EPSG:3857"
 };
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Highways"
-        }
-    },
+    wfs_feature: "Highways",
     stylemap: fixmystreet.assets.stylemap_invisible,
     always_visible: true,
 

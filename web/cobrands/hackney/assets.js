@@ -6,15 +6,7 @@ if (!fixmystreet.maps) {
 
 /** These layers are from the Hackney WFS feed, for non-Alloy categories: */
 var wfs_defaults = {
-  http_options: {
-    url: 'https://map2.hackney.gov.uk/geoserver/ows',
-    params: {
-        SERVICE: "WFS",
-        VERSION: "1.1.0",
-        REQUEST: "GetFeature",
-        SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-    }
-},
+  http_wfs_url: 'https://map2.hackney.gov.uk/geoserver/ows',
   asset_type: 'spot',
   max_resolution: 2.388657133579254,
   asset_id_field: 'id',
@@ -27,21 +19,13 @@ var wfs_defaults = {
 
 
 fixmystreet.assets.add(wfs_defaults, {
-  http_options: {
-      params: {
-          TYPENAME: "parking:inventory_pay_and_display_machine",
-      }
-  },
+  wfs_feature: "parking:inventory_pay_and_display_machine",
   asset_category: "Pay & Display Machines",
   attributes: {}
 });
 
 fixmystreet.assets.add(wfs_defaults, {
-  http_options: {
-      params: {
-          TYPENAME: "transport:bike_hangar",
-      }
-  },
+  wfs_feature: "transport:bike_hangar",
   asset_category: "Cycle Hangars",
   attributes: {}
 });

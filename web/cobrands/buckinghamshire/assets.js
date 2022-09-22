@@ -21,15 +21,7 @@ var tilma_url = "https://" + wfs_host + "/mapserver/bucks";
 var drains_proxy_url = "https://" + wfs_host + "/proxy/bcc/drains/wfs";
 
 var defaults = {
-    http_options: {
-        url: tilma_url,
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    http_wfs_url: tilma_url,
     asset_type: 'spot',
     max_resolution: 4.777314267158508,
     asset_id_field: 'central_as',
@@ -43,11 +35,7 @@ var defaults = {
 };
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Grit_Bins"
-        }
-    },
+    wfs_feature: "Grit_Bins",
     asset_category: ["Salt bin damaged", "Salt bin refill"],
     asset_item: 'grit bin'
 });
@@ -85,11 +73,7 @@ var labeled_defaults = $.extend(true, {}, defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "StreetLights_Union"
-        }
-    },
+    wfs_feature: "StreetLights_Union",
     class: OpenLayers.Layer.VectorAssetMove,
     asset_category: [
         'Light on during the day',
@@ -121,31 +105,19 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "IlluminatedBollards"
-        }
-    },
+    wfs_feature: "IlluminatedBollards",
     asset_category: ["Bollard light not working"],
     asset_item: 'bollard'
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Bollards"
-        }
-    },
+    wfs_feature: "Bollards",
     asset_category: ["Bollards or railings"],
     asset_item: 'bollard'
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Beacons"
-        }
-    },
+    wfs_feature: "Beacons",
     asset_category: [
           'Belisha Beacon broken',
         ],
@@ -153,11 +125,7 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Beacon_Column"
-        }
-    },
+    wfs_feature: "Beacon_Column",
     asset_category: [
           'Belisha Beacon broken',
         ],
@@ -165,11 +133,7 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Crossings"
-        }
-    },
+    wfs_feature: "Crossings",
     asset_category: [
           'Traffic lights & crossings problems with buttons, beep or lamps',
           'Traffic lights & crossings problems with timings',
@@ -178,11 +142,7 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Signs_Union"
-        }
-    },
+    wfs_feature: "Signs_Union",
     asset_category: [
           'Sign light not working',
           'Sign problem',
@@ -195,11 +155,7 @@ fixmystreet.assets.add(labeled_defaults, {
 });
 
 fixmystreet.assets.add(labeled_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "BusStops"
-        }
-    },
+    wfs_feature: "BusStops",
     asset_group: "Bus stop/shelter issue",
     construct_asset_name: null,
     asset_item: 'bus stop',
@@ -367,12 +323,8 @@ $(fixmystreet).on('report_new:highways_change', function() {
 
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            propertyName: 'msGeometry,site_code,feature_ty',
-            TYPENAME: "Whole_Street"
-        }
-    },
+    wfs_feature: "Whole_Street",
+    propertyNames: ['msGeometry', 'site_code', 'feature_ty'],
     stylemap: new OpenLayers.StyleMap({
         'default': highways_style
     }),
@@ -429,11 +381,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "WinterRoutes"
-        }
-    },
+    wfs_feature: "WinterRoutes",
     asset_category: "Snow and ice problem/winter salting",
     asset_item: "road",
     asset_type: "road",
@@ -464,12 +412,8 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer',
-        params: {
-            TYPENAME: "BC_CAR_PARKS"
-        }
-    },
+    http_wfs_url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer',
+    wfs_feature: "BC_CAR_PARKS",
     class: OpenLayers.Layer.VectorAssetMove,
     select_action: true,
     actions: {
@@ -496,13 +440,9 @@ fixmystreet.assets.add(defaults, {
 var parish_speed_threshold = 30;
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer',
-        params: {
-            propertyName: 'speed,shape',
-            TYPENAME: "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed"
-        }
-    },
+    http_wfs_url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer',
+    wfs_feature: "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed",
+    propertyNames: ['speed', 'shape'],
     actions: {
         found: function(layer, feature, criterion, msg_id) {
             // Answer speed limit question based on speed limit of the road.

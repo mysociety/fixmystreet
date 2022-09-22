@@ -9,15 +9,7 @@ var tilma_url = "https://" + wfs_host + "/mapserver/thamesmead";
 var wfs_url = "https://maps.peabody.org.uk/getows.ashx?mapsource=mapsources/maplayers";
 
 var defaults = {
-    http_options: {
-        url: wfs_url,
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    http_wfs_url: wfs_url,
     asset_type: 'area',
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
@@ -34,56 +26,36 @@ var defaults = {
 };
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "hardsurfaces"
-        }
-    },
+    wfs_feature: "hardsurfaces",
     no_asset_msg_id: '#js-not-an-asset-hard-surfaces',
     asset_item: 'Thamesmead managed hard surface',
     asset_group: 'Hard surfaces/paths/road (Peabody)'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "grass"
-        }
-    },
+    wfs_feature: "grass",
     no_asset_msg_id: '#js-not-an-asset-grass',
     asset_item: 'Thamesmead managed grass area',
     asset_group: 'Grass and grass areas (Peabody)'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "water"
-        }
-    },
+    wfs_feature: "water",
     no_asset_msg_id: '#js-not-an-asset-water',
     asset_item: 'Thamesmead managed water area',
     asset_group: 'Water areas (Peabody)'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: tilma_url,
-        params: {
-            TYPENAME: "treegroups"
-        }
-    },
+    http_wfs_url: tilma_url,
+    wfs_feature: "treegroups",
     no_asset_msg_id: '#js-not-an-asset-trees',
     asset_item: 'Thamesmead managed trees area',
     asset_group: 'Trees (Peabody)'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "planting"
-        }
-    },
+    wfs_feature: "planting",
     no_asset_msg_id: '#js-not-an-asset-planters',
     asset_item: 'Thamesmead managed shrubs area',
     asset_group: 'Planters and flower beds (Peabody)'

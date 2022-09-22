@@ -624,6 +624,22 @@ function get_fault_stylemap() {
 
 function construct_protocol_options(options) {
     var protocol_options;
+    if (options.http_wfs_url) {
+        var srsname = options.srsName.replace(':', '::');
+        options.http_options = {
+            url: options.http_wfs_url,
+            params: {
+                SERVICE: "WFS",
+                VERSION: "1.1.0",
+                REQUEST: "GetFeature",
+                SRSNAME: "urn:ogc:def:crs:" + srsname,
+                TYPENAME: options.wfs_feature
+            }
+        };
+        if (options.propertyNames) {
+            options.http_options.params.propertyName = options.propertyNames.join(',');
+        }
+    }
     if (options.http_options !== undefined) {
         protocol_options = options.http_options;
         OpenLayers.Util.applyDefaults(options, {

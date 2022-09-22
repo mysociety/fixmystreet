@@ -22,15 +22,7 @@ var defaults = {
 };
 
 var tilma_defaults = $.extend(true, {}, defaults, {
-    http_options: {
-        url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/peterborough" : "https://tilma.mysociety.org/mapserver/peterborough",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
-        }
-    },
+    http_wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/peterborough" : "https://tilma.mysociety.org/mapserver/peterborough",
     geometryName: 'msGeometry'
 });
 
@@ -90,21 +82,13 @@ var trees_defaults = $.extend(true, {}, tilma_defaults, {
 });
 
 fixmystreet.assets.add(trees_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "tree_groups"
-        }
-    },
+    wfs_feature: "tree_groups",
     asset_type: 'area',
     asset_item: 'tree group'
 });
 
 fixmystreet.assets.add(trees_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "tree_points"
-        }
-    },
+    wfs_feature: "tree_points",
     asset_type: 'spot',
     asset_item: 'tree'
 });
@@ -113,11 +97,7 @@ fixmystreet.assets.add(trees_defaults, {
 // separate layer with pin-snapping disabled for new tree requests.
 // The new tree request category is disabled in the other tree point layer.
 fixmystreet.assets.add(tilma_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "tree_points"
-        }
-    },
+    wfs_feature: "tree_points",
     asset_id_field: 'TREE_CODE',
     asset_type: 'spot',
     asset_category: NEW_TREE_CATEGORY_NAME,
@@ -133,11 +113,7 @@ var streetlight_stylemap = new OpenLayers.StyleMap({
 });
 
 var light_defaults = $.extend(true, {}, tilma_defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "StreetLights"
-        }
-    },
+    wfs_feature: "StreetLights",
     asset_id_field: 'UNITID',
     asset_type: 'spot',
     asset_item: 'light'

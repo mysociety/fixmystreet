@@ -8,26 +8,14 @@ var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.myso
 var tilma_url = "https://" + wfs_host + "/mapserver/hampshire";
 
 var defaults = {
-    http_options: {
-        url: tilma_url,
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    http_wfs_url: tilma_url,
     geometryName: 'msGeometry',
     srsName: "EPSG:27700",
     body: "Hampshire County Council"
 };
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Road_Sections"
-        }
-    },
+    wfs_feature: "Road_Sections",
     usrn: [
         {
         attribute: 'SITE_CODE',
@@ -56,11 +44,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "salt_bins"
-        }
-    },
+    wfs_feature: "salt_bins",
     asset_id_field: 'Asset_ID',
     asset_type: 'spot',
     asset_category: ["Salt Bin"],

@@ -5,15 +5,7 @@ if (!fixmystreet.maps) {
 }
 
 var defaults = {
-    http_options: {
-        url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/iow": "https://tilma.mysociety.org/mapserver/iow",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    http_wfs_url: fixmystreet.staging ? "https://tilma.staging.mysociety.org/mapserver/iow": "https://tilma.mysociety.org/mapserver/iow",
     max_resolution: 1.194328566789627,
     attributes: {
         central_asset_id: 'central_asset_id',
@@ -34,11 +26,7 @@ var labeled_stylemap = new OpenLayers.StyleMap({
 });
 
 fixmystreet.assets.add($.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "streets"
-        }
-    },
+    wfs_feature: "streets",
     always_visible: true,
     non_interactive: true,
     asset_type: 'area',
@@ -181,11 +169,7 @@ for (i = 0; i < point_category_list.length; i++) {
 
     fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
         asset_group: cat,
-        http_options: {
-            params: {
-                TYPENAME: layer
-            }
-        }
+        wfs_feature: layer
     }));
 }
 
@@ -195,68 +179,40 @@ for (i = 0; i < line_category_list.length; i++) {
 
     fixmystreet.assets.add($.extend(true, {}, line_asset_defaults, {
         asset_group: cat,
-        http_options: {
-            params: {
-                TYPENAME: layer
-            }
-        }
+        wfs_feature: layer
     }));
 }
 
 // non union layers
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
     asset_group: "Roads/Highways",
-    http_options: {
-        params: {
-            TYPENAME: "Fords"
-        }
-    }
+    wfs_feature: "Fords"
 }));
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
     asset_group: "Roads/Highways",
-    http_options: {
-        params: {
-            TYPENAME: "Furn-Grid_and_Stones"
-        }
-    }
+    wfs_feature: "Furn-Grid_and_Stones"
 }));
 
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
     asset_group: "Drainage",
-    http_options: {
-        params: {
-            TYPENAME: "Drainage_spot"
-        }
-    }
+    wfs_feature: "Drainage_spot"
 }));
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
     asset_group: "Car Parking",
-    http_options: {
-        params: {
-            TYPENAME: "Car_Parking"
-        }
-    }
+    wfs_feature: "Car_Parking"
 }));
 
 fixmystreet.assets.add($.extend(true, {}, line_asset_defaults, {
     asset_group: "Grass Verges & Weeds",
-    http_options: {
-        params: {
-            TYPENAME: "Verges-Natural"
-        }
-    }
+    wfs_feature: "Verges-Natural"
 }));
 
 fixmystreet.assets.add($.extend(true, {}, point_asset_defaults, {
     asset_group: "Dog Fouling",
-    http_options: {
-        params: {
-            TYPENAME: "Furn-Bins"
-        }
-    }
+    wfs_feature: "Furn-Bins"
 }));
 
 

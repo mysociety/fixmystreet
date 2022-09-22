@@ -8,15 +8,7 @@ var wfs_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.myso
 var tilma_url = "https://" + wfs_host + "/mapserver/shropshire";
 
 var defaults = {
-    http_options: {
-        url: tilma_url,
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::27700"
-        }
-    },
+    http_wfs_url: tilma_url,
     asset_type: 'spot',
     asset_id_field: 'CentralAssetId',
     attributes: {
@@ -35,11 +27,7 @@ var highways_style = new OpenLayers.Style({
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Street_Gazetteer"
-        }
-    },
+    wfs_feature: "Street_Gazetteer",
     stylemap: new OpenLayers.StyleMap({
          'default': highways_style
      }),
@@ -116,11 +104,7 @@ var streetlight_stylemap = new OpenLayers.StyleMap({
 
 fixmystreet.assets.add(defaults, {
     stylemap: streetlight_stylemap,
-    http_options: {
-        params: {
-            TYPENAME: "Lights_Union"
-        }
-    },
+    wfs_feature: "Lights_Union",
     asset_group: "Streetlights",
     asset_item: 'streetlight',
     asset_id_field: 'ASSET_ID',
@@ -152,11 +136,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Traffic_Signal_Areas"
-        }
-    },
+    wfs_feature: "Traffic_Signal_Areas",
     asset_id_field: 'ASSET_ID',
     attributes: {
         central_asset_id: 'ASSET_ID',
@@ -166,11 +146,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Illuminated_Bollards"
-        }
-    },
+    wfs_feature: "Illuminated_Bollards",
     asset_group: 'Illuminated signs',
     asset_item: 'bollard',
     asset_id_field: 'ASSET_ID',
@@ -180,31 +156,19 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Grit_Bins"
-        }
-    },
+    wfs_feature: "Grit_Bins",
     asset_category: ["Salt bins replenish"],
     asset_item: 'salt bin'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Cattle_Grids"
-        }
-    },
+    wfs_feature: "Cattle_Grids",
     asset_category: ["Cattle Grid"],
     asset_item: 'cattle grid'
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Bridges"
-        }
-    },
+    wfs_feature: "Bridges",
     asset_category: ["Bridge"],
     asset_item: 'bridge'
 });

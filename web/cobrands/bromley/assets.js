@@ -6,15 +6,7 @@ if (!fixmystreet.maps) {
 
 var domain = fixmystreet.staging ? "https://tilma.staging.mysociety.org" : "https://tilma.mysociety.org";
 var defaults = {
-    http_options: {
-        url: domain + "/mapserver/bromley_wfs",
-        params: {
-            SERVICE: "WFS",
-            VERSION: "1.1.0",
-            REQUEST: "GetFeature",
-            SRSNAME: "urn:ogc:def:crs:EPSG::3857"
-        }
-    },
+    http_wfs_url: domain + "/mapserver/bromley_wfs",
     asset_type: 'spot',
     max_resolution: 4.777314267158508,
     asset_id_field: 'CENTRAL_AS',
@@ -24,11 +16,7 @@ var defaults = {
 };
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Streetlights"
-        }
-    },
+    wfs_feature: "Streetlights",
     asset_id_field: 'FEATURE_ID',
     attributes: {
         feature_id: 'FEATURE_ID'
@@ -38,11 +26,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "Bins"
-        }
-    },
+    wfs_feature: "Bins",
     asset_category: ["Overflowing litter/dog bin", "Public Litter Bin"],
     asset_item: 'park bin',
     asset_item_message: 'For our parks, pick a <b class="asset-spot">bin</b> from the map &raquo;'
@@ -58,11 +42,7 @@ var parks_stylemap = new OpenLayers.StyleMap({
 });
 
 var parks_defaults = $.extend(true, {}, defaults, {
-    http_options: {
-        params: {
-            TYPENAME: 'Parks_Open_Spaces'
-        }
-    },
+    wfs_feature: 'Parks_Open_Spaces',
     stylemap: parks_stylemap,
     asset_type: 'area',
     asset_item: 'park',
@@ -86,11 +66,7 @@ var prow_stylemap = new OpenLayers.StyleMap({
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        params: {
-            TYPENAME: "PROW"
-        }
-    },
+    wfs_feature: "PROW",
     stylemap: prow_stylemap,
     always_visible: true,
     non_interactive: true,
@@ -107,7 +83,7 @@ fixmystreet.assets.add(defaults, {
 });
 
 fixmystreet.assets.add(defaults, {
-    http_options: { params: { TYPENAME: "Drains" } },
+    wfs_feature: "Drains",
     asset_id_field: 'node_id',
     attributes: {
         feature_id: 'node_id'
