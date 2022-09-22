@@ -671,6 +671,56 @@ sub _bulky_collection_window {
     };
 }
 
+sub bulky_items_master_list {
+    # XXX Need to fetch from DB
+    return [
+        {   category => 'Audio / Visual Elec. equipment',
+            items    => [
+                'Amplifiers',   'DVD/BR Video players',
+                'HiFi Stereos', 'Speakers',
+                'TV\'s',
+            ],
+        },
+        {   category => 'Baby / Toddler',
+            items    => [
+                'Childs bed / cot', 'High chairs',
+                'Prams',            'Pushchairs',
+                'Walkers',
+            ],
+        },
+        {   category => 'Bedroom',
+            items    => [
+                'Chest of drawers',
+                'Childrens cot',
+                'Double bed duvan',
+                'Double Bed frame',
+                'Double matress',
+                'Dressing tables',
+                'Headboards',
+                'Mirrors',
+                'Single bed duvan',
+                'Single Bed frame',
+                'Single Matresses',
+                'Wardrobes',
+                'Linen & Bedding ',
+                'Clothing',
+            ],
+        },
+        {   category => 'Carpet / Rugs',
+            items    => [ 'Carpet', 'Carpet tiles', 'Rugs', ],
+        },
+        {   category => 'Computer equipment',
+            items    => [
+                'Desktop PC\'s', 'Laptops',
+                'Monitors',      'Mouse / keyboards',
+                'Phones',        'Printers / scanners',
+                'Tablets',
+            ],
+        },
+        # etc.
+    ];
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;

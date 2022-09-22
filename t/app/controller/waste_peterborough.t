@@ -735,14 +735,19 @@ FixMyStreet::override_config {
             $mech->content_contains('Item 3');
             $mech->content_contains('Item 4');
             $mech->content_contains('Item 5');
-            $mech->content_contains('<option value="chair">Armchair</option>');
-            $mech->submit_form_ok({ with_fields => {
-                item1 => 'fridge',
-                item2 => 'chair',
-                item3 => 'sofa',
-                item4 => 'table',
-                item5 => 'fridge',
-            }});
+            $mech->content_like(
+                qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'item_1.category' => 'audio_visual_elec_equipment',
+                        'item_1.audio_visual_elec_equipment' => 'Amplifiers',
+
+                        'item_2.category' => 'baby_toddler',
+                        # XXX Should fail once validation implemented
+                        'item_2.audio_visual_elec_equipment' => 'Amplifiers',
+                    },
+                },
+            );
         };
 
         subtest 'Location details page' => sub {
@@ -756,7 +761,8 @@ FixMyStreet::override_config {
             $mech->content_contains('Submit bulky goods collection booking');
             $mech->content_contains('Please review the information');
             $mech->content_contains('provided before you submit your bulky goods collection booking.');
-            $mech->content_contains('<dd class="govuk-summary-list__value">table</dd>');
+            $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
+            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Category: Audio \/ Visual Elec\. equipment.*Item: Amplifiers/s);
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         };
 
@@ -777,11 +783,11 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
             is $report->get_extra_field_value('CREW NOTES'), 'behind the hedge in the front garden';
             is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
-            is $report->get_extra_field_value('ITEM_01'), 'fridge';
-            is $report->get_extra_field_value('ITEM_02'), 'chair';
-            is $report->get_extra_field_value('ITEM_03'), 'sofa';
-            is $report->get_extra_field_value('ITEM_04'), 'table';
-            is $report->get_extra_field_value('ITEM_05'), 'fridge';
+            is $report->get_extra_field_value('ITEM_01'), '';
+            is $report->get_extra_field_value('ITEM_02'), '';
+            is $report->get_extra_field_value('ITEM_03'), '';
+            is $report->get_extra_field_value('ITEM_04'), '';
+            is $report->get_extra_field_value('ITEM_05'), '';
         };
 
     };
