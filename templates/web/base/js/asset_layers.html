@@ -1,0 +1,23 @@
+[% FILTER collapse %]
+
+var fixmystreet = fixmystreet || {};
+
+(function(){
+
+if (!fixmystreet.maps) {
+    return;
+}
+
+fixmystreet.asset_layers = {};
+var defaults;
+
+[% FOR cobrand IN asset_layers %]
+    defaults = fixmystreet.asset_layers.[% cobrand.moniker %]_defaults = [% cobrand.default | safe %];
+    [% FOR layer IN cobrand.layers %]
+        fixmystreet.assets.add(defaults, [% layer | safe %]);
+    [% END %]
+[% END %]
+
+})();
+
+[% END %]

@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use File::Basename;
+use YAML;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -284,6 +285,12 @@ sub report_new_preview : Path('/_dev/report_new') : Args(0) {
     my ( $self, $c ) = @_;
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = $c->get_param('email_type');
+}
+
+sub asset_layers : Path('/_dev/asset_layers') : Args(0) {
+    my ( $self, $c ) = @_;
+    my $cobrands = $c->config->{COBRAND_FEATURES}->{asset_layers};
+    $c->stash->{config} = YAML::Dump($cobrands);
 }
 
 __PACKAGE__->meta->make_immutable;

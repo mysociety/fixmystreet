@@ -287,7 +287,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
         var feature = this.getFeatureAtPoint(point);
         if (feature == null) {
             // The click wasn't directly over a road, try and find one nearby
-            var nearest = this.getFeaturesWithinDistance(point, this.fixmystreet.nearest_radius || 10);
+            var nearest = this.getFeaturesWithinDistance(point, parseFloat(this.fixmystreet.nearest_radius) || 10);
             feature = nearest.length ? nearest[0] : null;
         }
         this.selected_feature = feature;
@@ -682,7 +682,9 @@ function construct_layer_options(options, protocol) {
 
     var max_resolution = options.max_resolution;
     if (typeof max_resolution === 'object') {
-        max_resolution = max_resolution[fixmystreet.cobrand];
+        max_resolution = parseFloat(max_resolution[fixmystreet.cobrand]);
+    } else {
+        max_resolution = parseFloat(max_resolution);
     }
 
     var layer_options = {

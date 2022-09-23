@@ -35,6 +35,9 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow');
             version('/cobrands/thamesmead/assets.js'),
         );
     END;
+    scripts.push(
+        version('../conf/general.yml', '/js/asset_layers.js')
+    );
 END;
 IF bodyclass.match('mappage') AND bodyclass.match('formflow');
     scripts.push(

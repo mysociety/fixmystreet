@@ -2,6 +2,7 @@
 IF bodyclass.match('mappage');
     scripts.push( version('/cobrands/fixmystreet/assets.js') );
     scripts.push( version('/cobrands/highwaysengland/assets.js') );
+    scripts.push( version('../conf/general.yml', '/js/asset_layers.js') );
     scripts.push(
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     );

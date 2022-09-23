@@ -5,6 +5,7 @@ scripts.push(
 IF bodyclass.match('mappage');
     scripts.push( version('/cobrands/fixmystreet/assets.js') );
     scripts.push( version('/cobrands/thamesmead/assets.js') );
+    scripts.push( version('../conf/general.yml', '/js/asset_layers.js') );
     scripts.push( version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js') );
     scripts.push(
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),

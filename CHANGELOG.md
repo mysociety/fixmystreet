@@ -46,6 +46,7 @@
         - Upgrade Net::DNS and libwww to deal with IPv6 issues.
         - Add send_state column to updates. #3865
         - Enable alternative response from templates to be emailed to issue reporter. #4001
+        - Option to read asset layers from configuration.
     - Security
         - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
     - Open311 improvements:
