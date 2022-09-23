@@ -1,0 +1,72 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+# avoid wide character warnings
+no warnings 'utf8';
+
+# Find all photos without filetype extensions and add the filetype extension
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use FixMyStreet::App::Model::PhotoSet;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c',
+    [ 'commit', "Supply argument to commit changes to the database" ],
+    [ 'help', "Print help text" ]
+);
+
+print($usage->text), exit if $opt->help;
+
+my $config =
+    {
+        photo =>
+            [ '-and' =>
+                { '-not_like' => '%tiff'},
+                { '-not_like' => '%jpeg'},
+                { '-not_like' => '%png'},
+                { '-not_like' => '%gif'}
+            ]
+    };
+
+my $rp = FixMyStreet::DB->resultset("Problem")->search($config);
+
+rename_photos($rp);
+
+my $rc = FixMyStreet::DB->resultset("Comment")->search($config);
+
+rename_photos($rc);
+
+sub rename_photos {
+    my $r = shift;
+    while (my $record = $r->next)  {
+        my @filenames = split(/,/, $record->photo);
+        if (@filenames) {
+            for my $i (0 .. $#filenames) {
+                if ($filenames[$i] !~ /\.\w+$/) {
+                    $filenames[$i] .= '.' . 'jpeg';
+                }
+            }
+            my $fixed_filenames = join(",", @filenames);
+            if ($record->photo ne $fixed_filenames) {
+                if ($opt->commit) {
+                    $record->photo($fixed_filenames);
+                    $record->update;
+                } else {
+                    print "id: " . $record->id . "\n";
+                    print "from: " . $record->photo . "\n";
+                    print "to: " . $fixed_filenames . "\n";
+                    print "(no change made without commit).\n";
+                }
+            }
+        }
+    };
+};
