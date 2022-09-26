@@ -10,7 +10,7 @@
 [% END %]
 
 <form class="waste" method="post">
-  [% FOR num IN [1..5] %]
+  [% FOR num IN [ 1 .. form.MAX_ITEMS ] %]
     [% form.field( 'item_' _ num ).render | safe %]
     <hr>
   [% END %]
