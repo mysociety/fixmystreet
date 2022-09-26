@@ -7,6 +7,7 @@ use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
 use FixMyStreet::WorkingDays;
+use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::SLWP;
 
 sub send_questionnaires { 0 }
@@ -540,6 +541,11 @@ sub waste_garden_sub_params {
         $c->set_param('dd_contact_id', $c->stash->{orig_sub}->get_extra_metadata('dd_contact_id'));
         $c->set_param('dd_mandate_id', $c->stash->{orig_sub}->get_extra_metadata('dd_mandate_id'));
     }
+}
+
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
 sub waste_request_form_first_next {

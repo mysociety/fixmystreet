@@ -802,7 +802,7 @@ sub report : Chained('property') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     $c->stash->{first_page} = 'report';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report';
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
     $c->stash->{page_list} = [
         report => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],

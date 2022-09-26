@@ -4,6 +4,13 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
+has_page about_you => (
+    fields => ['name', 'email', 'phone', 'continue'],
+    intro => 'about_you.html',
+    title => 'About you',
+    next => 'summary',
+);
+
 has_page replacement => (
     fields => ['request_reason', 'continue'],
     title => 'Reason for request',
