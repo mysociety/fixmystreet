@@ -29,6 +29,8 @@ sub _formatted_category_to_original {
 use constant FORMATTED_CATEGORY_TO_ORIGINAL =>
     _formatted_category_to_original();
 
+use constant MAX_ITEMS => 5;
+
 has_page intro => (
     title => 'Book bulky goods collection',
     intro => 'bulky/intro.html',
@@ -79,7 +81,7 @@ has_page choose_date_later => (
 );
 
 has_page add_items => (
-    fields   => [ 'continue', map {"item_$_"} ( 1 .. 5 ) ],
+    fields   => [ 'continue', map {"item_$_"} ( 1 .. MAX_ITEMS ) ],
     template => 'waste/bulky/items.html',
     title    => 'Add items for collection',
     next     => 'location',
@@ -196,17 +198,13 @@ has_field show_earlier_dates => (
     order => 998,
 );
 
-# XXX Validation
-### Make sure only one item type selected per compound item field
-### Make sure selected item matches category
-### Make sure at least one item provided
 # XXX Passing only selected params
 # XXX Uploading images
 ### Only one image per item
 # XXX Proof-of-concept Javascript?
 # XXX Tests
 
-for my $num ( 1 .. 5 ) {
+for my $num ( 1 .. MAX_ITEMS ) {
     has_field "item_$num" => (
         type     => 'Compound',
         label    => "Item $num",
@@ -218,6 +216,7 @@ for my $num ( 1 .. 5 ) {
         type    => 'Select',
         label   => 'Category',
         id => "item_$num.category",
+        empty_select => 'Please select category',
         options => _item_category_options(),
     );
 
@@ -227,6 +226,7 @@ for my $num ( 1 .. 5 ) {
             type           => 'Select',
             label => "Item for $cat",
             id => "item_$num.$cat_formatted",
+            empty_select => 'Please select item',
             options_method => sub {
                 my $self = shift;
 
@@ -239,7 +239,6 @@ for my $num ( 1 .. 5 ) {
                 }
 
                 return [
-                    { label => 'Please select', value => 0 },
                     map { label => $_, value => $_ },
                     @$items
                 ];
@@ -255,7 +254,6 @@ for my $num ( 1 .. 5 ) {
 
 sub _item_category_options {
     return [
-        { label => 'Please select', value => 0 },
         map {
             my $cat       = $_->{category};
             my $cat_value = _format_name($cat);
@@ -319,6 +317,32 @@ sub validate {
             $self->field('chosen_date')
                 ->add_error('Available dates field is required')
                 if !$self->field('chosen_date')->value;
+        }
+    }
+
+    if ( $self->current_page->name eq 'add_items' ) {
+        for my $num ( 1 .. MAX_ITEMS ) {
+            my $base_field = $self->field("item_$num");
+
+            # Make sure at least item_1 has input, by checking for at least
+            # one value on its fields.
+            # If partial input provided, validation further below will handle
+            # the errors.
+            if ( $num == 1 ) {
+                my $any_values = grep { $_->value } $base_field->fields;
+                $base_field->add_error('Please provide input for Item 1')
+                    unless $any_values;
+            }
+
+            if ( my $cat_formatted = $base_field->field('category')->value ) {
+                # Make sure item matches category
+                my $item_value = $base_field->field($cat_formatted)->value;
+                $base_field->add_error(
+                    "Selected category and item must match for Item $num")
+                    if !$item_value;
+
+                # XXX Image upload
+            }
         }
     }
 }
