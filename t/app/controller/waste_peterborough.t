@@ -734,14 +734,34 @@ FixMyStreet::override_config {
             $mech->content_contains('Item 5');
             $mech->content_like(
                 qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
+
+            $mech->submit_form_ok;
+            $mech->content_contains(
+                'Please provide input for Item 1');
+
+            $mech->submit_form_ok(
+                { with_fields => { 'item_2.category' => 'baby_toddler' } },
+            );
+            $mech->content_contains(
+                'Please provide input for Item 1');
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'item_1.category' => 'baby_toddler',
+                        'item_1.audio_visual_elec_equipment' => 'Amplifiers',
+                    },
+                },
+            );
+            $mech->content_contains(
+                'Selected category and item must match for Item 1');
+
             $mech->submit_form_ok(
                 {   with_fields => {
                         'item_1.category' => 'audio_visual_elec_equipment',
                         'item_1.audio_visual_elec_equipment' => 'Amplifiers',
 
                         'item_2.category' => 'baby_toddler',
-                        # XXX Should fail once validation implemented
-                        'item_2.audio_visual_elec_equipment' => 'Amplifiers',
+                        'item_2.baby_toddler' => 'High chairs',
                     },
                 },
             );
