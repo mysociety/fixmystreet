@@ -521,7 +521,7 @@ fixmystreet.assets.add(defaults, {
         }
     },
     no_asset_msg_id: '#js-not-a-road',
-    asset_category: "Grass cutting",
+    asset_category: ["Grass cutting", "Hedge problem", "Dirty signs"],
     non_interactive: true,
     road: true,
     asset_item: 'road',

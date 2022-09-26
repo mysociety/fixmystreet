@@ -757,12 +757,15 @@ around 'report_validation' => sub {
     return $self->$orig($report, $errors);
 };
 
-# Route grass cutting reports to the parish if the user answers 'no' to the
+# Route certain reports to the parish if the user answers 'no' to the
 # question 'Is the speed limit greater than 30mph?'
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
-    return unless $report->category eq 'Grass cutting';
+    my $parish_cats = [ 'Grass cutting', 'Hedge problem', 'Dirty signs' ];
+    my %parish_cats = map { $_ => 1 } @$parish_cats;
+
+    return unless $parish_cats{$report->category};
 
     # If there's only one contact then we just want to use that, so skip filtering.
     return if scalar @{$contacts} < 2;

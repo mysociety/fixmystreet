@@ -20,9 +20,32 @@ BEGIN {    # set all the paths to the perl code
 use FixMyStreet::DB;
 use Text::CSV;
 
+my $speed_limit_q = {
+    code => 'speed_limit_greater_than_30',
+    description => 'Is the speed limit greater than 30mph?',
+    datatype => 'string',
+    order => 1,
+    variable => 'true',
+    required => 'true',
+    protected => 'false',
+    automated => 'hidden_field',
+};
+
 my $contacts = [
-    { category => 'Hedge problem', extra_metadata => { prefer_if_multiple => 1, group => 'Grass, hedges and weeds' } },
-    { category => 'Dirty signs', extra_metadata => { prefer_if_multiple => 1, group => 'Road and street Signs' } },
+    {
+        category => 'Hedge problem',
+        extra_metadata => {
+            group => 'Grass, hedges and weeds'
+        },
+        extra_fields => [ $speed_limit_q ]
+    },
+    {
+        category => 'Dirty signs',
+        extra_metadata => {
+            group => 'Road and street Signs'
+        },
+        extra_fields => [ $speed_limit_q ]
+    },
     {
         category => 'Flyposting',
         extra_metadata => { prefer_if_multiple => 1 },
@@ -35,7 +58,7 @@ my $contacts = [
                 variable => 'true',
                 required => 'false',
                 protected => 'false',
-            }
+            },
         ]
     },
     {
@@ -43,18 +66,7 @@ my $contacts = [
         extra_metadata => {
             group => 'Grass, hedges and weeds',
         },
-        extra_fields => [
-            {
-                code => 'speed_limit_greater_than_30',
-                description => 'Is the speed limit greater than 30mph?',
-                datatype => 'string',
-                order => 1,
-                variable => 'true',
-                required => 'true',
-                protected => 'false',
-                automated => 'hidden_field',
-            }
-        ],
+        extra_fields => [ $speed_limit_q ],
     },
 ];
 
