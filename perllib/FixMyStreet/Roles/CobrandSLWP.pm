@@ -120,6 +120,8 @@ around look_up_property => sub {
     return $data;
 };
 
+sub waste_never_confirm_reports { 1 }
+
 sub waste_staff_choose_payment_method { 1 }
 sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
 

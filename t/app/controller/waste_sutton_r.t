@@ -74,7 +74,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Report a mixed recycling collection as missed');
     };
     subtest 'Request a new bin' => sub {
-        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/request');
 		# 19 (1), 24 (1), 16 (1), 1 (1)
         # missing, new_build, more
@@ -90,6 +89,7 @@ FixMyStreet::override_config {
         is $report->title, 'Request new Green paper and cardboard bin';
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
+        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-16' => 1 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'more' }});

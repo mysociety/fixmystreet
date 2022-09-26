@@ -1447,6 +1447,11 @@ sub add_report : Private {
         $report->confirmed(undef);
         $report->update;
     } else {
+        if ($c->cobrand->call_hook('waste_never_confirm_reports')) {
+            my $report = $c->stash->{report};
+            $report->confirm;
+            $report->update;
+        }
         $c->forward('/report/new/redirect_or_confirm_creation');
     }
 
