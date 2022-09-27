@@ -177,6 +177,15 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'kingston',
+}, sub {
+    subtest 'Sutton staff can see Kingston admin' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/admin/');
+    };
+};
+
 sub shared_echo_mocks {
     my $e = Test::MockModule->new('Integrations::Echo');
     $e->mock('GetPointAddress', sub {

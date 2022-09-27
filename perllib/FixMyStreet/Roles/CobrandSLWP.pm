@@ -63,6 +63,14 @@ around updates_disallowed => sub {
     return $orig->($self, $problem);
 };
 
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->is_superuser;
+    return undef unless defined $user->from_body;
+    my $user_cobrand = $user->from_body->get_extra_metadata('cobrand', '');
+    return $user_cobrand =~ /kingston|sutton/;
+}
+
 sub state_groups_admin {
     [
         [ New => [ 'confirmed' ] ],
