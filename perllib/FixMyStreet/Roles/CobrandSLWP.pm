@@ -335,6 +335,7 @@ sub bin_services_for_address {
             my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
             my ($containers, $request_max);
             foreach (@$data) {
+                next if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                 my ($container, $quantity);
                 foreach (@$moredata) {
