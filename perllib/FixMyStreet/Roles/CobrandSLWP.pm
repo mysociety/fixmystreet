@@ -349,6 +349,12 @@ sub bin_services_for_address {
                 }
             }
 
+            if ($service_name =~ /Food/) {
+                # Can always request a food caddy
+                push @$containers, 23; # Food waste bin (kitchen)
+                $request_max->{23} = 1;
+            }
+
             my ($open_request) = grep { $_ } map { $events->{request}->{$_} } @$containers;
 
             my $garden = 0;
