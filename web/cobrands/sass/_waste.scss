@@ -1,8 +1,9 @@
 /* COLOURS */
 
 $base_bg: #eeeeee;
-$govuk-brand-colour: #1d70b8;
-$govuk-error-colour: #d4351c;
+$govuk-brand-colour: #1d70b8 !default;
+$govuk-error-colour: #d4351c !default;
+$govuk-success-colour: #00703c !default;
 
 /* BREAKPOINTS */
 
@@ -348,6 +349,41 @@ input[type="submit"].waste-service-link {
     }
     .govuk-button {
       margin: 1.2em 0 0 0;
+    }
+  }
+
+  &.whole-page {
+    flex-direction: column;
+    align-items: center;
+
+    .govuk-warning-text__img {
+      .govuk-warning-text__icon {
+        border: 3px solid $govuk-brand-colour;
+        background: $govuk-brand-colour;
+        $icon-size: 100px;
+        min-width: $icon-size;
+        min-height: $icon-size;
+        line-height: $icon-size;
+        font-size: $icon-size/1.5;
+
+        &.success {
+          border: 3px solid $govuk-success-colour;
+          background: $govuk-success-colour;
+        }
+
+        &.error {
+          border: 3px solid $govuk-error-colour;
+          background: $govuk-error-colour;
+        }
+      }
+    }
+
+    .govuk-warning-text__content {
+      text-align: center;
+
+      dd {
+        margin-inline-start: 0;
+      }
     }
   }
 
