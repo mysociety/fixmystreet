@@ -342,8 +342,10 @@ sub bin_services_for_address {
                     $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
                     $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
                 }
+                next if $container == 6; # Red stripe bag
                 if ($container && $quantity) {
                     push @$containers, $container;
+                    next if $container == 28; # Garden waste bag
                     # The most you can request is the amount you have
                     $request_max->{$container} = $quantity;
                 }
