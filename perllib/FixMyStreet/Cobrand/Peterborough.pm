@@ -1328,4 +1328,22 @@ sub available_permissions {
     return $perms;
 }
 
+sub bulky_available_feature_types {
+    my $self = shift;
+
+    return unless $self->feature('waste_features')->{bulky_enabled};
+
+    my $cfg = $self->feature('bartec');
+    my $bartec = Integrations::Bartec->new(%$cfg);
+    my @types = @{ $bartec->Features_Types_Get() };
+
+    # Limit to the feature types that are for bulky waste
+    my $waste_cfg = $self->body->get_extra_metadata("wasteworks_config", {});
+    if ( my $classes = $waste_cfg->{bulky_feature_classes} ) {
+        my %classes = map { $_ => 1 } @$classes;
+        @types = grep { $classes{$_->{FeatureClass}->{ID}} } @types;
+    }
+    return { map { $_->{ID} => $_->{Name} } @types };
+}
+
 1;

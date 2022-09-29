@@ -28,4 +28,10 @@
     <a href="[% c.uri_for_action('admin/waste/index') %]">[% loc("&larr; Back") %]</a>
 </p>
 
+<h2>More config</h2>
+<ul>
+    <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
+</ul>
+
+
 [% INCLUDE 'admin/footer.html' %]

@@ -795,7 +795,8 @@ FixMyStreet::override_config {
         },
         waste_features => {
             peterborough => {
-                admin_config_enabled => 1
+                admin_config_enabled => 1,
+                bulky_enabled => 1
             }
         }
     },
@@ -864,9 +865,175 @@ FixMyStreet::override_config {
             $body->discard_changes;
             is_deeply $body->get_extra_metadata('wasteworks_config'), { base_price => 2350, daily_slots => 40 };
         };
-
     };
 
+    subtest 'WasteWorks bulky goods item list administration' => sub {
+        ok $mech->host('peterborough.fixmystreet.com');
+        my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+
+        subtest 'List admin page is linked from config page' => sub {
+            $mech->log_in_ok($super->email);
+            $mech->get_ok('/admin/waste/' . $body->id);
+            $mech->follow_link_ok( { text_regex => qr/Bulky items list/i, }, "follow 'Bulky items list' link" );
+            is $mech->uri->path, '/admin/waste/' . $body->id . '/bulky_items', 'ended up on correct page';
+        };
+
+        subtest 'Items can be stored correctly' => sub {
+            $body->set_extra_metadata(wasteworks_config => {});
+            $body->update;
+
+            # check validation of required fields
+            $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
+            $mech->submit_form_ok({ with_fields => {
+                'bartec_id[9999]' => 1234,
+                'category[9999]' => 'Furniture',
+                'name[9999]' => '', # name is required
+                'price[9999]' => '0',
+                'message[9999]' => '',
+            }});
+            $mech->content_lacks("Updated!");
+            $mech->content_contains("Please correct the errors below");
+
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), {};
+
+            # correctly store an item
+            $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
+            $mech->submit_form_ok({ with_fields => {
+                'bartec_id[9999]' => 1234,
+                'category[9999]' => 'Furniture',
+                'name[9999]' => 'Sofa',
+                'price[9999]' => '0',
+                'message[9999]' => 'test',
+            }});
+            $mech->content_contains("Updated!");
+
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), {
+                item_list => [ {
+                    bartec_id => "1234",
+                    category => "Furniture",
+                    message => "test",
+                    name => "Sofa",
+                    price => "0"
+                }]
+            };
+
+            # and add a new one
+            $mech->submit_form_ok({ with_fields => {
+                'bartec_id[9999]' => 4567,
+                'category[9999]' => 'Furniture',
+                'name[9999]' => 'Armchair',
+                'price[9999]' => '10',
+                'message[9999]' => '',
+            }});
+
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), {
+                item_list => [
+                    {
+                        bartec_id => "1234",
+                        category => "Furniture",
+                        message => "test",
+                        name => "Sofa",
+                        price => "0"
+                    },
+                    {
+                        bartec_id => "4567",
+                        category => "Furniture",
+                        message => "",
+                        name => "Armchair",
+                        price => "10"
+                    },
+                ]
+            };
+
+            # delete the first item
+            $mech->submit_form_ok({
+                fields => {
+                    "delete" => "0",
+                },
+                button => "delete",
+            });
+
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), {
+                item_list => [
+                    {
+                        bartec_id => "4567",
+                        category => "Furniture",
+                        message => "",
+                        name => "Armchair",
+                        price => "10"
+                    },
+                ]
+            };
+        };
+
+        subtest 'Bartec feature list is shown correctly' => sub {
+            $body->set_extra_metadata(wasteworks_config => {});
+            $body->update;
+
+            $b->mock('Features_Types_Get', sub { [
+                {
+                    Name => "Bookcase",
+                    ID => 6941,
+                    FeatureClass => {
+                        ID => 282
+                    },
+                },
+                {
+                    Name => "Dining table",
+                    ID => 6917,
+                    FeatureClass => {
+                        ID => 282
+                    },
+                },
+                {
+                    Name => "Dishwasher",
+                    ID => 6990,
+                    FeatureClass => {
+                        ID => 283
+                    },
+                },
+            ] });
+
+
+            $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
+            $mech->content_contains('<option value="6941">Bookcase</option>') or diag $mech->content;
+            $mech->content_contains('<option value="6917">Dining table</option>');
+            $mech->content_contains('<option value="6990">Dishwasher</option>');
+            $mech->submit_form_ok({ with_fields => {
+                'bartec_id[9999]' => 6941,
+                'category[9999]' => 'Furniture',
+                'name[9999]' => 'Bookcase',
+                'price[9999]' => '0',
+                'message[9999]' => '',
+            }});
+            $mech->content_contains("Updated!");
+
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), {
+                item_list => [ {
+                    bartec_id => "6941",
+                    category => "Furniture",
+                    message => "",
+                    name => "Bookcase",
+                    price => "0"
+                }]
+            };
+        };
+
+        subtest 'Feature classes can set in config to limit feature types' => sub {
+            $body->set_extra_metadata(wasteworks_config => { bulky_feature_classes => [ 282 ] });
+            $body->update;
+
+            $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
+            $mech->content_contains('<option value="6941">Bookcase</option>') or diag $mech->content;
+            $mech->content_contains('<option value="6917">Dining table</option>');
+            $mech->content_lacks('<option value="6990">Dishwasher</option>');
+        };
+    };
 };
 
 
@@ -905,6 +1072,9 @@ sub shared_bartec_mocks {
     $b->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
     $b->mock( 'WorkPacks_Get',                [] );
     $b->mock( 'Jobs_Get_for_workpack',        [] );
+    $b->mock('Features_Types_Get', sub { [
+        # No feature types at present
+    ] });
 
     return $b, $jobs_fsd_get;
 }

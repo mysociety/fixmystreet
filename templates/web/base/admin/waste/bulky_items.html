@@ -1,0 +1,80 @@
+[% INCLUDE 'admin/header.html' title=loc('Bulky items list') -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% INCLUDE status_message %]
+
+[% BLOCK item_row %]
+    <tr class="js-metadata-item[% IF item.errors %] error[% END %]">
+        <td>
+            [% IF available_features.size %]
+                <select class="form-control" name="bartec_id[[% i %]]"[% IF i < 9999 %] required[% ELSE %] data-required[% END %]>
+                    <option value="">---</option>
+                    [% FOR id IN available_features.sort %]
+                        <option value="[% id %]"[% IF id == item.bartec_id %] selected[% END %]>[% available_features.$id %]</option>
+                    [% END %]
+                </select>
+            [% ELSE %]
+            <input type="text" value="[% item.bartec_id %]" name="bartec_id[[% i %]]" />
+            [% END %]
+        </td>
+        <td>
+            [% IF item.errors.category %]<label for="[[% i %]]">[% item.errors.category %]</label>[% END %]
+            <input type="text" value="[% item.category %]" name="category[[% i %]]"[% IF i < 9999 %] required[% ELSE %] data-required[% END %]/>
+        </td>
+        <td>
+            [% IF item.errors.name %]<label for="[[% i %]]">[% item.errors.name %]</label>[% END %]
+            <input type="text" value="[% item.name %]" name="name[[% i %]]"[% IF i < 9999 %] required[% ELSE %] data-required[% END %]/>
+        </td>
+        <td>
+            [% IF item.errors.message %]<label for="[[% i %]]">[% item.errors.message %]</label>[% END %]
+            <input type="text" value="[% item.message %]" name="message[[% i %]]" />
+        </td>
+        <td>
+            [% IF item.errors.price %]<label for="[[% i %]]">[% item.errors.price %]</label>[% END %]
+            <input type="text" value="[% item.price %]" name="price[[% i %]]" />
+        </td>
+        <td><button name="delete" value="[% i %]" class="btn btn--small js-metadata-item-remove">[% loc('🗑') %]</button></td>
+    </tr>
+[% END %]
+
+<form method="post">
+    [% IF has_errors %]
+        <p class="error">[% loc('Please correct the errors below') %]</p>
+    [% END %]
+
+    <table>
+        <thead class="sticky">
+            <tr>
+                <th>Feature Type [% IF NOT available_features.size %]ID[% END %]</th>
+                <th>Category</th>
+                <th>Name</th>
+                <th>Message</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody class="js-metadata-items">
+            [% FOR item IN item_list %]
+                [% INCLUDE item_row i=loop.index %]
+            [% END %]
+        </tbody>
+        <tbody class="hidden-js" id="js-template-extra-metadata-item">
+            [% INCLUDE item_row item={} i=9999 %]
+        </tbody>
+        <tfoot class="hidden-nojs">
+            <tr>
+                <td colspan="6"><button type="button" class="btn js-metadata-item-add" data-container-selector="tbody.js-metadata-items">[% loc('Add row') %]</button></td>
+            </tr>
+        </tfoot>
+    </table>
+    <p>
+        <input type="hidden" name="token" value="[% csrf_token %]" >
+        <input type="submit" class="btn btn--primary" value="Save changes" />
+    </p>
+</form>
+
+<p>
+    <a href="[% c.uri_for_action('admin/waste/edit', [ body.id ]) %]">[% loc("&larr; Back") %]</a>
+</p>
+
+[% INCLUDE 'admin/footer.html' %]

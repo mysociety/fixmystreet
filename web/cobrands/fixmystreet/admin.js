@@ -129,9 +129,21 @@ $(function(){
 
     $('.js-metadata-item-add').on('click', function(){
         var $container = $(this).prevAll('.js-metadata-items');
+
+        // The element for the add button might not be a sibling of the
+        // container, so allow the container to be specified by putting the
+        // selector in a data-container-selector attribute
+        if (!$container.length && $(this).data('containerSelector')) {
+            $container = $($(this).data('containerSelector'));
+        }
+
         var i = $container.children().length + 1;
         var html = $('#js-template-extra-metadata-item').html().replace(/9999/g, i);
         $container.append(html);
+        // Can't set required attribute on template element because then browser
+        // won't let you submit form. Instead, set data-required and then it
+        // gets converted to required when turned into a real item.
+        $container.find("[data-required]").prop('required', 1);
         fixmystreet.set_up.toggle_visibility();
         reloadSortableMetadataItems();
     });

@@ -353,4 +353,16 @@ sub Streets_Events_Get {
     return force_arrayref($events, 'Event');
 }
 
+sub Features_Types_Get {
+    my ($self) = @_;
+    # This expensive operation doesn't take any params so may as well cache it
+    my $key = "peterborough:bartec:Features_Types_Get";
+    my $types = Memcached::get($key);
+    unless ($types) {
+        $types = force_arrayref($self->call('Features_Types_Get', token => $self->token), 'FeatureType');
+        Memcached::set($key, $types, 60*30);
+    }
+    return $types;
+}
+
 1;
