@@ -5,30 +5,6 @@ use DateTime::Format::Strptime;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
-# XXX Use cobrand hook
-use constant ITEMS_MASTER_LIST =>
-    FixMyStreet::Cobrand::Peterborough->bulky_items_master_list;
-
-sub _format_name {
-    my $str = shift;
-    return lc $str =~ s/\W+/_/gr;
-}
-
-sub _formatted_category_to_original {
-    my %hash;
-
-    for my $item ( @{ +ITEMS_MASTER_LIST } ) {
-        my $cat = $item->{category};
-
-        $hash{ _format_name($cat) } = $cat;
-    }
-
-    return \%hash;
-}
-
-use constant FORMATTED_CATEGORY_TO_ORIGINAL =>
-    _formatted_category_to_original();
-
 use constant MAX_ITEMS => 5;
 
 has_page intro => (
@@ -198,68 +174,157 @@ has_field show_earlier_dates => (
     order => 998,
 );
 
-# XXX Passing only selected params
-# XXX Uploading images
-### Only one image per item
-# XXX Proof-of-concept Javascript?
-# XXX Tests
+# Item selection code
 
-for my $num ( 1 .. MAX_ITEMS ) {
-    has_field "item_$num" => (
-        type     => 'Compound',
-        label    => "Item $num",
-        do_label => 1,
-        id       => "item_$num",
-    );
+# List as fetched from cobrand, before munging
+has items_master_list => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    lazy    => 1,
+    builder => '_build_items_master_list',
+);
 
-    has_field "item_$num.category" => (
-        type    => 'Select',
-        label   => 'Category',
-        id => "item_$num.category",
-        empty_select => 'Please select category',
-        options => _item_category_options(),
-    );
-
-    for my $cat ( map { $_->{category} } @{ +ITEMS_MASTER_LIST } ) {
-        my $cat_formatted = _format_name($cat);
-        has_field "item_$num.$cat_formatted" => (
-            type           => 'Select',
-            label => "Item for $cat",
-            id => "item_$num.$cat_formatted",
-            empty_select => 'Please select item',
-            options_method => sub {
-                my $self = shift;
-
-                my $items;
-                for ( @{ +ITEMS_MASTER_LIST } ) {
-                    if ( $cat eq $_->{category} ) {
-                        $items = $_->{items};
-                        last;
-                    }
-                }
-
-                return [
-                    map { label => $_, value => $_ },
-                    @$items
-                ];
-            },
-        );
-    }
-
-    has_field "item_$num.images" => (
-        type  => 'Upload',
-        label => 'Images',
-    );
+sub _build_items_master_list {
+    $_[0]->c->cobrand->call_hook('bulky_items_master_list');
 }
 
-sub _item_category_options {
-    return [
-        map {
-            my $cat       = $_->{category};
-            my $cat_value = _format_name($cat);
-            { label => $cat, value => $cat_value };
-        } @{ +ITEMS_MASTER_LIST }
-    ];
+# List of categories with item descriptions, with extra text removed
+# XXX This may need to change depending on the ultimate layout of the master
+# list
+has items_list => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    lazy    => 1,
+    builder => '_build_items_list',
+);
+
+sub _build_items_list {
+    my $self = shift;
+
+    my @munged_list;
+
+    for my $item ( @{ $self->items_master_list } ) {
+        my $item_munged = { category => $item->{category} };
+
+        for my $desc ( @{ $item->{item_descriptions} } ) {
+            if ( ref $desc eq 'ARRAY' ) {
+                push @{ $item_munged->{item_descriptions} }, $desc->[0];
+            } else {
+                push @{ $item_munged->{item_descriptions} }, $desc;
+            }
+        }
+
+        push @munged_list, $item_munged;
+    }
+
+    return \@munged_list;
+}
+
+# Hash of item names mapped to extra text
+has items_extra_text => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    lazy    => 1,
+    builder => '_build_items_extra_text',
+);
+
+sub _build_items_extra_text {
+    my $self = shift;
+
+    my %hash;
+    for my $item ( @{ $self->items_master_list } ) {
+        for my $desc ( @{ $item->{item_descriptions} } ) {
+            if ( ref $desc eq 'ARRAY' ) {
+                my ( $name, $extra_text ) = @$desc;
+                $hash{$name} = $extra_text;
+            }
+        }
+    }
+    return \%hash;
+}
+
+# Hash of formatted category names mapped to original category names
+has formatted_item_category_to_original => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    lazy    => 1,
+    builder => '_build_formatted_item_category_to_original',
+);
+
+sub _build_formatted_item_category_to_original {
+    my $self = shift;
+    my %hash;
+    for my $item ( @{ $self->items_list } ) {
+        my $cat = $item->{category};
+        $hash{ $self->format_item_string($cat) } = $cat;
+    }
+    return \%hash;
+}
+
+sub format_item_string {
+    my ( $self, $str ) = @_;
+    return lc $str =~ s/\W+/_/gr;
+}
+
+sub field_list {
+    my $self = shift;
+
+    my @field_list;
+
+    for my $num ( 1 .. MAX_ITEMS ) {
+        push @field_list,
+            "item_$num" => {
+            type     => 'Compound',
+            label    => "Item $num",
+            do_label => 1,
+            id       => "item_$num",
+            };
+
+        push @field_list, "item_$num.category" => {
+            type           => 'Select',
+            label          => 'Category',
+            id             => "item_$num.category",
+            empty_select   => 'Please select category',
+            options_method => sub {
+                my $field = shift;
+                return [
+                    map {
+                        my $cat = $_->{category};
+                        my $cat_value
+                            = $field->form->format_item_string($cat);
+                        { label => $cat, value => $cat_value };
+                    } @{ $field->form->items_list }
+                ];
+            },
+        };
+
+        for my $item_data ( @{ $self->items_list } ) {
+            my $cat = $item_data->{category};
+            my $cat_formatted
+                = $self->format_item_string( $item_data->{category} );
+
+            push @field_list, "item_$num.$cat_formatted" => {
+                type           => 'Select',
+                label          => "Item for $cat",
+                id             => "item_$num.$cat_formatted",
+                empty_select   => 'Please select item',
+                options_method => sub {
+                    return [
+                        map { label => $_, value => $_ },
+                        @{ $item_data->{item_descriptions} }
+                    ];
+                },
+            };
+        }
+
+        push @field_list,
+            "item_$num.images" => {
+            type  => 'Upload',
+            label => 'Images',
+            };
+    }
+
+    return \@field_list;
 }
 
 has_field tandc => (
