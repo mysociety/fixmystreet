@@ -378,3 +378,13 @@ input[type="submit"].waste-service-link {
     }
   }
 }
+
+// Bulky waste
+
+body.bulky {
+  #form-location_photo-row {
+    .dropzone.dz-clickable {
+      max-width: 465px;
+    }
+  }
+}

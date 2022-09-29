@@ -34,6 +34,12 @@ has_page choose_date => (
 has_page add_items => (
     fields => ['continue', 'item1', 'item2', 'item3', 'item4', 'item5'], # XXX build list dynamically
     title => 'Add items for collection',
+    next => 'location',
+);
+
+has_page location => (
+    title => 'Location details',
+    fields => ['location', 'location_photo', 'continue'],
     next => 'summary',
 );
 
@@ -99,6 +105,40 @@ has_field tandc => (
     ),
 );
 
+has_field location => (
+    required => 1,
+    type => 'Text',
+    widget => 'Textarea',
+    label => "Please tell us about anything else you feel is relevant",
+    tags => {
+        hint => "(e.g. 'The large items are in the front garden which can be accessed via the gate.')",
+    },
+);
+
+sub process_photo {
+    my ($form, $field) = @_;
+
+    my $saved_data = $form->saved_data;
+    my $fileid = $field . '_fileid';
+    my $c = $form->{c};
+    $c->forward('/photo/process_photo');
+    $saved_data->{$field} = $c->stash->{$fileid};
+    $saved_data->{$fileid} = '';
+}
+
+has_field location_photo_fileid => (
+    type => 'FileIdPhoto',
+    num_photos_required => 0,
+    linked_field => 'location_photo',
+);
+
+has_field location_photo => (
+    type => 'Photo',
+    tags => {
+        max_photos => 1,
+    },
+    label => 'Help us by attaching a photo of where the items will be left for collection.',
+);
 
 # XXX yuck
 sub item_field {

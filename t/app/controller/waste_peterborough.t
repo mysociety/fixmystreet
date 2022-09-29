@@ -724,6 +724,13 @@ FixMyStreet::override_config {
             }});
         };
 
+        subtest 'Location details page' => sub {
+            $mech->content_contains('Location details');
+            $mech->content_contains('Please tell us about anything else you feel is relevant');
+            $mech->content_contains('Help us by attaching a photo of where the items will be left for collection');
+            $mech->submit_form_ok({ with_fields => { location => 'behind the hedge in the front garden' } });
+        };
+
         subtest 'Summary page' => sub {
             $mech->content_contains('Submit bulky goods collection booking');
             $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
