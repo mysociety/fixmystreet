@@ -674,22 +674,22 @@ sub _bulky_collection_window {
 sub bulky_items_master_list {
     # XXX Need to fetch from DB
     return [
-        {   category => 'Audio / Visual Elec. equipment',
-            items    => [
+        {   category          => 'Audio / Visual Elec. equipment',
+            item_descriptions => [
                 'Amplifiers',   'DVD/BR Video players',
                 'HiFi Stereos', 'Speakers',
                 'TV\'s',
             ],
         },
-        {   category => 'Baby / Toddler',
-            items    => [
+        {   category          => 'Baby / Toddler',
+            item_descriptions => [
                 'Childs bed / cot', 'High chairs',
                 'Prams',            'Pushchairs',
                 'Walkers',
             ],
         },
-        {   category => 'Bedroom',
-            items    => [
+        {   category          => 'Bedroom',
+            item_descriptions => [
                 'Chest of drawers',
                 'Childrens cot',
                 'Double bed duvan',
@@ -701,16 +701,16 @@ sub bulky_items_master_list {
                 'Single bed duvan',
                 'Single Bed frame',
                 'Single Matresses',
-                'Wardrobes',
+                [ 'Wardrobes', 'Please dismantle' ],
                 'Linen & Bedding ',
                 'Clothing',
             ],
         },
-        {   category => 'Carpet / Rugs',
-            items    => [ 'Carpet', 'Carpet tiles', 'Rugs', ],
+        {   category          => 'Carpet / Rugs',
+            item_descriptions => [ 'Carpet', 'Carpet tiles', 'Rugs', ],
         },
-        {   category => 'Computer equipment',
-            items    => [
+        {   category          => 'Computer equipment',
+            item_descriptions => [
                 'Desktop PC\'s', 'Laptops',
                 'Monitors',      'Mouse / keyboards',
                 'Phones',        'Printers / scanners',

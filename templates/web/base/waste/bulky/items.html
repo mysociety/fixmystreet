@@ -12,9 +12,18 @@
 <form class="waste" method="post" enctype="multipart/form-data">
   [% FOR num IN [ 1 .. form.MAX_ITEMS ] %]
     [% form.field( 'item_' _ num ).render | safe %]
+    [% PROCESS extra_text num = num %]
     <hr>
   [% END %]
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
+
+[% BLOCK extra_text %]
+  [% FOR item_desc IN form.items_extra_text.keys %]
+    [% # XXX Hide until relevant item selected %]
+    [% id = 'item_' _ num _ '.' _ form.format_item_string(item_desc) _ '.extra_text' %]
+    <div id="[% id %]">[% item_desc %]: [% form.items_extra_text.$item_desc %]</div>
+  [% END %]
+[% END %]
 
 [% INCLUDE footer.html %]
