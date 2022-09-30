@@ -39,6 +39,13 @@ sub image_for_unit {
         2239 => "$base/bin-brown", # food
         2240 => "$base/bin-grey-blue-lid-recycling", # paper and card
         2241 => "$base/bin-green", # dry mixed
+        2242 => "$base/sack-clear-red", # domestic refuse bag
+        2243 => "$base/large-communal-black", # Communal refuse
+        2246 => "$base/sack-clear-blue", # domestic recycling bag
+        2248 => "$base/bin-brown", # Communal food
+        2249 => "$base/bin-grey-green-lid-recycling", # Communal paper
+        2250 => "$base/large-communal-green", # Communal recycling
+        2632 => "$base/sack-clear", # domestic paper bag
     };
     return $images->{$service_id};
 }
