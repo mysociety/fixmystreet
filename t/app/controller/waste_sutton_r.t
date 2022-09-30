@@ -129,7 +129,7 @@ FixMyStreet::override_config {
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a mixed recycling collection as missed');
-        $mech->content_contains('Request a new mixed recycling container');
+        $mech->content_contains('Request a mixed recycling container');
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
@@ -145,7 +145,7 @@ FixMyStreet::override_config {
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A new mixed recycling container request has been made');
+        $mech->content_contains('A mixed recycling container request has been made');
         $mech->content_contains('Report a mixed recycling collection as missed');
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/name="container-16"[^>]*disabled/s); # green
@@ -160,7 +160,7 @@ FixMyStreet::override_config {
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A mixed recycling collection has been reported as missed');
-        $mech->content_contains('Request a new mixed recycling container');
+        $mech->content_contains('Request a mixed recycling container');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 1566,
