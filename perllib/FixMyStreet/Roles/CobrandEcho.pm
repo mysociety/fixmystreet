@@ -450,8 +450,8 @@ sub waste_sub_due {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
 
-    my $diff = $now->delta_days($sub_end)->in_units('weeks');
-    return $diff < 7;
+    my $diff = $now->delta_days($sub_end)->in_units('days');
+    return $diff <= $self->garden_due_days;
 }
 
 sub waste_sub_overdue {
