@@ -387,9 +387,10 @@ sub GetServiceTaskInstances {
 }
 
 sub GetEvent {
-    my ($self, $guid) = @_;
+    my ($self, $guid, $type) = @_;
+    $type ||= 'Guid';
     $self->call('GetEvent', ref => ixhash(
-        Key => 'Guid',
+        Key => $type,
         Type => 'Event',
         Value => { 'msArray:anyType' => $guid },
     ));
