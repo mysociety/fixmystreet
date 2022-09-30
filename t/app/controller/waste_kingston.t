@@ -559,7 +559,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Your garden waste bin will');
+        $mech->content_contains('We will aim to deliver your garden waste bin ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
@@ -1170,7 +1170,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Your garden waste bin will');
+        $mech->content_contains('We will aim to deliver your garden waste bin ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
@@ -1229,7 +1229,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Your garden waste sacks will');
+        $mech->content_contains('We will aim to deliver your garden waste sacks ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;

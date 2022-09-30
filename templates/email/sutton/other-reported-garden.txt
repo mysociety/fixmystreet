@@ -66,7 +66,7 @@ You can check your collection day online:
 https://www.sutton.gov.uk/-/check-your-bin-collection-days
 
 [% IF new_bins > 0 ~%]
-We will deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
+We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
 You don't need to be at home for the delivery - we'll leave them outside your address.
 [% END %]
 
