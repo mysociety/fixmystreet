@@ -319,6 +319,8 @@ sub bin_services_for_address {
 
             my $schedules = $schedules{$service_id};
 
+            $self->{c}->stash->{communal_property} = 1 if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
+
             my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
             my ($container, $quantity);
             foreach (@$data) {
