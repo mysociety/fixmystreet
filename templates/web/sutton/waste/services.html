@@ -1,7 +1,6 @@
 [% IF unit.report_open %]
   <span class="waste-service-descriptor">
     A [% unit.service_name FILTER lower %] collection has been reported as missed
-    [% IF unit.report_open.report %] – <a href="[% unit.report_open.report.url %]" class="waste-service-link">check status</a>[% END %]
   </span>
 [% ELSIF unit.report_allowed %]
   [% any_report_allowed = 1 %]
@@ -19,7 +18,6 @@
 [% IF unit.request_open %]
   <span class="waste-service-descriptor">
     A [% unit.service_name FILTER lower %] container request has been made
-    [% IF unit.request_open.report %] – <a href="[% unit.request_open.report.url %]" class="waste-service-link">check status</a>[% END %]
   </span>
 [% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]
