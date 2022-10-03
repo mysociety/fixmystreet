@@ -257,20 +257,19 @@ sub field_list {
         push @field_list,
             "item_$num" => {
             type     => 'Compound',
-            label    => "Item $num",
-            do_label => 1,
             id       => "item_$num",
             };
 
-        # Optgrouped dropdown for if JS is disabled
         push @field_list, "item_$num.item" => {
             type           => 'Select',
-            do_label       => 0,
+            label          => "Item $num",
             id             => "item_$num.item",
             empty_select   => 'Please select an item',
             options_method => sub {
                 my $field = shift;
 
+                # JS autocomplete ignores optgroups, but we want them in case
+                # a user has JS disabled.
                 # In order to display under optgroups, we have to build
                 # data structures like the following:
                 # {   group   => 'First Group',
@@ -280,21 +279,15 @@ sub field_list {
                 #         { value => 3, label => 'Three' },
                 #     ],
                 # },
-
                 my @option_groups;
                 for my $item ( @{ $field->form->items_list } ) {
                     my $cat = $item->{category};
                     my @options;
 
                     for my $desc ( @{ $item->{item_descriptions} } ) {
-                        my $label = $desc;
-                        my $extra_text
-                            = $field->form->items_extra_text->{$desc};
-                        $label .= " --- $extra_text ---" if $extra_text;
-
                         push @options,
                             {
-                            label => $label,
+                            label => $desc,
                             value => $desc,
                             };
                     }
@@ -311,9 +304,9 @@ sub field_list {
         };
 
         push @field_list,
-            "item_$num.images" => {
+            "item_$num.image" => {
             type  => 'Upload',
-            label => 'Images',
+            label => 'Upload image (optional)',
             };
     }
 
