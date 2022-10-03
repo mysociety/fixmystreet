@@ -52,6 +52,15 @@ sub open311_post_send {
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
     }
+
+    if ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
+        my $id = $1;
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($id, 'Id');
+        $row->external_id($event->{Guid});
+        $sender->success(1);
+    }
 }
 
 around updates_disallowed => sub {
