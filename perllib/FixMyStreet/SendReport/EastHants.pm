@@ -59,7 +59,6 @@ sub send {
         $self->error( "Error sending to East Hants: $e" );
     };
     $self->success( !$return );
-    return $return;
 }
 
 1;

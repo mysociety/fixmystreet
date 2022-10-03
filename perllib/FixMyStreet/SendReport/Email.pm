@@ -81,7 +81,7 @@ sub send {
 
     unless ($recips) {
         $self->error( 'No recipients' );
-        return 1;
+        return;
     }
 
     my ($verbose, $nomail) = CronFns::options();
@@ -127,8 +127,6 @@ sub send {
     } else {
         $self->error( 'Failed to send email' );
     }
-
-    return $result;
 }
 
 sub email_list {

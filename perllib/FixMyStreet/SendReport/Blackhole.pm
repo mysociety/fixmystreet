@@ -14,7 +14,6 @@ it anywhere.
 sub send {
     my $self = shift;
     $self->success(1);
-    return 0;
 }
 
 1;
