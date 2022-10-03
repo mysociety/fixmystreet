@@ -36,6 +36,10 @@ sub image_for_unit {
         return "$base/caddy-brown-large" if $container == 24;
     }
     my $service_id = $unit->{service_id};
+    if ($service_id == 2243 && $unit->{schedule} =~ /fortnight/i) {
+        # Communal fortnightly is a wheelie bin, not a large bin
+        return "$base/bin-brown";
+    }
     my $images = {
         2238 => "$base/bin-brown", # refuse
         2239 => "$base/caddy-brown-large", # food
