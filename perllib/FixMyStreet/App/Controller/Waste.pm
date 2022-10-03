@@ -1000,7 +1000,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach( '/auth/redirect' );
     }
 
-    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) {
+    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
             my $payment_method = 'credit_card';
             $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
@@ -1215,7 +1215,7 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) { # XXX Kingston sack
+    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
         $data->{garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
