@@ -243,24 +243,6 @@ sub _build_items_extra_text {
     return \%hash;
 }
 
-# Hash of formatted category names mapped to original category names
-has formatted_item_category_to_original => (
-    is      => 'ro',
-    isa     => 'HashRef',
-    lazy    => 1,
-    builder => '_build_formatted_item_category_to_original',
-);
-
-sub _build_formatted_item_category_to_original {
-    my $self = shift;
-    my %hash;
-    for my $item ( @{ $self->items_list } ) {
-        my $cat = $item->{category};
-        $hash{ $self->format_item_string($cat) } = $cat;
-    }
-    return \%hash;
-}
-
 sub format_item_string {
     my ( $self, $str ) = @_;
     return lc $str =~ s/\W+/_/gr;
@@ -280,42 +262,53 @@ sub field_list {
             id       => "item_$num",
             };
 
-        push @field_list, "item_$num.category" => {
+        # Optgrouped dropdown for if JS is disabled
+        push @field_list, "item_$num.item" => {
             type           => 'Select',
-            label          => 'Category',
-            id             => "item_$num.category",
-            empty_select   => 'Please select category',
+            do_label       => 0,
+            id             => "item_$num.item",
+            empty_select   => 'Please select an item',
             options_method => sub {
                 my $field = shift;
-                return [
-                    map {
-                        my $cat = $_->{category};
-                        my $cat_value
-                            = $field->form->format_item_string($cat);
-                        { label => $cat, value => $cat_value };
-                    } @{ $field->form->items_list }
-                ];
+
+                # In order to display under optgroups, we have to build
+                # data structures like the following:
+                # {   group   => 'First Group',
+                #     options => [
+                #         { value => 1, label => 'One' },
+                #         { value => 2, label => 'Two' },
+                #         { value => 3, label => 'Three' },
+                #     ],
+                # },
+
+                my @option_groups;
+                for my $item ( @{ $field->form->items_list } ) {
+                    my $cat = $item->{category};
+                    my @options;
+
+                    for my $desc ( @{ $item->{item_descriptions} } ) {
+                        my $label = $desc;
+                        my $extra_text
+                            = $field->form->items_extra_text->{$desc};
+                        $label .= " --- $extra_text ---" if $extra_text;
+
+                        push @options,
+                            {
+                            label => $label,
+                            value => $desc,
+                            };
+                    }
+
+                    push @option_groups,
+                        {
+                        group   => $item->{category},
+                        options => \@options,
+                        };
+                }
+
+                return \@option_groups;
             },
         };
-
-        for my $item_data ( @{ $self->items_list } ) {
-            my $cat = $item_data->{category};
-            my $cat_formatted
-                = $self->format_item_string( $item_data->{category} );
-
-            push @field_list, "item_$num.$cat_formatted" => {
-                type           => 'Select',
-                label          => "Item for $cat",
-                id             => "item_$num.$cat_formatted",
-                empty_select   => 'Please select item',
-                options_method => sub {
-                    return [
-                        map { label => $_, value => $_ },
-                        @{ $item_data->{item_descriptions} }
-                    ];
-                },
-            };
-        }
 
         push @field_list,
             "item_$num.images" => {
@@ -389,25 +382,11 @@ sub validate {
         for my $num ( 1 .. MAX_ITEMS ) {
             my $base_field = $self->field("item_$num");
 
-            # Make sure at least item_1 has input, by checking for at least
-            # one value on its fields.
-            # If partial input provided, validation further below will handle
-            # the errors.
-            if ( $num == 1 ) {
-                my $any_values = grep { $_->value } $base_field->fields;
-                $base_field->add_error('Please provide input for Item 1')
-                    unless $any_values;
-            }
+            # Make sure at least item_1 has input
+            $base_field->add_error('Please select an item')
+                if $num == 1 && !$base_field->field('item')->value;
 
-            if ( my $cat_formatted = $base_field->field('category')->value ) {
-                # Make sure item matches category
-                my $item_value = $base_field->field($cat_formatted)->value;
-                $base_field->add_error(
-                    "Selected category and item must match for Item $num")
-                    if !$item_value;
-
-                # XXX Image upload
-            }
+            # XXX Image upload
         }
     }
 }

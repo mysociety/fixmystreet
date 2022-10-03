@@ -724,31 +724,12 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok;
             $mech->content_contains(
-                'Please provide input for Item 1');
-
-            $mech->submit_form_ok(
-                { with_fields => { 'item_2.category' => 'baby_toddler' } },
-            );
-            $mech->content_contains(
-                'Please provide input for Item 1');
+                'Please select an item');
 
             $mech->submit_form_ok(
                 {   with_fields => {
-                        'item_1.category' => 'baby_toddler',
-                        'item_1.audio_visual_elec_equipment' => 'Amplifiers',
-                    },
-                },
-            );
-            $mech->content_contains(
-                'Selected category and item must match for Item 1');
-
-            $mech->submit_form_ok(
-                {   with_fields => {
-                        'item_1.category' => 'audio_visual_elec_equipment',
-                        'item_1.audio_visual_elec_equipment' => 'Amplifiers',
-
-                        'item_2.category' => 'baby_toddler',
-                        'item_2.baby_toddler' => 'High chairs',
+                        'item_1.item' => 'Amplifiers',
+                        'item_2.item' => 'High chairs',
                     },
                 },
             );
@@ -764,7 +745,8 @@ FixMyStreet::override_config {
         subtest 'Summary page' => sub {
             $mech->content_contains('Submit bulky goods collection booking');
             $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
-            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Category: Audio \/ Visual Elec\. equipment.*Item: Amplifiers/s);
+            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Amplifiers/s);
+            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*High chairs/s);
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         };
 
