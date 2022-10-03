@@ -1,5 +1,7 @@
+use CGI::Simple;
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -29,6 +31,15 @@ $mech->create_contact_ok(
     extra => { type => 'waste' },
     group => ['Waste'],
 );
+$mech->create_contact_ok(
+    body => $body,
+    category => 'Garden Subscription',
+    email => '1638',
+    send_method => 'Open311',
+    endpoint => 'waste-endpoint',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     latitude => 51.402096,
@@ -43,6 +54,8 @@ my $report = $reports[0];
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'sutton',
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
 }, sub {
     subtest 'test waste duplicate' => sub {
         my $sender = FixMyStreet::SendReport::Open311->new(
@@ -91,6 +104,20 @@ FixMyStreet::override_config {
         });
         is $sender->success, 1;
         is $report->external_id, 'a-guid';
+    };
+
+    subtest 'correct payment data sent across' => sub {
+        $report->category('Garden Subscription');
+        $report->update_extra_field({ name => 'PaymentCode', value => 'Code4321' });
+        $report->update_extra_field({ name => 'payment', value => '8300' });
+        $report->state('confirmed');
+        $report->update;
+        FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[Transaction_Number]'), 'Code4321';
+        is $c->param('attribute[Payment_Amount]'), '83.00';
     };
 };
 

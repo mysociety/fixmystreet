@@ -36,6 +36,17 @@ sub open311_extra_data_include {
         if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
+
+        my $ref = $row->get_extra_field_value('PaymentCode') || $row->get_extra_metadata('chequeReference');
+        push @$open311_only, { name => 'Transaction_Number', value => $ref } if $ref;
+
+        my $payment = $row->get_extra_field_value('pro_rata') || $row->get_extra_field_value('payment');
+        my $admin_fee = $row->get_extra_field_value('admin_fee');
+        $payment += $admin_fee if $admin_fee;
+        if ($payment) {
+            my $amount = sprintf( '%.2f', $payment / 100 );
+            push @$open311_only, { name => 'Payment_Amount', value => $amount };
+        }
     }
 
     return $open311_only;
