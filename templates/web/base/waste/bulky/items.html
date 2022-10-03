@@ -20,9 +20,9 @@
 
 [% BLOCK extra_text %]
   [% FOR item_desc IN form.items_extra_text.keys %]
-    [% # XXX Hide until relevant item selected %]
+    [% # XXX Show if relevant item selected %]
     [% id = 'item_' _ num _ '.' _ form.format_item_string(item_desc) _ '.extra_text' %]
-    <div id="[% id %]">[% item_desc %]: [% form.items_extra_text.$item_desc %]</div>
+    <div id="[% id %]" hidden>[% item_desc %]: [% form.items_extra_text.$item_desc %]</div>
   [% END %]
 [% END %]
 
