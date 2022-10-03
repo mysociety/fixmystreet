@@ -35,11 +35,15 @@ has_field container_choice => (
     label => 'Would you like to subscribe for bins or sacks?',
     required => 1,
     widget => 'RadioGroup',
-    options => [
-        { value => 'bin', label => 'Bins', hint => '240L capacity, which is about the same size as a standard wheelie bin' },
-        { value => 'sack', label => 'Sacks', hint => 'Buy a roll of 10 sacks and use them anytime within your subscription year' },
-    ],
 );
+
+sub options_container_choice {
+    my $num = $_[0]->{c}->cobrand->moniker eq 'sutton' ? 20 : 10;
+    [
+        { value => 'bin', label => 'Bins', hint => '240L capacity, which is about the same size as a standard wheelie bin' },
+        { value => 'sack', label => 'Sacks', hint => "Buy a roll of $num sacks and use them anytime within your subscription year" },
+    ];
+}
 
 has_page sacks_details => (
     title_ggw => 'Subscribe to the %s',
