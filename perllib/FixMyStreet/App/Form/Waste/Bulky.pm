@@ -142,10 +142,12 @@ has_field location_photo => (
 
 # XXX yuck
 sub item_field {
+    my $i = shift;
     (
         type => 'Select',
         widget => 'Select',
-        label => 'Item ' . shift,
+        label => 'Item ' . $i,
+        required => $i == 1 ? 1 : 0,
         tags => { last_differs => 1, small => 1, autocomplete => 1 },
         options => [
             # XXX look these up dynamically

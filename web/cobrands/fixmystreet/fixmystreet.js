@@ -523,7 +523,7 @@ $.extend(fixmystreet.set_up, {
         accessibleAutocomplete.enhanceSelectElement({
             selectElement: this,
             displayMenu: 'overlay',
-            required: true,
+            required: $(this).prop('required') ? true : false,
             showAllValues: true,
             defaultValue: ''
         });
