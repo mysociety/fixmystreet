@@ -70,7 +70,7 @@ We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% EN
 You don't need to be at home for the delivery - we'll leave them outside your address.
 [% END %]
 
-Your garden waste needs to be at the boundary of your property by 6.30am on the
+Your garden waste needs to be at the boundary of your property by 6am on the
 day of collection. Find out what you can put in your garden waste:
 https://www.sutton.gov.uk/-/garden-waste-collection-what-we-can-collect-and-what-we-can-t-collect
 
