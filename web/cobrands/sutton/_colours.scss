@@ -1,0 +1,121 @@
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+$red: #cf1643;
+$green:#00856a;
+$green-l2:#40a360;
+$teal: #00a3b6;
+$orange: #ec6723;
+$purple: #84328a;
+$yellow: #f9b34a;
+$blue: 	#3466af;
+
+$white: #fff;
+$black: #0b0c0c;
+$black-l2: #505a5f;
+$grey:#757474;
+$grey-l1:#DBDBDB; // Footer background
+$grey-l2: #f8f9fa; // bg light
+
+$primary: $red;
+$primary_b: $black;
+$primary_text: $primary_b;
+
+
+$link-color: #3466af;
+$link-hover-color:#003078;
+$link-visited-color: #1d3860;
+$link-active-color: #0b0c0c;
+
+$primary_link_color: $link-color;
+$primary_link_hover_color: $link-hover-color;
+
+$base_bg: $grey-l2;
+$base_fg: $black;
+
+$nav_background_colour: $white;
+$nav_colour: $primary_b;
+$nav_hover_background_colour: $white;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+
+// $header-top-border-width: 4px;
+
+$mappage-header-height: 70px;
+$body-font: "proxima-nova","Helvetica","Arial",sans-serif;
+$border-radius: 0px;
+
+// The original website uses a width of 1100px, however
+// the style guide uses 1024px 
+$container-max-width: 1100px;
+
+@mixin sutton-form-input($margin: 0.5em 0, $padding: 5px) {
+    padding: $padding;
+    margin: $margin;
+    border: 2px solid $black;
+    box-shadow: none;
+
+    &:focus {
+        background-color: mix($green, $white, 5%);
+        outline: 3px solid #f9b34a;
+    }
+}
+
+@mixin sutton-form-label() {
+    color: $black;
+    font-weight: 700;
+}
+
+@mixin sutton-button($background-color: $white, $color: $green, $border-color: $green) {
+    // For a button with more empashis use: 
+    // @include sutton-button($background-color: $green, $color: $white);
+
+    // lbs-button--tertiary class on Sutton website
+    border: 2px solid $border-color;
+    color: $color;
+    background: $background-color;
+    border-radius: $border-radius;
+    padding: 0.5em;
+
+    // This gets rid of the .govuk-button box-shadow
+    box-shadow: none;
+
+    &:hover {
+        background: $color;
+        color: $background-color;
+        text-decoration: none;
+    }
+
+    &:focus {
+        border-color: $yellow;
+        color: $black;
+        background-color: $yellow;
+        outline: 2px solid $black;
+    }
+
+    &.govuk-button:focus:not(:active):not(:hover) {
+        border-color: $yellow;
+        box-shadow: none;
+    }
+}
+
+@mixin visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+@mixin hide-text($height) {
+    padding-top: $height;
+    padding-bottom: 0;
+    height: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}

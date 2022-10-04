@@ -3,9 +3,12 @@
       Please be aware refunds or part refunds will not be given for early termination during any 12-month subscription period.
   </p>
 
+ [% IF c.cobrand.moniker == 'bromley' %]
   <p>
     If you have paid by Direct Debit please ensure that you cancel your Direct Debit subscription with your bank, as [% c.cobrand.council_name %] is not able to do this on your behalf and payments may continue.
   </p>
+ [% END %]
+
 [% END %]
 
 [% INCLUDE 'waste/garden/property_page.html' %]

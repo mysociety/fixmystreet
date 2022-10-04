@@ -145,7 +145,8 @@ sub open311_post_send {
     return unless $dest;
 
     my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
-    if (!$sender->send($row, $h)) {
+    $sender->send($row, $h);
+    if ($sender->success) {
         $row->set_extra_metadata(extra_email_sent => 1);
     }
 }

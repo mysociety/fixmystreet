@@ -5,6 +5,7 @@ sub council_area_id { 2483 };
 
 package main;
 
+use Test::Deep;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 
@@ -596,7 +597,7 @@ foreach my $test (
         ok $report, "Found the report";
 
         # Check the report has been assigned appropriately
-        is $report->bodies_str, join(',', @body_ids{@{$test->{councils}}}) || undef;
+        cmp_bag([ split ',', ($report->bodies_str || '') ], [ @body_ids{@{$test->{councils}}} ]);
 
         $mech->content_contains('Thank you for reporting this issue');
 

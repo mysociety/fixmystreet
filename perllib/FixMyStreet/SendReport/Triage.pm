@@ -13,8 +13,6 @@ sub send {
     });
 
     $self->success(1);
-
-    return 0;
 }
 
 1;

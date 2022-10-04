@@ -10,6 +10,7 @@ use BromleyParks;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
+with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -381,18 +382,18 @@ sub clear_cached_lookups_property {
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};
-    my $base = '/cobrands/bromley/images/container-images';
+    my $base = '/i/waste-containers';
     my $images = {
-        531 => "$base/refuse-black-sack",
-        532 => "$base/refuse-black-sack",
+        531 => "$base/sack-black",
+        532 => "$base/sack-black",
         533 => "$base/large-communal-black",
-        535 => "$base/kerbside-green-box-mix",
-        536 => "$base/small-communal-mix",
-        537 => "$base/kerbside-black-box-paper",
-        541 => "$base/small-communal-paper",
-        542 => "$base/food-green-caddy",
-        544 => "$base/food-communal",
-        545 => "$base/garden-waste-bin",
+        535 => "$base/box-green-mix",
+        536 => "$base/bin-grey-green-lid-recycling",
+        537 => "$base/box-black-paper",
+        541 => "$base/bin-grey-blue-lid-recycling",
+        542 => "$base/caddy-green-recycling",
+        544 => "$base/bin-brown-recycling",
+        545 => "$base/bin-black-brown-lid-recycling",
     };
     return $images->{$service_id};
 }
@@ -426,6 +427,7 @@ sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} 
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
 sub garden_echo_container_name { 'LBB - GW Container' }
+sub garden_due_days { 48 }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;

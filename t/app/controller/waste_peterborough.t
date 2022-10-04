@@ -248,8 +248,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480');
         $mech->content_lacks('Request a new bin');
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
-        $mech->content_lacks('240L Green');
-        $mech->content_lacks('240L Black');
+        $mech->content_like(qr/name="container-420"[^>]*disabled/s); # green
+        $mech->content_like(qr/name="container-419"[^>]*disabled/s); # black
         $mech->content_lacks('Large food caddy');
         $mech->content_lacks('Small food caddy');
         $mech->content_lacks('All bins');

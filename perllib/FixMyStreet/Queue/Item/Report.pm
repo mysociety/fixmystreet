@@ -72,8 +72,8 @@ sub process {
     return unless $self->_check_abuse;
     $self->_create_vars;
     $self->_create_reporters or return;
-    my $result = $self->_send;
-    $self->_post_send($result);
+    $self->_send;
+    $self->_post_send;
 }
 
 sub _check_abuse {
@@ -241,8 +241,6 @@ sub _create_reporters {
 sub _send {
     my $self = shift;
 
-    # Multiply results together, so one success counts as a success.
-    my $result = -1;
     my $report = $self->report;
 
     my @add_send_fail_body_ids;
@@ -255,16 +253,14 @@ sub _send {
         # NOTE
         # Non-email senders should only have one body each (see
         # _create_reporters()).
-        my $res = $sender->send( $self->report, $self->h );
-
-        $result *= $res;
+        $sender->send( $self->report, $self->h );
 
         my @body_ids = map { $_->id } @{ $sender->bodies };
-        if ($res) {
-            push @add_send_fail_body_ids, @body_ids;
-        } else {
+        if ($sender->success) {
             $report->add_send_method($sender_name);
             push @remove_send_fail_body_ids, @body_ids;
+        } else {
+            push @add_send_fail_body_ids, @body_ids;
         }
 
         if ( $self->manager ) {
@@ -284,17 +280,20 @@ sub _send {
 
     $self->report->remove_send_fail_body_ids(@remove_send_fail_body_ids)
         if @remove_send_fail_body_ids;
-
-    return $result;
 }
 
 sub _post_send {
-    my ($self, $result) = @_;
+    my ($self) = @_;
 
     # Record any errors, whether overall successful or not (if multiple senders, perhaps one failed)
     my @errors;
+    my $result = 1;
     for my $sender ( @{ $self->reporters } ) {
-        push @errors, $sender->error unless $sender->success;
+        if ($sender->success) {
+            $result = 0;
+        } else {
+            push @errors, $sender->error;
+        }
     }
     if (@errors) {
         $self->report->update_send_failed( join( '|', @errors ) );

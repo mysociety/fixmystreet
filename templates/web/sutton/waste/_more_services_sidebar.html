@@ -1,0 +1,19 @@
+[% IF communal_property %]
+    <h3>Damaged or missing</h3>
+    <p>Please contact your managing agent if you have damaged or missing containers.</p>
+[% END %]
+
+[% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
+  <h3>More services</h3>
+   <ul>
+     [% IF any_report_allowed %]
+       <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
+    [% END %]
+    [% IF any_request_allowed %]
+      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a container</a></li>
+    [% END %]
+    [% IF show_garden_subscribe %]
+      <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+    [% END %]
+  </ul>
+[% END %]

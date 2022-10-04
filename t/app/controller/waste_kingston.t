@@ -423,16 +423,16 @@ FixMyStreet::override_config {
         $mech->content_lacks('Your subscription is now overdue', "No overdue link if after expired");
         set_fixed_time('2021-03-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
+        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 30 days of expiry");
         $mech->content_lacks('Modify your garden waste subscription');
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/waste/12345', 'link redirect to bin list if modify in renewal period';
-        set_fixed_time('2021-02-10T17:00:00Z');
+        set_fixed_time('2021-02-28T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if 7 weeks before expiry");
-        set_fixed_time('2021-02-08T17:00:00Z');
+        $mech->content_contains('Your subscription is soon due for renewal', "due soon link if 30 days before expiry");
+        set_fixed_time('2021-02-27T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 7 weeks before expiry");
+        $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 30 days before expiry");
         $mech->content_contains('Modify your garden waste subscription');
         $mech->log_out_ok;
     };
@@ -559,7 +559,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Your garden waste bin will');
+        $mech->content_contains('We will aim to deliver your garden waste bin ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
@@ -1170,7 +1170,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Your garden waste bin will');
+        $mech->content_contains('We will aim to deliver your garden waste bin ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
@@ -1229,7 +1229,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Your garden waste sacks will');
+        $mech->content_contains('We will aim to deliver your garden waste sacks ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;

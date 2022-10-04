@@ -1,0 +1,4 @@
+[% IF sent_confirm_id_ref ~%]
+The request's reference number is LBS-[% sent_confirm_id_ref %]. Please quote this
+if you need to contact the council about this request.
+[%~ END %]

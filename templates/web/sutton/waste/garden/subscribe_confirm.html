@@ -1,0 +1,87 @@
+[% INCLUDE waste/header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+[% IF error %]
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+        There was a problem: [% error %]
+        </p>
+    </div>
+[% ELSE %]
+    <h1 class="govuk-panel__title">
+        Thank you for contacting the London Borough of Sutton
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+          [% INCLUDE 'waste/_report_ids.html' %]
+        </p>
+        [% IF reference %]
+        <p>
+            Your card payment was successful
+            <br><small>payment reference [% reference %]</small>
+        </p>
+        [% END %]
+    </div>
+[% END %]
+</div>
+
+<p>
+[% message %]
+[% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+We have sent a confirmation email (you may also receive a payment receipt separately) to [% report.user.email %].
+[% END %]
+</p>
+
+<h2>What happens next?</h2>
+
+<!--
+<p>
+You have signed up for the garden waste collection at [% ADDRESS %].
+</p>
+-->
+
+[% SET container = report.get_extra_field_value('Subscription_Details_Containers') %]
+[% SET new_bins = report.get_extra_field_value('new_containers') %]
+[% IF container == 28 %]
+    [% SET container_str = 'sacks' %]
+[% ELSE %]
+    [% SET container_str = nget('bin', 'bins', new_bins) %]
+[% END %]
+
+<p>
+[% IF action == 'new_subscription' %]
+  [% IF new_bins > 0 %]
+    We will aim to deliver your garden waste [% container_str %] within 20 working days.
+    Your subscription will start on the next garden waste collection date for your
+    address after the delivery of your garden waste [% container_str %]. We will email you again
+    when our waste team have delivered your [% container_str %].
+    [% ELSE %]
+    Your subscription will start from the following collection.
+    [% END %]
+[% ELSIF action == 'add_containers' %]
+    We will aim to deliver your garden waste [% container_str %] within 20 working days.
+[% ELSE %]
+    Changes to your subscription will show up on your bin calender shortly.
+[% END %]
+</p>
+
+<p>
+You can <a target="_blank" href="https://www.sutton.gov.uk/-/check-your-bin-collection-days">check your collection day online</a>.
+Your garden waste needs to be at the boundary of your property by 6am on the day of collection.
+</p>
+
+<p>
+<a target="_blank" href="https://www.sutton.gov.uk/-/garden-waste-collection-what-we-can-collect-and-what-we-can-t-collect">
+Find out what you can put in your garden waste [% container_str %] on our website</a>.
+</p>
+
+<p>
+If you have any problems with your subscription, contact Sutton’s Customer Services team on 020 8770 5000.
+</p>
+
+<!-- <p><a class="govuk-button" href="/waste/[% property_id %]">Show upcoming bin days</a></p> -->
+
+[% INCLUDE footer.html %]

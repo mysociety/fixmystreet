@@ -23,7 +23,6 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe;
 use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 use Open311::GetServiceRequestUpdates;
-use Integrations::SCP;
 use Digest::MD5 qw(md5_hex);
 use Memcached;
 
@@ -193,90 +192,23 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
-    my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
+    if ( $c->cobrand->can('waste_cc_get_redirect_url') ) {
+        my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
-    my $payment = Integrations::SCP->new({
-        config => $c->cobrand->feature('payment_gateway')
-    });
-
-    my $p = $c->stash->{report};
-    my $uprn = $p->get_extra_field_value('uprn');
-
-    my $amount = $p->get_extra_field_value( 'pro_rata' );
-    unless ($amount) {
-        $amount = $p->get_extra_field_value( 'payment' );
-    }
-    my $admin_fee = $p->get_extra_field_value('admin_fee');
-
-    my $redirect_id = mySociety::AuthToken::random_token();
-    $p->set_extra_metadata('redirect_id', $redirect_id);
-    $p->update;
-
-    my $address = $c->stash->{property}{address};
-    my @parts = split ',', $address;
-
-    my @items = ({
-        amount => $amount,
-        reference => $payment->config->{customer_ref},
-        description => $p->title,
-        lineId => $c->cobrand->waste_cc_payment_line_item_ref($p),
-    });
-    if ($admin_fee) {
-        push @items, {
-            amount => $admin_fee,
-            reference => $payment->config->{customer_ref_admin_fee},
-            description => 'Admin fee',
-            lineId => $c->cobrand->waste_cc_payment_admin_fee_line_item_ref($p),
-        };
-    }
-    my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
-        backUrl => $backUrl,
-        ref => $c->cobrand->waste_cc_payment_sale_ref($p),
-        request_id => $p->id,
-        description => $p->title,
-        name => $p->name,
-        email => $p->user->email,
-        uprn => $uprn,
-        address1 => shift @parts,
-        address2 => shift @parts,
-        country => 'UK',
-        postcode => pop @parts,
-        items => \@items,
-        staff => $c->stash->{staff_payments_allowed} eq 'cnp',
-    });
-
-    if ( $result ) {
-        $c->stash->{xml} = $result;
-
-        # GET back
-        # requestId - should match above
-        # scpReference - transaction Ref, used later for query
-        # transactionState - in progress/complete
-        # invokeResult/status - SUCCESS/INVALID_REQUEST/ERROR
-        # invokeResult/redirectURL - what is says
-        # invokeResult/errorDetails - what it says
-        #
-        if ( $result->{transactionState} eq 'IN_PROGRESS' &&
-             $result->{invokeResult}->{status} eq 'SUCCESS' ) {
-
-             $p->set_extra_metadata('scpReference', $result->{scpReference});
-             $p->update;
-
-             # need to save scpReference against request here
-             my $redirect = $result->{invokeResult}->{redirectUrl};
-             $c->res->redirect( $redirect );
-             $c->detach;
-         } else {
-             # XXX - should this do more?
-            (my $error = $result->{invokeResult}->{status}) =~ s/_/ /g;
-            $c->stash->{error} = $error;
+        if ( $redirect_url ) {
+            $c->res->redirect( $redirect_url );
+            $c->detach;
+        } else {
+            unless ( $c->stash->{error} ) {
+                $c->stash->{error} = 'Unknown error';
+            }
             $c->stash->{template} = 'waste/pay.html';
             $c->detach;
-         }
-     } else {
-        $c->stash->{error} = 'Unknown error';
-        $c->stash->{template} = 'waste/pay.html';
+        }
+    } else {
+        $c->forward('populate_cc_details');
+        $c->cobrand->call_hook('garden_waste_cc_munge_form_details' => $c);
+        $c->stash->{template} = 'waste/cc.html';
         $c->detach;
     }
 }
@@ -288,36 +220,15 @@ sub pay_complete : Path('pay_complete') : Args(2) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
     my $p = $c->stash->{report};
 
-    # need to get some ID Things which I guess we stored in pay
-    my $scpReference = $p->get_extra_metadata('scpReference');
-    $c->detach( '/page_error_404_not_found' ) unless $scpReference;
+    my $ref = $c->cobrand->garden_cc_check_payment_status($c, $p);
 
-    my $payment = Integrations::SCP->new(
-        config => $c->cobrand->feature('payment_gateway')
-    );
-
-    my $resp = $payment->query({
-        scpReference => $scpReference,
-    });
-
-    if ($resp->{transactionState} eq 'COMPLETE') {
-        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
-            # create sub in echo
-            my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
-            $c->stash->{title} = 'Payment successful';
-            $c->stash->{reference} = $ref;
-            $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
-            $c->forward( 'confirm_subscription', [ $ref ] );
-        # It is not clear to me that it's possible to get to this with a redirect
-        } else {
-            $c->stash->{template} = 'waste/pay.html';
-            $c->stash->{error} = $resp->{paymentResult}->{status};
-            $c->detach;
-        }
+    if ( $ref ) {
+        $c->stash->{title} = 'Payment successful';
+        $c->stash->{reference} = $ref;
+        $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
+        $c->forward( 'confirm_subscription', [ $ref ] );
     } else {
-        # again, I am not sure it's possible for this to ever happen
         $c->stash->{template} = 'waste/pay.html';
-        $c->stash->{error} = $resp->{transactionState};
         $c->detach;
     }
 }
@@ -361,7 +272,7 @@ sub cancel_subscription : Private {
     $c->detach;
 }
 
-sub populate_dd_details : Private {
+sub populate_payment_details : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
@@ -385,6 +296,36 @@ sub populate_dd_details : Private {
     $c->stash->{town} = pop @parts;
     $c->stash->{address3} = join ', ', @parts;
 
+    my $payment_details = $c->cobrand->feature('payment_gateway');
+    $c->stash->{payment_details} = $payment_details;
+    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
+    $c->stash->{lookup} = $reference;
+}
+
+sub populate_cc_details : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_payment_details');
+
+    my $p = $c->stash->{report};
+    my $payment = $p->get_extra_field_value('pro_rata');
+    unless ($payment) {
+        $payment = $p->get_extra_field_value('payment');
+    }
+    my $admin_fee = $p->get_extra_field_value('admin_fee');
+    if ( $admin_fee ) {
+        $payment = $admin_fee + $payment;
+    }
+    $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
+}
+
+sub populate_dd_details : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_payment_details');
+
+    my $p = $c->stash->{report};
+
     my $dt = $c->cobrand->waste_get_next_dd_day;
 
     my $payment = $p->get_extra_field_value('payment');
@@ -393,12 +334,7 @@ sub populate_dd_details : Private {
         my $first_payment = $admin_fee + $payment;
         $c->stash->{firstamount} = sprintf( '%.2f', $first_payment / 100 );
     }
-
-    my $payment_details = $c->cobrand->feature('payment_gateway');
-    $c->stash->{payment_details} = $payment_details;
     $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
-    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
-    $c->stash->{lookup} = $reference;
     $c->stash->{payment_date} = $dt;
     $c->stash->{start_date} = $dt->ymd;
     $c->stash->{day} = $dt->day;
@@ -686,12 +622,13 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless ( $_->{next} && !$_->{request_open} ) || $_->{request_only};
+        next unless $_->{next} || $_->{request_only};
         my $service = $_;
         my $name = $_->{service_name};
         my $containers = $_->{request_containers};
-        my $max = $_->{request_max};
+        my $maximum = $_->{request_max};
         foreach my $id (@$containers) {
+            my $max = ref $maximum ? $maximum->{$id} : $maximum;
             push @$field_list, "container-$id" => {
                 type => 'Checkbox',
                 apply => [
@@ -704,6 +641,7 @@ sub construct_bin_request_form {
                 label => $name,
                 option_label => $c->stash->{containers}->{$id},
                 tags => { toggle => "form-quantity-$id-row" },
+                disabled => $_->{request_open} ? 1 : 0,
             };
             $name = ''; # Only on first container
             if ($max == 1) {
@@ -864,7 +802,7 @@ sub report : Chained('property') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     $c->stash->{first_page} = 'report';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report';
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
     $c->stash->{page_list} = [
         report => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
@@ -1043,7 +981,7 @@ sub garden : Chained('garden_setup') : Args(0) {
         max_bins => $c->stash->{quantity_max}->{$service}
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
-    if ($c->cobrand->moniker eq 'kingston') {
+    if ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe';
     }
     $c->forward('form');
@@ -1062,10 +1000,15 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->detach( '/auth/redirect' );
     }
 
-    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) { # XXX Kingston sack
-        my $payment_method = 'credit_card';
-        $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase';
+    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
+        if ($c->cobrand->moniker eq 'kingston') {
+            my $payment_method = 'credit_card';
+            $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
+            $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase';
+        } else {
+            $c->res->redirect('/waste/' . $c->stash->{property}{id});
+            $c->detach;
+        }
     } else {
         my $pick = $c->get_param('task') || '';
         if ($pick eq 'cancel') {
@@ -1147,7 +1090,10 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         bins => $service->{garden_bins},
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
-    if ($c->cobrand->moniker eq 'kingston' && $c->stash->{garden_sacks}) {
+    if (
+           ( $c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton' ) &&
+            $c->stash->{garden_sacks}
+        ) {
         $c->stash->{first_page} = 'sacks_choice';
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Renew';
     }
@@ -1269,7 +1215,7 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    if ($c->stash->{garden_sacks} && $service->{garden_container} == 28) { # XXX Kingston sack
+    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
         $data->{garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
@@ -1435,7 +1381,7 @@ sub process_garden_data : Private {
         $p->update;
         $c->forward('confirm_subscription', [ undef ]);
     } else {
-        if ( $data->{payment_method} eq 'direct_debit' ) {
+        if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
             $c->forward('direct_debit');
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
@@ -1501,6 +1447,11 @@ sub add_report : Private {
         $report->confirmed(undef);
         $report->update;
     } else {
+        if ($c->cobrand->call_hook('waste_never_confirm_reports')) {
+            my $report = $c->stash->{report};
+            $report->confirm;
+            $report->update;
+        }
         $c->forward('/report/new/redirect_or_confirm_creation');
     }
 
