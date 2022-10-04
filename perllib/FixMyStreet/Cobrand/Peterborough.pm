@@ -1080,6 +1080,31 @@ sub waste_munge_request_data {
     $data->{category} = $self->body->contacts->find({ email => "Bartec-$id" })->category;
 }
 
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+
+    $data->{title} = "Bulky goods collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{extra_DATE} = $data->{chosen_date};
+
+    # XXX loop here, plus might be more than 5 in future
+    $data->{extra_ITEM_01} = $data->{item1};
+    $data->{extra_ITEM_02} = $data->{item2};
+    $data->{extra_ITEM_03} = $data->{item3};
+    $data->{extra_ITEM_04} = $data->{item4};
+    $data->{extra_ITEM_05} = $data->{item5};
+
+    $data->{extra_CHARGEABLE} = 'CHARGED'; # XXX not necessarily true
+
+    $data->{"extra_CREW NOTES"} = $data->{location};
+
+    # XXX what about photos?
+
+    $data->{category} = "Bulky collection";
+}
+
 sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
     my $c = $self->{c};

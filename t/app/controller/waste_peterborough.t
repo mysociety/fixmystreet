@@ -52,6 +52,18 @@ create_contact({ category => '240L Black - Wheels', email => 'Bartec-541' }, 'Bi
 create_contact({ category => '240L Green - Wheels', email => 'Bartec-540' }, 'Bin repairs');
 create_contact({ category => 'Not returned to collection point', email => 'Bartec-497' }, 'Not returned to collection point');
 create_contact({ category => 'Black 360L bin', email => 'Bartec-422' }, 'Request new container');
+create_contact(
+    { category => 'Bulky collection', email => 'Bartec-238' },
+    'Bulky goods',
+    { code => 'ITEM_01', required => 1 },
+    { code => 'ITEM_02' },
+    { code => 'ITEM_03' },
+    { code => 'ITEM_04' },
+    { code => 'ITEM_05' },
+    { code => 'CHARGEABLE' },
+    { code => 'CREW NOTES' },
+    { code => 'DATE' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'peterborough',
@@ -654,6 +666,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'peterborough',
     COBRAND_FEATURES => {
         bartec => { peterborough => {
@@ -743,10 +756,28 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         };
 
-        # XXX payment tests here!
+        subtest 'Payment page' => sub {
+            $mech->content_contains('Payment successful');
+            $mech->submit_form_ok;
+        };
 
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Collection booked');
+
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->get_extra_field_value('uprn'), 100090215480;
+            is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
+            is $report->category, 'Bulky collection';
+            is $report->title, 'Bulky goods collection';
+            is $report->get_extra_field_value('uprn'), 100090215480;
+            is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
+            is $report->get_extra_field_value('CREW NOTES'), 'behind the hedge in the front garden';
+            is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
+            is $report->get_extra_field_value('ITEM_01'), 'fridge';
+            is $report->get_extra_field_value('ITEM_02'), 'chair';
+            is $report->get_extra_field_value('ITEM_03'), 'sofa';
+            is $report->get_extra_field_value('ITEM_04'), 'table';
+            is $report->get_extra_field_value('ITEM_05'), 'fridge';
         };
 
     };

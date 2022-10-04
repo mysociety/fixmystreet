@@ -943,6 +943,22 @@ sub bulky : Chained('bulky_setup') : Args(0) {
     $c->forward('form');
 }
 
+sub process_bulky_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    $c->cobrand->call_hook("waste_munge_bulky_data", $data);
+
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+    $c->forward('add_report', [ $data ]) or return;
+    return 1;
+}
+
+
 
 sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;

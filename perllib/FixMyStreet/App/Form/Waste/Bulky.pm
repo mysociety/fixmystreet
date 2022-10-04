@@ -71,7 +71,17 @@ has_page summary => (
     fields => ['submit', 'tandc'],
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
+    next => 'payment',
+);
+
+has_page payment => ( # XXX need to actually take payment
+    title => 'Payment successful',
+    fields => [ 'continue' ],
     next => 'done',
+    finished => sub {
+        return $_[0]->wizard_finished('process_bulky_data');
+    },
+
 );
 
 has_page done => (
