@@ -444,6 +444,9 @@ sub clear_cached_lookups_postcode {
 sub clear_cached_lookups_property {
     my ($self, $uprn) = @_;
 
+    # might be prefixed with postcode if it's come straight from the URL
+    $uprn =~ s/^.+\://g;
+
     foreach ( qw/look_up_property bin_services_for_address property_attributes/ ) {
         delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
     }

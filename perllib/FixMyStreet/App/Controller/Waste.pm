@@ -517,7 +517,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     $c->forward('/auth/get_csrf_token');
 
     # clear this every time they visit this page to stop stale content.
-    if ( $c->req->path =~ m#^waste/[:\w ]+$#i ) {
+    if ( $c->req->path =~ m#^waste/[:\w %]+$#i ) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );
     }
 
