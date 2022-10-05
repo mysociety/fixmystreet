@@ -504,6 +504,48 @@ subtest 'check heatmap page' => sub {
     $user->update({ area_ids => undef });
 };
 
+subtest 'category restrictions for roles restricts reporting categories for users with that role' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $potholes = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Potholes',
+            email => 'potholes@example.org',
+        );
+        my $flytipping = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Flytipping',
+            email => 'flytipping@example.org',
+        );
+        $user->set_extra_metadata(assigned_categories_only => 1);
+        $user->update;
+        my $role = $user->roles->create({
+            body => $body,
+            name => 'Out of hours',
+            permissions => ['moderate', 'planned_reports'],
+        });
+        $role->set_extra_metadata('categories', [$potholes->id]);
+        $role->update;
+        $user->add_to_roles($role);
+
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } },
+            "submit location" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Flytipping');
+
+        # TfL categories should always be displayed, regardless of role restrictions.
+        $mech->content_contains('Traffic Lights');
+    };
+};
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
     COBRAND_FEATURES => {

@@ -673,9 +673,18 @@ has categories => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        return [] unless $self->get_extra_metadata('categories');
+
+        my @category_ids;
+        my $user_categories = $self->get_extra_metadata('categories');
+        push @category_ids, @$user_categories if scalar $user_categories;
+        foreach my $role ($self->roles) {
+            my $role_categories = $role->get_extra_metadata('categories');
+            push @category_ids, @$role_categories if scalar $role_categories;
+        }
+        return [] unless @category_ids;
+
         my @categories = $self->result_source->schema->resultset("Contact")->search({
-            id => $self->get_extra_metadata('categories'),
+            id => \@category_ids,
         }, {
             order_by => 'category',
         })->get_column('category')->all;

@@ -417,17 +417,10 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
             $c->stash->{body} = $user->from_body;
             $c->forward('/admin/fetch_contacts');
         }
-        my @contacts = @{$user->get_extra_metadata('categories') || []};
-        my %active_contacts = map { $_ => 1 } @contacts;
-        my @live_contacts = $c->stash->{live_contacts}->all;
-        my @all_contacts = map { {
-            id => $_->id,
-            category => $_->category,
-            active => $active_contacts{$_->id},
-            group => $_->groups,
-        } } @live_contacts;
-        $c->stash->{contacts} = \@all_contacts;
-        $c->forward('/report/stash_category_groups', [ \@all_contacts, { combine_multiple => 1 } ]);
+        $c->forward('/admin/stash_contacts_for_template', [
+            \@{$user->get_extra_metadata('categories') || []}
+        ]);
+        $c->forward('/report/stash_category_groups', [ $c->stash->{contacts}, { combine_multiple => 1 } ]);
     }
 
     # this goes after in case we've delete any alerts

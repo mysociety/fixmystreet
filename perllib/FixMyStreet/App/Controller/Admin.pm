@@ -163,6 +163,21 @@ sub fetch_contacts : Private {
     return 1;
 }
 
+sub stash_contacts_for_template : Private {
+    my ( $self, $c, $contacts ) = @_;
+
+    my %active_contacts = map { $_ => 1 } @$contacts;
+    my @live_contacts = $c->stash->{live_contacts}->all;
+    my @all_contacts = map { {
+        id => $_->id,
+        category => $_->category,
+        active => $active_contacts{$_->id},
+        group => $_->groups,
+    } } @live_contacts;
+
+    $c->stash->{contacts} = \@all_contacts;
+}
+
 sub fetch_languages : Private {
     my ( $self, $c ) = @_;
 

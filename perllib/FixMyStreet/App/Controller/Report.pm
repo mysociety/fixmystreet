@@ -95,8 +95,8 @@ sub display :PathPart('') :Chained('id') :Args(0) {
         my $okay = 1;
         my $contact = $c->stash->{problem}->contact;
         if ($contact && ($c->user->get_extra_metadata('assigned_categories_only') || $contact->get_extra_metadata('assigned_users_only'))) {
-            my $user_cats = $c->user->get_extra_metadata('categories') || [];
-            $okay = any { $contact->id eq $_ } @$user_cats;
+            my $user_cats = $c->user->categories || [];
+            $okay = any { $contact->category eq $_ } @$user_cats;
         }
         if ($okay) {
             $c->stash->{relevant_staff_user} = 1;
