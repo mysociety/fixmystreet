@@ -24,9 +24,10 @@ my $params = {
     can_be_devolved => 1,
 };
 my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, { cobrand => 'sutton' });
+my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, { cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
-my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
-$staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
+my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $kingston->id);
+$staff->user_body_permissions->create({ body => $kingston, permission_type => 'report_edit' });
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -178,11 +179,13 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'kingston',
+    ALLOWED_COBRANDS => ['kingston', 'sutton'],
 }, sub {
-    subtest 'Sutton staff can see Kingston admin' => sub {
+    subtest 'Kingston staff can see Sutton admin' => sub {
+        $mech->host('sutton.example.org');
         $mech->log_in_ok($staff->email);
-        $mech->get_ok('/admin/');
+        $mech->get_ok('/admin/reports');
+        $mech->follow_link_ok({ text => "Edit" });
     };
 };
 

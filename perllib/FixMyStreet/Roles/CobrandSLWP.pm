@@ -91,6 +91,27 @@ sub admin_allow_user {
     return $user_cobrand =~ /kingston|sutton/;
 }
 
+# Let Kingston/Sutton staff users share permissions
+sub permission_body_override {
+    my ($self, $body_ids) = @_;
+
+    my $kingston = FixMyStreet::Cobrand::Kingston->new->body;
+    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
+    return unless $kingston && $sutton;
+
+    my @out = map {
+        if ($kingston->id == $_) {
+            ($_, $sutton->id);
+        } elsif ($sutton->id == $_) {
+            ($_, $kingston->id);
+        } else {
+            $_;
+        }
+    } @$body_ids;
+
+    return \@out;
+}
+
 sub state_groups_admin {
     [
         [ New => [ 'confirmed' ] ],
