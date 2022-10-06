@@ -633,13 +633,6 @@ sub waste_munge_request_data {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
         $nice_reason = "Missing";
-    } elsif ($reason eq 'new_build') {
-        $action_id = 1; # Deliver
-        $reason_id = 4; # New
-        $nice_reason = 'I am a new resident';
-    } elsif ($reason eq 'more') {
-        $action_id = 1; # Deliver
-        $reason_id = 3; # Change Capacity
     }
 
     $data->{title} = "Request new $container";

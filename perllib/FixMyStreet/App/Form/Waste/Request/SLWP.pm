@@ -22,15 +22,6 @@ has_field request_reason => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Why do you need a replacement bin?',
-    validate_method => sub {
-        my $self = shift;
-        if ($self->value eq 'more') {
-            my $data = $self->form->saved_data;
-            if ($data->{"quantity-16"} > 1) {
-                $data->{"quantity-16"} = 1;
-            }
-        }
-    },
 );
 
 sub options_request_reason {
@@ -38,11 +29,7 @@ sub options_request_reason {
     my @options = (
         { value => 'damaged', label => 'Damaged' },
         { value => 'missing', label => 'Missing' },
-        { value => 'new_build', label => 'I am a new resident' },
     );
-    if ($form->saved_data->{"container-16"}) {
-        push @options, { value => 'more', label => 'I would like an extra recycling container' };
-    }
     return @options;
 }
 
