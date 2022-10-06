@@ -259,7 +259,11 @@ sub confirm_subscription : Private {
     $c->forward( '/report/new/create_related_things', [ $p ] );
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
     $p->update;
-    $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
+    if ($p->category eq 'Bulky collection') {
+        $c->stash->{template} = 'waste/bulky/confirmation.html';
+    } else {
+        $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
+    }
     # Set an override template, so that the form processing can finish (to e.g.
     # clear the session unique ID) and have the form code load this template
     # rather than the default 'done' form one
@@ -1050,9 +1054,17 @@ sub process_bulky_data : Private {
         my ($id) = /^extra_(.*)/;
         $c->set_param($id, $data->{$_});
     }
+
     $c->stash->{waste_email_type} = 'bulky';
     $c->stash->{override_confirmation_template} = 'waste/bulky/confirmation.html';
-    $c->forward('add_report', [ $data ]) or return;
+
+    if ($c->stash->{payment}) {
+        $c->set_param('payment', $c->stash->{payment});
+        $c->forward('add_report', [ $data, 1 ]) or return;
+        $c->forward('pay', [ 'bulky' ]);
+    } else {
+        $c->forward('add_report', [ $data ]) or return;
+    }
     return 1;
 }
 

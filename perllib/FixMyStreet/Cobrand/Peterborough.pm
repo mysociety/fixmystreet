@@ -17,6 +17,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Multi';
+with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { 2566 }
 sub council_area { 'Peterborough' }
@@ -1105,6 +1106,7 @@ sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
+    my $cfg = $c->cobrand->body->get_extra_metadata("wasteworks_config", {});
 
     $data->{title} = "Bulky goods collection";
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
@@ -1116,13 +1118,73 @@ sub waste_munge_bulky_data {
         $data->{"extra_ITEM_$two"} = $data->{"item_$_"}{item};
     }
 
-    $data->{extra_CHARGEABLE} = 'CHARGED'; # XXX not necessarily true
+    my $free_collection_available = 1; # XXX need to check property attributes
+
+    if ($cfg->{free_mode} && $free_collection_available) {
+        $data->{extra_CHARGEABLE} = 'FREE';
+        $c->stash->{payment} = 0;
+    } else {
+        $data->{extra_CHARGEABLE} = 'CHARGED';
+
+        # XXX assume all paid bookings are one price, but will eventually
+        # need to support dynamic pricing per-item
+        $c->stash->{payment} = $cfg->{base_price};
+        $data->{"extra_payment_method"} = "credit_card"; # XXX what about CSC?
+    }
 
     $data->{"extra_CREW NOTES"} = $data->{location};
 
     # XXX what about photos?
 
     $data->{category} = "Bulky collection";
+}
+
+sub waste_cc_payment_line_item_ref {
+    my ($self, $p) = @_;
+    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+}
+
+sub waste_cc_payment_admin_fee_line_item_ref {
+    my ($self, $p) = @_;
+    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+}
+
+sub waste_cc_payment_sale_ref {
+    my ($self, $p) = @_;
+    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+}
+
+sub bin_payment_types {
+    return {
+        'csc' => 1,
+        'credit_card' => 2,
+        'direct_debit' => 3,
+    };
+}
+
+
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    if ( $service->{service_name} eq 'Bulky collection' ) {
+        push @$meta, {
+            code => 'payment',
+            datatype => 'string',
+            description => 'Payment',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        }, {
+            code => 'payment_method',
+            datatype => 'string',
+            description => 'Payment method',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        };
+    }
 }
 
 sub waste_munge_report_data {

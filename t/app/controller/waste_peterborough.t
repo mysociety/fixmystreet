@@ -68,6 +68,8 @@ create_contact(
     { code => 'CHARGEABLE' },
     { code => 'CREW NOTES' },
     { code => 'DATE' },
+    { code => 'payment' },
+    { code => 'payment_method' },
 );
 
 FixMyStreet::override_config {
@@ -686,6 +688,15 @@ FixMyStreet::override_config {
         waste_features => { peterborough => {
             bulky_enabled => 1,
         } },
+        payment_gateway => { peterborough => {
+            cc_url => 'https://example.org/scp/',
+            scp_fund_code => 2,
+            customer_ref => 'ABC12345',
+            siteID => 999,
+            scpID => 1234567,
+            hmac_id => 789,
+            hmac => 'bmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAKbmV2ZXIgZ29ubmEgbGV0IHlvdSBkb3duCm5ldmVyIGdvbm5hIHJ1bg==',
+        } },
     },
     STAGING_FLAGS => {
         send_reports => 1,
@@ -695,6 +706,8 @@ FixMyStreet::override_config {
 
     $body->set_extra_metadata(
         wasteworks_config => {
+            base_price => '2350',
+            free_mode => '0',
             item_list => [
                 {   bartec_id => '1001',
                     category  => 'Audio / Visual Elec. equipment',
@@ -744,6 +757,44 @@ FixMyStreet::override_config {
         },
     );
     $body->update;
+
+    my $sent_params;
+    my $call_params;
+    my $pay = Test::MockModule->new('Integrations::SCP');
+
+    $pay->mock(call => sub {
+        my $self = shift;
+        my $method = shift;
+        $call_params = { @_ };
+    });
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        $pay->original('pay')->($self, $sent_params);
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
 
     subtest 'Bulky goods collection booking' => sub {
         # XXX NB Currently, these tests do not describe the correct
@@ -849,6 +900,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { location => 'behind the hedge in the front garden' } });
         };
 
+        my $mech2;
         subtest 'Summary page' => sub {
             $mech->content_contains('Submit bulky goods collection booking');
             $mech->content_contains('Please review the information');
@@ -859,21 +911,49 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Wardrobes/s);
             # Extra text for wardrobes
             $mech->content_like(qr/Please dismantle/s);
-            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+            # external redirects make Test::WWW::Mechanize unhappy so clone
+            # the mech for the redirect
+            $mech2 = $mech->clone;
+            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
         };
 
         subtest 'Payment page' => sub {
-            $mech->content_contains('Payment successful');
-            $mech->submit_form_ok;
+
+            is $mech2->res->previous->code, 302, 'payments issues a redirect';
+            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+            is $new_report->category, 'Bulky collection', 'correct category on report';
+            is $new_report->title, 'Bulky goods collection', 'correct title on report';
+            is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $new_report->state, 'unconfirmed', 'report not confirmed';
+
+            is $sent_params->{items}[0]{amount}, 2350, 'correct amount used';
+
+            $new_report->discard_changes;
+            is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+            $mech->get('/waste/pay/xx/yyyyyyyyyyy');
+            ok !$mech->res->is_success(), "want a bad response";
+            is $mech->res->code, 404, "got 404";
+            $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
+            ok !$mech->res->is_success(), "want a bad response";
+            is $mech->res->code, 404, "got 404";
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+            is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+            $new_report->discard_changes;
+            is $new_report->state, 'confirmed', 'report confirmed';
+            is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
         };
 
+        my $report;
         subtest 'Confirmation page' => sub {
-            $mech->content_contains('Your booking is not complete yet');
-            my $link = $mech->get_link_from_email;
-            $mech->get_ok($link);
-            $mech->content_contains('Collection booked');
+            $mech->content_contains('Payment successful');
 
-            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->get_extra_field_value('uprn'), 100090215480;
             is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
             is $report->category, 'Bulky collection';
@@ -936,7 +1016,43 @@ FixMyStreet::override_config {
             is $mech->uri->path, '/waste/PE1%203NA:100090215480', 'Redirected to waste base page';
             $mech->content_lacks('None booked');
         };
+
+        $report->delete; # So can have another one below
     };
+
+    subtest 'Bulky collection, free' => sub {
+        my $cfg = $body->get_extra_metadata('wasteworks_config');
+        $cfg->{free_mode} = 1;
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
+
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        $mech->content_contains('Your booking is not complete yet');
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+        $mech->content_contains('Collection booked');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
+        is $report->category, 'Bulky collection';
+        is $report->title, 'Bulky goods collection';
+        is $report->get_extra_field_value('payment_method'), '';
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
+        is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
+        $mech->log_out_ok;
+        $report->delete;
+    };
+
 };
 
 FixMyStreet::override_config {
@@ -962,6 +1078,8 @@ FixMyStreet::override_config {
 
     subtest 'WasteWorks configuration editing' => sub {
         ok $mech->host('peterborough.fixmystreet.com');
+        $body->unset_extra_metadata('wasteworks_config');
+        $body->update;
 
         subtest 'Only cobrands with feature enabled are visible' => sub {
             $mech->log_in_ok($super->email);
@@ -1262,5 +1380,18 @@ sub _future_workpacks {
         },
     ];
 }
+
+sub get_report_from_redirect {
+    my $url = shift;
+
+    my ($report_id, $token) = ( $url =~ m#/(\d+)/([^/]+)$# );
+    my $new_report = FixMyStreet::DB->resultset('Problem')->find( {
+            id => $report_id,
+    });
+
+    return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
+    return ($token, $new_report, $report_id);
+}
+
 
 done_testing;
