@@ -1181,6 +1181,124 @@ foreach my $test ( {
     };
 }
 
+foreach my $test (
+    {
+        desc => 'check that new comment confirmed date greater than report sent date when originally the same',
+        dt1 => $dt,
+        dt2 => $dt
+    },
+    {
+        desc => 'check that new comment is not dated earlier than report sent date when originally earlier',
+        dt1 => $dt,
+        dt2 => $dt->subtract(seconds => 10)
+    }
+) {
+    subtest $test->{desc} => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638354</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <status>open</status>
+        <description>This is a different note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->state( 'confirmed' );
+
+        $problem->whensent( $test->{dt1} );
+        $problem->update;
+
+        $requests_xml =~ s/UPDATED_DATETIME/$test->{dt2}/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $bodies{2482},
+        );
+
+        $update->process_body;
+
+        $problem->discard_changes;
+
+        is $problem->comments->count, 1, 'one comment after fetching updates';
+        my $comment = $problem->comments->first;
+        is $comment->confirmed, $problem->whensent->add( seconds => 1), 'Comment date a second after report date';
+        $problem->comments->delete;
+    };
+}
+
+foreach my $test (
+    {
+        desc => 'check that new comment confirmed date greater than auto-internal comment date when originally the same',
+        dt1 => $dt,
+        dt2 => $dt
+    },
+    {
+        desc => 'check that new comment is not dated earlier than auto-internal comment date when originally earlier',
+        dt1 => $dt,
+        dt2 => $dt->subtract(seconds => 10)
+    }
+) {
+    subtest $test->{desc} => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638354</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <status>open</status>
+        <description>This is a different note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->state( 'fixed - council' );
+        $problem->whensent( $test->{dt1} );
+
+        my $auto_comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
+            problem_state => 'fixed - council',
+            problem_id => $problem->id,
+            user_id    => $user->id,
+            name       => 'User',
+            text       => "Thank you. Your report has been fixed",
+            state      => 'confirmed',
+            confirmed  => 'now()',
+            external_id => 'auto-internal',
+        } );
+
+        $problem->update;
+        $auto_comment->confirmed($test->{dt1});
+
+        $requests_xml =~ s/UPDATED_DATETIME/$test->{dt2}/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $bodies{2482},
+        );
+
+        $update->process_body;
+
+        $problem->discard_changes;
+
+        is $problem->comments->count, 2, 'two comment after fetching updates';
+
+        my @updates = $problem->comments->search(undef, { order_by => { -asc => 'created' } })->all;
+        is $updates[0]->external_id, 'auto-internal', "Automatic update is the earlier update";
+        is $updates[1]->created, $updates[0]->created->add( seconds => 1), "New update is one second later than automatic update";
+        $problem->comments->delete;
+    };
+}
+
 my $response_template_in_progress = $bodies{2482}->response_templates->create({
     title => "Acknowledgement 1",
     text => "Thank you for your report. We will provide an update within 48 hours.",

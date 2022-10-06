@@ -166,6 +166,24 @@ sub process_update {
     if (!$email_text && $request->{email_text}) {
         $email_text = $request->{email_text};
     };
+
+    # An update shouldn't precede an auto-internal update nor should it be earlier than when the
+    # report was sent.
+    my $auto_comment = $p->comments->search({ external_id => 'auto-internal' })->first;
+    if ($auto_comment) {
+        if ($request->{comment_time} <= $auto_comment->confirmed) {
+            $request->{comment_time} = $auto_comment->confirmed + DateTime::Duration->new( seconds => 1 );
+        }
+    } else {
+        # A report that has not yet reached the database may have a value of 'current_timestamp'
+        # for its whensent value
+        if ($p->whensent && ref($p->whensent) eq 'SCALAR' && ${$p->whensent} =~ /current_timestamp/) {
+            $request->{comment_time} = DateTime->now() + DateTime::Duration->new( seconds => 1 );
+        } elsif ($p->whensent && $request->{comment_time} <= $p->whensent) {
+            $request->{comment_time} = $p->whensent + DateTime::Duration->new( seconds => 1 );
+        }
+    }
+
     my $comment = $self->schema->resultset('Comment')->new(
         {
             problem => $p,
@@ -214,7 +232,7 @@ sub process_update {
         # comment. This is to catch automated updates which happen faster than we get the external_id
         # back from the endpoint and hence have an created time before the lastupdate.
         if ( $p->is_visible && $p->state ne $state &&
-            ( $comment->created >= $p->lastupdate || $p->comments->count == 0 ) ) {
+            ( $comment->created >= $p->lastupdate || $p->comments->count == 0 || ($p->comments->count == 1 && $p->comments->first->external_id eq "auto-internal") )) {
             $p->state($state);
         }
     }
