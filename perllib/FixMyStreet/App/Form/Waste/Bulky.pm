@@ -198,36 +198,21 @@ sub _build_items_master_list {
     $_[0]->c->cobrand->call_hook('bulky_items_master_list');
 }
 
-# List of categories with item descriptions, with extra text removed
-# XXX This may need to change depending on the ultimate layout of the master
-# list
-has items_list => (
+has items_by_category => (
     is      => 'ro',
-    isa     => 'ArrayRef',
+    isa     => 'HashRef',
     lazy    => 1,
-    builder => '_build_items_list',
+    builder => '_build_items_by_category',
 );
 
-sub _build_items_list {
+sub _build_items_by_category {
     my $self = shift;
 
-    my @munged_list;
-
+    my %hash;
     for my $item ( @{ $self->items_master_list } ) {
-        my $item_munged = { category => $item->{category} };
-
-        for my $desc ( @{ $item->{item_descriptions} } ) {
-            if ( ref $desc eq 'ARRAY' ) {
-                push @{ $item_munged->{item_descriptions} }, $desc->[0];
-            } else {
-                push @{ $item_munged->{item_descriptions} }, $desc;
-            }
-        }
-
-        push @munged_list, $item_munged;
+        push @{ $hash{ $item->{category} } }, $item->{name};
     }
-
-    return \@munged_list;
+    return \%hash;
 }
 
 # Hash of item names mapped to extra text
@@ -243,12 +228,7 @@ sub _build_items_extra_text {
 
     my %hash;
     for my $item ( @{ $self->items_master_list } ) {
-        for my $desc ( @{ $item->{item_descriptions} } ) {
-            if ( ref $desc eq 'ARRAY' ) {
-                my ( $name, $extra_text ) = @$desc;
-                $hash{$name} = $extra_text;
-            }
-        }
+        $hash{ $item->{name} } = $item->{message} if $item->{message};
     }
     return \%hash;
 }
@@ -290,23 +270,24 @@ sub field_list {
                 #     ],
                 # },
                 my @option_groups;
-                for my $item ( @{ $field->form->items_list } ) {
-                    my $cat = $item->{category};
+
+                for my $cat ( sort keys %{ $field->form->items_by_category } )
+                {
                     my @options;
 
-                    for my $desc ( @{ $item->{item_descriptions} } ) {
-                        push @options,
-                            {
-                            label => $desc,
-                            value => $desc,
-                            };
+                    for my $name (
+                        @{ $field->form->items_by_category->{$cat} } )
+                    {
+                        push @options => {
+                            label => $name,
+                            value => $name,
+                        };
                     }
 
-                    push @option_groups,
-                        {
-                        group   => $item->{category},
+                    push @option_groups => {
+                        group   => $cat,
                         options => \@options,
-                        };
+                    };
                 }
 
                 return \@option_groups;

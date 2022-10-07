@@ -743,6 +743,7 @@ FixMyStreet::override_config {
                 {   with_fields => {
                         'item_1.item' => 'Amplifiers',
                         'item_2.item' => 'High chairs',
+                        'item_3.item' => 'Wardrobes',
                     },
                 },
             );
@@ -760,6 +761,9 @@ FixMyStreet::override_config {
             $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
             $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Amplifiers/s);
             $mech->content_like(qr/<dd class="govuk-summary-list__value">.*High chairs/s);
+            $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Wardrobes/s);
+            # Extra text for wardrobes
+            $mech->content_like(qr/Please dismantle/s);
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         };
 
