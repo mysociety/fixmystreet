@@ -413,6 +413,19 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    if ($state eq 'Outstanding' && $now->hour < 17) {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed && $now->hour < 17) {
+        $row->{report_allowed} = 0;
+    }
+}
+
 sub waste_staff_choose_payment_method { 0 }
 sub waste_cheque_payments { 0 }
 

@@ -171,6 +171,20 @@ around look_up_property => sub {
 
 sub waste_never_confirm_reports { 1 }
 
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    if ($state eq 'Outstanding' && $now->hour < 18) {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    # No reports pre-6pm, completed or not
+    if ($now->hour < 18) {
+        $row->{report_allowed} = 0;
+    }
+}
+
 sub waste_staff_choose_payment_method { 1 }
 sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
 

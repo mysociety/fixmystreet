@@ -74,6 +74,28 @@ FixMyStreet::override_config {
         $mech->content_contains('Friday, 2nd September');
         $mech->content_contains('Report a mixed recycling collection as missed');
     };
+    subtest 'In progress collection' => sub {
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Completed' },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        }, {
+            Ref => { Value => { anyType => [ 17510905, 8287 ] } },
+            State => { Name => 'Outstanding' },
+            CompletedDate => undef
+        } ] });
+        set_fixed_time('2022-09-09T16:30:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_like(qr/Friday, 9th September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
+        $mech->content_like(qr/Friday, 9th September, at  4:00pm/);
+        $mech->content_lacks('Report a mixed recycling collection as missed');
+        $mech->content_lacks('Report a non-recyclable refuse collection as missed');
+        set_fixed_time('2022-09-09T19:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $e->mock('GetTasks', sub { [] });
+    };
     subtest 'Request a new bin' => sub {
         $mech->get_ok('/waste/12345/request');
 		# 19 (1), 24 (1), 16 (1), 1 (1)

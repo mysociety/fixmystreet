@@ -231,17 +231,10 @@ sub waste_task_resolutions {
         $row->{last}{completed} = $completed;
         $row->{last}{resolution} = $resolution;
 
-        # Special handling if last instance is today
+        # Special handling if last instance is today e.g. if it's before a
+        # particular hour and outstanding, show it as in progress
         if ($row->{last}{date}->ymd eq $now->ymd) {
-            # If it's before 5pm and outstanding, show it as in progress
-            if ($state eq 'Outstanding' && $now->hour < 17) {
-                $row->{next} = $row->{last};
-                $row->{next}{state} = 'In progress';
-                delete $row->{last};
-            }
-            if (!$completed && $now->hour < 17) {
-                $row->{report_allowed} = 0;
-            }
+            $self->waste_on_the_day_criteria($completed, $state, $now, $row);
         }
 
         # If the task is ended and could not be done, do not allow reporting
