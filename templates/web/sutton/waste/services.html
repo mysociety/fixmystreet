@@ -1,6 +1,7 @@
 [% IF unit.report_open %]
   <span class="waste-service-descriptor">
-    A [% unit.service_name FILTER lower %] collection has been reported as missed
+    A [% unit.service_name FILTER lower %] collection has been reported as missed.
+    Please check your email for an update on your request.
   </span>
 [% ELSIF unit.report_allowed %]
   [% any_report_allowed = 1 %]
