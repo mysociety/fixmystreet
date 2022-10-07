@@ -78,7 +78,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
 		# 19 (1), 24 (1), 16 (1), 1 (1)
         # missing, new_build, more
-        $mech->submit_form_ok({ with_fields => { 'container-19' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -92,7 +92,7 @@ FixMyStreet::override_config {
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-16' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -104,8 +104,8 @@ FixMyStreet::override_config {
     };
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
-        $mech->content_contains('name="container-1" value="1"');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 1 } });
+        $mech->content_contains('name="container-choice" value="1"');
         $mech->content_contains('Green paper and cardboard bin');
         $mech->content_contains('Green recycling box');
         $mech->content_contains('Food waste bin (outdoor)');
@@ -149,7 +149,7 @@ FixMyStreet::override_config {
         $mech->content_contains('A mixed recycling container request has been made');
         $mech->content_contains('Report a mixed recycling collection as missed');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-16"[^>]*disabled/s); # green
+        $mech->content_like(qr/name="container-choice" value="16"\s+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 1566,

@@ -375,7 +375,7 @@ sub bin_services_for_address {
             $self->{c}->stash->{communal_property} = 1 if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
 
             my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
-            my ($containers, $request_max);
+            my ($containers, $request_max, $quantities);
             foreach (@$data) {
                 next if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
@@ -388,8 +388,9 @@ sub bin_services_for_address {
                 if ($container && $quantity) {
                     push @$containers, $container;
                     next if $container == 28; # Garden waste bag
-                    # The most you can request is the amount you have
-                    $request_max->{$container} = $quantity;
+                    # The most you can request is one
+                    $request_max->{$container} = 1;
+                    $quantities->{$container} = $quantity;
                 }
             }
 
@@ -414,7 +415,7 @@ sub bin_services_for_address {
                     my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                     # Assume garden will only have one container data
                     $garden_container = $containers->[0];
-                    $garden_bins = $request_max->{$containers->[0]};
+                    $garden_bins = $quantities->{$containers->[0]};
                     if ($garden_container == 28) {
                         $garden_cost = $self->garden_waste_sacks_cost_pa() / 100;
                     } else {
@@ -604,15 +605,51 @@ sub waste_garden_sub_params {
     }
 }
 
+# This form adds some text to the About you page
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
+# Replace the usual checkboxes grouped by service with one radio list
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
+
+    my @radio_options;
+    for (my $i=0; $i<@$field_list; $i+=2) {
+        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+        next unless $key =~ /^container-(\d+)/;
+        my $id = $1;
+        push @radio_options, {
+            value => $id,
+            label => $self->{c}->stash->{containers}->{$id},
+            disabled => $value->{disabled},
+        };
+    }
+
+    @$field_list = (
+        "container-choice" => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            label => 'Which container do you need?',
+            options => \@radio_options,
+            required => 1,
+        }
+    );
+}
+
 sub waste_request_form_first_next {
     my $self = shift;
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::SLWP';
+    $self->{c}->stash->{form_title} = 'Which container do you need?';
     return 'replacement';
+}
+
+# Take the chosen container and munge it into the normal data format
+sub waste_munge_request_form_data {
+    my ($self, $data) = @_;
+    my $container_id = delete $data->{'container-choice'};
+    $data->{"container-$container_id"} = 1;
 }
 
 sub waste_munge_request_data {
@@ -621,7 +658,7 @@ sub waste_munge_request_data {
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
-    my $quantity = $data->{"quantity-$id"};
+    my $quantity = 1;
     my $reason = $data->{request_reason} || '';
 
     my ($action_id, $reason_id, $nice_reason);

@@ -33,4 +33,11 @@ sub options_request_reason {
     return @options;
 }
 
+has_field submit => (
+    type => 'Submit',
+    value => 'Request container',
+    element_attr => { class => 'govuk-button' },
+    order => 999,
+);
+
 1;
