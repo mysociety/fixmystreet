@@ -1,5 +1,9 @@
+window.addEventListener("pagehide", function() {
+    $('form.waste input[type="submit"]')
+        .prop('disabled', false)
+        .parents('.govuk-form-group').removeClass('loading');
+});
 $(function() {
-    $('form.waste input[type="submit"]').prop('disabled', false);
     $('form.waste').on('submit', function(e) {
         var $btn = $('input[type="submit"]', this);
         $btn.prop("disabled", true);
