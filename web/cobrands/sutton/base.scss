@@ -1,3 +1,35 @@
+@font-face {
+    font-family: "proxima-nova";
+    src: url("fonts/proximanova-semibold-webfont.woff2") format("woff2"), url("fonts/proximanova-semibold-webfont.woff") format("woff");
+    font-display: auto;
+    font-style: normal;
+    font-weight:700
+}
+
+@font-face {
+    font-family: "proxima-nova";
+    src: url("fonts/proximanova-bold-webfont.woff2") format("woff2"), url("fonts/proximanova-bold-webfont.woff") format("woff");
+    font-display: auto;
+    font-style: normal;
+    font-weight:900
+}
+
+@font-face {
+    font-family: "proxima-nova";
+    src: url("fonts/proximanova-regular-webfont.woff2") format("woff2"), url("fonts/proximanova-regular-webfont.woff") format("woff");
+    font-display: auto;
+    font-style: normal;
+    font-weight:400
+}
+
+@font-face {
+    font-family: "proxima-nova";
+    src: url("fonts/proximanova-light-webfont.woff2") format("woff2"), url("fonts/proximanova-light-webfont.woff") format("woff");
+    font-display: auto;
+    font-style: normal;
+    font-weight:300
+}
+
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
