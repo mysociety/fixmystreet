@@ -13,7 +13,6 @@ my $requires = {
     'Hounslow' => 'map-wmts-hounslow.js',
     'Lincolnshire' => 'lincolnshire/assets.js',
     'MasterMap' => 'map-mastermap.js',
-    'Northamptonshire' => 'map-wms-northamptonshire.js',
     'OS::FMS' => 'map-fms-os.js',
     'OS::API' => 'map-os.js',
     'OS::Premium' => 'map-os.js',
