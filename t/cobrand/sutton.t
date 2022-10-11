@@ -14,14 +14,20 @@ my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
 $uk->mock('_fetch_url', sub { '{}' });
 
 # Create test data
-my $user = $mech->create_user_ok( 'sutton@example.com', name => 'Sutton' );
-my $body = $mech->create_body_ok( 2482, 'Sutton Council', {
+my $user = $mech->create_user_ok( 'sutton@example.com', name => 'Sutton Council' );
+my $body = $mech->create_body_ok( 2498, 'Sutton Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
 }, {
     cobrand => 'sutton'
 });
 
+$mech->create_contact_ok(
+    body => $body,
+    category => 'Graffiti',
+    email => 'graffiti@example.org',
+    send_method => 'Email',
+);
 $mech->create_contact_ok(
     body => $body,
     category => 'Report missed collection',
@@ -53,7 +59,7 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 my $report = $reports[0];
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'sutton',
+    ALLOWED_COBRANDS => ['sutton', 'fixmystreet'],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1 },
 }, sub {
@@ -119,6 +125,32 @@ FixMyStreet::override_config {
         is $c->param('attribute[Transaction_Number]'), 'Code4321';
         is $c->param('attribute[Payment_Amount]'), '83.00';
     };
+
+    subtest '.com reports do not get branding/broken link' => sub {
+        ok $mech->host("www.fixmystreet.com"), "change host to www";
+        $mech->clear_emails_ok;
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/report/new?latitude=51.354679&longitude=-0.183895');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test graffiti",
+                detail => 'Test graffiti details.',
+                category => 'Graffiti',
+            }
+        }, "submit details");
+        $mech->content_contains('Thank you for reporting');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $id = $report->id;
+        ok $report, "Found the report";
+        is $report->title, 'Test graffiti', 'Got the correct report';
+        is $report->bodies_str, $body->id, 'Report was sent to parish';
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/Dear Sutton Council,\s+A user of FixMyStreet has submitted/;
+        like $body, qr{http://www.example.org/report/$id};
+    };
+
 };
 
 done_testing();

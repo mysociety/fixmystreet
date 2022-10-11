@@ -412,10 +412,19 @@ sub get_body_handler_for_problem {
     my @parishes = $bucks->parish_bodies->all;
     my @parish_ids = map { $_->id } @parishes;
 
+    # Have Kingston/Sutton made FMS reports not use the cobrand as its handler
+    my $kingston = FixMyStreet::Cobrand::Kingston->new->body;
+    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
+    $kingston = $kingston ? $kingston->id : 0;
+    $sutton = $sutton ? $sutton->id : 0;
+
     foreach my $body_id (@{$row->bodies_str_ids}) {
         if (grep { $body_id == $_ } @parish_ids) {
             # Report is to a Bucks parish
             return $bucks;
+        }
+        if ($body_id == $kingston || $body_id == $sutton) {
+            return ref $self ? $self : $self->new;
         }
     }
 
