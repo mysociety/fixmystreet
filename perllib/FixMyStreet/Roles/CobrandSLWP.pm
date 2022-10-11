@@ -415,7 +415,7 @@ sub bin_services_for_address {
                 $request_max->{23} = 1;
             }
 
-            my ($open_request) = grep { $_ } map { $events->{request}->{$_} } @$containers;
+            my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
 
             my $garden = 0;
             my $garden_bins;
@@ -455,7 +455,7 @@ sub bin_services_for_address {
                 garden_due => $garden_due,
                 garden_overdue => $garden_overdue,
                 request_allowed => $request_max && $schedules->{next},
-                request_open => $open_request,
+                requests_open => $open_requests,
                 request_containers => $containers,
                 request_max => $request_max,
                 service_task_id => $task->{Id},

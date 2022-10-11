@@ -818,6 +818,8 @@ sub bin_services_for_address {
         # Open request for same thing, or for all bins, or for large black bin
         my @request_service_ids_open = grep { $open_requests->{$_} || $open_requests->{425} || ($_ == 419 && $open_requests->{422}) } @$request_service_ids;
 
+        my %requests_open = map { $_ => 1 } @request_service_ids_open;
+
         my $last_obj = { date => $last, ordinal => ordinal($last->day) } if $last;
         my $next_obj = { date => $next, ordinal => ordinal($next->day) } if $next;
         my $row = {
@@ -827,14 +829,14 @@ sub bin_services_for_address {
             service_name => service_name_override()->{$name} || $name,
             schedule => $schedules{$name}->{Frequency},
             service_id => $container_id,
-            request_containers => $container_request_ids{$container_id},
+            request_containers => $request_service_ids,
 
             # can this container type be requested?
             request_allowed => $container_request_ids{$container_id} ? 1 : 0,
             # what's the maximum number of this container that can be request?
             request_max => $container_request_max{$container_id} || 0,
             # is there already an open bin request for this container?
-            request_open => @request_service_ids_open ? 1 : 0,
+            requests_open => \%requests_open,
             # can this collection be reported as having been missed?
             report_allowed => $last ? $self->_waste_report_allowed($last) : 0,
             # is there already a missed collection report open for this container

@@ -174,6 +174,25 @@ FixMyStreet::override_config {
         $mech->content_like(qr/name="container-choice" value="16"\s+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
+            # Request
+            EventTypeId => 1635,
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 23, DatatypeName => 'Container Type' },
+                    ] },
+                },
+            ] },
+        } ] });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A food waste container request has been made');
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_like(qr/name="container-choice" value="23"\s+disabled/s); # indoor
+        $mech->content_like(qr/name="container-choice" value="24"\s*>/s); # outdoor
+
+        $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 1566,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 408,

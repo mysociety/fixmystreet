@@ -14,10 +14,12 @@
   <span class="waste-service-descriptor">Please note that missed collections can only be reported within 2 working days of your scheduled collection day.</span>
 [% END %]
   <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-launch-arrow waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
-[% IF unit.request_open %]
+[% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
     A new [% unit.service_name FILTER lower %] container request has been made
-    [% IF unit.request_open.report %] – <a href="[% unit.request_open.report.url %]" class="waste-service-link">check status</a>[% END %]
+    [% FOR req IN unit.requests_open.values %]
+        [% IF req.report %] – <a href="[% req.report.url %]" class="waste-service-link">check status</a>[% END %]
+    [% END %]
   </span>
 [% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]

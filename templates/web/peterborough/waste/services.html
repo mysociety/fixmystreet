@@ -57,10 +57,9 @@
 [% END %]
 
 [% IF pboro_staff_request %]
-  [% IF unit.request_open %]
+  [% IF unit.requests_open.size %]
     <span class="waste-service-descriptor">
       A new [% unit.service_name FILTER lower %] request has been made
-      [% IF unit.request_open.report %] – <a href="[% unit.request_open.report.url %]" class="waste-service-link">check status</a>[% END %]
     </span>
   [% ELSIF unit.request_allowed %]
     [% any_request_allowed = 1 %]

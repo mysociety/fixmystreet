@@ -22,7 +22,7 @@
 
 [% END %]
 
-[% IF unit.request_open %]
+[% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
     A new [% unit.service_name FILTER lower %] container request has been made
   </span>
