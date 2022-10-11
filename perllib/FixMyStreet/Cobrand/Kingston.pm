@@ -30,7 +30,7 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     if (my $container = $unit->{garden_container}) {
-        return "$base/bin-grey-green-lid-recycling" if $container == 26;
+        return "$base/bin-grey-green-lid-recycling" if $container == 26 || $container == 27;
         return "";
     }
     my $service_id = $unit->{service_id};

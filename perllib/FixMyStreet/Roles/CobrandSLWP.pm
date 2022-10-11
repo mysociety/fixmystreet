@@ -298,6 +298,7 @@ sub bin_services_for_address {
         23 => 'Food waste bin (kitchen)',
         24 => 'Food waste bin (outdoor)',
         26 => 'Garden Waste Bin',
+        27 => 'Garden Waste Bin',
         28 => 'Garden Waste Sacks',
         6 => 'Refuse Red Stripe Bag',
         18 => 'Recyling Blue Stripe Bag',
@@ -598,10 +599,9 @@ sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
 
-    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
-
-    my $container = $data->{garden_sacks} ? 'Garden Waste Sacks' : 'Garden Waste Bin';
-    $container = $container_types{$container};
+    my $service = $self->garden_current_subscription;
+    my $existing = $service ? $service->{garden_container} : undef;
+    my $container = $data->{garden_sacks} ? 28 : $existing || 26;
 
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);

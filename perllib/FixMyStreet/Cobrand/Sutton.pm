@@ -29,7 +29,7 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     if (my $container = $unit->{garden_container}) {
-        return "$base/bin-green-brown-lid" if $container == 26;
+        return "$base/bin-green-brown-lid" if $container == 26 || $container == 27;
         return "";
     }
     if (my $container = $unit->{request_containers}[0]) {

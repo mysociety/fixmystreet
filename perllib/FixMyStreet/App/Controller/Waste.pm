@@ -1119,7 +1119,7 @@ sub process_garden_cancellation : Private {
     $c->set_param('Subscription_End_Date', $now->ymd);
 
     my $service = $c->cobrand->garden_current_subscription;
-    if (!$c->stash->{garden_sacks} || $service->{garden_container} == 26) {
+    if (!$c->stash->{garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
     } else {
