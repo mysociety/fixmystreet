@@ -311,11 +311,12 @@ sub waste_fetch_events {
         if $cobrand;
     my $open311 = Open311->new(%open311_conf);
 
+    my $suppress_alerts = $self->moniker eq 'sutton' ? 1 : 0;
     my $updates = Open311::GetServiceRequestUpdates->new(
         current_open311 => $open311,
         current_body => $body,
         system_user => $body->comment_user,
-        suppress_alerts => 0,
+        suppress_alerts => $suppress_alerts,
         blank_updates_permitted => $body->blank_updates_permitted,
     );
 
