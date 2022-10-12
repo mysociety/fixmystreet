@@ -949,7 +949,7 @@ sub process_bulky_data : Private {
 
     $c->cobrand->call_hook("waste_munge_bulky_data", $data);
 
-    # # Read extra details in loop
+    # Read extra details in loop
     foreach (grep { /^extra_/ } keys %$data) {
         my ($id) = /^extra_(.*)/;
         $c->set_param($id, $data->{$_});
