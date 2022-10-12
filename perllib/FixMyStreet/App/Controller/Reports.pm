@@ -61,7 +61,7 @@ sub index : Path : Args(0) {
     }
 
     if ($c->stash->{body}) {
-        my $children = $c->stash->{body}->first_area_children;
+        my $children = $c->stash->{body}->area_children;
         unless ($children->{error}) {
             $c->stash->{children} = $children;
         }
@@ -171,7 +171,7 @@ sub ward : Path : Args(2) {
 
     # List of wards
     if ( !$c->stash->{wards} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
-        my $children = $c->stash->{body}->first_area_children;
+        my $children = $c->stash->{body}->area_children;
         unless ($children->{error}) {
             foreach (values %$children) {
                 $_->{url} = $c->uri_for( $c->stash->{body_url}
@@ -484,7 +484,7 @@ sub summary : Private {
 
     $c->stash->{group_by_default} = 'category';
 
-    my $children = $c->stash->{body}->first_area_children;
+    my $children = $c->stash->{body}->area_children;
     $c->stash->{children} = $children;
 
     $c->forward('/admin/fetch_contacts');

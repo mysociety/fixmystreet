@@ -185,7 +185,7 @@ sub areas {
     return \%ids;
 }
 
-sub first_area_children {
+sub area_children {
     my ( $self, $all_generations ) = @_;
 
     my @body_area_ids = map { $_->area_id } $self->body_areas->all;
