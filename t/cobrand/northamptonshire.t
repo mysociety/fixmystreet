@@ -381,4 +381,14 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('northamptonshire,,' . $report->external_id);
 };
 
+subtest 'Old report cutoff' => sub {
+    my ($report1) = $mech->create_problems_for_body(1, $nh->id, 'West Northants Problem 1', { whensent => '2022-09-11 10:00' });
+    my ($report2) = $mech->create_problems_for_body(1, $nh->id, 'West Northants Problem 2', { whensent => '2022-09-12 10:00' });
+    my $update1 = $mech->create_comment_for_problem($report1, $user, 'Anonymous User', 'Update text', 't', 'confirmed', undef);
+    my $update2 = $mech->create_comment_for_problem($report2, $user, 'Anonymous User', 'Update text', 't', 'confirmed', undef);
+    my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
+    is $cobrand->should_skip_sending_update($update1), 1;
+    is $cobrand->should_skip_sending_update($update2), 0;
+};
+
 done_testing();
