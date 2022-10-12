@@ -30,6 +30,8 @@ has lpi_value => ( is => 'ro', default => 'SUTTON' );
 
 sub waste_payment_ref_council_code { "LBS" }
 
+sub waste_garden_allow_cancellation { 'staff' }
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';

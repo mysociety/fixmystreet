@@ -1076,6 +1076,11 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
     }
 
     $c->stash->{first_page} = 'intro';
+    my $allowed = $c->cobrand->call_hook('waste_garden_allow_cancellation') || 'all';
+    if ($allowed eq 'staff' && !$c->stash->{is_staff}) {
+        $c->stash->{first_page} = 'alter';
+    }
+
     $c->forward('form');
 }
 
@@ -1083,6 +1088,12 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
     if (!$c->cobrand->garden_current_subscription) {
+        $c->res->redirect('/waste/' . $c->stash->{property}{id});
+        $c->detach;
+    }
+
+    my $allowed = $c->cobrand->call_hook('waste_garden_allow_cancellation') || 'all';
+    if ($allowed eq 'staff' && !$c->stash->{is_staff}) {
         $c->res->redirect('/waste/' . $c->stash->{property}{id});
         $c->detach;
     }
