@@ -391,4 +391,25 @@ subtest 'Old report cutoff' => sub {
     is $cobrand->should_skip_sending_update($update2), 0;
 };
 
+# Associate body with North Northamptonshire area
+# (It's associated with West when it's created at the top of this file)
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 164185,
+    body_id => $nh->id,
+});
+
+subtest 'Dashboard wards contains North and West wards' => sub {
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $nh, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'northamptonshire',
+    }, sub {
+        $mech->get_ok('/dashboard');
+    };
+    $mech->content_contains('Weston By Welland');
+    $mech->content_contains('Sulgrave');
+};
+
 done_testing();

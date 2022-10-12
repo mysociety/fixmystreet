@@ -188,12 +188,12 @@ sub areas {
 sub first_area_children {
     my ( $self, $all_generations ) = @_;
 
-    my $body_area = $self->body_areas->first;
-    return unless $body_area;
+    my @body_area_ids = map { $_->area_id } $self->body_areas->all;
+    return unless @body_area_ids;
 
     my $cobrand = $self->result_source->schema->cobrand;
 
-    return $cobrand->fetch_area_children($body_area->area_id, $all_generations);
+    return $cobrand->fetch_area_children(\@body_area_ids, $all_generations);
 }
 
 =head2 get_cobrand_handler
