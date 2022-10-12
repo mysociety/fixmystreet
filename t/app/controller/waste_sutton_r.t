@@ -208,9 +208,9 @@ FixMyStreet::override_config {
             EventTypeId => 1566,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 408,
-            Data => { ExtensibleDatum => [
-                { Value => 1, DatatypeName => 'Paper' },
-            ] },
+            Data => { ExtensibleDatum => {
+                Value => 1, DatatypeName => 'Paper'
+            } },
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A paper and card collection has been reported as missed');

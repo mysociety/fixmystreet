@@ -88,9 +88,7 @@ sub waste_get_sub_quantity {
     return 0 unless scalar @$tasks;
     for my $data ( @$tasks ) {
         next unless $data->{DatatypeName} eq 'LBB - GW Container';
-        next unless $data->{ChildData};
-        my $kids = $data->{ChildData}->{ExtensibleDatum};
-        $kids = [ $kids ] if ref $kids eq 'HASH';
+        my $kids = Integrations::Echo::force_arrayref($data->{ChildData}, 'ExtensibleDatum');
         for my $child ( @$kids ) {
             next unless $child->{DatatypeName} eq 'Quantity';
             $quantity = $child->{Value}

@@ -427,7 +427,6 @@ sub bin_services_for_address {
                 $garden = 1;
                 foreach (@$data) {
                     next unless $_->{DatatypeName} eq $self->garden_echo_container_name; # DatatypeId 3346
-                    my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                     # Assume garden will only have one container data
                     $garden_container = $containers->[0];
                     $garden_bins = $quantities->{$containers->[0]};
@@ -509,15 +508,14 @@ sub _parse_events {
         next if $type ne 'missed' && $closed;
 
         if ($type eq 'request') {
-            my $data = $_->{Data} ? $_->{Data}{ExtensibleDatum} : [];
+            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
             my $container;
             DATA: foreach (@$data) {
-                if ($_->{ChildData}) {
-                    foreach (@{$_->{ChildData}{ExtensibleDatum}}) {
-                        if ($_->{DatatypeName} eq 'Container Type') {
-                            $container = $_->{Value};
-                            last DATA;
-                        }
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    if ($_->{DatatypeName} eq 'Container Type') {
+                        $container = $_->{Value};
+                        last DATA;
                     }
                 }
             }
@@ -543,7 +541,7 @@ sub _parse_events {
                 push @{$events->{missed}->{2239}}, $event;
                 push @{$events->{missed}->{2248}}, $event;
             } elsif ($service_id == 408 || $service_id == 410) {
-                my $data = $_->{Data} ? $_->{Data}{ExtensibleDatum} : [];
+                my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
                 foreach (@$data) {
                     if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
                         push @{$events->{missed}->{2240}}, $event;

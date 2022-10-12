@@ -690,15 +690,14 @@ sub _parse_events {
         next if $type ne 'missed' && $closed;
 
         if ($type eq 'request') {
-            my $data = $_->{Data} ? $_->{Data}{ExtensibleDatum} : [];
+            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
             my $container;
             DATA: foreach (@$data) {
-                if ($_->{ChildData}) {
-                    foreach (@{$_->{ChildData}{ExtensibleDatum}}) {
-                        if ($_->{DatatypeName} eq 'Container Type') {
-                            $container = $_->{Value};
-                            last DATA;
-                        }
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    if ($_->{DatatypeName} eq 'Container Type') {
+                        $container = $_->{Value};
+                        last DATA;
                     }
                 }
             }
