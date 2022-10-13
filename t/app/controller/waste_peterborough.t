@@ -770,7 +770,7 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 100090215480;
-            is $report->get_extra_field_value('DATE'), '20220828';
+            is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
             is $report->get_extra_field_value('CREW NOTES'), 'behind the hedge in the front garden';
             is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
             is $report->get_extra_field_value('ITEM_01'), 'fridge';
