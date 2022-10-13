@@ -16,6 +16,10 @@ $uk->mock('_fetch_url', sub { '{}' });
 
 my $mech = FixMyStreet::TestMech->new;
 
+my $bin_data = decode_json(path(__FILE__)->sibling('waste_4443082.json')->slurp_utf8);
+my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_4471550.json')->slurp_utf8);
+my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_4499005.json')->slurp_utf8);
+
 my $params = {
     send_method => 'Open311',
     api_key => 'KEY',
@@ -217,6 +221,22 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
+
+    $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
+    subtest 'No requesting a red stripe bag' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_lacks('"container-choice" value="6"');
+    };
+    subtest 'Fortnightly collection can request a blue stripe bag' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_contains('"container-choice" value="18"');
+    };
+    subtest 'Weekly collection cannot request a blue stripe bag' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_lacks('"container-choice" value="18"');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
 };
 
 FixMyStreet::override_config {
@@ -242,9 +262,7 @@ sub shared_echo_mocks {
             Description => '2 Example Street, Sutton, SM1 1AA',
         };
     });
-    $e->mock('GetServiceUnitsForObject', sub {
-        return decode_json(path(__FILE__)->sibling('waste_4443082.json')->slurp_utf8);
-    });
+    $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     $e->mock('GetEventsForObject', sub { [] });
     $e->mock('GetTasks', sub { [] });
     return $e;

@@ -400,6 +400,7 @@ sub bin_services_for_address {
                     $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
                 }
                 next if $container == 6; # Red stripe bag
+                next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
                 if ($container && $quantity) {
                     push @$containers, $container;
                     next if $container == 28; # Garden waste bag
