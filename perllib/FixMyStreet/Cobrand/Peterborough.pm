@@ -672,53 +672,11 @@ sub _bulky_collection_window {
 }
 
 sub bulky_items_master_list {
-    # XXX Need to fetch from DB
-    return [
-        {   bartec_id => '1001',
-            category  => 'Audio / Visual Elec. equipment',
-            message   => '',
-            name      => 'Amplifiers',
-            price     => '',
-        },
-        {   bartec_id => '1001',
-            category  => 'Audio / Visual Elec. equipment',
-            message   => '',
-            name      => 'DVD/BR Video players',
-            price     => '',
-        },
-        {   bartec_id => '1001',
-            category  => 'Audio / Visual Elec. equipment',
-            message   => '',
-            name      => 'HiFi Stereos',
-            price     => '',
-        },
+    my $self = shift;
 
-        {   bartec_id => '1002',
-            category  => 'Baby / Toddler',
-            message   => '',
-            name      => 'Childs bed / cot',
-            price     => '',
-        },
-        {   bartec_id => '1002',
-            category  => 'Baby / Toddler',
-            message   => '',
-            name      => 'High chairs',
-            price     => '',
-        },
+    my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
 
-        {   bartec_id => '1003',
-            category  => 'Bedroom',
-            message   => '',
-            name      => 'Chest of drawers',
-            price     => '',
-        },
-        {   bartec_id => '1003',
-            category  => 'Bedroom',
-            message   => 'Please dismantle',
-            name      => 'Wardrobes',
-            price     => '',
-        },
-    ];
+    return $cfg->{item_list} || [];
 }
 
 sub bin_services_for_address {
@@ -1140,11 +1098,11 @@ sub waste_munge_bulky_data {
     $data->{extra_DATE} = $data->{chosen_date};
 
     # XXX loop here, plus might be more than 5 in future
-    $data->{extra_ITEM_01} = $data->{item1};
-    $data->{extra_ITEM_02} = $data->{item2};
-    $data->{extra_ITEM_03} = $data->{item3};
-    $data->{extra_ITEM_04} = $data->{item4};
-    $data->{extra_ITEM_05} = $data->{item5};
+    $data->{extra_ITEM_01} = $data->{item_1}{item};
+    $data->{extra_ITEM_02} = $data->{item_2}{item};
+    $data->{extra_ITEM_03} = $data->{item_3}{item};
+    $data->{extra_ITEM_04} = $data->{item_4}{item};
+    $data->{extra_ITEM_05} = $data->{item_5}{item};
 
     $data->{extra_CHARGEABLE} = 'CHARGED'; # XXX not necessarily true
 
