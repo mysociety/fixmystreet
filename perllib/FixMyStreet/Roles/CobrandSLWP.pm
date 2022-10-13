@@ -301,7 +301,7 @@ sub bin_services_for_address {
         27 => 'Garden Waste Bin',
         28 => 'Garden Waste Sacks',
         6 => 'Refuse Red Stripe Bag',
-        18 => 'Recyling Blue Stripe Bag',
+        18 => 'Recycling Blue Stripe Bag',
         21 => 'Paper & Card Reusable Bag',
         30 => 'Paper Single Use Bag',
         7 => 'Communal Refuse bin (240L)',
@@ -655,7 +655,12 @@ sub waste_request_form_first_next {
     my $self = shift;
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::SLWP';
     $self->{c}->stash->{form_title} = 'Which container do you need?';
-    return 'replacement';
+    return sub {
+        my $data = shift;
+        my $choice = $data->{"container-choice"};
+        return 'about_you' if $choice == 18 || $choice == 30;
+        return 'replacement';
+    };
 }
 
 # Take the chosen container and munge it into the normal data format
@@ -683,6 +688,11 @@ sub waste_munge_request_data {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
         $nice_reason = "Missing";
+    } else {
+        # No reason, must be a bag
+        $action_id = 1; # Deliver
+        $reason_id = 3; # Change capacity
+        $nice_reason = "Additional bag required";
     }
 
     $data->{title} = "Request new $container";
