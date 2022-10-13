@@ -13,6 +13,11 @@ sub council_url { return 'kingston'; }
 
 sub admin_user_domain { ('kingston.gov.uk', 'sutton.gov.uk') }
 
+sub dashboard_extra_bodies {
+    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
+    return $sutton;
+}
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
