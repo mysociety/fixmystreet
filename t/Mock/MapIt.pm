@@ -204,6 +204,12 @@ sub dispatch_request {
         if ($area eq '2226') {
             return $self->output({22261 => {parent_area => 2226, id => 22261, name => "Lansdown and Park", type => "CED"}});
         }
+        if ($area eq '164185') {
+            return $self->output({53295 => {parent_area => 164185, id => 53295, name => "Weston By Welland", type => "CPC"}});
+        }
+        if ($area eq '164186') {
+            return $self->output({53296 => {parent_area => 164186, id => 53296, name => "Sulgrave", type => "CPC"}});
+        }
         my $response = {
             "60705" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 60705, "codes" => { "ons" => "00HY226", "gss" => "E04011842", "unit_id" => "17101" }, "name" => "Trowbridge", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },
             "62883" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 62883, "codes" => { "ons" => "00HY026", "gss" => "E04011642", "unit_id" => "17205" }, "name" => "Bradford-on-Avon", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },

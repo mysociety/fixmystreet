@@ -120,7 +120,7 @@ sub index : Path : Args(0) {
 
         $c->stash->{roles} = [ $body->roles->all ];
 
-        my $children = $c->stash->{children} = $body->first_area_children;
+        my $children = $c->stash->{children} = $body->area_children;
 
         $c->forward('/admin/fetch_contacts');
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
@@ -409,7 +409,7 @@ sub heatmap : Local : Args(0) {
         $c->detach('/reports/ajax', [ 'dashboard/heatmap-list.html' ]);
     }
 
-    my $children = $c->stash->{body}->first_area_children;
+    my $children = $c->stash->{body}->area_children;
     $c->stash->{children} = $children;
     $c->stash->{ward_hash} = { map { $_->{id} => 1 } @{$c->stash->{wards}} } if $c->stash->{wards};
 

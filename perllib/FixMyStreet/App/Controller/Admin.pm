@@ -510,7 +510,7 @@ sub fetch_all_bodies : Private {
 sub fetch_body_areas : Private {
     my ($self, $c, $body ) = @_;
 
-    my $children = $body->first_area_children;
+    my $children = $body->area_children;
     unless ($children) {
         # Body doesn't have any areas defined.
         delete $c->stash->{areas};

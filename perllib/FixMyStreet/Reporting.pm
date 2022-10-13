@@ -274,7 +274,7 @@ sub generate_csv {
 
     my %asked_for = map { $_ => 1 } @{$self->csv_columns};
 
-    my $children = $self->body ? $self->body->first_area_children(1) : {};
+    my $children = $self->body ? $self->body->area_children(1) : {};
 
     my $objects = $self->objects_rs;
     while ( my $obj = $objects->next ) {

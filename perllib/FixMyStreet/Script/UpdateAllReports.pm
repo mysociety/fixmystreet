@@ -288,7 +288,7 @@ sub calculate_top_five_bodies {
 sub calculate_top_five_wards {
     my ($data, $rs, $body) = @_;
 
-    my $children = $body->first_area_children;
+    my $children = $body->area_children;
     die $children->{error} if $children->{error};
 
     my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));

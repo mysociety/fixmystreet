@@ -814,12 +814,21 @@ cobrand's area_types_children type.
 =cut
 
 sub fetch_area_children {
-    my ($self, $area_id, $all_generations) = @_;
+    my ($self, $area_ids, $all_generations) = @_;
 
-    return FixMyStreet::MapIt::call('area/children', $area_id,
-        type => $self->area_types_children,
-        $all_generations ? (min_generation => 1) : (),
-    );
+    $area_ids = [ $area_ids ] unless ref $area_ids eq 'ARRAY';
+
+    my %all_children;
+
+    foreach my $area_id (@$area_ids) {
+        my $children = FixMyStreet::MapIt::call('area/children', $area_id,
+            type => $self->area_types_children,
+            $all_generations ? (min_generation => 1) : (),
+        );
+        %all_children = ( %all_children, %$children );
+    }
+
+    return \%all_children;
 }
 
 =item contact_name, contact_email, do_not_reply_email
