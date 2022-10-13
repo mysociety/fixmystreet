@@ -21,7 +21,7 @@ has_field request_reason => (
     required => 1,
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Why do you need a replacement bin?',
+    label => 'Why do you need a replacement container?',
 );
 
 sub options_request_reason {
