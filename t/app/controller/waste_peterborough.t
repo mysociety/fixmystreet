@@ -667,6 +667,58 @@ FixMyStreet::override_config {
 }, sub {
     my ($b, $jobs_fsd_get) = shared_bartec_mocks();
 
+    $body->set_extra_metadata(
+        wasteworks_config => {
+            item_list => [
+                {   bartec_id => '1001',
+                    category  => 'Audio / Visual Elec. equipment',
+                    message   => '',
+                    name      => 'Amplifiers',
+                    price     => '',
+                },
+                {   bartec_id => '1001',
+                    category  => 'Audio / Visual Elec. equipment',
+                    message   => '',
+                    name      => 'DVD/BR Video players',
+                    price     => '',
+                },
+                {   bartec_id => '1001',
+                    category  => 'Audio / Visual Elec. equipment',
+                    message   => '',
+                    name      => 'HiFi Stereos',
+                    price     => '',
+                },
+
+                {   bartec_id => '1002',
+                    category  => 'Baby / Toddler',
+                    message   => '',
+                    name      => 'Childs bed / cot',
+                    price     => '',
+                },
+                {   bartec_id => '1002',
+                    category  => 'Baby / Toddler',
+                    message   => '',
+                    name      => 'High chairs',
+                    price     => '',
+                },
+
+                {   bartec_id => '1003',
+                    category  => 'Bedroom',
+                    message   => '',
+                    name      => 'Chest of drawers',
+                    price     => '',
+                },
+                {   bartec_id => '1003',
+                    category  => 'Bedroom',
+                    message   => 'Please dismantle',
+                    name      => 'Wardrobes',
+                    price     => '',
+                },
+            ],
+        },
+    );
+    $body->update;
+
     subtest 'Bulky goods collection booking' => sub {
         # XXX NB Currently, these tests do not describe the correct
         # behaviour of the system. They are here to remind us to update them as
@@ -780,6 +832,8 @@ FixMyStreet::override_config {
         }
     },
 }, sub {
+    $body->set_extra_metadata( wasteworks_config => undef );
+    $body->update;
 
     subtest 'WasteWorks configuration editing' => sub {
         ok $mech->host('peterborough.fixmystreet.com');
