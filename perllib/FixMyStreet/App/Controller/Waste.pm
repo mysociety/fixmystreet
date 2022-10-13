@@ -263,6 +263,7 @@ sub confirm_subscription : Private {
     # clear the session unique ID) and have the form code load this template
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
+    $c->cobrand->call_hook('post_confirm_subscription');
 }
 
 sub cancel_subscription : Private {

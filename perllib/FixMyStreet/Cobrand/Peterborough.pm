@@ -1109,6 +1109,7 @@ sub waste_munge_bulky_data {
         # XXX assume all paid bookings are one price, but will eventually
         # need to support dynamic pricing per-item
         $c->stash->{payment} = $cfg->{base_price};
+        $data->{"extra_payment_method"} = "credit_card"; # XXX what about CSC?
     }
 
     $data->{"extra_CREW NOTES"} = $data->{location};
@@ -1116,6 +1117,15 @@ sub waste_munge_bulky_data {
     # XXX what about photos?
 
     $data->{category} = "Bulky collection";
+}
+
+sub post_confirm_subscription {
+    my $self = shift;
+    my $c = $self->{c};
+
+    if ($c->stash->{report}->category eq 'Bulky collection') {
+        $c->stash->{template} = 'waste/bulky/payment_confirm.html';
+    }
 }
 
 sub waste_cc_payment_line_item_ref {
@@ -1145,15 +1155,25 @@ sub bin_payment_types {
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
-    push @$meta, {
-        code => 'payment',
-        datatype => 'string',
-        description => 'Payment',
-        order => 101,
-        required => 'false',
-        variable => 'true',
-        automated => 'hidden_field',
-    };
+    if ( $service->{service_name} eq 'Bulky collection' ) {
+        push @$meta, {
+            code => 'payment',
+            datatype => 'string',
+            description => 'Payment',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        }, {
+            code => 'payment_method',
+            datatype => 'string',
+            description => 'Payment method',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        };
+    }
 }
 
 sub waste_munge_report_data {
