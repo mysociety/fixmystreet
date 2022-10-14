@@ -5,34 +5,56 @@
 
 /* COLOURS */
 
-// From http://style.bristol.gov.uk/patterns/colours/
+// From https://www.figma.com/file/L1Vou6zmX4iEShdY4sjGj0/style-guide%3A-fix-my-street?node-id=0%3A1
 
-$bcc_red: #bc0031;
-$g1: #2e3137;
-$g2: #676973;
-$g6: #eaeaea;
-$g7: #f1f1f1;
-$b3: #0d45a0;
-$b4: #74a9ff;
+/* Instruccion from client
+    Use decoration colour for banner and other decorative items/backgrounds
+    Do NOT use brand colour for 
+    - Header
+    - typography
+    - buttons
+    - links
+*/
+$decoration-colour: #175B69;
 
-$primary: $bcc_red;
-$primary_b: $g1;
-$primary_text: $g1;
+$gray-1: #0b0c0c;
+$gray-2: #4d5051;
+// $gray-3 For borders.
+$gray-3: #8B9192;
 
-$link-color: $b3;
-$link-hover-color: $b3;
+$white: #fff;
+// $white-2 should be used only for background colours.
+$white-2: #f2f5f9;
 
-$base_bg: white;
-$base_fg: $g1;
+$blue: #003E90;
+$blue-d1: #113255;
+$purple: #4c2c92;
+$yellow: #ffde02;
 
-$nav_background_colour: $g1;
-$nav_colour: #fff;
+// Error and Success colours
+$red: #a81010;
+$green: #006135;
+
+
+$primary: $gray-2;
+$primary_b: $gray-1;
+$primary_text: $gray-1;
+
+$link-color: $blue;
+$link-hover-color: $blue-d1;
+$link-active-color: $gray-1;
+
+$base_bg: $white;
+$base_fg: $gray-1;
+
+$nav_background_colour: $gray-1;
+$nav_colour: $white;
 $nav_hover_background_colour: $primary;
 
 $header-top-border: false;
 
-$col_click_map: $g1;
-$col_click_map_dark: darken($g1, 10%);
+$col_click_map: $gray-1;
+$col_click_map_dark: darken($gray-1, 10%);
 
 $search-help-alignment: left;
 $search-help-background: #fff3f3;
@@ -40,4 +62,8 @@ $search-help-header-font-weight: normal;
 $search-help-header-font-size-desktop: 1.25em;
 $search-help-margin-desktop: -1em -1em 0 -1em;
 
-$dropzone-button-text: $g7;
+$dropzone-border-colour: $link-color;
+$dropzone-button-text: $white;
+$dropzone-button-background: $link-color;
+$dropzone-button-border: $link-color;
+$dropzone-border-color--awakened: $yellow;
