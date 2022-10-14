@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="language" content="en">
+
+		<title>TheSans_LP_700_Bold Sample</title>
+
+		<style type="text/css">
+		<!--
+			@font-face {
+				font-family: "MyWebfont";
+				src: url("TheSans_LP_700_Bold.eot");
+				src: url("TheSans_LP_700_Bold.eot?#iefix") format("embedded-opentype"),
+				url("TheSans_LP_700_Bold.woff") format("woff"),
+				url("TheSans_LP_700_Bold.svg#TheSans_LP_700_Bold") format("svg");
+				font-weight: normal;
+				font-style: normal;
+			}
+
+			body {
+				font-family: MyWebfont, Verdana, sans-serif;
+				font-size: 13px;
+				line-height: 18px;
+				color: #999;
+				margin: 0;
+				padding: 0 30px 30px 36px;
+				text-rendering: optimizeLegibility;
+			}
+
+			p { margin: 0; }
+
+			p.codeblock { margin-bottom: 18px; font-family: "Courier New" !important;}
+
+			a { color: #ff5c1c; text-decoration: none; outline: none; }
+
+			a:hover, a:active { color: #d24c17; text-decoration: underline; }
+
+			span { display: block; }
+
+			span.indent { text-indent: 24px; }
+
+			h1 { position: relative; width: 192px; height: 36px; text-indent: -9000px; }
+
+			h1 a { width: 192px; height: 36px; display: block; }
+
+			h2 { margin: 35px 0 44px 0; font-size: 32px; line-height: 36px; color: black; float: left; font-weight: normal; }
+
+			h3 { font-size: 32px; line-height: 36px; color: black; margin: 0 0 20px 0; font-weight: normal; }
+
+			#sample-wrapper { clear: both; margin: 0 0 0 252px; padding: 0 0 20px 0; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #CCCCCC; overflow: hidden; }
+
+			.px72 { line-height: 100px; }
+
+			.px72 p.sample { font-size: 72px; }
+
+			.px60 { line-height: 84px; }
+
+			.px60 p.sample { font-size: 60px; }
+
+			.px48 { line-height: 68px; }
+
+			.px48 p.sample { font-size: 48px; }
+
+			.px36 { line-height: 54px; }
+
+			.px36 p.sample { font-size: 36px; }
+
+			.px28 { line-height: 46px; }
+
+			.px28 p.sample { font-size: 28px; }
+
+			.px22 { line-height: 38px; }
+
+			.px22 p.sample { font-size: 22px; }
+
+			.sample-line { position: relative; }
+
+			p.size { width: 44px; position: absolute; font-family: Verdana, sans-serif; }
+
+			p.sample { min-width: 100%; position: relative; left: 44px; color: black; white-space: nowrap; }
+
+			#pangram-wrapper { margin: 20px 0 0 252px; padding: 0 0 20px 0; border-bottom: 1px solid #CCCCCC; }
+
+			#resizer { height: 30px; }
+
+			#size-status { width: 30px; height: 30px; float: left; font-family: Verdana, sans-serif; }
+
+			p#pangram { font-size: 16px; line-height: 1.3em; color: black; clear: both; }
+
+			#minus, #plus { display: block; width: 20px; height: 20px; float: left; margin: 0 0 0 16px; font-family: Verdana, sans-serif; font-weight: bold; background: #999; color: white; line-height: 20px; text-align: center;
+
+			 -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
+
+			#minus:hover, #plus:hover { cursor: pointer; color: white; background: #666; text-decoration: none; }
+
+			#minus:active, #plus:active { margin-top: 1px; text-decoration: none; }
+
+			.info-wrapper { width: 660px; margin: 20px 0 0 252px; padding: 0 0 20px 0; border-bottom: 1px solid #CCCCCC; }
+
+			.info-wrapper p { font-family: Verdana, sans-serif; }
+
+			code { display: block; width: 620px; background: #F0F0F0; padding: 20px; font-family: Verdana, sans-serif; overflow: hidden; }
+
+			#footer { margin: 20px 0 0 252px; width: 660px; overflow: auto; font-family: Verdana, sans-serif; }
+
+			.copyright { float: left; }
+
+			.links { float: right; }
+
+			.links a { display: block; }
+
+			/*********** LOGO **************/
+
+			#logo { width: 192px; height: 36px; float: left; position: relative; margin: 35px 60px 0 0; }
+
+			#logo div {	position: absolute; overflow: hidden; }
+
+			.black { background: black; }
+
+			.orange { background: #ff6600; }
+
+			.sub1 { width: 4px; height: 4px; background: #ffa366; }
+
+			.sub2 { width: 4px; height: 4px; background: #ffc299; }
+
+			.sub3 { width: 4px; height: 4px; background: #ffe1cc; }
+
+			.lf1 { width: 36px; height: 36px; }
+
+			.lf2 { width: 28px; height: 28px; top: 4px; left: 4px; }
+
+			.l1 { width: 4px; height: 16px; top: 8px; left: 8px; }
+
+			.l2 { width: 12px; height: 4px; top: 24px; left: 8px; }
+
+			.f1 { width: 12px; height: 4px; top: 8px; left: 16px; }
+
+			.f2 { width: 12px; height: 4px; top: 16px; left: 16px; }
+
+			.f3 { width: 4px; height: 16px; top: 12px; left: 24px; }
+
+			.l3 { width: 4px; height: 20px; top: 8px; left: 45px; }
+
+			.l4 { width: 8px; height: 4px; top: 24px; left: 49px; }
+
+			.u1 { width: 4px; height: 16px; top: 12px; left: 61px; }
+
+			.u2 { width: 4px; height: 4px; top: 24px; left: 65px; }
+
+			.u3 { width: 4px; height: 16px; top: 12px; left: 69px; }
+
+			.u4 { top: 24px; left: 61px; }
+
+			.c1 { width: 4px; height: 16px; top: 12px; left: 77px; }
+
+			.c2 { width: 4px; height: 4px; top: 12px; left: 81px; }
+
+			.c3 { width: 4px; height: 4px; top: 24px; left: 81px; }
+
+			.c4 { top: 12px; left: 77px; }
+
+			.c5 { top: 24px; left: 77px; }
+
+			.a1 { width: 12px; height: 4px; top: 12px; left: 89px; }
+
+			.a2 { width: 4px; height: 4px; top: 16px; left: 97px; }
+
+			.a3 { width: 12px; height: 8px; top: 20px; left: 89px; }
+
+			.a4 { top: 24px; left: 89px; }
+
+			.a5 { top: 20px; left: 93px; }
+
+			.a6 { top: 12px; left: 97px; }
+
+			.s1 { width: 8px; height: 16px; top: 12px; left: 105px; }
+
+			.s2 { top: 12px; left: 105px; }
+
+			.s3 { top: 20px; left: 105px; }
+
+			.s4 { top: 16px; left: 109px; }
+
+			.s5 { top: 24px; left: 109px; }
+
+			.f4 { width: 4px; height: 20px; top: 8px; left: 117px; }
+
+			.f5 { width: 8px; height: 4px; top: 8px; left: 121px; }
+
+			.f6 { width: 4px; height: 4px; top: 16px; left: 121px; }
+
+			.f7 { top: 16px; left: 125px; }
+
+			.o1 { width: 4px; height: 16px; top: 12px; left: 133px; }
+
+			.o2 { width: 4px; height: 4px; top: 12px; left: 137px; }
+
+			.o3 { width: 4px; height: 4px; top: 24px; left: 137px; }
+
+			.o4 { width: 4px; height: 16px; top: 12px; left: 141px; }
+
+			.o5 { top: 12px; left: 133px; }
+
+			.o6 { top: 24px; left: 133px; }
+
+			.o7 { top: 12px; left: 141px; }
+
+			.o8 { top: 24px; left: 141px; }
+
+			.n1 { width: 4px; height: 16px; top: 12px; left: 149px; }
+
+			.n2 { width: 4px; height: 4px; top: 12px; left: 153px; }
+
+			.n3 { width: 4px; height: 16px; top: 12px; left: 157px; }
+
+			.n4 { top: 12px; left: 157px; }
+
+			.t1 { width: 8px; height: 4px; top: 12px; left: 165px; }
+
+			.t2 { width: 4px; height: 20px; top: 8px; left: 165px; }
+
+			.t3 { width: 8px; height: 4px; top: 24px; left: 165px; }
+
+			.t4 { top: 24px; left: 165px; }
+
+			.s6 { width: 8px; height: 16px; top: 12px; left: 177px; }
+
+			.s7 { top: 12px; left: 177px; }
+
+			.s8 { top: 20px; left: 177px; }
+
+			.s9 { top: 16px; left: 181px; }
+
+			.s10 { top: 24px; left: 181px; }
+
+		-->
+		</style>
+		<script type="text/javascript">
+		//<![CDATA[
+
+			var textSize = 16;
+
+			window.onload = function() {
+				var minusButton = document.createElement("a");
+				minusButton.id ="minus";
+				minusButton.href = "javascript:void(0)";
+				minusButton.innerHTML = "-";
+				document.getElementById('resizer').appendChild(minusButton);
+
+				var plusButton = document.createElement("a");
+				plusButton.id ="plus";
+				plusButton.href = "javascript:void(0)";
+				plusButton.innerHTML = "+";
+				document.getElementById('resizer').appendChild(plusButton);
+
+				minusButton.onclick = reduceText;
+				plusButton.onclick = enlargeText;
+			}
+
+			function reduceText(){
+				if (textSize >= 10){
+					textSize -= 2;
+					var newSize = textSize + "px";
+			    	document.getElementById("pangram").style.fontSize = newSize;
+			    	document.getElementById("size-status").innerHTML = newSize;
+			    }
+			}
+
+			function enlargeText(){
+				textSize += 2;
+				var newSize = textSize + "px";
+			    document.getElementById("pangram").style.fontSize = newSize;
+			    document.getElementById("size-status").innerHTML = newSize;
+			}
+
+		//]]>
+		</script>
+
+	</head>
+	<body>
+		<div id="logo">
+			<div class="lf1 black"></div>
+			<div class="lf2 orange"></div>
+			<div class="l1 black"></div>
+			<div class="l2 black"></div>
+			<div class="f1 black"></div>
+			<div class="f2 black"></div>
+			<div class="f3 black"></div>
+			<div class="l3 orange"></div>
+			<div class="l4 orange"></div>
+			<div class="u1 orange"></div>
+			<div class="u2 orange"></div>
+			<div class="u3 orange"></div>
+			<div class="u4 sub1"></div>
+			<div class="c1 orange"></div>
+			<div class="c2 orange"></div>
+			<div class="c3 orange"></div>
+			<div class="c4 sub1"></div>
+			<div class="c5 sub1"></div>
+			<div class="a1 orange"></div>
+			<div class="a2 orange"></div>
+			<div class="a3 orange"></div>
+			<div class="a4 sub1"></div>
+			<div class="a5 sub2"></div>
+			<div class="a6 sub1"></div>
+			<div class="s1 orange"></div>
+			<div class="s2 sub1"></div>
+			<div class="s3 sub3"></div>
+			<div class="s4 sub3"></div>
+			<div class="s5 sub1"></div>
+			<div class="f4 orange"></div>
+			<div class="f5 orange"></div>
+			<div class="f6 orange"></div>
+			<div class="f7 sub1"></div>
+			<div class="o1 orange"></div>
+			<div class="o2 orange"></div>
+			<div class="o3 orange"></div>
+			<div class="o4 orange"></div>
+			<div class="o5 sub1"></div>
+			<div class="o6 sub1"></div>
+			<div class="o7 sub1"></div>
+			<div class="o8 sub1"></div>
+			<div class="n1 orange"></div>
+			<div class="n2 orange"></div>
+			<div class="n3 orange"></div>
+			<div class="n4 sub1"></div>
+			<div class="t1 orange"></div>
+			<div class="t2 orange"></div>
+			<div class="t3 orange"></div>
+			<div class="t4 sub1"></div>
+			<div class="s6 orange"></div>
+			<div class="s7 sub1"></div>
+			<div class="s8 sub3"></div>
+			<div class="s9 sub3"></div>
+			<div class="s10 sub1"></div>
+			<h1><a href="http:lucasfonts.com">LucasFonts</a></h1>
+		</div>
+		<h2>TheSans_LP_700_Bold</h2>
+		<div id="sample-wrapper">
+			<div class="sample-line px72">
+				<p class="size">72px</p>
+				<p class="sample">The quick brown fox jumps over a lazy dog. Filmquiz bracht knappe ex-yogi van de wijs. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.</p>
+			</div>
+			<div class="sample-line px60">
+				<p class="size">60px</p>
+				<p class="sample">The quick brown fox jumps over a lazy dog. Filmquiz bracht knappe ex-yogi van de wijs. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.</p>
+			</div>
+			<div class="sample-line px48">
+				<p class="size">48px</p>
+				<p class="sample">The quick brown fox jumps over a lazy dog. Filmquiz bracht knappe ex-yogi van de wijs. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.</p>
+			</div>
+			<div class="sample-line px36">
+				<p class="size">36px</p>
+				<p class="sample">The quick brown fox jumps over a lazy dog. Filmquiz bracht knappe ex-yogi van de wijs. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich..</p>
+			</div>
+			<div class="sample-line px28">
+				<p class="size">28px</p>
+				<p class="sample">The quick brown fox jumps over a lazy dog. Filmquiz bracht knappe ex-yogi van de wijs. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.</p>
+			</div>
+			<div class="sample-line px22">
+				<p class="size">22px</p>
+				<p class="sample">The quick brown fox jumps over a lazy dog. Filmquiz bracht knappe ex-yogi van de wijs. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.</p>
+			</div>
+		</div>
+		<div id="pangram-wrapper">
+			<div id="resizer">
+				<div id="size-status">16px</div>
+			</div>
+			<p id="pangram">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec epde justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.</p>
+		</div>
+		<div class="info-wrapper">
+			<h3>How to embed LucasFonts’ webfonts</h3>
+			<code>
+			<p class="codeblock">/* Copy the following code into your CSS file */</p>
+			<p class="codeblock">
+				<span>@font-face {</span>
+				<span class="indent">font-family: "MyWebfont";</span>
+  				<span class="indent">src: url("TheSans_LP_700_Bold.eot");</span>
+				<span class="indent">src: url("TheSans_LP_700_Bold.eot?#iefix") format("embedded-opentype"),</span>
+				<span class="indent">url("TheSans_LP_700_Bold.woff") format("woff"),</span>
+				<span class="indent">url("TheSans_LP_700_Bold.svg#TheSans_LP_700_Bold") format("svg");</span>
+				<span class="indent">font-weight: normal;</span>
+				<span class="indent">font-style: normal;</span>
+				<span>}</span>
+			</p>
+
+			<p class="codeblock">
+				<span>body {</span>
+	  			<span class="indent">font-family: MyWebfont, Verdana, sans-serif;</span>
+	  			<span class="indent">text-rendering: optimizeLegibility;</span>
+				<span>}</span>
+			</p>
+			</code>
+		</div>
+		<div class="info-wrapper">
+			<h3>High quality screen performance</h3>
+			<p>Due to the various rasterizers that are at work inside the different operating systems webfonts will not be displayed with the same consistent quality across different browsers. To ensure optimal on-screen performance in all browsers our webfonts are carefully hinted. LucasFonts has over 10 years of experience in producing high-quality TrueType fonts for use on-screen.</p>
+		</div>
+		<div id="footer">
+			<p class="copyright">© 2001 LucasFonts</p>
+			<p class="links">
+				<a href="mailto:sales@lucasfonts.com">sales@lucasfonts.com</a>
+				<a href="http://lucasfonts.com">www.lucasfonts.com</a>
+			</p>
+		</div>
+	</body>
+</html>
