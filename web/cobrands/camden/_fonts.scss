@@ -1,0 +1,88 @@
+@font-face {
+    font-family: 'Thesans-Plain';
+    src: url("fonts/the-sans/thesans-lp5plain-webfont-webfont.eot");
+    src: url("fonts/the-sans/thesans-lp5plain-webfont-webfont.eot?#iefix") format("embedded-opentype"), url("fonts/the-sans/thesans-lp5plain-webfont-webfont.woff") format("woff"), url("fonts/the-sans/thesans-lp5plain-webfont-webfont.ttf") format("truetype"), url("fonts/the-sans/thesans-lp5plain-webfont-webfont.svg#Thesans-Plain") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Thesans-Semi-Bold';
+    src: url("fonts/the-sans/TheSans-B6SemiBold.eot");
+    src: url("fonts/the-sans/TheSans-B6SemiBold.eot?#iefix") format("embedded-opentype"), url("fonts/the-sans/TheSans-B6SemiBold.woff") format("woff"), url("fonts/the-sans/TheSans-B6SemiBold.ttf") format("truetype"), url("fonts/the-sans/TheSans-B6SemiBold.svg#Thesans-Semi-Bold") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    // Family Name
+    font-family: 'Thesans-Semi-Light';
+    // IE9 Compatibility Mode
+    src: url('fonts/the-sans/TheSansLP-SemiLight.eot');
+    // Various Browsers
+    src: url('fonts/the-sans/TheSansLP-SemiLight.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('fonts/the-sans/TheSansLP-SemiLight.woff') format('woff'), /* Modern Browsers */
+         url('fonts/the-sans/TheSansLP-SemiLight.ttf')  format('truetype'), /* Safari, Android, iOS */
+         url('fonts/the-sans/TheSansLP-SemiLight.svg#Thesans-Semi-Light') format('svg'); /* Legacy iOS */
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    // Family Name
+    font-family: 'Thesans-Bold';
+    // IE9 Compatibility Mode
+    src: url('fonts/the-sans/TheSans_LP_700_Bold.eot');
+    // Various Browsers
+    src: url('fonts/the-sans/TheSans_LP_700_Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('fonts/the-sans/TheSans_LP_700_Bold.woff') format('woff'), /* Modern Browsers */
+         url('fonts/the-sans/TheSans_LP_700_Bold.ttf')  format('truetype'), /* Safari, Android, iOS */
+         url('fonts/the-sans/TheSans_LP_700_Bold.svg#Thesans-Bold') format('svg'); /* Legacy iOS */
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    // Family Name
+    font-family: 'Thesans-Semi-Light-Select';
+    // IE9 Compatibility Mode
+    src: url('fonts/the-sans/TheSansLP-SemiLight.eot');
+    // Various Browsers
+    src: url('fonts/the-sans/TheSansLP-SemiLight.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('fonts/the-sans/TheSansLP-SemiLight.woff') format('woff'), /* Modern Browsers */
+         url('fonts/the-sans/TheSansLP-SemiLight.ttf')  format('truetype'), /* Safari, Android, iOS */
+         url('fonts/the-sans/TheSansLP-SemiLight.svg#Thesans-Semi-Light-Select') format('svg'); /* Legacy iOS */
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    // Family Name
+    font-family: 'bcc';
+    // IE9 Compatibility Mode
+    src: url('fonts/icomoon/bcc.eot');
+    // Various Browsers
+    src: url('fonts/icomoon/bcc.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('fonts/icomoon/bcc.woff') format('woff'), /* Modern Browsers */
+         url('fonts/icomoon/bcc.ttf')  format('truetype'), /* Safari, Android, iOS */
+         url('fonts/icomoon/bcc.svg#TheSans_LP_400_SemiLight') format('svg'); /* Legacy iOS */
+    font-weight: normal;
+    font-style: normal;
+}
+
+$bold-font-family: "Thesans-Bold", "Helvetica Neue", Helvetica, sans-serif;
+$normal-font-family: "Thesans-Semi-Light", "Helvetica Neue", Helvetica, sans-serif;
+
+// Use placeholder selectors for fonts because we want the bold font to
+// always be normally-weighted.
+%bold-font {
+  font-family: $bold-font-family;
+  font-weight: normal !important; // !important to ensure it doesn't get overridden, as we can't guarantee placement order in resulting CSS
+}
+%normal-font {
+  font-family: $normal-font-family;
+  font-weight: normal;
+}
+
+$heading-font: $bold-font-family;
+$body-font: $normal-font-family;
+$meta-font: $normal-font-family;
