@@ -1,0 +1,211 @@
+@import "_colours";
+@import "_fonts";
+@import "../sass/layout";
+
+#site-header {
+  border-bottom: none;
+}
+
+#main-nav {
+  float: none;
+  margin-top: 7em; // Put the main FMS navigation below the Bristol header
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
+}
+
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  // Display the BCC logo and header correctly
+  #site-logo {
+    background: url(/cobrands/bristol/img/bcclogo.png) 0 14px no-repeat;
+    background-size: 81px 81px;
+    text-indent: 122px;
+    height: 111px;
+    width: 11em;
+    line-height: 111px;
+    font-size: 30px;
+    padding: 0;
+  }
+
+  // White "nav bar" with red border-top, below the logo
+  #site-header {
+    &:after {
+      content: " ";
+      height: 3.5em;
+      display: block;
+      border-bottom: solid 5px $g6;
+      border-top: solid 5px $bcc_red;
+      background-color: white;
+    }
+  }
+
+  #front-main {
+    background-color: white;
+    text-align: left;
+    padding-top: 40px;
+
+    #postcodeForm {
+      margin-top: 0;
+
+      div {
+        margin: 0;
+      }
+    }
+
+    h1 {
+      font-size: 3em;
+    }
+
+    h1 + p {
+      font-size: 1.75em;
+      line-height: 1.25em;
+      max-width: 640px;
+    }
+  }
+
+  .nav-menu {
+    a, span {
+      display: inline-block; // So the chevrons appear correctly
+      font-size: 1.2em;
+    }
+    a {
+      text-decoration: underline;
+      color: $b3;
+
+      &:hover {
+        background: transparent;
+        color: $g1;
+      }
+    }
+    span {
+      color: $g1;
+    }
+  }
+
+  // Stop the 'report a problem' button being red on non-map pages
+  .nav-menu--main a.report-a-problem-btn {
+    background-color: transparent;
+  }
+
+  // Put FAQ side nav at correct vertical position
+  .content .sticky-sidebar aside {
+    top: 12.5em;
+  }
+}
+
+body.mappage {
+  // Add a red border-bottom *inside* the header
+  #site-header {
+    @include box-sizing(border-box);
+    border-bottom: solid 5px $bcc_red;
+  }
+
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: #{$right};
+    margin-top: 0;
+
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
+  }
+
+  // A few changes to the nav items now they're on a black background
+  .nav-menu {
+    a, span {
+      color: white;
+      font-size: 1.1em;
+    }
+
+    a:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    a.report-a-problem-btn {
+      color: white;
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+
+      &:hover {
+        background-color: lighten($bcc_red, 5%);
+      }
+    }
+  }
+
+  .big-green-banner {
+    display: block;
+    background-color: $bcc_red;
+    text-transform: none;
+  }
+}
+
+.bristol_footer footer {
+  .footer-title {
+    display: block;
+    color: white;
+    font-family: $heading-font;
+    font-size: 1.2em;
+    margin-top: 0.5em;
+  }
+
+  .footer-social-links {
+    margin-bottom: 2.7em;
+  }
+
+  #footer-logo {
+    display: block;
+
+    a {
+      text-indent: -999em;
+      background-image: url(/cobrands/bristol/img/bcc_footer_logo_2.png);
+      background-repeat: no-repeat;
+      height: 52px;
+      width: 203px;
+      display: inline-block;
+      margin: 2em 0;
+    }
+  }
+
+  .span8, .span4 {
+    text-align: left;
+
+    ul {
+      text-align: left;
+      margin: 0;
+    }
+  }
+
+  .span8 {
+    width: 66%;
+    float: left;
+  }
+
+  .span4 {
+    width: 33%;
+    float: right;
+  }
+
+  .legal-nav li {
+    border-left: solid 1px $g2;
+    padding: 0 0.5em;
+  }
+
+  .legal-nav li:first-child {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+// Set the default font colour everywhere
+body, .content {
+  color: $g1;
+}
