@@ -1,0 +1,14 @@
+<h2>[% loc('How to report a problem') %]</h2>
+
+<ol class="big-numbers">
+    <li>[% question %]</li>
+    <li>Select where the problem is on the map</li>
+    <li>Tell us what the problem is, and what we need to do</li>
+    <li>Confirm the report and we will investigate it</li>
+</ol>
+
+<section class="full-width">
+[% INCLUDE "front/stats.html" %]
+[% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+</section>
+

@@ -1,0 +1,666 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "../sass/report_list_pins";
+@import "./_mixins";
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+b, strong {
+  font-family: $body-font;
+}
+
+// * TYPOGRAPHY
+html {
+  font-size: $font-size-small-view;
+  @if variable-exists(large-view-point) {
+    @media only screen and (min-width: $large-view-point) {
+        font-size: $font-size-large-view;
+      }
+  }
+}
+
+h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
+  font-weight: 600 !important;
+}
+
+h1, .h1 {
+  font-size: $h1-size-small-view;
+  line-height: 120%;
+}
+
+h2, .h2 {
+  font-size: $h2-size-small-view;
+}
+
+h3, .h3 {
+  font-size: $h3-size-small-view;
+}
+
+h4, .h4 {
+  font-size: $h4-size-small-view;
+}
+
+@if variable-exists(large-view-point) {
+  @media only screen and (min-width: $large-view-point) {
+    h1, .h1 {
+      font-size: $h1-size-large-view;
+    }
+  
+    h2, .h2 {
+      font-size: $h2-size-large-view;
+    }
+  
+    h3, .h3 {
+      font-size: $h3-size-large-view;
+    }
+  
+    h4, .h4 {
+      font-size: $h4-size-large-view;
+    }
+  }
+}
+
+.body-large {
+  font-weight: 400 !important;
+  font-size: 18px;
+  @media only screen and (min-width: 641px) { 
+      font-size: 24px;
+  }
+}
+
+ul.unstyled-list {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-left: 0;
+  li {
+  list-style-type: none;
+  }
+}
+
+label {
+  font-family: $body-font;
+}
+
+// * LINKS AND BUTTONS
+
+a {
+  @include cobrand-link;
+}
+
+.my-account-buttons a {
+  background: transparent;
+  @include cobrand-link;
+}
+
+.skiplink:focus {
+  background-color: $link-focus-background-colour;
+}
+
+.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+  @include cobrand-btn-primary;
+}
+
+.btn-secondary, a#geolocate_link {
+  @include cobrand-btn-secondary;
+}
+
+.item-list--wards__item a, .item-list--reports__item a {
+  text-decoration: none;
+  &:hover {
+    h3 {
+      text-decoration: underline;
+      text-underline-offset: $text-underline-offset;
+    }
+    background-color: transparentize($color: $link-color, $amount: 0.8);
+  }
+
+  &:focus {
+    background-color: $link-focus-background-colour;
+    &:hover {
+      h3 {
+        text-decoration: underline;
+        text-underline-offset: $text-underline-offset;
+      }
+    }
+  }
+}
+
+.item-list__item__shortlist-add { 
+  @include cobrand-input-with-no-border;
+}
+
+.item-list__item--empty {
+  // To comply with AAA standard
+  color: $gray-2;
+}
+
+// * FORMS AND INPUTS
+body:not(.admin) {
+  .multi-select-button,
+  .form-control#sort,
+  input[type='text'],
+  input[type='radio'],
+  input[type='checkbox'],
+  .govuk-radios__input,
+  select,
+  .report-list-filters .form-control,
+  #bulk-assign-form .form-control, textarea {
+    @include input-reset;
+  }
+
+  select {
+    // This makes that the arrow is the same as .multi-select-container
+    position: relative;
+    background: transparent;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-size: contain;
+    padding-left: 8px !important; // overrides .report-list-filters .form-control
+  }
+
+  input[type="checkbox"] {
+    &:not(.govuk-checkboxes__input) {
+      @include input-small;
+    }
+  
+    &.bulk-assign {
+      position: relative;
+      transform: scale(1);
+    }
+  }
+  
+  input[type="radio"] {
+    @include input-small;
+    min-height: $radio-height-small-version;
+    min-width: $radio-height-small-version;
+    border-radius: 50%;
+    &:not(.govuk-radios__input) {
+      @include input-small;
+    }
+  }
+
+  .form-check {
+    padding-left: 0;
+  
+    &>input {
+      top: auto;
+    }
+  }
+
+  #sort {
+    max-width: 14em;
+  }
+
+  .report-list-filters {
+    @include cobrand-body;
+    line-height: $input-height-small-screen;
+    @media only screen and (min-width: 641px) { 
+      line-height: $input-height-large-screen;
+    }
+  }
+
+  .multi-select-button,
+  .report-list-filters .multi-select-button,
+  .form-control#sort,
+  select {
+    @include one-line-input-height;
+  }
+
+  .multi-select-button:after {
+    border-color: $primary_b transparent transparent transparent;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+  
+  .multi-select-menuitem {
+      font-size:$font-size-small-view;
+      padding: $checkbox-height-small-version/3 $checkbox-height-small-version $checkbox-height-small-version/3 $checkbox-width-small-version * 2;
+      line-height: $font-size-small-view * 2;
+      margin: 0;
+      white-space: nowrap !important;
+  
+    input {
+      margin-top: 0.25em;
+      margin-left: -($checkbox-width-small-version) * 1.5;
+      @include input-small;
+    }
+  }
+  
+  #show_old_reports_wrapper {
+    label {
+      line-height: $checkbox-height-small-version;
+    }
+  
+    input {
+      margin-left: 0.5em;
+      @include input-small;
+      left: auto;
+    }
+  }
+  
+  .label-containing-checkbox {
+    line-height: $checkbox-height-small-version * 1.2;
+    padding-left:$checkbox-height-small-version * 1.5;
+  
+    input {
+      margin-right: 0.5em;
+      @include input-small;
+    }
+  }
+  
+  .govuk-radios__input:focus {
+    & +.govuk-radios__label:before {
+      border-width: 4px;
+      box-shadow: 0 0 0 4px $link-focus-background-colour;
+    }
+    &:hover {
+        &+.govuk-radios__label:before {
+            box-shadow: $input-box-shadow-focus-hover;
+        }
+    }
+  }
+}
+
+.mobile-filters-active .report-list-filters-wrapper, 
+.mobile-filters-active #bulk-assign-form {
+  .multi-select-button,
+  .form-control#sort,
+  input[type='text'],
+  input[type='radio'],
+  input[type='checkbox'],
+  .govuk-radios__input,
+  select,
+  .report-list-filters .form-control {
+    border-color: $white;
+  }
+
+  .multi-select-container {
+    input[type='text'],
+    input[type='radio'],
+    input[type='checkbox'] {
+      border-color: $primary_b;
+    }
+  }
+
+  #show_old_reports_wrapper input[type="checkbox"]:checked:after {
+    @include svg-background-image("/cobrands/fixmystreet/images/check-white");
+  }
+}
+
+// Prevents .multi-select-button to jump to anothe line
+.report-list-filters .multi-select-button,
+#bulk-assign-form .multi-select-button {
+  max-width: 8em;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $error-color;
+}
+
+div.form-error, p.form-error {
+  background: $error-color;
+}
+
+.form-section-description, .change_location {
+  color: $gray-2;
+}
+
+.form-hint, .item-list--reports__item small, .item-list--reports__item .small-print {
+  color: $primary_b;
+  margin-top: 0.2em;
+}
+
+// * NAVBAR
+
+#site-logo {
+  display: block;
+  font-family: $body-font;
+  @include svg-background-image("/cobrands/camden/images/camden-logo-white");
+  background-position: 0;
+  background-size: $logo-width-mobile $logo-height-mobile;
+  background-repeat: no-repeat;
+  width: $logo-width-mobile;
+  padding: 0;
+  padding-top: $header-height-mobile;
+  max-height: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &:focus {
+    @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+  }
+}
+
+.nav-menu {
+  a, span {
+    border-bottom-color: $gray-3;
+  }
+
+  span {
+    background-color: $nav_colour;
+    color:$nav_background_colour;
+  }
+
+  a {
+    background-color: $nav_background_colour;
+    color: $nav_colour;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: $white;
+    }
+
+    &:focus {
+      background-color: $link-focus-background-colour;
+      color: $nav_background_colour;
+    }
+  }
+}
+
+#report-cta {
+  border-color: $nav_colour;
+  padding-top: $btn-top-padding-small;
+  padding-bottom: $btn-bottom-padding-small;
+  font-size: $nav-font-size-mobile;
+  text-decoration: none;
+  line-height: 100%;
+
+  &:hover {
+    border-color: $nav_colour;
+  }
+
+  &:focus {
+    border-color: $link-focus-background-colour;
+    outline: none;
+  }
+}
+
+#nav-link {
+  &:focus, &.focussed {
+    color: $link-hover-color;
+    outline: none;
+    background: $link-focus-background-colour inline-image("../fixmystreet/images/#{$menu-image-focus}.svg") center center no-repeat;
+  }
+  
+  html.js-nav-open & {
+    &:focus, &.focussed {
+      background: $link-focus-background-colour inline-image("../fixmystreet/images/#{$close-menu-image-focus}.svg") center center no-repeat;
+    }
+  }
+}
+
+// Make sure the numbers on the front page have the correct font weight
+@if variable-exists(large-view-point) {
+  ol.big-numbers>li:before {
+    font-size: 36px;
+      @media only screen and (min-width: $large-view-point) {
+          font-size: 48px;
+      }
+  }
+}
+
+#front_stats {
+  background-color: $white-2;
+
+  big {
+    color: $layout_front_stats_color;
+    @if variable-exists(large-view-point) {
+      font-size: 36px !important;
+      @media only screen and (min-width: $large-view-point) {
+          font-size: 48px !important;
+      }
+    }
+  }
+
+  div {
+    @include cobrand-body;
+    font-family: $body-font;
+  }
+}
+
+// FAQ/privacy pages should have correctly-weighted headers
+dl dt {
+  font-family: $body-font;
+}
+
+#front-main {
+  text-align: left;
+  padding-top: 1em;
+  padding-bottom: 3px;
+  margin-top: 0;
+
+  @if variable-exists(large-view-point) {
+    @media only screen and (min-width: $large-view-point) {
+      padding-bottom: 7px !important; // Needs to override the layout one
+    }
+  }
+
+  h1+p {
+    color: $gray-2;
+  }
+
+  h2 {
+    font-style: normal;
+    color: $primary_b;
+    @extend .body-large;
+  }
+
+  #postcodeForm {
+    background-color: $white-2;
+    color: $primary_b;
+    margin-top: 1em;
+
+    div {
+      border-width: 0px;
+      align-items: center;
+      background-color: transparent;
+    }
+
+    $border-width:2px;
+    $max-height: 45px;
+
+    input#sub {
+      background: $primary_button_background_color !important;
+      margin-top: -1px;
+      margin-bottom: -1px;
+      border: $border-width solid $primary_button_border_color;
+      max-height: $max-height;
+      height: $max-height;
+      
+
+      &:hover {
+        background: $primary_button_background_color_hover !important;
+        color: $primary_button_color_hover !important;
+        border-color: $primary_button_border_color_hover;
+        text-decoration: underline;
+        text-decoration-thickness: $btn-text-decoration-thickness-hover;
+      }
+
+      &:focus {
+        background: $primary_button_background_color_focus !important;
+        color: $primary_button_color_focus !important;
+        text-decoration: underline;
+        text-decoration-thickness: $btn-text-decoration-thickness-focus;
+        $text-underline-offset: $text-underline-offset;
+        border: 2px solid $primary_button_border_color_focus;
+        border-left: 0px;
+        outline: none;
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+
+    input#pc {
+      margin: 2px 0;
+      max-height: $max-height;
+      height: $max-height;
+      background: $secondary_button_background_color_hover !important;
+      border: $border-width solid $primary_b !important;
+      border-right-width: 0 !important;
+      &:focus {
+        outline:  2px solid $link-focus-background-colour;
+      }
+    }
+  }
+}
+
+a#geolocate_link {
+  // Out from #postcode form element so it also uses this style on the
+  // local alaert page.
+  margin-top: 1em;
+}
+
+.form-box, .box-warning {
+  background-color: $white-2;
+}
+
+.dropzone {
+  margin-top: 0.5em;
+
+  &:focus, &:focus-visible {
+    background-color: transparentize($color: $link-hover-color, $amount: 0.7);
+    border-color: $yellow;
+  }
+}
+
+#key-tools {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 15px;
+
+  li {
+    display: block;
+    width: 90%;
+
+    &:nth-child(2) {
+      margin-top: 15px;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: $primary_b !important;
+    text-align: left;
+    font-size: 14px !important;
+    @media only screen and (min-width: 641px) { 
+        font-size: 16px !important;
+        text-align: center;
+    }
+  }
+}
+
+// uses important because btn also uses it
+#highways .segmented-control--radio input:checked + label.btn {
+  color: $white-2 !important;
+  font-weight: bold !important;
+}
+
+.segmented-control>:last-child  {
+border-right-width: 3px;
+}
+
+.segmented-control--radio {
+  input:checked+label {
+    background-color: $primary_button_background_color;
+    border-color: $primary_button_background_color;
+    color: $primary_button_color !important;
+  }
+  .btn {
+    background-color: $primary_button_color;
+    color: $primary_button_background_color !important;
+  }
+}
+
+.alerts__nearby-activity__photos {
+  // This improves accessibility
+  $border-width: 3px;
+  img {
+    margin-top: $border-width;
+    margin-bottom: $border-width;
+    border:  $border-width solid transparent;
+  }
+  a {
+    &:focus {
+      img {
+        outline: $border-width solid $link-focus-background-colour;
+        border-color: $primary_b;
+      }
+    }
+  }
+}
+
+// Footer
+.camden-footer {
+  background-color: $gray-2;
+  padding-top: 15px;
+  padding-bottom: 45px;
+
+  .footer-logo {
+    display: block;
+    $logo-height: 20px;
+    @include svg-background-image("/cobrands/camden/images/camden-logo-white");
+    background-repeat: no-repeat;
+    background-position: 0;
+    background-size: 100px $logo-height;
+    width: 100px;
+    padding: 0;
+    padding-top: $logo-height;
+    max-height: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &:focus {
+      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+    }
+  }
+
+  li {
+    margin-bottom: 20px;
+  }
+
+  p, a, span {
+    color: $white;
+    font-size: 14px;
+    @if variable-exists(large-view-point) {
+      @media only screen and (min-width: $large-view-point) {
+        font-size: 16px;
+      }
+    }
+  }
+
+  a {
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+    &:visited {
+      color: $white;
+    }
+
+    &:focus {
+      color: $primary_b;
+      background-color: $link-focus-background-colour;
+    }
+  }
+
+  .footer-section {
+    margin-bottom: 25px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+
+<script nonce="[% csp_nonce %]">
+function getConsentCookie(b){b+="=";for(var d=decodeURIComponent(document.cookie).split(";"),c=0;c<d.length;c++){for(var a=d[c];" "==a.charAt(0);)a=a.substring(1);if(0==a.indexOf(b))return a.substring(b.length,a.length)}return""};
+var cookieconsent=getConsentCookie("cookieconsent_status");
+if(cookieconsent=="allow"){
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-WF28PJS');ga("set","page");ga("send","pageview");
+}
+</script>
+
+[% ELSE %]
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
+[% END %]

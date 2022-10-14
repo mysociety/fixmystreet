@@ -1,0 +1,6 @@
+<p>[% loc('This report is now closed to updates.') %]
+   [% tprintf(loc('You can <a href="%s">make a new report in the same location</a>.'),
+          c.uri_for( '/report/new', { longitude = longitude, latitude = latitude } )
+      ) %]
+    Please reference <b>[% problem.id %]</b> in your new report if it is an update on this one.
+</p>
