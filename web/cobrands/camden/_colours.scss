@@ -1,0 +1,43 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+// From http://style.bristol.gov.uk/patterns/colours/
+
+$bcc_red: #bc0031;
+$g1: #2e3137;
+$g2: #676973;
+$g6: #eaeaea;
+$g7: #f1f1f1;
+$b3: #0d45a0;
+$b4: #74a9ff;
+
+$primary: $bcc_red;
+$primary_b: $g1;
+$primary_text: $g1;
+
+$link-color: $b3;
+$link-hover-color: $b3;
+
+$base_bg: white;
+$base_fg: $g1;
+
+$nav_background_colour: $g1;
+$nav_colour: #fff;
+$nav_hover_background_colour: $primary;
+
+$header-top-border: false;
+
+$col_click_map: $g1;
+$col_click_map_dark: darken($g1, 10%);
+
+$search-help-alignment: left;
+$search-help-background: #fff3f3;
+$search-help-header-font-weight: normal;
+$search-help-header-font-size-desktop: 1.25em;
+$search-help-margin-desktop: -1em -1em 0 -1em;
+
+$dropzone-button-text: $g7;
