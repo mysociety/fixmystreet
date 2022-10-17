@@ -255,6 +255,7 @@ sub field_list {
             label          => "Item $num",
             id             => "item_$num.item",
             empty_select   => 'Please select an item',
+            tags           => { autocomplete => 1 },
             options_method => sub {
                 my $field = shift;
 
