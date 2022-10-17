@@ -274,7 +274,15 @@
   <select class="govuk-select[% ' js-autocomplete' IF field.get_tag('autocomplete') %]" id="[% field.id %]" name="[% field.html_name %]"[% IF field.required %] required[% END %]>
     [% '<option value=""></option>' IF field.get_tag('autocomplete') %]
     [% FOR item IN field.options %]
-      <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
+      [% # Select options may be optgrouped %]
+      [% IF item.group %]
+        <optgroup label="[% item.group %]"></optgroup>
+        [% FOR opt IN item.options %]
+          <option value="[% opt.value %]"[% ' selected' IF field.fif == opt.value %]>[% opt.label %]</option>
+        [% END %]
+      [% ELSE  %]
+        <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
+      [% END %]
 	[% END %]
   </select>
 [% END %]
