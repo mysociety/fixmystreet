@@ -800,7 +800,7 @@ $.extend(fixmystreet.set_up, {
             $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
           });
           this.on("success", function(file, xhrResponse) {
-            var $upload_fileids = $('input[name=' + $fileid_input + ']', $context);
+            var $upload_fileids = $('input[name=' + CSS.escape($fileid_input) + ']', $context);
             var ids = [];
             // only split if it has a value otherwise you get a spurious empty string
             // in the array as split returns the whole string if no match
@@ -815,7 +815,7 @@ $.extend(fixmystreet.set_up, {
           this.on("error", function(file, errorMessage, xhrResponse) {
           });
           this.on("removedfile", function(file) {
-            var $upload_fileids = $('input[name=' + $fileid_input + ']', $context);
+            var $upload_fileids = $('input[name=' + CSS.escape($fileid_input) + ']', $context);
             var ids = $upload_fileids.val().split(','),
                 newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
             $upload_fileids.val(newstr);
@@ -840,7 +840,7 @@ $.extend(fixmystreet.set_up, {
           }
       });
 
-      $.each($('input[name=' + $fileid_input + ']', $context).val().split(','), function(i, f) {
+      $.each($('input[name=' + CSS.escape($fileid_input) + ']', $context).val().split(','), function(i, f) {
         if (!f) {
             return;
         }
