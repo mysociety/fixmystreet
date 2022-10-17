@@ -98,4 +98,29 @@ sub waste_get_sub_quantity {
     return $quantity;
 }
 
+sub waste_check_existing_dd {
+    my ($self, $p) = @_;
+    my $c = $self->{c};
+
+    my $payer_reference = $p->get_extra_metadata('payerReference');
+    if (!$payer_reference) {
+        my $code = $self->waste_payment_ref_council_code;
+        my $uprn = $p->get_extra_field_value('uprn') || '';
+        my $id = $p->id;
+        $payer_reference = substr($code . '-' . $id . '-' . $uprn, 0, 18);
+    }
+
+    my $i = $self->get_dd_integration;
+    my $dd_status = $i->get_payer({ payer_reference => $payer_reference }) || '';
+
+    if ($dd_status eq 'Creation Pending') {
+        $c->stash->{direct_debit_status} = 'pending';
+        $c->stash->{pending_subscription} = $p;
+    } elsif ($dd_status eq 'Active') {
+        $c->stash->{direct_debit_status} = 'active';
+    } else {
+        $c->stash->{direct_debit_status} = 'none';
+    }
+}
+
 1;

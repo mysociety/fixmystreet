@@ -694,6 +694,24 @@ sub _garden_waste_service_units {
         } } } ];
 }
 
+my $dd_sent_params = {};
+my $dd = Test::MockModule->new('Integrations::Pay360');
+$dd->mock('one_off_payment', sub {
+    my ($self, $params) = @_;
+    delete $params->{orig_sub};
+    $dd_sent_params->{'one_off_payment'} = $params;
+});
+$dd->mock('amend_plan', sub {
+    my ($self, $params) = @_;
+    delete $params->{orig_sub};
+    $dd_sent_params->{'amend_plan'} = $params;
+});
+$dd->mock('cancel_plan', sub {
+    my ($self, $params) = @_;
+    delete $params->{report};
+    $dd_sent_params->{'cancel_plan'} = $params;
+});
+$dd->mock('get_payer', sub { });
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
@@ -747,26 +765,6 @@ FixMyStreet::override_config {
                 }
             }
         };
-    });
-
-    my $dd_sent_params = {};
-    my $dd = Test::MockModule->new('Integrations::Pay360');
-    $dd->mock('one_off_payment', sub {
-        my ($self, $params) = @_;
-        delete $params->{orig_sub};
-        $dd_sent_params->{'one_off_payment'} = $params;
-    });
-
-    $dd->mock('amend_plan', sub {
-        my ($self, $params) = @_;
-        delete $params->{orig_sub};
-        $dd_sent_params->{'amend_plan'} = $params;
-    });
-
-    $dd->mock('cancel_plan', sub {
-        my ($self, $params) = @_;
-        delete $params->{report};
-        $dd_sent_params->{'cancel_plan'} = $params;
     });
 
     subtest 'check bin calendar with multiple service tasks' => sub {
@@ -1200,7 +1198,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/12345');
         $mech->content_contains('You have a pending garden subscription');
-        $mech->content_lacks('Subscribe to Green Garden Waste');
+        $mech->content_contains('Subscribe to Green Garden Waste'); # Nothing in DD system yet, might have given up and want to pay by CC instead
 
         $mech->get("/waste/dd_complete?reference=$token&report_id=xxy");
         ok !$mech->res->is_success(), "want a bad response";
@@ -1210,6 +1208,12 @@ FixMyStreet::override_config {
         is $mech->res->code, 404, "got 404";
         $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
         $mech->content_contains('confirmation details once your Direct Debit');
+
+        $dd->mock('get_payer', sub { 'Creation Pending' });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste'); # Now pending in DD system
+        $dd->mock('get_payer', sub { });
 
         $mech->email_count_is( 1, "email sent for direct debit sub");
         my $email = $mech->get_email;
@@ -1402,6 +1406,7 @@ FixMyStreet::override_config {
 
     subtest 'renew direct debit sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $dd->mock('get_payer', sub { 'Active' });
 
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Renew subscription today');
@@ -1427,6 +1432,7 @@ FixMyStreet::override_config {
 
         $p->state('confirmed');
         $p->update;
+        $dd->mock('get_payer', sub { });
     };
 
     subtest 'renew direct debit after expiry' => sub {
