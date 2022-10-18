@@ -9,8 +9,9 @@
   [% INCLUDE 'waste/_address_display.html' %]
 [% END %]
 
-<form class="waste" method="post" enctype="multipart/form-data">
+<form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data">
   [% FOR num IN [ 1 .. form.MAX_ITEMS ] %]
+  <div class="bulky-item-wrapper">
     [% # Building names beforehand because override_fields does not seem to like them being built inside its arg list %]
     [% base_field = 'item_' _ num %]
     [% item = base_field _ '.item' %]
@@ -20,7 +21,9 @@
     [% PROCESS form override_fields = [ item, photo, photo_fileid ] %]
     [% PROCESS extra_text num = num %]
     <hr>
+  </div>
   [% END %]
+  <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3">+ Add item</button>
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
 

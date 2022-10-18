@@ -1997,3 +1997,11 @@ function setup_popstate() {
         });
     }, 0);
 }
+
+// Bulky Waste
+setTimeout(function () {
+    // Add items
+    $("#add-new-item").click(function(){
+        $('#item-selection-form > .bulky-item-wrapper:hidden:first').show();
+      });
+}, 0);

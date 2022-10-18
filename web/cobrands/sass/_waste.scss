@@ -388,3 +388,17 @@ body.bulky {
     }
   }
 }
+
+// Bulky item selection
+#item-selection-form {
+  .bulky-item-wrapper {
+      display: none;
+      &:first-child {
+          display: block;
+          .delete-item-btn {
+            display: none;
+          }
+      }
+  }
+}
+
