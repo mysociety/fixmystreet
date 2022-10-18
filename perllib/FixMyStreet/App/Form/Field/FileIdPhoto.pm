@@ -20,7 +20,7 @@ sub validate {
     my $field = $self->linked_field;
     $self->form->process_photo($field);
     my $value = $self->form->saved_data->{$field};
-    my @parts = split(/,/, $value);
+    my @parts = split /,/, ( $value // '' );
     if ($self->num_photos_required && scalar @parts != $self->num_photos_required) {
         my $num = $self->num_photos_required;
         my $word = NUMWORDS($num);

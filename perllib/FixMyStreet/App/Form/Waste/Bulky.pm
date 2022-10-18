@@ -295,11 +295,20 @@ sub field_list {
             },
         };
 
-        push @field_list,
-            "item_$num.image" => {
-            type  => 'Upload',
-            label => 'Upload image (optional)',
-            };
+        push @field_list => (
+            "item_$num.photo" => {
+                type  => 'Photo',
+                label => 'Upload image (optional)',
+                tags  => { max_photos => 1 },
+                # XXX Limit to JPG etc.
+                # XXX Save to DB
+            },
+            "item_$num.photo_fileid" => {
+                type                => 'FileIdPhoto',
+                num_photos_required => 0,
+                linked_field        => "item_$num.photo",
+            },
+        );
     }
 
     return \@field_list;
