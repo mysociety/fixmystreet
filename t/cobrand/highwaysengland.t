@@ -51,6 +51,9 @@ FixMyStreet::override_config {
     CONTACT_EMAIL => 'fixmystreet@example.org',
     COBRAND_FEATURES => {
         contact_email => { highwaysengland => 'highwaysengland@example.org' },
+        updates_allowed => {
+            highwaysengland => 'open',
+        },
     },
 }, sub {
     ok $mech->host('highwaysengland.example.org');
@@ -126,7 +129,15 @@ FixMyStreet::override_config {
     subtest 'check not in a group' => sub {
         my $j = $mech->get_ok_json('/report/new/ajax?latitude=52.236251&longitude=-0.892052&w=1');
         is $j->{subcategories}, undef;
-    }
+    };
+
+    subtest 'Reports do not have update form' => sub {
+        $problem->state('fixed - council');
+        $problem->update;
+
+        $mech->get_ok('/report/' . $problem->id);
+        $mech->content_lacks('Provide an update');
+    };
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
