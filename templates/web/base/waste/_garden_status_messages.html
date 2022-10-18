@@ -5,5 +5,5 @@
 [% ELSIF open_garden_event %]
     <p>This property has a pending garden subscription.</p>
 [% ELSE ~%]
-    [% content %]
+    [% content | safe %]
 [%~ END ~%]
