@@ -562,3 +562,35 @@ body.bulky {
     }
   }
 }
+
+// Bulky item selection
+
+.delete-item, #add-new-item {
+  display: none;
+}
+
+html.js #item-selection-form {
+  #add-new-item {
+    display: block;
+  }
+
+  .bulky-item-wrapper {
+      display: none;
+      &:first-child {
+          display: block;
+          .delete-item {
+            display: none;
+          }
+      }
+      .delete-item {
+        margin-top: 1em;
+      }
+
+      &:first-child {
+        .delete-item {
+          display: none;
+        }
+      }
+  }
+}
+

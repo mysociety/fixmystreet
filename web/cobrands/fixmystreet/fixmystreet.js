@@ -521,12 +521,32 @@ $.extend(fixmystreet.set_up, {
 
   autocomplete: function() {
     $('.js-autocomplete').each(function() {
+        var $this = $(this);
         accessibleAutocomplete.enhanceSelectElement({
             selectElement: this,
             displayMenu: 'overlay',
             required: $(this).prop('required') ? true : false,
             showAllValues: true,
-            defaultValue: ''
+            defaultValue: '',
+            onConfirm: function(label) {
+                // This function runs when the user selects an item, or removes focus from the autoselect dropdown.
+                if (typeof label !== 'undefined') {
+                    // If the user selects a value in the autocomplete dropdown, update the hidden 'select' element.
+                    // https://github.com/alphagov/accessible-autocomplete/issues/322
+                    var value = $this.children("option").filter(function () {return $(this).html() == label; }).val();
+                    var valueAttribute = $this.children("option").filter(function () { return $(this).html() == label; }).attr('data-extra_text');
+                    $this.val(value).trigger( "change" );
+                    $("#add-new-item").prop('disabled', false);
+
+                     // To display message if option has a data-extra_text
+                    if (typeof valueAttribute !== 'undefined') {
+                        $this.closest('.bulky-item-wrapper').find('#item-message').text(valueAttribute);
+                        $this.closest('.bulky-item-wrapper').find('.bulky-item-message').css('display', 'flex');
+                    } else {
+                        $this.closest('.bulky-item-wrapper').find('.bulky-item-message').hide();
+                    }
+                }
+            }
         });
     });
   },
@@ -2005,3 +2025,73 @@ function setup_popstate() {
         });
     }, 0);
 }
+
+// Bulky Waste
+var numItemsVisible = $('.bulky-item-wrapper:visible').length;
+var maxNumItems = $('.bulky-item-wrapper').length;
+var itemSelectionCounter = 0;
+var firstItem = $('.bulky-item-wrapper').first();
+var firstItemInput = $('.bulky-item-wrapper').first().find('ul.autocomplete__menu').children().length;
+
+function disableAddItemButton() {
+    // It will disable button if the first item is empty and the max number of items has been reached.
+    $("#add-new-item").prop('disabled', true);
+    if (numItemsVisible == maxNumItems || $('.bulky-item-wrapper').first().find('ul.autocomplete__menu').children().length == 0) {
+        $("#add-new-item").prop('disabled', true);
+        firstItemInput = $('.bulky-item-wrapper').first().find('ul.autocomplete__menu').children().length;
+    } else {
+        $("#add-new-item").prop('disabled', false);
+    }
+}
+
+setTimeout(function () {
+    function deleteItem() {
+        if (numItemsVisible == 1) {
+            $(".delete-item").hide();
+        } else {
+            $(".delete-item").show();
+            // The first one shouldn't be able to be deleted.
+            $(".delete-item").first().hide();
+        }
+    }
+
+    // If page reloads reveals any wrapper with an item already selected.
+    $( '.bulky-item-wrapper' ).each(function() {
+       if ($(this).find('ul.autocomplete__menu').children().length > 0) {
+            itemSelectionCounter++;
+        }
+    });
+
+    if (itemSelectionCounter == 0) {
+        firstItem.show();
+    } else {
+        $( '.bulky-item-wrapper' ).each(function() {
+            var addedItems = $(this).find('ul.autocomplete__menu');
+            if (addedItems.children().length > 0 ) {
+                $(this).show();
+                numItemsVisible = $('.bulky-item-wrapper:visible').length;
+                deleteItem();
+            } else {
+                $(this).hide();
+                firstItem.show();
+            }
+        });
+    }
+
+    // Add items
+    $("#add-new-item").click(function(){
+        $('#item-selection-form > .bulky-item-wrapper:hidden:first').show();
+        numItemsVisible = $('.bulky-item-wrapper:visible').length;
+        deleteItem();
+        $("#add-new-item").prop('disabled', true);
+    });
+
+      //Erase bulky item
+      $(".delete-item").click(function(){
+        $(this).closest('.bulky-item-wrapper').hide();
+        $(this).closest('.bulky-item-wrapper').find('.autocomplete__input').val('');
+        numItemsVisible = $('.bulky-item-wrapper:visible').length;
+        deleteItem();
+        disableAddItemButton();
+      });
+}, 300);
