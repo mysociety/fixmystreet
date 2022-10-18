@@ -235,11 +235,6 @@ sub _build_items_extra_text {
     return \%hash;
 }
 
-sub format_item_string {
-    my ( $self, $str ) = @_;
-    return lc $str =~ s/\W+/_/gr;
-}
-
 sub field_list {
     my $self = shift;
 
