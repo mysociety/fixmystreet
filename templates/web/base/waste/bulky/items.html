@@ -15,7 +15,14 @@
     [% base_field = 'item_' _ num %]
     [% item = base_field _ '.item' %]
     [% PROCESS form override_fields = [ item ] %]
-    [% form.field(base_field).field('image').render | safe %]
+
+    [% # XXX Use override_fields instead of .render %]
+    [% form.field(base_field).field('photo').render | safe %]
+    [% form.field(base_field).field('photo_fileid').render | safe %]
+    [% # photo = base_field _ '.photo' %]
+    [% # photo_fileid = base_field _ '.photo_fileid' %]
+    [% # PROCESS form override_fields = [ item, photo, photo_fileid ] %]
+
     [% PROCESS extra_text num = num %]
     <hr>
   [% END %]
