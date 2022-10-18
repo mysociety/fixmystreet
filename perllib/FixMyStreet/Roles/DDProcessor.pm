@@ -1,3 +1,22 @@
+package DDPayment;
+use Moo;
+
+has data => ( is => 'ro' );
+has cobrand => ( is => 'ro' );
+has payer => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->referenceField} } );
+has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->paymentDateField} } );
+has status => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->statusField} } );
+has type => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->paymentTypeField} } );
+has oneOffRef => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->oneOffReferenceField} } );
+
+package DDCancelPayment;
+use Moo;
+
+has data => ( is => 'ro' );
+has cobrand => ( is => 'ro' );
+has payer => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->cancelReferenceField} } );
+has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->cancelledDateField} } );
+
 package FixMyStreet::Roles::DDProcessor;
 
 use Moo::Role;
@@ -55,25 +74,21 @@ sub waste_reconcile_direct_debits {
     RECORD: for my $payment ( @$recent ) {
         $self->clear_log;
 
-        my $payer = $payment->{$self->referenceField};
-        my $date = $payment->{$self->paymentDateField};
+        $payment = DDPayment->new({ data => $payment, cobrand => $self });
+        next unless $payment->date;
 
-        $self->log( "looking at payment $payer" );
-        $self->log( "payment date: $date" );
+        $self->log( "looking at payment " . $payment->payer );
+        $self->log( "payment date: " . $payment->date );
 
-        next unless $self->waste_dd_paid($date);
-        next unless $payment->{$self->statusField} eq $self->paymentTakenCode;
+        next unless $self->waste_dd_paid($payment->date);
+        next unless $payment->status eq $self->paymentTakenCode;
 
-        my ($category, $type) = $self->waste_payment_type(
-            $payment->{$self->paymentTypeField},
-            $payment->{$self->oneOffReferenceField}
-        );
-
-        next unless $category && $date;
+        my ($category, $type) = $self->waste_payment_type($payment->type, $payment->oneOffRef);
+        next unless $category;
 
         $self->log( "category: $category ($type)" );
 
-        my ($uprn, $rs) = $self->_process_reference($payer);
+        my ($uprn, $rs) = $self->_process_reference($payment->payer);
         next unless $rs;
         $rs = $rs->search({ category => 'Garden Subscription' });
 
@@ -102,45 +117,28 @@ sub waste_reconcile_direct_debits {
                 next unless $self->waste_is_dd_payment($cur);
                 # only confirmed records are valid.
                 next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
+                # already processed
+                next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date;
+                next if $p;
+
                 my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
+                next unless $sub_type eq $self->waste_subscription_types->{New} || $sub_type eq $self->waste_subscription_types->{Renew};
+
                 if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    # already processed - need this because a Renewal report
-                    # may have been switched to a New if the backend
-                    # subscription had expired
-                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
-                    $self->log("is a matching new report") if !$p;
-                    $p = $cur if !$p;
+                    $self->log("is a matching new report");
                 } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
-                    # already processed
-                    next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date;
-                    # if it's a renewal of a DD where the initial setup was as a renewal
-                    $self->log("is a matching renewal report") if !$p;
-                    $p = $cur if !$p;
+                    $self->log("is a matching renewal report");
                 }
+                $p = $cur;
             }
             if ( $p ) {
                 my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
                 unless ($service) {
-                    $self->log("no matching service to renew for $payer");
+                    $self->log("no matching service to renew for " . $payment->payer);
                     $self->output_log(1);
                     next;
                 }
-                my $renew = $self->_duplicate_waste_report($p, 'Garden Subscription', {
-                    $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
-                    #service_id => $self->garden_waste_service_id,
-                    uprn => $uprn,
-                    #Subscription_Details_Container_Type => $self->garden_waste_container_id,
-                    Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
-                    LastPayMethod => $self->bin_payment_types->{direct_debit},
-                    PaymentCode => $payer,
-                    payment_method => 'direct_debit',
-                    property_id => $p->get_extra_field_value('property_id'),
-                } );
-                $renew->set_extra_metadata('payerReference', $payer);
-                $renew->set_extra_metadata('dd_date', $date);
-                $renew->confirm;
-                $renew->insert;
-                $self->log("created new confirmed report: " . $renew->id);
+                my $renew = $self->_duplicate_waste_report($p, $uprn, $service, $payment);
                 $handled = $renew->id;
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
@@ -153,60 +151,34 @@ sub waste_reconcile_direct_debits {
                 $self->log("looking at potential match " . $cur->id);
                 next unless $self->waste_is_dd_payment($cur);
                 $self->log("potential match is a dd payment");
-                if ( my $type = $self->_report_matches_payment( $cur, $payment ) ) {
-                    $self->log("found matching report " . $cur->id . " with state " . $cur->state);
-                    if ( $cur->state eq 'unconfirmed' && !$handled) {
-                        if ( $type eq 'New' ) {
-                            $self->log("matching report is New " . $cur->id);
-                            if ( !$cur->get_extra_metadata('payerReference') ) {
-                                $cur->set_extra_metadata('payerReference', $payer);
-                            }
-                        }
-                        $cur->set_extra_metadata('dd_date', $date);
-                        $cur->update_extra_field( {
-                            name => 'PaymentCode',
-                            description => 'PaymentCode',
-                            value => $payer,
-                        } );
-                        $cur->update_extra_field( {
-                            name => 'LastPayMethod',
-                            description => 'LastPayMethod',
-                            value => $self->bin_payment_types->{direct_debit},
-                        } );
-                        $self->add_new_sub_metadata($cur, $payment);
-                        $self->log("confirming matching report " . $cur->id);
-                        $cur->confirm;
-                        $cur->update;
-                        $handled = $cur->id;
-                    } elsif ( $cur->state eq 'unconfirmed' ) {
-                        $self->log("hiding matching report $handled");
-                        # if we've pulled out more that one record, e.g. because they
-                        # failed to make a payment then skip remaining ones.
-                        $cur->state('hidden');
-                        $cur->add_to_comments( { text => "Hiding report as handled elsewhere by report $handled", user => $user, problem_state => $cur->state } );
-                        $cur->update;
-                    } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date)  {
-                        $self->log("skipping matching report " . $cur->id);
-                        next RECORD;
-                    }
+                my $type = $self->_report_matches_payment( $cur, $payment );
+                next unless $type;
+
+                $self->log("found matching report " . $cur->id . " with state " . $cur->state);
+                if ( $cur->state eq 'unconfirmed' && !$handled) {
+                    $self->_confirm_dd_report($type, $cur, $payment);
+                    $handled = $cur->id;
+                } elsif ( $cur->state eq 'unconfirmed' ) {
+                    # if we've pulled out more that one record, e.g. because they failed to make a payment then skip remaining ones.
+                    $self->_hide_matching_dd_report($cur, $handled, $user);
+                } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date)  {
+                    $self->log("skipping matching report " . $cur->id);
+                    next RECORD;
                 }
             }
         }
 
         unless ( $handled ) {
-            $self->log("no matching record found for $category payment with id $payer");
+            $self->log("no matching record found for $category payment with id " . $payment->payer);
         }
 
-        $self->log( "done looking at payment " . $payment->{$self->referenceField} );
+        $self->log( "done looking at payment " . $payment->payer );
         $self->output_log(!$handled);
     }
 
-    # There's two options with a cancel payment. If the user has cancelled it outside of
-    # WasteWorks then we need to find the original sub and generate a new cancel subscription
-    # report.
-    #
-    # If it's been cancelled inside WasteWorks then we'll have an unconfirmed cancel report
-    # which we need to confirm.
+    # There's two options with a cancel payment. If the user has cancelled it outside
+    # of WasteWorks then we do nothing. If it's been cancelled inside WasteWorks then
+    # we'll have an unconfirmed cancel report which we need to confirm.
 
     my $cancelled = $i->get_cancelled_payers({
         start => $start,
@@ -226,14 +198,12 @@ sub waste_reconcile_direct_debits {
     CANCELLED: for my $payment ( @$cancelled ) {
         $self->clear_log;
 
-        my $payer = $payment->{$self->cancelReferenceField};
-        my $date = $payment->{$self->cancelledDateField};
+        $payment = DDCancelPayment->new({ data => $payment, cobrand => $self });
+        next unless $payment->date;
 
-        $self->log("looking at payment $payer");
+        $self->log("looking at payment " . $payment->payer);
 
-        next unless $date;
-
-        my ($uprn, $rs) = $self->_process_reference($payer);
+        my ($uprn, $rs) = $self->_process_reference($payment->payer);
         next unless $rs;
 
         $rs = $rs->search({ category => 'Cancel Garden Subscription' });
@@ -244,7 +214,7 @@ sub waste_reconcile_direct_debits {
                 $self->log("found matching report " . $cur->id);
                 $r = $cur;
             # already processed
-            } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $date) {
+            } elsif ( $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date) {
                 $self->log("skipping report " . $cur->id);
                 next CANCELLED;
             }
@@ -255,7 +225,7 @@ sub waste_reconcile_direct_debits {
             my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
             # if there's not a service then it's fine as it's already been cancelled
             if ( $service ) {
-                $r->set_extra_metadata('dd_date', $date);
+                $r->set_extra_metadata('dd_date', $payment->date);
                 $self->log("confirming report");
                 $r->confirm;
                 $r->update;
@@ -271,7 +241,7 @@ sub waste_reconcile_direct_debits {
             # associated Cancel reports, so no need to warn on them
             # warn "no matching record found for Cancel payment with id $payer\n";
         }
-        $self->log("finished looking at payment " . $payment->{$self->cancelReferenceField});
+        $self->log("finished looking at payment " . $payment->payer);
         $self->output_log;
     }
 }
@@ -282,11 +252,11 @@ sub _report_matches_payment {
     my ($self, $r, $p) = @_;
 
     my $match = 0;
-    $self->log( "one off reference field is " . $p->{$self->oneOffReferenceField} ) if $p->{ $self->oneOffReferenceField };
+    $self->log( "one off reference field is " . $p->oneOffRef ) if $p->oneOffRef;
     $self->log( "potential match type is " . $r->get_extra_field_value($self->garden_subscription_type_field) );
-    if ( $p->{$self->oneOffReferenceField} && $r->id eq $p->{$self->oneOffReferenceField} ) {
+    if ( $p->oneOffRef && $r->id eq $p->oneOffRef ) {
         $match = 'Ad-Hoc';
-    } elsif ( !$p->{$self->oneOffReferenceField}
+    } elsif ( !$p->oneOffRef
             && ( $r->get_extra_field_value($self->garden_subscription_type_field) eq $self->waste_subscription_types->{New} ||
                  # if we're renewing a previously non DD sub
                  $r->get_extra_field_value($self->garden_subscription_type_field) eq $self->waste_subscription_types->{Renew} )
@@ -298,9 +268,22 @@ sub _report_matches_payment {
 }
 
 sub _duplicate_waste_report {
-    my ( $self, $report, $category, $extra ) = @_;
-    my $new = FixMyStreet::DB->resultset('Problem')->new({
-        category => $category,
+    my ($self, $report, $uprn, $service, $payment) = @_;
+
+    my $extra = {
+        $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
+        uprn => $uprn,
+        Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
+        LastPayMethod => $self->bin_payment_types->{direct_debit},
+        PaymentCode => $payment->payer,
+        payment_method => 'direct_debit',
+        $self->garden_subscription_container_field => $report->get_extra_field_value($self->garden_subscription_container_field),
+        service_id => $report->get_extra_field_value('service_id'),
+        property_id => $report->get_extra_field_value('property_id'),
+    };
+
+    my $renew = FixMyStreet::DB->resultset('Problem')->new({
+        category => 'Garden Subscription',
         user => $report->user,
         latitude => $report->latitude,
         longitude => $report->longitude,
@@ -318,13 +301,49 @@ sub _duplicate_waste_report {
         cobrand_data => 'waste',
     });
 
-    $extra->{$self->garden_subscription_container_field} ||= $report->get_extra_field_value($self->garden_subscription_container_field);
-    $extra->{service_id} ||= $report->get_extra_field_value('service_id');
-
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
-    $new->set_extra_fields(@extra);
+    $renew->set_extra_fields(@extra);
+    $renew->set_extra_metadata('payerReference', $payment->payer);
+    $renew->set_extra_metadata('dd_date', $payment->date);
+    $renew->confirm;
+    $renew->insert;
+    $self->log("created new confirmed report: " . $renew->id);
+    return $renew;
+}
 
-    return $new;
+sub _confirm_dd_report {
+    my ($self, $type, $cur, $payment) = @_;
+
+    if ( $type eq 'New' ) {
+        $self->log("matching report is New " . $cur->id);
+        if ( !$cur->get_extra_metadata('payerReference') ) {
+            $cur->set_extra_metadata('payerReference', $payment->payer);
+        }
+    }
+    $cur->set_extra_metadata('dd_date', $payment->date);
+    $cur->update_extra_field( {
+        name => 'PaymentCode',
+        description => 'PaymentCode',
+        value => $payment->payer,
+    } );
+    $cur->update_extra_field( {
+        name => 'LastPayMethod',
+        description => 'LastPayMethod',
+        value => $self->bin_payment_types->{direct_debit},
+    } );
+    $self->add_new_sub_metadata($cur, $payment);
+    $cur->confirm;
+    $cur->update;
+    $self->log("confirming matching report " . $cur->id);
+}
+
+sub _hide_matching_dd_report {
+    my ($self, $cur, $handled, $user) = @_;
+
+    $self->log("hiding matching report $handled");
+    $cur->state('hidden');
+    $cur->add_to_comments( { text => "Hiding report as handled elsewhere by report $handled", user => $user, problem_state => $cur->state } );
+    $cur->update;
 }
 
 sub _process_reference {

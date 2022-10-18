@@ -341,7 +341,10 @@ sub bin_services_for_address {
 
     # If there is an open Garden subscription (1638) event, assume
     # that means a bin is being delivered and so a pending subscription
-    $self->{c}->stash->{pending_subscription} = $events->{enquiry}{1638} ? { title => 'Garden Subscription - New' } : undef;
+    if ($events->{enquiry}{1638}) {
+        $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
+        $self->{c}->stash->{open_garden_event} = 1;
+    }
 
     my @to_fetch;
     my %schedules;

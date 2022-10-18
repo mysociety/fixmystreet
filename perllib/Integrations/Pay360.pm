@@ -111,6 +111,21 @@ sub amend_plan {
     }
 }
 
+sub get_payer {
+    my ($self, $args) = @_;
+
+    my $obj = [
+        clientSUN => $self->config->{dd_sun},
+        reference => $args->{payer_reference},
+    ];
+
+    my $res = $self->call('GetPayer', @$obj);
+    if ( $res ) {
+        $res = $res->{GetPayerResponse}->{GetPayerResult};
+        return $res->{PayerWithAnswers}{Payer}{Status};
+    }
+}
+
 sub get_payers {
     my ($self, $args) = @_;
 

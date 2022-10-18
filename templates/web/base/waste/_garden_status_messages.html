@@ -1,0 +1,9 @@
+[% IF direct_debit_status == 'active' %]
+    <p>This property has an existing direct debit subscription which will renew automatically.</p>
+[% ELSIF direct_debit_status == 'pending' %]
+    <p>This property has a pending direct debit subscription.</p>
+[% ELSIF open_garden_event %]
+    <p>This property has a pending garden subscription.</p>
+[% ELSE ~%]
+    [% content %]
+[%~ END ~%]

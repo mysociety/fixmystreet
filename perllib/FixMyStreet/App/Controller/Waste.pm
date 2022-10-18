@@ -404,7 +404,7 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
 
     my $p = $c->stash->{report};
 
-    my $pro_rata = $p->get_extra_field_value('pro_rata');
+    my $pro_rata = $p->get_extra_field_value('pro_rata') || 0;
     my $admin_fee = $p->get_extra_field_value('admin_fee') || 0;
     my $total = $p->get_extra_field_value('payment');
 
@@ -1184,7 +1184,9 @@ sub get_original_sub : Private {
         });
     }
 
-    $c->stash->{orig_sub} = $p->first;
+    my $r = $c->stash->{orig_sub} = $p->first;
+    $c->cobrand->call_hook(waste_check_existing_dd => $r)
+        if $r && ($r->get_extra_field_value('payment_method') || '') eq 'direct_debit';
 }
 
 sub setup_garden_sub_params : Private {
