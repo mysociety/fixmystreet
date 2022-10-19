@@ -3,6 +3,9 @@ use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
 use FixMyStreet::Script::Reports;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Merton');
 

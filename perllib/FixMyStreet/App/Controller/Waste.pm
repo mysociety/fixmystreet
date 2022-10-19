@@ -394,6 +394,8 @@ sub direct_debit_error : Path('dd_error') : Args(0) {
     my ($token, $id) = $c->cobrand->call_hook( 'garden_waste_dd_get_redirect_params' => $c );
     if ( $id && $token ) {
         $c->forward('check_payment_redirect_id', [ $id, $token ]);
+        my $p = $c->stash->{report};
+        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
         $c->forward('populate_dd_details');
     }
 
@@ -1441,7 +1443,7 @@ sub add_report : Private {
     if ($c->user_exists) {
         if ($c->user->from_body && !$data->{email} && !$data->{phone}) {
             $c->set_param('form_as', 'anonymous_user');
-        } elsif ($c->user->from_body && $c->user->email ne $data->{email}) {
+        } elsif ($c->user->from_body && $c->user->email ne ($data->{email} || '')) {
             $c->set_param('form_as', 'another_user');
         }
         $c->set_param('username', $data->{email} || $data->{phone});

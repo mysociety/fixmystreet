@@ -130,7 +130,7 @@ FixMyStreet::override_config {
     };
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 1 } });
+        $mech->submit_form_ok({ form_number => 7 });
         $mech->content_contains('name="container-choice" value="1"');
         $mech->content_contains('Green paper and cardboard bin');
         $mech->content_contains('Green recycling box');

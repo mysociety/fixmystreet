@@ -1156,7 +1156,7 @@ sub waste_munge_problem_data {
     my $c = $self->{c};
 
     my $service_details = $self->{c}->stash->{services_problems}->{$id};
-    my $container_id = $service_details->{container};
+    my $container_id = $service_details->{container} || 0; # 497 doesn't have a container
 
     my $category = $self->body->contacts->find({ email => "Bartec-$id" })->category;
     my $category_verbose = $service_details->{label};
@@ -1180,7 +1180,7 @@ sub waste_munge_problem_data {
         $data->{detail} .= "\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
     } else {
         $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
-                         $category =~ /Not returned/ ? "$bin bin not returned" : $bin;
+                         $category =~ /Not returned/ ? "Bin not returned" : $bin;
         $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
     }
 

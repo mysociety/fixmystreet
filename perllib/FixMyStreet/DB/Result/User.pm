@@ -263,7 +263,7 @@ sub latest_visible_problem {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     }, {
         order_by => { -desc => 'id' }
-    })->single;
+    })->first;
 }
 
 =head2 check_for_errors

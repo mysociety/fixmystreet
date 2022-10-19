@@ -1,6 +1,8 @@
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+use t::Mock::Nominatim;
+
 # check that the homepage loads
 $mech->get_ok('/');
 

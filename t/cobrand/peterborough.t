@@ -5,6 +5,25 @@ use CGI::Simple;
 use Test::LongString;
 use Open311::PostServiceRequestUpdates;
 
+my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+$mock->mock('_fetch_features', sub {
+    my ($self, $args, $x, $y) = @_;
+    if ( $args->{type} && $args->{type} eq 'arcgis' ) {
+        # council land
+        if ( $x == 552617 && $args->{url} =~ m{4/query} ) {
+            return [ { geometry => { type => 'Point' } } ];
+        # leased out council land
+        } elsif ( $x == 552651 && $args->{url} =~ m{3/query} ) {
+            return [ { geometry => { type => 'Point' } } ];
+        # adopted roads
+        } elsif ( $x == 552721 && $args->{url} =~ m{7/query} ) {
+            return [ { geometry => { type => 'Point' } } ];
+        }
+        return [];
+    }
+    return [];
+});
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $params = {
@@ -186,25 +205,6 @@ subtest "extra bartec params are sent to open311" => sub {
         is $cgi->param('attribute[contributed_by]'), $staffuser->email, 'staff email address sent';
     };
 };
-
-my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
-$mock->mock('_fetch_features', sub {
-    my ($self, $args, $x, $y) = @_;
-    if ( $args->{type} && $args->{type} eq 'arcgis' ) {
-        # council land
-        if ( $x == 552617 && $args->{url} =~ m{4/query} ) {
-            return [ { geometry => { type => 'Point' } } ];
-        # leased out council land
-        } elsif ( $x == 552651 && $args->{url} =~ m{3/query} ) {
-            return [ { geometry => { type => 'Point' } } ];
-        # adopted roads
-        } elsif ( $x == 552721 && $args->{url} =~ m{7/query} ) {
-            return [ { geometry => { type => 'Point' } } ];
-        }
-        return [];
-    }
-    return [];
-});
 
 for my $test (
     {

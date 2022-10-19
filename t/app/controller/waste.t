@@ -114,7 +114,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
         $mech->content_contains('13345'); # For comparing against type check below
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
-        $mech->content_contains('can’t find your address');
+        $mech->content_contains('find your address in our records');
     };
     subtest 'Address lookup' => sub {
         set_fixed_time('2020-05-28T17:00:00Z'); # After sample data collection
@@ -1311,7 +1311,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Container_Type'), 44, 'correct container request bin type';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
-        is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
+        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
         $new_report->delete;
 
@@ -2100,7 +2100,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $new_report->get_extra_metadata('contributed_as'), 'anonymous_user';
-        is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
+        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
     };
 

@@ -5,6 +5,8 @@ use Path::Tiny;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+use t::Mock::Nominatim;
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");

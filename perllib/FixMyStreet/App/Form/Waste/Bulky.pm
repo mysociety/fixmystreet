@@ -62,7 +62,7 @@ has_page add_items => (
 
 has_page location => (
     title => 'Location details',
-    fields => ['location', 'location_photo', 'continue'],
+    fields => ['location', 'location_photo', 'location_photo_fileid', 'continue'],
     next => 'summary',
 );
 

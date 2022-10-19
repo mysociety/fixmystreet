@@ -1189,6 +1189,7 @@ subtest 'TfL staff cannot access Bromley admin' => sub {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tfl' ],
     BASE_URL => 'http://www.example.org',
+    MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         internal_ips => { tfl => [ '127.0.0.1' ] }, # To avoid 2-factor for test
         borough_email_addresses => { tfl => {

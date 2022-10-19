@@ -1,5 +1,9 @@
 use FixMyStreet::TestMech;
 
+use t::Mock::Tilma;
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
@@ -401,7 +405,10 @@ subtest "category groups are shown" => sub {
 subtest "TfL cobrand only shows TfL templates" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'tfl' ],
-        COBRAND_FEATURES => { internal_ips => { tfl => [ '127.0.0.1' ] } },
+        COBRAND_FEATURES => {
+            internal_ips => { tfl => [ '127.0.0.1' ] },
+            anonymous_account => { tfl => 'anon' },
+        },
     }, sub {
         $report->update({
             category => $tflcontact->category,

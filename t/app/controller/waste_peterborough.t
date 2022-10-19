@@ -12,6 +12,9 @@ END { FixMyStreet::App->log->enable('info'); }
 my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
 $uk->mock('_fetch_url', sub { '{}' });
 
+my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+$mock->mock('_fetch_features', sub { [] });
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $params = {
@@ -83,7 +86,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
-        $mech->content_contains('can’t find your address', "Missing message found");
+        $mech->content_contains('find your address in our records', "Missing message found");
     };
     subtest 'Address lookup' => sub {
         set_fixed_time('2021-08-05T21:00:00Z');
@@ -751,7 +754,8 @@ FixMyStreet::override_config {
 
         subtest 'Summary page' => sub {
             $mech->content_contains('Submit bulky goods collection booking');
-            $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
+            $mech->content_contains('Please review the information');
+            $mech->content_contains('provided before you submit your bulky goods collection booking.');
             $mech->content_contains('<dd class="govuk-summary-list__value">table</dd>');
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         };

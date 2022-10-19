@@ -94,6 +94,7 @@ subtest 'Reports have an update form for superusers' => sub {
         ALLOWED_COBRANDS => 'westminster',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
+            anonymous_account => { westminster => 'anon' },
             updates_allowed => {
                 westminster => 'staff',
             },

@@ -1283,7 +1283,7 @@ sub set_report_extras : Private {
             push @extra, {
                 name => $field->{code},
                 description => $field->{description},
-                value => $c->get_param($param_prefix . $field->{code}) || '',
+                value => $c->get_param($param_prefix . $field->{code}) // '',
             };
         }
     }

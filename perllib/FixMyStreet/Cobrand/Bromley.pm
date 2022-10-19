@@ -286,7 +286,7 @@ sub open311_munge_update_params {
 
     # Waste reports are sent to our Open311 endpoint, not Bromley's,
     # and we don't want to make changes to parameters in that case.
-    return if $comment->problem->cobrand_data eq 'waste';
+    return if ($comment->problem->cobrand_data || '') eq 'waste';
 
     delete $params->{update_id};
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',

@@ -832,7 +832,7 @@ FixMyStreet::override_config {
         is $sent_params, undef, "no one off payment if reducing bin count";
         check_extra_data_pre_confirm($new_report, type => 'Amend', state => 'confirmed', action => 2);
         is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
+        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
 
         $mech->clear_emails_ok;
@@ -1529,7 +1529,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $new_report->get_extra_metadata('contributed_as'), 'another_user';
-        is $new_report->get_extra_field_value('payment'), '', 'no payment if removing bins';
+        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
         is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -1767,7 +1767,7 @@ FixMyStreet::override_config {
         $mech->content_contains('"a user"');
         $mech->content_contains(1000000002);
         $mech->content_contains('a_user@example.net');
-        $mech->content_contains('credit_card,54321,2000,,,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('credit_card,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
         $mech->content_contains('"a user 2"');
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');

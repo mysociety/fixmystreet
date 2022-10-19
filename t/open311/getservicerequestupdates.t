@@ -1118,7 +1118,7 @@ subtest 'check that no external_status_code and no state change does not trigger
         current_body => $bodies{2482},
     );
 
-    $update->process_body;
+    stderr_like { $update->process_body } qr/Couldn't determine update text for/, 'Error message displayed';
 
     $problem->discard_changes;
     is $problem->comments->count, 1, 'comment is still created after fetching updates';

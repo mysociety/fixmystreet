@@ -1381,11 +1381,11 @@ sub emergency_message {
     my $field = 'emergency_message';
     $field .= "_$type" if $type;
 
-    my $ooh = $self->ooh_times($body);
     my $msg = $body->get_extra_metadata($field);
-    if ($ooh->active) {
-        $field .= "_ooh";
-        $msg = $body->get_extra_metadata($field) || $msg;
+    my $ooh_msg = $body->get_extra_metadata($field . '_ooh');
+    if ($ooh_msg) {
+        my $ooh = $self->ooh_times($body);
+        $msg = $ooh_msg if $ooh->active;
     }
     FixMyStreet::Template::SafeString->new($msg);
 }

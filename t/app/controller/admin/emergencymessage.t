@@ -10,6 +10,17 @@ my $user = $mech->create_user_ok('user@example.com', name => 'Test User', from_b
 
 $mech->log_in_ok( $user->email );
 
+my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+$ukc->mock('_get_bank_holiday_json', sub {
+    {
+        "england-and-wales" => {
+            "events" => [
+                { "date" => "2019-12-25", "title" => "Christmas Day" }
+            ]
+        }
+    }
+});
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire' ],
 }, sub {
@@ -108,17 +119,6 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/new?latitude=51.45556&longitude=0.15356');
         $mech->content_lacks('Testing reporting message');
     };
-
-    my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-    $ukc->mock('_get_bank_holiday_json', sub {
-        {
-            "england-and-wales" => {
-                "events" => [
-                    { "date" => "2019-12-25", "title" => "Christmas Day" }
-                ]
-            }
-        }
-    });
 
     subtest 'setting OOH messages' => sub {
         my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
