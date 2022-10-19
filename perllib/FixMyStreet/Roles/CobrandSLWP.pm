@@ -614,10 +614,19 @@ sub waste_garden_sub_params {
         $c->set_param('Bin_Delivery_Detail_Container', $container);
         $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
     }
+}
 
-    if ( $c->stash->{orig_sub} and ($c->stash->{orig_sub}->get_extra_field_value('payment_method')||'') eq 'direct_debit' ) {
-        $c->set_param('dd_contact_id', $c->stash->{orig_sub}->get_extra_metadata('dd_contact_id'));
-        $c->set_param('dd_mandate_id', $c->stash->{orig_sub}->get_extra_metadata('dd_mandate_id'));
+sub waste_report_extra_dd_data {
+    my ($self) = @_;
+    my $c = $self->{c};
+
+    if (my $orig = $c->stash->{orig_sub}) {
+        my $p = $c->stash->{report};
+        $p->set_extra_metadata(dd_contact_id => $orig->get_extra_metadata('dd_contact_id'))
+            if $orig->get_extra_metadata('dd_contact_id');
+        $p->set_extra_metadata(dd_mandate_id => $orig->get_extra_metadata('dd_mandate_id'))
+            if $orig->get_extra_metadata('dd_mandate_id');
+        $p->update;
     }
 }
 

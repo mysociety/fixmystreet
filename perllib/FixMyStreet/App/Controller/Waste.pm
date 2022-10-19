@@ -350,6 +350,7 @@ sub populate_dd_details : Private {
 sub direct_debit : Path('dd') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->cobrand->call_hook('waste_report_extra_dd_data');
     $c->forward('populate_dd_details');
     $c->stash->{template} = 'waste/dd.html';
     $c->detach;
@@ -399,10 +400,15 @@ sub direct_debit_error : Path('dd_error') : Args(0) {
     $c->stash->{template} = 'waste/dd_error.html';
 }
 
-sub direct_debit_modify : Path('dd_amend') : Args(0) {
+sub direct_debit_modify : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
+
+    my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
+    $p->set_extra_metadata(payerReference => $ref);
+    $p->update;
+    $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $pro_rata = $p->get_extra_field_value('pro_rata') || 0;
     my $admin_fee = $p->get_extra_field_value('admin_fee') || 0;
@@ -416,7 +422,7 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
     if ( $ad_hoc ) {
         my $one_off_ref = $i->one_off_payment( {
                 # this will be set when the initial payment is confirmed
-                payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
+                payer_reference => $ref,
                 amount => sprintf('%.2f', $ad_hoc / 100),
                 reference => $p->id,
                 comments => '',
@@ -426,22 +432,26 @@ sub direct_debit_modify : Path('dd_amend') : Args(0) {
     }
 
     my $update_ref = $i->amend_plan( {
-        payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
+        payer_reference => $ref,
         amount => sprintf('%.2f', $total / 100),
         orig_sub => $c->stash->{orig_sub},
     } );
 }
 
-sub direct_debit_cancel_sub : Path('dd_cancel_sub') : Args(0) {
+sub direct_debit_cancel_sub : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
+    my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
+    $p->set_extra_metadata(payerReference => $ref);
+    $p->update;
+    $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $i = $c->cobrand->get_dd_integration;
 
     $c->stash->{payment_method} = 'direct_debit';
     my $update_ref = $i->cancel_plan( {
-        payer_reference => $c->stash->{orig_sub}->get_extra_metadata('payerReference'),
+        payer_reference => $ref,
         report => $p,
     } );
 }
@@ -1155,9 +1165,6 @@ sub process_garden_cancellation : Private {
         $c->stash->{report}->update;
     } else {
         if ( $payment_method eq 'direct_debit' ) {
-            my $report = $c->stash->{report};
-            $report->set_extra_metadata('payerReference', $c->stash->{orig_sub}->get_extra_metadata('payerReference'));
-            $report->update;
             $c->forward('direct_debit_cancel_sub');
         } else {
             $c->stash->{report}->confirm;
@@ -1279,9 +1286,6 @@ sub process_garden_modification : Private {
         if ( $pro_rata && $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } elsif ( $payment_method eq 'direct_debit' ) {
-            my $report = $c->stash->{report};
-            $report->set_extra_metadata('payerReference', $c->stash->{orig_sub}->get_extra_metadata('payerReference'));
-            $report->update;
             $c->forward('direct_debit_modify');
         } elsif ( $pro_rata ) {
             $c->forward('pay', [ 'garden_modify' ]);
