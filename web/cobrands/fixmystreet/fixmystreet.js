@@ -526,7 +526,15 @@ $.extend(fixmystreet.set_up, {
             displayMenu: 'overlay',
             required: $(this).prop('required') ? true : false,
             showAllValues: true,
-            defaultValue: ''
+            defaultValue: '',
+            onConfirm: function(opt_val) {
+                console.log(opt_val);
+                var opt = $('[value=' + opt_val + ']');
+                console.log(opt);
+                if (opt[0]) {
+                    console.log(opt[0].dataset.extra_text);
+                }
+            }
         });
     });
   },
