@@ -841,9 +841,9 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
             is $report->get_extra_field_value('CREW NOTES'), 'behind the hedge in the front garden';
             is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
-            is $report->get_extra_field_value('ITEM_01'), '';
-            is $report->get_extra_field_value('ITEM_02'), '';
-            is $report->get_extra_field_value('ITEM_03'), '';
+            is $report->get_extra_field_value('ITEM_01'), 'Amplifiers';
+            is $report->get_extra_field_value('ITEM_02'), 'High chairs';
+            is $report->get_extra_field_value('ITEM_03'), 'Wardrobes';
             is $report->get_extra_field_value('ITEM_04'), '';
             is $report->get_extra_field_value('ITEM_05'), '';
         };
