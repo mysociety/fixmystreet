@@ -29,12 +29,18 @@
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
 
-[% # XXX If JS enabled, hide unless relevant item selected %]
+[% # Only shown if JS disabled %]
 [% BLOCK extra_text %]
-  [% FOR item_desc IN form.items_extra_text.keys %]
-    [% id = 'item_' _ num _ '.' _ form.format_item_string(item_desc) _ '.extra_text' %]
-    <div id="[% id %]"><b>[% item_desc %]: [% form.items_extra_text.$item_desc %]</b></div>
-  [% END %]
+<div class="govuk-warning-text due bulky-item-message">
+  <div class="govuk-warning-text__img">
+    <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+  </div>
+  <div class="govuk-warning-text__content">
+    <span class="item-name"></span>
+    <span class="govuk-warning-text__assistive">Important information</span>
+    <p id="item-message" class="govuk-!-margin-bottom-0"></p>
+  </div>
+</div>
 [% END %]
 
 [% INCLUDE footer.html %]

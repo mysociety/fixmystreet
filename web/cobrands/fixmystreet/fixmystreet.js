@@ -535,13 +535,17 @@ $.extend(fixmystreet.set_up, {
                     // https://github.com/alphagov/accessible-autocomplete/issues/322
                     var value = $this.children("option").filter(function () {return $(this).html() == label; }).val();
                     var valueAttribute = $this.children("option").filter(function () { return $(this).html() == label; }).attr('data-extra_text');
+                    var itemMessage = $('.item-name').filter(function () { return $(this).html() == label; }).html();
                     $this.val(value).trigger( "change" );
+
+                    // Ables the addItem btn when the user selects an option
                     $("#add-new-item").prop('disabled', false);
 
                      // To display message if option has a data-extra_text
                     if (typeof valueAttribute !== 'undefined') {
                         $this.closest('.bulky-item-wrapper').find('#item-message').text(valueAttribute);
                         $this.closest('.bulky-item-wrapper').find('.bulky-item-message').css('display', 'flex');
+
                     } else {
                         $this.closest('.bulky-item-wrapper').find('.bulky-item-message').hide();
                     }
@@ -2077,6 +2081,23 @@ setTimeout(function () {
             }
         });
     }
+
+    disableAddItemButton();
+
+    // Check if current item has a message. Useful when the user refresh the page
+    $( '.bulky-item-wrapper' ).each(function() {
+        $this = $(this);
+        label = $this.find('.autocomplete__option').text();
+        value = $this.find('.js-autocomplete').children("option").filter(function () {return $(this).html() == label; }).val();
+        itemMessage = $this.find('.js-autocomplete').children("option").filter(function () {return $(this).html() == label; }).attr('data-extra_text');
+        if (typeof itemMessage !== 'undefined') {
+            $this.find('#item-message').text(itemMessage);
+            $this.find('.bulky-item-message').css('display', 'flex');
+        } else {
+            $this.find('.bulky-item-message').hide();
+        }
+    });
+
 
     // Add items
     $("#add-new-item").click(function(){

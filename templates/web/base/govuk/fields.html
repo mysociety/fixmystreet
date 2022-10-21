@@ -278,7 +278,8 @@
       [% IF item.group %]
         <optgroup label="[% item.group %]"></optgroup>
         [% FOR opt IN item.options %]
-          <option value="[% opt.value %]"[% ' selected' IF field.fif == opt.value %]>[% opt.label %]</option>
+          [% extra_text = form.items_extra_text.${opt.value} %]
+          <option value="[% opt.value %]"[% IF extra_text %]data-extra_text="[% extra_text %]"[% END %][% ' selected' IF field.fif == opt.value %]>[% opt.label %]</option>
         [% END %]
       [% ELSE  %]
         <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>

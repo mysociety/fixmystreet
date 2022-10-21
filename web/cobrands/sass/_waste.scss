@@ -574,6 +574,17 @@ html.js #item-selection-form {
     display: block;
   }
 
+  .bulky-item-message {
+    display: none;
+    margin-top: 1em;
+    align-items: center;
+
+    .govuk-warning-text__img {
+      flex-basis: auto;
+      margin-right: 0.5em;
+    }
+  }
+
   .bulky-item-wrapper {
       display: none;
       &:first-child {
