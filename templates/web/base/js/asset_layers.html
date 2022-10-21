@@ -12,9 +12,9 @@ fixmystreet.asset_layers = {};
 var defaults;
 
 [% FOR cobrand IN asset_layers %]
-    defaults = fixmystreet.asset_layers.[% cobrand.moniker %]_defaults = [% cobrand.default | safe %];
+    defaults = [% cobrand.default | safe %];
     [% FOR layer IN cobrand.layers %]
-        fixmystreet.assets.add(defaults, [% layer | safe %]);
+        fixmystreet.assets.add(defaults.[% layer.default %], [% layer.data | safe %]);
     [% END %]
 [% END %]
 
