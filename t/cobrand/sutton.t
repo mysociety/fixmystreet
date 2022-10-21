@@ -248,7 +248,7 @@ subtest 'updating of waste reports' => sub {
         is $report->state, 'fixed - council', 'State changed';
 
         FixMyStreet::Script::Alerts::send_updates();
-        $mech->email_count_is(0);
+        $mech->email_count_is(1);
     };
 };
 
