@@ -144,9 +144,7 @@ fixmystreet.assets.add(labeled_defaults, {
 fixmystreet.assets.add(labeled_defaults, {
     wfs_feature: "Signs_Union",
     asset_category: [
-          'Sign light not working',
-          'Sign problem',
-          'Dirty signs'
+          'Sign light not working'
         ],
     asset_item: 'sign',
 
