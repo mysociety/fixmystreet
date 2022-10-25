@@ -16,7 +16,7 @@ $nav-height: 80px;
 
 #main-nav {
   float: none;
-  margin-top: $nav-height; // Put the main FMS navigation below the Bristol header
+  margin-top: $nav-height; // Put the main FMS navigation below the Camden header
 
   .ie9 & > * {
     #{$right}: auto;
