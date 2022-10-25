@@ -1,4 +1,0 @@
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
-<script src="[% version('/cobrands/bristol/vendor/cookieconsent.js') %]" data-cfasync="false"></script>
-<script nonce="[% csp_nonce %]">window.cookieconsent.initialise({"palette":{"popup":{"background":"#2e3137","text":"#FFFFFF"},"button":{"background":"#bc0031","text":"#FFFFFF"}},"type":"opt-in","position":"top","static":true,"content":{"message":"We use cookies to help make this site better.","link":"Find out about cookies","dismiss":"Accept cookies","href":"https://www.bristol.gov.uk/about-our-website/cookies"}});</script>
-[% END %]
