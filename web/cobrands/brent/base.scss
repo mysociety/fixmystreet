@@ -1,0 +1,260 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "../sass/report_list_pins";
+
+b, strong {
+  font-family: $body-font-family;
+}
+
+ul.unstyled-list {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-left: 0;
+  li {
+    list-style-type: none;
+  }
+}
+
+a {
+  color: $link-color;
+  text-decoration: underline;
+  &:visited {
+    color: $link-visited-color;
+  }
+  &:active {
+    color: $gray-1;
+  }
+  &:focus {
+    outline: 3px solid $focus-color;
+  }
+}
+
+.item-list--wards__item a, .item-list--reports__item a {
+  text-decoration: none;
+  &:hover {
+    background-color: transparentize($color: $link-color, $amount: 0.8);
+  }
+}
+
+div.form-error, p.form-error {
+  background: $red;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $red;
+}
+
+.form-section-description, .change_location {
+  color: $gray-2;
+}
+
+.item-list__item--empty {
+  // To comply with AAA standard
+  color: $gray-2;
+}
+
+.btn, .btn--primary, .btn-primary,.green-btn {
+  // All the !important declarations are to override the default behaviour.
+  border-radius: 3px;
+  background: $link-color;
+  color: $white !important;
+  border-color: $link-color;
+
+  &:hover {
+    background: $link-hover-color;
+    color: $white !important;
+    text-decoration: underline !important;
+    border-color: $link-hover-color;
+  }
+
+  &:focus {
+    background: $link-hover-color;
+    color: $white !important;
+    outline: 3px solid $focus-color;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.btn-secondary {
+  border-radius: 3px;
+  color: $link-color;
+  border: 3px solid;
+  border-color: $link-color;
+  background-color: $white;
+  border-radius: 3px;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus {
+    background-color: $white;
+    border-color: $focus-color;
+  }
+}
+
+.my-account-buttons a {
+  @extend .btn-secondary;
+}
+
+#report-cta {
+ @extend .btn-secondary;
+}
+
+input, .govuk-radios__input {
+  &:focus {
+    outline: 3px solid $focus-color;
+  }
+}
+
+#site-logo {
+  display: block;
+  $logo-height: 30px;
+  $nav-height: 50px;
+  font-family: $body-font-family;
+  @include svg-background-image("/cobrands/brent/images/brent-logo");
+  background-position: 0;
+  background-size: 150px $logo-height;
+  background-repeat: no-repeat;
+  width: 150px;
+  padding: 0;
+  padding-top: $nav-height;
+  max-height: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+// Make sure the numbers on the front page have the correct font weight
+#front_stats {
+  color: white;
+  background-color: $accent-color;
+
+  div {
+    font-family: $body-font-family;
+  }
+}
+
+// FAQ/privacy pages should have correctly-weighted headers
+dl dt {
+  font-family: $body-font-family;
+}
+
+
+#front-main {
+  text-align: left;
+
+  h1 {
+    font-size: 1.75em;
+  }
+
+  h1+p {
+    color: $gray-2;
+  }
+
+  h2 {
+    font-style: normal;
+    font-size: 1.25em;
+  }
+
+  #postcodeForm {
+    background-color: $accent-color;
+    color: $white;
+    margin-top: 1em;
+
+    .form-hint {
+      color: $white-2;
+    }
+  }
+}
+
+#geolocate_link {
+  // Out from #postcode form element so it also uses this style on the
+  // local alaert page.
+  @extend .btn;
+  margin-top: 1em;
+}
+
+.form-box, .box-warning {
+  background-color: $white-2;
+}
+
+// uses important because btn also uses it
+#highways .segmented-control--radio input:checked + label.btn {
+    color: $white-2 !important;
+    font-weight: bold !important;
+}
+
+.dropzone {
+  margin-top: 0.5em;
+
+  &:focus, &:focus-visible {
+    background-color: transparentize($color: $link-hover-color, $amount: 0.7);
+    border-color: $focus-color;
+  }
+}
+
+.segmented-control--radio {
+  input:checked+label {
+    background-color: $link-color;
+    color: $white !important;
+  }
+  .btn {
+    background-color: $white;
+    color: $link-color !important;
+  }
+}
+
+// Footer
+.brent-footer {
+  background-color: $gray-2;
+  padding-top: 15px;
+  padding-bottom: 45px;
+
+  .footer-logo {
+    display: block;
+    $logo-height: 20px;
+    @include svg-background-image("/cobrands/brent/images/brent-logo");
+    background-repeat: no-repeat;
+    background-position: 0;
+    background-size: 100px $logo-height;
+    width: 100px;
+    padding: 0;
+    padding-top: $logo-height;
+    max-height: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  p, a, li, span {
+    color: $white;
+    font-size: 14px;
+  }
+
+  a {
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .footer-section {
+    margin-bottom: 25px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
