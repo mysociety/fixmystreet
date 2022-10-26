@@ -14,14 +14,10 @@
     [% # Building names beforehand because override_fields does not seem to like them being built inside its arg list %]
     [% base_field = 'item_' _ num %]
     [% item = base_field _ '.item' %]
-    [% PROCESS form override_fields = [ item ] %]
 
-    [% # XXX Use override_fields instead of .render %]
-    [% form.field(base_field).field('photo').render | safe %]
-    [% form.field(base_field).field('photo_fileid').render | safe %]
-    [% # photo = base_field _ '.photo' %]
-    [% # photo_fileid = base_field _ '.photo_fileid' %]
-    [% # PROCESS form override_fields = [ item, photo, photo_fileid ] %]
+    [% photo = base_field _ '.photo' %]
+    [% photo_fileid = base_field _ '.photo_fileid' %]
+    [% PROCESS form override_fields = [ item, photo, photo_fileid ] %]
 
     [% PROCESS extra_text num = num %]
     <hr>

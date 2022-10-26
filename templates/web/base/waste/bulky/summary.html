@@ -17,7 +17,9 @@ step1 = 'report';
             Notes: [% extra_text %]
             <br>
           [% END %]
-          Image: TODO
+          [% IF item.photo_fileid %]
+          <img src="/photo/temp.[% item.photo_fileid %]" />
+          [% END %]
         </dd>
     </div>
   [% END %]
