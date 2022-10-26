@@ -1,0 +1,15 @@
+$heading-font-family: 'Poppins', sans-serif;
+$body-font-family: 'Noto Sans', sans-serif;
+
+$heading-font: $heading-font-family;
+$body-font: $body-font-family;
+$meta-font: $body-font-family;
+
+h1, h2, h3, .h1, .h2, .h3 {
+    font-weight: 700;
+    font-family: $heading-font-family;
+}
+
+label {
+    font-family: $body-font-family;
+}
