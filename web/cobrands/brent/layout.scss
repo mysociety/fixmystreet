@@ -1,0 +1,195 @@
+@import "_colours";
+@import "_fonts";
+@import "../sass/layout";
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+#site-header {
+  border-bottom: none;
+  background-color: $nav_background_colour;
+}
+
+$logo-height: 50px;
+$nav-height: 80px;
+
+#main-nav {
+  float: none;
+  margin-top: $nav-height; // Put the main FMS navigation below the Camden header
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
+}
+
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  // Display the BCC logo and header correctly
+  #site-logo {
+    @include svg-background-image("/cobrands/brent/images/brent-logo");
+    background-size: 250px $logo-height;
+    width: 250px;
+    padding: 0;
+    padding-top: $nav-height;
+    height: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  // White "nav bar" with red border-top, below the logo
+  #site-header {
+    &:after {
+      content: " ";
+      height: 3.5em;
+      display: block;
+      border-bottom: solid 5px $gray-3;
+      background-color: white;
+    }
+  }
+
+  #front-main {
+    background-color: white;
+    text-align: left;
+    padding-top: 40px;
+    padding-bottom: 75px;
+
+    #postcodeForm {
+      margin-top: 0;
+
+      div {
+        margin: 0;
+      }
+
+      .form-hint {
+        color: $gray-2;
+      }
+    }
+
+    h1 {
+      font-size: 3em;
+    }
+
+    h1 + p {
+      font-size: 1.75em;
+      line-height: 1.25em;
+      max-width: 640px;
+    }
+  }
+
+  .nav-menu {
+    a, span {
+      display: inline-block; // So the chevrons appear correctly
+      font-size: 1em;
+    }
+    a {
+      text-decoration: underline;
+      color: $link-color;
+
+      &:hover {
+        background: transparent;
+        color: $link-hover-color;
+        text-decoration: none;
+      }
+    }
+    span {
+      color: $link-active-color;
+      &:hover {
+        color:$link-active-color;
+      }
+    }
+  }
+
+  // Stop the 'report a problem' button being red on non-map pages
+  .nav-menu--main a.report-a-problem-btn {
+    background-color: transparent;
+  }
+
+  // Put FAQ side nav at correct vertical position
+  .content .sticky-sidebar aside {
+    top: 12.5em;
+  }
+}
+
+body.mappage {
+  // Add a red border-bottom *inside* the header
+  #site-header {
+    @include box-sizing(border-box);
+  }
+
+  #site-logo {
+    margin-top: 0.250em;
+  }
+
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: #{$right};
+    margin-top: 0;
+
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
+  }
+
+  // A few changes to the nav items now they're on a black background
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    a, span {
+      color: white;
+      font-size: 1.1em;
+      margin:0 0.250em;
+      text-decoration: none;
+    }
+
+    a:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    a.report-a-problem-btn {
+      color: $link-color;
+      background-color: $white;
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
+  }
+
+  .big-green-banner {
+    display: block;
+    background-color: $accent-color;
+    text-transform: none;
+  }
+}
+
+// Footer
+.brent-footer {
+  padding-top: 20px;
+  padding-bottom: 60px;
+
+  .footer-logo {
+    $logo-height: 25px;
+    background-size: 120px $logo-height;
+    width: 120px;
+    padding-top: $logo-height;
+    max-height: 0px;
+  }
+
+  p, a, li, span {
+    font-size: 14px;
+  }
+
+  .footer-section {
+    margin-bottom: 30px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
