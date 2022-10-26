@@ -1,0 +1,79 @@
+@import "./_variables";
+@import "./_mixins";
+
+$heading-font-family: 'Poppins', sans-serif;
+$body-font-family: 'Noto Sans', sans-serif;
+
+$heading-font: $heading-font-family;
+$body-font: $body-font-family;
+$meta-font: $body-font-family;
+
+h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
+    font-weight: 700;
+    font-family: $heading-font-family;
+}
+
+label, b, strong {
+    font-family: $body-font-family;
+}
+
+h1, .h1 {
+    font-size: 32px;
+    line-height: 120%;
+}
+
+h2, .h2 {
+    font-size: 27px;
+}
+
+h3, .h3 {
+    font-size: 18px;
+}
+
+h4, .h4 {
+    font-size: 16px;
+}
+
+@if variable-exists(large-view-point) {
+    @media only screen and (min-width: $large-view-point) {
+        h1, .h1 {
+           font-size: 48px;
+        }
+       
+        h2, .h2 {
+           font-size: 36px;
+        }
+       
+        h3, .h3 {
+           font-size: 24px;
+        }
+       
+        h4, .h4 {
+           font-size: 19px;
+        }
+    }
+}
+
+.subtitle {
+    font-size: 18px;
+    font-family: $body-font-family;
+    font-weight: 400;
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            font-size: 24px;
+        }
+    }
+}
+
+
+#front_stats div {
+    @include brent-body;
+}
+
+#front-main h2 {
+    @extend .h3;
+}
+
+#front-main h1+p {
+    @extend .subtitle;
+}

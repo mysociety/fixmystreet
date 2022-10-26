@@ -1,0 +1,122 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+// From https://docs.google.com/presentation/d/1lIyKjx6dOSPUJZ0qZl0TZcyusRI-YaCU/edit#slide=id.p10
+
+/* INSTRUCTIONS 
+
+Ideally none of the color palette should be 
+used outside this file, instead use the variables
+in the followinf section.
+
+*/
+$gray-1: #202124; // Text and background colour
+$gray-2: #4d4e50;
+$gray-3: #6c6c6e;
+$gray-4:#eff2f5;
+
+$white: #fff; // Text and background colour
+$white-2: #f8f9fa; // $white-2 should be used only for background colours.
+
+$blue-1: #085093; // Hover
+$blue-2: #0964b9; // Link
+$blue-3: #3982c6;
+$blue-4: #d7e6f4;
+
+$green-1: #298560;
+$green-2: #30b781;
+$green-3: #34c187;
+$green-4: #eaf8f3;
+
+$purple-1: #3a308b;
+$purple-2: #5d54a4; // Background
+$purple-3: #7c75b5;
+$purple-4: #e5e3f0;
+
+$yellow-1: #f3eb03; // Focus
+$yellow-2: #fbfad5;
+
+$red: #d5281b; // Error
+$orange: #d34b1f;
+
+// END of color palette
+
+$accent-color: #248660;
+$section-background-color: $white-2;
+
+$primary: $gray-2;
+$primary_b: $gray-1;
+$primary_text: $white;
+
+$link-color: $blue-2;
+$link-hover-color: $blue-1;
+$link-active-color: $blue-1;
+$link-visited-color: $purple-1;
+$link-focus-color: $yellow-1;
+
+$base_bg: $white-2;
+$front_main_colour: $white-2; // This one is the website, but not the official color palette
+$base_fg: $gray-1;
+
+$nav_background_colour: $white;
+$nav_colour: $gray-1;
+$nav_hover_background_colour: $primary;
+
+$header-top-border: false;
+
+$col_click_map: $gray-1;
+$col_click_map_dark: darken($gray-1, 10%);
+
+$search-help-alignment: left;
+$search-help-background: #fff3f3;
+$search-help-header-font-weight: normal;
+$search-help-header-font-size-desktop: 1.25em;
+$search-help-margin-desktop: -1em -1em 0 -1em;
+
+$dropzone-border-colour: $link-color;
+$dropzone-button-text: $white;
+$dropzone-button-background: $link-color;
+$dropzone-button-border: $link-color;
+$dropzone-border-color--awakened: $yellow-1;
+
+// If the cobrand doesn't have a large view point just comment this variable($large-view-point);
+$large-view-point: 1024px;
+$font-size-large-view: 18px;
+$font-size-small-view: 18px;
+
+$link-text-decoration-thickness: 1px !important; // We need to override the default mixin
+// Some cobrands use a thick underline.
+// This prevent the line to get cropped by letter such as g and y
+$text-underline-offset: 5px;
+
+//Navbar
+// Mobile
+$navlink-background-color: $gray-2;
+$navlink-color: $white;
+$navspan-background-color: $white;
+$navspan-color: $gray-2;
+
+// Buttons
+$btn-border-radius: 0px;
+
+$btn-primary-background: $link-color;
+$btn-primary-color: $primary_text;
+$btn-primary-border-color:$link-color;
+$btn-primary-background-hover: $link-hover-color;
+$btn-primary-color-hover: $primary_text;
+$btn-primary-border-color-hover: $link-hover-color;
+
+$btn-secondary-background: #E0E0E1;
+$btn-secondary-color: $primary_b;
+$btn-secondary-border-color:#E0E0E1;
+$btn-secondary-background-hover: $gray-2;
+$btn-secondary-color-hover: $primary_text;
+$btn-secondary-border-color-hover: $gray-2;
+
+// Footer
+$footer-background-colour: $gray-1;
+$footer-colour: $primary_text;
