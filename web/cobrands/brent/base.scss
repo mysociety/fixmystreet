@@ -1,0 +1,695 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "./_fonts";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+@import "./_mixins";
+
+// Optimize legibility
+html, body, .content {
+  color: $primary_b;
+  background-color: $base_bg;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: rgba(0, 0, 0, 0.1) 0 0 1px;
+  font-size: $font-size-small-view;
+}
+
+ul.unstyled-list {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-left: 0;
+  li {
+  list-style-type: none;
+  }
+}
+
+a {
+  @include brent-link;
+}
+
+.my-account-buttons a {
+  background: transparent;
+  @include brent-link;
+}
+
+.skiplink:focus {
+  background-color: $link-focus-color;
+}
+
+.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+  @include brent-btn-primary;
+}
+
+.btn-secondary, a#geolocate_link {
+  @include brent-btn-secondary;
+}
+
+.item-list--wards__item a, .item-list--reports__item a {
+  text-decoration: none;
+
+  h3 {
+    font-family: $body-font;
+    font-size: $font-size-small-view;
+    font-weight: 700;
+  }
+
+  &:hover {
+    h3 {
+      text-decoration: underline;
+      text-underline-offset: $text-underline-offset;
+      color: $link-color;
+    }
+    background-color: transparentize($color: $link-color, $amount: 0.8);
+  }
+
+  &:focus {
+    background-color: $link-focus-color;
+
+    h3 {
+      text-decoration: underline;
+    }
+
+    &:hover {
+      h3 {
+        text-decoration: none;
+        text-underline-offset: $text-underline-offset;
+      }
+    }
+  }
+}
+
+.item-list__item {
+  a {
+    padding-top: 0.75em;
+    padding-bottom: 0.75em;
+  }
+}
+
+.item-list__item__shortlist-add { 
+  @include brent-input-with-no-border;
+}
+
+.item-list__item--empty {
+  // To comply with AAA standard
+  color: $primary_b;
+}
+
+// Input
+.govuk-radios__input:focus+.govuk-radios__label:before {
+  border-width: 4px;
+  box-shadow: 0 0 0 4px $link-focus-color;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $red;
+}
+
+div.form-error, p.form-error {
+  background: $red;
+}
+
+.form-section-description, .change_location {
+  color: $primary_b;
+}
+
+.form-hint, .item-list--reports__item small, .item-list--reports__item .small-print {
+  color: $primary_b;
+  margin-top: 0.2em;
+}
+
+// Navbar
+#site-logo {
+  display: block;
+  $logo-height: 55px;
+  $nav-height: 70px;
+  font-family: $body-font-family;
+  @include svg-background-image("/cobrands/brent/images/brent-logo");
+  background-position: 0;
+  background-size: auto $logo-height;
+  background-repeat: no-repeat;
+  width: 150px;
+  padding: 0;
+  padding-top: $nav-height;
+  max-height: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.nav-menu {
+  a, span {
+    border-bottom-color: $primary_text;
+    font-size: 18px;
+  }
+
+  span {
+    background-color: $navspan-background-color;
+    color:$navspan-color;
+  }
+
+  a {
+    background-color: $navlink-background-color;
+    color: $navlink-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: lighten($link-visited-color, 35%);
+    }
+
+    &:focus {
+      background-color: $link-focus-color;
+      color: $primary_b;
+      text-decoration: underline;
+    }
+  }
+}
+
+#report-cta {
+  padding-top: $btn-top-padding-small;
+  padding-bottom: $btn-bottom-padding-small;
+  font-size: $font-size-small-view;
+  text-decoration: none;
+  line-height: 100%;
+
+  &:focus {
+    border-color: $link-focus-color;
+    outline: none;
+  }
+}
+
+#nav-link {
+  background: $nav_background_colour url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M2.01 3.999h17.98c1.109 0 2.01-.896 2.01-2.001A2.006 2.006 0 0019.99 0H2.01C.9 0 0 .896 0 1.999 0 3.104.901 4 2.01 4v-.001zM19.99 7H2.01C.9 7 0 7.896 0 8.999 0 10.102.901 11 2.01 11h17.98c1.109 0 2.01-.896 2.01-2.001A2.005 2.005 0 0019.99 7zm0 7H2.01C.9 14 0 14.894 0 15.999 0 17.102.901 18 2.01 18h17.98c1.109 0 2.01-.896 2.01-2.001A2.005 2.005 0 0019.99 14z'/%3E%3C/svg%3E") center center no-repeat;
+
+  &:focus, &.focussed {
+    color: $link-hover-color;
+    outline: none;
+    background: $link-focus-color url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M2.01 3.999h17.98c1.109 0 2.01-.896 2.01-2.001A2.006 2.006 0 0019.99 0H2.01C.9 0 0 .896 0 1.999 0 3.104.901 4 2.01 4v-.001zM19.99 7H2.01C.9 7 0 7.896 0 8.999 0 10.102.901 11 2.01 11h17.98c1.109 0 2.01-.896 2.01-2.001A2.005 2.005 0 0019.99 7zm0 7H2.01C.9 14 0 14.894 0 15.999 0 17.102.901 18 2.01 18h17.98c1.109 0 2.01-.896 2.01-2.001A2.005 2.005 0 0019.99 14z'/%3E%3C/svg%3E") center center no-repeat;
+  }
+  
+  html.js-nav-open & {
+    background: $nav_background_colour url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M3.223 1.221c.78-.78 2.049-.778 2.835.008l4.941 4.942 4.943-4.942a2.005 2.005 0 012.835-.008 2.006 2.006 0 01-.006 2.837v-.001l-4.944 4.942 4.944 4.943c.743.744.785 1.923.125 2.708l-.116.127a2.006 2.006 0 01-2.837-.007L11 11.827 6.057 16.77a2.006 2.006 0 01-2.837.007c-.779-.78-.775-2.05.01-2.835L8.171 9 3.23 4.057a2.005 2.005 0 01-.007-2.836z'/%3E%3C/svg%3E") center center no-repeat;
+    &:focus, &.focussed {
+      background: $link-focus-color url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M3.223 1.221c.78-.78 2.049-.778 2.835.008l4.941 4.942 4.943-4.942a2.005 2.005 0 012.835-.008 2.006 2.006 0 01-.006 2.837v-.001l-4.944 4.942 4.944 4.943c.743.744.785 1.923.125 2.708l-.116.127a2.006 2.006 0 01-2.837-.007L11 11.827 6.057 16.77a2.006 2.006 0 01-2.837.007c-.779-.78-.775-2.05.01-2.835L8.171 9 3.23 4.057a2.005 2.005 0 01-.007-2.836z'/%3E%3C/svg%3E") center center no-repeat;
+    }
+  }
+}
+
+ol.big-numbers>li:before {
+  color: $primary_b;
+}
+
+// Make sure the numbers on the front page have the correct font weight
+#front_stats {
+  color: $primary_text;
+  background-color: $accent-color;
+
+  div {
+    font-family: $body-font-family;
+  }
+}
+
+// FAQ/privacy pages should have correctly-weighted headers
+dl dt {
+  font-family: $body-font-family;
+}
+
+#front-main {
+  text-align: left;
+  margin: 0 0;
+  padding: 1em 1em;
+  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $right center no-repeat;
+  z-index: 1;
+  border-top: 58px solid $accent-color;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left top;
+  background-blend-mode: soft-light;
+  background-blend-mode: normal!important;
+
+  h2 {
+    font-style: normal;
+  }
+
+  #postcodeForm {
+    background-color: transparent;
+    color: $primary_b;
+    margin: 1em 0em;
+    padding-right: 0;
+    padding-left: 0;
+
+    div {
+      border-width: 0px;
+      align-items: center;
+      background-color: transparent;
+
+      $border-width:2px;
+      $max-height: 45px;
+  
+      input#sub {
+        background: $link-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
+        margin-top: -1px;
+        margin-bottom: -1px;
+        border: $border-width solid $primary_b;
+        border-left: none;
+        max-height: $max-height;
+        padding: 0;
+        padding-top: ($max-height - ($border-width) * 2 );
+        height: 0;
+        overflow: hidden;
+  
+        &:hover {
+          background: $link-hover-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
+          border-color: $link-hover-color;
+        }
+  
+        &:focus {
+          background:$link-focus-color inline-image("../fixmystreet/images/search-black.svg") center no-repeat;
+          text-decoration-thickness: $link-text-decoration-thickness;
+          border: 2px solid $primary_b;
+          outline: none;
+          border-left: 0px;
+          $text-underline-offset: 5px;
+          box-shadow: none;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+  
+      input#pc {
+        margin: 2px 0;
+        max-height: $max-height;
+        height: $max-height;
+        border: $border-width solid $primary_b !important;
+        background: $white !important;
+        &:focus {
+          outline:  2px solid $link-focus-color;
+        }
+      }
+    }
+  }
+}
+
+a#geolocate_link {
+  // Out from #postcode form element so it also uses this style on the
+  // local alaert page.
+  margin-top: 1em;
+}
+
+.form-box, .box-warning {
+  background-color: $section-background-color;
+}
+
+// uses important because btn also uses it
+#highways .segmented-control--radio input:checked + label.btn {
+    color: $white !important;
+    font-weight: bold !important;
+}
+
+.segmented-control>:last-child  {
+  border-right-width: 3px;
+}
+
+.dropzone {
+  margin-top: 0.5em;
+
+  &:focus, &:focus-visible {
+    background-color: transparentize($color: $link-hover-color, $amount: 0.7);
+    border-color: $link-focus-color;
+  }
+}
+
+.segmented-control--radio {
+  input:checked+label {
+    background-color: $link-color;
+    color: $white !important;
+    border-color: $link-color !important;
+  }
+  .btn {
+    background-color: $white;
+    color: $link-color !important;
+    box-shadow: none;
+  }
+}
+
+.alerts__nearby-activity__photos {
+  img {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border: 3px solid transparent;
+  }
+  a {
+    &:focus {
+      img {
+        outline: 3px solid $link-focus-color;
+        border-color: $primary_b;
+      }
+    }
+  }
+}
+
+body.twothirdswidthpage {
+  .sticky-sidebar {
+    background: $section-background-color;
+    margin: 1em -1em;
+    padding: 0.5em 1em;
+  }
+}
+
+// Footer
+.footer-marketing {
+  display: none;
+}
+
+.brent_footer {
+  color: $footer-colour;
+  font-size: $font-size-small-view;
+
+  footer {
+    margin-top: 0;
+  }
+
+  .footer__upper-container {
+    // background-color: $footer-background-colour;
+    background: $footer-background-colour inline-image("../brent/images/logo-pattern-bolder_black.svg") $left center no-repeat;
+    background-size: 100%;
+    background-blend-mode: soft-light;
+    background-attachment: initial;
+    background-position: center!important;
+  }
+
+  .footer__logo {
+    @include svg-background-image("/cobrands/brent/images/brent-logo-dark-bg");
+    display: block;
+    background-repeat: no-repeat;
+    font-size: 0;
+    height: 64px;
+    width: 165px;
+    margin: 0 auto;
+  }
+
+  .footer__content {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    @extend .container;
+    max-width: 1140px;
+
+    .footer__column {
+      flex-basis: 100%;
+      margin-top: 30px;
+      text-align: center;
+      order: 3;
+
+      &-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 0.5em;
+      }
+  
+      &-link {
+        display: block;
+        color: $footer-colour;
+        text-decoration: none;
+        padding: 0.5em 0;
+    
+        &:hover {
+          text-decoration: underline;
+        }
+
+        &:focus {
+          background-color: $link-focus-color;
+          color: $primary_b;
+          text-decoration: underline;
+        }
+    
+        svg {
+          height: 1em;
+          overflow: visible;
+          vertical-align: -0.125em;
+        }
+      }
+
+      &:last-of-type {
+        order: 2;
+        margin-bottom: calc(30px*1.5);
+      } 
+
+      &:first-of-type {
+        order: 1;
+        margin-bottom: calc(30px*1.5);
+      } 
+    }
+
+    .footer__column-summary {
+      margin-top: 1em;
+      font-size: $font-size-small-view;
+    }
+
+    .footer__cta {
+      display: inline-block;
+      @include brent-btn-primary;
+      margin-top: 1em;
+    }
+
+    .footer__social-network {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin: calc(30px/2) 12px 0;
+      font-size: 0;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      transition: all .2s ease;
+
+      &.footer__social-network_facebook {
+        @include svg-background-image("/cobrands/brent/images/facebook");
+      }
+      &.footer__social-network_instagram {
+        @include svg-background-image("/cobrands/brent/images/instagram");
+      }
+      &.footer__social-network_linkedin {
+        @include svg-background-image("/cobrands/brent/images/linkedin");
+      }
+      &.footer__social-network_twitter {
+        @include svg-background-image("/cobrands/brent/images/twitter");
+      }
+      &.footer__social-network_youtube {
+        @include svg-background-image("/cobrands/brent/images/youtube");
+      }
+
+      &:focus {
+        background-color: transparent;
+        outline: 3px solid #f3eb03;
+      }
+
+      &:hover {
+        -webkit-transform: scale(1.2);
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  .footer__legal-pages {
+    background-color: black;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    text-align: center;
+
+    .legal-pages__content {
+      @extend .container;
+    }
+
+    .legal-pages__link {
+      margin-right: 0.5em;
+      margin-left: 0.5em;
+      color: $primary_text;
+
+      &:hover {
+        text-decoration: none;
+      }
+
+      &:focus {
+        color: $primary_b;
+      }
+    }
+
+    .legal-pages__copyright {
+      margin-top: 30px;
+    }
+  }
+}
+
+// Skyline graphic above the footer
+.place-banner {
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: flex-end;
+  display: flex;
+
+  position: relative;
+  margin: 60px 0px 0;
+
+  @media (min-width: 736px){
+    margin: 140px 0 0;
+  }
+
+  @media (min-width: 1024px) {
+    margin: 140px 0 0;
+  }
+}
+
+.place-banner_purple .place-banner__bg {
+  background-color: #5d54a4;
+}
+
+.place-banner__bg-inner-container {
+  max-width: 1110px;
+  margin: 0 auto;
+  
+}
+
+.place-banner__bg-inner {
+  position: relative;
+  padding-top: calc((1/9.6)*100%);
+}
+
+.place-banner_horizon .place-banner__horizon {
+  top: -57%;
+}
+
+.place-banner__horizon {
+  max-width: 1110px;
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 1;
+  width: 100%;
+}
+
+.place-banner_horizon .place-banner__horizon:before {
+  padding-top: calc((1/9.6)*100%);
+  @include svg-background-image("/cobrands/brent/images/default-horizon");
+}
+
+.place-banner__horizon:before {
+  position: absolute;
+  content: '';
+  display: block;
+  width: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+// Waste
+.waste {
+  .content {
+    padding-top: 0;
+    margin-top: 2rem;
+    background-color: $section-background-color;
+  }
+
+  .govuk-button {
+    background-color: $link-color;
+    box-shadow: 0 4px 0 $btn-primary-background-hover;
+
+    &:hover {
+      background-color: $btn-primary-background-hover;
+    }
+  }
+}
+
+h1.govuk-heading-xl {
+  text-align: left;
+  margin: 0 -1rem;
+  padding: 1.5rem 1rem;
+  // background-color: $front_main_colour;
+  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $right center no-repeat;
+  z-index: 1;
+  background-repeat: no-repeat;
+  background-size: 50%;
+  background-position: left top;
+  background-blend-mode: soft-light;
+  background-blend-mode: normal!important;
+}
+
+.waste__collections .govuk-summary-list,
+.waste__summary .govuk-summary-list,
+.waste__collections .govuk-summary-list__row,
+.waste__summary .govuk-summary-list__row{
+background-color: transparent;
+}
+
+form.waste {
+    background-color: $section-background-color;
+    color: $primary_b;
+    margin: 0 -1rem;
+    padding: 1rem 1rem 2rem 1rem;
+
+    div {
+      border-width: 0px;
+      align-items: center;
+      background-color: transparent;
+    }
+
+    $border-width:2px;
+    $max-height: 45px;
+
+    input#sub {
+      background: $link-color !important;
+      margin-top: -1px;
+      margin-bottom: -1px;
+      border: $border-width solid $primary_b;
+      max-height: $max-height;
+      height: $max-height;
+
+      &:hover {
+        background: $link-hover-color !important;
+        color: $white !important;
+        border-color: $link-hover-color;
+      }
+
+      &:focus {
+        background: $link-focus-color !important;
+        color: $primary_b !important;
+        text-decoration-thickness: $link-text-decoration-thickness;
+        border: 2px solid $link-focus-color;
+        border-bottom: 4px solid $primary_b;
+        outline: none;
+        border-left: 0px;
+        $text-underline-offset: 5px;
+        box-shadow: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    input#postcode {
+      margin: 2px 0;
+      max-height: $max-height;
+      height: $max-height;
+      border: $border-width solid $primary_b !important;
+      background: $white !important;
+      &:focus {
+        outline:  2px solid $link-focus-color;
+      }
+    }
+
+    #form-go-row {
+      margin-top: 1rem;
+    }
+}
