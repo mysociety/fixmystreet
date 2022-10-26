@@ -1,0 +1,132 @@
+@import "./_variables";
+
+ @mixin brent-link {
+     color: $link-color;
+     text-decoration: underline;
+     text-underline-offset: $text-underline-offset;
+     &:visited {
+         color: $link-visited-color;
+         &:hover {
+             color: $link-hover-color;
+         }
+     }
+     &:active {
+         color: $primary_b;
+         text-decoration-thickness: $link-text-decoration-thickness;
+     }
+     &:hover {
+         text-decoration-thickness: $link-text-decoration-thickness;
+     }
+     &:focus {
+         outline: none;
+         background-color: $link-focus-color;
+         color: $primary_b;
+         text-decoration-thickness: $link-text-decoration-thickness;
+         box-shadow: 0 4px 0 0 $primary_b;
+     }
+ }
+
+ $input-border-width: 2px;
+ $input-box-shadow: 0px 0px 0px 2px $primary_b inset,
+ 25px 0px 20px -20px $primary_b,
+ 0px 25px 20px -20px $primary_b,
+ -25px 0px 20px -20px $primary_b;
+
+ @mixin brent-input-with-border {
+     &:focus {
+         outline: 3px solid $link-focus-color;
+         box-shadow: $input-box-shadow;
+     }
+ }
+
+ @mixin brent-input-with-no-border {
+     &:focus {
+         box-shadow: 0px 0px 0px 4px $primary_b inset,
+         25px 0px 20px -20px $primary_b,
+         0px 25px 20px -20px $primary_b,
+         -25px 0px 20px -20px $primary_b;
+     }
+ }
+
+ $btn-top-padding-small: 8px;
+ $btn-bottom-padding-small: 8px;
+ $btn-top-padding-large: 8px;
+ $btn-bottom-padding-large: 8px;
+ $btn-horizontal-padding: 24px;
+ $btn-border-width: 3px;
+
+ @mixin brent-btn {
+    // Include in this mixin any style that the primary and secondary btn share.
+     padding-top: $btn-top-padding-small;
+     padding-bottom: $btn-bottom-padding-small;
+     padding-right: $btn-horizontal-padding;
+     padding-left: $btn-horizontal-padding;
+     font-size: $font-size-small-view;
+     font-weight: 700;
+     text-decoration: none;
+     line-height: 100%;
+     border-radius: $btn-border-radius;
+     border-style: solid;
+     border-width: $btn-border-width;
+     text-underline-offset: $text-underline-offset;
+
+     &:focus {
+         outline: none;
+         background: $link-focus-color;
+         color: $primary_b !important;
+         border-color: $link-focus-color;
+         box-shadow: 0 4px 0 0 $primary_b;
+     }
+
+     &:disabled {
+         opacity: 0.5;
+     }
+
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            padding-top: $btn-top-padding-large;
+            padding-bottom: $btn-bottom-padding-large;
+            font-size: $font-size-large-view;
+        }
+    }
+ }
+
+ @mixin brent-btn-primary {
+     // All the !important declarations are to override the default behaviour.
+     @include brent-btn;
+     background: $btn-primary-background;
+     color: $btn-primary-color !important;
+     border-color: $btn-primary-border-color;
+     box-shadow: 0 4px 0 0 $btn-primary-background-hover;
+
+     &:hover {
+         background: $btn-primary-background-hover;
+         color: $btn-primary-color-hover !important;
+         border-color: $btn-primary-border-color-hover;
+     }
+ }
+
+ @mixin brent-btn-secondary {
+     @include brent-btn;
+     color: $btn-secondary-color;
+     border-color: $btn-secondary-border-color;
+     background-color: $btn-secondary-background;
+     box-shadow: 0 4px 0 0 $btn-secondary-background-hover;
+    //  font-weight: 600;
+
+    &:hover {
+        background: $btn-secondary-background-hover;
+        color: $btn-secondary-color-hover !important;
+        border-color: $btn-secondary-border-color-hover;
+    }
+ }
+
+ @mixin brent-body {
+     // Overrides styles from default base file
+     font-size: $font-size-small-view !important;
+     @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            font-size: $font-size-large-view !important;
+        }
+    }
+ }
