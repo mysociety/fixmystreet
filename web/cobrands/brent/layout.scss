@@ -1,0 +1,235 @@
+@import "_variables";
+@import "_fonts";
+@import "./_mixins";
+@import "../sass/layout";
+
+#site-header {
+  border-bottom: 58px solid $accent-color;
+  background-color: transparent; // Allows the .nav-wrapper to have a background
+}
+
+.nav-wrapper {
+  &:after {
+    @include svg-background-image("/cobrands/brent/images/bg-pattern");
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: 100% 10%;
+    background-size: 200%;
+    background-color: $nav_background_colour;
+  }
+}
+
+$logo-height: 70px;
+$nav-height: 90px;
+
+#main-nav {
+  float: right;
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
+}
+
+.content {
+  background-color: $base_bg;
+}
+
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body.waste {
+  #site-logo {
+    @include svg-background-image("/cobrands/brent/images/brent-logo");
+    background-size: 165px $logo-height;
+    width: 165px;
+    padding: 0;
+    padding-top: $nav-height;
+    height: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &:focus {
+      background-color: $link-focus-color;
+    }
+  }
+
+  #main-nav {
+    min-height: $nav-height !important;
+  }
+
+  #front-main  {
+    // background-color: $front_main_colour;
+    color: $primary_b;
+    text-align: left;
+    padding-top: 40px;
+    padding-bottom: 75px;
+    background-blend-mode: soft-light;
+    background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $left -150px center no-repeat;
+    border-top: none;
+
+    #postcodeForm {
+      color: $primary_b;
+      margin-top: 0;
+      background-color: transparent;
+      margin: 0 auto;
+      margin-top: 1em;
+      padding: 0.5em 0em 2em 0em;
+      div {
+        margin: 0;
+      }
+
+      .form-hint {
+        color: $primary_b;
+      }
+    }
+
+    h1 + p {
+      max-width: 640px;
+    }
+
+    h2 {
+      max-width: 650px;
+    }
+  }
+
+  // Put FAQ side nav at correct vertical position
+  .content .sticky-sidebar aside {
+    top: 12.5em;
+  }
+}
+
+.nav-menu--main.nav-menu {
+  li {
+    margin-right: 10px;
+  }
+
+  a, span {
+    display: inline-block; // So the chevrons appear correctly
+    font-size: $font-size-small-view;
+    padding: 0.5em;
+    font-weight: 400;
+  }
+
+  a, a.report-a-problem-btn {
+    text-decoration: none;
+    margin: 0;
+    background-color: transparent;
+    color: $primary_b;
+    text-decoration-thickness: 1.5px !important;
+
+    &:hover {
+      text-decoration: underline;
+      color: $link-color;
+    }
+
+    &:focus {
+      background-color: $link-focus-color;
+      color: $link-color;
+      text-decoration: underline;
+      box-shadow: none;
+    }
+  }
+
+  span {
+    color: $primary_b;
+    text-decoration: underline;
+    pointer-events: none;
+    text-underline-offset: $text-underline-offset;
+  }
+}
+
+body.mappage {
+  // Add a red border-bottom *inside* the header
+  #site-header {
+    @include box-sizing(border-box);
+    border-bottom: none;
+  }
+
+  #site-logo {
+    margin-top: 0.250em;
+    &:focus {
+      @include svg-background-image("/cobrands/brent/images/brent-logo-black");
+    }
+  }
+
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: #{$right};
+    min-height: 4em;
+
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+  }
+
+  .big-green-banner {
+    padding-left: 16px;
+    background-color: $accent-color;
+    text-transform: none;
+    color: $primary_text;
+    text-align: left;
+    background: $accent-color inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
+  }
+}
+
+#front_stats {
+  border-top: none;
+  background: $accent-color;
+  color: $primary_text;
+
+  big {
+    color: $primary_text;
+  }
+}
+
+.report-list-filters {
+  color: $gray-2;
+  @include brent-body;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+  padding: 0;
+  margin: 0;
+}
+
+// Footer
+.footer-marketing {
+  display: none;
+}
+
+.brent_footer {
+  .footer__logo {
+    margin-left: 0;
+  }
+  .footer__content {
+    .footer__column {
+      flex-basis: 25%;
+      text-align: left;
+
+      &:last-of-type {
+        order: 4;
+      } 
+    }
+  }
+}
+
+// Waste
+body.waste {
+  h1.govuk-heading-xl {
+    margin-bottom: 2rem;
+  }
+}
