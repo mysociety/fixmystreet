@@ -659,14 +659,16 @@ sub _bulky_collection_window {
         $start_date->add( days => 1 );
     }
 
-    my $today = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+    my $tomorrow
+        = DateTime->today( time_zone => FixMyStreet->local_time_zone )
+        ->add( days => 1 );
     my $date_to
-        = $today->clone->add( days => bulky_collection_window_days() );
+        = $tomorrow->clone->add( days => bulky_collection_window_days() );
 
     return {
         date_from => $start_date
         ? $start_date->strftime($fmt)
-        : $today->strftime($fmt),
+        : $tomorrow->strftime($fmt),
         date_to => $date_to->strftime($fmt),
     };
 }
