@@ -74,4 +74,13 @@ sub open311_contact_meta_override {
     }
 }
 
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $contact = $update->problem->contact || return 0;
+    my $endpoint = $contact->endpoint || return 0;
+    return 1 if $endpoint eq 'https://open311.royalgreenwich.gov.uk/';
+    return 0;
+}
+
 1;
