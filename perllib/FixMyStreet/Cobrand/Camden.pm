@@ -28,6 +28,10 @@ sub send_questionnaires {
     return 0;
 }
 
+sub privacy_policy_url {
+    'https://www.camden.gov.uk/data-protection-privacy-and-cookies'
+}
+
 sub admin_user_domain { 'camden.gov.uk' }
 
 1;
