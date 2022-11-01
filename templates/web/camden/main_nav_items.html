@@ -1,0 +1,21 @@
+[% INCLUDE 'navigation/_report.html' %]
+
+[%~ IF c.user_exists ~%]
+    [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
+[%~ END ~%]
+
+[%~ IF c.user_exists AND c.user.has_body_permission_to('planned_reports') ~%]
+    [%~ INCLUDE navitem always_url=1 uri='/my/planned' label=loc('Shortlist') ~%]
+[%~ END ~%]
+
+[%~ INCLUDE 'navigation/_all_reports.html' ~%]
+
+[%~ INCLUDE navitem uri='/faq' label=loc('Help') ~%]
+
+[%~ UNLESS hide_privacy_link ~%]
+  [%~ INCLUDE navitem uri=c.cobrand.privacy_policy_url label=loc('Privacy') liattrs='class="nav-menu__item--privacy"' ~%]
+[%~ END ~%]
+
+[%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
+  [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]
+[%~ END ~%]
