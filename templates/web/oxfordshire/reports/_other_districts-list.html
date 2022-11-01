@@ -14,7 +14,7 @@
       [% IF child.type == 'CPC' %]
       <li class="item-list__item item-list--wards__item">
         <label class="[% show_parish_shown_class %]">
-          <input type="checkbox" name="ward" value="[% child.name | html %]">
+            <input type="checkbox" name="ward" value="[% child.name | html %]">
           [% child.name %]
         </label>
         <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
@@ -24,6 +24,7 @@
     </ul>
     </section>
     <p>
+      <input type="hidden" name="type" value="CPC">
       <input class="btn [% show_parish_shown_class %]" type="submit" value="[% loc('View parishes') %]" />
     </p>
     </form>
@@ -52,6 +53,7 @@
       </ul>
       </section>
       <p>
+        <input type="hidden" name="type" value="DIW">
         <input class="btn [% show_district_shown_class %]" type="submit" value="[% loc('View districts') %]" />
       </p>
       </form>

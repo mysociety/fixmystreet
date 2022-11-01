@@ -509,4 +509,16 @@ sub add_parish_wards {
     );
 }
 
+sub get_ward_type {
+    my ($self, $ward_type) = @_;
+
+    if ($ward_type eq 'CPC') {
+        return 'parish';
+    } elsif ($ward_type eq 'DIW') {
+        return 'ward';
+    } else {
+        return 'division'
+    }
+}
+
 1;

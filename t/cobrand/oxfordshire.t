@@ -440,14 +440,37 @@ FixMyStreet::override_config {
     subtest 'Shows choice of wards, parishes, divisions' => sub {
         $mech->get_ok('/reports');
         $mech->content_contains('id="key-tool-parish"', "Tabs available for districts and wards");
-        $mech->content_contains('<a class="js-district-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Faringdon">Faringdon</a>', "District list populated");
-        $mech->content_contains('<a class="js-parish-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Aston+Upthorpe">Aston Upthorpe</a>', "Parish list populated");
+        $mech->content_contains('<a class="js-district-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Faringdon?type=DIW">Faringdon</a>', "District list populated");
+        $mech->content_contains('<a class="js-parish-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Aston+Upthorpe?type=CPC">Aston Upthorpe</a>', "Parish list populated");
     };
 
-    subtest 'Shows list for district' => sub {
-        $mech->get_ok('/reports/Oxfordshire/Faringdon');
-        $mech->content_contains('Faringdon', "Link leads to Faringdon reports list");
-    }
+    subtest 'Shows Chinnor parish and updates rss link text to "parish"' => sub {
+        $mech->get_ok('/reports/Oxfordshire/Chinnor?type=CPC', 'Report page called with parish type to differentiate area');
+        $mech->content_contains('Get updates of parish problems', "rss link updated to say 'parish'");
+        $mech->content_contains('Chinnor', "Link leads to Chinnor reports list");
+        $mech->content_contains('/rss/reports/Oxfordshire/Chinnor?type=CPC', 'rss link contains parish type information');
+    };
+
+    subtest 'Shows Chinnor ward and leaves rss link text as "ward"' => sub {
+        $mech->get_ok('/reports/Oxfordshire/Chinnor?type=DIW', 'Report page called with ward type to differentiate area');
+        $mech->content_contains('Get updates of ward problems', "rss link left as 'ward'");
+        $mech->content_contains('Chinnor', "Link leads to Chinnor reports list");
+        $mech->content_contains('/rss/reports/Oxfordshire/Chinnor?type=DIW', 'rss link contains ward type information');
+    };
+
+    subtest 'Shows multiple wards' => sub {
+        $mech->get_ok('/reports/Oxfordshire/ward=Abingdon+Abbey+Northcourt&ward=Abingdon+Caldecott?type=DIW');
+        $mech->content_contains('Abingdon Abbey Northcourt', "report page contains Abingdon Abbey Northcourt reports list");
+        $mech->content_contains('Abingdon Caldecott', "report page contains Abingdon Caldecott reports list");
+        # TODO Mutiple wards or parishes etc default to whole council for rss
+        # $mech->content_contains('Get updates of ward problems', "rss link updated to say ward");
+    };
+
+    subtest 'rss updates "ward" text to "parish" for Adwell parish' => sub {
+        $mech->get_ok('/rss/reports/Oxfordshire/Adwell?type=CPC');
+        $mech->content_contains('within Adwell parish', 'Text updated from ward to parish on rss page');
+        $mech->content_contains('<uri>http://oxfordshire.fixmystreet.com/rss/reports/Oxfordshire/Adwell?type=CPC</uri>', 'url to copy contains parish type information');
+    };
 };
 
 done_testing();

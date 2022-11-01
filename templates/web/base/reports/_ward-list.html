@@ -20,7 +20,11 @@
       [% END %]
     </ul>
     </section>
+
     <p>
+      [% IF c.cobrand.moniker == 'oxfordshire' %]
+        <input type="hidden" name="type" value="CED">
+      [% END %]
       <input class="btn [% show_wards_shown_class %]" type="submit" value="[% ward_link_button | html %]" />
     </p>
     </form>
