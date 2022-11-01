@@ -160,10 +160,8 @@ dl dt {
 
 #front-main {
   text-align: left;
-
-  h1 {
-    font-size: 1.75em;
-  }
+  padding-top: 1em;
+  margin-top: 0;
 
   h1+p {
     color: $gray-2;
@@ -171,7 +169,6 @@ dl dt {
 
   h2 {
     font-style: normal;
-    font-size: 1.25em;
   }
 
   #postcodeForm {
