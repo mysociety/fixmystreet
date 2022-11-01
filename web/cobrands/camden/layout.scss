@@ -12,11 +12,11 @@ body, .content {
 }
 
 $logo-height: 50px;
-$nav-height: 80px;
+$nav-height: 65px;
 
 #main-nav {
-  float: none;
-  margin-top: $nav-height; // Put the main FMS navigation below the Camden header
+  float: right;
+  min-height: $nav-height !important;
 
   .ie9 & > * {
     #{$right}: auto;
@@ -28,25 +28,13 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   // Display the BCC logo and header correctly
   #site-logo {
     @include svg-background-image("/cobrands/camden/images/camden-logo-white");
-    background-size: 250px $logo-height;
-    width: 250px;
+    background-size: 165px $logo-height;
+    width: 165px;
     padding: 0;
     padding-top: $nav-height;
     height: 0px;
     overflow: hidden;
     white-space: nowrap;
-  }
-
-  // White "nav bar" with red border-top, below the logo
-  #site-header {
-    &:after {
-      content: " ";
-      height: 3.5em;
-      display: block;
-      border-bottom: solid 5px $gray-3;
-      border-top: solid 5px $decoration-colour;
-      background-color: white;
-    }
   }
 
   #front-main {
@@ -67,10 +55,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
       }
     }
 
-    h1 {
-      font-size: 3em;
-    }
-
     h1 + p {
       font-size: 1.75em;
       line-height: 1.25em;
@@ -79,18 +63,22 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   }
 
   .nav-menu {
+    &:last-child {
+      li {
+        margin-right: 5px; // so the focus state doesn't get cropped
+      }
+    }
+
     a, span {
       display: inline-block; // So the chevrons appear correctly
-      font-size: 1em;
+      font-size: 16px;
     }
     a {
-      text-decoration: underline;
-      color: $link-color;
+      text-decoration: none;
 
       &:hover {
         background: transparent;
-        color: $link-hover-color;
-        text-decoration: none;
+        text-decoration: underline;
       }
     }
     span {
