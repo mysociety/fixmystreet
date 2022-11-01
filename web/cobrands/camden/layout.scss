@@ -1,5 +1,6 @@
 @import "_colours";
 @import "_fonts";
+@import "./_components";
 @import "../sass/layout";
 
 // Set the default font colour everywhere
@@ -60,32 +61,9 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
       line-height: 1.25em;
       max-width: 640px;
     }
-  }
 
-  .nav-menu {
-    &:last-child {
-      li {
-        margin-right: 5px; // so the focus state doesn't get cropped
-      }
-    }
-
-    a, span {
-      display: inline-block; // So the chevrons appear correctly
-      font-size: 16px;
-    }
-    a {
-      text-decoration: none;
-
-      &:hover {
-        background: transparent;
-        text-decoration: underline;
-      }
-    }
-    span {
-      color: $link-active-color;
-      &:hover {
-        color:$link-active-color;
-      }
+    h2 {
+      max-width: 650px;
     }
   }
 
@@ -97,6 +75,41 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   // Put FAQ side nav at correct vertical position
   .content .sticky-sidebar aside {
     top: 12.5em;
+  }
+}
+
+.nav-menu {
+  &:last-child {
+    li {
+      margin-right: 5px; // so the focus state doesn't get cropped
+    }
+  }
+
+  a, span {
+    display: inline-block; // So the chevrons appear correctly
+    font-size: 16px;
+    padding: 0.5em;
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      background-color: $link-focus-color;
+      color: $primary_b;
+    }
+  }
+  span {
+    color: $white;
+    text-decoration: underline;
+    &:hover {
+      color:$link-active-color;
+    }
   }
 }
 
@@ -114,7 +127,7 @@ body.mappage {
   // Reinstate the floated nav bar on map pages
   #main-nav {
     float: #{$right};
-    margin-top: 0;
+    margin-top: 3px;
 
     // IE9 uses absolute positioning rather than floats.
     .ie9 & {
@@ -131,23 +144,19 @@ body.mappage {
   .nav-menu {
     display: flex;
     align-items: center;
-    a, span {
-      color: white;
-      font-size: 1.1em;
-      margin:0 0.250em;
-      text-decoration: none;
-    }
-
-    a:hover {
-      background: transparent;
-      text-decoration: underline;
-    }
 
     a.report-a-problem-btn {
-      color: $link-color;
-      background-color: $white;
-      padding-left: 0.5em;
-      padding-right: 0.5em;
+      @extend .btn-primary;
+      border-color: $white;
+
+      &:hover {
+        border-color: $white;
+      }
+
+      @media only screen and (min-width: 641px) {
+        padding-top: $btn-top-padding-small;
+        padding-bottom: $btn-bottom-padding-small;
+      }
     }
   }
 
@@ -169,10 +178,6 @@ body.mappage {
     width: 120px;
     padding-top: $logo-height;
     max-height: 0px;
-  }
-
-  p, a, li, span {
-    font-size: 14px;
   }
 
   .footer-section {
