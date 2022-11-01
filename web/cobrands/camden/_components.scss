@@ -1,0 +1,125 @@
+b, strong {
+    font-family: $body-font-family;
+  }
+
+ul.unstyled-list {
+    padding-inline-start: 0;
+    margin-block-start: 0;
+    margin-left: 0;
+    li {
+    list-style-type: none;
+    }
+}
+
+a {
+    color: $blue;
+    text-decoration: underline;
+    &:visited {
+        color: $purple;
+    }
+    &:active {
+        color: $primary_b;
+    }
+    &:focus {
+        background-color: $link-focus-color;
+        color: $primary_b;
+    }
+}
+
+input {
+
+    &:focus {
+        box-shadow: 0px 0px 0px 2px $primary_b inset,
+        25px 0px 20px -20px $primary_b,
+        0px 25px 20px -20px $primary_b,
+        -25px 0px 20px -20px $primary_b;
+    }
+}
+
+$btn-top-padding-small: 12px;
+$btn-bottom-padding-small: 11px;
+$btn-top-padding-large: 15px;
+$btn-bottom-padding-large: 16px;
+$btn-horizontal-padding: 15px;
+$btn-border-width: 3px;
+
+.btn, .btn-primary, .btn-secondary, a#geolocate_link {
+    padding-top: $btn-top-padding-small;
+    padding-bottom: $btn-bottom-padding-small;
+    font-size: 16px;
+    text-decoration: none;
+    line-height: 100%;
+
+    &:focus {
+        outline: none;
+    }
+
+    @media only screen and (min-width: 641px) {
+        padding-top: $btn-top-padding-large;
+        padding-bottom: $btn-bottom-padding-large;
+        font-size: 19px;
+    }
+}
+
+#report-cta  {
+    padding-top: $btn-top-padding-small;
+    padding-bottom: $btn-bottom-padding-small;
+    font-size: 16px;
+    text-decoration: none;
+    line-height: 100%;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+    // All the !important declarations are to override the default behaviour.
+    border-radius: 3px;
+    background: $blue;
+    color: $white !important;
+    border-color: $link-color;
+    border-width: $btn-border-width;
+    border-style: solid;
+
+
+    &:hover {
+        background: $link-hover-color;
+        color: $white !important;
+        text-decoration: underline !important;
+        border-color: $link-hover-color;
+    }
+
+    &:focus {
+        background: $link-focus-color;
+        color: $primary_b !important;
+        text-decoration: underline !important;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.btn-secondary, a#geolocate_link {
+    border-radius: 3px;
+    color: $link-color;
+    border-style: solid;
+    border-color: $link-color;
+    border-width: $btn-border-width;
+    background-color: $white;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+        text-decoration: underline !important;
+    }
+
+    &:focus {
+        background-color: $link-focus-color;
+        border-color: $blue-d1;
+        color:$link-hover-color;
+        outline: none;
+        text-decoration: underline !important;
+    }
+}
