@@ -63,6 +63,9 @@ input.form-error, textarea.form-error {
   background: $blue;
   color: $white !important;
   border-color: $link-color;
+  border-width: 3px;
+  padding-top: 12px;
+  padding-bottom: 11px;
 
   &:hover {
     background: $link-hover-color;
@@ -107,7 +110,9 @@ input.form-error, textarea.form-error {
 }
 
 #report-cta {
- @extend .btn-secondary;
+ @extend .btn-primary;
+ border-width: 3px;
+ border-color: $white;
 }
 
 input, .govuk-radios__input {
@@ -119,7 +124,7 @@ input, .govuk-radios__input {
 #site-logo {
   display: block;
   $logo-height: 30px;
-  $nav-height: 50px;
+  $nav-height: 65px;
   font-family: $body-font-family;
   @include svg-background-image("/cobrands/camden/images/camden-logo-white");
   background-position: 0;
@@ -131,10 +136,6 @@ input, .govuk-radios__input {
   max-height: 0px;
   overflow: hidden;
   white-space: nowrap;
-}
-
-#site-header {
-  border-bottom: solid 5px $decoration-colour;
 }
 
 // Set the default font colour everywhere
