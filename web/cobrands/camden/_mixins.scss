@@ -1,0 +1,130 @@
+$link-text-decoration-thickness: 3px !important; // We need to override the default mixin
+$text-underline-offset: 5px;
+
+@mixin camden-link {
+    color: $blue;
+    text-decoration: underline;
+    text-underline-offset: $text-underline-offset;
+    &:visited {
+        color: $purple;
+        &:hover {
+            color: $link-hover-color;
+        }
+    }
+    &:active {
+        color: $primary_b;
+        text-decoration-thickness: $link-text-decoration-thickness;
+    }
+    &:hover {
+        text-decoration-thickness: $link-text-decoration-thickness;
+    }
+    &:focus {
+        outline: none;
+        background-color: $link-focus-color;
+        color: $primary_b;
+        text-decoration-thickness: $link-text-decoration-thickness;
+    }
+}
+
+$input-border-width: 2px;
+$input-box-shadow: 0px 0px 0px 2px $primary_b inset,
+25px 0px 20px -20px $primary_b,
+0px 25px 20px -20px $primary_b,
+-25px 0px 20px -20px $primary_b;
+@mixin camden-input-with-border {
+    &:focus {
+        outline: 3px solid $yellow;
+        box-shadow: $input-box-shadow;
+    }
+}
+
+@mixin camden-input-with-no-border {
+    &:focus {
+        box-shadow: 0px 0px 0px 4px $primary_b inset,
+        25px 0px 20px -20px $primary_b,
+        0px 25px 20px -20px $primary_b,
+        -25px 0px 20px -20px $primary_b;
+    }
+}
+
+$btn-top-padding-small: 12px;
+$btn-bottom-padding-small: 11px;
+$btn-top-padding-large: 15px;
+$btn-bottom-padding-large: 16px;
+$btn-horizontal-padding: 15px;
+$btn-border-width: 3px;
+
+@mixin camden-btn {
+    padding-top: $btn-top-padding-small;
+    padding-bottom: $btn-bottom-padding-small;
+    font-size: 16px;
+    text-decoration: none;
+    line-height: 100%;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: $btn-border-width;
+    text-underline-offset: $text-underline-offset;
+
+    &:focus {
+        outline: none;
+        text-decoration: underline !important;
+        text-decoration-thickness: $link-text-decoration-thickness;
+    }
+
+    &:hover {
+        text-decoration: underline !important;
+        text-decoration-thickness: $link-text-decoration-thickness;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+    }
+
+    @media only screen and (min-width: 641px) {
+        padding-top: $btn-top-padding-large;
+        padding-bottom: $btn-bottom-padding-large;
+        font-size: 19px;
+    }
+}
+
+@mixin camden-btn-primary {
+    // All the !important declarations are to override the default behaviour.
+    @include camden-btn;
+    background: $link-color;
+    color: $white !important;
+    border-color: $link-color;
+    &:focus {
+        background: $link-focus-color;
+        color: $primary_b !important;
+        border-color: $primary_b;
+    }
+
+    &:hover {
+        background: $link-hover-color;
+        color: $white !important;
+        border-color: $link-hover-color;
+    }
+}
+
+@mixin camden-btn-secondary {
+    @include camden-btn;
+    color: $link-color;
+    border-color: $link-color;
+    background-color: $white;
+    font-weight: 600;
+
+    &:focus {
+        background-color: $link-focus-color;
+        border-color: $link-hover-color;
+        color:$link-hover-color;
+        outline: none;
+    }
+}
+
+@mixin camden-body {
+    // Overrides styles from default base file
+    font-size: 16px !important;
+    @media only screen and (min-width: 641px) {
+        font-size: 19px !important;
+    }
+}
