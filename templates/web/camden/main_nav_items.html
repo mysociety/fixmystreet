@@ -10,6 +10,15 @@
 
 [%~ INCLUDE 'navigation/_all_reports.html' ~%]
 
+[%~
+  IF pc;
+    pc_uri = pc | uri;
+    pc_suffix = "/list?pc=" _ pc_uri;
+  END;
+
+  INCLUDE navitem uri='/alert' label=loc('Local alerts') suffix=pc_suffix;
+~%]
+
 [%~ INCLUDE navitem uri='/faq' label=loc('Help') ~%]
 
 [%~ UNLESS hide_privacy_link ~%]
