@@ -1,6 +1,6 @@
 @import "_colours";
 @import "_fonts";
-@import "./_components";
+@import "./_mixins";
 @import "../sass/layout";
 
 // Set the default font colour everywhere
@@ -26,7 +26,6 @@ $nav-height: 65px;
 }
 
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
-  // Display the BCC logo and header correctly
   #site-logo {
     @include svg-background-image("/cobrands/camden/images/camden-logo-white");
     background-size: 165px $logo-height;
@@ -36,6 +35,10 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     height: 0px;
     overflow: hidden;
     white-space: nowrap;
+
+    &:focus {
+      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+    }
   }
 
   #front-main {
@@ -46,7 +49,10 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 
     #postcodeForm {
       margin-top: 0;
-
+      background-color: $white-2;
+      margin: 0 auto;
+      margin-top: 1em;
+      padding: 0.5em 1em 2em 1em;
       div {
         margin: 0;
       }
@@ -67,32 +73,30 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     }
   }
 
-  // Stop the 'report a problem' button being red on non-map pages
-  .nav-menu--main a.report-a-problem-btn {
-    background-color: transparent;
-  }
-
   // Put FAQ side nav at correct vertical position
   .content .sticky-sidebar aside {
     top: 12.5em;
   }
 }
 
-.nav-menu {
-  &:last-child {
-    li {
-      margin-right: 5px; // so the focus state doesn't get cropped
-    }
+.nav-menu--main.nav-menu {
+  li {
+    margin-right: 10px;
   }
 
   a, span {
     display: inline-block; // So the chevrons appear correctly
     font-size: 16px;
     padding: 0.5em;
+    font-weight: 600;
   }
 
-  a {
+  a, a.report-a-problem-btn {
     text-decoration: none;
+    margin: 0;
+    background-color: transparent;
+    color: $white;
+    text-decoration-thickness: 1.5px !important;
 
     &:hover {
       background: transparent;
@@ -104,12 +108,12 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
       color: $primary_b;
     }
   }
+
   span {
     color: $white;
     text-decoration: underline;
-    &:hover {
-      color:$link-active-color;
-    }
+    pointer-events: none;
+    text-underline-offset: $text-underline-offset;
   }
 }
 
@@ -117,11 +121,13 @@ body.mappage {
   // Add a red border-bottom *inside* the header
   #site-header {
     @include box-sizing(border-box);
-    border-bottom: solid 5px $decoration-colour;
   }
 
   #site-logo {
     margin-top: 0.250em;
+    &:focus {
+      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+    }
   }
 
   // Reinstate the floated nav bar on map pages
@@ -140,31 +146,34 @@ body.mappage {
     }
   }
 
-  // A few changes to the nav items now they're on a black background
   .nav-menu {
     display: flex;
     align-items: center;
-
-    a.report-a-problem-btn {
-      @extend .btn-primary;
-      border-color: $white;
-
-      &:hover {
-        border-color: $white;
-      }
-
-      @media only screen and (min-width: 641px) {
-        padding-top: $btn-top-padding-small;
-        padding-bottom: $btn-bottom-padding-small;
-      }
-    }
   }
 
   .big-green-banner {
+    padding-left: 16px;
     display: block;
-    background-color: $decoration-colour;
+    background-color: $white-2;
     text-transform: none;
+    color: $primary_b;
+    text-align: left;
+    background: $white-2 inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
   }
+}
+
+#front_stats {
+  border-top: none;
+  background: $white-2;
+
+  big {
+    color: $primary_b;
+  }
+}
+
+.report-list-filters {
+  color: $gray-2;
+  @include camden-body;
 }
 
 // Footer

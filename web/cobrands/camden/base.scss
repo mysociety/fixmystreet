@@ -1,34 +1,74 @@
 @import "../sass/h5bp";
 @import "./_colours";
-
 @import "./_fonts";
 @import "../sass/mixins";
 
 @import "../sass/base";
 @import "../sass/report_list_pins";
-@import "./_components";
+@import "./_mixins";
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+b, strong {
+  font-family: $body-font-family;
+}
+
+ul.unstyled-list {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-left: 0;
+  li {
+  list-style-type: none;
+  }
+}
+
+a {
+  @include camden-link;
+}
+
+.my-account-buttons a {
+  background: transparent;
+  @include camden-link;
+}
+
+.skiplink:focus {
+  background-color: $link-focus-color;
+}
+
+.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+  @include camden-btn-primary;
+}
+
+.btn-secondary, a#geolocate_link {
+  @include camden-btn-secondary;
+}
 
 .item-list--wards__item a, .item-list--reports__item a {
   text-decoration: none;
   &:hover {
+    h3 {
+      text-decoration: underline;
+      text-underline-offset: $text-underline-offset;
+    }
     background-color: transparentize($color: $link-color, $amount: 0.8);
   }
 
   &:focus {
     background-color: $link-focus-color;
+    &:hover {
+      h3 {
+        text-decoration: underline;
+        text-underline-offset: $text-underline-offset;
+      }
+    }
   }
 }
 
-div.form-error, p.form-error {
-  background: $red;
-}
-
-input.form-error, textarea.form-error {
-  border-color: $red;
-}
-
-.form-section-description, .change_location {
-  color: $gray-2;
+.item-list__item__shortlist-add { 
+  @include camden-input-with-no-border;
 }
 
 .item-list__item--empty {
@@ -36,15 +76,65 @@ input.form-error, textarea.form-error {
   color: $gray-2;
 }
 
-.my-account-buttons a {
-  @extend .btn-secondary;
+.report-list-filters {
+  color: $white;
+  @include camden-body;
 }
 
+// Input
 input, .govuk-radios__input {
-  &:focus {
-    outline: 3px solid $yellow;
+  @include camden-input-with-border;
+}
+
+.govuk-radios__input:focus+.govuk-radios__label:before {
+  border-width: 4px;
+  box-shadow: 0 0 0 4px $link-focus-color;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $red;
+}
+
+div.form-error, p.form-error {
+  background: $red;
+}
+
+.form-section-description, .change_location {
+  color: $gray-2;
+}
+
+.form-hint, .item-list--reports__item small, .item-list--reports__item .small-print {
+  color: $gray-2;
+  margin-top: 0.2em;
+}
+
+.multi-select-menuitems {
+  input {
+    box-shadow: $input-box-shadow;
+
+    &:hover {
+      outline: 3px solid $primary_b;
+    }
   }
 }
+.multi-select-button, .form-control#sort {
+  border: 2px solid $primary_b;
+  $height: 38px !important;
+  height: $height;
+  font-size: 19px;
+  line-height: $height !important;
+
+  &:focus {
+      outline: 3px solid $link-focus-color;
+      box-shadow: $input-box-shadow;
+  }
+}
+
+.multi-select-button:after {
+  border-color: $primary_b transparent transparent transparent;
+}
+
+// Navbar
 
 #site-logo {
   display: block;
@@ -61,13 +151,53 @@ input, .govuk-radios__input {
   max-height: 0px;
   overflow: hidden;
   white-space: nowrap;
+
+  &:focus {
+    @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+  }
+}
+
+.nav-menu {
+  a, span {
+    border-bottom-color: $gray-3;
+  }
+
+  span {
+    background-color: $white;
+    color:$primary_b;
+  }
+
+  a {
+    background-color: $primary_b;
+    color: $white;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: lighten($purple, 35%);
+    }
+
+    &:focus {
+      background-color: $link-focus-color;
+      color: $primary_b;
+    }
+  }
 }
 
 #report-cta {
   border-color: $white;
+  padding-top: $btn-top-padding-small;
+  padding-bottom: $btn-bottom-padding-small;
+  font-size: 16px;
+  text-decoration: none;
+  line-height: 100%;
 
   &:focus {
     border-color: $link-focus-color;
+    outline: none;
   }
 }
 
@@ -85,15 +215,10 @@ input, .govuk-radios__input {
   }
 }
 
-// Set the default font colour everywhere
-body, .content {
-  color: $gray-1;
-}
-
 // Make sure the numbers on the front page have the correct font weight
 #front_stats {
-  color: white;
-  background-color: $decoration-colour;
+  color: $primary_b;
+  background-color: $white-2;
 
   div {
     font-family: $body-font-family;
@@ -120,13 +245,14 @@ dl dt {
   }
 
   #postcodeForm {
-    background-color: $decoration-colour;
-    color: $white;
+    background-color: $white-2;
+    color: $primary_b;
     margin-top: 1em;
 
     div {
       border-width: 0px;
       align-items: center;
+      background-color: transparent;
     }
 
     $border-width:2px;
@@ -140,27 +266,39 @@ dl dt {
       max-height: $max-height;
       height: $max-height;
 
+      &:hover {
+        background: $link-hover-color !important;
+        color: $white !important;
+        border-color: $link-hover-color;
+        text-decoration: underline;
+        text-decoration-thickness: $link-text-decoration-thickness;
+        $text-underline-offset: 5px;
+      }
+
       &:focus {
         background: $link-focus-color !important;
-        color: $primary_b;
+        color: $primary_b !important;
         text-decoration: underline;
+        text-decoration-thickness: $link-text-decoration-thickness;
         border: 2px solid $primary_b;
         outline: none;
         border-left: 0px;
+        $text-underline-offset: 5px;
+        &:hover {
+          text-decoration: none;
+        }
       }
     }
 
     input#pc {
       margin: 2px 0;
       max-height: $max-height;
+      height: $max-height;
       border: $border-width solid $primary_b !important;
+      background: $white !important;
       &:focus {
         outline:  2px solid $link-focus-color;
       }
-    }
-
-    .form-hint {
-      color: $white-2;
     }
   }
 }
@@ -181,6 +319,10 @@ a#geolocate_link {
     font-weight: bold !important;
 }
 
+.segmented-control>:last-child  {
+  border-right-width: 3px;
+}
+
 .dropzone {
   margin-top: 0.5em;
 
@@ -198,6 +340,22 @@ a#geolocate_link {
   .btn {
     background-color: $white;
     color: $link-color !important;
+  }
+}
+
+.alerts__nearby-activity__photos {
+  img {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border: 3px solid transparent;
+  }
+  a {
+    &:focus {
+      img {
+        outline: 3px solid $link-focus-color;
+        border-color: $primary_b;
+      }
+    }
   }
 }
 
@@ -226,7 +384,11 @@ a#geolocate_link {
     }
   }
 
-  p, a, li, span {
+  li {
+    margin-bottom: 20px;
+  }
+
+  p, a, span {
     color: $white;
     font-size: 14px;
     @media only screen and (min-width: 641px) {
