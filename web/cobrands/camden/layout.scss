@@ -1,0 +1,198 @@
+@import "_colours";
+@import "_fonts";
+@import "./_mixins";
+@import "../sass/layout";
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+#site-header {
+  border-bottom: none;
+}
+
+$logo-height: 50px;
+$nav-height: 65px;
+
+#main-nav {
+  float: right;
+  min-height: $nav-height !important;
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
+}
+
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  #site-logo {
+    @include svg-background-image("/cobrands/camden/images/camden-logo-white");
+    background-size: 165px $logo-height;
+    width: 165px;
+    padding: 0;
+    padding-top: $nav-height;
+    height: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &:focus {
+      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+    }
+  }
+
+  #front-main {
+    background-color: white;
+    text-align: left;
+    padding-top: 40px;
+    padding-bottom: 75px;
+
+    #postcodeForm {
+      margin-top: 0;
+      background-color: $white-2;
+      margin: 0 auto;
+      margin-top: 1em;
+      padding: 0.5em 1em 2em 1em;
+      div {
+        margin: 0;
+      }
+
+      .form-hint {
+        color: $gray-2;
+      }
+    }
+
+    h1 + p {
+      font-size: 1.75em;
+      line-height: 1.25em;
+      max-width: 640px;
+    }
+
+    h2 {
+      max-width: 650px;
+    }
+  }
+
+  // Put FAQ side nav at correct vertical position
+  .content .sticky-sidebar aside {
+    top: 12.5em;
+  }
+}
+
+.nav-menu--main.nav-menu {
+  li {
+    margin-right: 10px;
+  }
+
+  a, span {
+    display: inline-block; // So the chevrons appear correctly
+    font-size: 16px;
+    padding: 0.5em;
+    font-weight: 600;
+  }
+
+  a, a.report-a-problem-btn {
+    text-decoration: none;
+    margin: 0;
+    background-color: transparent;
+    color: $white;
+    text-decoration-thickness: 1.5px !important;
+
+    &:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      background-color: $link-focus-color;
+      color: $primary_b;
+    }
+  }
+
+  span {
+    color: $white;
+    text-decoration: underline;
+    pointer-events: none;
+    text-underline-offset: $text-underline-offset;
+  }
+}
+
+body.mappage {
+  // Add a red border-bottom *inside* the header
+  #site-header {
+    @include box-sizing(border-box);
+  }
+
+  #site-logo {
+    margin-top: 0.250em;
+    &:focus {
+      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+    }
+  }
+
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: #{$right};
+    margin-top: 3px;
+
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+  }
+
+  .big-green-banner {
+    padding-left: 16px;
+    display: block;
+    background-color: $white-2;
+    text-transform: none;
+    color: $primary_b;
+    text-align: left;
+    background: $white-2 inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
+  }
+}
+
+#front_stats {
+  border-top: none;
+  background: $white-2;
+
+  big {
+    color: $primary_b;
+  }
+}
+
+.report-list-filters {
+  color: $gray-2;
+  @include camden-body;
+}
+
+// Footer
+.camden-footer {
+  padding-top: 20px;
+  padding-bottom: 60px;
+
+  .footer-logo {
+    $logo-height: 25px;
+    background-size: 120px $logo-height;
+    width: 120px;
+    padding-top: $logo-height;
+    max-height: 0px;
+  }
+
+  .footer-section {
+    margin-bottom: 30px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

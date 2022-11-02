@@ -173,5 +173,6 @@ sub open311_post_send {
     $row->detail($h->{ce_original_detail});
 }
 
+sub public_update_default_checked { 0 }
 
 1;

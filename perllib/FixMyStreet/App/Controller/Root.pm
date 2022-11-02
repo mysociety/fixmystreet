@@ -44,6 +44,8 @@ sub auto : Private {
 
     $c->forward('/offline/_stash_manifest_theme', [ $c->cobrand->moniker ]);
 
+    $c->forward('set_pwa_stash');
+
     return 1;
 }
 
@@ -189,6 +191,13 @@ sub set_app_cors_header : Private {
     my ($self, $c) = @_;
     my $origin = $c->req->header('Origin') || '';
     $c->response->header('Access-Control-Allow-Origin' => 'app://localhost') if $origin eq 'app://localhost';
+}
+
+sub set_pwa_stash : Private {
+    my ($self, $c) = @_;
+    if (my $platform = $c->req->cookies->{"app-platform"}) {
+        $c->stash->{pwa_platform} = $platform =~ /ios/i ? "ios" : "android";
+    }
 }
 
 =head2 end

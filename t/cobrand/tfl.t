@@ -199,11 +199,6 @@ my $contact6 = $mech->create_contact_ok(
 );
 $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Countdown - not working',
-    email => 'countdown@example.net',
-);
-$mech->create_contact_ok(
-    body_id => $body->id,
     category => 'Abandoned Santander Cycle',
     email => 'lonelybikes@example.net',
 );
@@ -417,12 +412,15 @@ subtest "extra information included in email" => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
     my @email = $mech->get_email;
-    like $email[0]->header('From'), qr/"Joe Bloggs" <fms-report-$id-/;
+    is $email[0]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
     is $email[0]->header('To'), 'TfL <busstops@example.com>';
+    is $email[0]->header('Reply-To'), undef;
     like $mech->get_text_body_from_email($email[0]), qr/Report reference: FMS$id/, "FMS-prefixed ID in TfL email";
     like $mech->get_text_body_from_email($email[0]), qr/Stop number: 12345678/, "Bus stop code in TfL email";
+    unlike $mech->get_text_body_from_email($email[0]), qr/Joe Bloggs/;
     my $body = $mech->get_html_body_from_email($email[0]);
     unlike $body, qr/Please do not reply/;
+    unlike $body, qr/Joe Bloggs/;
     is $email[1]->header('To'), $report->user->email;
     is $email[1]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
@@ -430,16 +428,6 @@ subtest "extra information included in email" => sub {
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
-};
-
-subtest "Countdown reports sent from different email" => sub {
-    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
-    $report->update({ whensent => undef, category => "Countdown - not working" });
-    FixMyStreet::Script::Reports::send();
-    my @email = $mech->get_email;
-    is $email[0]->header('From'), '"TfL Streetcare" <fms-tfl-DO-NOT-REPLY@example.com>';
-    $mech->clear_emails_ok;
-    $report->update({ category => "Bus stops" });
 };
 
 subtest "Abandoned bike reports contain bike number" => sub {
@@ -468,7 +456,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
     $mech->content_contains('"Bus things","Bus stops"');
     $mech->content_contains('"BR1 3UH",Bromley,');
-    $mech->content_contains(',,,no,countdown@example.net,,,,Yes');
+    $mech->content_contains(',,,no,busstops@example.com,,,,Yes');
 
     $report->set_extra_fields({ name => 'safety_critical', value => 'yes' });
     $report->anonymous(1);
@@ -493,13 +481,13 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
     $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains($dt . ',,,confirmed,51.4021');
-    $mech->content_contains(',,,yes,countdown@example.net,,' . $dt . ',"Council User"');
+    $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 
     $report->set_extra_fields({ name => 'Question', value => '12345' });
     $report->update;
 
     $mech->get_ok('/dashboard?export=1');
-    $mech->content_contains(',12345,,no,countdown@example.net,,', "Bike number added to csv");
+    $mech->content_contains(',12345,,no,busstops@example.com,,', "Bike number added to csv");
 };
 
 subtest 'Inspect form state choices' => sub {
@@ -847,7 +835,6 @@ for my $test (
             'Abandoned Santander Cycle',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
-            'Countdown - not working',
             'Flooding',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
@@ -866,7 +853,6 @@ for my $test (
             'Abandoned Santander Cycle',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
-            'Countdown - not working',
             'Flooding (Bromley)',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
@@ -883,7 +869,6 @@ for my $test (
         expected => [
             'Abandoned Santander Cycle',
             'Bus stops',
-            'Countdown - not working',
             'Flooding',
             'Grit bins',
             'Pothole',
@@ -900,7 +885,6 @@ for my $test (
         expected => [
             'Abandoned Santander Cycle',
             'Bus stops',
-            'Countdown - not working',
             'Flooding',
             'Grit bins',
             'Pothole',
@@ -918,7 +902,6 @@ for my $test (
             'Abandoned Santander Cycle',
             'Accumulated Litter',
             'Bus stops',
-            'Countdown - not working',
             'Flooding',
             'Flytipping (Bromley)',
             'Grit bins',
@@ -937,7 +920,6 @@ for my $test (
             'Abandoned Santander Cycle',
             'Accumulated Litter',
             'Bus stops',
-            'Countdown - not working',
             'Flooding (Bromley)',
             'Flytipping (Bromley)',
             'Grit bins',
@@ -954,7 +936,6 @@ for my $test (
         expected => [
             'Abandoned Santander Cycle',
             'Bus stops',
-            'Countdown - not working',
             'Flooding',
             'Grit bins',
             'Pothole',

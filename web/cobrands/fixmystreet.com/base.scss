@@ -432,3 +432,23 @@ html.lazyload .js-lazyload {
         margin-bottom: 0;
     }
 }
+
+// Some PWA overrides to make it appier
+body.pwa {
+  // Hide the FMS Pro and open source promos
+  .fms-pro-promo, .footer-marketing {
+    display: none;
+  }
+  .mysoc-footer {
+      display: none
+  }
+
+  .frontpage {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .dev-site-notice {
+    display: none;
+  }
+}
