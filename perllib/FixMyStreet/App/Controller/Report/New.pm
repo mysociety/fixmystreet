@@ -1658,6 +1658,12 @@ sub save_user_and_report : Private {
 
     $report->update_or_insert;
 
+    # Save land type if applicable
+    my $handler_cobrand
+        = $c->cobrand->call_hook( get_body_handler_for_problem => $report );
+    $handler_cobrand->call_hook( land_type_for_problem => $report )
+        if $handler_cobrand;
+
     # tidy up
     if ( my $token = $c->stash->{partial_token} ) {
         $token->delete;

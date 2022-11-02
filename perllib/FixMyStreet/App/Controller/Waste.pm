@@ -263,6 +263,7 @@ sub confirm_subscription : Private {
     # clear the session unique ID) and have the form code load this template
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
+    $c->cobrand->call_hook('post_confirm_subscription');
 }
 
 sub cancel_subscription : Private {
@@ -962,7 +963,14 @@ sub process_bulky_data : Private {
         my ($id) = /^extra_(.*)/;
         $c->set_param($id, $data->{$_});
     }
-    $c->forward('add_report', [ $data ]) or return;
+
+    if ($c->stash->{payment}) {
+        $c->set_param('payment', $c->stash->{payment});
+        $c->forward('add_report', [ $data, 1 ]) or return;
+        $c->forward('pay', [ 'bulky' ]);
+    } else {
+        $c->forward('add_report', [ $data ]) or return;
+    }
     return 1;
 }
 

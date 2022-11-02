@@ -9,6 +9,7 @@ use DateTime::Format::Strptime;
 use Integrations::Bartec;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
+use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Utils;
 
@@ -16,6 +17,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Multi';
+with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { 2566 }
 sub council_area { 'Peterborough' }
@@ -61,6 +63,27 @@ sub disambiguate_location {
         centre => '52.6085234396978,-0.253091266573947',
         bounds => [ 52.5060949603654, -0.497663559599628, 52.6752139533306, -0.0127696975457487 ],
     };
+}
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+
+    my $c = $self->{c};
+    my $is_staff
+        = $c
+        && $c->user_exists
+        && (
+            ( $c->user->from_body && $c->user->from_body->name eq council_name() )
+            || $c->user->is_superuser
+        );
+
+    if ($is_staff) {
+        my $land_type = $self->land_type_for_problem($p);
+        return 'blue'   if $land_type eq 'public';
+        return 'orange' if $land_type eq 'private';
+    }
+
+    return 'yellow';
 }
 
 sub get_geocoder { 'OSM' }
@@ -158,81 +181,110 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params);
 };
 
-sub get_body_sender {
-    my ($self, $body, $problem) = @_;
-    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+# Looks up & sets land_type in extra_metadata if not previously set, or
+# lat or lon have been changed. For flytipping & graffiti only.
+sub land_type_for_problem {
+    my ( $self, $problem ) = @_;
 
-    my ($x, $y) = Utils::convert_latlon_to_en(
-        $problem->latitude,
-        $problem->longitude,
-        'G'
+    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+    return '' unless $flytipping_cats{ $problem->category };
+
+    my %dirty_columns = $problem->get_dirty_columns;
+    my $land_type;
+    $land_type = $problem->get_extra_metadata('land_type')
+        if !exists $dirty_columns{longitude}
+        && !exists $dirty_columns{latitude};
+
+    return $land_type if defined $land_type;
+
+    my ( $x, $y )
+        = Utils::convert_latlon_to_en( $problem->latitude,
+        $problem->longitude, 'G' );
+
+    # Council land
+    my $features = $self->_fetch_features(
+        {   type   => 'arcgis',
+            url    => 'https://peterborough.assets/4/query?',
+            buffer => 1,
+        },
+        $x, $y,
     );
-    if ( $flytipping_cats{ $problem->category } ) {
-        # look for land belonging to the council
-        my $features = $self->_fetch_features(
-            {
-                type => 'arcgis',
-                url => 'https://peterborough.assets/4/query?',
+
+    $land_type = 'public' if $features && @$features;
+
+    unless ($land_type) {
+        # Leased land - count as 'private' (i.e. not dealt with in Bartec)
+        $features = $self->_fetch_features(
+            {   type   => 'arcgis',
+                url    => 'https://peterborough.assets/3/query?',
                 buffer => 1,
             },
-            $x,
-            $y,
+            $x, $y,
         );
 
-        # if not then check if it's land leased out or on a road.
-        unless ( $features && scalar @$features ) {
-            my $leased_features = $self->_fetch_features(
-                {
-                    type => 'arcgis',
-                    url => 'https://peterborough.assets/3/query?',
-                    buffer => 1,
-                },
-                $x,
-                $y,
-            );
-
-            # some PCC land is leased out and not dealt with in bartec
-            $features = [] if $leased_features && scalar @$leased_features;
-
-            # if it's not council, or leased out land check if it's on an
-            # adopted road
-            unless ( $leased_features && scalar @$leased_features ) {
-                my $road_features = $self->_fetch_features(
-                    {
-                        buffer => 1, # metres
-                        type => 'arcgis',
-                        url => 'https://peterborough.assets/7/query?',
-                    },
-                    $x,
-                    $y,
-                );
-
-                $features = $road_features if $road_features && scalar @$road_features;
-            }
-        }
-
-        # is on land that is handled by bartec so send
-        if ( $features && scalar @$features ) {
-            return $self->SUPER::get_body_sender($body, $problem);
-        }
-
-        # neither of those so just send email for records
-        my $emails = $self->feature('open311_email');
-        if ( $emails->{flytipping} ) {
-            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
-
-            # P'bro do not want to be notified of smaller incident sizes. They
-            # also do not want email for reports raised by staff.
-            return { method => 'Blackhole' }
-                if _is_small_flytipping_incident($problem)
-                || _is_raised_by_staff($problem);
-
-            my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
-            return { method => 'Email', contact => $contact};
-        }
+        $land_type = 'private' if $features && @$features;
     }
 
-    return $self->SUPER::get_body_sender($body, $problem);
+    unless ($land_type) {
+        # Adopted road - count as 'public'
+        $features = $self->_fetch_features(
+            {   type   => 'arcgis',
+                url    => 'https://peterborough.assets/7/query?',
+                buffer => 1,
+            },
+            $x, $y,
+        );
+
+        $land_type = 'public' if $features && @$features;
+    }
+
+    $land_type = 'private' unless $land_type;
+
+    # We want to save the land type on extra_metadata, but need to make sure
+    # we don't save other fields that may have been changed on the original
+    # problem outside this method. So we fetch a fresh version of the problem
+    # from the DB and update the extra_metadata on that.
+    my $problem_clean = FixMyStreet::DB->resultset('Problem')
+        ->find( { id => $problem->id } );
+
+    if ( $problem_clean ) {
+        $problem_clean->set_extra_metadata( land_type => $land_type );
+        $problem_clean->update;
+    }
+    else {
+        # Ideally, the caller should provide a problem that already
+        # exists in the DB. But in case it doesn't, just set
+        # extra_metadata on the problem object. In this case, we leave it to
+        # the caller to save to the DB.
+        $problem->set_extra_metadata( land_type => $land_type );
+    }
+
+    return $land_type;
+}
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    my $land_type = $self->land_type_for_problem($problem);
+
+    my $emails = $self->feature('open311_email');
+    if ( $land_type eq 'private' && $emails->{flytipping} ) {
+        # Just send email for records
+        $problem->set_extra_metadata(
+            'flytipping_email' => $emails->{flytipping} );
+
+        # P'bro do not want to be notified of smaller incident sizes. They
+        # also do not want email for reports raised by staff.
+        return { method => 'Blackhole' }
+            if _is_small_flytipping_incident($problem)
+            || _is_raised_by_staff($problem);
+
+        my $contact
+            = $self->SUPER::get_body_sender( $body, $problem )->{contact};
+        return { method => 'Email', contact => $contact };
+    }
+
+    return $self->SUPER::get_body_sender( $body, $problem );
 }
 
 sub munge_sendreport_params {
@@ -385,7 +437,6 @@ sub dashboard_export_problems_add_columns {
         return $extra;
     });
 }
-
 
 sub open311_filter_contacts_for_deletion {
     my ($self, $contacts) = @_;
@@ -704,6 +755,14 @@ sub _bulky_collection_window {
         : $today->strftime($fmt),
         date_to => $date_to->strftime($fmt),
     };
+}
+
+sub bulky_items_master_list {
+    my $self = shift;
+
+    my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
+
+    return $cfg->{item_list} || [];
 }
 
 sub bin_services_for_address {
@@ -1119,25 +1178,95 @@ sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
+    my $cfg = $c->cobrand->body->get_extra_metadata("wasteworks_config", {});
 
     $data->{title} = "Bulky goods collection";
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
     $data->{extra_DATE} = $data->{chosen_date};
 
     # XXX loop here, plus might be more than 5 in future
-    $data->{extra_ITEM_01} = $data->{item1};
-    $data->{extra_ITEM_02} = $data->{item2};
-    $data->{extra_ITEM_03} = $data->{item3};
-    $data->{extra_ITEM_04} = $data->{item4};
-    $data->{extra_ITEM_05} = $data->{item5};
+    $data->{extra_ITEM_01} = $data->{item_1}{item};
+    $data->{extra_ITEM_02} = $data->{item_2}{item};
+    $data->{extra_ITEM_03} = $data->{item_3}{item};
+    $data->{extra_ITEM_04} = $data->{item_4}{item};
+    $data->{extra_ITEM_05} = $data->{item_5}{item};
 
-    $data->{extra_CHARGEABLE} = 'CHARGED'; # XXX not necessarily true
+    my $free_collection_available = 1; # XXX need to check property attributes
+
+    if ($cfg->{free_mode} && $free_collection_available) {
+        $data->{extra_CHARGEABLE} = 'FREE';
+        $c->stash->{payment} = 0;
+    } else {
+        $data->{extra_CHARGEABLE} = 'CHARGED';
+
+        # XXX assume all paid bookings are one price, but will eventually
+        # need to support dynamic pricing per-item
+        $c->stash->{payment} = $cfg->{base_price};
+        $data->{"extra_payment_method"} = "credit_card"; # XXX what about CSC?
+    }
 
     $data->{"extra_CREW NOTES"} = $data->{location};
 
     # XXX what about photos?
 
     $data->{category} = "Bulky collection";
+}
+
+sub post_confirm_subscription {
+    my $self = shift;
+    my $c = $self->{c};
+
+    if ($c->stash->{report}->category eq 'Bulky collection') {
+        $c->stash->{template} = 'waste/bulky/payment_confirm.html';
+    }
+}
+
+sub waste_cc_payment_line_item_ref {
+    my ($self, $p) = @_;
+    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+}
+
+sub waste_cc_payment_admin_fee_line_item_ref {
+    my ($self, $p) = @_;
+    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+}
+
+sub waste_cc_payment_sale_ref {
+    my ($self, $p) = @_;
+    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+}
+
+sub bin_payment_types {
+    return {
+        'csc' => 1,
+        'credit_card' => 2,
+        'direct_debit' => 3,
+    };
+}
+
+
+sub open311_contact_meta_override {
+    my ($self, $service, $contact, $meta) = @_;
+
+    if ( $service->{service_name} eq 'Bulky collection' ) {
+        push @$meta, {
+            code => 'payment',
+            datatype => 'string',
+            description => 'Payment',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        }, {
+            code => 'payment_method',
+            datatype => 'string',
+            description => 'Payment method',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        };
+    }
 }
 
 sub waste_munge_report_data {

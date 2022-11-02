@@ -206,6 +206,16 @@ h1, h2 {
     }
 }
 
+div.land-type-public {
+    margin-top: 0.25em;
+    color:#54b1e4;
+}
+
+div.land-type-private {
+    margin-top: 0.25em;
+    color:#f79421;
+}
+
 @import "../sass/waste";
 
 // Waste style overrides

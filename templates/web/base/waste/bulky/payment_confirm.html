@@ -1,0 +1,39 @@
+[% INCLUDE waste/header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+[% IF error %]
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+        There was a problem: [% error %]
+        </p>
+    </div>
+[% ELSE %]
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+          [% INCLUDE 'waste/_report_ids.html' %]
+        </p>
+        [% IF reference %]
+        <p>
+          Your payment reference is [% reference %].
+        </p>
+        [% END %]
+    </div>
+[% END %]
+</div>
+
+<p>
+[% message %]
+[% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+We have sent a confirmation email (you may also receive a payment receipt separately) to [% report.user.email %].
+[% END %]
+</p>
+
+<p><a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a></p>
+
+[% INCLUDE footer.html %]
