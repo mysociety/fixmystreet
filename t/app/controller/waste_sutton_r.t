@@ -1,6 +1,7 @@
 use utf8;
 use JSON::MaybeXS;
 use Path::Tiny;
+use Storable qw(dclone);
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
@@ -243,6 +244,27 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-choice" value="18"');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
+    subtest 'Okay fetching property with two of the same task type' => sub {
+        my @dupe = @$bin_data;
+        push @dupe, dclone($dupe[0]);
+        # Give the new entry a different ID and task ref
+        $dupe[$#dupe]->{ServiceTasks}{ServiceTask}[0]{Id} = 4001;
+        $dupe[$#dupe]->{ServiceTasks}{ServiceTask}[0]{ServiceTaskSchedules}{ServiceTaskSchedule}{LastInstance}{Ref}{Value}{anyType}[1] = 8281;
+        $e->mock('GetServiceUnitsForObject', sub { \@dupe });
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 22239416, 8280 ] } },
+            State => { Name => 'Completed' },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        }, {
+            Ref => { Value => { anyType => [ 22239416, 8281 ] } },
+            State => { Name => 'Outstanding' },
+            CompletedDate => undef
+        } ] });
+        $mech->get_ok('/waste/12345');
+        $e->mock('GetTasks', sub { [] });
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 };
