@@ -628,6 +628,9 @@ sub bin_services_for_address {
             }
         }
 
+        my $task_indicator = $servicetask->{TaskIndicatorId} || 0;
+        $self->{c}->stash->{assisted_collection} = 1 if $task_indicator == 84;
+
         my $row = {
             id => $_->{Id},
             service_id => $service_id,
@@ -852,7 +855,7 @@ sub waste_munge_enquiry_data {
     $data->{title} = $data->{category};
 
     my $detail;
-    foreach (grep { /^extra_/ } keys %$data) {
+    foreach (sort grep { /^extra_/ } keys %$data) {
         $detail .= "$data->{$_}\n\n";
     }
     $detail .= $address;

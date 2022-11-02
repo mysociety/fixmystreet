@@ -61,6 +61,12 @@ create_contact({ category => 'General enquiry', email => 'general@example.org' }
     { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'Source', required => 0, automated => 'hidden_field' },
 );
+create_contact({ category => 'Assisted collection add', email => 'assisted' },
+    { code => 'Exact_Location', description => 'Exact location', required => 1, datatype => 'text' },
+    { code => 'Reason', description => 'Reason for request', required => 1, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
+    { code => 'Source', required => 0, automated => 'hidden_field' },
+);
 create_contact({ category => 'Garden Subscription', email => 'garden@example.com'},
         { code => 'Subscription_Type', required => 1, automated => 'hidden_field' },
         { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
@@ -366,6 +372,51 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Source'), 9, 'Correct source';
         $staff_user->discard_changes;
         is $staff_user->name, $original_name, 'Staff user name stayed the same';
+    };
+    subtest 'test staff-only assisted collection form' => sub {
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=531');
+        $mech->submit_form_ok({ with_fields => { extra_Exact_Location => 'Behind the garden gate', extra_Reason => 'Reason' } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Reason'), 'Reason';
+        is $report->detail, "Behind the garden gate\n\nReason\n\n2 Example Street, Bromley, BR1 1AA";
+        is $report->user->email, 'anne@example.org';
+        is $report->name, 'Anne Assist';
+        is $report->get_extra_field_value('Source'), 9, 'Correct source';
+    };
+    subtest 'test staff-only form when logged out' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection&service_id=531');
+        is $mech->res->previous->code, 302;
+    };
+    subtest 'test assisted collection display' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Set up for assisted collection');
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetServiceUnitsForObject', sub {
+            return [ {
+                Id => 1003,
+                ServiceId => 531,
+                ServiceName => 'Domestic Refuse Collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 403,
+                    TaskIndicatorId => 84,
+                    ServiceTaskSchedules => { ServiceTaskSchedule => {
+                        StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                        EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                        },
+                    } },
+                } },
+            } ];
+        });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('This property is set up for assisted collections');
     };
     subtest 'Ignores expired services' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
