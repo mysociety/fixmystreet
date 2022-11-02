@@ -136,6 +136,18 @@ sub problems_on_map {
     return $self->problems_on_map_restriction(FixMyStreet::DB->resultset('Problem'));
 }
 
+=item problems_on_dashboard
+
+Returns a ResultSet of Problems to be shown on the /dashboard.
+Defaults to the same as problems.
+
+=cut
+
+sub problems_on_dashboard {
+    my $self = shift;
+    return $self->problems;
+}
+
 =item updates
 
 Returns a ResultSet of Comments, potentially restricted to a subset if we're on

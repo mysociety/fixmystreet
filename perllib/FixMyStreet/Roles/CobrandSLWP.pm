@@ -25,6 +25,18 @@ around problems_restriction => sub {
     return $rs;
 };
 
+sub problems_on_dashboard {
+    my ($self, $rs) = @_;
+
+    my $bodies = [ $self->body->id ];
+    my $extra = $self->dashboard_extra_bodies;
+    push @$bodies, $extra->id if $extra;
+    $rs = FixMyStreet::DB->resultset('Problem')->to_body($bodies)->search({
+        "me.cobrand_data" => 'waste',
+    });
+    return $rs;
+}
+
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 

@@ -249,12 +249,19 @@ FixMyStreet::override_config {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['kingston', 'sutton'],
+    MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     subtest 'Kingston staff can see Sutton admin' => sub {
         $mech->host('sutton.example.org');
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/admin/reports');
         $mech->follow_link_ok({ text => "Edit" });
+    };
+    subtest 'Kingston staff can see Sutton data on their dashboard' => sub {
+        $mech->host('kingston.example.org');
+        $mech->get_ok('/dashboard?body=' . $body->id);
+        $mech->content_like(qr{<th scope="row">Total</th>\s*<td>4</td>});
+        $mech->submit_form_ok;
     };
 };
 

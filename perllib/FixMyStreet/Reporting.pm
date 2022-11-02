@@ -144,7 +144,7 @@ sub construct_rs_filter {
         $where{"$table_name.confirmed"} = $range->sql;
     }
 
-    my $rs = $self->on_updates ? $self->cobrand->updates : $self->cobrand->problems;
+    my $rs = $self->on_updates ? $self->cobrand->updates : $self->cobrand->problems_on_dashboard;
     my $objects_rs = $rs->to_body($self->body)->search( \%where );
 
     if ($self->role_id) {
