@@ -71,15 +71,21 @@ var layers = [
 },
 {
   "categories": [
-    "Damaged/Exposed Wiring / Vandalised",
+// Old
     "Lamp/Bulb Failure",
     "Signal Failure",
     "Signal Failure all out",
     "Signal Stuck",
     "Signal Head Failure",
-    "Request Timing Review",
     "Damaged Control box",
-    "Signal Failure/Damaged - Toucan/Pelican"
+    "Signal Failure/Damaged - Toucan/Pelican",
+// New
+    "All Traffic Signals OUT (Not Working)",
+    "Damaged/Exposed Wiring / Vandalised",
+    "Lamp Failure",
+    "Pushbutton Not Working",
+    "Request Timing Review",
+    "Signal Stuck / Not Changing"
   ],
   "item_name": "signal or crossing",
   "layer_name": "Traffic_Signal_Junction"
