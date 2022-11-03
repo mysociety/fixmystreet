@@ -25,11 +25,11 @@
     <hr>
   </div>
   [% END %]
-  <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3">+ Add item</button>
+  <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+ Add item</button>
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
 
-[% # Only shown if JS disabled %]
+[% # Only shown if JS enabled %]
 [% BLOCK extra_text %]
 <div class="govuk-warning-text due bulky-item-message">
   <div class="govuk-warning-text__img">
@@ -38,7 +38,7 @@
   <div class="govuk-warning-text__content">
     <span class="item-name"></span>
     <span class="govuk-warning-text__assistive">Important information</span>
-    <p id="item-message" class="govuk-!-margin-bottom-0"></p>
+    <p class="item-message govuk-!-margin-bottom-0" aria-live="polite"></p>
   </div>
 </div>
 [% END %]

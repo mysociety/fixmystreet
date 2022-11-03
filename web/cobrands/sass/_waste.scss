@@ -565,7 +565,7 @@ body.bulky {
 
 // Bulky item selection
 
-.delete-item, #add-new-item {
+.delete-item, #add-new-item, .bulky-item-message {
   display: none;
 }
 
@@ -601,6 +601,10 @@ html.js #item-selection-form {
         .delete-item {
           display: none;
         }
+      }
+
+      .dropzone {
+        max-width: 380px;
       }
   }
 }

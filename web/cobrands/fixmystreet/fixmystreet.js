@@ -539,11 +539,11 @@ $.extend(fixmystreet.set_up, {
                     $this.val(value).trigger( "change" );
 
                     // Ables the addItem btn when the user selects an option
-                    $("#add-new-item").prop('disabled', false);
+                    disableAddItemButton();
 
                      // To display message if option has a data-extra_text
                     if (typeof valueAttribute !== 'undefined') {
-                        $this.closest('.bulky-item-wrapper').find('#item-message').text(valueAttribute);
+                        $this.closest('.bulky-item-wrapper').find('.item-message').text(valueAttribute);
                         $this.closest('.bulky-item-wrapper').find('.bulky-item-message').css('display', 'flex');
 
                     } else {
@@ -2101,7 +2101,10 @@ setTimeout(function () {
 
     // Add items
     $("#add-new-item").click(function(){
-        $('#item-selection-form > .bulky-item-wrapper:hidden:first').show();
+        var firstHidden = $('#item-selection-form > .bulky-item-wrapper:hidden:first');
+        var hiddenInput = $('#item-selection-form > .bulky-item-wrapper:hidden:first input.autocomplete__input');
+        firstHidden.show();
+        hiddenInput.focus(); // To make it friendly to screen readers
         numItemsVisible = $('.bulky-item-wrapper:visible').length;
         deleteItem();
         $("#add-new-item").prop('disabled', true);
