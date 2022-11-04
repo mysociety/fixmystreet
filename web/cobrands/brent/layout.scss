@@ -1,5 +1,6 @@
-@import "_colours";
+@import "_variables";
 @import "_fonts";
+@import "./_mixins";
 @import "../sass/layout";
 
 // Set the default font colour everywhere
@@ -9,15 +10,29 @@ body, .content {
 
 #site-header {
   border-bottom: none;
-  background-color: $nav_background_colour;
+  background-color: transparent; // Allows the .nav-wrapper to have a background
 }
 
-$logo-height: 50px;
-$nav-height: 80px;
+.nav-wrapper {
+  &:after {
+    @include svg-background-image("/cobrands/brent/images/bg-pattern");
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: 100% 10%;
+    background-size: 200%;
+  }
+}
+
+$logo-height: 70px;
+$nav-height: 90px;
 
 #main-nav {
-  float: none;
-  margin-top: $nav-height; // Put the main FMS navigation below the Camden header
+  float: right;
 
   .ie9 & > * {
     #{$right}: auto;
@@ -26,38 +41,40 @@ $nav-height: 80px;
 }
 
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
-  // Display the BCC logo and header correctly
   #site-logo {
     @include svg-background-image("/cobrands/brent/images/brent-logo");
-    background-size: 250px $logo-height;
-    width: 250px;
+    background-size: 165px $logo-height;
+    width: 165px;
     padding: 0;
     padding-top: $nav-height;
     height: 0px;
     overflow: hidden;
     white-space: nowrap;
-  }
 
-  // White "nav bar" with red border-top, below the logo
-  #site-header {
-    &:after {
-      content: " ";
-      height: 3.5em;
-      display: block;
-      border-bottom: solid 5px $gray-3;
-      background-color: white;
+    &:focus {
+      background-color: $link-focus-color;
     }
   }
 
+  #main-nav {
+    min-height: $nav-height !important;
+  }
+
   #front-main {
-    background-color: white;
+    // background-color: $front_main_colour;
     text-align: left;
     padding-top: 40px;
     padding-bottom: 75px;
+    background-blend-mode: soft-light;
+    background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $left -150px top no-repeat;
 
     #postcodeForm {
+      color: $primary_b;
       margin-top: 0;
-
+      background-color: $section-background-color;
+      margin: 0 auto;
+      margin-top: 1em;
+      padding: 0.5em 1em 2em 1em;
       div {
         margin: 0;
       }
@@ -67,48 +84,58 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
       }
     }
 
-    h1 {
-      font-size: 3em;
-    }
-
     h1 + p {
-      font-size: 1.75em;
-      line-height: 1.25em;
       max-width: 640px;
     }
-  }
 
-  .nav-menu {
-    a, span {
-      display: inline-block; // So the chevrons appear correctly
-      font-size: 1em;
+    h2 {
+      max-width: 650px;
     }
-    a {
-      text-decoration: underline;
-      color: $link-color;
-
-      &:hover {
-        background: transparent;
-        color: $link-hover-color;
-        text-decoration: none;
-      }
-    }
-    span {
-      color: $link-active-color;
-      &:hover {
-        color:$link-active-color;
-      }
-    }
-  }
-
-  // Stop the 'report a problem' button being red on non-map pages
-  .nav-menu--main a.report-a-problem-btn {
-    background-color: transparent;
   }
 
   // Put FAQ side nav at correct vertical position
   .content .sticky-sidebar aside {
     top: 12.5em;
+  }
+}
+
+.nav-menu--main.nav-menu {
+  li {
+    margin-right: 10px;
+  }
+
+  a, span {
+    display: inline-block; // So the chevrons appear correctly
+    font-size: $font-size-small-view;
+    padding: 0.5em;
+    font-weight: 400;
+  }
+
+  a, a.report-a-problem-btn {
+    text-decoration: none;
+    margin: 0;
+    background-color: transparent;
+    color: $primary_b;
+    text-decoration-thickness: 1.5px !important;
+
+    &:hover {
+      text-decoration: underline;
+      color: $link-color;
+    }
+
+    &:focus {
+      background-color: $link-focus-color;
+      color: $link-color;
+      text-decoration: underline;
+      box-shadow: none;
+    }
+  }
+
+  span {
+    color: $primary_b;
+    text-decoration: underline;
+    pointer-events: none;
+    text-underline-offset: $text-underline-offset;
   }
 }
 
@@ -120,12 +147,15 @@ body.mappage {
 
   #site-logo {
     margin-top: 0.250em;
+    &:focus {
+      @include svg-background-image("/cobrands/brent/images/brent-logo-black");
+    }
   }
 
   // Reinstate the floated nav bar on map pages
   #main-nav {
     float: #{$right};
-    margin-top: 0;
+    min-height: 4em;
 
     // IE9 uses absolute positioning rather than floats.
     .ie9 & {
@@ -138,58 +168,59 @@ body.mappage {
     }
   }
 
-  // A few changes to the nav items now they're on a black background
   .nav-menu {
     display: flex;
     align-items: center;
-    a, span {
-      color: white;
-      font-size: 1.1em;
-      margin:0 0.250em;
-      text-decoration: none;
-    }
-
-    a:hover {
-      background: transparent;
-      text-decoration: underline;
-    }
-
-    a.report-a-problem-btn {
-      color: $link-color;
-      background-color: $white;
-      padding-left: 0.5em;
-      padding-right: 0.5em;
-    }
   }
 
   .big-green-banner {
+    padding-left: 16px;
     display: block;
     background-color: $accent-color;
     text-transform: none;
+    color: $primary_text;
+    text-align: left;
+    background: $accent-color inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
   }
 }
 
+#front_stats {
+  border-top: none;
+  background: $accent-color;
+  color: $primary_text;
+
+  big {
+    color: $primary_text;
+  }
+}
+
+.report-list-filters {
+  color: $gray-2;
+  @include brent-body;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+  padding: 0;
+  margin: 0;
+}
+
 // Footer
-.brent-footer {
-  padding-top: 20px;
-  padding-bottom: 60px;
+.footer-marketing {
+  display: none;
+}
 
-  .footer-logo {
-    $logo-height: 25px;
-    background-size: 120px $logo-height;
-    width: 120px;
-    padding-top: $logo-height;
-    max-height: 0px;
+.brent_footer {
+  .footer__logo {
+    margin-left: 0;
   }
+  .footer__content {
+    .footer__column {
+      flex-basis: 25%;
+      text-align: left;
 
-  p, a, li, span {
-    font-size: 14px;
-  }
-
-  .footer-section {
-    margin-bottom: 30px;
-    &:last-child {
-      margin-bottom: 0;
+      &:last-of-type {
+        order: 4;
+      } 
     }
   }
 }
