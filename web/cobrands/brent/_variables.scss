@@ -45,20 +45,21 @@ $orange: #d34b1f;
 
 // END of color palette
 
-$accent-color: $green-2;
+$accent-color: #248660;
+$section-background-color: $white-2;
 
 $primary: $gray-2;
 $primary_b: $gray-1;
-$primary_text: $gray-1;
+$primary_text: $white;
 
 $link-color: $blue-2;
 $link-hover-color: $blue-1;
-$link-active-color: $gray-1;
-$link-visited-color: $gray-1;
-
-$focus-color: $yellow-1;
+$link-active-color: $blue-1;
+$link-visited-color: $purple-1;
+$link-focus-color: $yellow-1;
 
 $base_bg: $white;
+$front_main_colour: $accent-color; // This one is the website, but not the official color palette
 $base_fg: $gray-1;
 
 $nav_background_colour: $white;
@@ -81,3 +82,41 @@ $dropzone-button-text: $white;
 $dropzone-button-background: $link-color;
 $dropzone-button-border: $link-color;
 $dropzone-border-color--awakened: $yellow-1;
+
+// If the cobrand doesn't have a large view point just comment this variable($large-view-point);
+$large-view-point: 1024px;
+$font-size-large-view: 16px;
+$font-size-small-view: 16px;
+
+$link-text-decoration-thickness: 1px !important; // We need to override the default mixin
+// Some cobrands use a thick underline.
+// This prevent the line to get cropped by letter such as g and y
+$text-underline-offset: 5px;
+
+//Navbar
+// Mobile
+$navlink-background-color: $gray-2;
+$navlink-color: $white;
+$navspan-background-color: $white;
+$navspan-color: $gray-2;
+
+// Buttons
+$btn-border-radius: 0px;
+
+$btn-primary-background: $link-color;
+$btn-primary-color: $primary_text;
+$btn-primary-border-color:$link-color;
+$btn-primary-background-hover: $link-hover-color;
+$btn-primary-color-hover: $primary_text;
+$btn-primary-border-color-hover: $link-hover-color;
+
+$btn-secondary-background: #E0E0E1;
+$btn-secondary-color: $primary_b;
+$btn-secondary-border-color:#E0E0E1;
+$btn-secondary-background-hover: $gray-2;
+$btn-secondary-color-hover: $primary_text;
+$btn-secondary-border-color-hover: $gray-2;
+
+// Footer
+$footer-background-colour: $gray-1;
+$footer-colour: $primary_text;
