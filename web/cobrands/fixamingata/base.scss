@@ -221,3 +221,24 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 .btn--primary {
   @include button-variant(#20bbdf, #087fa0, #087fa0, #fff, #06708e, #20bbdf, #087fa0, #fff);
 }
+
+#front-main #postcodeForm label {
+    margin-bottom: 8px;
+    padding-top: 0.5em;
+}
+
+.mobile #front-main #postcodeForm label {
+    padding-top: 0;
+}
+
+#geolocate_link {
+    margin-top: 2em !important;
+}
+
+.mobile #geolocate_link {
+    margin-top: 15px !important;
+}
+
+#pc-hint {
+    display: none;
+}

@@ -175,10 +175,6 @@ body.twothirdswidthpage {
     margin-top: .5em;
 }
 
-#pc-hint {
-    order: 1;
-}
-
 #front-main #geolocate_link {
     border-color: rgb(34, 34, 34);
     color: rgb(34, 34, 34);
@@ -204,4 +200,8 @@ body.twothirdswidthpage {
 
 .item-list, h4.static-with-rule, #key-tools {
     border-color: #087fa0;
+}
+
+#offline_list:empty {
+    display: none;
 }
