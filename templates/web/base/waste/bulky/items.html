@@ -15,13 +15,14 @@
     [% # Building names beforehand because override_fields does not seem to like them being built inside its arg list %]
     [% base_field = 'item_' _ num %]
     [% item = base_field _ '.item' %]
+    [% PROCESS form override_fields = [ item ] %]
+    [% PROCESS extra_text num = num %]
     [% photo = base_field _ '.photo' %]
     [% photo_fileid = base_field _ '.photo_fileid' %]
-    [% PROCESS form override_fields = [ item, photo, photo_fileid ] %]
+    [% PROCESS form override_fields = [ photo, photo_fileid ] %]
 
     <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
 
-    [% PROCESS extra_text num = num %]
     <hr>
   </div>
   [% END %]
@@ -29,7 +30,6 @@
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
 
-[% # Only shown if JS enabled %]
 [% BLOCK extra_text %]
 <div class="govuk-warning-text due bulky-item-message">
   <div class="govuk-warning-text__img">
