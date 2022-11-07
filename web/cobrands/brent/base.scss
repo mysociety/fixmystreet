@@ -9,13 +9,13 @@
 @import "./_mixins";
 
 // Optimize legibility
-body, .content {
+html, body, .content {
   color: $gray-1;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: rgba(0, 0, 0, 0.1) 0 0 1px;
-  font-size: 18px;
+  font-size: $font-size-small-view;
 }
 
 ul.unstyled-list {
@@ -40,7 +40,7 @@ a {
   background-color: $link-focus-color;
 }
 
-.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+.btn, .btn--primary, .btn-primary, .green-btn, #report-cta, .govuk-button {
   @include brent-btn-primary;
 }
 
@@ -565,4 +565,89 @@ body.twothirdswidthpage {
       margin-top: 30px;
     }
   }
+}
+
+// Waste
+.content {
+  .waste & {
+    padding-top: 0;
+    margin-top: 2rem;
+    background-color: $section-background-color;
+  }
+}
+
+h1.govuk-heading-xl {
+  text-align: left;
+  color: $white;
+  margin: 0 -1rem;
+  padding: 1.5rem 1rem;
+  // background-color: $front_main_colour;
+  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $right center no-repeat;
+  z-index: 1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left top;
+  background-blend-mode: soft-light;
+  background-blend-mode: normal!important;
+}
+
+form.waste {
+    background-color: $section-background-color;
+    color: $primary_b;
+    margin: 0 -1rem;
+    padding: 1rem 1rem 2rem 1rem;
+
+    div {
+      border-width: 0px;
+      align-items: center;
+      background-color: transparent;
+    }
+
+    $border-width:2px;
+    $max-height: 45px;
+
+    input#sub {
+      background: $link-color !important;
+      margin-top: -1px;
+      margin-bottom: -1px;
+      border: $border-width solid $primary_b;
+      max-height: $max-height;
+      height: $max-height;
+
+      &:hover {
+        background: $link-hover-color !important;
+        color: $white !important;
+        border-color: $link-hover-color;
+      }
+
+      &:focus {
+        background: $link-focus-color !important;
+        color: $primary_b !important;
+        text-decoration-thickness: $link-text-decoration-thickness;
+        border: 2px solid $link-focus-color;
+        border-bottom: 4px solid $primary_b;
+        outline: none;
+        border-left: 0px;
+        $text-underline-offset: 5px;
+        box-shadow: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    input#postcode {
+      margin: 2px 0;
+      max-height: $max-height;
+      height: $max-height;
+      border: $border-width solid $primary_b !important;
+      background: $white !important;
+      &:focus {
+        outline:  2px solid $link-focus-color;
+      }
+    }
+
+    #form-go-row {
+      margin-top: 1rem;
+    }
 }

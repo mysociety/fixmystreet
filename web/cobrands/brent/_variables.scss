@@ -85,8 +85,8 @@ $dropzone-border-color--awakened: $yellow-1;
 
 // If the cobrand doesn't have a large view point just comment this variable($large-view-point);
 $large-view-point: 1024px;
-$font-size-large-view: 16px;
-$font-size-small-view: 16px;
+$font-size-large-view: 18px;
+$font-size-small-view: 18px;
 
 $link-text-decoration-thickness: 1px !important; // We need to override the default mixin
 // Some cobrands use a thick underline.
