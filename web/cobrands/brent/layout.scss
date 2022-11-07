@@ -25,6 +25,7 @@ body, .content {
     height: 100%;
     background-position: 100% 10%;
     background-size: 200%;
+    background-color: $nav_background_colour;
   }
 }
 
@@ -40,7 +41,7 @@ $nav-height: 90px;
   }
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body.waste {
   #site-logo {
     @include svg-background-image("/cobrands/brent/images/brent-logo");
     background-size: 165px $logo-height;
@@ -60,7 +61,7 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     min-height: $nav-height !important;
   }
 
-  #front-main {
+  #front-main  {
     // background-color: $front_main_colour;
     text-align: left;
     padding-top: 40px;
@@ -222,5 +223,12 @@ body.twothirdswidthpage .content .sticky-sidebar {
         order: 4;
       } 
     }
+  }
+}
+
+// Waste
+body.waste {
+  h1.govuk-heading-xl {
+    margin-bottom: 2rem;
   }
 }
