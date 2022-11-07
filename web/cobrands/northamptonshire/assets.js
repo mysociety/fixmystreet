@@ -71,6 +71,15 @@ var layers = [
 },
 {
   "categories": [
+// Old
+    "Lamp/Bulb Failure",
+    "Signal Failure",
+    "Signal Failure all out",
+    "Signal Stuck",
+    "Signal Head Failure",
+    "Damaged Control box",
+    "Signal Failure/Damaged - Toucan/Pelican",
+// New
     "All Traffic Signals OUT (Not Working)",
     "Damaged/Exposed Wiring / Vandalised",
     "Lamp Failure",

@@ -64,7 +64,7 @@ my $c = 0;
 while (my $row = $csv->getline_hr($fh)) {
     my $junction = uc $row->{junction};
     my $alt_name;
-    if ($junction =~ /^(J\d+)\s*(.*)$/) {
+    if ($junction =~ /^(J\d+)\s+(.*)$/) {
         ($junction, $alt_name) = ($1, $2);
     }
 

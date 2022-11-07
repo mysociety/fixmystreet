@@ -41,6 +41,14 @@ sub asset_layers : Path('asset_layers.js') : Args(0) {
             my @layers = @{ $cobrands->{$moniker} };
             push @$layers, _add_layer($moniker, @layers);
         }
+    } elsif ($c->cobrand->moniker eq 'greenwich' || $c->cobrand->moniker eq 'bexley') {
+        my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
+        my $cobrands = $features->{asset_layers} || {};
+        my $layers = $c->stash->{asset_layers} = [];
+        for my $moniker ($c->cobrand->moniker, 'thamesmead') {
+            my @layers = @{ $cobrands->{$moniker} };
+            push @$layers, _add_layer($moniker, @layers) if @layers;
+        }
     } else {
         my @layers = @{ $c->cobrand->feature('asset_layers') || [] };
         return unless @layers;
@@ -48,16 +56,29 @@ sub asset_layers : Path('asset_layers.js') : Args(0) {
     }
 }
 
+sub _encode_json_with_js_classes {
+    my $data = shift;
+    my $json = encode_json($data);
+    $json =~ s/"(class|format_class|construct_asset_name|asset_found|asset_not_found|found|not_found|stylemap)":"(.*?)"/"$1":$2/g;
+    return $json;
+}
+
 sub _add_layer {
     my ($moniker, @layers) = @_;
     my $default = shift @layers;
+    unless (ref $default eq 'ARRAY') {
+        $default = [ $default ];
+    }
+    $default = { map {
+        ($_->{name} || 'default') => $_
+    } @$default };
     return {
         moniker => $moniker,
-        default => encode_json($default),
+        default => _encode_json_with_js_classes($default),
         layers => [ map {
-            my $json = encode_json($_);
-            $json =~ s/("stylemap":)"(.*?)"/$1$2/;
-            $json;
+            my $default = $_->{template} || 'default';
+            my $json = _encode_json_with_js_classes($_);
+            { default => $default, data => $json };
         } @layers ],
     };
 }
