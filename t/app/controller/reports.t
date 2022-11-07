@@ -137,6 +137,9 @@ FixMyStreet::override_config {
     $mech->submit_form_ok( { with_fields => { body => $body_edin_id } }, 'Submitted dropdown okay' );
     is $mech->uri->path, '/reports/City+of+Edinburgh';
 
+    my $problems = $mech->extract_problem_list;
+    is scalar @$problems, 3, 'no waste problems displayed';
+
     subtest "test ward pages" => sub {
         $mech->get_ok('/reports/Birmingham/Bad-Ward');
         is $mech->uri->path, '/reports/Birmingham';

@@ -35,7 +35,7 @@ sub restriction {
     return {};
 }
 
-# FixMyStreet needs to not show TfL reports or Bromley waste reports
+# FixMyStreet needs to not show TfL reports or waste reports
 sub problems_restriction {
     my ($self, $rs) = @_;
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
@@ -47,7 +47,15 @@ sub problems_restriction {
 sub problems_sql_restriction {
     my $self = shift;
     return "AND cobrand != 'tfl'";
-    # Doesn't need Bromley one as all waste reports non-public
+    # Doesn't need waste one as all waste reports non-public
+}
+
+# We can show pins for TfL reports, but not waste reports
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search({
+        cobrand_data => { '!=' => 'waste' },
+    });
 }
 
 sub relative_url_for_report {
