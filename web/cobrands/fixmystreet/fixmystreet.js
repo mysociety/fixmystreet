@@ -850,6 +850,7 @@ $.extend(fixmystreet.set_up, {
                 $upload_fileids.val(newstr);
             });
             this.on("maxfilesexceeded", function(file) {
+                console.log(this);
                 this.removeFile(file);
                 var $message = $('<div class="dz-message dz-error-message">');
                 $message.text(translation_strings.upload_max_files_exceeded);
@@ -861,6 +862,11 @@ $.extend(fixmystreet.set_up, {
                 }, 2000);
             });
             }
+        });
+
+        // Delete pictures when item is deleted on bulky waste
+        $(this).closest('.bulky-item-wrapper').find('.delete-item').click(function(){
+            photodrop.removeAllFiles(true);
         });
 
         $dropzone.on('keydown', function(e) {
@@ -2116,8 +2122,15 @@ setTimeout(function () {
       $(".delete-item").click(function(){
         var $enhancedElement = $(this).closest('.bulky-item-wrapper').find('.autocomplete__input');
         $(this).closest('.bulky-item-wrapper').hide();
+        $(this).closest('.bulky-item-wrapper').hide();
         $enhancedElement.val('');
         $(this).closest('.bulky-item-wrapper').find('select.js-autocomplete').val('');
+        console.log(this);
+        // $(this).closest('.bulky-item-wrapper').find('.dropzone');
+        // photodrop.removeFile(file);
+        $(this).closest('.bulky-item-wrapper').find('.dz-remove').trigger('click');
+        // console.log($(this).closest('.bulky-item-wrapper').find('.dz-remove'));
+        // console.log($(this).closest('.bulky-item-wrapper').find('.dz-remove').trigger('click'));
         $enhancedElement.click()
         $enhancedElement.focus()
         $enhancedElement.blur()
@@ -2126,3 +2139,4 @@ setTimeout(function () {
         disableAddItemButton();
       });
 }, 300);
+
