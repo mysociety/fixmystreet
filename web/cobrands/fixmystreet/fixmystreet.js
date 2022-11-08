@@ -528,6 +528,7 @@ $.extend(fixmystreet.set_up, {
             required: $(this).prop('required') ? true : false,
             showAllValues: true,
             defaultValue: '',
+            preserveNullOptions: true,
             onConfirm: function(label) {
                 // This function runs when the user selects an item, or removes focus from the autoselect dropdown.
                 if (typeof label !== 'undefined') {
@@ -2110,10 +2111,16 @@ setTimeout(function () {
         $("#add-new-item").prop('disabled', true);
     });
 
-      //Erase bulky item
+    //Erase bulky item
+    //https://github.com/OfficeForProductSafetyAndStandards/product-safety-database/blob/master/app/assets/javascripts/autocomplete.js#L40
       $(".delete-item").click(function(){
+        var $enhancedElement = $(this).closest('.bulky-item-wrapper').find('.autocomplete__input');
         $(this).closest('.bulky-item-wrapper').hide();
-        $(this).closest('.bulky-item-wrapper').find('.autocomplete__input').val('');
+        $enhancedElement.val('');
+        $(this).closest('.bulky-item-wrapper').find('select.js-autocomplete').val('');
+        $enhancedElement.click()
+        $enhancedElement.focus()
+        $enhancedElement.blur()
         numItemsVisible = $('.bulky-item-wrapper:visible').length;
         deleteItem();
         disableAddItemButton();
