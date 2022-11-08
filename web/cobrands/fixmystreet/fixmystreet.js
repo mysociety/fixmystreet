@@ -2125,15 +2125,9 @@ setTimeout(function () {
         $(this).closest('.bulky-item-wrapper').hide();
         $enhancedElement.val('');
         $(this).closest('.bulky-item-wrapper').find('select.js-autocomplete').val('');
-        console.log(this);
-        // $(this).closest('.bulky-item-wrapper').find('.dropzone');
-        // photodrop.removeFile(file);
-        $(this).closest('.bulky-item-wrapper').find('.dz-remove').trigger('click');
-        // console.log($(this).closest('.bulky-item-wrapper').find('.dz-remove'));
-        // console.log($(this).closest('.bulky-item-wrapper').find('.dz-remove').trigger('click'));
-        $enhancedElement.click()
-        $enhancedElement.focus()
-        $enhancedElement.blur()
+        $enhancedElement.click();
+        $enhancedElement.focus();
+        $enhancedElement.blur();
         numItemsVisible = $('.bulky-item-wrapper:visible').length;
         deleteItem();
         disableAddItemButton();
