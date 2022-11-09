@@ -1,10 +1,14 @@
-[% IF unit.garden_waste %][%# At present %]
-
 [% IF unit.report_open %]
   <span class="waste-service-descriptor">
-    A [% unit.service_name FILTER lower %] collection has been reported as missed
+  [% IF communal_property %]
+    A [% unit.service_name FILTER lower %] collection has been reported as missed by yourself, a neighbour, or your Managing Agent.
+    For updates please check your email or telephone our contact centre on 020 8547 5002.
+  [% ELSE %]
+    A [% unit.service_name FILTER lower %] collection has been reported as missed.
+    Please check your email for an update on your request.
+  [% END %]
   </span>
-[% ELSIF unit.report_allowed AND 0 %]
+[% ELSIF unit.report_allowed %]
   [% any_report_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -14,24 +18,19 @@
 [% ELSIF unit.report_locked_out %]
   <span class="waste-service-descriptor">A missed collection cannot be reported, please see the last collection status above.</span>
 [% ELSE %]
-
- [% IF 0 %][%# At present %]
-  <span class="waste-service-descriptor" style="margin-top: 1.5em;">Please note that missed collections can only be reported after 6pm on your scheduled collection day and for 2 working days after your scheduled collection.</span>
- [% END %]
-[% END %]
-
+  <span class="waste-service-descriptor" style="margin-top: 1.5em;">Please note that missed collections can only be reported after the collection on your street was completed and for 2 working days after your scheduled collection.</span>
 [% END %]
 
 [% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
-    A new [% unit.service_name FILTER lower %] container request has been made
+    A [% unit.service_name FILTER lower %] container request has been made
   </span>
 [% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="hidden" name="container-choice" value ="[% unit.request_containers.0 %]">
-    <input type="submit" value="Request a [% unit.service_name == 'Garden Waste' ? 'replacement' : 'new' %] [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+    <input type="hidden" name="container-choice" value="[% unit.request_containers.0 %]">
+    <input type="submit" value="Request a [% unit.service_name == 'Garden Waste' ? 'replacement ' : '' %][% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
   </form>
 [% ELSIF unit.garden_waste && NOT unit.garden_due %]
   <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
@@ -81,9 +80,11 @@
     [% END %]
       </form>
   [% END %]
-  <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
-    <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
-  </form>
+      [% IF c.cobrand.call_hook('waste_garden_allow_cancellation') == 'staff' AND is_staff %]
+          <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
+            <input type="hidden" name="token" value="[% csrf_token %]">
+            <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+          </form>
+      [% END %]
   [% END %]
 [% END %]

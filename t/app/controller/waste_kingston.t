@@ -225,6 +225,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    $echo->mock('GetTasks', sub { [] });
 
     subtest 'Look up of address not in correct borough' => sub {
         $mech->get_ok('/waste');
@@ -699,7 +700,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
-        like $body, qr/reference number is RBK-GGW-$report_id/, 'email has ID in it';
+        like $body, qr/reference number is RBK-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
@@ -1466,7 +1467,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
-        like $body, qr/reference number is RBK-GGW-$report_id/, 'email has ID in it';
+        like $body, qr/reference number is RBK-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
@@ -1622,7 +1623,7 @@ FixMyStreet::override_config {
         $mech->content_contains('1 bin');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
-        my ($report_id) = $mech->content =~ m#RBK-GGW-(\d+)#;
+        my ($report_id) = $mech->content =~ m#RBK-(\d+)#;
         my $report = FixMyStreet::DB->resultset('Problem')->search( { id => $report_id } )->first;
 
         check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');

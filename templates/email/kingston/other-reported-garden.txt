@@ -1,4 +1,4 @@
-Subject: Garden waste collection service - reference RBK-GGW-[% report.id %]
+Subject: Garden waste collection service - reference RBK-[% report.id %]
 
 [%
 

@@ -311,6 +311,7 @@ sub bin_services_for_address {
         1 => 'Brown rubbish bin (140L)',
         2 => 'Brown rubbish bin (240L)',
         3 => 'Brown rubbish bin (360L)',
+        35 => 'Rubbish bin (180L)',
         16 => 'Green recycling box',
         19 => 'Green paper and cardboard bin',
         23 => 'Food waste bin (kitchen)',
@@ -351,7 +352,6 @@ sub bin_services_for_address {
     unless (@$result && grep { $_->{ServiceId} == 409 } @$result) {
         # No garden collection possible
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
-        return [] if $self->council_url eq 'kingston';
     }
 
     my $events = $self->_parse_events($self->{api_events});
@@ -378,10 +378,6 @@ sub bin_services_for_address {
             if ($service_id == 2242) { # Collect Domestic Refuse Bag
                 $self->{c}->stash->{garden_sacks} = 1;
             }
-
-            # Only Garden for now XXX
-            next if $self->council_url eq 'kingston' && $service_id != $self->garden_service_id;
-            # Only Garden for now XXX
 
             my $schedules = _parse_schedules($task, 'task');
 
