@@ -1,0 +1,234 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+// From https://www.figma.com/file/If9ROhwOWsl2Y1p38S6Jsa/style-guide%3A-fix-my-street-v2?node-id=140%3A185
+
+/* COLOURS */
+$gray-1: #0b0c0c;
+$gray-2: #4d5051;
+$gray-3: #8B9192; // $gray-3 For borders.
+
+$white: #fff;
+$white-2: #f2f5f9; // $white-2 should be used only for background colours.
+
+$blue: #003E90;
+$blue-d1: #113255;
+$purple: #4c2c92;
+$yellow: #ffde02;
+
+// Error and Success colours
+$red: #a81010;
+$green: #006135;
+
+$primary: $gray-2;
+$primary_b: $gray-1;
+$primary_text: $gray-1;
+$error-color: $red;
+$base_bg: $white;
+$base_fg: $gray-1;
+
+/* 
+IMPORTANT
+If cobrand doesn't have specific rules for large screen, comment 
+the variable $large-view-point. This will disable all the variables 
+with large property and only use the small as the default. */
+$large-view-point: 641px;
+// $container-max-width: 60em;
+
+/* FONTS */
+$heading-font: 'Inter', sans-serif;
+$body-font: 'Inter', sans-serif;
+$meta-font: 'Inter', sans-serif;
+
+$font-size-small-view: 16px;
+$font-size-large-view: 19px;
+
+$h1-size-small-view: 32px;
+$h2-size-small-view: 24px;
+$h3-size-small-view: 18px;
+$h4-size-small-view: 16px;
+
+$h1-size-large-view: 48px;
+$h2-size-large-view: 32px;
+$h3-size-large-view: 24px;
+$h4-size-large-view: 19px;
+
+/* LINKS */
+$primary_link_color: $blue;
+$primary_link_hover_color: $blue-d1;
+$link-color: $blue;
+$link-hover-color: $blue-d1;
+$link-visited-color: $purple;
+$link-active-color: $primary_b;
+$link-focus-color: $primary_b;
+$link-focus-background-colour: $yellow;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline;
+
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: underline;
+$primary_link_focus_decoration: underline;
+
+// Some cobrands change the thickness on hover or focus
+$link-text-decoration-thickness-default: 1.5px;
+$link-text-decoration-thickness-active: 3px;
+$link-text-decoration-thickness-hover: 3px;
+$link-text-decoration-thickness-focus: 3px;
+$text-underline-offset: 5px; // This prevent the underline to get cropped
+
+$col_click_map: $gray-1;
+$col_click_map_dark: darken($gray-1, 10%);
+
+/* NAVBAR */
+
+$menu-image: "menu-white";
+$menu-image-focus: "menu-black";
+$close-menu-image: "close-#{$menu-image}";
+$close-menu-image-focus: "close-#{$menu-image-focus}";
+
+$nav_background_colour: $gray-1;
+$nav_colour: $white;
+$nav_hover_background_colour: $primary;
+
+$mappage-header-height: 65px;
+$header-height-mobile: 65px;
+$header-height-desktop: $mappage-header-height; // The navbar should be same size everywhere
+$header-top-border: false;
+$header-top-border-width: 0px;
+$header-top-border: $header-top-border-width solid $primary;
+
+$logo-height-mobile: 30px;
+$logo-width-mobile: 150px;
+$logo-height-desktop: 50px;
+$logo-width-desktop: 165px;
+
+$nav-font-size-mobile: $font-size-small-view;
+$nav-font-size-desktop: $font-size-small-view;
+
+// * BUTTON
+
+$button-margin-top: 0;
+$button-margin-bottom: 0;
+$button-margin-right: 0;
+$button-margin-left: 0;
+
+$btn-font-size-small: $font-size-small-view;
+$btn-font-size-large: $font-size-large-view;
+$btn-font-weight: 500;
+
+$btn-top-padding-small: 12px;
+$btn-bottom-padding-small: 11px;
+$btn-right-padding-small: 15px;
+$btn-left-padding-small: 15px;
+
+$btn-top-padding-large: 15px;
+$btn-bottom-padding-large: 16px;
+$btn-right-padding-large: 15px;
+$btn-left-padding-large: 15px;
+
+// This padding variables are from sass file that applies to all cobrands
+// Unfortunately that file only consider btn with one size.
+// NO NEED TO CHANGE THEM
+$button-padding-top: $btn-top-padding-small; //
+$button-padding-bottom: $btn-bottom-padding-small;
+$button-padding-left: $btn-left-padding-small;
+$button-padding-right: $btn-right-padding-small;
+
+$btn-border-width: 3px;
+$btn-border-radius: 3px;
+
+$btn-text-decoration-thickness-default: 0px !important;
+$btn-text-decoration-thickness-active: 2px !important;
+$btn-text-decoration-thickness-hover: 1px !important;
+$btn-text-decoration-thickness-focus: 2px !important;
+$btn-underline-offset: $text-underline-offset;
+
+// * Primary button
+$primary_button_background_color: $link-color;
+$primary_button_color: $white;
+$primary_button_border_color: $link-color;
+
+$primary_button_background_color_hover: $link-hover-color;
+$primary_button_color_hover: $white;
+$primary_button_border_color_hover: $link-hover-color;
+
+$primary_button_background_color_focus: $link-focus-background-colour;
+$primary_button_color_focus: $primary_b;
+$primary_button_border_color_focus: $primary_b;
+
+// * Secondary button
+$secondary_button_background_color: $white;
+$secondary_button_color: $link-color;
+$secondary_button_border_color: $link-color;
+
+$secondary_button_background_color_hover: $white;
+$secondary_button_color_hover: $link-hover-color;
+$secondary_button_border_color_hover:$link-hover-color;
+
+$secondary_button_background_color_focus: $link-focus-background-colour;
+$secondary_button_color_focus: $primary_b;
+$secondary_button_border_color_focus: $primary_b;
+
+/* INPUTS */
+$input-height-small-screen: 42px;
+$input-height-large-screen: 40px;
+$input-border-radius: 0;
+$input-border-width: 2px;
+$input-padding-x: 8px;
+$input-border-colour: $primary_b;
+$input-outline-hover: 10px solid $gray-3; //Only applies to radio and checkbox
+$input-outline-focus: 3px solid $link-focus-background-colour;
+$input-box-shadow-default: none;
+$input-box-shadow-focus: 0px 0px 0px 2px $primary_b inset;
+$input-box-shadow-focus-hover: 0px 0px 0px 3px $link-focus-background-colour, 0px 0px 0px 10px $gray-3;
+
+// * CHECKBOXES
+$checkbox-height-small-version: 24px;
+$checkbox-width-small-version: 24px;
+
+// * RADIOBUTTON
+$radio-height-small-version: $checkbox-height-small-version;
+$radio-width-small-version: $checkbox-width-small-version;
+
+// * SEARCH HELP
+// This section has more variables. Go to _search-help.scss to see the full list
+$search-help-alignment: left;
+$search-help-background: lighten($red, 60%);
+$search-help-header-background: $red;
+$search-help-header-font-weight: normal;
+$search-help-header-font-size: 24px;
+$search-help-header-font-size-desktop: 32px;
+$search-help-margin-desktop: -1em -1em 0 -1em;
+
+/* DROPZONE */
+// You can comment this out, and see if the default is good enough
+$dropzone-border-colour: $link-color;
+$dropzone-button-text: $white;
+$dropzone-button-background: $link-color;
+$dropzone-button-border: $link-color;
+$dropzone-border-color--awakened: $yellow;
+
+$layout_front_stats_color: $primary_b;
+$col_big_numbers: $primary_b;
+
+/* 
+If you want to enable the sticky side bar on the help page
+erase the following file
+/about/_sidebar.html
+*/
+
+/* LIST OF UNUSED VARIABLES FOR THIS COBRAND */
+// $mappage-sidebar-width: 29em;
+// $mappage-sidebar-padding: 1em;
+// $mappage-notes-width: 15em;
+// $mappage-actions-width: 25em;
+// $mappage-sidebar-width--medium: 24em;
+// $mappage-actions-width--medium: 20em;
+// $pagination_background: #f6f6f6;
+// $itemlist_item_background: #f6f6f6;
+// $itemlist_item_background_hover: #e6e6e6;
+// $col_fixed_label: #00bd08;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+// $form-control-border-color: #aaaaaa;
