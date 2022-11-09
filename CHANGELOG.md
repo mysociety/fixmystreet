@@ -37,6 +37,7 @@
         - Admin 'add user' form now always creates staff users
         - Make sure staff permissions removed when anonymized.
         - Add role filter to dashboard interface.
+        - Alerts are paginated on user edit page. #4158
     - Development improvements:
         - Default make_css to `web/cobrands` rather than `web`.
         - Ability to pass custom arguments (eg: SSL config) to server when running via Docker
