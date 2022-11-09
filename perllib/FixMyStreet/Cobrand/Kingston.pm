@@ -59,10 +59,42 @@ sub garden_waste_dd_munge_form_details {
     my ($self, $c) = @_;
 
     $c->stash->{form_name} = $c->stash->{payment_details}->{form_name};
-
     if ( $c->stash->{staff_payments_allowed} ) {
         $c->stash->{form_name} = $c->stash->{payment_details}->{staff_form_name};
     }
+
+    my $cfg = $self->feature('echo');
+    if ($cfg->{nlpg} && $c->stash->{property}{uprn}) {
+        my $uprn_data = get(sprintf($cfg->{nlpg}, $c->stash->{property}{uprn}));
+        $uprn_data = JSON::MaybeXS->new->decode($uprn_data);
+        my $address = $self->get_address_details_from_nlpg($uprn_data);
+        if ( $address ) {
+            $c->stash->{address1} = $address->{address1};
+            $c->stash->{address2} = $address->{address2};
+            $c->stash->{town} = $address->{town};
+            $c->stash->{postcode} = $address->{postcode};
+        }
+    }
+}
+
+sub get_address_details_from_nlpg {
+    my ( $self, $uprn_data) = @_;
+
+    my $address;
+    my $property = $uprn_data->{results}->[0]->{LPI};
+    if ( $property ) {
+        $address = {};
+        $address->{address1} .= ( FixMyStreet::Template::title($property->{$_}) . ", " || '' ) for qw/SUB_BUILDING_NAME BUILDING_NAME BUILDING_NUMBER/;
+
+        $address->{address1} = join(", ", grep {/.+/} map { FixMyStreet::Template::title($property->{$_}) } qw/SUB_BUILDING_NAME BUILDING_NAME BUILDING_NUMBER/);
+
+        $address->{address2} = FixMyStreet::Template::title($property->{THOROUGHFARE_NAME});
+        $address->{address2} = join(", ", grep { /.+/ } map { FixMyStreet::Template::title($property->{$_}) } qw/DEPENDENT_THOROUGHFARE_NAME THOROUGHFARE_NAME/);
+        $address->{town} = FixMyStreet::Template::title($property->{POST_TOWN});
+        $address->{postcode} = $property->{POSTCODE};
+    }
+
+    return $address;
 }
 
 1;

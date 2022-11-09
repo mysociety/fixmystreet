@@ -167,12 +167,12 @@ sub sanitize {
     $text = $$text if UNIVERSAL::isa($text, 'FixMyStreet::Template::SafeString');
 
     my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
-    my %admin_tags = ( p => { class => 1 } );
+    my %admin_tags = ( p => { class => 1, id => 1, style => 1 } );
     my $scrubber = HTML::Scrubber->new(
         rules => [
             %allowed_tags,
             $admin ? %admin_tags : (),
-            a => { href => qr{^(http|/|tel)}i, style => 1, target => qr/^_blank$/, title => 1, class => qr/^js-/ },
+            a => { href => qr{^(http|/|tel|mailto)}i, style => 1, target => qr/^_blank$/, title => 1, class => qr/^js-/ },
             img => { src => 1, alt => 1, width => 1, height => 1, hspace => 1, vspace => 1, align => 1, sizes => 1, srcset => 1 },
             font => { color => 1 },
             span => { style => 1 },

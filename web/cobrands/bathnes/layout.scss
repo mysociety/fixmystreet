@@ -43,10 +43,8 @@
 #front-main {
     padding: 2em 1em;
     background-color: $front_main_background;
+    color: $primary_b;
 
-    h1, h4 {
-        color: $primary_b;
-    }
     h1 {
         font-weight: bold;
         font-size: 3em;

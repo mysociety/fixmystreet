@@ -72,11 +72,12 @@ body.mappage {
 }
 
 #site-header {
-    background: $nav_background_colour;
     padding: 1em 0;
 }
 
 body.frontpage {
+    @include linear-gradient(white 5%, #9adfef 65%);
+
     #site-logo {
         width: 300px;
         height: 55px;
@@ -97,7 +98,7 @@ body.mappage {
 }
 
 #front-main {
-    background: $primary url(/cobrands/fixamingata/images/tile-y.jpg);
+    background: unset;
 }
 
 .tablewrapper {
@@ -158,4 +159,49 @@ body.twothirdswidthpage {
            background:#fff;
        }
     }
+}
+
+#front-main {
+    margin: 1em 0 2em;
+}
+
+#postcodeForm  {
+    display: flex;
+    flex-direction: column;
+}
+
+#front-main #postcodeForm .form-hint {
+    font-size: .9em;
+    margin-top: .5em;
+}
+
+#front-main #geolocate_link {
+    border-color: rgb(34, 34, 34);
+    color: rgb(34, 34, 34);
+    font-size: .9em;
+}
+
+.nav-menu a:hover {
+    background-color: #e6f7fb;
+    color: rgb(34, 34, 34);
+}
+
+.content {
+    margin-bottom: 2em;
+}
+
+#front_stats {
+    border-color: #087FA0;
+}
+
+#front_stats big {
+    color: #087FA0;
+}
+
+.item-list, h4.static-with-rule, #key-tools {
+    border-color: #087fa0;
+}
+
+#offline_list:empty {
+    display: none;
 }

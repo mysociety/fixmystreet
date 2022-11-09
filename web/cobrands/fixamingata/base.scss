@@ -11,7 +11,6 @@
 @import "../sass/base";
 
 #site-header {
-    @include linear-gradient(#000, #ccc 10%, #ccc 90%, #000);
     padding: 0.5em 0;
 }
 
@@ -59,4 +58,187 @@
     width: 100%;
     height: 100%;
     border: 0;
+}
+
+#site-header {
+    background: unset;
+}
+
+$mysoc-footer-background-color: #fff;
+$mysoc-footer-text-color: rgb(34, 34, 34);
+$mysoc-footer-site-name-text-color: rgb(34, 34, 34);
+
+$mysoc-footer-link-text-color: rgb(34, 34, 34);
+$mysoc-footer-link-hover-text-color: rgb(34, 34, 34);
+
+$mysoc-footer-border-top: 0.25em solid #087FA0; // $primary;
+
+$mysoc-footer-divider-color: rgb(34, 34, 34);
+
+$mysoc-footer-donate-background-color: rgb(34, 34, 34);
+$mysoc-footer-donate-text-color: #fff;
+$mysoc-footer-donate-button-background-color: red;
+$mysoc-footer-donate-button-text-color: rgb(34, 34, 34);
+
+$mysoc-footer-legal-text-color: rgb(68, 68, 68);
+
+$mysoc-footer-image-path: 'images/mysoc-footer/';
+$mysoc-footer-breakpoint-sm: 48em;
+
+$grid-max-width: 60em;
+$grid-gutter: 2em;
+$grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
+
+@import "mysoc_footer";
+
+.mysoc-footer {
+
+  @media print {
+    display: none;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  .container {
+    margin: 0 auto;
+  }
+
+  .container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: $grid-gutter / 2;
+    padding-right: $grid-gutter / 2;
+    max-width: $grid-max-width;
+  }
+
+  .row {
+    @include clearfix;
+    margin-left: $grid-gutter / -2;
+    margin-right: $grid-gutter / -2;
+  }
+
+  %col {
+    padding-left: $grid-gutter / 2;
+    padding-right: $grid-gutter / 2;
+  }
+
+  @for $i from 1 through 12 {
+    .col-sm-#{$i} {
+      @extend %col;
+    }
+  }
+
+  @media(min-width: $grid-breakpoint-sm) {
+    %col-float {
+      float: left;
+    }
+
+    @for $i from 1 through 12 {
+      .col-sm-#{$i} {
+        @extend %col-float;
+        width: 100% / 12 * $i;
+      }
+    }
+  }
+}
+
+.mysoc-footer__org__logo--fms-platform {
+  width: 205px;
+  background-repeat: no-repeat;
+  background-size: 205px 32px;
+  @include svg-background-image('#{$mysoc-footer-image-path}logo-fms-platform');
+}
+
+.fms-app-badges {
+  margin: 1em 0;
+}
+.fms-app-badge {
+  display: inline-block;
+  text-decoration: none;
+  width: 135px;
+  height: 0;
+  padding-top: 40px;
+  background-size: 135px 40px;
+  overflow: hidden;
+  margin-right: 0.5em;
+}
+.fms-app-badge--ios {
+  @include svg-background-image('/cobrands/fixmystreet/images/itunes_store_logo');
+}
+.fms-app-badge--android {
+  @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
+}
+
+.fms-pro-promo {
+    margin: 0 -1em;
+
+    h2 {
+        margin-top: 0;
+    }
+
+    .lead {
+        font-weight: bold;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.fms-pro-promo__pro,
+.fms-pro-promo__stats {
+    padding: 1.5em 1em;
+}
+
+.fms-pro-promo__pro {
+    background: $primary;
+}
+
+.fms-pro-promo__stats {
+    border-bottom: 0.25em solid $primary;
+}
+
+#for-municipalities {
+    display: none;
+}
+
+.frontpage #for-municipalities {
+    display: block;
+}
+
+.mobile #front-recently {
+    padding-right: 1em;
+}
+
+.mobile .fms-pro-promo__stats {
+    padding: 0;
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    @include button-variant(#1a9ab8, #05617a, #05617a, #fff, #045369, #1a9ab8, #05617a, #fff);
+}
+
+#front-main #postcodeForm label {
+    margin-bottom: 8px;
+    padding-top: 0.5em;
+}
+
+.mobile #front-main #postcodeForm label {
+    padding-top: 0;
+}
+
+#geolocate_link {
+    margin-top: 2em !important;
+}
+
+.mobile #geolocate_link {
+    margin-top: 15px !important;
+}
+
+#pc-hint {
+    display: none;
 }

@@ -1,8 +1,25 @@
-<div style="padding-top: 20px;">
-  <h2>Så här enkelt används FixaMinGata</h2>
-  <video controls poster="/static/poster2019.png" style="width: 100%;">
-    <source src="/static/FMG2019.mp4" type="video/mp4">
-    <track label="Svenska" kind="subtitles" srclang="sv" src="/static/sv.vtt">
-    Din webbläsare kan tyvärr inte spela upp videoklippet.
-  </video>
+<div style="padding-left: 1em; padding-right: 1em; padding-top: 20px;">
+    <h2>Så här enkelt används FixaMinGata</h2>
+    <video controls id="fmg-video" poster="/static/poster2019.png" style="width: 100%;">
+        <source src="/static/FMG2019.mp4" type="video/mp4">
+        <track label="Svenska" kind="subtitles" srclang="sv" src="/static/sv.vtt">
+            Din webbläsare kan tyvärr inte spela upp videoklippet.
+     </video>
 </div>
+<script>
+    // Lose focus on pc element to avoid a virtual keyboard problem on Android
+    var fmgVideo = document.getElementById('fmg-video'),
+        pc = document.getElementById('pc');
+
+    function blurPc() {
+        if (pc.blur) {
+            pc.blur();
+        }
+    }
+
+    if (fmgVideo && fmgVideo.addEventListener) {
+        fmgVideo.addEventListener('play', blurPc);
+        fmgVideo.addEventListener('seeking', blurPc);
+        fmgVideo.addEventListener('volumechange', blurPc);
+    }
+</script>

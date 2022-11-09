@@ -272,6 +272,39 @@ sub about_hook {
     }
 }
 
+=item emergency_message
+
+We want to show the reporting page emergency message from a UK cobrand if one
+is relevant to the location we're currently at.
+
+=cut
+
+sub emergency_message {
+    my $self = shift;
+    my ($type) = @_;
+
+    return unless $type eq 'reporting';
+
+    # Body list might come from /report/new or /around data
+    my $c = $self->{c};
+    my @bodies = do {
+        if ($c->stash->{bodies_to_list}) {
+            values %{$c->stash->{bodies_to_list}};
+        } else {
+            @{$c->stash->{around_bodies}};
+        }
+    };
+
+    foreach my $body (@bodies) {
+        my $cobrand = $body->get_cobrand_handler || next;
+        my $msg = $cobrand->emergency_message($type);
+        if ($msg) {
+            $msg = "Message from " . $body->name . ": " . $msg;
+            return FixMyStreet::Template::SafeString->new($msg);
+        }
+    }
+}
+
 sub per_body_config {
     my ($self, $feature, $problem) = @_;
 

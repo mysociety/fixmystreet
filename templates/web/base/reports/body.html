@@ -1,6 +1,10 @@
 [% body_name = PROCESS 'reports/_body_name.html' | trim %]
 
-[% IF ward %]
+[% IF ward_type %]
+    [% name = "$ward.name, $body_name"
+        thing = ward_type
+    %]
+[% ELSIF ward %]
     [% name = "$ward.name, $body_name"
        thing = loc('ward')
     %]

@@ -107,7 +107,10 @@ fixmystreet.staff_set_up = {
             $emailOptionalLabel.addClass('hidden');
             $nameInput.val($nameInput.prop('defaultValue')).prop('disabled', false).prop('readonly', true);
             $phoneInput.val($phoneInput.prop('defaultValue')).prop('disabled', true);
-            $showNameCheckbox.prop('checked', false).prop('disabled', false);
+            if (fixmystreet.cobrand !== 'fixamingata') {
+                $showNameCheckbox.prop('checked', false);
+            }
+            $showNameCheckbox.prop('disabled', false);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'another_user') {
             $emailInput.val('').prop('disabled', false);

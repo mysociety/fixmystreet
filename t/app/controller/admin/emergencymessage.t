@@ -5,6 +5,7 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 my $bexley = $mech->create_body_ok(2494, 'Bexley Council', {}, { cobrand => 'bexley' });
+$mech->create_contact_ok(body_id => $bexley->id, category => 'Damaged road', email => "ROAD");
 my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
 my $user = $mech->create_user_ok('user@example.com', name => 'Test User', from_body => $body);
 
@@ -96,7 +97,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'bexley' ],
+    ALLOWED_COBRANDS => [ 'bexley', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk',
 }, sub {
     subtest 'setting reporting message' => sub {
@@ -106,13 +107,19 @@ FixMyStreet::override_config {
             permission_type => 'emergency_message_edit',
         });
 
+        $mech->host('bexley.example.org');
         $mech->get_ok('/admin/emergencymessage');
         $mech->submit_form_ok({ with_fields => { emergency_message_reporting => 'Testing reporting message' } });
         $mech->content_contains('Testing reporting message');
         $mech->get_ok('/report/new?latitude=51.45556&longitude=0.15356');
         $mech->content_contains('Testing reporting message');
 
+        $mech->host('fixmystreet.example.org');
+        $mech->get_ok('/report/new?latitude=51.45556&longitude=0.15356');
+        $mech->content_contains('Testing reporting message');
+
         # Check removing message
+        $mech->host('bexley.example.org');
         $mech->get_ok('/admin/emergencymessage');
         $mech->submit_form_ok({ with_fields => { emergency_message_reporting => '' } });
         $mech->content_lacks('Testing reporting message');

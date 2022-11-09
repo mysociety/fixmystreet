@@ -5,6 +5,7 @@ use DateTime::Format::Strptime;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
+# XXX Remove hardcoded number & fetch from config
 use constant MAX_ITEMS => 5;
 
 has_page intro => (

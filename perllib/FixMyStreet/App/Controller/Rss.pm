@@ -6,7 +6,6 @@ use POSIX qw(strftime);
 use HTML::Entities qw();
 use URI::Escape;
 use XML::RSS;
-
 use FixMyStreet::App::Model::PhotoSet;
 
 use FixMyStreet::Gaze;
@@ -140,8 +139,8 @@ sub local_problems_ll : Private {
     my ( $self, $c, $lat, $lon ) = @_;
 
     # truncate the lat,lon for nicer urls
-    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );    
-    
+    ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
+
     my $d = $c->stash->{distance};
     if ( $d ) {
         $c->stash->{qs} .= ";d=$d";
@@ -160,7 +159,7 @@ sub local_problems_ll : Private {
         $c->stash->{type} .= '_state';
         push @{ $c->stash->{db_params} }, $c->stash->{state};
     }
-    
+
     $c->forward('output');
 }
 
@@ -209,6 +208,7 @@ sub generate : Private {
 
     my $out = $c->stash->{rss}->as_string;
     my $uri = $c->uri_for( '/' . $c->req->path );
+    $uri .= '?type=' . $c->stash->{ward_code} if $c->stash->{ward_code} && $c->stash->{ward};
     $out =~ s{(<link>.*?</link>)}{$1<uri>$uri</uri>};
 
     $c->response->header('Content-Type' => 'application/xml; charset=utf-8');
@@ -334,6 +334,8 @@ sub add_parameters : Private {
     $row->{SITE_NAME} = $c->stash->{site_name};
 
     (my $title = _($alert_type->head_title)) =~ s/\{\{(.*?)}}/$row->{$1}/g;
+    my $replacement_text = $c->stash->{ward_type};
+    $title =~ s/ ward / $replacement_text / if $replacement_text;
     (my $link = $alert_type->head_link) =~ s/\{\{(.*?)}}/$row->{$1}/g;
     (my $desc = _($alert_type->head_description)) =~ s/\{\{(.*?)}}/$row->{$1}/g;
 

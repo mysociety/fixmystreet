@@ -1399,7 +1399,7 @@ sub emergency_message {
         my $ooh = $self->ooh_times($body);
         $msg = $ooh_msg if $ooh->active;
     }
-    FixMyStreet::Template::SafeString->new($msg);
+    FixMyStreet::Template::SafeString->new($msg) if $msg;
 }
 
 sub ooh_times {

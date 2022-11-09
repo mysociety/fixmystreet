@@ -34,6 +34,11 @@ has token => (
     default => undef,
 );
 
+has page_size => (
+    is => 'rw',
+    default => 50,
+);
+
 sub headers {
     my $self = shift;
 
@@ -108,6 +113,33 @@ has auth_details => (
         return $ua;
     },
 );
+
+sub call_paged {
+    my ($self, $path, $data, $method) = @_;
+
+    my $first_result = $self->call($path, $data, $method);
+
+    if ( ref $first_result eq 'HASH' and $first_result->{error} ) {
+        return $first_result;
+    }
+
+    my $count = $self->parse_results("long", $first_result);
+
+    return $first_result unless @$count;
+
+    my $rows = $count->[0]->{'$value'};
+    if ( $rows > $self->page_size ) {
+        my $start = $self->page_size;
+        while ( $start < $rows ) {
+            $data->{resultsPage}->{firstResult} = $start;
+            my $res = $self->call($path, $data, $method);
+            push @{ $first_result->{rows } }, @{ $res->{rows} };
+            $start += $self->page_size;
+        }
+    }
+
+    return $first_result;
+}
 
 
 sub call {
@@ -309,7 +341,7 @@ sub build_query {
        $params->{query} ? ( criteria => { searchCriteria => [ @{$params->{query}} ] } ) : (),
        "resultsPage" => ixhash(
            "firstResult" => 0,
-           "maxResults" => 50
+           "maxResults" => $self->page_size
        )
     );
 
@@ -377,7 +409,7 @@ sub get_recent_payments {
        )]
    ));
 
-    my $resp = $self->call("query/execute#CollectionHistoryDates", $data);
+    my $resp = $self->call_paged("query/execute#CollectionHistoryDates", $data);
 
     return $self->parse_results("Instruction", $resp);
 }
@@ -385,38 +417,38 @@ sub get_recent_payments {
 sub get_payments_with_status {
     my ($self, $args) = @_;
 
-    my $data = $self->build_query({
-        entity => {
+    my $data = $self->build_query(ixhash(
+        entity => ixhash(
            "name" => "Instructions",
            "symbol" => "com.bottomline.ddm.model.instruction",
            "key" => "com.bottomline.ddm.model.instruction"
-       },
-       field => {
+       ),
+       field => ixhash(
             name => "Instruction",
             symbol => "com.bottomline.ddm.model.instruction.Instruction",
-        },
+        ),
         query =>[
-         {
+         ixhash(
              '@type' => "QueryParameter",
-             "field" => {
+             "field" => ixhash(
                "name" => "status",
                "symbol" => "com.bottomline.ddm.model.instruction.Instruction.status",
                "fieldType" => "ENUM",
                "key" => JSON()->false,
-             },
+             ),
              "operator" => {
                "symbol" => "="
              },
              "queryValues" => [
-               {
+               ixhash(
                    '@type' => "string",
                    '$value' => $args->{status},
-               }
+               )
              ]
-       }
-   ]});
+       )
+   ]));
 
-    my $resp = $self->call("query/execute#CollectionHistoryStatus", $data, "POST");
+    my $resp = $self->call_paged("query/execute#CollectionHistoryStatus", $data);
     return $self->parse_results("Instruction", $resp);
 }
 
@@ -454,7 +486,7 @@ sub get_cancelled_payers {
        )
    ]));
 
-    my $resp = $self->call("query/execute#getCancelledPayers", $data);
+    my $resp = $self->call_paged("query/execute#getCancelledPayers", $data);
     return $self->parse_results("MandateDTO", $resp);
 }
 

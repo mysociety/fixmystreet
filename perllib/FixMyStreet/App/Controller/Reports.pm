@@ -126,6 +126,8 @@ sub ward : Path : Args(2) {
     my @wards = $c->get_param('wards') ? $c->get_param_list('wards', 1) : split /\|/, $ward || "";
     $c->forward( 'body_check', [ $body ] );
 
+    $c->stash->{ward_code} = $c->get_param('type') if $c->get_param('type');
+
     # If viewing multiple wards, rewrite the url from
     # /reports/Borsetshire?ward=North&ward=East
     # to
@@ -169,7 +171,7 @@ sub ward : Path : Args(2) {
     $c->stash->{rss_url} = '/rss/reports/' . $body_short;
     $c->stash->{rss_url} .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
-
+    $c->stash->{rss_url} .= "?type=" . $c->stash->{ward_code} if $c->stash->{ward_code};
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
     $c->forward('setup_map');
@@ -180,7 +182,8 @@ sub ward : Path : Args(2) {
         unless ($children->{error}) {
             foreach (values %$children) {
                 $_->{url} = $c->uri_for( $c->stash->{body_url}
-                    . '/' . $c->cobrand->short_name( $_ )
+                    . '/' . $c->cobrand->short_name( $_ ),
+                    { type => $_->{type} }
                 );
             }
             $c->stash->{children} = $children;
@@ -190,7 +193,8 @@ sub ward : Path : Args(2) {
         unless ($parish_ward->{error}) {
             foreach (values %$parish_ward) {
                 $_->{url} = $c->uri_for( $c->stash->{body_url}
-                    . '/' . $c->cobrand->short_name( $_ )
+                    . '/' . $c->cobrand->short_name( $_ ),
+                    { type => $_->{type} }
                 );
             }
             $c->stash->{parish_ward} = $parish_ward;
@@ -316,6 +320,7 @@ sub rss_body : Path('/rss/reports') : Args(1) {
 sub rss_ward : Path('/rss/reports') : Args(2) {
     my ( $self, $c, $body, $ward ) = @_;
 
+    $c->stash->{ward_code} = $c->get_param('type') || '';
     $c->stash->{rss} = 1;
 
     $c->forward( 'body_check', [ $body ] );
@@ -424,7 +429,6 @@ sub ward_check : Private {
         s/\.html//;
         s{_}{/}g;
     }
-
     # Could be from RSS area, or body...
     my $parent_id;
     if ( $c->stash->{body} ) {
@@ -438,13 +442,19 @@ sub ward_check : Private {
     my $qw = $c->cobrand->fetch_area_children($parent_id);
     $c->cobrand->call_hook('add_parish_wards' => $qw);
 
+    $qw = [values %$qw];
+    if ($c->stash->{ward_code}) {
+        @$qw = grep { $_->{type} eq $c->stash->{ward_code} } @$qw;
+    }
+
     my %names = map { $c->cobrand->short_name({ name => $_ }) => 1 } @wards;
     my @areas;
-    foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {
+    foreach my $area (sort { $a->{name} cmp $b->{name} } @$qw) {
         my $name = $c->cobrand->short_name($area);
         push @areas, $area if $names{$name};
     }
     if (@areas) {
+        $c->stash->{ward_type} = $c->cobrand->call_hook('get_ward_type' => ($areas[0])->{type});
         $c->stash->{ward} = $areas[0] if @areas == 1;
         $c->stash->{wards} = \@areas;
         return;

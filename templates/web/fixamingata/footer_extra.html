@@ -1,32 +1,68 @@
-<footer class="fmg-footer">
-  <div class="container">
-    <div id="footer-mobileapps">
-      <!--
-          <h4></h4>
-      <p>
-      </p>
-      -->
+<div class="container" id="for-municipalities">
+    <div class="content" style="margin: 2em 0;">
+        <div class="fms-pro-promo" style="margin: 0;">
+            <div class="fms-pro-promo__stats" style="border: 0;">
+                <h2>FixaMinGata för kommuner</h2>
+                <p class="lead">FixaMinGata hjälper kommuner att effektivt delta i medborgardialogen.</p>
+                <p>Säker och prioriterad tillgång till support, integration med verksamhetssystem och möjligheten att påverka utvecklingen av tjänsten. Allt till en låg kostnad.</p>
+                <p><a href="/about/council" class="btn">Läs mer om fördelarna</a></p>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div id="footer-help">
-      <ul>
-	<li>
-          <h4>Sekretess och kakor</h4>
-          <p>Vill du veta mer om det juridiska? Läs vår information om <a href="/about/privacy">Sekretess och kakor</a>.</p>
-	</li>
-        <li>
-          <h4>Är du en utvecklare?</h4>
-          <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="https://fixmystreet.org">available at fixmystreet.org</a>.') %]</p>
-        </li>
-	<li>
-          <h4>Är du anställd i en kommun?</h4>
-          <p>Vill du veta mer om FixaMinGata eller hur det kan fungera för er kommun? <a href="/about/council">Läs mer om FixaMinGata för kommuner</a>.</p>
-	</li>
-	<li>
-	  <h4>Tillgänglighet</h4>
-	  <p>Läs gärna vår <a href="/about/accessibility">tillgänglighetsredogörelse</a>.</p>
-	</li>
-      </ul>
+<div class="mysoc-footer" role="contentinfo">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-sm-7">
+                <h2 class="mysoc-footer__site-name">FixaMinGata</h2>
+                <div class="mysoc-footer__site-description">
+                    <p>Rapportera eller visa lokala problem. Var som helst i Sverige.</p>
+                </div>
+
+                <div class="fms-app-badges">
+                    <a class="js-lazyload fms-app-badge fms-app-badge--ios" href="http://appstore.com/fixamingata">
+                        FixaMinGata på App Store
+                    </a>
+                    <a class="js-lazyload fms-app-badge fms-app-badge--android" href="https://play.google.com/store/apps/details?id=se.sambruk.fixamingata">
+                        FixaMinGata på Google Play
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-sm-5">
+                <nav class="mysoc-footer__links">
+                    <ul>
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="[% base %]/"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="[% base %]/my"[% END
+                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="[% base %]/reports"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="[% base %]/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>
+                    </ul>
+                    <ul>
+                        <!-- <li><[% IF c.req.uri.path == '/posters' %]span[% ELSE %]a href="[% base %]/posters"[% END
+                            %]>[% loc("FixMyStreet Goodies") %]</[% c.req.uri.path == '/posters' ? 'span' : 'a' %]></li> -->
+                        <!-- <li><[% IF c.req.uri.path == '/contact' %]span[% ELSE %]a href="[% base %]/contact"[% END
+                            %]>[% loc("Contact") %]</[% c.req.uri.path == '/contact' ? 'span' : 'a' %]></li> -->
+                        <li><[% IF c.req.uri.path == '/contact' %]span[% ELSE %]a href="[% base %]/contact"[% END
+                            %]>Kontakt</[% c.req.uri.path == '/contact' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="[% base %]/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                        <!-- <li><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="[% base %]/privacy"[% END
+                            %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li> -->
+                        <li><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="[% base %]/privacy"[% END
+                            %]>Sekretess</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
+                        <li><a href="https://github.com/Sambruk/fixmystreet">Öppen källkod</a></li>
+                        <li><[% IF c.req.uri.path == '/about/accessibility' %]span[% ELSE %]a href="[% base %]/faq"[% END
+                            %]>Tillgänglighet</[% c.req.uri.path == '/about/accessibility' ? 'span' : 'a' %]></li>
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
     </div>
-  </div>
-</footer>
+</div>

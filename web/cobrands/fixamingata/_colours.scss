@@ -2,7 +2,7 @@
 
 $menu-image: 'menu-black';
 
-$primary: #087FA0;
+$primary: #b5deec;
 $primary_b: #087FA0;
 $primary_text: #222;
 $primary_link_color: $primary_text;
@@ -11,9 +11,9 @@ $primary_link_hover_color: rgba($primary_text, 0.8);
 $base_bg: #eee url(images/tile.jpg) 0 0 repeat;
 $base_fg: $primary_text;
 
-$nav_background_colour: #eee;
+$nav_background_colour: unset;
 $nav_colour: $primary_text;
-$nav_hover_background_colour: $nav_background_colour;
+$nav_hover_background_colour: #eee;
 
 $header-top-border: false;
 
