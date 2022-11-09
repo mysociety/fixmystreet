@@ -7,7 +7,7 @@
 
 [% IF problems.size %]
     [% PROCESS 'admin/_index_table.html' %]
-    [% INCLUDE 'pagination.html', admin = 1, param = 'p', pager = problems_pager %]
+    [% INCLUDE 'pagination.html', param = 'p', pager = problems_pager %]
 [% END %]
 
 [% INCLUDE 'admin/list_updates.html' %]
