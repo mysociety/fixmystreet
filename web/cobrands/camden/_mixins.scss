@@ -1,130 +1,199 @@
-$link-text-decoration-thickness: 3px !important; // We need to override the default mixin
-$text-underline-offset: 5px;
+@import "./_variables";
 
-@mixin camden-link {
-    color: $blue;
-    text-decoration: underline;
+@mixin cobrand-body {
+    // Overrides styles from default base file
+    font-size: $font-size-small-view !important;
+
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            font-size: $font-size-large-view !important;
+        }
+    }
+}
+
+@mixin cobrand-link {
     text-underline-offset: $text-underline-offset;
+    text-decoration-thickness: $link-text-decoration-thickness-default;
     &:visited {
-        color: $purple;
         &:hover {
             color: $link-hover-color;
         }
     }
     &:active {
-        color: $primary_b;
-        text-decoration-thickness: $link-text-decoration-thickness;
+        text-decoration-thickness: $link-text-decoration-thickness-active;
     }
     &:hover {
-        text-decoration-thickness: $link-text-decoration-thickness;
+        text-decoration-thickness: $link-text-decoration-thickness-hover;
     }
     &:focus {
+        text-decoration: $primary_link_focus_decoration;
         outline: none;
-        background-color: $link-focus-color;
+        background-color: $link-focus-background-colour;
         color: $primary_b;
-        text-decoration-thickness: $link-text-decoration-thickness;
+        text-decoration-thickness: $link-text-decoration-thickness-focus;
     }
 }
 
-$input-border-width: 2px;
-$input-box-shadow: 0px 0px 0px 2px $primary_b inset,
-25px 0px 20px -20px $primary_b,
-0px 25px 20px -20px $primary_b,
--25px 0px 20px -20px $primary_b;
-@mixin camden-input-with-border {
+@mixin input-reset {
+    // Apply to any input
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    box-sizing: border-box;
+    border: $input-border-width solid $input-border-colour;
+    border-radius: $input-border-radius;
+    box-shadow: none;
+    font-family: $body-font;
+    padding-left: $input-padding-x;
+    padding-right: $input-padding-x;
+    @include cobrand-body;
+    color: $primary-b;
+
     &:focus {
-        outline: 3px solid $yellow;
-        box-shadow: $input-box-shadow;
+        outline: $input-outline-focus;
+        box-shadow: $input-box-shadow-focus;
     }
 }
 
-@mixin camden-input-with-no-border {
+@mixin input-small {
+    // To use it add it inside the input component.
+    // The default input components are not accessible enough.
+    min-height: $checkbox-height-small-version;
+    min-width: $checkbox-width-small-version;
+    position: absolute;
+
+    &:hover {
+        outline: $input-outline-hover;
+    }
+
     &:focus {
-        box-shadow: 0px 0px 0px 4px $primary_b inset,
-        25px 0px 20px -20px $primary_b,
-        0px 25px 20px -20px $primary_b,
-        -25px 0px 20px -20px $primary_b;
+        outline: $input-outline-focus;
+        &:hover {
+            box-shadow: $input-box-shadow-focus-hover;
+            border-width: 4px;
+        }
+    }
+
+    &:checked {
+        &:after {
+            content: '';
+            display: inline-block;
+            height: $checkbox-height-small-version;
+            width: $checkbox-width-small-version;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-size: $checkbox-width-small-version;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
+
+    &[type="checkbox"]:checked {
+        &:after {
+            @include svg-background-image('/cobrands/fixmystreet/images/check-black');
+        }
+    }
+
+    &[type="radio"] {
+        border-radius: $checkbox-height-small-version;
+    }
+
+    &[type="radio"]:checked {
+        &:after {
+            background-size: 11px;
+            @include svg-background-image('/cobrands/fixmystreet/images/dot-black');
+        }
     }
 }
 
-$btn-top-padding-small: 12px;
-$btn-bottom-padding-small: 11px;
-$btn-top-padding-large: 15px;
-$btn-bottom-padding-large: 16px;
-$btn-horizontal-padding: 15px;
-$btn-border-width: 3px;
+@mixin one-line-input-height {
+    height: $input-height-small-screen;
 
-@mixin camden-btn {
-    padding-top: $btn-top-padding-small;
-    padding-bottom: $btn-bottom-padding-small;
-    font-size: 16px;
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            height: $input-height-large-screen;
+        }
+    }
+}
+
+@mixin cobrand-input-with-border {
+    &:focus {
+        outline: $input-outline-focus;
+        box-shadow: $input-box-shadow-focus;
+    }
+}
+
+@mixin cobrand-input-with-no-border {
+    &:focus {
+        box-shadow: 0px 0px 0px 4px $primary_b inset;
+    }
+}
+
+@mixin cobrand-btn {
+    font-weight: $btn-font-weight;
+    font-size: $btn-font-size-small;
     text-decoration: none;
     line-height: 100%;
-    border-radius: 3px;
+    border-radius: $btn-border-radius;
     border-style: solid;
     border-width: $btn-border-width;
     text-underline-offset: $text-underline-offset;
+    text-decoration-thickness: $btn-text-decoration-thickness-default;
 
     &:focus {
         outline: none;
         text-decoration: underline !important;
-        text-decoration-thickness: $link-text-decoration-thickness;
+        text-decoration-thickness: $btn-text-decoration-thickness-focus;
     }
 
     &:hover {
         text-decoration: underline !important;
-        text-decoration-thickness: $link-text-decoration-thickness;
+        text-decoration-thickness: $btn-text-decoration-thickness-hover;
+    }
+
+    &:active {
+        text-decoration: underline !important;
+        text-decoration-thickness: $btn-text-decoration-thickness-active;
     }
 
     &:disabled {
         opacity: 0.5;
     }
 
-    @media only screen and (min-width: 641px) {
-        padding-top: $btn-top-padding-large;
-        padding-bottom: $btn-bottom-padding-large;
-        font-size: 19px;
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            padding-top: $btn-top-padding-large;
+            padding-bottom: $btn-bottom-padding-large;
+            padding-left: $btn-left-padding-large;
+            padding-right: $btn-right-padding-large;
+            font-size: $btn-font-size-large;
+        }
     }
 }
 
-@mixin camden-btn-primary {
-    // All the !important declarations are to override the default behaviour.
-    @include camden-btn;
-    background: $link-color;
-    color: $white !important;
-    border-color: $link-color;
+@mixin cobrand-btn-primary {
+    // All the !important declarations are to override the default behaviour of button-variant.
+    @include button-variant($bg-top: $primary_button_background_color, $bg-bottom: $primary_button_background_color, $border: $primary_button_border_color, $text: $primary_button_color, $hover-bg-bottom: $primary_button_background_color_hover, $hover-bg-top: $primary_button_background_color_hover, $hover-border: $primary_button_border_color_hover, $hover-text: $primary_button_color_hover);
+    @include cobrand-btn;
     &:focus {
-        background: $link-focus-color;
-        color: $primary_b !important;
-        border-color: $primary_b;
-    }
-
-    &:hover {
-        background: $link-hover-color;
-        color: $white !important;
-        border-color: $link-hover-color;
+        background: $primary_button_background_color_focus !important;
+        color: $primary_button_color_focus !important;
+        border-color: $primary_button_border_color_focus !important;
     }
 }
 
-@mixin camden-btn-secondary {
-    @include camden-btn;
-    color: $link-color;
-    border-color: $link-color;
-    background-color: $white;
-    font-weight: 600;
+@mixin cobrand-btn-secondary {
+    // All the !important declarations are to override the default behaviour of button-variant.
+    @include button-variant($bg-top: $secondary_button_background_color, $bg-bottom: $secondary_button_background_color, $border: $secondary_button_border_color, $text: $secondary_button_color, $hover-bg-bottom: $secondary_button_background_color_hover, $hover-bg-top: $secondary_button_background_color_hover, $hover-border: $secondary_button_border_color_hover, $hover-text: $secondary_button_color_hover);
+    @include cobrand-btn;
 
     &:focus {
-        background-color: $link-focus-color;
+        background-color: $link-focus-background-colour;
         border-color: $link-hover-color;
         color:$link-hover-color;
         outline: none;
-    }
-}
-
-@mixin camden-body {
-    // Overrides styles from default base file
-    font-size: 16px !important;
-    @media only screen and (min-width: 641px) {
-        font-size: 19px !important;
     }
 }
