@@ -1,5 +1,6 @@
+[% emergency_message = c.cobrand.emergency_message %]
+[% IF emergency_message %]
 <div class="front-main-other-issues-wrapper">
-    <p style='margin-top:0.8em'><a href="https://www.bathnes.gov.uk/reportit">Report other issues or make enquiries</a></p>
-    <p>Report emergencies on 01225 39 40 41 (option 9).</p>
-    <p style="max-width: 30em; margin-right: auto; margin-left: auto; margin-top: 0.5em;">For issues with parking, please contact Parking Services by phone on <a href="tel:01225 477133">01225 477133</a> or by email at <a href="email:parking@bathnes.gov.uk">parking@bathnes.gov.uk</a></p>
+  [% emergency_message | html_para %]
 </div>
+[% END %]
