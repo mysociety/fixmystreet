@@ -105,14 +105,6 @@ sub admin_user_domain { 'tfl.gov.uk' }
 
 sub allow_anonymous_reports { 'button' }
 
-sub anonymous_account {
-    my $self = shift;
-    return {
-        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
-        name => 'Anonymous user',
-    };
-}
-
 sub lookup_by_ref_regex {
     return qr/^\s*((?:FMS\s*)?\d+)\s*$/i;
 }
