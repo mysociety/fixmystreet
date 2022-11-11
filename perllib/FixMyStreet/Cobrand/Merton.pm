@@ -54,14 +54,8 @@ sub admin_user_domain { 'merton.gov.uk' }
 
 sub allow_anonymous_reports { 'button' }
 
-sub anonymous_account {
-    my $self = shift;
-    return {
-        # Merton requested something other than @merton.gov.uk due to their CRM misattributing reports to staff.
-        email => $self->feature('anonymous_account') . '@anonymous-fms.merton.gov.uk',
-        name => 'Anonymous user',
-    };
-}
+# Merton requested something other than @merton.gov.uk due to their CRM misattributing reports to staff.
+sub anonymous_domain { 'anonymous-fms.merton.gov.uk' }
 
 sub open311_config {
     my ($self, $row, $h, $params) = @_;

@@ -167,14 +167,6 @@ sub social_auth_enabled {
     return $self->feature('oidc_login') ? 1 : 0;
 }
 
-sub anonymous_account {
-    my $self = shift;
-    return {
-        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
-        name => 'Anonymous user',
-    };
-}
-
 sub user_from_oidc {
     my ($self, $payload) = @_;
 
