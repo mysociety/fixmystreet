@@ -100,14 +100,6 @@ sub admin_user_domain { ( 'highwaysengland.co.uk', 'nationalhighways.co.uk' ) }
 
 sub abuse_reports_only { 1 }
 
-sub anonymous_account {
-    my $self = shift;
-    return {
-        email => $self->feature('anonymous_account') . '@' . 'highwaysengland.co.uk',
-        name => 'Anonymous user',
-    };
-}
-
 # Bypass photo requirement, we have none
 sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
