@@ -283,7 +283,7 @@ sub emergency_message {
     my $self = shift;
     my ($type) = @_;
 
-    return unless $type eq 'reporting';
+    return unless $type && $type eq 'reporting';
 
     # Body list might come from /report/new or /around data
     my $c = $self->{c};
