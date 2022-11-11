@@ -71,14 +71,6 @@ sub abuse_reports_only { 1 }
 
 sub send_questionnaires { 0 }
 
-sub anonymous_account {
-    my $self = shift;
-    return {
-        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
-        name => 'Anonymous user',
-    };
-}
-
 =head2 lookup_site_code_config
 
 If the client does not send us a nearest street, we try and look one up in
