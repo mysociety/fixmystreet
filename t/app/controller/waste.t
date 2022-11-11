@@ -403,7 +403,13 @@ FixMyStreet::override_config {
                 ServiceName => 'Domestic Refuse Collection',
                 ServiceTasks => { ServiceTask => {
                     Id => 403,
-                    TaskIndicatorId => 84,
+                    Data => { ExtensibleDatum => [ {
+                        Value => 'LBB - Assisted Collection',
+                        DatatypeName => 'Task Indicator',
+                    }, {
+                        Value => '01/01/2050',
+                        DatatypeName => 'Indicator End Date',
+                    } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => {
                         StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                         EndDate => { DateTime => '2050-01-01T00:00:00Z' },
