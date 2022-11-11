@@ -902,6 +902,39 @@ subtest "can edit list of user's alerts" => sub {
     is $user->alerts->count, 0, 'alert deleted';
 };
 
+subtest "can view pagination on list of user's alerts" => sub {
+    $mech->get_ok( '/admin/users/' . $user->id );
+    $mech->content_lacks("User's alerts", 'no list of alerts');
+
+    my @problems = $mech->create_problems_for_body(110, 2514, 'Title', { user => $user });
+
+    my $alert;
+    foreach my $p ( @problems ) {
+        $alert = FixMyStreet::DB->resultset('Alert')->create({
+            user_id => $user->id,
+            alert_type => 'new_updates',
+            parameter => $p->id
+        });
+    }
+    my $first_alert = $user->alerts->first;
+    my $last_alert = $alert;
+
+    $mech->get_ok( '/admin/users/' . $user->id );
+    $mech->content_contains("User's alerts", 'has list of alerts');
+    $mech->content_contains("1 to 100 of 110", 'has pagination bar');
+    $mech->content_like(qr[<td>${\$first_alert->id}</td>\s*<td>new_updates</td>]m, 'first alert on page');
+    $mech->content_unlike(qr[<td>${\$last_alert->id}</td>\s*<td>new_updates</td>]m, 'last alert not on page');
+
+    $mech->get_ok( '/admin/users/' . $user->id . '?p=2' );
+    $mech->content_contains("User's alerts", 'has list of alerts');
+    $mech->content_contains("101 to 110 of 110", 'has pagination bar');
+    $mech->content_unlike(qr[<td>${\$first_alert->id}</td>\s*<td>new_updates</td>]m, 'first alert not on page');
+    $mech->content_like(qr[<td>${\$last_alert->id}</td>\s*<td>new_updates</td>]m, 'last alert on page');
+
+    $user->alerts->delete_all;
+};
+
+
 subtest "View timeline" => sub {
     $mech->get_ok('/admin/timeline');
 };

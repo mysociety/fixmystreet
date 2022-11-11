@@ -54,7 +54,13 @@
     <td><input type="radio" name="edit_alert[[% alert.id %]]" value="delete"></td>
 </tr>
 [% END %]
+<tr>
+    <td colspan=5></td>
+    <td colspan=3 align="center">
+        <input class="btn" type="submit" value="[% loc('Update') %]">
+    </td>
+</tr>
 </table>
-<input class="btn" type="submit" value="[% loc('Update') %]">
 </form>
+[% INCLUDE 'pagination.html', param = 'p', pager = alerts_pager %]
 [% END %]

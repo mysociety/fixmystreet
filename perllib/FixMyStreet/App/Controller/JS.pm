@@ -46,7 +46,7 @@ sub asset_layers : Path('asset_layers.js') : Args(0) {
         my $cobrands = $features->{asset_layers} || {};
         my $layers = $c->stash->{asset_layers} = [];
         for my $moniker ($c->cobrand->moniker, 'thamesmead') {
-            my @layers = @{ $cobrands->{$moniker} };
+            my @layers = @{ $cobrands->{$moniker} || [] };
             push @$layers, _add_layer($moniker, @layers) if @layers;
         }
     } else {

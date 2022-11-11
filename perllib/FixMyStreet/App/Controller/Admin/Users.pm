@@ -555,8 +555,13 @@ sub user_cobrand_extra_fields : Private {
 sub user_alert_details : Private {
     my ( $self, $c ) = @_;
 
-    my @alerts = $c->stash->{user}->alerts({}, { prefetch => 'alert_type' })->all;
+    my $page = $c->get_param('p') || 1;
+
+    my $alerts = $c->stash->{user}->alerts({}, { prefetch => 'alert_type', rows => 100 })->page( $page );
+    my @alerts = $alerts->all;
+
     $c->stash->{alerts} = \@alerts;
+    $c->stash->{alerts_pager} = $alerts->pager;
 
     my @wards;
 
