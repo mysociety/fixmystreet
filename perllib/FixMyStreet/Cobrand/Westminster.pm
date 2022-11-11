@@ -50,14 +50,6 @@ sub allow_anonymous_reports { 'button' }
 
 sub admin_user_domain { 'westminster.gov.uk' }
 
-sub anonymous_account {
-    my $self = shift;
-    return {
-        email => $self->feature('anonymous_account') . '@' . $self->admin_user_domain,
-        name => 'Anonymous user',
-    };
-}
-
 sub oidc_user_extra {
     my ($self, $id_token) = @_;
 
