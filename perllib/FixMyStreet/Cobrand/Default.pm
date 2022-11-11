@@ -1186,11 +1186,20 @@ sub allow_anonymous_reports {
 =item anonymous_account
 
 Details to use for anonymous reports. This should return a hashref with an email and
-a name key
+a name key if allowed. Use anonymous_domain or admin_user_domain to set the domain.
 
 =cut
 
-sub anonymous_account { undef; }
+sub anonymous_account {
+    my $self = shift;
+    my $local = $self->feature('anonymous_account');
+    return unless $local;
+    my $domain = $self->call_hook('anonymous_domain') || $self->call_hook('admin_user_domain') || 'unknown';
+    return {
+        email => $local . '@' . $domain,
+        name => 'Anonymous user',
+    };
+}
 
 =item show_unconfirmed_reports
 
