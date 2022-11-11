@@ -178,13 +178,9 @@ function inspection_layer_loadend() {
 }
 
 var layer = fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: drains_proxy_url,
-        params: {
-            propertyName: 'id,msGeometry,asset_id,created,junction_cleaned',
-            TYPENAME: "junction_inspections"
-        }
-    },
+    http_wfs_url: drains_proxy_url,
+    wfs_feature: "junction_inspections",
+    propertyNames: ['id', 'msGeometry', 'asset_id', 'created', 'junction_cleaned'],
     stylemap: fixmystreet.assets.stylemap_invisible,
     asset_category: ["Blocked drain"],
     asset_item: 'drain',
@@ -193,13 +189,9 @@ var layer = fixmystreet.assets.add(defaults, {
 layer.events.register( 'loadend', layer, inspection_layer_loadend);
 
 fixmystreet.assets.add(defaults, {
-    http_options: {
-        url: drains_proxy_url,
-        params: {
-            propertyName: 'id,msGeometry,asset_id,created,last_inspected',
-            TYPENAME: "junctions"
-        }
-    },
+    http_wfs_url: drains_proxy_url,
+    wfs_feature: "junctions",
+    propertyNames: ['id', 'msGeometry', 'asset_id', 'created', 'last_inspected'],
     asset_category: ["Blocked drain"],
     asset_item: 'drain',
     select_action: true,
