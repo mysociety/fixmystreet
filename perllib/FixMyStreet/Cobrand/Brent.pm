@@ -8,4 +8,6 @@ sub council_url { return 'brent'; }
 
 sub admin_user_domain { 'brent.gov.uk' }
 
+sub allow_anonymous_reports { 'button' }
+
 1;
