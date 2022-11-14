@@ -70,4 +70,6 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+sub prevent_questionnaire_updating_status { 1 };
+
 1;
