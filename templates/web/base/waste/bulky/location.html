@@ -8,7 +8,7 @@
     </div>
   </div>
   [% PROCESS form override_fields = [ 'location_photo', 'location_photo_fileid' ] %]
-  [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
+  [% PROCESS 'waste/bulky/_core_fields.html' %]
 </form>
 
 [% INCLUDE footer.html %]
