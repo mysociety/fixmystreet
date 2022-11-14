@@ -34,4 +34,42 @@ sub privacy_policy_url {
 
 sub admin_user_domain { 'camden.gov.uk' }
 
+sub lookup_site_code_config {
+    my ($self, $property) = @_;
+
+    # uncoverable subroutine
+    # uncoverable statement
+    {
+        buffer => 1000, # metres
+        url => "https://tilma.mysociety.org/mapserver/camden",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "Streets",
+        property => $property,
+        accept_feature => sub {
+            # Sometimes the nearest feature has a NULL streetref1 property
+            # but there is an overlapping feature that correctly has a streetref1
+            # value a very small distance away. To avoid choosing the feature
+            # with an empty streetref1 we reject those features, forcing selection
+            # of the nearest feature that has a valid value.
+            my $f = shift;
+            return $f->{properties} && $f->{properties}->{$property};
+        }
+    }
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    # Reports made via the app probably won't have a NSGRef because we don't
+    # display the road layer. Instead we'll look up the closest asset from the
+    # WFS service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('NSGRef')) {
+        if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
+            $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
+        }
+    }
+
+    return [];
+}
+
 1;
