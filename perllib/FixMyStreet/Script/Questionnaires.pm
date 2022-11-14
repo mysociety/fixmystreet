@@ -64,8 +64,8 @@ sub send_questionnaires_period {
             next;
         }
 
-        # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
-        # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
+        # Cobranded and non-cobranded messages can share a database. In this case, the conf file
+        # should specify a vhost to send the reports for each cobrand, so that they don't get sent
         # more than once if there are multiple vhosts running off the same database. The email_host
         # call checks if this is the host that sends mail for this cobrand.
         next unless $cobrand->email_host;
