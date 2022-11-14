@@ -65,8 +65,9 @@ has_page add_items => (
 );
 
 has_page location => (
-    title => 'Location details',
-    fields => ['location', 'location_photo', 'location_photo_fileid', 'continue'],
+    title    => 'Location details',
+    fields   =>
+        [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
 );
 
@@ -325,7 +326,6 @@ has_field tandc => (
 );
 
 has_field location => (
-    required => 1,
     type => 'Text',
     widget => 'Textarea',
     label => "Please tell us about anything else you feel is relevant",
@@ -356,7 +356,11 @@ has_field location_photo => (
     tags => {
         max_photos => 1,
     },
-    label => 'Help us by attaching a photo of where the items will be left for collection.',
+    label => <<HERE,
+Items should be left as close to your usual bin collection point as possible. Items must not cause an obstruction on the footpath. We can collect items from your front garden assuming we can gain access and there are no vehicles or gates blocking or limiting access.
+
+Help us by attaching a photo of where the items will be left for collection.
+HERE
 );
 
 sub validate {
