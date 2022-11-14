@@ -65,8 +65,10 @@ has_page add_items => (
 );
 
 has_page location => (
-    title => 'Location details',
-    fields => ['location', 'location_photo', 'location_photo_fileid', 'continue'],
+    title    => 'Location details',
+    template => 'waste/bulky/location.html',
+    fields   =>
+        [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
 );
 
@@ -325,7 +327,6 @@ has_field tandc => (
 );
 
 has_field location => (
-    required => 1,
     type => 'Text',
     widget => 'Textarea',
     label => "Please tell us about anything else you feel is relevant",
