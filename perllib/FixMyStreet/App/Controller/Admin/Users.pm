@@ -177,7 +177,8 @@ sub add : Local : Args(0) {
             phone => $phone || undef,
             phone_verified => $phone && $phone_v ? 1 : 0,
             from_body => $from_body,
-            flagged => $c->get_param('flagged') || 0,
+            # Only superusers can flag users, unless for Zurich
+            flagged => ( ( $c->user->is_superuser || $c->cobrand->moniker eq 'zurich' ) && $c->get_param('flagged') ) || 0,
             # Only superusers can create superusers
             is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
         } );
@@ -321,7 +322,10 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
         $user->phone_verified( $phone_v );
         $user->name( $name );
 
-        $user->flagged( $c->get_param('flagged') || 0 );
+        # Only superusers can flag / unflag a user, unless for Zurich
+        if ($c->user->is_superuser || $c->cobrand->moniker eq 'zurich') {
+            $user->flagged( $c->get_param('flagged') || 0 )
+        }
         # Only superusers can grant superuser status
         $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
         # Superusers can set from_body to any value, but other staff can only

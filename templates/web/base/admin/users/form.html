@@ -12,18 +12,22 @@
         <li>
           <div class="admin-hint">
             <p>
-              [% loc("Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>.") %]
-              <br>
-              [% tprintf(loc("Flagged users are listed on the <a href='%s'>flagged</a> page."), c.uri_for_action( 'admin/flagged' )) %]
-              <br>
+              [% IF c.user.is_superuser %]
+                [% loc("Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>.") %]
+                <br>
+                [% tprintf(loc("Flagged users are listed on the <a href='%s'>flagged</a> page."), c.uri_for_action( 'admin/flagged' )) %]
+                <br>
+              [% END %]
               [% loc("You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create.") %]
             </p>
           </div>
 
-          <label>
-            [% loc('Flagged:') %]
-            <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
-          </label>
+          [% IF c.user.is_superuser %]
+            <label>
+              [% loc('Flagged:') %]
+              <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
+            </label>
+          [% END %]
           [% IF username_in_abuse %]
            <small>[% loc('User in abuse table') %]</small>
            <input class="btn" name="unban" type="submit" value="[% loc('Unban') %]">

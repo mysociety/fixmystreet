@@ -297,9 +297,12 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         my $old_state = $problem->state;
 
         my %columns = (
-            flagged => $c->get_param('flagged') ? 1 : 0,
             non_public => $c->get_param('non_public') ? 1 : 0,
         );
+        # Only superusers can flag / unflag a report
+        if ($c->user->is_superuser) {
+            $columns{flagged} = $c->get_param('flagged') ? 1 : 0;
+        }
         foreach (qw/state anonymous title detail name external_id external_body external_team/) {
             $columns{$_} = $c->get_param($_);
         }

@@ -133,8 +133,10 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label class="inline-text" for="closed_updates">[% loc('Closed to updates') %]:</label>
     <input type="checkbox" id="closed_updates" name="closed_updates"[% ' checked' IF problem.extra.closed_updates %]></li>
 
-<li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
-    <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
+[% IF c.user.is_superuser %]
+  <li><label class="inline-text" for="flagged">[% loc('Flagged:') %]</label>
+      <input type="checkbox" id="flagged" name="flagged"[% ' checked' IF problem.flagged %]></li>
+[%~ END ~%]
 
 [% IF problem.photo %]
 <li>

@@ -127,7 +127,6 @@ FixMyStreet::override_config {
             email => $user2->email,
             body => $user2->from_body->id,
             phone => '',
-            flagged => undef,
         } } );
         $user2->discard_changes;
         is $user2->name, 'Test Updated User 2', 'name changed';
@@ -149,7 +148,6 @@ FixMyStreet::override_config {
             email => $user2->email,
             body => $user2->from_body->id,
             phone => '',
-            flagged => undef,
             "permissions[moderate]" => 'on',
             "permissions[report_edit_category]" => undef,
             "permissions[report_edit_priority]" => undef,
@@ -183,7 +181,6 @@ FixMyStreet::override_config {
             email => $user2->email,
             body => undef,
             phone => '',
-            flagged => undef,
             "permissions[moderate]" => 'on', # NB tick box is left on deliberately
             "permissions[report_edit_category]" => undef,
             "permissions[report_edit_priority]" => undef,
