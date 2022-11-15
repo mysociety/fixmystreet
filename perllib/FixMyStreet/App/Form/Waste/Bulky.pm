@@ -66,7 +66,6 @@ has_page add_items => (
 
 has_page location => (
     title    => 'Location details',
-    template => 'waste/bulky/location.html',
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
@@ -357,7 +356,9 @@ has_field location_photo => (
     tags => {
         max_photos => 1,
     },
-    label => 'Help us by attaching a photo of where the items will be left for collection.',
+    label => "Items should be left as close to your usual bin collection point as possible. Items must not cause an obstruction on the footpath. We can collect items from your front garden assuming we can gain access and there are no vehicles or gates blocking or limiting access.
+
+Help us by attaching a photo of where the items will be left for collection.",
 );
 
 sub validate {
