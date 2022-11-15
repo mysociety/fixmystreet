@@ -559,12 +559,12 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
 
     my $cfg = $c->cobrand->feature('waste_features');
 
-    return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
-
     # Bulky goods has a new design for the bin days page
     if ($cfg->{bulky_enabled}) {
         $c->stash->{template} = 'waste/bin_days_bulky.html';
     }
+
+    return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
 
     # Allow lookups of max_per_day different properties per day
     my $today = DateTime->today->set_time_zone(FixMyStreet->local_time_zone)->ymd;
@@ -942,7 +942,12 @@ sub check_if_staff_can_pay : Private {
 
 sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
-    $c->detach('property_redirect') unless $c->stash->{waste_features}->{bulky_enabled};
+
+    if (  !$c->stash->{waste_features}{bulky_enabled}
+        || $c->stash->{property}{has_pending_bulky_collection} )
+    {
+        $c->detach('property_redirect');
+    }
 }
 
 sub bulky : Chained('bulky_setup') : Args(0) {
