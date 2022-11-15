@@ -163,6 +163,32 @@ fixmystreet.assets.bexley.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${Unit_No}")
 });
 
+fixmystreet.assets.brent = {};
+
+// The label for street light markers should be everything after the final
+// '-' in the feature's unit_id attribute.
+var brent_select_style = fixmystreet.assets.construct_named_select_style("${unit_id}");
+brent_select_style.createLiterals = function() {
+    var literals = Object.getPrototypeOf(this).createLiterals.apply(this, arguments);
+    if (literals.label && literals.label.split) {
+        literals.label = literals.label.split("-").slice(-1)[0];
+    }
+    return literals;
+};
+
+fixmystreet.assets.brent.streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': fixmystreet.assets.style_default,
+  'hover': fixmystreet.assets.style_default_hover,
+  'select': brent_select_style
+});
+
+fixmystreet.assets.brent.construct_asset_name = function(id) {
+    if (id.split) {
+        var code = id.split("-").slice(-1)[0];
+        return {id: code, name: 'street light'};
+    }
+};
+
 /* Bristol */
 
 fixmystreet.assets.bristol = {};
