@@ -740,6 +740,22 @@ FixMyStreet::override_config {
         # behaviour of the system. They are here to remind us to update them as
         # we break them by implementing the correct behaviour :)
 
+        subtest '?type=bulky redirect' => sub {
+            $mech->get_ok('/waste?type=bulky');
+            is $mech->uri, 'http://localhost/waste?type=bulky',
+                'No redirect if no address data';
+            $mech->content_contains( 'What is your address?',
+                'user on address page' );
+
+            $mech->submit_form_ok(
+                { with_fields => { postcode => 'PE1 3NA' } } );
+            $mech->submit_form_ok(
+                { with_fields => { address => 'PE1 3NA:100090215480' } } );
+            is $mech->uri,
+                'http://localhost/waste/PE1%203NA:100090215480/bulky',
+                'Redirected to /bulky if address data';
+        };
+
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
 
