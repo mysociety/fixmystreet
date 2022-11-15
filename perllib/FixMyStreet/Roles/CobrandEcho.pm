@@ -380,7 +380,7 @@ sub waste_get_event_type {
 
     my $state_map = $self->waste_event_state_map;
 
-    my $states = $event_type->{Workflow}->{States}->{State};
+    my $states = Integrations::Echo::force_arrayref($event_type->{Workflow}->{States}, 'State');
     my $data;
     foreach (@$states) {
         my $core = $_->{CoreState}; # New/Pending/Closed

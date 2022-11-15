@@ -394,6 +394,11 @@ sub bin_services_for_address {
     my @out;
     my %task_ref_to_row;
     foreach (@$result) {
+        my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            $self->{c}->stash->{assisted_collection} = 1 if $_->{DatatypeName} eq "Assisted Collection" && $_->{Value};
+        }
+
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
             my $task_id = $task->{Id};
