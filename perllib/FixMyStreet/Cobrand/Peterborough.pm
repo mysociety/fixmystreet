@@ -493,7 +493,28 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
+    $premises{$uprn}{has_pending_bulky_collection}
+        = $self->has_pending_bulky_collection( $premises{$uprn} );
+
     return $premises{$uprn};
+}
+
+sub has_pending_bulky_collection {
+    my ( $self, $property ) = @_;
+
+    my @collections = FixMyStreet::DB->resultset('Problem')->search(
+        {   category => 'Bulky collection',
+            extra    => {
+                      like => '%T4:uprn,T5:value,I'
+                    . length( $property->{uprn} ) . ':'
+                    . $property->{uprn} . '%',
+            },
+            state =>
+                { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
+        },
+    )->all;
+
+    return @collections ? 1 : 0;
 }
 
 sub image_for_unit {

@@ -740,7 +740,7 @@ FixMyStreet::override_config {
         # behaviour of the system. They are here to remind us to update them as
         # we break them by implementing the correct behaviour :)
 
-        subtest '?type=bulky redirect' => sub {
+        subtest '?type=bulky redirect before any bulky booking made' => sub {
             $mech->get_ok('/waste?type=bulky');
             is $mech->uri, 'http://localhost/waste?type=bulky',
                 'No redirect if no address data';
@@ -754,6 +754,10 @@ FixMyStreet::override_config {
             is $mech->uri,
                 'http://localhost/waste/PE1%203NA:100090215480/bulky',
                 'Redirected to /bulky if address data';
+
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
+            $mech->content_contains( 'None booked',
+                'Bin days page has correct messaging' );
         };
 
         $mech->get_ok('/waste/PE1%203NA:100090215480');
@@ -864,6 +868,19 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('ITEM_05'), '';
         };
 
+        subtest '?type=bulky redirect after bulky booking made' => sub {
+            $mech->get_ok('/waste?type=bulky');
+            $mech->content_contains( 'What is your address?',
+                'user on address page' );
+            $mech->submit_form_ok(
+                { with_fields => { postcode => 'PE1 3NA' } } );
+            $mech->submit_form_ok(
+                { with_fields => { address => 'PE1 3NA:100090215480' } } );
+            is $mech->uri,
+                'http://localhost/waste/PE1%203NA:100090215480',
+                'Redirected to waste base page';
+            $mech->content_lacks('None booked');
+        };
     };
 };
 
