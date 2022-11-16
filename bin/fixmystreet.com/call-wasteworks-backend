@@ -37,6 +37,17 @@ my $cfg = $cobrand->feature($opts->backend);
 my $class = $opts->backend eq 'echo' ? 'Integrations::Echo' : 'Integrations::Bartec';
 my $integration = $class->new(%$cfg);
 
+# file already exists, must have been put there by fork()ed previous
+# incantation of this script.
+if ( -e $opts->out) {
+    exit 0;
+}
+
+my $pid = fork();
+if ($pid) {
+    exit 1; # let the caller know that the data isn't ready yet
+}
+
 my $calls = decode_json($opts->calls);
 $calls = $integration->_parallel_api_calls(@$calls);
 if ($opts->out) {

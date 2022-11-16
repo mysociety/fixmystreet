@@ -41,7 +41,10 @@ sub call_api {
     } else {
         # uncoverable statement
         system(@cmd);
-        $data = Storable::fd_retrieve($tmp);
+        unless ($?) {
+            $data = Storable::retrieve($tmp);
+            unlink $tmp; # don't want to inadvertently cache forever
+        }
     }
     $c->session->{$key} = $data;
     my $time = Time::HiRes::time() - $start;
