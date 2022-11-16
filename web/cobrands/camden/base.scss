@@ -51,15 +51,15 @@ h4, .h4 {
     h1, .h1 {
       font-size: $h1-size-large-view;
     }
-
+  
     h2, .h2 {
       font-size: $h2-size-large-view;
     }
-
+  
     h3, .h3 {
       font-size: $h3-size-large-view;
     }
-
+  
     h4, .h4 {
       font-size: $h4-size-large-view;
     }
@@ -69,7 +69,7 @@ h4, .h4 {
 .body-large-bold {
   font-weight: 400 !important;
   font-size: 18px;
-  @media only screen and (min-width: 641px) {
+  @media only screen and (min-width: 641px) { 
       font-size: 24px;
   }
 }
@@ -131,7 +131,7 @@ a {
   }
 }
 
-.item-list__item__shortlist-add {
+.item-list__item__shortlist-add { 
   @include cobrand-input-with-no-border;
 }
 
@@ -323,7 +323,7 @@ div.form-error, p.form-error {
     outline: none;
     background: $link-focus-background-colour inline-image("../fixmystreet/images/#{$menu-image-focus}.svg") center center no-repeat;
   }
-
+  
   html.js-nav-open & {
     &:focus, &.focussed {
       background: $link-focus-background-colour inline-image("../fixmystreet/images/#{$close-menu-image-focus}.svg") center center no-repeat;
@@ -413,7 +413,7 @@ dl dt {
       border: $border-width solid $primary_button_border_color;
       max-height: $max-height;
       height: $max-height;
-
+      
 
       &:hover {
         background: $primary_button_background_color_hover !important;

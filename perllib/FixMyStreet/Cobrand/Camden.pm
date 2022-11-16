@@ -45,15 +45,7 @@ sub lookup_site_code_config {
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "Streets",
         property => $property,
-        accept_feature => sub {
-            # Sometimes the nearest feature has a NULL streetref1 property
-            # but there is an overlapping feature that correctly has a streetref1
-            # value a very small distance away. To avoid choosing the feature
-            # with an empty streetref1 we reject those features, forcing selection
-            # of the nearest feature that has a valid value.
-            my $f = shift;
-            return $f->{properties} && $f->{properties}->{$property};
-        }
+        accept_feature => sub { 1 },
     }
 }
 
@@ -70,6 +62,16 @@ sub open311_extra_data_include {
     }
 
     return [];
+}
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+    $params->{multi_photos} = 1;
+}
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+    $params->{service_request_id_ext} = $comment->problem->id;
 }
 
 1;
