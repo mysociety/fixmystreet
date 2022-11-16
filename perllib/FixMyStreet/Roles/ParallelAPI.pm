@@ -4,6 +4,7 @@ use JSON::MaybeXS;
 use Parallel::ForkManager;
 use Storable;
 use Time::HiRes;
+use Digest::MD5 qw(md5_hex);
 
 # ---
 # Calling things in parallel
@@ -16,13 +17,18 @@ sub call_api {
     $key = "$cobrand:$type:$key";
     return $c->session->{$key} if !FixMyStreet->test_mode && $c->session->{$key};
 
-    my $tmp = File::Temp->new;
+    my $calls = encode_json(\@_);
+
+    my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
+    mkdir($outdir) unless -d $outdir;
+    my $tmp = $outdir . "/" . md5_hex("$key $calls");
+
     my @cmd = (
         FixMyStreet->path_to('bin/fixmystreet.com/call-wasteworks-backend'),
         '--cobrand', $cobrand,
         '--backend', $type,
         '--out', $tmp,
-        '--calls', encode_json(\@_),
+        '--calls', $calls,
     );
     my $start = Time::HiRes::time();
 
