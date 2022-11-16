@@ -64,4 +64,14 @@ sub open311_extra_data_include {
     return [];
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+    $params->{multi_photos} = 1;
+}
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+    $params->{service_request_id_ext} = $comment->problem->id;
+}
+
 1;
