@@ -6,3 +6,8 @@ IF bodyclass.match('mappage');
     );
 END
 %]
+[% IF page_refresh;
+    scripts.push(
+        version('/vendor/htmx.min.js'),
+    );
+END %]

@@ -964,7 +964,24 @@ sub bin_services_for_address {
         ServiceRequests_Get => [ $uprn ],
         Premises_Attributes_Get => [ $uprn ],
     );
-    my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, @calls);
+
+    # we can only do an async lookup and thus page refresh when navigating
+    # directly to the bin days page, not when e.g. calling this sub as a result
+    # of going to the /bulky page.
+    my $async = $self->{c}->action eq 'waste/bin_days' && $self->{c}->req->method eq 'GET';
+
+    my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, $async, @calls);
+    if (!$results) {
+        # Need to set the custom template here because Waste::bin_days
+        # doesn't actually get run because of the detach
+        # XXX This can be removed when the bulky template is removed
+        if ( $self->feature('waste_features')->{bulky_enabled} ) {
+            $self->{c}->stash->{template} = 'waste/bin_days_bulky.html';
+        }
+        $self->{c}->stash->{data_loading} = 1;
+        $self->{c}->stash->{page_refresh} = 2;
+        $self->{c}->detach;
+    }
 
     my $jobs = $results->{"Jobs_Get $uprn"};
     my $schedules = $results->{"Features_Schedules_Get $uprn"};

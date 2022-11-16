@@ -6,8 +6,22 @@
 [% END %]
 
 [% INCLUDE 'waste/_address_display.html' %]
-<div class="waste__collections">
+<div class="waste__collections" [% IF data_loading AND page_refresh %]
+  hx-get="[% c.req.uri.path %]"
+  hx-swap="outerHTML"
+  hx-select=".waste__collections"
+  hx-trigger="every [% page_refresh %]s"
+[% END %]>
   <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
+  [% IF data_loading %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full text-centered">
+        <img id="loading-indicator" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
+        <h2>Loading your bin days...</h2>
+      </div>
+    </div>
+  [% ELSE %]
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
@@ -111,6 +125,7 @@
       </div>
     </div>
   </div>
+[% END %]
 </div>
 [% INCLUDE footer.html %]
 

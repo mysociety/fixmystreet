@@ -3,12 +3,20 @@
 [% PROCESS 'waste/header.html' %]
 
 
-[% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
+[% UNLESS data_loading %]
+  [% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
+[% END %]
 <h1 class="govuk-heading-xl">Your bin days</h1>
 
 [% INCLUDE 'waste/_address_display.html' %]
 [% TRY %][% PROCESS waste/_announcement.html %][% CATCH file %][% END %]
-<div class="waste__collections">
+<div class="waste__collections" [% IF data_loading AND page_refresh %]
+hx-get="[% c.req.uri.path %]"
+hx-swap="outerHTML"
+hx-select="div.content"
+hx-target="div.content"
+hx-trigger="every [% page_refresh %]s"
+[% END %]>
   <div class="govuk-!-margin-bottom-8">
     <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
     [% IF service_data.size %]
@@ -17,6 +25,16 @@
       [% END %]
     [% END %]
   </div>
+
+  [% IF data_loading %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full text-centered">
+        <img id="loading-indicator" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
+        <h2>Loading your bin days...</h2>
+      </div>
+    </div>
+  [% ELSE %]
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
     [% DEFAULT any_report_allowed = 0 ~%]
@@ -214,5 +232,6 @@
   <div id="more-services">
     [% INCLUDE waste/bin_days_sidebar.html %]
   </div>
+[% END %]
 </div>
 [% INCLUDE footer.html %]

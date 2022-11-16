@@ -15,7 +15,8 @@ BEGIN {
 
 use Getopt::Long::Descriptive;
 use JSON::MaybeXS;
-use Storable;
+use Storable qw(store_fd);
+use Fcntl qw(:flock);
 use Integrations::Echo;
 use Integrations::Bartec;
 use FixMyStreet;
@@ -39,10 +40,18 @@ my $cfg = $features->{$opts->backend}->{$opts->cobrand};
 my $class = $opts->backend eq 'echo' ? 'Integrations::Echo' : 'Integrations::Bartec';
 my $integration = $class->new(%$cfg);
 
+my $fd;
+if ($opts->out) {
+    open($fd, ">", $opts->out) or die;
+    flock($fd, LOCK_EX | LOCK_NB) or die;
+}
+
 my $calls = decode_json($opts->calls);
 $calls = $integration->_parallel_api_calls(@$calls);
-if ($opts->out) {
-    Storable::store($calls, $opts->out);
+if ($fd) {
+    store_fd($calls, $fd);
+    flock($fd, LOCK_UN);
+    close($fd);
 } else {
     print encode_json($calls);
 }

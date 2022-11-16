@@ -2,27 +2,35 @@ package FixMyStreet::Roles::ParallelAPI;
 use Moo::Role;
 use JSON::MaybeXS;
 use Parallel::ForkManager;
-use Storable;
+use Storable qw(retrieve_fd retrieve);
 use Time::HiRes;
+use Digest::MD5 qw(md5_hex);
+use Try::Tiny;
+use Fcntl qw(:flock);
 
 # ---
 # Calling things in parallel
 
 sub call_api {
     # Shifting because the remainder of @_ is passed along further down
-    my ($self, $c, $cobrand, $key) = (shift, shift, shift, shift);
+    my ($self, $c, $cobrand, $key, $fork) = (shift, shift, shift, shift, shift);
 
     my $type = $self->backend_type;
     $key = "$cobrand:$type:$key";
     return $c->session->{$key} if !FixMyStreet->test_mode && $c->session->{$key};
 
-    my $tmp = File::Temp->new;
+    my $calls = encode_json(\@_);
+
+    my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
+    mkdir($outdir) unless -d $outdir;
+    my $tmp = $outdir . "/" . md5_hex("$key $calls");
+
     my @cmd = (
         FixMyStreet->path_to('bin/fixmystreet.com/call-wasteworks-backend'),
         '--cobrand', $cobrand,
         '--backend', $type,
         '--out', $tmp,
-        '--calls', encode_json(\@_),
+        '--calls', $calls,
     );
     my $start = Time::HiRes::time();
 
@@ -32,14 +40,35 @@ sub call_api {
     # uncoverable branch false
     if (FixMyStreet->test_mode || $self->sample_data) {
         $data = $self->_parallel_api_calls(@_);
+    } elsif (-e $tmp) {
+        # if output file is already there, we can only open it if it's finished with
+        try {
+            open(my $fd, "<", $tmp) or die;
+            flock($fd, LOCK_SH|LOCK_NB) or die;
+            $data = retrieve_fd($fd);
+            flock($fd, LOCK_UN);
+            close($fd);
+            unlink $tmp; # don't want to inadvertently cache forever
+        };
     } else {
-        # uncoverable statement
-        system(@cmd);
-        $data = Storable::fd_retrieve($tmp);
+        if ($fork) {
+            # wrap the $calls value in single quotes
+            push(@cmd, "'" . pop(@cmd) . "'");
+            # run it in the background
+            push @cmd, '&';
+            my $cmd = join(" ", @cmd);
+            system($cmd);
+        } else {
+            # uncoverable statement
+            system(@cmd);
+            $data = retrieve($tmp);
+        }
     }
-    $c->session->{$key} = $data;
-    my $time = Time::HiRes::time() - $start;
-    $c->log->info("[$cobrand] call_api $key took $time seconds");
+    if ($data) {
+        $c->session->{$key} = $data;
+        my $time = Time::HiRes::time() - $start;
+        $c->log->info("[$cobrand] call_api $key took $time seconds");
+    }
     return $data;
 }
 

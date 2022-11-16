@@ -38,6 +38,7 @@ sub look_up_property {
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, $self->moniker,
         "look_up_property:$id",
+        0,
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
