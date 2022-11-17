@@ -579,8 +579,6 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
-    my $attributes = $self->property_attributes($uprn);
-    $premises{$uprn}{attributes} = $attributes;
     return $premises{$uprn};
 }
 
@@ -846,6 +844,7 @@ sub bin_services_for_address {
         Premises_Events_Get => [ $uprn ],
         Streets_Events_Get => [ $property->{usrn} ],
         ServiceRequests_Get => [ $uprn ],
+        Premises_Attributes_Get => [ $uprn ],
     );
     my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, 1, @calls);
     if (!$results) {
@@ -860,6 +859,10 @@ sub bin_services_for_address {
     my $events_uprn = $results->{"Premises_Events_Get $uprn"};
     my $events_usrn = $results->{"Streets_Events_Get " . $property->{usrn}};
     my $requests = $results->{"ServiceRequests_Get $uprn"};
+    my $attributes = $results->{"Premises_Attributes_Get $uprn"};
+
+    my %attribs = map { $_->{AttributeDefinition}->{Name} => 1 } @$attributes;
+    $property->{attributes} = \%attribs;
 
     my $job_dates = relevant_jobs($jobs_featureschedules, $uprn, $schedules);
     my $open_requests = $self->open_service_requests_for_uprn($uprn, $requests);
