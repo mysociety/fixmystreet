@@ -315,6 +315,7 @@ sub bin_services_for_address {
         6 => 'Refuse Red Stripe Bag',
         18 => 'Recycling Blue Stripe Bag',
         21 => 'Paper & Card Reusable Bag',
+        29 => 'Recycling Single Use Bag',
         30 => 'Paper Single Use Bag',
         7 => 'Communal Refuse bin (240L)',
         8 => 'Communal Refuse bin (360L)',
@@ -416,13 +417,13 @@ sub bin_services_for_address {
             foreach (@$data) {
                 next if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                my ($container, $quantity);
+                my ($container, $quantity) = (0, 0);
                 foreach (@$moredata) {
                     $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
                     $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
                 }
                 next if $container == 6; # Red stripe bag
-                next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+                next if ($container == 18 || $container == 29) && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
                 if ($container && $quantity) {
                     push @$containers, $container;
                     next if $container == 28; # Garden waste bag
@@ -689,7 +690,7 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'about_you' if $choice == 18 || $choice == 30;
+        return 'about_you' if $choice == 18 || $choice == 29 || $choice == 30;
         return 'replacement';
     };
 }
