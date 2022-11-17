@@ -11,7 +11,7 @@ use Digest::MD5 qw(md5_hex);
 
 sub call_api {
     # Shifting because the remainder of @_ is passed along further down
-    my ($self, $c, $cobrand, $key) = (shift, shift, shift, shift);
+    my ($self, $c, $cobrand, $key, $fork) = (shift, shift, shift, shift, shift);
 
     my $type = $self->backend_type;
     $key = "$cobrand:$type:$key";
@@ -28,6 +28,7 @@ sub call_api {
         '--cobrand', $cobrand,
         '--backend', $type,
         '--out', $tmp,
+        $fork ? ('--fork') : (),
         '--calls', $calls,
     );
     my $start = Time::HiRes::time();
