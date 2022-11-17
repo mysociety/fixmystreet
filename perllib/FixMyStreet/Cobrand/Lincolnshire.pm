@@ -101,6 +101,20 @@ sub open311_get_user {
 
     return unless $request->{contact_name} && $request->{contact_email};
 
+    if (FixMyStreet->config("STAGING_SITE")) { {
+        # In staging we don't want to store private contact information
+        # so only return a user if the email address is @lincolnshire.gov.uk
+        # or a superuser with the email address already exists.
+        my $domain = $self->admin_user_domain;
+        last if $request->{contact_email} =~ /[@]$domain$/;
+        last if FixMyStreet::DB->resultset('User')->find({
+            email => $request->{contact_email},
+            email_verified => 1,
+            is_superuser => 1,
+        });
+        return;
+    } }
+
     return FixMyStreet::DB->resultset('User')->find_or_create(
         {
             name => $request->{contact_name},
