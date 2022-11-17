@@ -63,6 +63,10 @@
     min-width: $checkbox-width-small-version;
     position: absolute;
 
+    &+ label {
+        padding-left: $checkbox-width-small-version * 1.5;
+    }
+
     &:hover {
         outline: $input-outline-hover;
     }
