@@ -74,4 +74,10 @@ sub open311_munge_update_params {
     $params->{service_request_id_ext} = $comment->problem->id;
 }
 
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
 1;
