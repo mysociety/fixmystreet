@@ -25,6 +25,7 @@ my ($opts, $usage) = describe_options(
     ['cobrand=s', 'which cobrand configuration to use'],
     ['backend=s', 'which backend type (echo/bartec)'],
     ['out=s', 'where to output data'],
+    ['fork', 'run API calls in forked process (exits with status code 1 if data not ready yet)'],
     ['calls=s', 'JSON of what API calls to make'],
     ['help|h', "print usage message and exit" ],
 );
@@ -37,10 +38,42 @@ my $cfg = $cobrand->feature($opts->backend);
 my $class = $opts->backend eq 'echo' ? 'Integrations::Echo' : 'Integrations::Bartec';
 my $integration = $class->new(%$cfg);
 
+my $lockfile;
+if ($opts->fork) {
+    unless ($opts->out) {
+        die "Must use --out with --fork";
+    }
+
+    $lockfile = $opts->out . ".lock";
+
+    if ( -e $opts->out ) {
+        # file already exists, must have been put there by fork()ed previous
+        # incantation of this script.
+
+        unlink $lockfile if -e $lockfile; # tidy up lock file just in case
+        exit 0;
+    }
+
+    if ( -e $lockfile ) {
+        # don't fork, there's already a forked process working on this
+        # batch of API calls
+        exit 1;
+    }
+    my $pid = fork();
+    if ($pid) {
+        # we're the parent, let the caller know that the data isn't ready yet
+        exit 1;
+    } else {
+        # create the lockfile so we don't fork() the same batch of jobs again
+        open(FH, ">", $lockfile) and close(FH);
+    }
+}
+
 my $calls = decode_json($opts->calls);
 $calls = $integration->_parallel_api_calls(@$calls);
 if ($opts->out) {
     Storable::store($calls, $opts->out);
+    unlink $lockfile if $lockfile; # tidy up after ourselves
 } else {
     print encode_json($calls);
 }

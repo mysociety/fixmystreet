@@ -847,7 +847,12 @@ sub bin_services_for_address {
         Streets_Events_Get => [ $property->{usrn} ],
         ServiceRequests_Get => [ $uprn ],
     );
-    my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, @calls);
+    my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, 1, @calls);
+    if (!$results) {
+        $self->{c}->stash->{data_loading} = 1;
+        $self->{c}->stash->{page_refresh} = 2;
+        $self->{c}->detach;
+    }
 
     my $jobs = $results->{"Jobs_Get $uprn"};
     my $schedules = $results->{"Features_Schedules_Get $uprn"};

@@ -4,25 +4,32 @@ use JSON::MaybeXS;
 use Parallel::ForkManager;
 use Storable;
 use Time::HiRes;
+use Digest::MD5 qw(md5_hex);
 
 # ---
 # Calling things in parallel
 
 sub call_api {
     # Shifting because the remainder of @_ is passed along further down
-    my ($self, $c, $cobrand, $key) = (shift, shift, shift, shift);
+    my ($self, $c, $cobrand, $key, $fork) = (shift, shift, shift, shift, shift);
 
     my $type = $self->backend_type;
     $key = "$cobrand:$type:$key";
     return $c->session->{$key} if !FixMyStreet->test_mode && $c->session->{$key};
 
-    my $tmp = File::Temp->new;
+    my $calls = encode_json(\@_);
+
+    my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
+    mkdir($outdir) unless -d $outdir;
+    my $tmp = $outdir . "/" . md5_hex("$key $calls");
+
     my @cmd = (
         FixMyStreet->path_to('bin/fixmystreet.com/call-wasteworks-backend'),
         '--cobrand', $cobrand,
         '--backend', $type,
         '--out', $tmp,
-        '--calls', encode_json(\@_),
+        $fork ? ('--fork') : (),
+        '--calls', $calls,
     );
     my $start = Time::HiRes::time();
 
@@ -35,7 +42,10 @@ sub call_api {
     } else {
         # uncoverable statement
         system(@cmd);
-        $data = Storable::fd_retrieve($tmp);
+        unless ($?) {
+            $data = Storable::retrieve($tmp);
+            unlink $tmp; # don't want to inadvertently cache forever
+        }
     }
     $c->session->{$key} = $data;
     my $time = Time::HiRes::time() - $start;
