@@ -458,6 +458,28 @@ sub updates_disallowed {
     return '';
 }
 
+# Allow cobrands to prevent reports from being reopened
+sub reopening_disallowed {
+    my ($self, $problem) = @_;
+    my $c = $self->{c};
+
+    # Check if reopening is disallowed by the problem's category
+    return 1 if $self->next::method($problem);
+
+    my $cfg = $self->feature('reopening_allowed') || '';
+    if ($cfg eq 'none') {
+        return 1;
+    } elsif ($cfg eq 'staff') {
+        # Only staff and superusers can reopen
+        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
+        my $superuser = $c->user_exists && $c->user->is_superuser;
+        return 1 unless $staff || $superuser;
+    }
+
+    # Default to allowing reports to be reopened
+    return 0;
+}
+
 # Report if cobrand denies updates by user
 sub deny_updates_by_user {
     my ($self, $row) = @_;

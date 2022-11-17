@@ -488,11 +488,31 @@ around 'munge_sendreport_params' => sub {
     $row->areas($original_areas);
 };
 
+# Allow cobrands to prevent reports from being reopened
 sub reopening_disallowed {
     my ($self, $problem) = @_;
     my $c = $self->{c};
-    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
-    return $self->next::method($problem);
+
+    # Check if reopening is disallowed by the problem's category
+    return 1 if $self->next::method($problem);
+
+    my ($cfg, $body) = $self->per_body_config('reopening_allowed', $problem);
+    $cfg //= '';
+
+    if ($cfg eq 'none') {
+        return 1;
+    } elsif ($cfg eq 'staff') {
+        # Only staff and superusers can reopen
+        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
+        my $superuser = $c->user_exists && $c->user->is_superuser;
+        return 1 unless $staff || $superuser;
+    } elsif ($cfg eq 'reporter') {
+        # Only the original reporter can reopen
+        return 1 unless $c->user_exists && $c->user->id == $problem->user_id;
+    }
+
+    # Default to allowing reports to be reopened
+    return 0;
 }
 
 # Make sure CPC areas are included in point lookups for new reports

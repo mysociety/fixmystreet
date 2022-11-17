@@ -70,17 +70,6 @@ sub open311_config {
     $params->{upload_files} = 1;
 }
 
-sub reopening_disallowed {
-    my ($self, $problem) = @_;
-    # allow admins to restrict staff from reopening categories using category control
-    return 1 if $self->next::method($problem);
-    # only Merton staff may reopen reports
-    my $c = $self->{c};
-    my $user = $c->user;
-    return 0 if ($c->user_exists && $user->from_body && $user->from_body->cobrand_name eq 'Merton Council');
-    return 1;
-}
-
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
