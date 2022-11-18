@@ -18,7 +18,7 @@ use JSON::MaybeXS;
 use Storable;
 use Integrations::Echo;
 use Integrations::Bartec;
-use FixMyStreet::Cobrand;
+use FixMyStreet;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
@@ -31,8 +31,10 @@ my ($opts, $usage) = describe_options(
 $usage->die if $opts->help;
 $usage->die unless $opts->cobrand && $opts->calls && $opts->backend;
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
-my $cfg = $cobrand->feature($opts->backend);
+# Doing it this way, rather than creating the cobrand object and calling
+# feature() is much quicker for a command line script
+my $features = FixMyStreet->config('COBRAND_FEATURES');
+my $cfg = $features->{$opts->backend}->{$opts->cobrand};
 
 my $class = $opts->backend eq 'echo' ? 'Integrations::Echo' : 'Integrations::Bartec';
 my $integration = $class->new(%$cfg);
