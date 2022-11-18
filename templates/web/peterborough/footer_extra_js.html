@@ -6,3 +6,13 @@ IF bodyclass.match('mappage');
     );
 END
 %]
+[% IF page_refresh;
+    # XXX this should probably be vendored if this ever makes its way to production
+    scripts.push( [
+        "https://unpkg.com/htmx.org@1.8.4",
+        {
+            integrity = "sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV",
+            crossorigin="anonymous"
+        }
+    ] );
+END %]

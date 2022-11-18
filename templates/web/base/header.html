@@ -11,7 +11,9 @@
 
         <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
         [% IF page_refresh %]
-            <meta http-equiv="refresh" content="[% page_refresh %]">
+            <noscript>
+                <meta http-equiv="refresh" content="[% page_refresh %]">
+            </noscript>
         [% END %]
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
