@@ -440,8 +440,9 @@ FixMyStreet::override_config {
     subtest 'Shows choice of wards, parishes, divisions' => sub {
         $mech->get_ok('/reports');
         $mech->content_contains('id="key-tool-parish"', "Tabs available for districts and wards");
-        $mech->content_contains('<a class="js-ward-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Faringdon?type=DIW">Faringdon</a>', "District list populated");
+        $mech->content_contains('<a class="js-ward-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Faringdon?type=DIW">Faringdon</a>', "Ward list populated");
         $mech->content_contains('<a class="js-ward-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/Aston+Upthorpe?type=CPC">Aston Upthorpe</a>', "Parish list populated");
+        $mech->content_contains('<a class="js-ward-single" href="http://oxfordshire.fixmystreet.com/reports/Oxfordshire/South+Oxfordshire?type=DIS">South Oxfordshire District Council</a>', "District list populated");
     };
 
     subtest 'Shows Chinnor parish and updates rss link text to "parish"' => sub {

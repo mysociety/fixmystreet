@@ -516,6 +516,8 @@ sub get_ward_type {
         return 'parish';
     } elsif ($ward_type eq 'DIW') {
         return 'ward';
+    } elsif ($ward_type eq 'DIS') {
+        return 'district';
     } else {
         return 'division'
     }
