@@ -1,7 +1,7 @@
 [% IF children.size %]
 [% SET show_wards_hidden_class = c.req.params.show_wards ? 'hidden' : 'js-ward-single' %]
 [% SET show_wards_shown_class = c.req.params.show_wards ? '' : 'js-ward-multi hidden' %]
-<section id="council_wards"[% UNLESS c.req.params.show_wards %] class="hidden-js"[% END %]>
+<section id="council_wards" class="js-sub-area-list[% UNLESS c.req.params.show_wards %] hidden-js[% END %]">
 <h2>[% ward_text %]</h2>
     <p class="[% show_wards_hidden_class %]">[% ward_link_text %]</p>
     <p class="[% show_wards_shown_class %]">[% ward_link_instruction %]</p>

@@ -1067,8 +1067,9 @@ $.extend(fixmystreet.set_up, {
   ward_select_multiple: function() {
     $(".js-ward-select-multiple").on('click', function(e) {
         e.preventDefault();
-        $(".js-ward-single").addClass("hidden");
-        $(".js-ward-multi").removeClass("hidden");
+        var sect = $(this).closest('section');
+        sect.find(".js-ward-single").addClass("hidden");
+        sect.find(".js-ward-multi").removeClass("hidden");
     });
   },
 

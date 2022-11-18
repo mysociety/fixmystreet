@@ -76,25 +76,23 @@
     }
 
     $.extend(fixmystreet.set_up, {
-        map_sidebar_key_tools: function() {
+        map_sidebar_key_tools_2: function() {
+            // Similar to main one but for key-tool-area
             if ($('html.mobile').length) {
-                $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
-                $('#key-tool-wards').off('click.wards');
+                $('#key-tool-area').off('click.wards');
                 $('#key-tool-area').on('click.wards', function(e) {
                     e.preventDefault();
                     $('#key-tools').addClass('area-js');
                     $('#council_wards').slideToggle('800', function() {
-                      $('#key-tool-wards').toggleClass('hover');
+                      $('#key-tool-division').toggleClass('hover');
                     });
                 });
             } else {
                 $('#key-tool-area').drawer('council_wards', false);
-                $('#key-tool-around-updates').drawer('updates_ajax', true);
             }
-            $('#key-tool-report-updates').small_drawer('report-updates-data');
-            $('#key-tool-report-share').small_drawer('report-share');
-          },
-          sub_item_key_tools_areas: function() {
+        },
+
+        sub_item_key_tools_areas: function() {
             var $sidebar = $('#map_sidebar');
             var drawer_css = {
                 position: 'fixed',
@@ -108,77 +106,27 @@
                 background: '#fff'
             };
             drawer_css[isR2L() ? 'right' : 'left'] = 0;
-        
-            if ($('html.mobile').length) { 
-                $('#key-tool-wards').on('click', function(e) {
+
+            if ($('html.mobile').length) {
+                $('.sub-area-item a').on('click', function(e) {
                     e.preventDefault();
                     $('[id^=key-tool-]').removeClass('hover');
-                    $('#key-tool-wards').addClass('hover');
-                    $('#council_wards').slideToggle('800', function() {
-                        $('#council_parishes,#council_district_wards').addClass('hidden-js').hide();
-                        $('#council_wards').removeClass('hidden-js').find('h2').hide();
-                    });
-                });
-                $('#key-tool-parish').on('click', function(e) {
-                    e.preventDefault();
-                    $('[id^=key-tool-]').removeClass('hover');
-                    $('#key-tool-parish').addClass('hover');
-                    $('#council_parishes').slideToggle('800', function() {
-                        $('#council_parishes').removeClass('hidden-js').find('h2').hide();
-                        $('#council_wards,#council_district_wards').addClass('hidden-js').hide();
-                    });
-                });
-                $('#key-tool-district').on('click', function(e) {
-                    e.preventDefault();
-                    $('[id^=key-tool-]').removeClass('hover');
-                    $('#key-tool-district').addClass('hover');
-                    $('#council_district_wards').slideToggle('800', function() {
-                        $('#council_wards,#council_parishes').addClass('hidden-js').hide();
-                        $('#council_district_wards').removeClass('hidden-js').find('h2').hide();
-                    });
+                    $(this).addClass('hover');
+                    $('.js-sub-area-list').addClass('hidden-js');
+                    var href = this.getAttribute('href');
+                    $(href).removeClass('hidden-js').find('h2').hide();
                 });
             } else {
-                $('#key-tool-wards').on('click', function(e) {
-                    $('#key-tool-wards').addClass('hover');
-                    $('#key-tool-parish,#key-tool-district').removeClass('hover');
-                    $('#council_wards').css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
-                    $('#key-tools-wrapper').addClass('static').prependTo('#council_wards');
-                    $('#council_parishes,#council_district_wards').addClass('hidden-js');
-                });
-
-                $('#key-tool-parish').on('click', function(e) {
+                $('.sub-area-item a').on('click', function(e) {
+                    e.preventDefault();
                     $('[id^=key-tool-]').removeClass('hover');
-                    $('#key-tool-parish').addClass('hover');
-                    $('#council_parishes').css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
-                    $('#key-tools-wrapper').addClass('static').prependTo('#council_parishes');
-                    $('#council_wards,#council_district_wards').addClass('hidden-js');
-                });
-                
-                $('#key-tool-district').on('click', function(e) {
-                    $('[id^=key-tool-]').removeClass('hover');
-                    $('#key-tool-district').addClass('hover');
-                    $('#council_district_wards').css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
-                    $('#key-tools-wrapper').addClass('static').prependTo('#council_district_wards');
-                    $('#council_wards,#council_parishes').addClass('hidden-js');
+                    $(this).addClass('hover');
+                    $('.js-sub-area-list').addClass('hidden-js');
+                    var href = this.getAttribute('href');
+                    $(href).css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
+                    $('#key-tools-wrapper').addClass('static').prependTo(href);
                 });
             }
-        },
-        ward_select_multiple: function() {
-            $(".js-ward-select-multiple").on('click', function(e) {
-                e.preventDefault();
-                $(".js-ward-single").addClass("hidden");
-                $(".js-ward-multi").removeClass("hidden");
-            });
-            $(".js-parish-select-multiple").on('click', function(e) {
-                e.preventDefault();
-                $(".js-parish-single").addClass("hidden");
-                $(".js-parish-multi").removeClass("hidden");
-            });
-            $(".js-district-select-multiple").on('click', function(e) {
-                e.preventDefault();
-                $(".js-district-single").addClass("hidden");
-                $(".js-district-multi").removeClass("hidden");
-            });
         }
     });
 })();
