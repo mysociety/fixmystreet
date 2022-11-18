@@ -6,7 +6,12 @@
 [% END %]
 
 [% INCLUDE 'waste/_address_display.html' %]
-<div class="waste__collections">
+<div class="waste__collections" [% IF data_loading AND page_refresh %]
+  hx-get="[% c.req.uri.path %]"
+  hx-swap="outerHTML"
+  hx-select=".waste__collections"
+  hx-trigger="every [% page_refresh %]s"
+[% END %]>
   <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
   [% IF data_loading %]
     <div class="govuk-grid-row">
