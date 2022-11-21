@@ -128,6 +128,12 @@ after 'validate_form' => sub {
         $self->saved_data($saved_data);
         $self->field('saved_data')->_set_value($saved_data);
 
+        # A pre_finished lets a form pass validation but not actually finish
+        if ($page->pre_finished) {
+            my $success = $page->pre_finished->($self);
+            return unless $success;
+        }
+
         # And check to see if there is a function to call on the page
         if ($page->finished) {
             my $success = $page->finished->($self);

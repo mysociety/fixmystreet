@@ -78,7 +78,28 @@ has_page summary => (
     fields => ['submit', 'tandc'],
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
-    next => 'done',
+    next => sub { $_[0]->{no_slots} ? 'choose_date_earlier' : 'done' },
+    # Return to 'Choose date' page if slot has been taken in the meantime.
+    # Otherwise, proceed to payment.
+    pre_finished => sub {
+        my $form = shift;
+        my $c = $form->c;
+
+        my $slot_still_available
+            = $c->cobrand->call_hook(
+            check_bulky_slot_available => $form->saved_data->{chosen_date} );
+
+        return 1 if $slot_still_available;
+
+        # Clear date cache so user gets updated selection
+        my $uprn = $c->stash->{property}{uprn};
+        for (qw/earlier later/) {
+            delete $c->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};
+        }
+        $c->stash->{flash_message} = 'choose_another_date';
+        $form->saved_data->{no_slots} = 1;
+        return 0;
+    },
     finished => sub {
         return $_[0]->wizard_finished('process_bulky_data');
     },

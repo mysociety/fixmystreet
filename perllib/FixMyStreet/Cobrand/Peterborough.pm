@@ -562,7 +562,7 @@ sub find_available_bulky_slots {
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
-    my $window    = _bulky_collection_window($last_earlier_date_str);
+    my $window = _bulky_collection_window($last_earlier_date_str);
     if ( $window->{error} ) {
         # XXX Handle error gracefully
         die $window->{error};
@@ -574,13 +574,6 @@ sub find_available_bulky_slots {
     );
 
     my @available_slots;
-
-    my $suffix_date_parser
-        = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
-    my $workpack_date_pattern = '%FT%T';
-    my $workpack_date_parser
-        = DateTime::Format::Strptime->new(
-        pattern => $workpack_date_pattern );
 
     my $last_workpack_date;
     for my $workpack (@$workpacks) {
@@ -617,51 +610,13 @@ sub find_available_bulky_slots {
         # workpacks for the same date, we only take the first into account
         next if $workpack->{WorkPackDate} eq ( $last_workpack_date // '' );
 
-        my $workpack_dt = $workpack_date_parser->parse_datetime(
-            $workpack->{WorkPackDate} );
-        next unless $workpack_dt;
-
-        my $date_from
-            = $workpack_dt->clone->set( hour => 0, minute => 0, second => 0 )
-            ->strftime($workpack_date_pattern);
-        my $date_to = $workpack_dt->clone->set(
-            hour   => 23,
-            minute => 59,
-            second => 59,
-        )->strftime($workpack_date_pattern);
-        my $workpacks_for_day = $bartec->WorkPacks_Get(
-            date_from => $date_from,
-            date_to   => $date_to,
-        );
-
-        my %jobs_per_uprn;
-        for my $wpfd (@$workpacks_for_day) {
-            next if $wpfd->{Name} !~ bulky_workpack_name();
-
-            # Ignore workpacks with names with faulty date suffixes
-            my $suffix_dt
-                = $suffix_date_parser->parse_datetime( $+{date_suffix} );
-
-            next
-                if !$suffix_dt
-                || $workpack_dt->date ne $suffix_dt->date;
-
-            my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
-
-            # Group jobs by UPRN. For a bulky workpack, a UPRN/premises may
-            # have multiple jobs (equivalent to item slots); these all count
-            # as a single bulky collection slot.
-            $jobs_per_uprn{ $_->{Job}{UPRN} }++ for @$jobs;
-        }
-
-        my $total_collection_slots = keys %jobs_per_uprn;
-
         # Only include if max jobs not already reached
         push @available_slots => {
             workpack_id => $workpack->{id},
             date        => $workpack->{WorkPackDate},
             }
-            if $total_collection_slots < max_daily_bulky_collection_slots();
+            if $self->check_bulky_slot_available( $workpack->{WorkPackDate},
+            $bartec );
 
         $last_workpack_date = $workpack->{WorkPackDate};
 
@@ -676,6 +631,59 @@ sub find_available_bulky_slots {
     $self->{c}->session->{$key} = \@available_slots;
 
     return \@available_slots;
+}
+
+# Checks if there is a slot available for a given date
+sub check_bulky_slot_available {
+    my ( $self, $date, $bartec ) = @_;
+
+    unless ($bartec) {
+        $bartec = $self->feature('bartec');
+        $bartec = Integrations::Bartec->new(%$bartec);
+    }
+
+    my $suffix_date_parser = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
+    my $workpack_date_pattern = '%FT%T';
+    my $workpack_dt
+        = DateTime::Format::Strptime->new( pattern => $workpack_date_pattern )
+        ->parse_datetime($date);
+    next unless $workpack_dt;
+
+    my $date_from
+        = $workpack_dt->clone->set( hour => 0, minute => 0, second => 0 )
+        ->strftime($workpack_date_pattern);
+    my $date_to = $workpack_dt->clone->set(
+        hour   => 23,
+        minute => 59,
+        second => 59,
+    )->strftime($workpack_date_pattern);
+    my $workpacks_for_day = $bartec->WorkPacks_Get(
+        date_from => $date_from,
+        date_to   => $date_to,
+    );
+
+    my %jobs_per_uprn;
+    for my $wpfd (@$workpacks_for_day) {
+        next if $wpfd->{Name} !~ bulky_workpack_name();
+
+        # Ignore workpacks with names with faulty date suffixes
+        my $suffix_dt = $suffix_date_parser->parse_datetime( $+{date_suffix} );
+
+        next
+            if !$suffix_dt
+            || $workpack_dt->date ne $suffix_dt->date;
+
+        my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
+
+        # Group jobs by UPRN. For a bulky workpack, a UPRN/premises may
+        # have multiple jobs (equivalent to item slots); these all count
+        # as a single bulky collection slot.
+        $jobs_per_uprn{ $_->{Job}{UPRN} }++ for @$jobs;
+    }
+
+    my $total_collection_slots = keys %jobs_per_uprn;
+
+    return $total_collection_slots < max_daily_bulky_collection_slots();
 }
 
 sub _bulky_collection_window {

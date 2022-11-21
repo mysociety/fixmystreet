@@ -8,6 +8,15 @@
   [% IF property %]
     [% INCLUDE 'waste/_address_display.html' %]
   [% END %]
+
+[% IF flash_message && flash_message == 'choose_another_date' %]
+  <div class="govuk-error-summary">
+    <div class="govuk-error-message">
+      Unfortunately, the slot you originally chose has become fully booked. Please select another date.
+    </div>
+  </div>
+[% END %]
+
 <form class="waste" method="post">
   [% # 'Show later / earlier dates' functionality has been implemented but at the time of writing, Peterborough have requested it not be made available %]
   [% PROCESS form override_fields = [

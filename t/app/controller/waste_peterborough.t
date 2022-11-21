@@ -876,7 +876,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('02 September'); # Max of 4 dates fetched
             $mech->submit_form_ok(
                 {   with_fields =>
-                        { chosen_date => '2022-08-26T00:00:00' }
+                        { chosen_date => '2022-08-19T00:00:00' }
                 }
             );
         };
@@ -936,8 +936,8 @@ FixMyStreet::override_config {
             $mech->content_contains('£23.50');
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
-
-
+        }
+        sub test_summary_submission {
             # external redirects make Test::WWW::Mechanize unhappy so clone
             # the mech for the redirect
             my $mech2 = $mech->clone;
@@ -963,6 +963,42 @@ FixMyStreet::override_config {
         }
 
         subtest 'Summary page' => \&test_summary;
+
+        subtest 'Slot has become fully booked' => sub {
+            # Slot has become fully booked in the meantime - should
+            # redirect to date selection
+
+            # Mock out a bulky workpack with maximum number of jobs
+            $b->mock(
+                'WorkPacks_Get',
+                sub {
+                    [   {   'ID'   => '190822',
+                            'Name' => 'Waste-BULKY WASTE-190822',
+                        },
+                    ];
+                },
+            );
+            my $other_uprn = 10001;
+            $b->mock( 'Jobs_Get_for_workpack',
+                [ map { { Job => { UPRN => $other_uprn++ } } } 1 .. 40 ]
+            );
+
+            $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
+            $mech->content_contains('Choose date for collection');
+            $mech->content_contains(
+                'Unfortunately, the slot you originally chose has become fully booked. Please select another date.',
+            );
+            $mech->content_lacks( '2022-08-19T00:00:00', 'Original date no longer an option' );
+        };
+
+        subtest 'New date selected, submit pages again' => sub {
+            $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+            $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs', 'item_3' => 'Wardrobes' } });
+            $mech->submit_form_ok({ with_fields => { location => 'behind the hedge in the front garden' } });
+        };
+
+        subtest 'Summary submission' => \&test_summary_submission;
+
         subtest 'Payment page' => sub {
             my ($token, $new_report, $report_id) = test_payment_page($sent_params);
             # Check changing your mind from payment page
@@ -970,6 +1006,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Summary page' => \&test_summary;
+        subtest 'Summary submission again' => \&test_summary_submission;
         subtest 'Payment page again' => sub {
             my ($token, $new_report, $report_id) = test_payment_page($sent_params);
 

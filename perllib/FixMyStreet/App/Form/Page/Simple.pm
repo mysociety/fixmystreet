@@ -25,6 +25,7 @@ has post_process => (
 has check_unique_id => ( is => 'ro', default => 1 );
 
 # Catalyst action to forward to once this page has been reached
+has pre_finished => ( is => 'ro', isa => 'CodeRef' );
 has finished => ( is => 'ro', isa => 'CodeRef' );
 
 has field_ignore_list => (
