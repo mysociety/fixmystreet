@@ -533,7 +533,7 @@ sub clear_cached_lookups_property {
     # might be prefixed with postcode if it's come straight from the URL
     $uprn =~ s/^.+\://g;
 
-    foreach ( qw/look_up_property bin_services_for_address property_attributes/ ) {
+    foreach ( qw/look_up_property bin_services_for_address/ ) {
         delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
     }
 
@@ -1089,25 +1089,6 @@ sub open_service_requests_for_uprn {
         $open_requests{$service_id} = 1;
     }
     return \%open_requests;
-}
-
-sub property_attributes {
-    my ($self, $uprn, $bartec) = @_;
-
-    my $key = "peterborough:bartec:property_attributes:$uprn";
-    return $self->{c}->session->{$key} if !FixMyStreet->test_mode && $self->{c}->session->{$key};
-
-    unless ($bartec) {
-        $bartec = $self->feature('bartec');
-        $bartec = Integrations::Bartec->new(%$bartec);
-    }
-
-    my $attributes = $bartec->Premises_Attributes_Get($uprn);
-    my %attribs = map { $_->{AttributeDefinition}->{Name} => 1 } @$attributes;
-
-    $self->{c}->session->{$key} = \%attribs;
-
-    return \%attribs;
 }
 
 sub waste_munge_request_form_data {
