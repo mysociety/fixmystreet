@@ -30,6 +30,11 @@ sub get_geocoder { 'OSM' }
 
 sub reopening_disallowed { 1 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a ' . $self->council_area . ' postcode, or street name';
+}
+
 sub disambiguate_location { {
     centre => '51.5585509362304,-0.26781886445231',
     span   => '0.0727325098393763,0.144085171830317',
