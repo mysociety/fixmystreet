@@ -176,11 +176,37 @@ select {
   background-repeat: no-repeat;
   background-position-x: right;
   background-size: contain;
+  padding-right: 30px;
 }
 
 input[type="checkbox"] {
-  min-height: $checkbox-height-small-version;
-  min-width: $checkbox-width-small-version;
+  &:not(.govuk-checkboxes__input) {
+    @include input-small;
+  }
+}
+
+input[type="radio"] {
+  @include input-small;
+  min-height: $radio-height-small-version;
+  min-width: $radio-height-small-version;
+  border-radius: 50%;
+  &:not(.govuk-radios__input) {
+    @include input-small;
+  }
+}
+
+.form-check {
+  padding-left: 0;
+
+  &>input {
+    top: auto;
+  }
+
+  .admin & {
+    &>input {
+      left: 0;
+    }
+  }
 }
 
 .multi-select-menuitem {
@@ -205,6 +231,7 @@ input[type="checkbox"] {
   input {
     margin-left: 0.5em;
     @include input-small;
+    left: auto;
   }
 }
 
