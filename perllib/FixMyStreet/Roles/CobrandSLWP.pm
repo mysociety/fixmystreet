@@ -271,7 +271,7 @@ sub service_name_override {
         2257 => '', # Deliver recycling bags
     );
 
-    return $service_name_override{$service} // "Unknown $service";
+    return $service_name_override{$service} // '';
 }
 
 sub bin_payment_types {
