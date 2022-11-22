@@ -24,6 +24,8 @@ sub privacy_policy_url {
 
 sub get_geocoder { 'OSM' }
 
+sub reopening_disallowed { 1 }
+
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a ' . $self->council_area . ' postcode, or street name';
