@@ -160,7 +160,7 @@ sub record_state_change : Private {
     $c->stash->{new_state} = $new_state;
 
     # Record state change, if there was one
-    if ( $new_state ) {
+    if ( $new_state && !$c->cobrand->call_hook("prevent_questionnaire_updating_status")) {
         $problem->state( $new_state );
         $problem->lastupdate( \'current_timestamp' );
     } elsif ($problem->state ne $old_state) {
