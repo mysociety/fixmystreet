@@ -441,7 +441,8 @@ $.extend(fixmystreet.set_up, {
         errorElement: 'div',
         errorClass: 'form-error',
         errorPlacement: function( error, element ) {
-            if (element.attr('type') == 'radio') {
+            var typ = element.attr('type');
+            if (typ == 'radio' || typ == 'checkbox') {
                 element.parent().before( error );
             } else {
                 element.before( error );

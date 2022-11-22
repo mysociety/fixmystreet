@@ -24,3 +24,13 @@
 <option value="National Highways correspondence"[% ' selected' IF 'National Highways correspondence' == where_hear %]>National Highways correspondence</option>
 <option value="Other"[% ' selected' IF 'Other' == where_hear %]>Other</option>
 </select>
+
+    <div class="govuk-checkboxes" style="margin-top:2em">
+      <div class="govuk-checkboxes__item">
+        <input required type="checkbox" class="form-control govuk-checkboxes__input" id="form_confirm_no_personal" name="confirm_no_personal" value="1">
+        <label style="margin-top:0;padding-top:0" class="govuk-label govuk-checkboxes__label" for="form_confirm_no_personal">
+            Please tick this box to confirm that you have not entered any
+            personal information on this page
+        </label>
+      </div>
+    </div>
