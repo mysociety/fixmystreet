@@ -450,10 +450,11 @@ sub bin_services_for_address {
             my $garden_bins;
             my $garden_container;
             my $garden_cost = 0;
-            my $garden_due = $self->waste_sub_due($schedules->{end_date});
+            my $garden_due;
             my $garden_overdue = 0; # No 'overdue' notice
             if ($service_name eq 'Garden Waste') {
                 $garden = 1;
+                $garden_due = $self->waste_sub_due($schedules->{end_date});
                 foreach (@$data) {
                     next unless $_->{DatatypeName} eq $self->garden_echo_container_name; # DatatypeId 3346
                     # Assume garden will only have one container data
