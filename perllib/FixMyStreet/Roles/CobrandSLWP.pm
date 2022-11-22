@@ -261,6 +261,8 @@ sub service_name_override {
         2249 => "Paper and card",
         2250 => "Mixed recycling",
         2632 => 'Paper and card',
+        3571 => 'Mixed recycling',
+        3576 => 'Non-recyclable Refuse',
         2256 => '', # Deliver refuse bags
         2257 => '', # Deliver recycling bags
     );
@@ -556,6 +558,7 @@ sub _parse_events {
             if ($service_id == 405) {
                 push @{$events->{missed}->{2238}}, $event;
                 push @{$events->{missed}->{2242}}, $event;
+                push @{$events->{missed}->{3576}}, $event;
             } elsif ($service_id == 406) {
                 push @{$events->{missed}->{2243}}, $event;
             } elsif ($service_id == 409) {
@@ -574,6 +577,7 @@ sub _parse_events {
                         push @{$events->{missed}->{2241}}, $event;
                         push @{$events->{missed}->{2246}}, $event;
                         push @{$events->{missed}->{2250}}, $event;
+                        push @{$events->{missed}->{3571}}, $event;
                     } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
                         push @{$events->{missed}->{2239}}, $event;
                         push @{$events->{missed}->{2248}}, $event;
