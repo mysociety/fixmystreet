@@ -34,7 +34,9 @@
     [% photo_fileid = base_field _ '.photo_fileid' %]
     [% PROCESS form override_fields = [ photo, photo_fileid ] %]
 
+    [% IF num > 1 %]
     <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
+    [% END %]
 
     <hr>
   </div>

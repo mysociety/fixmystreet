@@ -594,18 +594,10 @@ html.js {
         display: none;
         &:first-child {
             display: block;
-            .delete-item {
-              display: none;
-            }
         }
         .delete-item {
           margin-top: 1em;
-        }
-
-        &:first-child {
-          .delete-item {
-            display: none;
-          }
+          display: inline-block;
         }
 
         .dropzone {
