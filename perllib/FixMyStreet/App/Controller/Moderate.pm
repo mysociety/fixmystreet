@@ -151,7 +151,13 @@ sub check_edited_elsewhere : Private {
 sub moderate_log_entry : Private {
     my ($self, $c, $object_type, @types) = @_;
 
-    my $user = $c->user->obj;
+    my $user;
+    my $admin_user = 'automated';
+    if ($c->user_exists) {
+        $user = $c->user->obj;
+        $admin_user = $user->moderating_user_name;
+    }
+
     my $reason = $c->stash->{'moderation_reason'};
     my $object = $object_type eq 'update' ? $c->stash->{comment} : $c->stash->{problem};
 
@@ -163,8 +169,8 @@ sub moderate_log_entry : Private {
     # We attach the log to the moderation entry if present, or the object if not (hiding)
     $c->model('DB::AdminLog')->create({
         action => 'moderation',
-        user => $user,
-        admin_user => $user->moderating_user_name,
+        $user ? (user => $user) : (),
+        admin_user => $admin_user,
         object_id => $c->stash->{history}->id || $object->id,
         object_type => $c->stash->{history}->id ? 'moderation' : $object_type,
         reason => $log_reason,
@@ -191,7 +197,7 @@ sub report_moderate_audit : Private {
 
     my $cobrand = $problem->get_cobrand_logged;
     my $anon = $cobrand->anonymous_account && $problem->user->email eq $cobrand->anonymous_account->{email};
-    if ($problem->user->email_verified && $c->cobrand->send_moderation_notifications && !$anon) {
+    if ($problem->user->email_verified && $c->cobrand->send_moderation_notifications && !$c->stash->{moderation_no_email} && !$anon) {
         my $token = $c->model("DB::Token")->create({
             scope => 'moderation',
             data => { id => $problem->id }

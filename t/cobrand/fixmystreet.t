@@ -359,13 +359,14 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
+    my $hampshire = $mech->create_body_ok(2227, 'Hampshire County Council');
+    my $he = $mech->create_body_ok(2227, 'National Highways');
+    $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
+    $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Litter (NH)', email => 'litter@he', group => 'National Highways');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he', group => 'National Highways');
+
     subtest 'fixmystreet changes litter options for National Highways' => sub {
-        my $hampshire = $mech->create_body_ok(2227, 'Hampshire County Council');
-        my $he = $mech->create_body_ok(2227, 'National Highways');
-        $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
-        $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
-        $mech->create_contact_ok(body_id => $he->id, category => 'Litter (NH)', email => 'litter@he', group => 'National Highways');
-        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he', group => 'National Highways');
 
         our $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
         sub mock_road {
@@ -419,6 +420,34 @@ FixMyStreet::override_config {
         is @elements, 1, 'Only one subcategory in National Highways category';
         is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping';
     };
+
+    subtest "check things redacted appropriately" => sub {
+        $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
+        my $title = "Test Redact report from 07000 000000";
+        my $detail = 'Please could you email me on test@example.org or ring me on (01234) 567 890.';
+        $mech->submit_form_ok({
+            with_fields => {
+                title => $title,
+                detail => $detail,
+                category => 'Potholes (NH)',
+                name => 'Test Example',
+                username_register => 'test@example.org',
+            }
+        }, "submit details");
+        $mech->content_contains('Nearly done');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, 'Test Redact report from [phone removed]';
+        is $report->detail, 'Please could you email me on [email removed] or ring me on [phone removed].';
+
+        my ($history) = $report->moderation_history;
+        is $history->title, $title;
+        is $history->detail, $detail;
+
+        $report->delete;
+    };
+
+
 };
 
 done_testing();

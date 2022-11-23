@@ -1657,6 +1657,7 @@ sub save_user_and_report : Private {
     $c->cobrand->call_hook(report_new_munge_before_insert => $report);
 
     $report->update_or_insert;
+    $c->cobrand->call_hook(report_new_munge_after_insert => $report);
 
     # tidy up
     if ( my $token = $c->stash->{partial_token} ) {

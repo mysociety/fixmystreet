@@ -143,6 +143,55 @@ sub fetch_area_children {
     return $areas;
 }
 
+sub report_new_munge_after_insert {
+    my ($self, $report) = @_;
+
+    my %new = (
+        title => _redact($report->title),
+        detail => _redact($report->detail),
+    );
+
+    # Data used by report_moderate_audit
+    my $c = $self->{c};
+    $c->stash->{history} = $report->new_related( moderation_original_data => {
+        title => $report->title,
+        detail => $report->detail,
+        photo => $report->photo,
+        anonymous => $report->anonymous,
+        longitude => $report->longitude,
+        latitude => $report->latitude,
+        category => $report->category,
+        $report->extra ? (extra => $report->extra) : (),
+    });
+    $c->stash->{problem} = $report;
+    $c->stash->{moderation_reason} = 'Automatic data redaction';
+    $c->stash->{moderation_no_email} = 1;
+
+    my @types;
+    foreach (qw(title detail)) {
+        if ($report->$_ ne $new{$_}) {
+            $report->$_($new{$_});
+            push @types, $_;
+        }
+    }
+
+    $c->forward( '/moderate/report_moderate_audit', \@types );
+}
+
+sub _redact {
+    my $s = shift;
+
+    my $atext = "[A-Za-z0-9!#\$%&'*+\-/=?^_`{|}~]";
+    my $atom = "$atext+";
+    my $local_part = "$atom(\\s*\\.\\s*$atom)*";
+    my $sub_domain = '[A-Za-z0-9][A-Za-z0-9-]*';
+    my $domain = "$sub_domain(\\s*\\.\\s*$sub_domain)*";
+    $s =~ s/$local_part\@$domain/[email removed]/g;
+
+    $s =~ s/\(?\+?[0-9](?:[\s()-]*[0-9]){9,}/[phone removed]/g;
+    return $s;
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
     # On the cobrand there is only the HE body

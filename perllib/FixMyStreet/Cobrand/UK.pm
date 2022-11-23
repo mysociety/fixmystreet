@@ -427,6 +427,14 @@ sub report_new_munge_before_insert {
     }
 }
 
+sub report_new_munge_after_insert {
+    my ($self, $report) = @_;
+
+    if ($report->to_body_named('National Highways')) {
+        FixMyStreet::Cobrand::HighwaysEngland::report_new_munge_after_insert($self, $report);
+    }
+}
+
 # Allow cobrands to disallow updates on some things.
 # Note this only ever locks down more than the default.
 sub updates_disallowed {

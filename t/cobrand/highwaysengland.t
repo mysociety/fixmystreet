@@ -92,6 +92,34 @@ FixMyStreet::override_config {
         unlike $body, qr/Never retype another FixMyStreet report/, 'FMS not mentioned in email';
     };
 
+    subtest "check things redacted appropriately" => sub {
+        $mech->get_ok('/report/new?latitude=52.23025&longitude=-1.015826');
+        my $title = "Test Redact report from 07000 000000";
+        my $detail = 'Please could you email me on test@example.org or ring me on (01234) 567 890 or 07000 000000.';
+        $mech->submit_form_ok(
+            {
+                button => 'report_anonymously',
+                with_fields => {
+                    title => $title,
+                    detail => $detail,
+                    category => 'Pothole',
+                }
+            },
+            "submit details"
+        );
+        $mech->content_contains('Thank you');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->title, 'Test Redact report from [phone removed]';
+        is $report->detail, 'Please could you email me on [email removed] or ring me on [phone removed] or [phone removed].';
+
+        my ($history) = $report->moderation_history;
+        is $history->title, $title;
+        is $history->detail, $detail;
+
+        $report->delete;
+    };
+
     subtest "Reports from FMS cobrand use correct branding in email" => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
         ok $report, "Found the report";

@@ -425,6 +425,11 @@ sub report_new_munge_before_insert {
     FixMyStreet::Cobrand::Merton::report_new_munge_before_insert($self, $report);
 }
 
+sub report_new_munge_after_insert {
+    my ($self, $report) = @_;
+    $self->SUPER::report_new_munge_after_insert($report);
+}
+
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
