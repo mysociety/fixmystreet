@@ -1,0 +1,700 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "../sass/report_list_pins";
+@import "./_mixins";
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+b, strong {
+  font-family: $body-font;
+}
+
+// * TYPOGRAPHY
+html {
+  text-rendering: optimizeLegibility;
+  font-size: $font-size-small-view;
+  @if variable-exists(large-view-point) {
+    @media only screen and (min-width: $large-view-point) {
+        font-size: $font-size-large-view;
+      }
+  }
+}
+
+h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
+  font-weight: $heading-font-weight !important;
+}
+
+h1, .h1 {
+  font-size: $h1-size-small-view;
+  line-height: 120%;
+}
+
+h2, .h2 {
+  font-size: $h2-size-small-view;
+}
+
+h3, .h3 {
+  font-size: $h3-size-small-view;
+}
+
+h4, .h4 {
+  font-size: $h4-size-small-view;
+}
+
+@if variable-exists(large-view-point) {
+  @media only screen and (min-width: $large-view-point) {
+    h1, .h1 {
+      font-size: $h1-size-large-view;
+    }
+  
+    h2, .h2 {
+      font-size: $h2-size-large-view;
+    }
+  
+    h3, .h3 {
+      font-size: $h3-size-large-view;
+    }
+  
+    h4, .h4 {
+      font-size: $h4-size-large-view;
+    }
+  }
+}
+
+.body-large-bold {
+  font-weight: 400 !important;
+  font-size: 18px;
+  @media only screen and (min-width: 641px) { 
+      font-size: 24px;
+  }
+}
+
+ul.unstyled-list {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-left: 0;
+  li {
+  list-style-type: none;
+  }
+}
+
+label {
+  font-family: $body-font;
+}
+
+// * LINKS AND BUTTONS
+
+a {
+  @include cobrand-link;
+}
+
+.my-account-buttons a {
+  background: transparent;
+  @include cobrand-link;
+}
+
+.skiplink:focus {
+  background-color: $link-focus-background-colour;
+}
+
+.btn, .btn--primary, .btn-primary, .green-btn {
+  @include cobrand-btn-primary;
+}
+
+.btn-secondary, a#geolocate_link, #report-cta {
+  @include cobrand-btn-secondary;
+}
+
+a#geolocate_link {
+  font-size: 0.875rem;
+}
+
+.item-list--wards__item, .item-list--reports__item {
+  margin: 0;
+  border-top: 1px solid $secondary_button_border_color;
+}
+
+.item-list--wards__item a, .item-list--reports__item a {
+  color: $primary-b;
+  text-decoration: none;
+
+  &:hover {
+    h3 {
+      text-decoration: underline;
+      text-underline-offset: $text-underline-offset;
+    }
+    background-color: transparentize($color: $link-color, $amount: 0.9);
+  }
+
+  &:focus {
+    background-color: $link-focus-background-colour;
+    &:hover {
+      h3 {
+        text-decoration: underline;
+        text-underline-offset: $text-underline-offset;
+      }
+    }
+  }
+}
+
+input {
+  font-family: $body-font; 
+}
+
+input:not([type]), 
+input[type=text], 
+input[type=password], 
+input[type=date], 
+input[type=datetime], 
+input[type=datetime-local], 
+input[type=month], 
+input[type=week], 
+input[type=email], 
+input[type=number], 
+input[type=search], 
+input[type=tel], 
+input[type=time], 
+input[type=url], 
+input[type=color], 
+textarea, 
+select, 
+input[type=radio], 
+input[type=checkbox],
+input#pc,
+.multi-select-button,
+.form-control {
+
+  // There shouldn't be any code about sizing here
+  border-radius: $input-border-radius;
+  background-color: #FFF;
+  border-style: solid;
+  border-width: $input-border-width;
+  border-color: $input-border-colour;
+  box-shadow: $input-box-shadow-default;
+  color: $input-colour;
+
+  &:focus {
+    border-color: $input-border-colour-focus;
+    outline: $input-outline-focus;
+    box-shadow: $input-box-shadow-focus;
+  }
+}
+
+.item-list__item__shortlist-add { 
+  &:focus {
+    box-shadow: 0px 0px 0px 4px $primary_b inset;
+  }
+}
+
+.item-list__item--empty {
+  // To comply with AAA standard
+  color: $gray-2;
+}
+
+.report-list-filters {
+  color: $white;
+  @include cobrand-body;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $error-color;
+}
+
+div.form-error, p.form-error {
+  background: $error-color;
+}
+
+.form-section-description, .change_location {
+  color: $gray-2;
+}
+
+.form-hint, .item-list--reports__item small, .item-list--reports__item .small-print {
+  color: $gray-2;
+  margin-top: 0.2em;
+}
+
+// * NAVBAR
+
+#site-logo {
+  display: block;
+  font-family: $body-font;
+
+  background-image: url('/cobrands/southwark/images/logo-white.png');
+  background-position: 0;
+  background-size: $logo-width-mobile $logo-height-mobile;
+  background-repeat: no-repeat;
+  width: $logo-width-mobile;
+  padding: 0;
+  padding-top: $header-height-mobile;
+  max-height: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &:focus {
+    background-image: url('/cobrands/southwark/images/logo-dark.png');
+  }
+}
+
+.nav-menu {
+  a, span {
+    border-bottom-color: darken($nav_background_colour_mobile, 10%);
+    font-size: $nav-font-size-mobile;
+  }
+
+  span {
+    background-color: $nav_background_colour_mobile;
+    color:$nav_background_colour;
+  }
+
+  a {
+    background-color: $nav_background_colour_mobile;
+    color: $nav_colour_mobile;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: lighten($purple, 15%);
+    }
+
+    &:focus {
+      background-color: $link-focus-background-colour;
+      color: $nav_background_colour;
+    }
+  }
+}
+
+#report-cta {
+  border-color: $nav_colour;
+  padding-top: $btn-top-padding-small;
+  padding-bottom: $btn-bottom-padding-small;
+  font-size: $nav-font-size-mobile;
+  text-decoration: none;
+  line-height: 100%;
+
+  &:hover {
+    border-color: $nav_colour;
+  }
+
+  &:focus {
+    border-color: $link-focus-background-colour;
+    outline: none;
+  }
+}
+
+#nav-link {
+  &:focus, &.focussed {
+    color: $link-hover-color;
+    outline: none;
+    background: $link-focus-background-colour inline-image("../fixmystreet/images/#{$menu-image-focus}.svg") center center no-repeat;
+  }
+  
+  html.js-nav-open & {
+    &:focus, &.focussed {
+      background: $link-focus-background-colour inline-image("../fixmystreet/images/#{$close-menu-image-focus}.svg") center center no-repeat;
+    }
+  }
+}
+
+// Make sure the numbers on the front page have the correct font weight
+@if variable-exists(large-view-point) {
+  ol.big-numbers>li:before {
+    font-size: 36px;
+      @media only screen and (min-width: $large-view-point) {
+          font-size: 48px;
+      }
+  }
+}
+
+#front_stats {
+  background-color: $white-2;
+
+  big {
+    color: $layout_front_stats_color;
+    @if variable-exists(large-view-point) {
+      font-size: 36px !important;
+      @media only screen and (min-width: $large-view-point) {
+          font-size: 48px !important;
+      }
+    }
+  }
+
+  div {
+    @include cobrand-body;
+    font-family: $body-font;
+  }
+}
+
+// FAQ/privacy pages should have correctly-weighted headers
+dl dt {
+  font-family: $body-font;
+}
+
+#front-main {
+  text-align: left;
+  padding-top: 1em;
+  padding-bottom: 3px;
+  margin-top: 0;
+
+  @if variable-exists(large-view-point) {
+    @media only screen and (min-width: $large-view-point) {
+      padding-bottom: 7px !important; // Needs to override the layout one
+    }
+  }
+
+  h1+p {
+    color: $gray-2;
+  }
+
+  h2 {
+    font-style: normal;
+    font-size: $h2-size-small-view;
+    color: $subtext !important;
+    @if variable-exists(large-view-point) {
+      @media only screen and (min-width: $large-view-point) {
+        font-size:32px;
+      }
+    }
+  }
+
+  #postcodeForm {
+    background-color: $mainform_bg;
+    color: $primary_b;
+    margin-top: 1em;
+
+    div {
+      border-width: 0px;
+      align-items: center;
+      background-color: transparent;
+    }
+
+    $border-width:1px;
+    $max-height: 45px;
+
+    input#sub {
+      background: $primary_button_background_color !important;
+      margin-top: -1px;
+      margin-bottom: -1px;
+      border: $border-width solid $primary_button_border_color;
+      max-height: $max-height;
+      height: $max-height;
+      
+
+      &:hover {
+        background: $primary_button_background_color_hover !important;
+        color: $primary_button_color_hover !important;
+        border-color: $primary_button_border_color_hover;
+      }
+
+      &:focus {
+        background: $primary_button_background_color_focus !important;
+        color: $primary_button_color_focus !important;
+        border: 2px solid $primary_button_border_color_focus;
+        border-left: 0px;
+        outline: none;
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+
+    input#pc {
+      margin: 2px 0;
+      max-height: $max-height;
+      height: $max-height;
+      border: $border-width solid $secondary_button_border_color !important;
+      background: $white !important;
+      &:focus {
+        outline:  2px solid $link-focus-background-colour;
+      }
+    }
+  }
+}
+
+a#geolocate_link {
+  // Out from #postcode form element so it also uses this style on the
+  // local alaert page.
+  margin-top: 1em;
+}
+
+.form-box, .box-warning {
+  background-color: $white-2;
+}
+
+.form-box {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.dropzone {
+  margin-top: 0.5em;
+
+  &:focus, &:focus-visible {
+    background-color: transparentize($color: $link-hover-color, $amount: 0.7);
+    border-color: $yellow;
+  }
+}
+
+// uses important because btn also uses it
+#highways .segmented-control--radio input:checked + label.btn {
+  color: $white-2 !important;
+  font-weight: bold !important;
+}
+
+.segmented-control>:last-child  {
+border-right-width: $btn-border-width;
+}
+
+.segmented-control--radio {
+  input:checked+label {
+    background-color: $primary_button_background_color;
+    border-color: $primary_button_background_color;
+    color: $primary_button_color !important;
+  }
+  .btn {
+    background-color: $primary_button_color;
+    color: $primary_button_background_color !important;
+  }
+}
+
+.alerts__nearby-activity__photos {
+  // This improves accessibility
+  $border-width: 3px;
+  img {
+    margin-top: $border-width;
+    margin-bottom: $border-width;
+    border:  $border-width solid transparent;
+  }
+  a {
+    &:focus {
+      img {
+        outline: $border-width solid $link-focus-background-colour;
+        border-color: $primary_b;
+      }
+    }
+  }
+}
+
+// Footer
+.cobrand-footer {
+  $desktop-view: 64.0625em;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  margin-top: 4rem;
+
+  .footer-grid {
+    padding: 20px 0;
+    display: grid;
+    align-items: center;
+    gap: 0.5rem;
+
+    @media (min-width: 64.0625em) {
+     grid-template-columns: repeat(3, 1fr);
+     gap: 1rem;
+    }
+  }
+
+  .outBoundSocialLinks {
+    justify-self: center;
+    @media (min-width: $desktop-view) {
+      justify-self: start;
+    }
+
+    a {
+      display: inline-block;
+      margin-right: 0.625em;
+      margin-left: 0.625em;
+      line-height: 40px;
+      min-width: 30px;
+      min-height: 30px;
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+
+      -webkit-transition: transform .25s ease;
+      -moz-transition: transform .25s ease;
+      -o-transition: transform .25s ease;
+      -ms-transition: transform .25s ease;
+      transition:  transform .25s ease;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+
+      &:focus {
+        outline: 3px solid $primary-b;
+      }
+
+      @media (min-width: $desktop-view) {
+        min-width: 40px;
+        min-height: 40px;
+      }
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+
+      &.flkr {
+        background-image: url('/cobrands/southwark/images/flkr.png');
+      }
+      &.twitter {
+        background-image: url('/cobrands/southwark/images/twitter.png');
+      }
+      &.youtube {
+        background-image: url('/cobrands/southwark/images/youtube.png');
+      }
+      &.facebook {
+        background-image: url('/cobrands/southwark/images/facebook.png');
+      }
+      &.instagram {
+        background-image: url('/cobrands/southwark/images/instagram.png');
+      }
+    }
+  }
+
+  .fairFuture {
+    justify-self: center;
+    display: none;
+    width: 220px;
+    height: 66px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('/cobrands/southwark/images/southwark-fairer-future.png');
+    margin: 0 auto;
+  
+    @media (min-width: 90.0625em) {
+      display: block;
+    }
+  }
+
+  .ratePlugin {
+    justify-self: center;
+    @media (min-width: $desktop-view) {
+      justify-self: end;
+    }
+
+    .gm-container {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: center;
+      @media (min-width: $desktop-view) {
+        flex-direction: row;
+      }
+    }
+
+    .rate-page{
+      margin: 0;
+      margin-right: 0;
+      margin-bottom: 15px;
+      @media (min-width: $desktop-view) {
+        margin-right: 15px;
+        margin-bottom: 0;
+      }
+    }
+
+    .rating-options {
+      $height: 70px;
+      height: $height;
+      a {
+        display: inline-block;
+        width: $height;
+        height: $height;
+        margin-right: 10px;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        -webkit-transition: transform .25s ease;
+        -moz-transition: transform .25s ease;
+        -o-transition: transform .25s ease;
+        -ms-transition: transform .25s ease;
+        transition:  transform .25s ease;
+  
+        &:hover {
+          transform: scale(1.2);
+        }
+    
+        &:focus {
+          outline: 3px solid $primary-b;
+        }
+  
+        &.good{
+          background-image: url('/cobrands/southwark/images/good.png');
+        }
+        &.average{
+          background-image: url('/cobrands/southwark/images/average.png');
+        }
+        &.poor{
+          background-image: url('/cobrands/southwark/images/poor.png');
+        }
+      }
+    }
+  }
+
+  .otherLinks {
+   ul {
+    margin-left: 0;
+    margin-bottom: 0;
+    padding: 20px 0;
+    text-align: center;
+    li {
+      display: inline-block;
+      margin-bottom: 0;
+      padding-top: 10px;
+      padding-bottom: 10px;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+
+      a {
+        line-height: 130%;
+
+        padding-right: 15px;
+        margin-right: 15px;
+        border-right: 1px solid #e5e5e5;
+        font-size: 15px;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+
+      &:last-of-type a{
+        border-right: none;
+        margin-right: 0;
+      }
+    }
+   }
+  }
+}
+
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  left: 112px;
+  top: 71px;
+}
+
+.show-for-sr {
+  clip: rect(1px,1px,1px,1px);
+  height: 1px;
+  overflow: hidden;
+  position: absolute!important;
+  width: 1px;
+}

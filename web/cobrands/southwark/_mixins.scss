@@ -1,0 +1,104 @@
+@import "./_variables";
+
+@mixin cobrand-body {
+    // Overrides styles from default base file
+    font-size: $font-size-small-view !important;
+
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            font-size: $font-size-large-view !important;
+        }
+    }
+}
+
+@mixin cobrand-link {
+    text-underline-offset: $text-underline-offset;
+    text-decoration-thickness: $link-text-decoration-thickness-default;
+    &:visited {
+        &:hover {
+            color: $link-hover-color;
+        }
+    }
+    &:active {
+        text-decoration: $link-focus-text-decoration;
+        text-decoration-thickness: $link-text-decoration-thickness-active;
+    }
+    &:hover {
+        text-decoration-thickness: $link-text-decoration-thickness-hover;
+    }
+    &:focus {
+        text-decoration: $link-focus-text-decoration;
+        outline: none;
+        background-color: $link-focus-background-colour;
+        color: $primary_b;
+        text-decoration-thickness: $link-text-decoration-thickness-focus;
+    }
+}
+
+@mixin cobrand-btn {
+    text-shadow:0px 1px 0px rgba(0, 0, 0, 0.3);
+    font-weight: $btn-font-weight;
+    font-size: $btn-font-size-small;
+    text-decoration: none;
+    line-height: 100%;
+    border-radius: $btn-border-radius;
+    border-style: solid;
+    border-width: $btn-border-width;
+    text-underline-offset: $text-underline-offset;
+    text-decoration-thickness: $btn-text-decoration-thickness-default;
+
+    &:focus {
+        outline: none;
+        text-decoration: none !important;
+        text-decoration-thickness: $btn-text-decoration-thickness-focus;
+    }
+
+    &:hover {
+        text-decoration: none !important;
+        text-decoration-thickness: $btn-text-decoration-thickness-hover;
+    }
+
+    &:active {
+        text-decoration: underline !important;
+        text-decoration-thickness: $btn-text-decoration-thickness-active;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+    }
+
+    @if variable-exists(large-view-point) {
+        @media only screen and (min-width: $large-view-point) {
+            padding-top: $btn-top-padding-large;
+            padding-bottom: $btn-bottom-padding-large;
+            padding-left: $btn-left-padding-large;
+            padding-right: $btn-right-padding-large;
+            font-size: $btn-font-size-large;
+        }
+    }
+}
+
+@mixin cobrand-btn-primary {
+    // All the !important declarations are to override the default behaviour of button-variant.
+    @include button-variant($bg-top: $primary_button_background_color, $bg-bottom: $primary_button_background_color, $border: $primary_button_border_color, $text: $primary_button_color, $hover-bg-bottom: $primary_button_background_color_hover, $hover-bg-top: $primary_button_background_color_hover, $hover-border: $primary_button_border_color_hover, $hover-text: $primary_button_color_hover);
+    @include cobrand-btn;
+    &:focus {
+        background: $primary_button_background_color_focus !important;
+        color: $primary_button_color_focus !important;
+        border-color: $primary_button_border_color_focus !important;
+        text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.4);
+    }
+}
+
+@mixin cobrand-btn-secondary {
+    // All the !important declarations are to override the default behaviour of button-variant.
+    @include button-variant($bg-top: $secondary_button_background_color_top, $bg-bottom: $secondary_button_background_color_bottom, $border: $secondary_button_border_color, $text: $secondary_button_color, $hover-bg-bottom: $secondary_button_background_color_hover_bottom, $hover-bg-top: $secondary_button_background_color_hover_top, $hover-text: $secondary_button_color_hover);
+    @include cobrand-btn;
+
+    &:focus {
+        background: $link-focus-background-colour;
+        border-color: $secondary_button_border_color_focus;
+        color: $secondary_button_color_focus;
+        outline: none;
+    }
+}

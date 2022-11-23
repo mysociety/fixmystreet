@@ -1,0 +1,253 @@
+@import "fonts";
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+// From https://www.southwark.gov.uk/branding
+
+/* COLOURS */
+$gray-1: #000;
+$gray-2: #666;
+$gray-3: #ccc; // $gray-3 For borders.
+
+$white: #fff;
+$white-2: #e9ecee;
+
+$theme-2: #256f8a;
+$blue: #0d5c84;
+$blue-l1: #e5eff8;
+$purple: #4c2c92;
+$yellow: #ffbf47;
+
+// Error and Success colours
+$red: #d7471a;
+$green: #5aa614;
+
+$primary: $gray-2;
+$primary_b: $gray-1;
+$primary_text: $gray-1;
+$subtext: $gray-2;
+$error-color: $red;
+$base_bg: $white;
+$base_fg: $gray-3;
+// From here https://www.southwark.gov.uk/myarea
+$mainform_bg: $white-2;
+
+/* 
+IMPORTANT
+If cobrand doesn't have specific rules for large screen, comment 
+the variable $large-view-point. This will disable all the variables 
+with large property and only use the small as the default. */
+$large-view-point: 641px;
+// $container-max-width: 60em;
+
+/* FONTS */
+$heading-font: "myriadpro", sans-serif;
+$body-font: "myriadpro", sans-serif;
+$meta-font: "myriadpro", sans-serif;
+
+$font-size-small-view: 100%;
+$font-size-large-view: 19px;
+
+$heading-font-weight: 600;
+$h1-size-small-view: 2.125rem;
+$h2-size-small-view: 1.6875rem;
+$h3-size-small-view: 1.375rem;
+$h4-size-small-view: 1.125rem;
+$h5-size-small-view: 1.125rem;
+$h6-size-small-view: 1rem;
+
+$h1-size-large-view: 48px;
+$h2-size-large-view: 32px;
+$h3-size-large-view: 24px;
+$h4-size-large-view: 19px;
+
+/* LINKS */
+$primary_link_color: $blue;
+$primary_link_hover_color: $blue;
+$link-color: $blue;
+$link-hover-color: #258faf;
+$link-visited-color: $purple;
+$link-active-color: $primary_b;
+$link-focus-color: $primary_b;
+$link-focus-background-colour: $yellow;
+
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline;
+$link-focus-text-decoration: none;
+
+// Some cobrands change the thickness on hover or focus
+$link-text-decoration-thickness-default: auto;
+$link-text-decoration-thickness-active: auto;
+$link-text-decoration-thickness-hover: auto;
+$link-text-decoration-thickness-focus: auto;
+$text-underline-offset: auto; // This prevent the underline to get cropped
+
+$col_click_map: $gray-1;
+$col_click_map_dark: darken($gray-1, 10%);
+
+/* NAVBAR */
+
+$menu-image: "menu-white";
+$menu-image-focus: "menu-black";
+$close-menu-image: "close-#{$menu-image}";
+$close-menu-image-focus: "close-#{$menu-image-focus}";
+
+$nav_background_colour: $theme-2;
+$nav_colour: $white;
+$nav_hover_background_colour: $primary;
+$nav_background_colour_mobile: $blue-l1;
+$nav_colour_mobile: $primary_b;
+
+$mappage-header-height: 65px;
+$header-height-mobile: 55px;
+$header-height-desktop: 120px; // The navbar on mapage is smaller, because the one in the homepage uses a lot of space.
+$header-top-border: false;
+$header-top-border-width: 0px;
+$header-top-border: $header-top-border-width solid $primary;
+
+$logo-height-mobile: 40px;
+$logo-width-mobile: 90px;
+$logo-height-desktop: 63px;
+$logo-width-desktop: 145px;
+
+$nav-font-weight-top-lvl: 400;
+$nav-font-size-mobile: 15px;
+$nav-font-size-desktop: 18px;
+
+// * BUTTON
+
+$button-margin-top: 0;
+$button-margin-bottom: 0;
+$button-margin-right: 0;
+$button-margin-left: 0;
+
+$btn-font-size-small: 0.8125rem;
+$btn-font-size-large: 1.125rem;
+$btn-font-weight: 400;
+
+$btn-top-padding-small: 0.75rem;
+$btn-bottom-padding-small: 0.75rem;
+$btn-right-padding-small: 0.75rem;
+$btn-left-padding-small: 0.75rem;
+
+$btn-top-padding-large: 0.75rem;
+$btn-bottom-padding-large: 0.75rem;
+$btn-right-padding-large: 0.75rem;
+$btn-left-padding-large: 0.75rem;
+
+// This padding variables are from sass file that applies to all cobrands
+// Unfortunately that file only consider btn with one size.
+// NO NEED TO CHANGE THEM
+$button-padding-top: $btn-top-padding-small; //
+$button-padding-bottom: $btn-bottom-padding-small;
+$button-padding-left: $btn-left-padding-small;
+$button-padding-right: $btn-right-padding-small;
+
+$btn-border-width: 1px;
+$btn-border-radius: 0px;
+
+$btn-text-decoration-thickness-default: auto !important;
+$btn-text-decoration-thickness-active: auto !important;
+$btn-text-decoration-thickness-hover: auto !important;
+$btn-text-decoration-thickness-focus: auto !important;
+$btn-underline-offset: $text-underline-offset;
+
+// * Primary button
+// https://www.southwark.gov.uk/jobs-and-careers/apprenticeships
+// https://jobs.southwark.gov.uk/
+$primary_button_background_color: $theme-2;
+$primary_button_color: $white;
+$primary_button_border_color: $theme-2;
+
+$primary_button_background_color_hover: #585858;
+$primary_button_color_hover: $white;
+$primary_button_border_color_hover: #585858;
+
+$primary_button_background_color_focus: $link-focus-background-colour;
+$primary_button_color_focus: $primary_b;
+$primary_button_border_color_focus: $link-focus-background-colour;
+
+// * Secondary button
+// Style from the sign in button
+$secondary_button_background_color_top: #f7f7f7;
+$secondary_button_background_color_bottom: #dadada;
+$secondary_button_color: #333;
+$secondary_button_border_color: #cbcbcb;
+
+$secondary_button_background_color_hover_top: #e8e8e8;
+$secondary_button_background_color_hover_bottom: #c1c1c1;
+$secondary_button_color_hover: $secondary_button_color;
+$secondary_button_border_color_hover:$secondary_button_border_color;
+
+$secondary_button_background_color_focus: $link-focus-background-colour;
+$secondary_button_color_focus: $primary_b;
+$secondary_button_border_color_focus: $secondary_button_border_color;
+
+/* INPUTS */
+$input-font-size: 0.875rem;
+$input-colour: transparentize($primary-b, 0.25);
+$input-height-small-screen: 42px;
+$input-height-large-screen: 38px;
+$input-border-radius: 0;
+$input-border-width: 1px;
+$input-border-colour: #999;
+$input-padding-x: 8px;
+$input-border-colour: $gray-3;
+$input-outline-hover: 10px solid $gray-3; //Only applies to radio and checkbox
+$input-outline-focus: 3px solid $link-focus-background-colour;
+$input-border-colour-focus: #999;
+$input-box-shadow-default: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+$input-box-shadow-focus: 0 0 10px rgba(255, 191, 71, 0.5);
+$input-box-shadow-focus-hover: inset 0 1px 1px rgba(0, 0, 0, 0.08), 0 0 8px rgba(102, 175, 233, 0.6);
+
+// * CHECKBOXES
+$checkbox-height-small-version: 24px;
+$checkbox-width-small-version: 24px;
+
+// * RADIOBUTTON
+$radio-height-small-version: $checkbox-height-small-version;
+$radio-width-small-version: $checkbox-width-small-version;
+
+// * SEARCH HELP
+// This section has more variables. Go to _search-help.scss to see the full list
+$search-help-alignment: left;
+$search-help-background: lighten($red, 60%);
+$search-help-header-background: $red;
+$search-help-header-font-weight: normal;
+$search-help-header-font-size: 24px;
+$search-help-header-font-size-desktop: 32px;
+$search-help-margin-desktop: -1em -1em 0 -1em;
+
+/* DROPZONE */
+// You can comment this out, and see if the default is good enough
+$dropzone-border-colour: $link-color;
+$dropzone-button-text: $white;
+$dropzone-button-background: $link-color;
+$dropzone-button-border: $link-color;
+$dropzone-border-color--awakened: $yellow;
+
+$layout_front_stats_color: $primary_b;
+$col_big_numbers: $primary_b;
+
+$pagination_background: $white;
+$itemlist_item_background: $white-2;
+$itemlist_item_background_hover: $blue-l1;
+
+/* 
+If you want to enable the sticky side bar on the help page
+erase the following file
+/about/_sidebar.html
+*/
+
+/* LIST OF UNUSED VARIABLES FOR THIS COBRAND */
+// $mappage-sidebar-width: 29em;
+// $mappage-sidebar-padding: 1em;
+// $mappage-notes-width: 15em;
+// $mappage-actions-width: 25em;
+// $mappage-sidebar-width--medium: 24em;
+// $mappage-actions-width--medium: 20em;
+// $col_fixed_label: #00bd08;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+// $form-control-border-color: #aaaaaa;
