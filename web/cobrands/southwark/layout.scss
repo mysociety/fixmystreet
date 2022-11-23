@@ -1,0 +1,133 @@
+@import "_variables";
+@import "./_mixins";
+@import "../sass/layout";
+
+// Set the default font colour everywhere
+body, .content {
+  color: $gray-1;
+}
+
+p, span {
+  max-width: 770px;
+}
+
+#main-nav {
+  float: right;
+  min-height: $header-height-desktop;
+
+  .ie9 & > * {
+    #{$right}: auto;
+    #{$left}: 0;
+  }
+}
+
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  #site-logo {
+    background-size: $logo-width-desktop $logo-height-desktop;
+    width: $logo-width-desktop;
+    padding-top: $header-height-desktop;
+  }
+
+  #front-main {
+    background-color: white;
+    padding-top: 40px;
+
+    #postcodeForm {
+      margin-top: 0;
+      background-color: $mainform_bg;
+      margin: 0 auto;
+      margin-top: 1em;
+      padding: 0.5em 1em 2em 1em;
+      div {
+        margin: 0;
+      }
+
+      .form-hint {
+        color: $gray-2;
+      }
+    }
+
+    h2 {
+      max-width: 650px;
+    }
+  }
+}
+
+.nav-menu--main.nav-menu {
+  li {
+    margin-right: 10px;
+  }
+
+  a, span {
+    display: inline-block; // So the chevrons appear correctly
+    font-size: $nav-font-size-desktop;
+    padding: 0.5em;
+    font-weight: $nav-font-weight-top-lvl;
+  }
+
+  a, a.report-a-problem-btn {
+    text-decoration: none;
+    margin: 0;
+    background-color: transparent;
+    color: $white;
+    text-decoration-thickness: 1.5px !important;
+
+    &:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      background-color: $link-focus-background-colour;
+      color: $primary_b;
+    }
+  }
+
+  span {
+    color: $white;
+    text-decoration: underline;
+    pointer-events: none;
+    text-underline-offset: $text-underline-offset;
+  }
+}
+
+body.mappage {
+  #site-header {
+    @include box-sizing(border-box);
+  }
+
+  // Reinstate the floated nav bar on map pages
+  #main-nav {
+    float: #{$right};
+    min-height: $mappage-header-height;
+
+    // IE9 uses absolute positioning rather than floats.
+    .ie9 & {
+      float: none;
+
+      & > * {
+        #{$right}: 0;
+        #{$left}: auto;
+      }
+    }
+  }
+
+  .big-green-banner {
+    padding-left: 16px;
+    display: block;
+    text-transform: none;
+    color: $primary_b;
+    text-align: left;
+    background: $mainform_bg inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
+  }
+}
+
+#front_stats {
+  border-top: none;
+  background: $mainform_bg;
+}
+
+.report-list-filters {
+  color: $gray-2;
+  @include cobrand-body;
+}
