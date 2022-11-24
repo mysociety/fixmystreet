@@ -74,4 +74,11 @@ sub open311_munge_update_params {
     $params->{service_request_id_ext} = $comment->problem->id;
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    # Camden don't want TfL's River Piers category to appear on their cobrand.
+    return $rs->search( { 'me.category' => { '!=', 'River Piers' } } );
+}
+
 1;
