@@ -1365,4 +1365,18 @@ sub bulky_available_feature_types {
     return { map { $_->{ID} => $_->{Name} } @types };
 }
 
+sub bulky_nice_collection_date {
+    my ($self, $date) = @_;
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $dt = $parser->parse_datetime($date)->truncate( to => 'day' );
+    return $dt->strftime('%d %B');
+}
+
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @fields = grep { $_->{name} =~ /ITEM_/ } @{$report->get_extra_fields};
+    return [ map { $_->{value} || () } @fields ];
+}
+
 1;

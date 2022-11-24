@@ -1,0 +1,37 @@
+Subject: Bulky waste collection service - reference [% report.id %]
+
+[%
+USE pounds = format('%.2f');
+PROCESS '_bulky_data.html';
+~%]
+
+Dear [% report.name %],
+
+[% email_summary %]
+
+[% INCLUDE '_council_reference.txt' problem=report %]
+
+[% report.detail %]
+
+Collection date: [% collection_date %]
+
+Items to be collected:
+
+  [% item_list.join("\n\n  ") %]
+
+[% IF payment ~%]
+Total cost: £[% pounds(payment / 100) %]
+
+[% END ~%]
+
+If you wish to cancel your booking, please visit:
+    URL XXX
+
+You can obtain a refund if you cancel more than one day before your booking.
+
+Cancellation policy / T&amp;Cs / etc
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

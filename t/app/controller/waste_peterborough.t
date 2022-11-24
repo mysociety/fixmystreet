@@ -559,6 +559,10 @@ FixMyStreet::override_config {
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 360L Black bin';
         $b->mock('Premises_Attributes_Get', sub { [] });
+
+        # Clear any waiting emails
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
     };
     subtest 'Only staff see "Request new bin" link' => sub {
         $mech->log_out_ok;
@@ -679,6 +683,9 @@ FixMyStreet::override_config {
         waste_features => { peterborough => {
             bulky_enabled => 1,
         } },
+    },
+    STAGING_FLAGS => {
+        send_reports => 1,
     },
 }, sub {
     my ($b, $jobs_fsd_get) = shared_bartec_mocks();
@@ -878,6 +885,13 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('ITEM_03'), 'Wardrobes';
             is $report->get_extra_field_value('ITEM_04'), '';
             is $report->get_extra_field_value('ITEM_05'), '';
+        };
+
+        subtest 'Email confirmation of booking' => sub {
+            FixMyStreet::Script::Reports::send();
+            my $email = $mech->get_email->as_string;
+            like $email, qr/1 Pope Way/;
+            like $email, qr/Collection date: 26 August/;
         };
 
         subtest '?type=bulky redirect after bulky booking made' => sub {
