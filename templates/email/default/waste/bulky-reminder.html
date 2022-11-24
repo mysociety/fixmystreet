@@ -1,0 +1,76 @@
+[%
+
+USE pounds = format('%.2f');
+PROCESS '_bulky_data.html';
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+
+  <p style="[% p_style %]">Dear [% report.name %],</p>
+
+  <p style="[% p_style %]">[% email_summary %]</p>
+
+  <p style="[% p_style %]">
+    [% IF days == 3 %]
+    This is a reminder that your collection is in
+    <strong>3 days</strong>.
+    [% ELSIF days == 1 %]
+    This is a reminder that your collection is
+    <strong>tomorrow</strong>.
+    [% END %]
+  </p>
+
+    [% INCLUDE '_council_reference.html' problem=report %]
+
+  <p style="[% p_style %]">
+    Collection date: [% collection_date %]
+  </p>
+
+  <p style="[% p_style %]">
+    Items to be collected:
+    [% FOR item IN item_list %]<br>[% item %][% END %]
+  </p>
+
+[% IF payment %]
+  <p style="[% p_style %]">
+    Total cost: £[% pounds(payment / 100) %]
+  </p>
+[% END %]
+
+  <p style="[% p_style %]">
+    If you wish to cancel your booking, please follow the link below.
+[% IF days == 1 %]
+You can still cancel your booking, but a refund is no longer available.
+[% ELSE %]
+You can obtain a refund if you cancel more than one day before your booking.
+[% END %]
+  </p>
+
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% URL %]">Cancel booking</a>
+  </p>
+
+  <p style="[% p_style %]">
+    Cancellation policy / T&amp;Cs / etc
+  </p>
+
+  <p style="[% p_style %]">
+    Kind regards,<br>Waste Services Team
+  </p>
+
+  [% end_padded_box | safe %]
+</th>
+
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

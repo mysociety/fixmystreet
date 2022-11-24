@@ -15,6 +15,8 @@ $uk->mock('_fetch_url', sub { '{}' });
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
 $mock->mock('_fetch_features', sub { [] });
 
+my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $params = {
@@ -892,6 +894,35 @@ FixMyStreet::override_config {
             my $email = $mech->get_email->as_string;
             like $email, qr/1 Pope Way/;
             like $email, qr/Collection date: 26 August/;
+            $mech->clear_emails_ok;
+        };
+
+        sub reminder_check {
+            my ($day, $time, $days) = @_;
+            set_fixed_time("2022-08-$day" . "T$time:00:00Z");
+            $cobrand->bulky_reminders;
+            if ($days) {
+                my $email = $mech->get_email->as_string;
+                like $email, qr/26 August/;
+                like $email, qr/Wardrobe/;
+                if ($days == 3) {
+                    like $email, qr/This is a reminder that your collection is in 3 days./;
+                } else {
+                    like $email, qr/This is a reminder that your collection is tomorrow./;
+                }
+                $mech->clear_emails_ok;
+            } else {
+                $mech->email_count_is(0);
+            }
+        }
+        subtest 'Email reminders' => sub {
+            reminder_check(22, 10, 0);
+            reminder_check(23, 10, 3);
+            reminder_check(23, 11, 0);
+            reminder_check(24, 10, 0);
+            reminder_check(25, 10, 1);
+            reminder_check(25, 11, 0);
+            reminder_check(26, 10, 0);
         };
 
         subtest '?type=bulky redirect after bulky booking made' => sub {

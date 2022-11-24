@@ -1,0 +1,44 @@
+Subject: Bulky waste collection reminder - reference [% report.id %]
+
+[% PROCESS '_bulky_data.html'; ~%]
+
+Dear [% report.name %],
+
+[% email_summary %]
+
+[% IF days == 3 %]
+This is a reminder that your collection is in 3 days.
+[% ELSIF days == 1 %]
+This is a reminder that your collection is tomorrow.
+[% END %]
+
+[% INCLUDE '_council_reference.txt' problem=report %]
+
+[% report.detail %]
+
+Collection date: [% collection_date %]
+
+Items to be collected:
+
+  [% item_list.join("\n\n  ") %]
+
+[% IF payment ~%]
+Total cost: £[% pounds(payment / 100) %]
+
+[% END ~%]
+
+If you wish to cancel your booking, please visit:
+    URL XXX
+
+[% IF days == 1 %]
+You can still cancel your booking, but a refund is no longer available.
+[% ELSE %]
+You can obtain a refund if you cancel more than one day before your booking.
+[% END %]
+
+Cancellation policy / T&amp;Cs / etc
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
