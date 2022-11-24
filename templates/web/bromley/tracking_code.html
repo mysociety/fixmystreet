@@ -1,0 +1,74 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" AND (bodyclass == 'waste' OR (problem AND problem.cobrand_data == 'waste')) %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.7.min.js" type="text/javascript"></script>
+<script nonce="[% csp_nonce %]">
+  var config = {
+      apiKey: "d92680d5a72175b87ad26cc91e1c4f41994ee659",
+      product: "PRO",
+      accessibility: {
+          highlightFocus: true,
+          outline: true
+      },
+      initialState: "NOTIFY",
+      layout: "POPUP",
+      rejectButton: !0,
+      theme: "light",
+      statement: {
+          description: "For more information visit our",
+          name: "Cookies statement",
+          url: "https://www.bromley.gov.uk/data-protection-freedom-information/subject-access-requests-privacy-cookies-statement14/04/2022"
+      },
+      text: {
+          necessaryTitle: "Necessary cookies",
+          acceptRecommended: "Accept recommended settings",
+          closeLabel: "Save settings"
+      },
+      cookieConsentExpiry: 365,
+      closeStyle: "button",
+      optionalCookies: [
+          {
+              name: "analytics",
+              label: "Anonymous performance cookies",
+              description: "Performance cookies help us to improve our website by anonymously collecting and reporting information on its usage.",
+              cookies: ["_ga", "_gid", "_gat", "__utma", "__utmt", "__utmb", "__utmc", "__utmz", "__utmv",],
+              recommendedState: !1,
+              onAccept: function () {
+                  (function (w, d, s, l, i) {
+                      w[l] = w[l] || [];
+                      function gtag(){w[l].push(arguments);}
+                      gtag('js', new Date());
+                      gtag('config', i);
+                      var f = d.getElementsByTagName(s)[0], j = d.createElement(s);
+                      j.async = true;
+                      j.src = 'https://www.googletagmanager.com/gtag/js?id=' + i;
+                      j.setAttribute('nonce', '[% csp_nonce %]');
+                      f.parentNode.insertBefore(j, f);
+                  })(window, document, 'script', 'dataLayer', 'UA-12543967-1');
+              },
+              onRevoke: function () {
+                  window["ga-disable-UA-12543967-1"] = !0;
+              }
+          },
+      ],
+      branding: {
+          fontFamily: '"Droid Sans", sans-serif',
+          fontColor: "#111",
+          fontSizeTitle: "26px",
+          fontSizeIntro: "1em",
+          fontSizeHeaders: "22px",
+          fontSize: "1em",
+          backgroundColor: "#FFF",
+          toggleText: "#235e1c",
+          toggleColor: "#647890",
+          toggleBackground: "#e7e7e7",
+          buttonIcon: null,
+          buttonIconWidth: "64px",
+          buttonIconHeight: "64px",
+          closeText: "#fff",
+          closeBackground: "#333",
+          removeIcon: !1,
+          removeAbout: !0
+      }
+  };
+  CookieControl.load(config);
+</script>
+[% END %]

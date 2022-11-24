@@ -562,3 +562,47 @@ body.bulky {
     }
   }
 }
+
+// Bulky item selection
+
+.delete-item, #add-new-item, .bulky-item-message {
+  display: none;
+}
+
+html.js {
+  .no-js-message {
+    display: none;
+  }
+
+  #item-selection-form {
+    #add-new-item {
+      display: block;
+    }
+
+    .bulky-item-message {
+      display: none;
+      margin-top: 1em;
+      align-items: center;
+
+      .govuk-warning-text__img {
+        flex-basis: auto;
+        margin-right: 0.5em;
+      }
+    }
+
+    .bulky-item-wrapper {
+        display: none;
+        &:first-child {
+            display: block;
+        }
+        .delete-item {
+          margin-top: 1em;
+          display: inline-block;
+        }
+
+        .dropzone {
+          max-width: 380px;
+        }
+    }
+  }
+}

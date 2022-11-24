@@ -447,7 +447,7 @@ sub clear_cached_lookups_property {
     # might be prefixed with postcode if it's come straight from the URL
     $uprn =~ s/^.+\://g;
 
-    foreach ( qw/look_up_property bin_services_for_address property_attributes/ ) {
+    foreach ( qw/look_up_property bin_services_for_address/ ) {
         delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
     }
 
@@ -493,9 +493,28 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
-    my $attributes = $self->property_attributes($uprn);
-    $premises{$uprn}{attributes} = $attributes;
+    $premises{$uprn}{has_pending_bulky_collection}
+        = $self->has_pending_bulky_collection( $premises{$uprn} );
+
     return $premises{$uprn};
+}
+
+sub has_pending_bulky_collection {
+    my ( $self, $property ) = @_;
+
+    my @collections = FixMyStreet::DB->resultset('Problem')->search(
+        {   category => 'Bulky collection',
+            extra    => {
+                      like => '%T4:uprn,T5:value,I'
+                    . length( $property->{uprn} ) . ':'
+                    . $property->{uprn} . '%',
+            },
+            state =>
+                { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
+        },
+    )->all;
+
+    return @collections ? 1 : 0;
 }
 
 sub image_for_unit {
@@ -659,14 +678,16 @@ sub _bulky_collection_window {
         $start_date->add( days => 1 );
     }
 
-    my $today = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+    my $tomorrow
+        = DateTime->today( time_zone => FixMyStreet->local_time_zone )
+        ->add( days => 1 );
     my $date_to
-        = $today->clone->add( days => bulky_collection_window_days() );
+        = $tomorrow->clone->add( days => bulky_collection_window_days() );
 
     return {
         date_from => $start_date
         ? $start_date->strftime($fmt)
-        : $today->strftime($fmt),
+        : $tomorrow->strftime($fmt),
         date_to => $date_to->strftime($fmt),
     };
 }
@@ -758,6 +779,7 @@ sub bin_services_for_address {
         Premises_Events_Get => [ $uprn ],
         Streets_Events_Get => [ $property->{usrn} ],
         ServiceRequests_Get => [ $uprn ],
+        Premises_Attributes_Get => [ $uprn ],
     );
     my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, @calls);
 
@@ -767,6 +789,10 @@ sub bin_services_for_address {
     my $events_uprn = $results->{"Premises_Events_Get $uprn"};
     my $events_usrn = $results->{"Streets_Events_Get " . $property->{usrn}};
     my $requests = $results->{"ServiceRequests_Get $uprn"};
+    my $attributes = $results->{"Premises_Attributes_Get $uprn"};
+
+    my %attribs = map { $_->{AttributeDefinition}->{Name} => 1 } @$attributes;
+    $property->{attributes} = \%attribs;
 
     my $job_dates = relevant_jobs($jobs_featureschedules, $uprn, $schedules);
     my $open_requests = $self->open_service_requests_for_uprn($uprn, $requests);
@@ -987,25 +1013,6 @@ sub open_service_requests_for_uprn {
         $open_requests{$service_id} = 1;
     }
     return \%open_requests;
-}
-
-sub property_attributes {
-    my ($self, $uprn, $bartec) = @_;
-
-    my $key = "peterborough:bartec:property_attributes:$uprn";
-    return $self->{c}->session->{$key} if !FixMyStreet->test_mode && $self->{c}->session->{$key};
-
-    unless ($bartec) {
-        $bartec = $self->feature('bartec');
-        $bartec = Integrations::Bartec->new(%$bartec);
-    }
-
-    my $attributes = $bartec->Premises_Attributes_Get($uprn);
-    my %attribs = map { $_->{AttributeDefinition}->{Name} => 1 } @$attributes;
-
-    $self->{c}->session->{$key} = \%attribs;
-
-    return \%attribs;
 }
 
 sub waste_munge_request_form_data {

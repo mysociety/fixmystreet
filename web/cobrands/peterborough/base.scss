@@ -113,6 +113,8 @@ h1, h2 {
     &.is--disabled, &:disabled {
         color: $primary !important;
         border: 0.2em solid $primary;
+        opacity: 0.5;
+        pointer-events: none;
     }
 
     &.is--next {

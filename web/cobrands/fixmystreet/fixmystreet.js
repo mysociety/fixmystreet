@@ -521,12 +521,26 @@ $.extend(fixmystreet.set_up, {
 
   autocomplete: function() {
     $('.js-autocomplete').each(function() {
+        var $this = $(this);
         accessibleAutocomplete.enhanceSelectElement({
             selectElement: this,
             displayMenu: 'overlay',
             required: $(this).prop('required') ? true : false,
             showAllValues: true,
-            defaultValue: ''
+            defaultValue: '',
+            confirmOnBlur: false,
+            onConfirm: function(label) {
+                // If the user selects a value in the autocomplete dropdown, update the hidden 'select' element.
+                // https://github.com/alphagov/accessible-autocomplete/issues/322
+                var match = [].filter.call(this.selectElement.options, function(e){
+                    return (e.textContent||e.innerText) === label;
+                })[0];
+                if (match) {
+                    match.selected = true;
+                    // Trigger a change event
+                    $this.trigger("change");
+                }
+            }
         });
     });
   },
@@ -836,6 +850,11 @@ $.extend(fixmystreet.set_up, {
                 }, 2000);
             });
             }
+        });
+
+        // Delete pictures when item is deleted on bulky waste
+        $(this).closest('.bulky-item-wrapper').find('.delete-item').click(function(){
+            photodrop.removeAllFiles(true);
         });
 
         $dropzone.on('keydown', function(e) {

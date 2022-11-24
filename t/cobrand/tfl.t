@@ -649,7 +649,8 @@ subtest 'check report age on /around' => sub {
 
     $mech->get_ok( '/around?lat=' . $report->latitude . '&lon=' . $report->longitude );
     $mech->content_contains($report->title);
-    $mech->content_contains('item-list__item__borough">Bromley');
+    my $id = $report->id;
+    $mech->content_like(qr{item-list__item__borough">\s+<span>FMS$id</span>\s+Bromley});
 
     $report->update({
         confirmed => \"current_timestamp-'7 weeks'::interval",

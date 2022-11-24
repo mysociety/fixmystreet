@@ -24,3 +24,14 @@
     [% END %]
   </ul>
 [% END %]
+
+[% IF c.user.from_body OR c.user.is_superuser %]
+    <h3>Assisted collection</h3>
+    <ul>
+    [% IF assisted_collection %]
+        <li>This property is set up for assisted collections.</li>
+    [% ELSE %]
+        <li>This property is not set up for assisted collections.</li>
+    [% END %]
+    </ul>
+[% END %]

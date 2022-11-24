@@ -264,7 +264,22 @@ FixMyStreet::override_config {
             CompletedDate => undef
         } ] });
         $mech->get_ok('/waste/12345');
+        $mech->content_lacks('assisted collection'); # For below, while we're here
         $e->mock('GetTasks', sub { [] });
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
+    subtest 'Assisted collection display for staff' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('not set up for assisted collection');
+        my $dupe = dclone($bin_data);
+        # Give the entry an assisted collection
+        $dupe->[0]{Data}{ExtensibleDatum}{DatatypeName} = 'Assisted Collection';
+        $dupe->[0]{Data}{ExtensibleDatum}{Value} = 1;
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('is set up for assisted collection');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 };
