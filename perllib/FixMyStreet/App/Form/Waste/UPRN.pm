@@ -20,7 +20,11 @@ has_field postcode => (
         return if $self->has_errors; # Called even if already failed
         my $data = $self->form->cobrand->bin_addresses_for_postcode($self->value);
         if (!@$data) {
-            $self->add_error('Sorry, we did not find any results for that postcode');
+            my $error = 'Sorry, we did not find any results for that postcode';
+            if ($self->form->cobrand->moniker eq 'peterborough') {
+                $error = 'Unfortunately this postcode is not in Peterborough City Council’s local area. Please contact your local council.';
+            }
+            $self->add_error($error);
         }
         push @$data, { value => 'missing', label => 'I can’t find my address' };
         $self->value($data);
