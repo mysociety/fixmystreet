@@ -1166,6 +1166,14 @@ sub bin_payment_types {
     };
 }
 
+sub waste_check_staff_payment_permissions {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->stash->{is_staff};
+
+    $c->stash->{staff_payments_allowed} = 'paye';
+}
 
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;

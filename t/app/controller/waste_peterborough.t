@@ -645,6 +645,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
         $mech->content_contains('10 Pope Way');
         $mech->content_contains('1 Pope Way');
+        $mech->log_out_ok;
     };
 };
 
@@ -805,10 +806,6 @@ FixMyStreet::override_config {
             is $mech->uri,
                 'http://localhost/waste/PE1%203NA:100090215480/bulky',
                 'Redirected to /bulky if address data';
-
-            $mech->get_ok('/waste/PE1%203NA:100090215480');
-            $mech->content_contains( 'None booked',
-                'Bin days page has correct messaging' );
         };
 
         $mech->get_ok('/waste/PE1%203NA:100090215480');
@@ -931,13 +928,13 @@ FixMyStreet::override_config {
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
         };
 
-        # XXX need a test for free collections; need a test for CSC payments
+        # XXX need a test for free collections
 
+        my $report;
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Payment successful') or diag $mech->content;
 
-            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-            is $report->get_extra_field_value('uprn'), 100090215480;
+            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
@@ -952,19 +949,37 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('ITEM_05'), '';
         };
 
-        subtest '?type=bulky redirect after bulky booking made' => sub {
-            $mech->get_ok('/waste?type=bulky');
-            $mech->content_contains( 'What is your address?',
-                'user on address page' );
-            $mech->submit_form_ok(
-                { with_fields => { postcode => 'PE1 3NA' } } );
-            $mech->submit_form_ok(
-                { with_fields => { address => 'PE1 3NA:100090215480' } } );
-            is $mech->uri,
-                'http://localhost/waste/PE1%203NA:100090215480',
-                'Redirected to waste base page';
-            $mech->content_lacks('None booked');
+        subtest 'View booking' => sub {
+            $mech->log_in_ok($user->email);
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
+            # Should be displaying booking stuff here, is currently not XXX
         };
+
+        $report->delete; # So can have another one below
+    };
+
+    subtest 'Bulky collection, payment by staff' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
+        is $report->category, 'Bulky collection';
+        is $report->title, 'Bulky goods collection';
+        is $report->get_extra_field_value('payment_method'), 'csc';
+        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
+        is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
+        $mech->log_out_ok;
     };
 };
 
