@@ -775,8 +775,10 @@ FixMyStreet::override_config {
 
         subtest 'Residency check page' => sub {
             $mech->content_contains('Are you the resident of this property or booking on behalf of the property resident?');
+            $mech->submit_form_ok({ with_fields => { resident => 'No' } });
+            $mech->content_contains('cannot book');
+            $mech->back;
             $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
-            # XXX need to check 'No' behaviour too
         };
 
         subtest 'About you page' => sub {

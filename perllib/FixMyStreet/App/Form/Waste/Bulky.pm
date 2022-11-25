@@ -15,7 +15,13 @@ has_page intro => (
 has_page residency_check => (
     title => 'Book bulky goods collection',
     fields => ['resident', 'continue'],
-    next => 'about_you',
+    next => sub { $_[0]->{resident} eq 'Yes' ? 'about_you' : 'cannot_book' },
+);
+
+has_page cannot_book => (
+    fields => [],
+    intro => 'bulky/cannot_book.html',
+    title => 'Book bulky goods collection',
 );
 
 has_page about_you => (
