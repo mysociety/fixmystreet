@@ -72,7 +72,7 @@ my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
 $c->mock( cobrand => sub {$cobrand} );
 my $form = FixMyStreet::App::Form::Waste::Bulky->new(
     c         => $c,
-    page_name => 'add_items',
+    page_name => 'intro',
 );
 
 is_deeply $form->items_by_category => {

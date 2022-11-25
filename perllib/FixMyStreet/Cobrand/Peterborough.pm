@@ -692,13 +692,13 @@ sub _bulky_collection_window {
     };
 }
 
-sub bulky_items_master_list {
-    my $self = shift;
+has wasteworks_config => (
+    is => 'lazy',
+    default => sub { $_[0]->body->get_extra_metadata( 'wasteworks_config', {} ) },
+);
 
-    my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
-
-    return $cfg->{item_list} || [];
-}
+sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
+sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
 
 sub bin_services_for_address {
     my $self = shift;
@@ -1104,12 +1104,11 @@ sub waste_munge_bulky_data {
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
     $data->{extra_DATE} = $data->{chosen_date};
 
-    # XXX loop here, plus might be more than 5 in future
-    $data->{extra_ITEM_01} = $data->{item_1}{item};
-    $data->{extra_ITEM_02} = $data->{item_2}{item};
-    $data->{extra_ITEM_03} = $data->{item_3}{item};
-    $data->{extra_ITEM_04} = $data->{item_4}{item};
-    $data->{extra_ITEM_05} = $data->{item_5}{item};
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        my $two = sprintf("%02d", $_);
+        $data->{"extra_ITEM_$two"} = $data->{"item_$_"}{item};
+    }
 
     $data->{extra_CHARGEABLE} = 'CHARGED'; # XXX not necessarily true
 

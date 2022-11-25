@@ -950,11 +950,92 @@ sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     }
 }
 
+sub bulky_item_options_method {
+    my $field = shift;
+
+    # JS autocomplete ignores optgroups, but we want them in case
+    # a user has JS disabled.
+    # In order to display under optgroups, we have to build
+    # data structures like the following:
+    # {   group   => 'First Group',
+    #     options => [
+    #         { value => 1, label => 'One' },
+    #         { value => 2, label => 'Two' },
+    #         { value => 3, label => 'Three' },
+    #     ],
+    # },
+    my @option_groups;
+
+    for my $cat ( sort keys %{ $field->form->items_by_category } )
+    {
+        my @options;
+
+        for my $name (
+            @{ $field->form->items_by_category->{$cat} } )
+        {
+            push @options => {
+                label => $name,
+                value => $name,
+            };
+        }
+
+        push @option_groups => {
+            group   => $cat,
+            options => \@options,
+        };
+    }
+
+    return \@option_groups;
+};
+
 sub bulky : Chained('bulky_setup') : Args(0) {
     my ($self, $c) = @_;
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
+
+    my $max_items = $c->cobrand->bulky_items_maximum;
+    my $field_list = [];
+    for my $num ( 1 .. $max_items ) {
+        push @$field_list,
+            "item_$num" => {
+                type => 'Compound',
+                id => "item_$num",
+                $num == 1 ? (required => 1) : (),
+                messages => { required => 'Please select an item' },
+            },
+            "item_$num.item" => {
+                type => 'Select',
+                label => "Item $num",
+                id => "item_$num.item",
+                empty_select => 'Please select an item',
+                tags => { autocomplete => 1 },
+                options_method => \&bulky_item_options_method,
+            },
+            "item_$num.photo" => {
+                type => 'Photo',
+                label => 'Upload image (optional)',
+                tags => { max_photos => 1 },
+                # XXX Limit to JPG etc.
+                # XXX Save to DB
+            },
+            "item_$num.photo_fileid" => {
+                type => 'FileIdPhoto',
+                num_photos_required => 0,
+                linked_field => "item_$num.photo",
+            };
+    }
+
+    $c->stash->{page_list} = [
+        add_items => {
+            fields => [ 'continue', map {"item_$_"} ( 1 .. $max_items ) ],
+            template => 'waste/bulky/items.html',
+            title => 'Add items for collection',
+            next => 'location',
+        },
+    ];
+    $c->stash->{field_list} = $field_list;
+
     $c->forward('form');
 }
 

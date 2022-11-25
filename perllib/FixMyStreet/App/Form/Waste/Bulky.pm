@@ -5,9 +5,6 @@ use DateTime::Format::Strptime;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
-# XXX Remove hardcoded number & fetch from config
-use constant MAX_ITEMS => 5;
-
 has_page intro => (
     title => 'Book bulky goods collection',
     intro => 'bulky/intro.html',
@@ -55,13 +52,6 @@ has_page choose_date_later => (
             ? 'choose_date_earlier'
             : 'add_items';
     },
-);
-
-has_page add_items => (
-    fields   => [ 'continue', map {"item_$_"} ( 1 .. MAX_ITEMS ) ],
-    template => 'waste/bulky/items.html',
-    title    => 'Add items for collection',
-    next     => 'location',
 );
 
 has_page location => (
@@ -235,82 +225,6 @@ sub _build_items_extra_text {
     return \%hash;
 }
 
-sub field_list {
-    my $self = shift;
-
-    my @field_list;
-
-    for my $num ( 1 .. MAX_ITEMS ) {
-        push @field_list,
-            "item_$num" => {
-            type     => 'Compound',
-            id       => "item_$num",
-            };
-
-        push @field_list, "item_$num.item" => {
-            type           => 'Select',
-            label          => "Item $num",
-            id             => "item_$num.item",
-            empty_select   => 'Please select an item',
-            tags           => { autocomplete => 1 },
-            options_method => sub {
-                my $field = shift;
-
-                # JS autocomplete ignores optgroups, but we want them in case
-                # a user has JS disabled.
-                # In order to display under optgroups, we have to build
-                # data structures like the following:
-                # {   group   => 'First Group',
-                #     options => [
-                #         { value => 1, label => 'One' },
-                #         { value => 2, label => 'Two' },
-                #         { value => 3, label => 'Three' },
-                #     ],
-                # },
-                my @option_groups;
-
-                for my $cat ( sort keys %{ $field->form->items_by_category } )
-                {
-                    my @options;
-
-                    for my $name (
-                        @{ $field->form->items_by_category->{$cat} } )
-                    {
-                        push @options => {
-                            label => $name,
-                            value => $name,
-                        };
-                    }
-
-                    push @option_groups => {
-                        group   => $cat,
-                        options => \@options,
-                    };
-                }
-
-                return \@option_groups;
-            },
-        };
-
-        push @field_list => (
-            "item_$num.photo" => {
-                type  => 'Photo',
-                label => 'Upload image (optional)',
-                tags  => { max_photos => 1 },
-                # XXX Limit to JPG etc.
-                # XXX Save to DB
-            },
-            "item_$num.photo_fileid" => {
-                type                => 'FileIdPhoto',
-                num_photos_required => 0,
-                linked_field        => "item_$num.photo",
-            },
-        );
-    }
-
-    return \@field_list;
-}
-
 has_field tandc => (
     type => 'Checkbox',
     required => 1,
@@ -369,18 +283,6 @@ sub validate {
             $self->field('chosen_date')
                 ->add_error('Available dates field is required')
                 if !$self->field('chosen_date')->value;
-        }
-    }
-
-    if ( $self->current_page->name eq 'add_items' ) {
-        for my $num ( 1 .. MAX_ITEMS ) {
-            my $base_field = $self->field("item_$num");
-
-            # Make sure at least item_1 has input
-            $base_field->add_error('Please select an item')
-                if $num == 1 && !$base_field->field('item')->value;
-
-            # XXX Image upload
         }
     }
 }
