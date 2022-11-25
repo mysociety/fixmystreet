@@ -401,6 +401,7 @@ input[type="submit"].waste-service-link {
 // Bulky Waste
 body.bulky {
   $border: 1px solid #e9e9e9;
+  $bulky-mobile-breakpoint: 720px;
 
   #form-location_photo-row {
     .dropzone.dz-clickable {
@@ -455,6 +456,13 @@ body.bulky {
     align-self: auto;
   }
 
+  .govuk-grid-column-two-thirds {
+    @media only screen and (max-width: ($bulky-mobile-breakpoint - 1px)) {
+      // So the service-navbar on the right doesn't overlap with the content on the left.
+      width:100%;
+    }
+  }
+
   .services-navbar {
     // This variables will help when we want to reuse this
     //component on another cobrand and the default colors
@@ -471,7 +479,7 @@ body.bulky {
     top: 100px;
     right: 0;
   
-    @media only screen and (min-width: 720px) {
+    @media only screen and (min-width: $bulky-mobile-breakpoint) {
       display:block;
     }
 
@@ -536,7 +544,7 @@ body.bulky {
     }
   
     &.is--mobile-only {
-      @media only screen and (min-width: 720px) {
+      @media only screen and (min-width: $bulky-mobile-breakpoint) {
         display:none;
       }
     }
