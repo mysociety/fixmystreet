@@ -281,6 +281,8 @@ HERE
 sub validate {
     my $self = shift;
 
+    $self->next::method();
+
     if ( $self->current_page->name =~ /choose_date/ ) {
         my $next_page
             = $self->current_page->next->( undef, $self->c->req->params );
