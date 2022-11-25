@@ -9,7 +9,7 @@ body, .content {
 }
 
 #site-header {
-  border-bottom: none;
+  border-bottom-width: 58px;
   background-color: transparent; // Allows the .nav-wrapper to have a background
 }
 
@@ -144,6 +144,7 @@ body.mappage {
   // Add a red border-bottom *inside* the header
   #site-header {
     @include box-sizing(border-box);
+    border-bottom: none;
   }
 
   #site-logo {
