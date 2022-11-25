@@ -1129,7 +1129,7 @@ sub waste_munge_bulky_data {
         # XXX assume all paid bookings are one price, but will eventually
         # need to support dynamic pricing per-item
         $c->stash->{payment} = $cfg->{base_price};
-        $data->{"extra_payment_method"} = "credit_card"; # XXX what about CSC?
+        $data->{"extra_payment_method"} = "credit_card";
     }
 
     $data->{"extra_CREW NOTES"} = $data->{location};
@@ -1162,6 +1162,14 @@ sub bin_payment_types {
     };
 }
 
+sub waste_check_staff_payment_permissions {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->stash->{is_staff};
+
+    $c->stash->{staff_payments_allowed} = 'paye';
+}
 
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;

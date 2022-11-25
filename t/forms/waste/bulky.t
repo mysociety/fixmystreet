@@ -10,6 +10,7 @@ my $req = Test::MockObject->new;
 $req->mock( params => sub { {} } );
 
 my $c = Test::MockObject->new;
+$c->mock( get_param => sub { "" } );
 $c->mock( req => sub {$req} );
 
 # Peterborough

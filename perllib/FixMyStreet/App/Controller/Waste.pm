@@ -1061,14 +1061,22 @@ sub process_bulky_data : Private {
     if ($c->stash->{payment}) {
         $c->set_param('payment', $c->stash->{payment});
         $c->forward('add_report', [ $data, 1 ]) or return;
-        $c->forward('pay', [ 'bulky' ]);
+        if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+            $c->stash->{message} = 'Payment skipped on staging';
+            $c->stash->{reference} = $c->stash->{report}->id;
+            $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+        } else {
+            if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
+                $c->forward('csc_code');
+            } else {
+                $c->forward('pay', [ 'bulky' ]);
+            }
+        }
     } else {
         $c->forward('add_report', [ $data ]) or return;
     }
     return 1;
 }
-
-
 
 sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
