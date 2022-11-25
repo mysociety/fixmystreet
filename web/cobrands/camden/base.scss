@@ -183,7 +183,14 @@ input[type="checkbox"] {
   &:not(.govuk-checkboxes__input) {
     @include input-small;
   }
+
+  &.bulk-assign {
+    position: relative;
+    transform: scale(1);
+  }
 }
+
+
 
 input[type="radio"] {
   @include input-small;
