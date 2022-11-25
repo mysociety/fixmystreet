@@ -466,14 +466,9 @@ sub reopening_disallowed {
     # Check if reopening is disallowed by the problem's category
     return 1 if $self->next::method($problem);
 
-    my $cfg = $self->feature('reopening_allowed') || '';
-    if ($cfg eq 'none') {
+    # Check if reopening is disallowed by the cobrand
+    if (my $cfg = $self->feature('reopening_disallowed')) {
         return 1;
-    } elsif ($cfg eq 'staff') {
-        # Only staff and superusers can reopen
-        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
-        my $superuser = $c->user_exists && $c->user->is_superuser;
-        return 1 unless $staff || $superuser;
     }
 
     # Default to allowing reports to be reopened

@@ -6,6 +6,7 @@ with 'FixMyStreet::Roles::BoroughEmails';
 
 use constant COUNCIL_ID_BROMLEY => 2482;
 use constant COUNCIL_ID_ISLEOFWIGHT => 2636;
+use FixMyStreet::Cobrand::Default;
 
 sub on_map_default_status { return 'open'; }
 
@@ -309,7 +310,7 @@ sub per_body_config {
     my ($self, $feature, $problem) = @_;
 
     # This is a hash of council name to match, and what to do
-    my $cfg = $self->feature($feature) || {};
+    my $cfg = $self->feature($feature);
 
     my $value;
     my $body;
@@ -324,12 +325,13 @@ sub per_body_config {
 }
 
 sub updates_disallowed {
+    print STDERR "updates_disallowed called on fixmystreet class\n";
     my $self = shift;
     my ($problem) = @_;
     my $c = $self->{c};
 
     # If closed due to problem/category closure, want that to take precedence
-    my $parent = $self->next::method(@_);
+    my $parent = FixMyStreet::Cobrand::Default::updates_disallowed($self, @_);
     return $parent if $parent;
 
     my ($type, $body) = $self->per_body_config('updates_allowed', $problem);
@@ -496,20 +498,10 @@ sub reopening_disallowed {
     # Check if reopening is disallowed by the problem's category
     return 1 if $self->next::method($problem);
 
-    my ($cfg, $body) = $self->per_body_config('reopening_allowed', $problem);
-    $cfg //= '';
+    my ($cfg, $body) = $self->per_body_config('reopening_disallowed', $problem);
 
-    if ($cfg eq 'none') {
-        return 1;
-    } elsif ($cfg eq 'staff') {
-        # Only staff and superusers can reopen
-        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
-        my $superuser = $c->user_exists && $c->user->is_superuser;
-        return 1 unless $staff || $superuser;
-    } elsif ($cfg eq 'reporter') {
-        # Only the original reporter can reopen
-        return 1 unless $c->user_exists && $c->user->id == $problem->user_id;
-    }
+    # Check if reopening is disallowed by the problem's body
+    return 1 if $cfg;
 
     # Default to allowing reports to be reopened
     return 0;
