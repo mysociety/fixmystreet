@@ -98,19 +98,7 @@ a {
   color: $gray-2;
 }
 
-.report-list-filters {
-  @include brent-body;
-
-  span, label {
-    line-height: 42px;
-  }
-}
-
 // Input
-input, .govuk-radios__input {
-  @include brent-input-with-border;
-}
-
 .govuk-radios__input:focus+.govuk-radios__label:before {
   border-width: 4px;
   box-shadow: 0 0 0 4px $link-focus-color;
@@ -133,39 +121,10 @@ div.form-error, p.form-error {
   margin-top: 0.2em;
 }
 
-.multi-select-menuitems {
-  input {
-    box-shadow: $input-box-shadow;
-
-    &:hover {
-      outline: 3px solid $primary_b;
-    }
-  }
-}
-.multi-select-button, .form-control#sort {
-  border: 2px solid $primary_b;
-  $height: 38px !important;
-  height: $height;
-  font-size: $font-size-small-view;
-  line-height: $height;
-
-  &:focus {
-      outline: 3px solid $link-focus-color;
-      box-shadow: $input-box-shadow;
-  }
-
-  @if variable-exists(large-view-point) {
-    @media only screen and (min-width: $large-view-point) {
-        font-size: $font-size-large-view;
-    }
-  }
-}
-
-.multi-select-button:after {
-  border-color: $primary_b transparent transparent transparent;
-}
-
 // Navbar
+#site-header {
+  border-bottom: 2px solid $accent-color;
+}
 
 #site-logo {
   display: block;
