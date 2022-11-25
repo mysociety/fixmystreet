@@ -10,7 +10,8 @@
 
 // Optimize legibility
 html, body, .content {
-  color: $gray-1;
+  color: $primary_b;
+  background-color: $base_bg;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
@@ -95,7 +96,7 @@ a {
 
 .item-list__item--empty {
   // To comply with AAA standard
-  color: $gray-2;
+  color: $primary_b;
 }
 
 // Input
@@ -113,11 +114,11 @@ div.form-error, p.form-error {
 }
 
 .form-section-description, .change_location {
-  color: $gray-2;
+  color: $primary_b;
 }
 
 .form-hint, .item-list--reports__item small, .item-list--reports__item .small-print {
-  color: $gray-2;
+  color: $primary_b;
   margin-top: 0.2em;
 }
 
@@ -205,6 +206,10 @@ div.form-error, p.form-error {
   }
 }
 
+ol.big-numbers>li:before {
+  color: $primary_b;
+}
+
 // Make sure the numbers on the front page have the correct font weight
 #front_stats {
   color: $primary_text;
@@ -223,11 +228,10 @@ dl dt {
 
 #front-main {
   text-align: left;
-  color: $white;
   margin: 0 0;
   padding: 1em 1em;
   // background-color: $front_main_colour;
-  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $right center no-repeat;
+  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $right center no-repeat;
   z-index: 1;
   background-repeat: no-repeat;
   background-size: cover;
@@ -240,7 +244,7 @@ dl dt {
   }
 
   #postcodeForm {
-    background-color: $section-background-color;
+    background-color: transparent;
     color: $primary_b;
     margin: 1em 0em;
 

@@ -31,6 +31,10 @@ $nav-height: 90px;
   }
 }
 
+.content {
+  background-color: $base_bg;
+}
+
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body.waste {
   #site-logo {
     @include svg-background-image("/cobrands/brent/images/brent-logo");
@@ -53,16 +57,17 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
 
   #front-main  {
     // background-color: $front_main_colour;
+    color: $primary_b;
     text-align: left;
     padding-top: 40px;
     padding-bottom: 75px;
     background-blend-mode: soft-light;
-    background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $left -150px top no-repeat;
+    background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $left -150px center no-repeat;
 
     #postcodeForm {
       color: $primary_b;
       margin-top: 0;
-      background-color: $section-background-color;
+      background-color: transparent;
       margin: 0 auto;
       margin-top: 1em;
       padding: 0.5em 1em 2em 1em;
@@ -71,7 +76,7 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
       }
 
       .form-hint {
-        color: $gray-2;
+        color: $primary_b;
       }
     }
 
