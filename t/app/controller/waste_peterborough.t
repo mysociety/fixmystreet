@@ -760,6 +760,14 @@ FixMyStreet::override_config {
                 'Bin days page has correct messaging' );
         };
 
+        subtest 'No commercial bookings' => sub {
+            $b->mock('Premises_Detail_Get', sub { { BLPUClassification => { ClassificationCode => 'C001' } } });
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
+            $mech->content_contains('listed as a commercial premises');
+            $mech->content_lacks('Book bulky goods collection');
+            $b->mock('Premises_Detail_Get', sub { {} });
+        };
+
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
 
@@ -1167,6 +1175,7 @@ sub shared_bartec_mocks {
     $b->mock('ServiceRequests_Get', sub { [
         # No open requests at present
     ] });
+    $b->mock('Premises_Detail_Get', sub { {} });
     $b->mock('Premises_Attributes_Get', sub { [] });
     $b->mock('Premises_Events_Get', sub { [
         # No open events at present

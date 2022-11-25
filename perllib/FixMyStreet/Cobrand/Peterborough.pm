@@ -776,6 +776,7 @@ sub bin_services_for_address {
         Jobs_Get => [ $uprn ],
         Features_Schedules_Get => [ $uprn ],
         Jobs_FeatureScheduleDates_Get => [ $uprn ],
+        Premises_Detail_Get => [ $uprn ],
         Premises_Events_Get => [ $uprn ],
         Streets_Events_Get => [ $property->{usrn} ],
         ServiceRequests_Get => [ $uprn ],
@@ -786,10 +787,14 @@ sub bin_services_for_address {
     my $jobs = $results->{"Jobs_Get $uprn"};
     my $schedules = $results->{"Features_Schedules_Get $uprn"};
     my $jobs_featureschedules = $results->{"Jobs_FeatureScheduleDates_Get $uprn"};
+    my $detail_uprn = $results->{"Premises_Detail_Get $uprn"};
     my $events_uprn = $results->{"Premises_Events_Get $uprn"};
     my $events_usrn = $results->{"Streets_Events_Get " . $property->{usrn}};
     my $requests = $results->{"ServiceRequests_Get $uprn"};
     my $attributes = $results->{"Premises_Attributes_Get $uprn"};
+
+    my $code = $detail_uprn->{BLPUClassification}{ClassificationCode} || '';
+    $property->{commercial_property} = $code =~ /^C/;
 
     my %attribs = map { $_->{AttributeDefinition}->{Name} => 1 } @$attributes;
     $property->{attributes} = \%attribs;

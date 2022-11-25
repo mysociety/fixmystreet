@@ -115,11 +115,9 @@
     </div>
     <div class="govuk-grid-column-three-quarters">
         <hr>
-        [% IF commercial_property # XXX %]
-          <!-- #08 Only visible when address is commercial -->
-          [% TRY %][% PROCESS waste/_bulky_waste_message.html %][% CATCH file %][% END %]
-          <!-- END #08 -->
-        [% END %]
+      [% IF property.commercial_property %]
+        [% PROCESS waste/_bulky_waste_message.html %]
+      [% ELSE %]
         [% IF property.has_pending_bulky_collection AND NOT c.user_exists # XXX %]
           <!-- #09 Should be displayed when: When user HASN'T signed in -->
           [% TRY %][% PROCESS waste/_bulky_not_signed_user.html %][% CATCH file %][% END %]
@@ -141,9 +139,7 @@
                 <p class="govuk-!-margin-bottom-0"><strong>From £23.50</strong> Afterwards.</p>
                 <!-- END #02 -->
               [% ELSE %]
-                [% UNLESS commercial_property # XXX %]
                   <p class="govuk-!-margin-bottom-0"><strong>£23.50</strong></p>
-                [% END %]
               [% END %]
             </dd>
           </div>
@@ -204,6 +200,7 @@
             <!-- END #06 -->
           [% END %]
         </div>
+      [% END %]
         <hr>
     </div>
 

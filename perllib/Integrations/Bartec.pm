@@ -86,6 +86,12 @@ sub Authenticate {
     return $res;
 }
 
+sub Premises_Detail_Get {
+    my ($self, $uprn) = @_;
+    my $res = $self->call('Premises_Detail_Get', token => $self->token, UPRN => $uprn);
+    return $res->{Premises};
+}
+
 # Given a postcode, returns an arrayref of addresses
 sub Premises_Get {
     my $self = shift;
