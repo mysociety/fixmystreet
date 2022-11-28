@@ -123,7 +123,8 @@ div.form-error, p.form-error {
 
 // Navbar
 #site-header {
-  border-bottom: 2px solid $accent-color;
+  border-bottom: 58px solid $accent-color;
+  background-color: transparent; // Allows the .nav-wrapper to have a background
 }
 
 #site-logo {

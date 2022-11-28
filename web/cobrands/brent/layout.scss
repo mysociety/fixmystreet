@@ -3,16 +3,6 @@
 @import "./_mixins";
 @import "../sass/layout";
 
-// Set the default font colour everywhere
-body, .content {
-  color: $gray-1;
-}
-
-#site-header {
-  border-bottom-width: 58px;
-  background-color: transparent; // Allows the .nav-wrapper to have a background
-}
-
 .nav-wrapper {
   &:after {
     @include svg-background-image("/cobrands/brent/images/bg-pattern");
