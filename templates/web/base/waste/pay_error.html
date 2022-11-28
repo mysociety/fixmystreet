@@ -1,7 +1,5 @@
 [% INCLUDE header.html %]
 
-
-[% IF error %]
 <div class="govuk-error-summary">
     <h1 class="govuk-error-summary__title">
         There was a problem with your payment
@@ -24,18 +22,6 @@
         <input class="govuk-button" type="submit" value="Retry">
         </div>
     </form>
-[% END %]
-[% ELSE %]
-<div class="govuk-panel govuk-panel--confirmation">
-    <h1 class="govuk-panel__title">
-        [% title %]
-    </h1>
-    <div class="govuk-panel__body">
-        <p>
-        [% message %]
-        </p>
-    </div>
-</div>
 [% END %]
 
 [% INCLUDE footer.html %]
