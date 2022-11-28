@@ -1,16 +1,6 @@
 [% INCLUDE waste/header.html %]
 
 <div class="govuk-panel govuk-panel--confirmation">
-[% IF error %]
-    <h1 class="govuk-panel__title">
-        [% title %]
-    </h1>
-    <div class="govuk-panel__body">
-        <p>
-        There was a problem: [% error %]
-        </p>
-    </div>
-[% ELSE %]
     <h1 class="govuk-panel__title">
         [% title %]
     </h1>
@@ -24,7 +14,6 @@
         </p>
         [% END %]
     </div>
-[% END %]
 </div>
 
 <p>

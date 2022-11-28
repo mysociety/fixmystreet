@@ -137,7 +137,7 @@ sub check_payment_redirect_id : Private {
 
     if ( $p->state ne 'unconfirmed' ) {
         $c->stash->{error} = 'Already confirmed';
-        $c->stash->{template} = 'waste/pay.html';
+        $c->stash->{template} = 'waste/pay_error.html';
         $c->detach;
     }
 
@@ -203,7 +203,7 @@ sub pay : Path('pay') : Args(0) {
             unless ( $c->stash->{error} ) {
                 $c->stash->{error} = 'Unknown error';
             }
-            $c->stash->{template} = 'waste/pay.html';
+            $c->stash->{template} = 'waste/pay_error.html';
             $c->detach;
         }
     } else {
@@ -229,7 +229,7 @@ sub pay_complete : Path('pay_complete') : Args(2) {
         $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
         $c->forward( 'confirm_subscription', [ $ref ] );
     } else {
-        $c->stash->{template} = 'waste/pay.html';
+        $c->stash->{template} = 'waste/pay_error.html';
         $c->detach;
     }
 }

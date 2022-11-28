@@ -1,0 +1,22 @@
+[% INCLUDE header.html %]
+
+<div class="govuk-warning-text whole-page govuk-!-margin-bottom-9">
+    <div class="govuk-warning-text__img govuk-!-margin-bottom-5">
+        <span class="govuk-warning-text__icon error" aria-hidden="true">X</span>
+    </div>
+    <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        <h3 class="govuk-heading-l govuk-warning-text__heading">Payment Failed: [% error %]</h3>
+      [% IF report && (report.get_extra_field_value('payment') > 0 OR report.get_extra_field_value('pro_rata') > 0) %]
+        <p class="govuk-!-margin-bottom-2">You can retry this transaction or exit without booking a collection.</p>
+        <a href="/waste" class="btn btn-secondary govuk-!-margin-bottom-2">Exit without booking</a>
+        <form method="POST" action="[% c.uri_for('pay_retry') %]">
+            <input type="hidden" name="id" value="[% report.id %]">
+            <input type="hidden" name="token" value="[% report.get_extra_metadata('redirect_id') %]">
+            <input class="btn btn-primary" type="submit" value="Retry payment">
+        </form>
+      [% END %]
+    </div>
+</div>
+
+[% INCLUDE footer.html %]
