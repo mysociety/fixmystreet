@@ -1124,7 +1124,7 @@ sub waste_munge_bulky_data {
         # XXX assume all paid bookings are one price, but will eventually
         # need to support dynamic pricing per-item
         $c->stash->{payment} = $cfg->{base_price};
-        $data->{"extra_payment_method"} = "credit_card"; # XXX what about CSC?
+        $data->{"extra_payment_method"} = "credit_card";
     }
 
     $data->{"extra_CREW NOTES"} = $data->{location};
