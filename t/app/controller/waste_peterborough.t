@@ -649,6 +649,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
         $mech->content_contains('10 Pope Way');
         $mech->content_contains('1 Pope Way');
+        $mech->log_out_ok;
     };
 };
 
@@ -763,10 +764,6 @@ FixMyStreet::override_config {
             is $mech->uri,
                 'http://localhost/waste/PE1%203NA:100090215480/bulky',
                 'Redirected to /bulky if address data';
-
-            $mech->get_ok('/waste/PE1%203NA:100090215480');
-            $mech->content_contains( 'None booked',
-                'Bin days page has correct messaging' );
         };
 
         subtest 'No commercial bookings' => sub {
@@ -871,6 +868,9 @@ FixMyStreet::override_config {
         };
 
         subtest 'Confirmation page' => sub {
+            $mech->content_contains('Your booking is not complete yet');
+            my $link = $mech->get_link_from_email;
+            $mech->get_ok($link);
             $mech->content_contains('Collection booked');
 
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -933,9 +933,7 @@ FixMyStreet::override_config {
                 { with_fields => { postcode => 'PE1 3NA' } } );
             $mech->submit_form_ok(
                 { with_fields => { address => 'PE1 3NA:100090215480' } } );
-            is $mech->uri,
-                'http://localhost/waste/PE1%203NA:100090215480',
-                'Redirected to waste base page';
+            is $mech->uri->path, '/waste/PE1%203NA:100090215480', 'Redirected to waste base page';
             $mech->content_lacks('None booked');
         };
     };

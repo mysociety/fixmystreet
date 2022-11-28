@@ -1050,6 +1050,8 @@ sub process_bulky_data : Private {
         my ($id) = /^extra_(.*)/;
         $c->set_param($id, $data->{$_});
     }
+    $c->stash->{waste_email_type} = 'bulky';
+    $c->stash->{override_confirmation_template} = 'waste/bulky/confirmation.html';
     $c->forward('add_report', [ $data ]) or return;
     return 1;
 }
@@ -1520,7 +1522,7 @@ sub add_report : Private {
     my ( $self, $c, $data, $no_confirm ) = @_;
 
     $c->stash->{cobrand_data} = 'waste';
-    $c->stash->{override_confirmation_template} = 'waste/confirmation.html';
+    $c->stash->{override_confirmation_template} ||= 'waste/confirmation.html';
 
     # Store the name of the first page of the wizard on the token
     # so Peterborough can show the appropriate confirmation page when the

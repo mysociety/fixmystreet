@@ -1,0 +1,48 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Create a report') %]
+
+[% IF waste_email_type == 'bulky' %]
+
+<div class="govuk-warning-text whole-page govuk-!-margin-bottom-9">
+    <div class="govuk-warning-text__img govuk-!-margin-bottom-5">
+        <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+    </div>
+    <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Important information</span>
+        <h3 class="govuk-heading-l govuk-warning-text__heading">Your booking is not complete yet</h3>
+        <p class="govuk-!-margin-bottom-2">
+            To complete your booking, please confirm your email.
+            Go to your email inbox and follow the instructions.
+        </p>
+        <p>
+            Can’t find our email? <strong>Check your spam folder.</strong>
+        </p>
+    </div>
+</div>
+
+[% ELSE %]
+
+<div class="confirmation-header confirmation-header--inbox">
+
+    <h1>[% loc("Nearly done! Now check your email&hellip;") %]</h1>
+
+    <p>
+    [% IF email_type == 'problem' %]
+        [% loc("Click the link in our confirmation email to publish your problem.") %]
+    [% ELSIF email_type == 'update' %]
+        [% loc("Click the link in our confirmation email to publish your update.") %]
+    [% ELSIF email_type == 'alert' %]
+        [% loc("Click the link in our confirmation email to activate your alert.") %]
+    [% END %]
+    </p>
+
+    [% TRY %][% INCLUDE '_email_sent_extra.html' %][% CATCH file %][% END %]
+
+    <p>
+        [% loc("Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time.") %]
+    </p>
+
+</div>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]
