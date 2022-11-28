@@ -82,6 +82,6 @@ is_deeply $form->items_by_category => {
     'Baby / Toddler' => [ 'Childs bed / cot', 'High chairs' ],
     'Bedroom'        => [ 'Chest of drawers', 'Wardrobes' ]
 };
-is_deeply $form->items_extra_text => { 'Wardrobes' => 'Please dismantle' };
+is_deeply $form->items_extra => { 'Wardrobes' => { message => "Please dismantle", json => '{"message":"Please dismantle"}' } };
 
 done_testing;

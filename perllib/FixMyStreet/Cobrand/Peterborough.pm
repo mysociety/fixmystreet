@@ -701,6 +701,12 @@ sub bulky_items_master_list {
     return $cfg->{item_list} || [];
 }
 
+sub bulky_per_item_costs {
+    my $self = shift;
+    my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
+    return $cfg->{per_item_costs};
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
