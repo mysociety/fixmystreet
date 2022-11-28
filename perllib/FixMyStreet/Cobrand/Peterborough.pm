@@ -1134,15 +1134,6 @@ sub waste_munge_bulky_data {
     $data->{category} = "Bulky collection";
 }
 
-sub post_confirm_subscription {
-    my $self = shift;
-    my $c = $self->{c};
-
-    if ($c->stash->{report}->category eq 'Bulky collection') {
-        $c->stash->{template} = 'waste/bulky/payment_confirm.html';
-    }
-}
-
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');

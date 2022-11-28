@@ -259,12 +259,15 @@ sub confirm_subscription : Private {
     $c->forward( '/report/new/create_related_things', [ $p ] );
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
     $p->update;
-    $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
+    if ($p->category eq 'Bulky collection') {
+        $c->stash->{template} = 'waste/bulky/confirmation.html';
+    } else {
+        $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
+    }
     # Set an override template, so that the form processing can finish (to e.g.
     # clear the session unique ID) and have the form code load this template
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
-    $c->cobrand->call_hook('post_confirm_subscription');
 }
 
 sub cancel_subscription : Private {
