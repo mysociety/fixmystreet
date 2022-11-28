@@ -1,3 +1,4 @@
+[% USE pounds = format('%.2f'); ~%]
 [% SET title = form.title ~%]
 [% PROCESS 'waste/header.html' %]
 
@@ -42,6 +43,15 @@
   </div>
   [% END %]
   <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+ Add item</button>
+
+    <p>
+      [% IF c.cobrand.bulky_per_item_costs %]
+        Total cost: £<span id="js-bulky-total">[% pounds(total) %]</span>
+      [% ELSE %]
+        Total cost: £[% pounds(total) %]
+      [% END %]
+    </p>
+
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
 

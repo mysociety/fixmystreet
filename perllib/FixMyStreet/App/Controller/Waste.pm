@@ -1036,6 +1036,14 @@ sub bulky : Chained('bulky_setup') : Args(0) {
             template => 'waste/bulky/items.html',
             title => 'Add items for collection',
             next => 'location',
+            update_field_list => sub {
+                my $form = shift;
+                my $data = $form->saved_data;
+                my $c = $form->{c};
+                $c->cobrand->bulky_total_cost($data);
+                $c->stash->{total} = $c->stash->{payment} / 100;
+                return {};
+            },
         },
     ];
     $c->stash->{field_list} = $field_list;

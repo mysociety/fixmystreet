@@ -1112,10 +1112,10 @@ sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
-    my $cfg = $c->cobrand->body->get_extra_metadata("wasteworks_config", {});
 
     $data->{title} = "Bulky goods collection";
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
     $data->{extra_DATE} = $data->{chosen_date};
 
     my $max = $self->bulky_items_maximum;
@@ -1123,6 +1123,19 @@ sub waste_munge_bulky_data {
         my $two = sprintf("%02d", $_);
         $data->{"extra_ITEM_$two"} = $data->{"item_$_"}{item};
     }
+
+    $self->bulky_total_cost($data);
+
+    $data->{"extra_CREW NOTES"} = $data->{location};
+
+    # XXX what about photos?
+}
+
+sub bulky_total_cost {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $cfg = $self->body->get_extra_metadata("wasteworks_config", {});
 
     my $free_collection_available = 1; # XXX need to check property attributes
 
@@ -1132,17 +1145,19 @@ sub waste_munge_bulky_data {
     } else {
         $data->{extra_CHARGEABLE} = 'CHARGED';
 
-        # XXX assume all paid bookings are one price, but will eventually
-        # need to support dynamic pricing per-item
-        $c->stash->{payment} = $cfg->{base_price};
+        if ($cfg->{per_item_costs}) {
+            my %prices = map { $_->{name} => $_->{price} } @{ $self->bulky_items_master_list };
+            my $total = 0;
+            for (1..5) {
+                my $item = $data->{"item_$_"}{item} or next;
+                $total += $prices{$item};
+            }
+            $c->stash->{payment} = $total;
+        } else {
+            $c->stash->{payment} = $cfg->{base_price};
+        }
         $data->{"extra_payment_method"} = "credit_card";
     }
-
-    $data->{"extra_CREW NOTES"} = $data->{location};
-
-    # XXX what about photos?
-
-    $data->{category} = "Bulky collection";
 }
 
 sub waste_cc_payment_line_item_ref {

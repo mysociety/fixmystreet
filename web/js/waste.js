@@ -97,6 +97,15 @@ $(function() {
         } else {
             $this.closest('.bulky-item-wrapper').find('.bulky-item-message').hide();
         }
+
+        // Update total
+        var total = 0;
+        $('.govuk-select[name^="item_"]').each(function(i, e) {
+            var extra = $(this).find('option').filter(':selected').data('extra');
+            var price = extra ? parseFloat(extra.price) : 0;
+            total += price;
+        });
+        $('#js-bulky-total').text((total / 100).toFixed(2));
     });
 
     // If page reloads reveals any wrapper with an item already selected.

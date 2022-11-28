@@ -707,51 +707,52 @@ FixMyStreet::override_config {
     $body->set_extra_metadata(
         wasteworks_config => {
             base_price => '2350',
+            per_item_costs => 0,
             free_mode => '0',
             item_list => [
                 {   bartec_id => '1001',
                     category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'Amplifiers',
-                    price     => '',
+                    price     => '1001',
                 },
                 {   bartec_id => '1001',
                     category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'DVD/BR Video players',
-                    price     => '',
+                    price     => '2002',
                 },
                 {   bartec_id => '1001',
                     category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'HiFi Stereos',
-                    price     => '',
+                    price     => '3003',
                 },
 
                 {   bartec_id => '1002',
                     category  => 'Baby / Toddler',
                     message   => '',
                     name      => 'Childs bed / cot',
-                    price     => '',
+                    price     => '4040',
                 },
                 {   bartec_id => '1002',
                     category  => 'Baby / Toddler',
                     message   => '',
                     name      => 'High chairs',
-                    price     => '',
+                    price     => '5050',
                 },
 
                 {   bartec_id => '1003',
                     category  => 'Bedroom',
                     message   => '',
                     name      => 'Chest of drawers',
-                    price     => '',
+                    price     => '6060',
                 },
                 {   bartec_id => '1003',
                     category  => 'Bedroom',
                     message   => 'Please dismantle',
                     name      => 'Wardrobes',
-                    price     => '',
+                    price     => '7070',
                 },
             ],
         },
@@ -1023,6 +1024,28 @@ FixMyStreet::override_config {
         };
 
         $report->delete; # So can have another one below
+    };
+
+    subtest 'Bulky collection, per item payment' => sub {
+        my $cfg = $body->get_extra_metadata('wasteworks_config');
+        $cfg->{per_item_costs} = 1;
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
+
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $report->get_extra_field_value('payment_method'), 'credit_card';
+        is $report->get_extra_field_value('payment'), 1001 + 5050;
+        is $report->get_extra_field_value('uprn'), 100090215480;
     };
 
     subtest 'Bulky collection, payment by staff' => sub {
