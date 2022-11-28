@@ -702,6 +702,12 @@ has wasteworks_config => (
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
 
+sub bulky_per_item_costs {
+    my $self = shift;
+    my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
+    return $cfg->{per_item_costs};
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;

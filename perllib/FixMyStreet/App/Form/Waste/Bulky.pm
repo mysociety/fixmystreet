@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Bulky;
 use utf8;
 use DateTime::Format::Strptime;
 use HTML::FormHandler::Moose;
+use JSON::MaybeXS;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
@@ -208,19 +209,23 @@ sub _build_items_by_category {
 }
 
 # Hash of item names mapped to extra text
-has items_extra_text => (
+has items_extra => (
     is      => 'ro',
     isa     => 'HashRef',
     lazy    => 1,
-    builder => '_build_items_extra_text',
+    builder => '_build_items_extra',
 );
 
-sub _build_items_extra_text {
+sub _build_items_extra {
     my $self = shift;
+
+    my $per_item = $self->c->cobrand->bulky_per_item_costs;
 
     my %hash;
     for my $item ( @{ $self->items_master_list } ) {
-        $hash{ $item->{name} } = $item->{message} if $item->{message};
+        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
+        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
+        $hash{ $item->{name} }{json} = encode_json($hash{$item->{name}}) if $hash{$item->{name}};
     }
     return \%hash;
 }

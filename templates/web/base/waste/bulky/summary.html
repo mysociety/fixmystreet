@@ -13,7 +13,7 @@ step1 = 'report';
         <dd class="govuk-summary-list__value">
           [% item.item %]
           <br>
-          [% extra_text = form.items_extra_text.${item.item}; IF extra_text %]
+          [% extra_text = form.items_extra.${item.item}.message; IF extra_text %]
             Notes: [% extra_text %]
             <br>
           [% END %]

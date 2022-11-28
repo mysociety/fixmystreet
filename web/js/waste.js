@@ -88,9 +88,10 @@ $(function() {
         var $this = $(this);
         disableAddItemButton();
 
-        // To display message if option has a data-extra_text
-        var valueAttribute = $this.find('option').filter(':selected').attr('data-extra_text');
-        if (typeof valueAttribute !== 'undefined') {
+        // To display message if option has a data-extra message
+        var valueAttribute = $this.find('option').filter(':selected').data('extra');
+        valueAttribute = valueAttribute ? valueAttribute.message : '';
+        if (valueAttribute) {
             $this.closest('.bulky-item-wrapper').find('.item-message').text(valueAttribute);
             $this.closest('.bulky-item-wrapper').find('.bulky-item-message').css('display', 'flex');
         } else {
@@ -128,8 +129,9 @@ $(function() {
         var label = $this.find('.autocomplete__option').text();
         var match = $this.find('.js-autocomplete').children("option").filter(function () {return $(this).html() == label; });
         var value = match.val();
-        var itemMessage = match.attr('data-extra_text');
-        if (typeof itemMessage !== 'undefined') {
+        var matchExtra = match.data('extra');
+        var itemMessage = matchExtra ? matchExtra.message : '';
+        if (itemMessage) {
             $this.find('#item-message').text(itemMessage);
             $this.find('.bulky-item-message').css('display', 'flex');
         } else {
