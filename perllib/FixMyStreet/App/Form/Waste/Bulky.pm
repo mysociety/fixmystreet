@@ -63,6 +63,14 @@ has_page add_items => (
     template => 'waste/bulky/items.html',
     title    => 'Add items for collection',
     next     => 'location',
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->{c};
+        $c->cobrand->bulky_total_cost($data);
+        $c->stash->{total} = $c->stash->{payment} / 100;
+        return {};
+    },
 );
 
 has_page location => (
