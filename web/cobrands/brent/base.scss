@@ -123,11 +123,6 @@ div.form-error, p.form-error {
 }
 
 // Navbar
-#site-header {
-  border-bottom: 58px solid $accent-color;
-  background-color: transparent; // Allows the .nav-wrapper to have a background
-}
-
 #site-logo {
   display: block;
   $logo-height: 55px;
@@ -147,7 +142,7 @@ div.form-error, p.form-error {
 
 .nav-menu {
   a, span {
-    border-bottom-color: $gray-3;
+    border-bottom-color: $primary_text;
     font-size: 18px;
   }
 
@@ -226,14 +221,13 @@ dl dt {
   font-family: $body-font-family;
 }
 
-
 #front-main {
   text-align: left;
   margin: 0 0;
   padding: 1em 1em;
-  // background-color: $front_main_colour;
   background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $right center no-repeat;
   z-index: 1;
+  border-top: 58px solid $accent-color;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: left top;
