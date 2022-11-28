@@ -3,6 +3,11 @@
 @import "./_mixins";
 @import "../sass/layout";
 
+#site-header {
+  border-bottom: 58px solid $accent-color;
+  background-color: transparent; // Allows the .nav-wrapper to have a background
+}
+
 .nav-wrapper {
   &:after {
     @include svg-background-image("/cobrands/brent/images/bg-pattern");
@@ -63,6 +68,7 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
     padding-bottom: 75px;
     background-blend-mode: soft-light;
     background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $left -150px center no-repeat;
+    border-top: none;
 
     #postcodeForm {
       color: $primary_b;
