@@ -283,7 +283,7 @@ sub meta_line {
 
     my $contributed_as = $self->get_extra_metadata('contributed_as') || '';
     my $staff = $self->user->from_body || $self->get_extra_metadata('is_body_user') || $self->get_extra_metadata('is_superuser');
-    my $anon = $self->anonymous || !$self->name;
+    my $anon = $self->anonymous || !$self->name || $cobrand->call_hook('is_comment_anonymous');
 
     if ($anon && (!$staff || $contributed_as eq 'anonymous_user' || $contributed_as eq 'another_user')) {
         $meta = $cobrand->call_hook(update_anonymous_message => $self);

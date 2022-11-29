@@ -708,7 +708,10 @@ sub meta_line {
     my $category = $problem->category_display;
     $category = $cobrand->call_hook(change_category_text => $category) || $category;
 
-    if ( $problem->anonymous ) {
+    # Call a hook on the cobrand to check if the problem should be treated as anonymous
+    my $anonymous = $cobrand->call_hook('is_problem_anonymous');
+
+    if ( $problem->anonymous || $anonymous ) {
         if ( $problem->service and $category && $category ne _('Other') ) {
             $meta =
             sprintf( _('Reported via %s in the %s category anonymously at %s'),
