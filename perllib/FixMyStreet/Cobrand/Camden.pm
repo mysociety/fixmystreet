@@ -87,4 +87,9 @@ sub categories_restriction {
     return $rs->search( { 'me.category' => { '!=', 'River Piers' } } );
 }
 
+# Problems and comments are always treated as anonymous so the user's name isn't displayed.
+sub is_problem_anonymous { 1 }
+
+sub is_comment_anonymous { 1 }
+
 1;
