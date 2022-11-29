@@ -28,6 +28,7 @@
         - Decouple the permission to manage shortlist from default_to_body. #3317
         - Fix issue with sanitizing missing attributes.
         - Include email_text from templates in export-import-data script. #4084
+        - Stop map moving when navigating through images with arrow keys.
 	- For CSV export, fetch children of all generations.
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
