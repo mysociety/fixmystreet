@@ -16,6 +16,7 @@ use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
 use FixMyStreet::App::Form::Waste::Bulky;
+use FixMyStreet::App::Form::Waste::Bulky::Cancel;
 use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
@@ -1115,6 +1116,18 @@ sub bulky_view : Private {
     };
 }
 
+sub bulky_cancel : Chained('property') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->detach('property_redirect')
+        if !$c->stash->{waste_features}{bulky_enabled}
+        || !$c->cobrand->call_hook('bulky_can_cancel');
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
+    $c->forward('form');
+}
+
 sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
@@ -1147,6 +1160,28 @@ sub process_bulky_data : Private {
     } else {
         $c->forward('add_report', [ $data ]) or return;
     }
+    return 1;
+}
+
+sub process_bulky_cancellation : Private {
+    my ( $self, $c, $form ) = @_;
+
+    my $collection_report = $c->stash->{property}{pending_bulky_collection};
+    my %data = (
+        detail => $collection_report->detail,
+        name   => $collection_report->name,
+    );
+
+    $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
+
+    $c->forward( 'add_report', [ \%data ] ) or return;
+
+    # Mark original report as closed
+    $collection_report->state('closed');
+    $collection_report->detail(
+        $collection_report->detail . " | Cancelled at user request", );
+    $collection_report->update;
+
     return 1;
 }
 

@@ -501,10 +501,13 @@ sub look_up_property {
     return $premises{$uprn};
 }
 
+# Should only be a single open collection for a given property, but in case
+# there isn't, return the most recent
 sub find_pending_bulky_collection {
     my ( $self, $property ) = @_;
 
-    return FixMyStreet::DB->resultset('Problem')->to_body($self->body)->find(
+    return FixMyStreet::DB->resultset('Problem')->to_body( $self->body )
+        ->find(
         {   category => 'Bulky collection',
             extra    => {
                       like => '%T4:uprn,T5:value,I'
@@ -514,7 +517,8 @@ sub find_pending_bulky_collection {
             state =>
                 { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
         },
-    );
+        { order_by => { -desc => 'id' } },
+        );
 }
 
 sub bulky_can_view_collection {
@@ -731,6 +735,18 @@ sub bulky_per_item_costs {
     my $self = shift;
     my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
     return $cfg->{per_item_costs};
+}
+
+sub bulky_can_cancel {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    my $pending_collection = $c->stash->{property}{pending_bulky_collection};
+
+    return
+           $pending_collection
+        && $pending_collection->external_id
+        && $self->bulky_can_view_collection($pending_collection);
 }
 
 sub bin_services_for_address {
@@ -1265,6 +1281,22 @@ sub open311_contact_meta_override {
             automated => 'hidden_field',
         };
     }
+}
+
+sub waste_munge_bulky_cancellation_data {
+    my ( $self, $data ) = @_;
+
+    my $c = $self->{c};
+    my $collection_report = $c->stash->{property}{pending_bulky_collection};
+
+    $data->{title}    = 'Bulky goods cancellation';
+    $data->{category} = 'Bulky cancel';
+    $data->{detail} .= " | Original report ID: " . $collection_report->id;
+
+    $c->set_param( 'COMMENTS', 'Cancellation at user request' );
+
+    my $original_sr_number = $collection_report->external_id =~ s/Bartec-//r;
+    $c->set_param( 'ORIGINAL_SR_NUMBER', $original_sr_number );
 }
 
 sub waste_munge_report_data {

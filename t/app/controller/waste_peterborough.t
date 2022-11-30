@@ -78,6 +78,12 @@ create_contact(
     { code => 'payment_method' },
     { code => 'property_id' },
 );
+create_contact(
+    { category => 'Bulky cancel', email => 'Bartec-545' },
+    'Bulky goods',
+    { code => 'ORIGINAL_SR_NUMBER', required => 1 },
+    { code => 'COMMENTS',           required => 1 },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'peterborough',
@@ -840,6 +846,7 @@ FixMyStreet::override_config {
         };
 
         $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks( 'Cancel booking', 'Cancel option unavailable' );
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
 
         subtest 'Intro page' => sub {
@@ -1145,6 +1152,9 @@ FixMyStreet::override_config {
             reminder_check(26, 10, 0);
         };
 
+        $report->discard_changes;
+        $report->update({ external_id => undef }); # For cancellation
+
         subtest '?type=bulky redirect after bulky booking made' => sub {
             $mech->get_ok('/waste?type=bulky');
             $mech->content_contains( 'What is your address?',
@@ -1155,6 +1165,108 @@ FixMyStreet::override_config {
                 { with_fields => { address => 'PE1 3NA:100090215480' } } );
             is $mech->uri->path, '/waste/PE1%203NA:100090215480', 'Redirected to waste base page';
             $mech->content_lacks('None booked');
+        };
+
+        subtest 'Cancellation' => sub {
+            # Time/date that is within the cancellation & refund window
+            my $good_date = '2022-08-25T05:44:59Z'; # 06:44:59 UK time
+            set_fixed_time($good_date);
+
+            $mech->content_lacks( 'Cancel booking',
+                'Cancel option unavailable before request sent to Bartec' );
+
+            # Presence of external_id in report implies we have sent request
+            # to Bartec
+            $report->external_id('Bartec-SR00100001');
+            $report->update;
+            $mech->reload;
+            $mech->content_contains( 'Cancel booking',
+                'Cancel option available after request sent to Bartec' );
+
+            $mech->log_in_ok( $user2->email );
+            $mech->reload;
+            $mech->content_lacks(
+                'Cancel booking',
+                'Cancel option unavailable if booking does not belong to user',
+            );
+            $mech->log_in_ok( $user->email );
+
+            # Collection date =  2022-08-26T00:00:00
+            set_fixed_time('2022-08-25T23:55:00Z');
+            $mech->reload;
+            $mech->content_lacks( 'Cancel booking',
+                'Cancel option unavailable if outside cancellation window' );
+
+            set_fixed_time($good_date);
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+            $mech->content_contains(
+                'Your booking has been cancelled',
+                'Cancellation confirmation page shown',
+            );
+            $mech->follow_link_ok( { text => 'Go back home' } );
+            is $mech->uri->path, '/waste/PE1%203NA:100090215480',
+                'Returned to bin days';
+            $mech->content_lacks( 'Cancel booking',
+                'Cancel option unavailable if already cancelled' );
+
+            my $cancellation_report;
+            subtest 'reports' => sub {
+                $report->discard_changes;
+                is $report->state, 'closed', 'Original report closed';
+                like $report->detail, qr/Cancelled at user request/,
+                    'Original report detail field updated';
+
+                subtest 'cancellation report' => sub {
+                    $cancellation_report
+                        = FixMyStreet::DB->resultset('Problem')->find(
+                        {   extra => {
+                                like =>
+                                    '%T18:ORIGINAL_SR_NUMBER,T5:value,T10:SR00100001%',
+                            },
+                        }
+                        );
+                    is $cancellation_report->category, 'Bulky cancel',
+                        'Correct category';
+                    is $cancellation_report->title,
+                        'Bulky goods cancellation',
+                        'Correct title';
+                    is $cancellation_report->get_extra_field_value(
+                        'COMMENTS'),
+                        'Cancellation at user request',
+                        'Correct extra comment field';
+                    is $cancellation_report->state, 'confirmed',
+                        'Report confirmed';
+                    like $cancellation_report->detail,
+                        qr/Original report ID: ${\$report->id}/,
+                        'Original report ID in detail field';
+                };
+            };
+
+            #subtest 'refund request email' => sub {
+            #    my $email = $mech->get_email;
+            #
+            #    is $email->header('Subject'),
+            #        'Refund requested for cancelled bulky goods collection SR00100001',
+            #        'Correct subject';
+            #    is $email->header('To'),
+            #        '"Peterborough City Council" <team@example.org>',
+            #        'Correct recipient';
+            #
+            #    my $text = $email->as_string;
+            #    like $text, qr/Capita SCP Response: 12345/,
+            #        'Correct SCP response';
+            #    # XXX Not picking up on mocked time
+            #    like $text, qr|Payment Date: \d{2}/\d{2}/\d{2} \d{2}:\d{2}|,
+            #        'Correct date format';
+            #    like $text, qr/CAN: 123/, 'Correct CAN';
+            #    like $text, qr/Auth Code: 112233/, 'Correct auth code';
+            #    like $text, qr/Original Service Request Number: SR00100001/,
+            #        'Correct SR number';
+            #};
+
+            $mech->clear_emails_ok;
+            $cancellation_report->delete;
         };
 
         $report->delete; # So can have another one below
@@ -1251,6 +1363,39 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
         is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
+        is $report->get_extra_field_value('CHARGEABLE'), 'FREE';
+
+        subtest 'cancel free collection' => sub {
+            # Time/date that is within the cancellation & refund window
+            set_fixed_time('2022-08-25T05:44:59Z');  # 06:44:59 UK time
+
+            # Presence of external_id in report implies we have sent request
+            # to Bartec
+            $report->external_id('Bartec-SR00100001');
+            $report->update;
+
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+
+            # No refund request sent
+            $mech->email_count_is(0);
+
+            $report->discard_changes;
+            is $report->state, 'closed', 'Original report closed';
+
+            my $cancellation_report
+                = FixMyStreet::DB->resultset('Problem')->find(
+                {   extra => {
+                        like =>
+                            '%T18:ORIGINAL_SR_NUMBER,T5:value,T10:SR00100001%',
+                    },
+                }
+            );
+            like $cancellation_report->detail,
+                qr/Original report ID: ${\$report->id}/,
+                'Original report ID in detail field';
+        };
+
         $mech->log_out_ok;
         $report->delete;
     };
@@ -1585,6 +1730,15 @@ sub shared_bartec_mocks {
     ] });
     $b->mock('Premises_Detail_Get', sub { {} });
     $b->mock('Premises_Attributes_Get', sub { [] });
+#    $b->mock(
+#        'Premises_AttributeDefinitions_Get',
+#        sub {
+#            [
+#                { Name => 'FREE BULKY USED', ID => 123 },
+#            ];
+#        }
+#    );
+#    $b->mock( 'Premises_Attributes_Delete', sub { } );
     $b->mock('Premises_Events_Get', sub { [
         # No open events at present
     ] });
