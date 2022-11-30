@@ -66,22 +66,49 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
         $c->forward('/auth/check_csrf_token');
 
         my $new_cfg;
-        try {
-            $new_cfg = JSON->new->utf8(1)->allow_nonref(0)->decode($c->get_param("body_config"));
-        } catch {
-            $c->stash->{errors} ||= {};
-            my $e = $_;
-            $e =~ s/ at \/.*$//; # trim the filename/lineno
-            $c->stash->{errors}->{body_config} =
-                sprintf(_("Not a valid JSON string: %s"), $e);
-            $c->detach;
-        };
-        if (ref $new_cfg ne 'HASH') {
-            $c->stash->{errors} ||= {};
-            $c->stash->{errors}->{body_config} =
-                _("Config must be a JSON object literal, not array.");
-            $c->detach;
+        if (my $cfg = $c->get_param("body_config")) {
+            try {
+                $new_cfg = JSON->new->utf8(1)->allow_nonref(0)->decode($cfg);
+            } catch {
+                $c->stash->{errors} ||= {};
+                my $e = $_;
+                $e =~ s/ at \/.*$//; # trim the filename/lineno
+                $c->stash->{errors}->{body_config} =
+                    sprintf(_("Not a valid JSON string: %s"), $e);
+                $c->detach;
+            };
+            if (ref $new_cfg ne 'HASH') {
+                $c->stash->{errors} ||= {};
+                $c->stash->{errors}->{body_config} =
+                    _("Config must be a JSON object literal, not array.");
+                $c->detach;
+            }
+        } else {
+            $new_cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
+            my %keys = (
+                free_mode => 'bool',
+                per_item_costs => 'bool',
+                base_price => 'int',
+                items_per_collection_max => 'int',
+            );
+            foreach (keys %keys) {
+                my $val = $c->get_param($_);
+                if ($keys{$_} eq 'bool') {
+                    $new_cfg->{$_} = $val ? 1 : 0;
+                } elsif ($keys{$_} eq 'int') {
+                    if ($val ne $val+0) {
+                        $c->stash->{errors}->{site_wide} = "Not an integer";
+                    } elsif ($_ eq 'items_per_collection_max' && $val > 20) {
+                        $c->stash->{errors}->{site_wide} = "Maximum items per collection cannot be more than 20";
+                    }
+                    $new_cfg->{$_} = $val;
+                }
+            }
+            if ($c->stash->{errors}) {
+                $c->detach;
+            }
         }
+
         $c->stash->{body}->set_extra_metadata("wasteworks_config", $new_cfg);
         $c->stash->{body}->update;
         $c->flash->{status_message} = _("Updated!");
@@ -176,11 +203,14 @@ sub fetch_wasteworks_bodies : Private {
 sub stash_body_config_json : Private {
     my ($self, $c) = @_;
 
+    my $cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
     if ( my $new_cfg = $c->get_param("body_config") ) {
         $c->stash->{body_config_json} = $new_cfg;
     } else {
-        my $cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
+    }
+    foreach (qw(free_mode per_item_costs base_price items_per_collection_max)) {
+        $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }
 

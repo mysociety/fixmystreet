@@ -3,11 +3,50 @@
 
 [% INCLUDE status_message %]
 
+<ul>
+    <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
+</ul>
+
+<h2>Site wide configuration</h2>
+
+[% IF errors %]
+    <p class="error">[% loc('Please correct the errors below') %]</p>
+[% END %]
+
 <form method="post">
-    [% IF errors %]
-        <p class="error">[% loc('Please correct the errors below') %]</p>
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+
+    [% IF errors.site_wide %]
+        <div class="form-error">[% errors.site_wide %]</div>
     [% END %]
 
+    <p>
+    <label for="waste_items_per_collection_max">Maximum items per collection (1-20)</label>
+    <input class="form-control" type=text max=20 min=1 name="items_per_collection_max" id="waste_items_per_collection_max"
+        value="[% items_per_collection_max %]">
+
+    <p>
+    <label for="waste_base_price">Price for a collection (in <strong>pence</strong>)</label>
+    <input class="form-control" type=text name="base_price" id="waste_base_price"
+        value="[% base_price %]">
+
+    <p>
+    <input type=checkbox name="free_mode" value="1" id="waste_free_mode"
+        [% 'checked' IF free_mode %]>
+    <label class="inline" for="waste_free_mode">Free collection allowed</label>
+
+    <p>
+    <input type=checkbox name="per_item_costs" value=1 id="waste_per_item_costs"
+        [% 'checked' IF per_item_costs %]>
+    <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
+
+    <p>
+    <input type="submit" class="btn" value="Save changes" />
+</form>
+
+<details[% IF errors.body_config %] open[% END %]>
+    <summary>JSON</summary>
+    <form method="post">
     <p>
         <label for="body_config">JSON:</label>
         <small>Use <code>0</code>/<code>1</code> instead of <code>false</code>/<code>true</code>.</small>
@@ -20,18 +59,9 @@
     </p>
     <p>
         <input type="hidden" name="token" value="[% csrf_token %]" >
-        <input type="submit" class="btn" value="Save changes" />
+        <input type="submit" class="btn" value="Save JSON" />
     </p>
-</form>
-
-<p>
-    <a href="[% c.uri_for_action('admin/waste/index') %]">[% loc("&larr; Back") %]</a>
-</p>
-
-<h2>More config</h2>
-<ul>
-    <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
-</ul>
-
+    </form>
+</details>
 
 [% INCLUDE 'admin/footer.html' %]

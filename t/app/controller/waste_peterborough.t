@@ -1195,6 +1195,16 @@ FixMyStreet::override_config {
             $body->discard_changes;
             is_deeply $body->get_extra_metadata('wasteworks_config'), { base_price => 2350, daily_slots => 40 };
         };
+
+        subtest 'Submitting valid inputs gets stored OK' => sub {
+            $mech->submit_form_ok({ with_fields => { per_item_costs => 1, base_price => 1234, items_per_collection_max => 7 } });
+            $mech->content_contains("Updated!");
+            $body->discard_changes;
+            is_deeply $body->get_extra_metadata('wasteworks_config'), {
+                daily_slots => 40, # from before
+                free_mode => 0, # not checked
+                base_price => 1234, per_item_costs => 1, items_per_collection_max => 7 };
+        };
     };
 
     subtest 'WasteWorks bulky goods item list administration' => sub {
