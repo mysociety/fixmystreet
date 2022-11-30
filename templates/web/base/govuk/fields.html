@@ -14,7 +14,7 @@
     [% SET error = field.errors.join(' ') ~%]
     <div class="govuk-form-group[% IF error %] govuk-form-group--error[% END %][% ' hidden-js' IF field.get_tag('initial_hidden') %]" id="form-[% field.id %]-row">
     [% IF field.widget == 'Submit' %]
-        [% field.render_element | safe %]
+        [% PROCESS submit %]
     [% ELSIF field.widget == 'Text' || field.type == 'Password' %]
         [% PROCESS text %]
     [% ELSIF field.widget == 'Textarea' %]
@@ -44,6 +44,13 @@
   [% IF form.field('back').is_active %]
     [% form.field('back').render_element | safe %]
   [% END %]
+[% END %]
+
+[% BLOCK submit %]
+  [% IF field.get_tag('hint') %]
+      <span id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</span>
+  [% END %]
+  [% field.render_element | safe %]
 [% END %]
 
 [% BLOCK errors %]

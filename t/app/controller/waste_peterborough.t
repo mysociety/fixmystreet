@@ -907,6 +907,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Please review the information');
             $mech->content_contains('provided before you submit your bulky goods collection booking.');
             $mech->content_contains('Please review the information you’ve provided before you submit your bulky goods collection booking.');
+            $mech->content_contains('You will be redirected to the council’s card payments provider.');
             $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Amplifiers/s);
             $mech->content_like(qr/<dd class="govuk-summary-list__value">.*High chairs/s);
             $mech->content_like(qr/<dd class="govuk-summary-list__value">.*Wardrobes/s);

@@ -98,6 +98,7 @@ has_field continue => (
 has_field submit => (
     type => 'Submit',
     value => 'Continue to payment',
+    tags => { hint => "You will be redirected to the council’s card payments provider." },
     element_attr => { class => 'govuk-button' },
     order => 999,
 );
