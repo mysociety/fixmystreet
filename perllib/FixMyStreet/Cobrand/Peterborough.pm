@@ -495,16 +495,16 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
-    $premises{$uprn}{has_pending_bulky_collection}
-        = $self->has_pending_bulky_collection( $premises{$uprn} );
+    $premises{$uprn}{pending_bulky_collection}
+        = $self->find_pending_bulky_collection( $premises{$uprn} );
 
     return $premises{$uprn};
 }
 
-sub has_pending_bulky_collection {
+sub find_pending_bulky_collection {
     my ( $self, $property ) = @_;
 
-    my @collections = FixMyStreet::DB->resultset('Problem')->search(
+    return FixMyStreet::DB->resultset('Problem')->to_body($self->body)->find(
         {   category => 'Bulky collection',
             extra    => {
                       like => '%T4:uprn,T5:value,I'
@@ -514,9 +514,23 @@ sub has_pending_bulky_collection {
             state =>
                 { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
         },
-    )->to_body($self->body)->all;
+    );
+}
 
-    return @collections ? 1 : 0;
+sub bulky_can_view_collection {
+    my ( $self, $p ) = @_;
+
+    my $c = $self->{c};
+
+    # logged out users can't see anything
+    return unless $p && $c->user_exists;
+
+    # superusers and staff can see it
+    # XXX do we want a permission for this?
+    return 1 if $c->user->is_superuser || $c->user->belongs_to_body($self->body->id);
+
+    # otherwise only the person who booked the collection can view
+    return $c->user->id == $p->user_id;
 }
 
 sub image_for_unit {
@@ -1228,6 +1242,14 @@ sub open311_contact_meta_override {
             code => 'payment_method',
             datatype => 'string',
             description => 'Payment method',
+            order => 101,
+            required => 'false',
+            variable => 'true',
+            automated => 'hidden_field',
+        }, {
+            code => 'property_id',
+            datatype => 'string',
+            description => 'Property ID',
             order => 101,
             required => 'false',
             variable => 'true',

@@ -118,7 +118,7 @@
       [% IF property.commercial_property %]
         [% PROCESS waste/_bulky_waste_message.html %]
       [% ELSE %]
-        [% IF property.has_pending_bulky_collection AND NOT c.user_exists # XXX %]
+        [% IF property.pending_bulky_collection AND NOT c.user_exists # XXX %]
           <!-- #09 Should be displayed when: When user HASN'T signed in -->
           [% TRY %][% PROCESS waste/_bulky_not_signed_user.html %][% CATCH file %][% END %]
           <!-- END #09 -->
@@ -143,26 +143,25 @@
               [% END %]
             </dd>
           </div>
-          [% IF property.has_pending_bulky_collection AND user_owns_existing_booking # XXX %]
+          [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
             <!-- #01 Should only display when: There IS a booking AND is a signed user -->
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Next collection</dt>
-              <dd class="govuk-summary-list__value"> Friday, 9th September 2022 </dd>
+              <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(property.pending_bulky_collection.get_extra_field_value('DATE')) %]</dd>
             </div>
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Reference number</dt>
-              <dd class="govuk-summary-list__value"> XXXXXXXXXXX </dd>
+              <dd class="govuk-summary-list__value">[% property.pending_bulky_collection.id %]</dd>
             </div>
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Items to be collected</dt>
               <dd class="govuk-summary-list__value">
-                <p class="govuk-!-margin-bottom-0"> 3 requested items </p>
-                <small>(2 remaining slots)</small>
+                <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(property.pending_bulky_collection).size %]</p>
               </dd>
             </div>
             <!-- END #01 -->
           [% END %]
-          [% IF c.user_exists AND NOT property.has_pending_bulky_collection # XXX %]
+          [% IF c.user_exists AND NOT property.pending_bulky_collection # XXX %]
             <!-- #04 Should only display when: There is NO booking AND is a signed user -->
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Next collection</dt>
@@ -173,17 +172,10 @@
         </dl>
         <hr>
         <div class="waste-services-launch-panel">
-          [% IF property.has_pending_bulky_collection AND user_owns_existing_booking # XXX %]
+          [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
             <!-- #05 Should only display when: There IS a booking AND is a signed user -->
-            <form method="post" action="https://peterborough.localhost:3000/waste/PE7%208GS:10008060131/report">
-              <input type="hidden" name="token" value="1662715863-O65oVPqXX8CumEyA2nWAsVaeYgM">
-              <input type="hidden" name="service-6534" value="1">
-              <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Check collection details" value="Check collection details">
-            </form>
-            <form method="post" action="https://peterborough.localhost:3000/waste/PE7%208GS:10008060131/problem">
-              <input type="hidden" name="token" value="1662715863-O65oVPqXX8CumEyA2nWAsVaeYgM">
-              <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Cancel your booking" value="Cancel your booking">
-            </form>
+            <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% property.pending_bulky_collection.id %]">Check collection details</a>
+            <a class="btn btn-primary govuk-!-margin-bottom-2" href="#">Cancel booking</a>
             <!-- END #05 -->
           [% END %]
           [% UNLESS c.user_exists %]
@@ -191,7 +183,7 @@
             <a class="btn btn-primary govuk-!-margin-bottom-2" href="">Sign in</a>
             <!-- END #07 -->
           [% END %]
-          [% UNLESS property.has_pending_bulky_collection AND user_owns_existing_booking # XXX %]
+          [% UNLESS property.pending_bulky_collection %]
             <!-- #06 Should NOT be displayed when: there is a signed user with a booking request -->
             <form method="post" action="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">
               <input type="hidden" name="token" value="[% csrf_token %]">

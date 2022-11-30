@@ -7,23 +7,31 @@
 [% SET data = form.saved_data ~%]
 
 
-<h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Request a bulky waste collection</h1>
+<h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
+  [% IF problem %]
+    Your bulky waste collection
+  [% ELSE %]
+    Request a bulky waste collection
+  [% END %]
+</h1>
 <div class="bulky__summary">
   <h2 class="govuk-heading-l govuk-!-margin-bottom-5">Booking Summary</h2>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-warning-text due">
-        <div class="govuk-warning-text__img">
-          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        </div>
-        <div class="govuk-warning-text__content">
-            <span class="govuk-warning-text__assistive">Warning</span>
-              <p class="govuk-!-margin-bottom-0">Please read carefully all the details for your booking. You won't be
-                able to amend your details afterwards.</p>
+  [% UNLESS problem %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-warning-text due">
+          <div class="govuk-warning-text__img">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          </div>
+          <div class="govuk-warning-text__content">
+              <span class="govuk-warning-text__assistive">Warning</span>
+                <p class="govuk-!-margin-bottom-0">Please read carefully all the details for your booking. You won't be
+                  able to amend your details afterwards.</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  [% END %]
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h3>Property details</h3>
@@ -144,9 +152,18 @@
     </div>
   </div>
 
-  <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">
-    [% PROCESS form %]
-  </form>
+  [% IF problem %]
+    <p>
+      <a class="govuk-button govuk-button--secondary" href="# [% #XXX cancellations %]">Cancel this booking</a>
+    </p>
+    <p>
+      <a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a>
+    </p>
+  [% ELSE %]
+    <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">
+      [% PROCESS form %]
+    </form>
+  [% END %]
 
 </div>
 [% INCLUDE footer.html %]

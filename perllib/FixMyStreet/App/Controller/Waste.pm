@@ -26,6 +26,7 @@ use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 use Open311::GetServiceRequestUpdates;
 use Digest::MD5 qw(md5_hex);
 use Memcached;
+use JSON::MaybeXS;
 
 has feature => (
     is => 'ro',
@@ -973,7 +974,7 @@ sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
     if (  !$c->stash->{waste_features}{bulky_enabled}
-        || $c->stash->{property}{has_pending_bulky_collection} )
+        || $c->stash->{property}{pending_bulky_collection} )
     {
         $c->res->redirect( '/waste/' . $c->stash->{property}{id} );
         $c->detach;
@@ -1077,6 +1078,42 @@ sub bulky : Chained('bulky_setup') : Args(0) {
     $c->stash->{field_list} = $field_list;
 
     $c->forward('form');
+}
+
+# Called by F::A::Controller::Report::display if the report in question is
+# a bulky goods collection.
+sub bulky_view : Private {
+    my ($self, $c) = @_;
+
+    my $p = $c->stash->{problem};
+
+    if (!$c->stash->{property}) {
+        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
+    }
+
+    $c->stash->{template} = 'waste/bulky/summary.html';
+
+
+    my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->user->phone;
+    $saved_data->{resident} = 'Yes';
+
+    my $items_list = $c->cobrand->call_hook('bulky_items_master_list');
+    my $per_item = $c->cobrand->bulky_per_item_costs;
+
+    # XXX copied from Form::Waste::Bulky, can it be refactored?
+    my %hash;
+    for my $item ( @$items_list ) {
+        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
+        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
+        $hash{ $item->{name} }{json} = encode_json($hash{$item->{name}}) if $hash{$item->{name}};
+    }
+    $c->stash->{form} = {
+        items_extra => \%hash,
+        saved_data => $saved_data,
+    };
 }
 
 sub process_bulky_data : Private {

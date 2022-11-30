@@ -82,6 +82,10 @@ Display a report.
 sub display :PathPart('') :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
+    if ($c->stash->{problem}->cobrand_data eq 'waste' && $c->stash->{problem}->category eq 'Bulky collection' ) {
+        $c->detach('/waste/bulky_view');
+    }
+
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );

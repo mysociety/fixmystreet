@@ -29,8 +29,10 @@ my $params = {
 my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $user2 = $mech->create_user_ok('test2@example.net', name => 'Very Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
+$staff->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
 
 sub create_contact {
@@ -70,6 +72,7 @@ create_contact(
     { code => 'DATE' },
     { code => 'payment' },
     { code => 'payment_method' },
+    { code => 'property_id' },
 );
 
 FixMyStreet::override_config {
@@ -902,6 +905,8 @@ FixMyStreet::override_config {
         };
 
         sub test_summary {
+            $mech->content_contains('Request a bulky waste collection');
+            $mech->content_lacks('Your bulky waste collection');
             $mech->content_contains('Booking Summary');
             $mech->content_contains('Please read carefully all the details');
             $mech->content_contains('You will be redirected to the council’s card payments provider.');
@@ -910,8 +915,13 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
             # Extra text for wardrobes
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
+            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('2 remaining slots available');
             $mech->content_contains('behind the hedge in the front garden');
             $mech->content_contains('£23.50');
+            $mech->content_lacks('Cancel this booking');
+            $mech->content_lacks('Show upcoming bin days');
+
 
             # external redirects make Test::WWW::Mechanize unhappy so clone
             # the mech for the redirect
@@ -980,12 +990,69 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('ITEM_03'), 'Wardrobes';
             is $report->get_extra_field_value('ITEM_04'), '';
             is $report->get_extra_field_value('ITEM_05'), '';
+            is $report->get_extra_field_value('property_id'), 'PE1 3NA:100090215480';
         };
 
-        subtest 'View booking' => sub {
+        subtest 'View own booking' => sub {
             $mech->log_in_ok($user->email);
+            $mech->get_ok('/report/' . $report->id);
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_contains('1 Pope Way, Peterborough, PE1 3NA');
+            $mech->content_lacks('Please read carefully all the details');
+            $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Amplifiers/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*High chairs/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
+            # Extra text for wardrobes
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
+            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('2 remaining slots available');
+            $mech->content_contains('behind the hedge in the front garden');
+            $mech->content_contains('£23.50');
+            $mech->content_contains('26 August');
+            $mech->content_lacks('Request a bulky waste collection');
+            $mech->content_contains('Your bulky waste collection');
+            $mech->content_contains('Cancel this booking');
+            $mech->content_contains('Show upcoming bin days');
+        };
+
+        subtest "Can't view booking logged-out" => sub {
+            $mech->log_out_ok;
+            $mech->get('/report/' . $report->id);
+
+            is $mech->res->code, 403, "got 403";
+            $mech->content_contains('Sorry, you don’t have permission to do that.');
+        };
+
+        subtest "Can't view someone else's booking" => sub {
+            $mech->log_in_ok($user2->email);
+            $mech->get('/report/' . $report->id);
+
+            is $mech->res->code, 403, "got 403";
+            $mech->content_contains('Sorry, you don’t have permission to do that.');
+        };
+
+        subtest "Staff can view booking" => sub {
+            $mech->log_in_ok($staff->email);
+            $mech->get_ok('/report/' . $report->id);
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_contains('Your bulky waste collection');
+        };
+
+        subtest "Superusers can view booking" => sub {
+            $mech->log_in_ok($super->email);
+            $mech->get_ok('/report/' . $report->id);
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_contains('Your bulky waste collection');
+        };
+
+        subtest "Can follow link to booking from bin days page" => sub {
             $mech->get_ok('/waste/PE1%203NA:100090215480');
-            # Should be displaying booking stuff here, is currently not XXX
+            $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
+            is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         };
 
         subtest 'Email confirmation of booking' => sub {
@@ -1040,6 +1107,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Bulky collection, per item payment' => sub {
+        $mech->log_in_ok($user->email);
         my $cfg = $body->get_extra_metadata('wasteworks_config');
         $cfg->{per_item_costs} = 1;
         $body->set_extra_metadata(wasteworks_config => $cfg);
