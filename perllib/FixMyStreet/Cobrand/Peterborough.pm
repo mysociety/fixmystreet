@@ -536,7 +536,6 @@ sub image_for_unit {
 # Holidays, bank holidays?
 # Monday limit, Tuesday limit etc.?
 # Check which bulky collections are pending, open
-# Check if collection is free or chargeable
 sub find_available_bulky_slots {
     my ( $self, $property, $last_earlier_date_str ) = @_;
 
@@ -1137,7 +1136,8 @@ sub bulky_total_cost {
 
     my $cfg = $self->body->get_extra_metadata("wasteworks_config", {});
 
-    my $free_collection_available = 1; # XXX need to check property attributes
+    my $attributes = $c->stash->{property}->{attributes};
+    my $free_collection_available = !$attributes->{"FREE BULKY USED"};
 
     if ($cfg->{free_mode} && $free_collection_available) {
         $data->{extra_CHARGEABLE} = 'FREE';

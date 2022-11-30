@@ -1077,6 +1077,7 @@ FixMyStreet::override_config {
     subtest 'Bulky collection, free' => sub {
         my $cfg = $body->get_extra_metadata('wasteworks_config');
         $cfg->{free_mode} = 1;
+        $cfg->{per_item_costs} = 0;
         $body->set_extra_metadata(wasteworks_config => $cfg);
         $body->update;
 
@@ -1086,6 +1087,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->content_contains('£0.00');
         $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1105,6 +1107,33 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
         $mech->log_out_ok;
         $report->delete;
+    };
+
+    subtest 'Bulky collection, free already used' => sub {
+        # Main config still has free from above
+
+        $b->mock('Premises_Attributes_Get', sub { [
+            { AttributeDefinition => { Name => 'FREE BULKY USED' } },
+        ] });
+
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->content_contains('£23.50');
+        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $report->get_extra_field_value('payment_method'), 'credit_card';
+        is $report->get_extra_field_value('payment'), 2350;
+        is $report->get_extra_field_value('uprn'), 100090215480;
+
+        $report->delete;
+        $b->mock('Premises_Attributes_Get', sub { [] });
     };
 
 };
