@@ -328,6 +328,22 @@ sub ServiceRequests_Get {
     return force_arrayref($requests, 'ServiceRequest');
 }
 
+# XXX Move to open311-adapter?
+sub ServiceRequest_Cancel {
+    my ( $self, $service_req_id ) = @_;
+
+    my $res = $self->call(
+        'ServiceRequest_Cancel',
+        token            => $self->token,
+        ServiceRequestID => $service_req_id,
+    );
+
+    return {
+        success   => $res->{Success},
+        error_msg => $res->{Errors}{Message},
+    };
+}
+
 sub Premises_Attributes_Get {
     my ($self, $uprn) = @_;
 

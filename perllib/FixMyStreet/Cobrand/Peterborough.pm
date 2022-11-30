@@ -501,10 +501,13 @@ sub look_up_property {
     return $premises{$uprn};
 }
 
+# Should only be a single open collection for a given property, but in case
+# there isn't, return the most recent
 sub find_pending_bulky_collection {
     my ( $self, $property ) = @_;
 
-    return FixMyStreet::DB->resultset('Problem')->to_body($self->body)->find(
+    return FixMyStreet::DB->resultset('Problem')->to_body( $self->body )
+        ->find(
         {   category => 'Bulky collection',
             extra    => {
                       like => '%T4:uprn,T5:value,I'
@@ -514,7 +517,38 @@ sub find_pending_bulky_collection {
             state =>
                 { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
         },
-    );
+        { order_by => { -desc => 'id' } },
+        );
+}
+
+sub cancel_bulky_collection {
+    my ($self, $property) = @_;
+
+    return unless $self->{c}->stash->{latest_open_bulky_request};
+
+    my $collection = $self->find_pending_bulky_collection($property);
+
+    return unless $collection;
+
+    my $bartec = $self->feature('bartec');
+    $bartec = Integrations::Bartec->new(%$bartec);
+
+    # XXX Make second request asking for cancellation
+    $bartec->ServiceRequest_Cancel(
+        $self->{c}->stash->{latest_open_bulky_request}{id} );
+
+    # XXX
+    # Have DB update & Bartec call in a transaction?
+
+    # XXX Test:
+    ### Different address
+    ### No open bookings, but some closed ones
+    ### No bookings at all
+    ### Multiple open bookings
+
+    # XXX Add comment saying it is cancelled? See /admin/report_edit logic
+    $collection->state('closed');
+    $collection->update;
 }
 
 sub bulky_can_view_collection {
@@ -868,6 +902,9 @@ sub bin_services_for_address {
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
     $self->{c}->stash->{open_service_requests} = $open_requests;
 
+    $self->{c}->stash->{latest_open_bulky_request}
+        = $self->latest_open_bulky_request($requests);
+
     $self->{c}->stash->{waste_features} = $self->feature('waste_features');
 
     my @out;
@@ -1051,6 +1088,22 @@ sub open_service_requests_for_uprn {
         $open_requests{$service_id} = 1;
     }
     return \%open_requests;
+}
+
+sub latest_open_bulky_request {
+    my ( $self, $requests ) = @_;
+
+    for ( sort { $b->{DateRequested} cmp $a->{DateRequested} } @$requests ) {
+        # XXX need to confirm that this list is complete and won't change in
+        # the future...
+        next
+            unless $_->{ServiceStatus}{Status}
+            =~ /PENDING|INTERVENTION|OPEN|ASSIGNED|IN PROGRESS/;
+
+        next unless $_->{ServiceType}{Name} eq 'BULKY COLLECTION';
+
+        return $_;
+    }
 }
 
 sub waste_munge_request_form_data {
@@ -1265,6 +1318,31 @@ sub open311_contact_meta_override {
             automated => 'hidden_field',
         };
     }
+}
+
+# Has an open booking on both our end and Bartec's
+sub has_open_bulky_collection_report_and_request {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return $c->stash->{property}{open_bulky_collection_report}
+        && $c->stash->{latest_open_bulky_request};
+}
+
+sub waste_munge_bulky_cancellation_data {
+    my ( $self, $data ) = @_;
+
+    my $c = $self->{c};
+
+    $data->{title}    = 'Bulky goods cancellation';
+    $data->{category} = 'Bulky cancel';
+
+    # XXX These are being asked for when I try to submit cancellation, but I
+    # haven't yet figured out what is asking for them (Bartec?) or how the
+    # keys should be formatted so they are recognised
+    $data->{extra_COMMENTS}           = 'Cancellation at user request';
+    $data->{extra_ORIGINAL_SR_NUMBER}
+        = $c->stash->{latest_open_bulky_request}{ServiceCode};
 }
 
 sub waste_munge_report_data {

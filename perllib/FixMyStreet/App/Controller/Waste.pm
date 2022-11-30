@@ -16,6 +16,7 @@ use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
 use FixMyStreet::App::Form::Waste::Bulky;
+use FixMyStreet::App::Form::Waste::Bulky::Cancel;
 use FixMyStreet::App::Form::Waste::Garden;
 use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
@@ -575,6 +576,9 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
     $c->stash->{services_available} = $c->cobrand->call_hook(available_bin_services_for_address => $property) || {};
 
+    $c->stash->{has_open_bulky_collection_report_and_request}
+        = $c->cobrand->call_hook('has_open_bulky_collection_report_and_request');
+
     $c->forward('get_pending_subscription');
 }
 
@@ -1115,6 +1119,23 @@ sub bulky_view : Private {
     };
 }
 
+sub bulky_cancel : Chained('property') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    # XXX
+    # Check booking belongs to user
+    if (  !$c->stash->{waste_features}{bulky_enabled}
+        || !$c->stash->{has_open_bulky_collection_report_and_request} )
+    {
+        $c->res->redirect( '/waste/' . $c->stash->{property}{id} );
+        $c->detach;
+    }
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
+    $c->forward('form');
+}
+
 sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
@@ -1147,6 +1168,36 @@ sub process_bulky_data : Private {
     } else {
         $c->forward('add_report', [ $data ]) or return;
     }
+    return 1;
+}
+
+sub process_bulky_cancellation : Private {
+    my ( $self, $c, $form ) = @_;
+
+    my %collection_report_data
+        = $c->stash->{property}{open_bulky_collection_report}->get_columns;
+    # XXX What should we actually put for 'name' etc.? 'add_report' complains
+    # if we don't have these.
+    my %data =
+        %collection_report_data{
+            'name',
+            'detail',
+        };
+
+    $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
+
+    # Read extra details in loop
+    for (grep { /^extra_/ } keys %data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param( $id, $data{$_} );
+    }
+
+    # Mark original report as closed
+    # XXX Leave e.g. comment to clarify that report is cancelled
+    $c->stash->{property}{open_bulky_collection_report}->state('closed');
+    $c->stash->{property}{open_bulky_collection_report}->update;
+
+    $c->forward( 'add_report', [\%data] ) or return;
     return 1;
 }
 
