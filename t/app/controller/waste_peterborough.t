@@ -901,8 +901,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { location => 'behind the hedge in the front garden' } });
         };
 
-        my $mech2;
-        subtest 'Summary page' => sub {
+        sub test_summary {
             $mech->content_contains('Booking Summary');
             $mech->content_contains('Please read carefully all the details');
             $mech->content_contains('You will be redirected to the council’s card payments provider.');
@@ -916,15 +915,13 @@ FixMyStreet::override_config {
 
             # external redirects make Test::WWW::Mechanize unhappy so clone
             # the mech for the redirect
-            $mech2 = $mech->clone;
+            my $mech2 = $mech->clone;
             $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-        };
-
-        subtest 'Payment page' => sub {
-
             is $mech2->res->previous->code, 302, 'payments issues a redirect';
             is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
-
+        }
+        sub test_payment_page {
+            my $sent_params = shift;
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
             is $new_report->category, 'Bulky collection', 'correct category on report';
@@ -937,12 +934,27 @@ FixMyStreet::override_config {
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
+            return ($token, $new_report, $report_id);
+        }
+
+        subtest 'Summary page' => \&test_summary;
+        subtest 'Payment page' => sub {
+            my ($token, $new_report, $report_id) = test_payment_page($sent_params);
+            # Check changing your mind from payment page
+            $mech->get_ok("/waste/pay_cancel/$report_id/$token?property_id=PE1%203NA:100090215480");
+        };
+
+        subtest 'Summary page' => \&test_summary;
+        subtest 'Payment page again' => sub {
+            my ($token, $new_report, $report_id) = test_payment_page($sent_params);
+
             $mech->get('/waste/pay/xx/yyyyyyyyyyy');
             ok !$mech->res->is_success(), "want a bad response";
             is $mech->res->code, 404, "got 404";
             $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
             ok !$mech->res->is_success(), "want a bad response";
             is $mech->res->code, 404, "got 404";
+
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
             is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 

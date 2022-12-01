@@ -3,12 +3,11 @@ package FixMyStreet::Roles::SCP;
 use Moo::Role;
 use strict;
 use warnings;
+use URI::Escape;
 use Integrations::SCP;
 
 sub waste_cc_get_redirect_url {
     my ($self, $c, $back) = @_;
-
-    my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
 
     my $payment = Integrations::SCP->new({
         config => $self->feature('payment_gateway')
@@ -26,6 +25,15 @@ sub waste_cc_get_redirect_url {
     my $redirect_id = mySociety::AuthToken::random_token();
     $p->set_extra_metadata('redirect_id', $redirect_id);
     $p->update;
+
+    my $backUrl;
+    if ($back eq 'bulky') {
+        # Need to pass through property ID as not sure how to work it out once we're back
+        my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
+        $backUrl = $c->uri_for('pay_cancel', $p->id, $redirect_id ) . '?property_id=' . $id;
+    } else {
+        $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
+    }
 
     my $address = $c->stash->{property}{address};
     my @parts = split ',', $address;

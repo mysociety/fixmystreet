@@ -7,6 +7,7 @@ BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 use utf8;
 use Lingua::EN::Inflect qw( NUMWORDS );
 use List::Util qw(any);
+use FixMyStreet::App::Form::Field::JSON;
 use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
@@ -212,6 +213,31 @@ sub pay : Path('pay') : Args(0) {
         $c->stash->{template} = 'waste/cc.html';
         $c->detach;
     }
+}
+
+# redirect from cc processing - bulky goods only at present
+sub pay_cancel : Local : Args(2) {
+    my ($self, $c, $id, $token) = @_;
+
+    my $property_id = $c->get_param('property_id');
+
+    $c->forward('check_payment_redirect_id', [ $id, $token ]);
+
+    $c->forward('/auth/get_csrf_token');
+
+    my $p = $c->stash->{report};
+    my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->user->phone;
+    $saved_data->{resident} = 'Yes';
+
+    my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
+    $saved_data = $saved_data_field->deflate_json($saved_data);
+    $c->set_param(saved_data => $saved_data);
+    $c->set_param(goto => 'summary');
+    $c->set_param(process => '');
+    $c->go('bulky', [ $property_id ], []);
 }
 
 # redirect from cc processing

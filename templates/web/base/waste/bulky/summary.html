@@ -144,7 +144,7 @@
     </div>
   </div>
 
-  <form class="waste" method="post">
+  <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">
     [% PROCESS form %]
   </form>
 
