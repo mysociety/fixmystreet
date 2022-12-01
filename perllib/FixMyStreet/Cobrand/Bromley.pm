@@ -336,7 +336,7 @@ sub open311_contact_meta_override {
         required => 'false',
         variable => 'true',
         automated => 'hidden_field',
-    } if $service->{service_code} eq 'SLRS';
+    } if $service->{service_code} =~ /^SL_/;
 
     my @override = qw(
         requested_datetime

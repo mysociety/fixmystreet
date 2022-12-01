@@ -11,6 +11,7 @@ use FixMyStreet::Script::Alerts;
 use Open311::PostServiceRequestUpdates;
 use List::Util 'any';
 use Regexp::Common 'URI';
+use Open311::PopulateServiceList;
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -1985,6 +1986,60 @@ sub setup_dd_test_report {
     $report->update;
 
     return $report;
+}
+
+for my $test (
+    {
+        code => 'SL_LAMP',
+        result => 'feature_id',
+        description => 'feature_id added to lamp code'
+    },
+    {
+        code => 'ASL_LAMP',
+        result => undef,
+        description => 'feature_id not added to non-lamp code'
+    }
+) {
+    subtest 'check open311_contact_meta_override' => sub {
+
+        my $processor = Open311::PopulateServiceList->new();
+
+        my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
+<service_definition>
+    <service_code>DUMMY</service_code>
+    <attributes>
+        <attribute>
+            <automated>server_set</automated>
+            <code>hint</code>
+            <datatype>string</datatype>
+            <datatype_description></datatype_description>
+            <description>Lamp on during day</description>
+            <order>1</order>
+            <required>false</required>
+            <variable>false</variable>
+        </attribute>
+    </attributes>
+</service_definition>
+    ';
+
+        my $o = Open311->new(
+            jurisdiction => 'mysociety',
+            endpoint => 'http://example.com',
+        );
+        Open311->_inject_response('/services/' . $test->{code} . '.xml', $meta_xml);
+
+        $processor->_current_open311( $o );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ 'bromley' ],
+        }, sub {
+            $processor->_current_body( $body );
+        };
+        $processor->_current_service( { service_code => $test->{code}, service_name => 'Lamp on during day' } );
+        $processor->_add_meta_to_contact( $contact );
+        $contact->discard_changes;
+        my @extra_fields = $contact->get_extra_fields;
+        is $extra_fields[0][2]->{code}, $test->{result}, $test->{description};
+    };
 }
 
 done_testing();
