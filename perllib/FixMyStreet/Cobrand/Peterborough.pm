@@ -514,7 +514,7 @@ sub has_pending_bulky_collection {
             state =>
                 { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
         },
-    )->all;
+    )->to_body($self->body)->all;
 
     return @collections ? 1 : 0;
 }
