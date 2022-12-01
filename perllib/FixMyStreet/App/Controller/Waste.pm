@@ -1124,8 +1124,9 @@ sub bulky_cancel : Chained('property') : Args(0) {
 
     # XXX
     # Check booking belongs to user
-    if (  !$c->stash->{waste_features}{bulky_enabled}
-        || !$c->stash->{has_open_bulky_collection_report_and_request} )
+    if (   !$c->stash->{waste_features}{bulky_enabled}
+        || !$c->stash->{has_open_bulky_collection_report_and_request}
+        || !$c->cobrand->call_hook('within_bulky_cancel_window') )
     {
         $c->res->redirect( '/waste/' . $c->stash->{property}{id} );
         $c->detach;
