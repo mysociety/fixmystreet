@@ -316,8 +316,6 @@
         [% END %]
   [% END %]
 
-      <input type="hidden" name="fileid_field" value="[% field.id %]_fileid">
-      <input type="hidden" name="photo_field" value="[% field.id %]">
       <input class="govuk-file-upload" id="[% field.id %]" name="[% field.id %]" type="file" >
       [% SET count = field.get_tag('max_photos');
          WHILE count > 1 ~%]

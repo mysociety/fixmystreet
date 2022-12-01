@@ -1153,28 +1153,6 @@ sub validate_datetime {
     $field->add_error("Please enter a valid date") unless $valid;
 }
 
-sub update_photo {
-    my ($form, $field, $fields) = @_;
-    my $saved_data = $form->saved_data;
-
-    if ($saved_data->{$field}) {
-        my $fileid = $field . '_fileid';
-        $saved_data->{$fileid} = $saved_data->{$field};
-        $fields->{$fileid} = { default => $saved_data->{$field} };
-    }
-}
-
-sub process_photo {
-    my ($form, $field) = @_;
-
-    my $saved_data = $form->saved_data;
-    my $fileid = $field . '_fileid';
-    my $c = $form->{c};
-    $c->forward('/photo/process_photo');
-    $saved_data->{$field} = $c->stash->{$fileid};
-    $saved_data->{$fileid} = '';
-}
-
 sub file_upload {
     my ($form, $field) = @_;
 

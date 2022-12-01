@@ -161,8 +161,8 @@ sub process_photo : Private {
 
 sub process_photo_upload_or_cache : Private {
     my ( $self, $c ) = @_;
-    my $photo_prefix = $c->get_param('photo_field') || 'photo';
-    my $fileid_field = $c->get_param('fileid_field') || 'upload_fileid';
+    my $photo_prefix = $c->stash->{photo_upload_prefix} || 'photo';
+    my $fileid_field = $c->stash->{photo_upload_fileid_field} || 'upload_fileid';
     my @items = (
         ( map {
             /^$photo_prefix/ ? # photo, photo1, photo2 etc.

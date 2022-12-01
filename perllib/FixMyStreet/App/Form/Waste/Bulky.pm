@@ -249,17 +249,6 @@ has_field location => (
     },
 );
 
-sub process_photo {
-    my ($form, $field) = @_;
-
-    my $saved_data = $form->saved_data;
-    my $fileid = $field . '_fileid';
-    my $c = $form->{c};
-    $c->forward('/photo/process_photo');
-    $saved_data->{$field} = $c->stash->{$fileid};
-    $saved_data->{$fileid} = '';
-}
-
 has_field location_photo_fileid => (
     type => 'FileIdPhoto',
     num_photos_required => 0,
