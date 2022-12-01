@@ -10,16 +10,22 @@
   [% INCLUDE 'waste/_address_display.html' %]
 [% END %]
 
-<div class="no-js-message govuk-warning-text due" style="max-width:550px">
+<div class="screen-reader-only govuk-warning-text due" style="max-width:550px">
   <div class="govuk-warning-text__img">
     <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
   </div>
   <div class="govuk-warning-text__content">
     <span class="govuk-warning-text__assistive">Important information</span>
     <p class="govuk-!-margin-bottom-1"><strong>About your items</strong></p>
-    <p >Before continuing, please read the following file and see if any items have a note or comment that might help our crew to collect them.</p>
-    <!-- Needs file -->
-    <a class="btn-primary" href="" download="">Item notes</a>
+    <p >Before continuing, please read the following to see if any items have a note or comment that might help our crew to collect them.</p>
+
+    <dl>
+      [% FOR item IN form.items_extra; IF item.value.message %]
+        <dt>[% item.key %]</dt>
+        <dd>[% item.value.message %]</dd>
+      [% END; END %]
+    </dl>
+
   </div>
 </div>
 
