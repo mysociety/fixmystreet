@@ -746,7 +746,34 @@ sub bulky_can_cancel {
     return
            $pending_collection
         && $pending_collection->external_id
-        && $self->bulky_can_view_collection($pending_collection);
+        && $self->bulky_can_view_collection($pending_collection)
+        && $self->within_bulky_cancel_window;
+}
+
+sub within_bulky_cancel_window {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    my $open_collection = $c->stash->{property}{pending_bulky_collection};
+    return 0 unless $open_collection;
+
+    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+
+    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
+    my $collection_dt = DateTime::Format::Strptime->new(
+        pattern   => '%FT%T',
+        time_zone => FixMyStreet->local_time_zone
+    )->parse_datetime($collection_date_str);
+
+    return $self->_check_within_bulky_cancel_window( $now_dt,
+        $collection_dt );
+}
+
+sub _check_within_bulky_cancel_window {
+    my ( undef, $now_dt, $collection_dt ) = @_;
+
+    my $cutoff_dt = $collection_dt->clone->subtract( minutes => 5 );
+    return $now_dt < $cutoff_dt;
 }
 
 sub bin_services_for_address {

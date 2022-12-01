@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
 use Test::More;
+use DateTime;
 use DateTime::Format::Strptime;
 use FixMyStreet::Cobrand::Peterborough;
 
@@ -377,5 +378,141 @@ sub _jobs_arrayref {
     $uprn //= 10001;
     return [ map { { Job => { UPRN => $uprn++ } } } 1 .. $job_count ];
 }
+
+### end 'find_available_bulky_slots'
+
+subtest '_check_within_bulky_cancel_window' => sub {
+    my $now_dt;
+    my $collection_dt;
+
+    subtest 'Now one day earlier than collection date' => sub {
+        $now_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 2,
+            time_zone => 'Europe/London',
+        );
+
+        subtest 'Now time earlier than 23:55' => sub {
+            $now_dt->set( hour => 23, minute => 54, second => 59 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_cancel_window(
+                        $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'Now time equals 23:55' => sub {
+            $now_dt->set( hour => 23, minute => 55 );
+            ok !( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_cancel_window(
+                        $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'Now time later than 23:55' => sub {
+            $now_dt->set( hour => 23, minute => 56 );
+            ok !( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_cancel_window(
+                        $now_dt, $collection_dt
+                    )
+            );
+        };
+    };
+
+    subtest 'Now same day as collection date' => sub {
+        $now_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+
+        ok !(
+            FixMyStreet::Cobrand::Peterborough
+            ->_check_within_bulky_cancel_window(
+                $now_dt, $collection_dt
+            )
+        );
+    };
+
+    subtest 'Now later day than collection date' => sub {
+        $now_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 3,
+            day       => 31,
+            time_zone => 'Europe/London',
+        );
+
+        ok !(
+            FixMyStreet::Cobrand::Peterborough
+            ->_check_within_bulky_cancel_window(
+                $now_dt, $collection_dt
+            )
+        );
+    };
+
+    # Check we are taking year into account when considering day comparisons
+    subtest 'Now same date as collection date but year earlier' => sub {
+        $now_dt = DateTime->new(
+            year      => 2022,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+
+        ok (
+            FixMyStreet::Cobrand::Peterborough
+            ->_check_within_bulky_cancel_window(
+                $now_dt, $collection_dt
+            )
+        );
+    };
+
+    subtest 'Now later date than collection date but year earlier' => sub {
+        $now_dt = DateTime->new(
+            year      => 2022,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 3,
+            day       => 31,
+            time_zone => 'Europe/London',
+        );
+
+        ok (
+            FixMyStreet::Cobrand::Peterborough
+            ->_check_within_bulky_cancel_window(
+                $now_dt, $collection_dt
+            )
+        );
+    };
+};
 
 done_testing;
