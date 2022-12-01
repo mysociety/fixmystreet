@@ -1036,11 +1036,15 @@ sub bulky : Chained('bulky_setup') : Args(0) {
             next => 'location',
             update_field_list => sub {
                 my $form = shift;
+                my $fields = {};
                 my $data = $form->saved_data;
                 my $c = $form->{c};
                 $c->cobrand->bulky_total_cost($data);
                 $c->stash->{total} = $c->stash->{payment} / 100;
-                return {};
+                for my $num ( 1 .. $max_items ) {
+                    $form->update_photo("item_photo_$num", $fields);
+                }
+                return $fields;
             },
         },
     ];

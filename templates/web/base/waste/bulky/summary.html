@@ -89,8 +89,8 @@
                 <p class="govuk-!-margin-bottom-0">[% item.item %]</p>
               </td>
               <td>
-                  [% IF item.photo_fileid %]
-                    <img class="img-preview is--small" alt="Preview image succesfully attached" src="/photo/temp.[% item.photo_fileid %]">
+                  [% IF item.photo %]
+                    <img class="img-preview is--small" alt="Preview image succesfully attached" src="/photo/temp.[% item.photo %]">
                   [% ELSE %]
                     <span class="govuk-text__assistive">No image attached for this item</span>
                   [% END %]
@@ -124,8 +124,8 @@
           No description provided.
         [% END %]
       </p>
-      [% IF data.location_photo_fileid %]
-        <img class="img-preview is--medium" alt="Preview image succesfully attached" src="/photo/temp.[% data.location_photo_fileid %]">
+      [% IF data.location_photo %]
+        <img class="img-preview is--medium" alt="Preview image succesfully attached" src="/photo/temp.[% data.location_photo %]">
       [% ELSE %]
         <p class="due" style="padding:1em">No image of the location has been attached.</p>
       [% END %]

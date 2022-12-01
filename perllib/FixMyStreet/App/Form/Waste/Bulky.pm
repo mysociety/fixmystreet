@@ -66,6 +66,12 @@ has_page location => (
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        $form->update_photo('location_photo', $fields);
+        return $fields;
+    },
 );
 
 has_page summary => (

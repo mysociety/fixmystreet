@@ -23,7 +23,8 @@
 
   [% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
 
-  <form class="waste" method="post">
+  <form class="waste" method="post"
+    [% IF form.current_page.name == 'location' %]enctype="multipart/form-data"[% END %]>
     [% UNLESS property %]
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
