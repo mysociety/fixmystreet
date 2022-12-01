@@ -1120,7 +1120,7 @@ sub waste_munge_bulky_data {
     my $max = $self->bulky_items_maximum;
     for (1..$max) {
         my $two = sprintf("%02d", $_);
-        $data->{"extra_ITEM_$two"} = $data->{"item_$_"}{item};
+        $data->{"extra_ITEM_$two"} = $data->{"item_$_"};
     }
 
     $self->bulky_total_cost($data);
@@ -1149,7 +1149,7 @@ sub bulky_total_cost {
             my %prices = map { $_->{name} => $_->{price} } @{ $self->bulky_items_master_list };
             my $total = 0;
             for (1..5) {
-                my $item = $data->{"item_$_"}{item} or next;
+                my $item = $data->{"item_$_"} or next;
                 $total += $prices{$item};
             }
             $c->stash->{payment} = $total;

@@ -1003,36 +1003,34 @@ sub bulky : Chained('bulky_setup') : Args(0) {
     for my $num ( 1 .. $max_items ) {
         push @$field_list,
             "item_$num" => {
-                type => 'Compound',
-                id => "item_$num",
-                $num == 1 ? (required => 1) : (),
-                messages => { required => 'Please select an item' },
-            },
-            "item_$num.item" => {
                 type => 'Select',
                 label => "Item $num",
-                id => "item_$num.item",
+                id => "item_$num",
                 empty_select => 'Please select an item',
                 tags => { autocomplete => 1 },
                 options_method => \&bulky_item_options_method,
+                $num == 1 ? (required => 1) : (),
+                messages => { required => 'Please select an item' },
             },
-            "item_$num.photo" => {
+            "item_photo_$num" => {
                 type => 'Photo',
                 label => 'Upload image (optional)',
                 tags => { max_photos => 1 },
                 # XXX Limit to JPG etc.
                 # XXX Save to DB
             },
-            "item_$num.photo_fileid" => {
+            "item_photo_${num}_fileid" => {
                 type => 'FileIdPhoto',
                 num_photos_required => 0,
-                linked_field => "item_$num.photo",
+                linked_field => "item_photo_$num",
             };
     }
 
     $c->stash->{page_list} = [
         add_items => {
-            fields => [ 'continue', map {"item_$_"} ( 1 .. $max_items ) ],
+            fields => [ 'continue',
+                map { ("item_$_", "item_photo_$_", "item_photo_${_}_fileid") } ( 1 .. $max_items ),
+            ],
             template => 'waste/bulky/items.html',
             title => 'Add items for collection',
             next => 'location',

@@ -886,9 +886,9 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
-                        'item_1.item' => 'Amplifiers',
-                        'item_2.item' => 'High chairs',
-                        'item_3.item' => 'Wardrobes',
+                        'item_1' => 'Amplifiers',
+                        'item_2' => 'High chairs',
+                        'item_3' => 'Wardrobes',
                     },
                 },
             );
@@ -1039,7 +1039,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
-        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -1057,7 +1057,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
-        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
@@ -1088,7 +1088,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_contains('£0.00');
-        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
@@ -1123,7 +1123,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_contains('£23.50');
-        $mech->submit_form_ok({ with_fields => { 'item_1.item' => 'Amplifiers', 'item_2.item' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );

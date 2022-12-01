@@ -52,10 +52,13 @@
       <hr>
       <h3>Items to be collected</h3>
       [% items = [] %]
-      [% FOR item_key IN data.keys.grep('^item_[\d]+$').sort %]
-        [% item = data.$item_key; NEXT UNLESS item %]
-        [% items.push(item) %]
-      [% END %]
+      [% FOR num IN [ 1 .. cobrand.bulky_items_maximum ];
+        item_key = 'item_' _ num;
+        photo_key = 'item_photo_' _ num;
+        item = data.$item_key;
+        NEXT UNLESS item;
+        items.push({ item => item, photo => data.$photo_key });
+      END %]
       <dl>
         <dt>Price</dt>
         [% payment = cobrand.bulky_total_cost(data) %]
