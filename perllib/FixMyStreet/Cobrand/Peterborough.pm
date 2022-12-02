@@ -767,6 +767,85 @@ sub bulky_per_item_costs {
     return $cfg->{per_item_costs};
 }
 
+# Has an open booking on both our end and Bartec's
+sub has_open_bulky_collection_report_and_request {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return $c->stash->{property}{open_bulky_collection_report}
+        && $c->stash->{latest_open_bulky_request};
+}
+
+# Collections are scheduled to begin at 06:45 each day.
+# A cancellation made less than 24 hours before the collection is scheduled to
+# begin is not entitled to a refund.
+sub within_bulky_refund_window {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    my $open_collection = $c->stash->{property}{open_bulky_collection_report};
+    return 0 unless $open_collection;
+
+    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+
+    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
+    my $collection_dt       = DateTime::Format::Strptime->new(
+        pattern   => '%FT%T',
+        time_zone => FixMyStreet->local_time_zone,
+    )->parse_datetime($collection_date_str);
+
+    return $self->_check_within_bulky_refund_window( $now_dt,
+        $collection_dt );
+}
+
+sub _check_within_bulky_refund_window {
+    my ( undef, $now_dt, $collection_dt ) = @_;
+
+    my $cutoff_dt = $collection_dt->clone->set( hour => 6, minute => 45 )
+        ->subtract( hours => 24 );
+
+    # Now should be earlier than or equal to cutoff
+    return DateTime->compare( $now_dt, $cutoff_dt ) < 1;
+}
+
+sub within_bulky_cancel_window {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    my $open_collection = $c->stash->{property}{open_bulky_collection_report};
+    return 0 unless $open_collection;
+
+    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+
+    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
+    my $collection_dt       = DateTime::Format::Strptime->new(
+        pattern   => '%FT%T',
+        time_zone => FixMyStreet->local_time_zone,
+    )->parse_datetime($collection_date_str);
+
+    return $self->_check_within_bulky_cancel_window( $now_dt,
+        $collection_dt );
+}
+
+sub _check_within_bulky_cancel_window {
+    my ( undef, $now_dt, $collection_dt ) = @_;
+
+    # Collection date must be at least a day later than today's date for
+    # cancellation to be allowed
+    my $today          = $now_dt->clone->truncate( to => 'day' );
+    my $collection_day = $collection_dt->clone->truncate( to => 'day' );
+    return 0 if DateTime->compare( $collection_day, $today ) < 1;
+
+    # Check if the time now is before 23:55, if today is one day before the
+    # collection date
+    return 1
+        if DateTime->compare( $collection_day->clone->subtract( days => 1 ),
+        $today ) < 0;
+    return $now_dt->hour < 23 ?
+        1 : $now_dt->minute < 55 ?
+        1 : 0;
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
@@ -1318,54 +1397,6 @@ sub open311_contact_meta_override {
             automated => 'hidden_field',
         };
     }
-}
-
-# Has an open booking on both our end and Bartec's
-sub has_open_bulky_collection_report_and_request {
-    my $self = shift;
-    my $c = $self->{c};
-
-    return $c->stash->{property}{open_bulky_collection_report}
-        && $c->stash->{latest_open_bulky_request};
-}
-
-# XXX Move code around so not in middle of 'munge' methods?
-sub within_bulky_cancel_window {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    my $open_collection = $c->stash->{property}{open_bulky_collection_report};
-    return 0 unless $open_collection;
-
-    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-
-    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
-    my $collection_dt = DateTime::Format::Strptime->new(
-        pattern   => '%FT%T',
-        time_zone => FixMyStreet->local_time_zone
-    )->parse_datetime($collection_date_str);
-
-    return $self->_check_within_bulky_cancel_window( $now_dt,
-        $collection_dt );
-}
-
-sub _check_within_bulky_cancel_window {
-    my ( undef, $now_dt, $collection_dt ) = @_;
-
-    # Collection date must be at least a day later than today's date for
-    # cancellation to be allowed
-    my $today          = $now_dt->clone->truncate( to => 'day' );
-    my $collection_day = $collection_dt->clone->truncate( to => 'day' );
-    return 0 if DateTime->compare( $collection_day, $today ) < 1;
-
-    # Check if the time now is before 23:55, if today is one day before the
-    # collection date
-    return 1
-        if DateTime->compare( $collection_day->clone->subtract( days => 1 ),
-        $today ) < 0;
-    return $now_dt->hour < 23 ?
-        1 : $now_dt->minute < 55 ?
-        1 : 0;
 }
 
 sub waste_munge_bulky_cancellation_data {

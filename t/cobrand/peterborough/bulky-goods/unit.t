@@ -403,24 +403,26 @@ subtest '_check_within_bulky_cancel_window' => sub {
             $now_dt->set( hour => 23, minute => 54, second => 59 );
             ok( FixMyStreet::Cobrand::Peterborough
                     ->_check_within_bulky_cancel_window(
-                        $now_dt, $collection_dt
+                    $now_dt, $collection_dt
                     )
             );
         };
         subtest 'Now time equals 23:55' => sub {
             $now_dt->set( hour => 23, minute => 55 );
-            ok !( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_cancel_window(
-                        $now_dt, $collection_dt
-                    )
+            ok !(
+                FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_cancel_window(
+                    $now_dt, $collection_dt
+                )
             );
         };
         subtest 'Now time later than 23:55' => sub {
             $now_dt->set( hour => 23, minute => 56 );
-            ok !( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_cancel_window(
-                        $now_dt, $collection_dt
-                    )
+            ok !(
+                FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_cancel_window(
+                    $now_dt, $collection_dt
+                )
             );
         };
     };
@@ -484,11 +486,10 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        ok (
-            FixMyStreet::Cobrand::Peterborough
-            ->_check_within_bulky_cancel_window(
+        ok( FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_cancel_window(
                 $now_dt, $collection_dt
-            )
+                )
         );
     };
 
@@ -506,12 +507,181 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        ok (
-            FixMyStreet::Cobrand::Peterborough
-            ->_check_within_bulky_cancel_window(
+        ok( FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_cancel_window(
                 $now_dt, $collection_dt
-            )
+                )
         );
+    };
+};
+
+subtest '_check_within_bulky_refund_window' => sub {
+    my $now_dt;
+    my $collection_dt;
+
+    subtest 'Now same day as collection date' => sub {
+        $now_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+
+        subtest 'before 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 44 );
+            ok !(
+                FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                )
+            );
+        };
+        subtest 'at 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 45 );
+            ok !(
+                FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                )
+            );
+        };
+        subtest 'after 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 46 );
+            ok !(
+                FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                )
+            );
+        };
+    };
+
+    subtest 'Now day before collection date' => sub {
+        $now_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 2,
+            time_zone => 'Europe/London',
+        );
+
+        subtest 'before 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 44 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'at 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 45 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'after 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 46 );
+            ok !(
+                FixMyStreet::Cobrand::Peterborough
+                ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                )
+            );
+        };
+    };
+
+    # Check we are taking year into account when considering day comparisons
+    subtest 'Now same date as collection date but year earlier' => sub {
+        $now_dt = DateTime->new(
+            year      => 2022,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+
+        subtest 'before 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 44 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'at 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 45 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'after 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 46 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+    };
+
+    subtest 'Now date a date after collection date, one year earlier' => sub {
+        $now_dt = DateTime->new(
+            year      => 2022,
+            month     => 4,
+            day       => 2,
+            time_zone => 'Europe/London',
+        );
+        $collection_dt = DateTime->new(
+            year      => 2023,
+            month     => 4,
+            day       => 1,
+            time_zone => 'Europe/London',
+        );
+
+        subtest 'before 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 44 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'at 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 45 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
+        subtest 'after 6:45' => sub {
+            $now_dt->set( hour => 6, minute => 46 );
+            ok( FixMyStreet::Cobrand::Peterborough
+                    ->_check_within_bulky_refund_window(
+                    $now_dt, $collection_dt
+                    )
+            );
+        };
     };
 };
 
