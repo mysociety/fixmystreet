@@ -1658,6 +1658,16 @@ sub add_report : Private {
 
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
+
+    # store photos
+    foreach (grep { /^(item|location)_photo/ } keys %$data) {
+        next unless $data->{$_};
+        my $k = $_;
+        $k =~ s/^(.+)_fileid$/$1/;
+        $c->stash->{report}->set_extra_metadata($k => $data->{$_});
+    }
+    $c->stash->{report}->update;
+
     # we don't want to confirm reports that are for things that require a payment because
     # we need to get the payment to confirm them.
     if ( $no_confirm ) {

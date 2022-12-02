@@ -1140,24 +1140,21 @@ sub waste_munge_bulky_data {
     $self->bulky_total_cost($data);
 
     $data->{"extra_CREW NOTES"} = $data->{location};
-
-    # XXX what about photos?
 }
 
 sub waste_reconstruct_bulky_data {
     my ($self, $p) = @_;
 
-    # XXX Photos not present in report as yet
     my $saved_data = {
         "chosen_date" => $p->get_extra_field_value('DATE'),
         "location" => $p->get_extra_field_value('CREW NOTES'),
-        #"location_photo_fileid" => '???',
+        "location_photo" => $p->get_extra_metadata("location_photo"),
     };
     my @fields = grep { $_->{name} =~ /ITEM_/ } @{$p->get_extra_fields};
     foreach (@fields) {
         my ($id) = $_->{name} =~ /ITEM_(\d+)/;
         $saved_data->{"item_" . ($id+0)} = $_->{value};
-        #$saved_data->{"item_photo_" . ($id+0)} = '???';
+        $saved_data->{"item_photo_" . ($id+0)} = $p->get_extra_metadata("item_photo_" . ($id+0));
     }
 
     return $saved_data;

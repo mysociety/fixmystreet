@@ -3,6 +3,8 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use Path::Tiny;
+use File::Temp 'tempdir';
 use CGI::Simple;
 
 FixMyStreet::App->log->disable('info');
@@ -16,6 +18,8 @@ my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
 $mock->mock('_fetch_features', sub { [] });
 
 my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
+
+my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -704,6 +708,10 @@ FixMyStreet::override_config {
     STAGING_FLAGS => {
         send_reports => 1,
     },
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => tempdir( CLEANUP => 1 ),
+    },
 }, sub {
     my ($b, $jobs_fsd_get) = shared_bartec_mocks();
 
@@ -890,6 +898,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         'item_1' => 'Amplifiers',
+                        'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                         'item_2' => 'High chairs',
                         'item_3' => 'Wardrobes',
                     },
@@ -901,7 +910,10 @@ FixMyStreet::override_config {
             $mech->content_contains('Location details');
             $mech->content_contains('Please tell us about anything else you feel is relevant');
             $mech->content_contains('Help us by attaching a photo of where the items will be left for collection');
-            $mech->submit_form_ok({ with_fields => { location => 'behind the hedge in the front garden' } });
+            $mech->submit_form_ok({ with_fields => {
+                location => 'behind the hedge in the front garden',
+                location_photo => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+            } });
         };
 
         sub test_summary {
@@ -911,6 +923,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Please read carefully all the details');
             $mech->content_contains('You will be redirected to the council’s card payments provider.');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Amplifiers/s);
+            $mech->content_contains('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*High chairs/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
             # Extra text for wardrobes
@@ -918,6 +931,8 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('2 remaining slots available');
             $mech->content_contains('behind the hedge in the front garden');
+            $mech->content_contains('<img class="img-preview is--medium" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
+            $mech->content_lacks('No image of the location has been attached.');
             $mech->content_contains('£23.50');
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
