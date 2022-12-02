@@ -750,6 +750,37 @@ sub bulky_can_cancel {
         && $self->within_bulky_cancel_window;
 }
 
+# Collections are scheduled to begin at 06:45 each day.
+# A cancellation made less than 24 hours before the collection is scheduled to
+# begin is not entitled to a refund.
+sub within_bulky_refund_window {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    my $open_collection = $c->stash->{property}{pending_bulky_collection};
+    return 0 unless $open_collection;
+
+    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+
+    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
+    my $collection_dt       = DateTime::Format::Strptime->new(
+        pattern   => '%FT%T',
+        time_zone => FixMyStreet->local_time_zone,
+    )->parse_datetime($collection_date_str);
+
+    return $self->_check_within_bulky_refund_window( $now_dt,
+        $collection_dt );
+}
+
+sub _check_within_bulky_refund_window {
+    my ( undef, $now_dt, $collection_dt ) = @_;
+
+    my $cutoff_dt = $collection_dt->clone->set( hour => 6, minute => 45 )
+        ->subtract( hours => 24 );
+
+    return $now_dt <= $cutoff_dt;
+}
+
 sub within_bulky_cancel_window {
     my $self = shift;
     my $c    = $self->{c};
@@ -760,9 +791,9 @@ sub within_bulky_cancel_window {
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
     my $collection_date_str = $open_collection->get_extra_field_value('DATE');
-    my $collection_dt = DateTime::Format::Strptime->new(
+    my $collection_dt       = DateTime::Format::Strptime->new(
         pattern   => '%FT%T',
-        time_zone => FixMyStreet->local_time_zone
+        time_zone => FixMyStreet->local_time_zone,
     )->parse_datetime($collection_date_str);
 
     return $self->_check_within_bulky_cancel_window( $now_dt,
