@@ -8,6 +8,7 @@ sub council_area_id { return 2505; }
 sub council_area { return 'Camden'; }
 sub council_name { return 'Camden Council'; }
 sub council_url { return 'camden'; }
+sub get_geocoder { 'OSM' }
 
 sub disambiguate_location {
     my $self    = shift;
