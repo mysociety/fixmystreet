@@ -1,24 +1,27 @@
-use DateTime::Format::Strptime;
-use FixMyStreet::Cobrand::Peterborough;
 use Test::Fatal;
 use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
 use Test::More;
+use DateTime::Format::Strptime;
+use FixMyStreet::Cobrand::Peterborough;
 
-# TODO Mocked time not being picked up on, why?
-
-# Friday, 31 December 2021 23:59:59 GMT
-# set_fixed_time(1640995199);
-
-# subtest '_bulky_collection_window' => sub {
-#     is_deeply(
-#         FixMyStreet::Cobrand::Peterborough->_bulky_collection_window(),
-#         {   date_from => '2021-12-31',
-#             date_to   => '2022-03-29',
-#         },
-#     );
-# };
+subtest '_bulky_collection_window' => sub {
+    set_fixed_time('2021-12-31T14:00:00Z');
+    is_deeply(
+        FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
+        {   date_from => '2022-01-01',
+            date_to   => '2022-04-01',
+        },
+    );
+    set_fixed_time('2021-12-31T23:00:00Z');
+    is_deeply(
+        FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
+        {   date_from => '2022-01-02',
+            date_to   => '2022-04-01',
+        },
+    );
+};
 
 subtest 'find_available_bulky_slots' => sub {
     my $dummy_property = { uprn => 123456789 };

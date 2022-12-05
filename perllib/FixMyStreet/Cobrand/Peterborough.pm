@@ -688,7 +688,10 @@ sub check_bulky_slot_available {
 
 sub _bulky_collection_window {
     my $last_earlier_date_str = shift;
-    my $fmt            = '%F';
+    my $fmt = '%F';
+
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $tomorrow = $now->clone->truncate( to => 'day' )->add( days => 1 );
 
     my $start_date;
     if ($last_earlier_date_str) {
@@ -699,18 +702,19 @@ sub _bulky_collection_window {
         return { error => 'Invalid date provided' } unless $start_date;
 
         $start_date->add( days => 1 );
+    } else {
+        $start_date = $tomorrow->clone;
+        # Can only book the next day up to 3pm
+        if ($now->hour >= 15) {
+            $start_date->add( days => 1 );
+        }
     }
 
-    my $tomorrow
-        = DateTime->today( time_zone => FixMyStreet->local_time_zone )
-        ->add( days => 1 );
     my $date_to
         = $tomorrow->clone->add( days => bulky_collection_window_days() );
 
     return {
-        date_from => $start_date
-        ? $start_date->strftime($fmt)
-        : $tomorrow->strftime($fmt),
+        date_from => $start_date->strftime($fmt),
         date_to => $date_to->strftime($fmt),
     };
 }
