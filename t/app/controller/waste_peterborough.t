@@ -732,12 +732,14 @@ FixMyStreet::override_config {
                     message   => '',
                     name      => 'DVD/BR Video players',
                     price     => '2002',
+                    max => 1,
                 },
                 {   bartec_id => '1001',
                     category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'HiFi Stereos',
                     price     => '3003',
+                    max => 2,
                 },
 
                 {   bartec_id => '1002',
@@ -1158,6 +1160,18 @@ FixMyStreet::override_config {
         $report->delete; # So can have another one below
     };
 
+    subtest 'Bulky collection, per item maximum' => sub {
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->content_contains('HiFi Stereos: 2');
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'HiFi Stereos', 'item_2' => 'HiFi Stereos', item_3 => 'HiFi Stereos' } });
+        $mech->content_contains('Too many of item: HiFi Stereos');
+    };
+
     subtest 'Bulky collection, per item payment' => sub {
         $mech->log_in_ok($user->email);
         my $cfg = $body->get_extra_metadata('wasteworks_config');
@@ -1416,6 +1430,7 @@ FixMyStreet::override_config {
                     category => "Furniture",
                     message => "test",
                     name => "Sofa",
+                    max => "",
                     price => "0"
                 }]
             };
@@ -1437,6 +1452,7 @@ FixMyStreet::override_config {
                         category => "Furniture",
                         message => "test",
                         name => "Sofa",
+                        max => "",
                         price => "0"
                     },
                     {
@@ -1444,6 +1460,7 @@ FixMyStreet::override_config {
                         category => "Furniture",
                         message => "",
                         name => "Armchair",
+                        max => "",
                         price => "10"
                     },
                 ]
@@ -1465,6 +1482,7 @@ FixMyStreet::override_config {
                         category => "Furniture",
                         message => "",
                         name => "Armchair",
+                        max => "",
                         price => "10"
                     },
                 ]
@@ -1509,6 +1527,7 @@ FixMyStreet::override_config {
                 'category[9999]' => 'Furniture',
                 'name[9999]' => 'Bookcase',
                 'price[9999]' => '0',
+                'max[9999]' => '',
                 'message[9999]' => '',
             }});
             $mech->content_contains("Updated!");
@@ -1520,6 +1539,7 @@ FixMyStreet::override_config {
                     category => "Furniture",
                     message => "",
                     name => "Bookcase",
+                    max => "",
                     price => "0"
                 }]
             };

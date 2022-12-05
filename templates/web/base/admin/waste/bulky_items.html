@@ -33,6 +33,10 @@
             [% IF item.errors.price %]<label for="[[% i %]]">[% item.errors.price %]</label>[% END %]
             <input type="text" value="[% item.price %]" name="price[[% i %]]" />
         </td>
+        <td>
+            [% IF item.errors.max %]<label for="[[% i %]]">[% item.errors.max %]</label>[% END %]
+            <input type="text" value="[% item.max %]" name="max[[% i %]]" />
+        </td>
         <td><button name="delete" value="[% i %]" class="btn btn--small js-metadata-item-remove">[% loc('🗑') %]</button></td>
     </tr>
 [% END %]
@@ -49,7 +53,8 @@
                 <th>Category</th>
                 <th>Name</th>
                 <th>Message</th>
-                <th>Price</th>
+                <th>Price (pence)</th>
+                <th title="Max per collection">Max</th>
                 <th></th>
             </tr>
         </thead>

@@ -148,6 +148,7 @@ sub bulky_items : Chained('body') {
                 name => $c->get_param("name[$i]"),
                 message => $c->get_param("message[$i]"),
                 price => $c->get_param("price[$i]"),
+                max => $c->get_param("max[$i]"),
             };
 
             # validate the row - if any field has a value then need to check

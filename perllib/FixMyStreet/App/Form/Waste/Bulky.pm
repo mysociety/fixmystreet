@@ -253,6 +253,7 @@ sub _build_items_extra {
     for my $item ( @{ $self->items_master_list } ) {
         $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
         $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
+        $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
         $hash{ $item->{name} }{json} = encode_json($hash{$item->{name}}) if $hash{$item->{name}};
     }
     return \%hash;
@@ -307,6 +308,21 @@ sub validate {
             $self->field('chosen_date')
                 ->add_error('Available dates field is required')
                 if !$self->field('chosen_date')->value;
+        }
+    }
+
+    if ($self->current_page->name eq 'add_items') {
+        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my %given;
+        for my $num ( 1 .. $max_items ) {
+            my $val = $self->field("item_$num")->value or next;
+            $given{$val}++;
+        }
+        my %max = map { $_->{name} => $_->{max} } @{ $self->items_master_list };
+        foreach (sort keys %given) {
+            if ($max{$_} && $given{$_} > $max{$_}) {
+                $self->add_form_error("Too many of item: $_");
+            }
         }
     }
 }
