@@ -328,27 +328,38 @@ sub ServiceRequests_Get {
     return force_arrayref($requests, 'ServiceRequest');
 }
 
-# XXX Move to open311-adapter?
-sub ServiceRequest_Cancel {
-    my ( $self, $service_req_id ) = @_;
-
-    my $res = $self->call(
-        'ServiceRequest_Cancel',
-        token            => $self->token,
-        ServiceRequestID => $service_req_id,
-    );
-
-    return {
-        success   => $res->{Success},
-        error_msg => $res->{Errors}{Message},
-    };
-}
-
 sub Premises_Attributes_Get {
     my ($self, $uprn) = @_;
 
     my $attributes = $self->call('Premises_Attributes_Get', token => $self->token, UPRN => $uprn );
     return force_arrayref($attributes, 'Attribute');
+}
+
+sub Premises_Attributes_Delete {
+    my ( $self, $uprn, $attr_name ) = @_;
+
+    my $attr_def = $self->call( 'Premises_AttributeDefinitions_Get',
+        token => $self->token );
+
+    if ( ref $attr_def eq 'HASH' && $attr_def->{AttributeDefinition} ) {
+        my $attr_id;
+        for my $attribute ( @{ $attr_def->{AttributeDefinition} } ) {
+            if ( $attribute->{Name} eq $attr_name ) {
+                $attr_id = $attribute->{ID};
+                last;
+            }
+        }
+
+        if ($attr_id) {
+            # XXX Return any errors
+            $self->call(
+                'Premises_Attributes_Delete',
+                token       => $self->token,
+                UPRN        => $uprn,
+                AttributeID => $attr_id,
+            );
+        }
+    }
 }
 
 sub Premises_Events_Get {

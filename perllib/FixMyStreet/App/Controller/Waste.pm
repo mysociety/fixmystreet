@@ -1183,16 +1183,12 @@ sub process_bulky_cancellation : Private {
         = $c->stash->{property}{open_bulky_collection_report}->get_columns;
     # XXX What should we actually put for 'name' etc.? 'add_report' complains
     # if we don't have these.
-    my %data =
-        %collection_report_data{
-            'name',
-            'detail',
-        };
+    my %data = %collection_report_data{ 'name', 'detail' };
 
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
 
     # Read extra details in loop
-    for (grep { /^extra_/ } keys %data) {
+    for ( grep {/^extra_/} keys %data ) {
         my ($id) = /^extra_(.*)/;
         $c->set_param( $id, $data{$_} );
     }
@@ -1202,7 +1198,12 @@ sub process_bulky_cancellation : Private {
     $c->stash->{property}{open_bulky_collection_report}->state('closed');
     $c->stash->{property}{open_bulky_collection_report}->update;
 
-    $c->forward( 'add_report', [\%data] ) or return;
+    $c->forward( 'add_report', [ \%data ] ) or return;
+
+    # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
+    if ( $collection_report->get_extra_field_value('CHARGEABLE') eq 'FREE' ) {
+        $c->cobrand->call_hook('unset_free_bulky_used');
+    }
 
     if ( $c->cobrand->call_hook('within_bulky_refund_window') ) {
         $c->send_email(

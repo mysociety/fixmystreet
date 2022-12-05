@@ -846,6 +846,20 @@ sub _check_within_bulky_cancel_window {
         1 : 0;
 }
 
+sub unset_free_bulky_used {
+    my $self = shift;
+
+    my $c = $self->{c};
+
+    my $bartec = $self->feature('bartec');
+    $bartec = Integrations::Bartec->new(%$bartec);
+
+    # XXX At the time of writing, there does not seem to be a
+    # 'FREE BULKY USED' attribute defined in Bartec
+    $bartec->Premises_Attributes_Delete( $c->stash->{property}{uprn},
+        'FREE BULKY USED' );
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
