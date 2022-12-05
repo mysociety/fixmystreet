@@ -1182,6 +1182,28 @@ sub process_bulky_cancellation : Private {
         $collection_report->detail . " | Cancelled at user request", );
     $collection_report->update;
 
+    if ( $c->cobrand->call_hook('bulky_can_refund') ) {
+        $c->send_email(
+            'waste/bulky-refund-request.txt',
+            {   to => [
+                    [ $c->cobrand->contact_email, $c->cobrand->council_name ]
+                ],
+
+                auth_code =>
+                    $collection_report->get_extra_metadata('authCode'),
+                continuous_audit_number =>
+                    $collection_report->get_extra_metadata(
+                    'continuousAuditNumber'),
+                original_sr_number => $c->get_param('ORIGINAL_SR_NUMBER'),
+                payment_date       => $collection_report->created,
+                scp_response       =>
+                    $collection_report->get_extra_metadata('scpReference'),
+            },
+        );
+
+        $c->stash->{entitled_to_refund} = 1;
+    }
+
     return 1;
 }
 

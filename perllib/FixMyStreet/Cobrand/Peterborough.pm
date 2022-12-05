@@ -750,6 +750,15 @@ sub bulky_can_cancel {
         && $self->within_bulky_cancel_window;
 }
 
+sub bulky_can_refund {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    return $c->stash->{property}{pending_bulky_collection}
+        ->get_extra_field_value('CHARGEABLE') ne 'FREE'
+        && $self->within_bulky_refund_window;
+}
+
 # Collections are scheduled to begin at 06:45 each day.
 # A cancellation made less than 24 hours before the collection is scheduled to
 # begin is not entitled to a refund.

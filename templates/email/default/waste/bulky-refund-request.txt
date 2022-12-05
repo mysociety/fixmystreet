@@ -1,0 +1,18 @@
+Subject: Refund requested for cancelled bulky goods collection [% original_sr_number %]
+
+A bulky goods collection has been cancelled and is entitled to a refund.
+
+
+Capita SCP Response: [% scp_response %]
+
+Payment Date: [% USE date; date.format( payment_date, '%d/%m/%y %H:%M' ) %]
+
+CAN: [% continuous_audit_number %]
+
+Auth Code: [% auth_code %]
+
+Original Service Request Number: [% original_sr_number %]
+
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

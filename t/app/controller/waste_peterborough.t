@@ -808,6 +808,10 @@ FixMyStreet::override_config {
             paymentResult => {
                 status => 'SUCCESS',
                 paymentDetails => {
+                    authDetails => {
+                        authCode              => 112233,
+                        continuousAuditNumber => 123,
+                    },
                     paymentHeader => {
                         uniqueTranId => 54321
                     }
@@ -1243,27 +1247,27 @@ FixMyStreet::override_config {
                 };
             };
 
-            #subtest 'refund request email' => sub {
-            #    my $email = $mech->get_email;
-            #
-            #    is $email->header('Subject'),
-            #        'Refund requested for cancelled bulky goods collection SR00100001',
-            #        'Correct subject';
-            #    is $email->header('To'),
-            #        '"Peterborough City Council" <team@example.org>',
-            #        'Correct recipient';
-            #
-            #    my $text = $email->as_string;
-            #    like $text, qr/Capita SCP Response: 12345/,
-            #        'Correct SCP response';
-            #    # XXX Not picking up on mocked time
-            #    like $text, qr|Payment Date: \d{2}/\d{2}/\d{2} \d{2}:\d{2}|,
-            #        'Correct date format';
-            #    like $text, qr/CAN: 123/, 'Correct CAN';
-            #    like $text, qr/Auth Code: 112233/, 'Correct auth code';
-            #    like $text, qr/Original Service Request Number: SR00100001/,
-            #        'Correct SR number';
-            #};
+            subtest 'refund request email' => sub {
+                my $email = $mech->get_email;
+
+                is $email->header('Subject'),
+                    'Refund requested for cancelled bulky goods collection SR00100001',
+                    'Correct subject';
+                is $email->header('To'),
+                    '"Peterborough City Council" <team@example.org>',
+                    'Correct recipient';
+
+                my $text = $email->as_string;
+                like $text, qr/Capita SCP Response: 12345/,
+                    'Correct SCP response';
+                # XXX Not picking up on mocked time
+                like $text, qr|Payment Date: \d{2}/\d{2}/\d{2} \d{2}:\d{2}|,
+                    'Correct date format';
+                like $text, qr/CAN: 123/, 'Correct CAN';
+                like $text, qr/Auth Code: 112233/, 'Correct auth code';
+                like $text, qr/Original Service Request Number: SR00100001/,
+                    'Correct SR number';
+            };
 
             $mech->clear_emails_ok;
             $cancellation_report->delete;
