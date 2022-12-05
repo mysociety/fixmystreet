@@ -73,6 +73,9 @@ sub open311_config {
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
     $params->{service_request_id_ext} = $comment->problem->id;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
 }
 
 sub categories_restriction {
