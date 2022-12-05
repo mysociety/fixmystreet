@@ -1225,6 +1225,8 @@ sub process_bulky_cancellation : Private {
 
             },
         );
+
+        $c->stash->{entitled_to_refund} = 1;
     }
 
     return 1;
