@@ -335,6 +335,42 @@ sub Premises_Attributes_Get {
     return force_arrayref($attributes, 'Attribute');
 }
 
+sub Premises_AttributeDefinitions_Get {
+    my $self = shift;
+    my $attr_def = $self->call( 'Premises_AttributeDefinitions_Get',
+        token => $self->token );
+    return force_arrayref($attr_def, 'AttributeDefinition');
+}
+
+sub Premises_Attributes_Delete {
+    my ($self, $uprn, $attr_id) = @_;
+    # XXX Return any errors
+    $self->call(
+        'Premises_Attributes_Delete',
+        token       => $self->token,
+        UPRN        => $uprn,
+        AttributeID => $attr_id,
+    );
+}
+
+sub delete_premise_attribute {
+    my ( $self, $uprn, $attr_name ) = @_;
+
+    my $attr_def = $self->Premises_AttributeDefinitions_Get();
+
+    my $attr_id;
+    for my $attribute (@$attr_def) {
+        if ( $attribute->{Name} eq $attr_name ) {
+            $attr_id = $attribute->{ID};
+            last;
+        }
+    }
+
+    if ($attr_id) {
+        $self->Premises_Attributes_Delete($uprn, $attr_id);
+    }
+}
+
 sub Premises_Events_Get {
     my ($self, $uprn) = @_;
 

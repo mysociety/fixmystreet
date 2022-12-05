@@ -816,6 +816,24 @@ sub _check_within_bulky_cancel_window {
     return $now_dt < $cutoff_dt;
 }
 
+sub unset_free_bulky_used {
+    my $self = shift;
+
+    my $c = $self->{c};
+
+    return
+        unless $c->stash->{property}{pending_bulky_collection}
+        ->get_extra_field_value('CHARGEABLE') eq 'FREE';
+
+    my $bartec = $self->feature('bartec');
+    $bartec = Integrations::Bartec->new(%$bartec);
+
+    # XXX At the time of writing, there does not seem to be a
+    # 'FREE BULKY USED' attribute defined in Bartec
+    $bartec->delete_premise_attribute( $c->stash->{property}{uprn},
+        'FREE BULKY USED' );
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;

@@ -1182,6 +1182,9 @@ sub process_bulky_cancellation : Private {
         $collection_report->detail . " | Cancelled at user request", );
     $collection_report->update;
 
+    # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
+    $c->cobrand->call_hook('unset_free_bulky_used');
+
     if ( $c->cobrand->call_hook('bulky_can_refund') ) {
         $c->send_email(
             'waste/bulky-refund-request.txt',

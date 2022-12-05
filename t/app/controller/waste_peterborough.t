@@ -1706,7 +1706,6 @@ FixMyStreet::override_config {
     };
 };
 
-
 sub shared_bartec_mocks {
     my $b = Test::MockModule->new('Integrations::Bartec');
     $b->mock('Authenticate', sub {
@@ -1734,15 +1733,15 @@ sub shared_bartec_mocks {
     ] });
     $b->mock('Premises_Detail_Get', sub { {} });
     $b->mock('Premises_Attributes_Get', sub { [] });
-#    $b->mock(
-#        'Premises_AttributeDefinitions_Get',
-#        sub {
-#            [
-#                { Name => 'FREE BULKY USED', ID => 123 },
-#            ];
-#        }
-#    );
-#    $b->mock( 'Premises_Attributes_Delete', sub { } );
+    $b->mock(
+        'Premises_AttributeDefinitions_Get',
+        sub {
+            [
+                { Name => 'FREE BULKY USED', ID => 123 },
+            ];
+        }
+    );
+    $b->mock( 'Premises_Attributes_Delete', sub { } );
     $b->mock('Premises_Events_Get', sub { [
         # No open events at present
     ] });
