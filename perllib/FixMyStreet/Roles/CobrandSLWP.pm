@@ -194,6 +194,10 @@ sub waste_on_the_day_criteria {
     # No reports pre-6pm, completed or not
     if ($now->hour < 18) {
         $row->{report_allowed} = 0;
+        if ($self->council_url eq 'sutton' && $row->{last} ) {
+            # Prevent showing collected time until reporting is allowed
+            $row->{last}{completed} = 0;
+        }
     }
 }
 
