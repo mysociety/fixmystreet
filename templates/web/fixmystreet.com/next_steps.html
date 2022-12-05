@@ -1,3 +1,17 @@
+[% IF utm_content == 'questionnaire completed' %]
+<div class="survey-cta">
+  <div class="survey-cta__content">
+    <p class="content__preheading">Can you spare 5 minutes for a survey about FixMyStreet?</p>
+    <h2 class="content__heading">We want to know more about who uses FixMyStreet and what you use it for to help us improve the service.</h2>
+    <p>As a thank you, there's the opportunity to enter a prize draw for a voucher of your choice.</p>
+    <a href="https://survey.alchemer.com/s3/6214003/FixMyStreet-User-Survey?[% c.cobrand.user_survey_information %]" class="btn btn--secondary">Complete the short survey</a>
+  </div>
+  <div class="survey-cta__img">
+    <img src="/cobrands/fixmystreet.com/images/survey-img-1.svg" alt="" width="300" height="300">
+  </div>
+</div>
+[% END %]
+
 [%# A trio of suggested steps, shown on completion pages across FMS.com %]
 
 [% DEFAULT share_url = c.cobrand.base_url %]

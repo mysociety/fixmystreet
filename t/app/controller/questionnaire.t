@@ -2,6 +2,10 @@ use DateTime;
 
 use FixMyStreet::TestMech;
 
+use t::Mock::Tilma;
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
@@ -28,7 +32,7 @@ my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
         whensent           => $sent_time,
         lang               => 'en-gb',
         service            => '',
-        cobrand            => '',
+        cobrand            => 'fixmystreet',
         cobrand_data       => '',
         send_questionnaire => 1,
         latitude           => '55.951963',
@@ -465,6 +469,10 @@ FixMyStreet::override_config {
     $mech->title_like( qr/Questionnaire/ );
     $mech->content_contains( 'Has this problem been fixed?' );
     $mech->content_lacks( 'ever reported' );
+
+    $mech->submit_form_ok({ with_fields => { been_fixed => 'Unknown', another => 'No' } });
+    $mech->content_contains('Can you spare 5 minutes for a survey about FixMyStreet?');
+    $mech->content_contains('ever_reported=&amp;been_fixed=Unknown&amp;category=Street+lighting&amp;num_reports_by_user=1&amp;imd_decile=6&amp;cobrand=fixmystreet');
 
     $token = FixMyStreet::DB->resultset("Token")->find( { scope => 'questionnaire', token => $token } );
     ok $token, 'found token for questionnaire';

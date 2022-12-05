@@ -53,6 +53,36 @@ svg|g.site-logo__svg {
     color: $primary_text;
 }
 
+.survey-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: left;
+  gap: 15px;
+  padding: 1.8em;
+  margin: 0 -1em;
+  background: $primary;
+
+  .survey-cta__content {
+    max-width: 550px;
+
+    .content__preheading {
+      margin-bottom: 10px;
+      color: #555555; // Instead of #666666 that won't pass the contrast test against yellow background
+      font-weight: bold;
+    }
+
+    .content__heading {
+      margin-top: 0;
+      font-weight: bold;
+    }
+  }
+
+  .survey-cta__img {
+    max-width: 175px;
+  }
+}
+
 .next-steps {
   margin: 0 -1em; // counteract padding on parent
   background-color: #faf7e2;

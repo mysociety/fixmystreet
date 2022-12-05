@@ -186,6 +186,19 @@ body.frontpage {
     }
 }
 
+.survey-cta {
+    padding: 2.5em 1.8em; // More vertical spacing on bigger screens
+
+    .survey-cta__content {
+        flex-basis: 55%;
+    }
+
+    .survey-cta__img {
+      max-width: none;
+      flex-basis: 40%;
+    }
+}
+
 .next-steps {
   @include flex-container();
   margin-bottom: 2em; // add some space between this and the footer
