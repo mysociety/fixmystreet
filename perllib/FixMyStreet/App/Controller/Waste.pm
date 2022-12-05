@@ -1175,6 +1175,10 @@ sub process_bulky_data : Private {
 sub process_bulky_cancellation : Private {
     my ( $self, $c, $form ) = @_;
 
+    # XXX Use this instead of %collection_report_data
+    my $collection_report
+        = $c->stash->{property}{open_bulky_collection_report};
+
     my %collection_report_data
         = $c->stash->{property}{open_bulky_collection_report}->get_columns;
     # XXX What should we actually put for 'name' etc.? 'add_report' complains
@@ -1199,6 +1203,29 @@ sub process_bulky_cancellation : Private {
     $c->stash->{property}{open_bulky_collection_report}->update;
 
     $c->forward( 'add_report', [\%data] ) or return;
+
+    if ( $c->cobrand->call_hook('within_bulky_refund_window') ) {
+        $c->send_email(
+            'waste/bulky-refund-request.txt',
+            {   to => [
+                    [ $c->cobrand->contact_email, $c->cobrand->council_name ]
+                ],
+
+                auth_code =>
+                    $collection_report->get_extra_metadata('authCode'),
+                continuous_audit_number =>
+                    $collection_report->get_extra_metadata(
+                    'continuousAuditNumber'),
+                original_sr_number =>
+                    $c->stash->{latest_open_bulky_request}{ServiceCode},
+                payment_date => $collection_report->created,
+                scp_response =>
+                    $collection_report->get_extra_metadata('scpReference'),
+
+            },
+        );
+    }
+
     return 1;
 }
 
