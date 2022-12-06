@@ -2,6 +2,8 @@
 
 [%~ IF c.user_exists ~%]
     [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
+[%~ ELSE ~%]
+    [%~ INCLUDE navitem uri='/auth' label=loc('Sign in') ~%]
 [%~ END ~%]
 
 [%~ IF c.user_exists AND c.user.has_body_permission_to('planned_reports') ~%]
