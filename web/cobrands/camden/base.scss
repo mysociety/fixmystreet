@@ -278,7 +278,7 @@ div.form-error, p.form-error {
 }
 
 .form-hint, .item-list--reports__item small, .item-list--reports__item .small-print {
-  color: $gray-2;
+  color: $primary_b;
   margin-top: 0.2em;
 }
 
@@ -471,8 +471,9 @@ dl dt {
       margin: 2px 0;
       max-height: $max-height;
       height: $max-height;
-      border: $border-width solid $secondary_button_border_color !important;
       background: $secondary_button_background_color_hover !important;
+      border: $border-width solid $primary_b !important;
+      border-right-width: 0 !important;
       &:focus {
         outline:  2px solid $link-focus-background-colour;
       }
