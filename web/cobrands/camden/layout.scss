@@ -139,6 +139,20 @@ body.mappage {
   @include cobrand-body;
 }
 
+#key-tools {
+  display: table;
+  padding: 0;
+
+  li {
+    display: table-cell;
+    width: auto;
+
+    &:nth-child(2) {
+      margin-top: 0px;
+    }
+  }
+}
+
 // Footer
 .camden-footer {
   padding-top: 20px;
