@@ -66,7 +66,7 @@ h4, .h4 {
   }
 }
 
-.body-large-bold {
+.body-large {
   font-weight: 400 !important;
   font-size: 18px;
   @media only screen and (min-width: 641px) { 
@@ -417,13 +417,8 @@ dl dt {
 
   h2 {
     font-style: normal;
-    font-size: 24px;
     color: $primary_b;
-    @if variable-exists(large-view-point) {
-      @media only screen and (min-width: $large-view-point) {
-        font-size:32px;
-      }
-    }
+    @extend .body-large;
   }
 
   #postcodeForm {
