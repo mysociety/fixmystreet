@@ -84,17 +84,23 @@ sub get_address_details_from_nlpg {
     my $property = $uprn_data->{results}->[0]->{LPI};
     if ( $property ) {
         $address = {};
-        $address->{address1} .= ( FixMyStreet::Template::title($property->{$_}) . ", " || '' ) for qw/SUB_BUILDING_NAME BUILDING_NAME BUILDING_NUMBER/;
-
-        $address->{address1} = join(", ", grep {/.+/} map { FixMyStreet::Template::title($property->{$_}) } qw/SUB_BUILDING_NAME BUILDING_NAME BUILDING_NUMBER/);
-
-        $address->{address2} = FixMyStreet::Template::title($property->{THOROUGHFARE_NAME});
-        $address->{address2} = join(", ", grep { /.+/ } map { FixMyStreet::Template::title($property->{$_}) } qw/DEPENDENT_THOROUGHFARE_NAME THOROUGHFARE_NAME/);
-        $address->{town} = FixMyStreet::Template::title($property->{POST_TOWN});
-        $address->{postcode} = $property->{POSTCODE};
+        my @namenumber = (_get_addressable_object($property, 'SAO'), _get_addressable_object($property, 'PAO'));
+        $address->{address1} = join(", ", grep { /./ } map { FixMyStreet::Template::title($_) } @namenumber);
+        $address->{address2} = FixMyStreet::Template::title($property->{STREET_DESCRIPTION});
+        $address->{town} = FixMyStreet::Template::title($property->{TOWN_NAME});
+        $address->{postcode} = $property->{POSTCODE_LOCATOR};
     }
-
     return $address;
+}
+
+sub _get_addressable_object {
+    my ($property, $type) = @_;
+    my $ao = $property->{$type . '_TEXT'} || '';
+    $ao .= ' ' if $ao && $property->{$type . '_START_NUMBER'};
+    $ao .= ($property->{$type . '_START_NUMBER'} || '') . ($property->{$type . '_START_SUFFIX'} || '');
+    $ao .= '-' if $property->{$type . '_END_NUMBER'};
+    $ao .= ($property->{$type . '_END_NUMBER'} || '') . ($property->{$type . '_END_SUFFIX'} || '');
+    return $ao;
 }
 
 1;

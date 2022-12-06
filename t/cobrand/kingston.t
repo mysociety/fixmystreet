@@ -907,13 +907,10 @@ for my $test (
     {
         desc => 'basic address',
         data => { results => [ { LPI => {
-            SUB_BUILDING_NAME => "",
-            BUILDING_NAME => "",
-            BUILDING_NUMBER => 22,
-            DEPENDENT_THOROUGHFARE_NAME => "",
-            THOROUGHFARE_NAME => "TEST ROAD",
-            POST_TOWN => "TEST TOWN",
-            POSTCODE => "TA1 1AT",
+            PAO_START_NUMBER => 22,
+            STREET_DESCRIPTION => "TEST ROAD",
+            TOWN_NAME => "TEST TOWN",
+            POSTCODE_LOCATOR => "TA1 1AT",
         } } ] },
         address => {
             address1 => "22",
@@ -925,13 +922,12 @@ for my $test (
     {
         desc => 'address with flat',
         data => { results => [ { LPI => {
-            SUB_BUILDING_NAME => "FLAT 1",
-            BUILDING_NAME => "",
-            BUILDING_NUMBER => 22,
-            DEPENDENT_THOROUGHFARE_NAME => "",
-            THOROUGHFARE_NAME => "TEST ROAD",
-            POST_TOWN => "TEST TOWN",
-            POSTCODE => "TA1 1AT",
+            SAO_TEXT => "FLAT",
+            SAO_START_NUMBER => "1",
+            PAO_START_NUMBER => 22,
+            STREET_DESCRIPTION => "TEST ROAD",
+            TOWN_NAME => "TEST TOWN",
+            POSTCODE_LOCATOR => "TA1 1AT",
         } } ] },
         address => {
             address1 => "Flat 1, 22",
@@ -943,13 +939,10 @@ for my $test (
     {
         desc => 'address with name',
         data => { results => [ { LPI => {
-            SUB_BUILDING_NAME => "",
-            BUILDING_NAME => "TEST HOUSE",
-            BUILDING_NUMBER => "",
-            DEPENDENT_THOROUGHFARE_NAME => "",
-            THOROUGHFARE_NAME => "TEST ROAD",
-            POST_TOWN => "TEST TOwN",
-            POSTCODE => "TA1 1AT",
+            PAO_TEXT => "TEST HOUSE",
+            STREET_DESCRIPTION => "TEST ROAD",
+            TOWN_NAME => "TEST TOwN",
+            POSTCODE_LOCATOR => "TA1 1AT",
         } } ] },
         address => {
             address1 => "Test House",
@@ -961,13 +954,10 @@ for my $test (
     {
         desc => 'address with dependent road',
         data => { results => [ { LPI => {
-            SUB_BUILDING_NAME => "",
-            BUILDING_NAME => "",
-            BUILDING_NUMBER => "22",
-            DEPENDENT_THOROUGHFARE_NAME => "DEPENDENT ROAD",
-            THOROUGHFARE_NAME => "TEST ROAD",
-            POST_TOWN => "TEST TOwN",
-            POSTCODE => "TA1 1AT",
+            PAO_START_NUMBER => "22",
+            STREET_DESCRIPTION => "DEPENDENT ROAD, TEST ROAD",
+            TOWN_NAME => "TEST TOwN",
+            POSTCODE_LOCATOR => "TA1 1AT",
         } } ] },
         address => {
             address1 => "22",
@@ -979,13 +969,12 @@ for my $test (
     {
         desc => 'name with flat',
         data => { results => [ { LPI => {
-            SUB_BUILDING_NAME => "FLAT 2",
-            BUILDING_NAME => "TEST HOUSE",
-            BUILDING_NUMBER => "",
-            DEPENDENT_THOROUGHFARE_NAME => "",
-            THOROUGHFARE_NAME => "TEST ROAD",
-            POST_TOWN => "TEST TOwN",
-            POSTCODE => "TA1 1AT",
+            SAO_TEXT => "FLAT",
+            SAO_START_NUMBER => "2",
+            PAO_TEXT => "TEST HOUSE",
+            STREET_DESCRIPTION => "TEST ROAD",
+            TOWN_NAME => "TEST TOwN",
+            POSTCODE_LOCATOR => "TA1 1AT",
         } } ] },
         address => {
             address1 => "Flat 2, Test House",
