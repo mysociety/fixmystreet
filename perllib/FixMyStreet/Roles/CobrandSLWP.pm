@@ -830,6 +830,28 @@ sub waste_cc_payment_sale_ref {
     return "GGW" . $p->get_extra_field_value('uprn');
 }
 
+sub garden_waste_dd_munge_form_details {
+    my ($self, $c) = @_;
+
+    $c->stash->{form_name} = $c->stash->{payment_details}->{form_name};
+    if ( $c->stash->{staff_payments_allowed} ) {
+        $c->stash->{form_name} = $c->stash->{payment_details}->{staff_form_name};
+    }
+
+    my $cfg = $self->feature('echo');
+    if ($cfg->{nlpg} && $c->stash->{property}{uprn}) {
+        my $uprn_data = get(sprintf($cfg->{nlpg}, $c->stash->{property}{uprn}));
+        $uprn_data = JSON::MaybeXS->new->decode($uprn_data);
+        my $address = $self->get_address_details_from_nlpg($uprn_data);
+        if ( $address ) {
+            $c->stash->{address1} = $address->{address1};
+            $c->stash->{address2} = $address->{address2};
+            $c->stash->{town} = $address->{town};
+            $c->stash->{postcode} = $address->{postcode};
+        }
+    }
+}
+
 sub garden_waste_dd_redirect_url {
     my ($self, $p) = @_;
 
@@ -884,6 +906,32 @@ sub garden_waste_dd_complete {
     my ($self, $report) = @_;
     $report->set_extra_metadata('ddsubmitted', 1);
     $report->update();
+}
+
+sub get_address_details_from_nlpg {
+    my ( $self, $uprn_data) = @_;
+
+    my $address;
+    my $property = $uprn_data->{results}->[0]->{LPI};
+    if ( $property ) {
+        $address = {};
+        my @namenumber = (_get_addressable_object($property, 'SAO'), _get_addressable_object($property, 'PAO'));
+        $address->{address1} = join(", ", grep { /./ } map { FixMyStreet::Template::title($_) } @namenumber);
+        $address->{address2} = FixMyStreet::Template::title($property->{STREET_DESCRIPTION});
+        $address->{town} = FixMyStreet::Template::title($property->{TOWN_NAME});
+        $address->{postcode} = $property->{POSTCODE_LOCATOR};
+    }
+    return $address;
+}
+
+sub _get_addressable_object {
+    my ($property, $type) = @_;
+    my $ao = $property->{$type . '_TEXT'} || '';
+    $ao .= ' ' if $ao && $property->{$type . '_START_NUMBER'};
+    $ao .= ($property->{$type . '_START_NUMBER'} || '') . ($property->{$type . '_START_SUFFIX'} || '');
+    $ao .= '-' if $property->{$type . '_END_NUMBER'};
+    $ao .= ($property->{$type . '_END_NUMBER'} || '') . ($property->{$type . '_END_SUFFIX'} || '');
+    return $ao;
 }
 
 sub admin_templates_external_status_code_hook {
