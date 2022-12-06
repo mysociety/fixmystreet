@@ -115,10 +115,12 @@
 
 @mixin one-line-input-height {
     height: $input-height-small-screen;
+    line-height: $input-height-small-screen;
 
     @if variable-exists(large-view-point) {
         @media only screen and (min-width: $large-view-point) {
             height: $input-height-large-screen;
+            line-height: $input-height-large-screen;
         }
     }
 }
