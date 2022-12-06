@@ -141,8 +141,11 @@ a {
 }
 
 .report-list-filters {
-  color: $white;
   @include cobrand-body;
+  line-height: $input-height-small-screen;
+  @media only screen and (min-width: 641px) { 
+    line-height: $input-height-large-screen;
+  }
 }
 
 // * FORMS AND INPUTS
@@ -158,7 +161,32 @@ select,
   @include input-reset;
 }
 
-.multi-select-button, .form-control#sort, select {
+.mobile-filters-active .report-list-filters-wrapper, 
+.mobile-filters-active #bulk-assign-form {
+  .multi-select-button,
+  .form-control#sort,
+  input[type='text'],
+  input[type='radio'],
+  input[type='checkbox'],
+  .govuk-radios__input,
+  select,
+  .report-list-filters .form-control {
+    border-color: $white;
+  }
+
+  #show_old_reports_wrapper input[type="checkbox"]:checked:after {
+    @include svg-background-image("/cobrands/fixmystreet/images/check-white");
+  }
+}
+
+#sort {
+  max-width: 14em;
+}
+
+.multi-select-button,
+.report-list-filters .multi-select-button,
+.form-control#sort,
+select {
   @include one-line-input-height;
 }
 
@@ -497,6 +525,33 @@ a#geolocate_link {
   &:focus, &:focus-visible {
     background-color: transparentize($color: $link-hover-color, $amount: 0.7);
     border-color: $yellow;
+  }
+}
+
+#key-tools {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 15px;
+
+  li {
+    display: block;
+    width: 90%;
+
+    &:nth-child(2) {
+      margin-top: 15px;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: $primary_b !important;
+    text-align: left;
+    font-size: 14px !important;
+    @media only screen and (min-width: 641px) { 
+        font-size: 16px !important;
+        text-align: center;
+    }
   }
 }
 
