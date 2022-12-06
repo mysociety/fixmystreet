@@ -453,6 +453,12 @@ sub clear_cached_lookups_property {
         delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
     }
 
+    $self->clear_cached_lookups_bulky_slots($uprn);
+}
+
+sub clear_cached_lookups_bulky_slots {
+    my ($self, $uprn) = @_;
+
     for (qw/earlier later/) {
         delete $self->{c}
             ->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};

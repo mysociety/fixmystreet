@@ -1078,6 +1078,10 @@ sub bulky : Chained('bulky_setup') : Args(0) {
     $c->stash->{field_list} = $field_list;
 
     $c->forward('form');
+
+    if ( $c->stash->{form}->current_page->name eq 'intro' ) {
+        $c->cobrand->call_hook(clear_cached_lookups_bulky_slots => $c->stash->{property}{uprn});
+    }
 }
 
 # Called by F::A::Controller::Report::display if the report in question is
