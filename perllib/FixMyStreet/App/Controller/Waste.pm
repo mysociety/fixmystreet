@@ -576,9 +576,6 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
     $c->stash->{services_available} = $c->cobrand->call_hook(available_bin_services_for_address => $property) || {};
 
-    $c->stash->{has_open_bulky_collection_report_and_request}
-        = $c->cobrand->call_hook('has_open_bulky_collection_report_and_request');
-
     $c->forward('get_pending_subscription');
 }
 
@@ -1122,15 +1119,9 @@ sub bulky_view : Private {
 sub bulky_cancel : Chained('property') : Args(0) {
     my ( $self, $c ) = @_;
 
-    # XXX
-    # Check booking belongs to user
-    if (   !$c->stash->{waste_features}{bulky_enabled}
-        || !$c->stash->{has_open_bulky_collection_report_and_request}
-        || !$c->cobrand->call_hook('within_bulky_cancel_window') )
-    {
-        $c->res->redirect( '/waste/' . $c->stash->{property}{id} );
-        $c->detach;
-    }
+    $c->detach('property_redirect')
+        if !$c->stash->{waste_features}{bulky_enabled}
+        || !$c->cobrand->call_hook('bulky_can_cancel');
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
@@ -1175,37 +1166,27 @@ sub process_bulky_data : Private {
 sub process_bulky_cancellation : Private {
     my ( $self, $c, $form ) = @_;
 
-    # XXX Use this instead of %collection_report_data
-    my $collection_report
-        = $c->stash->{property}{open_bulky_collection_report};
+    my $collection_report = $c->stash->{property}{pending_bulky_collection};
 
-    my %collection_report_data
-        = $c->stash->{property}{open_bulky_collection_report}->get_columns;
-    # XXX What should we actually put for 'name' etc.? 'add_report' complains
-    # if we don't have these.
-    my %data = %collection_report_data{ 'name', 'detail' };
+    my %data = (
+        detail => $collection_report->detail,
+        name   => $collection_report->name,
+    );
 
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
 
-    # Read extra details in loop
-    for ( grep {/^extra_/} keys %data ) {
-        my ($id) = /^extra_(.*)/;
-        $c->set_param( $id, $data{$_} );
-    }
-
-    # Mark original report as closed
-    # XXX Leave e.g. comment to clarify that report is cancelled
-    $c->stash->{property}{open_bulky_collection_report}->state('closed');
-    $c->stash->{property}{open_bulky_collection_report}->update;
-
     $c->forward( 'add_report', [ \%data ] ) or return;
 
-    # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
-    if ( $collection_report->get_extra_field_value('CHARGEABLE') eq 'FREE' ) {
-        $c->cobrand->call_hook('unset_free_bulky_used');
-    }
+    # Mark original report as closed
+    $collection_report->state('closed');
+    $collection_report->detail(
+        $collection_report->detail . " | Cancelled at user request", );
+    $collection_report->update;
 
-    if ( $c->cobrand->call_hook('within_bulky_refund_window') ) {
+    # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
+    $c->cobrand->call_hook('unset_free_bulky_used');
+
+    if ( $c->cobrand->call_hook('bulky_can_refund') ) {
         $c->send_email(
             'waste/bulky-refund-request.txt',
             {   to => [
@@ -1217,12 +1198,10 @@ sub process_bulky_cancellation : Private {
                 continuous_audit_number =>
                     $collection_report->get_extra_metadata(
                     'continuousAuditNumber'),
-                original_sr_number =>
-                    $c->stash->{latest_open_bulky_request}{ServiceCode},
-                payment_date => $collection_report->created,
-                scp_response =>
+                original_sr_number => $c->get_param('ORIGINAL_SR_NUMBER'),
+                payment_date       => $collection_report->created,
+                scp_response       =>
                     $collection_report->get_extra_metadata('scpReference'),
-
             },
         );
 

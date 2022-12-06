@@ -485,6 +485,18 @@ sub construct_bin_date {
     return $date;
 }
 
+sub image_for_unit {
+    my ($self, $unit) = @_;
+    my $service_id = $unit->{service_id};
+    my $base = '/i/waste-containers';
+    my $images = {
+        6533 => "$base/bin-black",
+        6534 => "$base/bin-green",
+        6579 => "$base/bin-brown",
+    };
+    return $images->{$service_id};
+}
+
 sub look_up_property {
     my $self = shift;
     my $id = shift;
@@ -521,36 +533,6 @@ sub find_pending_bulky_collection {
         );
 }
 
-sub cancel_bulky_collection {
-    my ($self, $property) = @_;
-
-    return unless $self->{c}->stash->{latest_open_bulky_request};
-
-    my $collection = $self->find_pending_bulky_collection($property);
-
-    return unless $collection;
-
-    my $bartec = $self->feature('bartec');
-    $bartec = Integrations::Bartec->new(%$bartec);
-
-    # XXX Make second request asking for cancellation
-    $bartec->ServiceRequest_Cancel(
-        $self->{c}->stash->{latest_open_bulky_request}{id} );
-
-    # XXX
-    # Have DB update & Bartec call in a transaction?
-
-    # XXX Test:
-    ### Different address
-    ### No open bookings, but some closed ones
-    ### No bookings at all
-    ### Multiple open bookings
-
-    # XXX Add comment saying it is cancelled? See /admin/report_edit logic
-    $collection->state('closed');
-    $collection->update;
-}
-
 sub bulky_can_view_collection {
     my ( $self, $p ) = @_;
 
@@ -565,18 +547,6 @@ sub bulky_can_view_collection {
 
     # otherwise only the person who booked the collection can view
     return $c->user->id == $p->user_id;
-}
-
-sub image_for_unit {
-    my ($self, $unit) = @_;
-    my $service_id = $unit->{service_id};
-    my $base = '/i/waste-containers';
-    my $images = {
-        6533 => "$base/bin-black",
-        6534 => "$base/bin-green",
-        6579 => "$base/bin-brown",
-    };
-    return $images->{$service_id};
 }
 
 # XXX
@@ -767,13 +737,26 @@ sub bulky_per_item_costs {
     return $cfg->{per_item_costs};
 }
 
-# Has an open booking on both our end and Bartec's
-sub has_open_bulky_collection_report_and_request {
+sub bulky_can_cancel {
     my $self = shift;
-    my $c = $self->{c};
+    my $c    = $self->{c};
 
-    return $c->stash->{property}{open_bulky_collection_report}
-        && $c->stash->{latest_open_bulky_request};
+    my $pending_collection = $c->stash->{property}{pending_bulky_collection};
+
+    return
+           $pending_collection
+        && $pending_collection->external_id
+        && $self->bulky_can_view_collection($pending_collection)
+        && $self->within_bulky_cancel_window;
+}
+
+sub bulky_can_refund {
+    my $self = shift;
+    my $c    = $self->{c};
+
+    return $c->stash->{property}{pending_bulky_collection}
+        ->get_extra_field_value('CHARGEABLE') ne 'FREE'
+        && $self->within_bulky_refund_window;
 }
 
 # Collections are scheduled to begin at 06:45 each day.
@@ -783,7 +766,7 @@ sub within_bulky_refund_window {
     my $self = shift;
     my $c    = $self->{c};
 
-    my $open_collection = $c->stash->{property}{open_bulky_collection_report};
+    my $open_collection = $c->stash->{property}{pending_bulky_collection};
     return 0 unless $open_collection;
 
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
@@ -804,15 +787,14 @@ sub _check_within_bulky_refund_window {
     my $cutoff_dt = $collection_dt->clone->set( hour => 6, minute => 45 )
         ->subtract( hours => 24 );
 
-    # Now should be earlier than or equal to cutoff
-    return DateTime->compare( $now_dt, $cutoff_dt ) < 1;
+    return $now_dt <= $cutoff_dt;
 }
 
 sub within_bulky_cancel_window {
     my $self = shift;
     my $c    = $self->{c};
 
-    my $open_collection = $c->stash->{property}{open_bulky_collection_report};
+    my $open_collection = $c->stash->{property}{pending_bulky_collection};
     return 0 unless $open_collection;
 
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
@@ -830,20 +812,8 @@ sub within_bulky_cancel_window {
 sub _check_within_bulky_cancel_window {
     my ( undef, $now_dt, $collection_dt ) = @_;
 
-    # Collection date must be at least a day later than today's date for
-    # cancellation to be allowed
-    my $today          = $now_dt->clone->truncate( to => 'day' );
-    my $collection_day = $collection_dt->clone->truncate( to => 'day' );
-    return 0 if DateTime->compare( $collection_day, $today ) < 1;
-
-    # Check if the time now is before 23:55, if today is one day before the
-    # collection date
-    return 1
-        if DateTime->compare( $collection_day->clone->subtract( days => 1 ),
-        $today ) < 0;
-    return $now_dt->hour < 23 ?
-        1 : $now_dt->minute < 55 ?
-        1 : 0;
+    my $cutoff_dt = $collection_dt->clone->subtract( minutes => 5 );
+    return $now_dt < $cutoff_dt;
 }
 
 sub unset_free_bulky_used {
@@ -851,12 +821,16 @@ sub unset_free_bulky_used {
 
     my $c = $self->{c};
 
+    return
+        unless $c->stash->{property}{pending_bulky_collection}
+        ->get_extra_field_value('CHARGEABLE') eq 'FREE';
+
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
     # XXX At the time of writing, there does not seem to be a
     # 'FREE BULKY USED' attribute defined in Bartec
-    $bartec->Premises_Attributes_Delete( $c->stash->{property}{uprn},
+    $bartec->delete_premise_attribute( $c->stash->{property}{uprn},
         'FREE BULKY USED' );
 }
 
@@ -994,9 +968,6 @@ sub bin_services_for_address {
 
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
     $self->{c}->stash->{open_service_requests} = $open_requests;
-
-    $self->{c}->stash->{latest_open_bulky_request}
-        = $self->latest_open_bulky_request($requests);
 
     $self->{c}->stash->{waste_features} = $self->feature('waste_features');
 
@@ -1181,22 +1152,6 @@ sub open_service_requests_for_uprn {
         $open_requests{$service_id} = 1;
     }
     return \%open_requests;
-}
-
-sub latest_open_bulky_request {
-    my ( $self, $requests ) = @_;
-
-    for ( sort { $b->{DateRequested} cmp $a->{DateRequested} } @$requests ) {
-        # XXX need to confirm that this list is complete and won't change in
-        # the future...
-        next
-            unless $_->{ServiceStatus}{Status}
-            =~ /PENDING|INTERVENTION|OPEN|ASSIGNED|IN PROGRESS/;
-
-        next unless $_->{ServiceType}{Name} eq 'BULKY COLLECTION';
-
-        return $_;
-    }
 }
 
 sub waste_munge_request_form_data {
@@ -1417,16 +1372,16 @@ sub waste_munge_bulky_cancellation_data {
     my ( $self, $data ) = @_;
 
     my $c = $self->{c};
+    my $collection_report = $c->stash->{property}{pending_bulky_collection};
 
     $data->{title}    = 'Bulky goods cancellation';
     $data->{category} = 'Bulky cancel';
+    $data->{detail} .= " | Original report ID: " . $collection_report->id;
 
-    # XXX These are being asked for when I try to submit cancellation, but I
-    # haven't yet figured out what is asking for them (Bartec?) or how the
-    # keys should be formatted so they are recognised
-    $data->{extra_COMMENTS}           = 'Cancellation at user request';
-    $data->{extra_ORIGINAL_SR_NUMBER}
-        = $c->stash->{latest_open_bulky_request}{ServiceCode};
+    $c->set_param( 'COMMENTS', 'Cancellation at user request' );
+
+    my $original_sr_number = $collection_report->external_id =~ s/Bartec-//r;
+    $c->set_param( 'ORIGINAL_SR_NUMBER', $original_sr_number );
 }
 
 sub waste_munge_report_data {

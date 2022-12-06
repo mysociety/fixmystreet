@@ -117,12 +117,11 @@ sub garden_cc_check_payment_status {
 
     if ($resp->{transactionState} eq 'COMPLETE') {
         if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
-            $p->set_extra_metadata( 'authCode',
-                $resp->{paymentResult}{paymentDetails}{authDetails}{authCode}
-            );
+            my $auth_details
+                = $resp->{paymentResult}{paymentDetails}{authDetails};
+            $p->set_extra_metadata( 'authCode', $auth_details->{authCode} );
             $p->set_extra_metadata( 'continuousAuditNumber',
-                $resp->{paymentResult}{paymentDetails}{authDetails}
-                    {continuousAuditNumber} );
+                $auth_details->{continuousAuditNumber} );
             $p->update;
 
             # create sub in echo
