@@ -323,7 +323,7 @@ div.form-error, p.form-error {
     }
 
     &:visited {
-      color: lighten($purple, 35%);
+      color: $white;
     }
 
     &:focus {
