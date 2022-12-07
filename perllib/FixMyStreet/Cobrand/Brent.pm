@@ -67,4 +67,10 @@ sub open311_extra_data_include {
 
 sub prevent_questionnaire_updating_status { 1 };
 
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
 1;
