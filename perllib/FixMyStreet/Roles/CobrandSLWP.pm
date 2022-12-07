@@ -186,7 +186,7 @@ sub waste_never_confirm_reports { 1 }
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
-    if ($state eq 'Outstanding' && $now->hour < 18) {
+    if (($state eq 'Outstanding' || $state eq 'Allocated') && $now->hour < 18) {
         $row->{next} = $row->{last};
         $row->{next}{state} = 'In progress';
         delete $row->{last};

@@ -86,7 +86,7 @@ FixMyStreet::override_config {
             CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
         }, {
             Ref => { Value => { anyType => [ 17510905, 8287 ] } },
-            State => { Name => 'Outstanding' },
+            State => { Name => 'Allocated' },
             CompletedDate => undef
         } ] });
         set_fixed_time('2022-09-09T16:30:00Z');
