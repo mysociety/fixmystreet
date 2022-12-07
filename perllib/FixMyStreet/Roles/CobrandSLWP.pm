@@ -610,7 +610,7 @@ sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
     my $wd = FixMyStreet::WorkingDays->new(
         public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
-        saturdays => 1,
+        $self->council_url eq 'sutton' ? (saturdays => 1) : (),
     );
     $dt = $wd->add_days($dt, $days)->ymd;
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;

@@ -97,6 +97,9 @@ FixMyStreet::override_config {
         $mech->content_contains(', at  4:00pm');
         $mech->content_contains('Report a mixed recycling collection as missed');
         $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        set_fixed_time('2022-09-13T19:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a mixed recycling collection as missed');
         $e->mock('GetTasks', sub { [] });
     };
     subtest 'Request a new bin' => sub {
