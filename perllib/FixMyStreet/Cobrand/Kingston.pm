@@ -18,6 +18,19 @@ sub dashboard_extra_bodies {
     return $sutton;
 }
 
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
+    }
+}
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};

@@ -417,12 +417,13 @@ sub image_for_unit {
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
-    if ($state eq 'Outstanding' && $now->hour < 17) {
+    return unless $now->hour < 17;
+    if ($state eq 'Outstanding') {
         $row->{next} = $row->{last};
         $row->{next}{state} = 'In progress';
         delete $row->{last};
     }
-    if (!$completed && $now->hour < 17) {
+    if (!$completed) {
         $row->{report_allowed} = 0;
     }
 }

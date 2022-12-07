@@ -17,6 +17,22 @@ sub dashboard_extra_bodies {
     return $kingston;
 }
 
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    return unless $now->hour < 18;
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    $row->{report_allowed} = 0; # No reports pre-6pm, completed or not
+    if ($row->{last}) {
+        # Prevent showing collected time until reporting is allowed
+        $row->{last}{completed} = 0;
+    }
+}
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
