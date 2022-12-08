@@ -140,25 +140,132 @@ a {
   color: $gray-2;
 }
 
-.report-list-filters {
-  @include cobrand-body;
-  line-height: $input-height-small-screen;
-  @media only screen and (min-width: 641px) { 
-    line-height: $input-height-large-screen;
-  }
-}
-
 // * FORMS AND INPUTS
-.multi-select-button,
-.form-control#sort,
-input[type='text'],
-input[type='radio'],
-input[type='checkbox'],
-.govuk-radios__input,
-select,
-.report-list-filters .form-control,
-#bulk-assign-form .form-control, textarea {
-  @include input-reset;
+body:not(.admin) {
+  .multi-select-button,
+  .form-control#sort,
+  input[type='text'],
+  input[type='radio'],
+  input[type='checkbox'],
+  .govuk-radios__input,
+  select,
+  .report-list-filters .form-control,
+  #bulk-assign-form .form-control, textarea {
+    @include input-reset;
+  }
+
+  select {
+    // This makes that the arrow is the same as .multi-select-container
+    position: relative;
+    background: transparent;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-size: contain;
+    padding-left: 8px !important; // overrides .report-list-filters .form-control
+  }
+
+  input[type="checkbox"] {
+    &:not(.govuk-checkboxes__input) {
+      @include input-small;
+    }
+  
+    &.bulk-assign {
+      position: relative;
+      transform: scale(1);
+    }
+  }
+  
+  input[type="radio"] {
+    @include input-small;
+    min-height: $radio-height-small-version;
+    min-width: $radio-height-small-version;
+    border-radius: 50%;
+    &:not(.govuk-radios__input) {
+      @include input-small;
+    }
+  }
+
+  .form-check {
+    padding-left: 0;
+  
+    &>input {
+      top: auto;
+    }
+  }
+
+  #sort {
+    max-width: 14em;
+  }
+
+  .report-list-filters {
+    @include cobrand-body;
+    line-height: $input-height-small-screen;
+    @media only screen and (min-width: 641px) { 
+      line-height: $input-height-large-screen;
+    }
+  }
+
+  .multi-select-button,
+  .report-list-filters .multi-select-button,
+  .form-control#sort,
+  select {
+    @include one-line-input-height;
+  }
+
+  .multi-select-button:after {
+    border-color: $primary_b transparent transparent transparent;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+  
+  .multi-select-menuitem {
+      font-size:$font-size-small-view;
+      padding: $checkbox-height-small-version/3 $checkbox-height-small-version $checkbox-height-small-version/3 $checkbox-width-small-version * 2;
+      line-height: $font-size-small-view * 2;
+      margin: 0;
+      white-space: nowrap !important;
+  
+    input {
+      margin-top: 0.25em;
+      margin-left: -($checkbox-width-small-version) * 1.5;
+      @include input-small;
+    }
+  }
+  
+  #show_old_reports_wrapper {
+    label {
+      line-height: $checkbox-height-small-version;
+    }
+  
+    input {
+      margin-left: 0.5em;
+      @include input-small;
+      left: auto;
+    }
+  }
+  
+  .label-containing-checkbox {
+    line-height: $checkbox-height-small-version * 1.2;
+    padding-left:$checkbox-height-small-version * 1.5;
+  
+    input {
+      margin-right: 0.5em;
+      @include input-small;
+    }
+  }
+  
+  .govuk-radios__input:focus {
+    & +.govuk-radios__label:before {
+      border-width: 4px;
+      box-shadow: 0 0 0 4px $link-focus-background-colour;
+    }
+    &:hover {
+        &+.govuk-radios__label:before {
+            box-shadow: $input-box-shadow-focus-hover;
+        }
+    }
+  }
 }
 
 .mobile-filters-active .report-list-filters-wrapper, 
@@ -178,120 +285,6 @@ select,
     @include svg-background-image("/cobrands/fixmystreet/images/check-white");
   }
 }
-
-#sort {
-  max-width: 14em;
-}
-
-.multi-select-button,
-.report-list-filters .multi-select-button,
-.form-control#sort,
-select {
-  @include one-line-input-height;
-}
-
-.multi-select-button:after {
-  border-color: $primary_b transparent transparent transparent;
-  transform: translateY(-50%);
-  margin: 0;
-}
-
-select {
-  // This makes that the arrow is the same as .multi-select-container
-  position: relative;
-  background: transparent;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-  background-repeat: no-repeat;
-  background-position-x: right;
-  background-size: contain;
-  padding-right: 30px;
-}
-
-input[type="checkbox"] {
-  &:not(.govuk-checkboxes__input) {
-    @include input-small;
-  }
-
-  &.bulk-assign {
-    position: relative;
-    transform: scale(1);
-  }
-}
-
-
-
-input[type="radio"] {
-  @include input-small;
-  min-height: $radio-height-small-version;
-  min-width: $radio-height-small-version;
-  border-radius: 50%;
-  &:not(.govuk-radios__input) {
-    @include input-small;
-  }
-}
-
-.form-check {
-  padding-left: 0;
-
-  &>input {
-    top: auto;
-  }
-
-  .admin & {
-    &>input {
-      left: 0;
-    }
-  }
-}
-
-.multi-select-menuitem {
-    font-size:$font-size-small-view;
-    padding: $checkbox-height-small-version/3 $checkbox-height-small-version $checkbox-height-small-version/3 $checkbox-width-small-version * 2;
-    line-height: $font-size-small-view * 2;
-    margin: 0;
-    white-space: nowrap !important;
-
-  input {
-    margin-top: 0.25em;
-    margin-left: -($checkbox-width-small-version) * 1.5;
-    @include input-small;
-  }
-}
-
-#show_old_reports_wrapper {
-  label {
-    line-height: $checkbox-height-small-version;
-  }
-
-  input {
-    margin-left: 0.5em;
-    @include input-small;
-    left: auto;
-  }
-}
-
-.label-containing-checkbox {
-  line-height: 140%;
-  padding-left:$checkbox-height-small-version * 1.5;
-
-  input {
-    margin-right: 0.5em;
-    @include input-small;
-  }
-}
-
-.govuk-radios__input:focus {
-  & +.govuk-radios__label:before {
-    border-width: 4px;
-    box-shadow: 0 0 0 4px $link-focus-background-colour;
-  }
-  &:hover {
-      &+.govuk-radios__label:before {
-          box-shadow: $input-box-shadow-focus-hover;
-      }
-  }
-}
-
 
 input.form-error, textarea.form-error {
   border-color: $error-color;
@@ -641,7 +634,7 @@ border-right-width: 3px;
       text-decoration-thickness: 1px;
     }
     &:visited {
-      color: lighten($purple, 55%);
+      color: $white;
     }
 
     &:focus {

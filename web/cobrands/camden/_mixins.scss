@@ -45,8 +45,8 @@
     border-radius: $input-border-radius;
     box-shadow: none;
     font-family: $body-font;
-    padding-left: $input-padding-x;
-    padding-right: $input-padding-x;
+    // padding-left: $input-padding-x;
+    // padding-right: $input-padding-x;
     @include cobrand-body;
     color: $primary-b;
 
@@ -63,7 +63,7 @@
     min-width: $checkbox-width-small-version;
     position: absolute;
 
-    &+ label {
+    & + label.inline, & + legend.inline, & + .label.inline {
         padding-left: $checkbox-width-small-version * 1.5;
     }
 
@@ -115,12 +115,12 @@
 
 @mixin one-line-input-height {
     height: $input-height-small-screen;
-    line-height: $input-height-small-screen;
+    line-height: $input-height-small-screen * 0.9;
 
     @if variable-exists(large-view-point) {
         @media only screen and (min-width: $large-view-point) {
             height: $input-height-large-screen;
-            line-height: $input-height-large-screen;
+            line-height: $input-height-large-screen * 0.9;
         }
     }
 }
