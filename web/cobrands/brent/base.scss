@@ -373,6 +373,10 @@ body.twothirdswidthpage {
   color: $footer-colour;
   font-size: $font-size-small-view;
 
+  footer {
+    margin-top: 0;
+  }
+
   .footer__upper-container {
     // background-color: $footer-background-colour;
     background: $footer-background-colour inline-image("../brent/images/logo-pattern-bolder_black.svg") $left center no-repeat;
@@ -526,6 +530,69 @@ body.twothirdswidthpage {
       margin-top: 30px;
     }
   }
+}
+
+// Skyline graphic above the footer
+.place-banner {
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: flex-end;
+  display: flex;
+
+  position: relative;
+  margin: 60px 0px 0;
+
+  @media (min-width: 736px){
+    margin: 140px 0 0;
+  }
+
+  @media (min-width: 1024px) {
+    margin: 140px 0 0;
+  }
+}
+
+.place-banner_purple .place-banner__bg {
+  background-color: #5d54a4;
+}
+
+.place-banner__bg-inner-container {
+  max-width: 1110px;
+  margin: 0 auto;
+  
+}
+
+.place-banner__bg-inner {
+  position: relative;
+  padding-top: calc((1/9.6)*100%);
+}
+
+.place-banner_horizon .place-banner__horizon {
+  top: -57%;
+}
+
+.place-banner__horizon {
+  max-width: 1110px;
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 1;
+  width: 100%;
+}
+
+.place-banner_horizon .place-banner__horizon:before {
+  padding-top: calc((1/9.6)*100%);
+  @include svg-background-image("/cobrands/brent/images/default-horizon");
+}
+
+.place-banner__horizon:before {
+  position: absolute;
+  content: '';
+  display: block;
+  width: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 // Waste
