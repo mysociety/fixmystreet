@@ -1,4 +1,4 @@
-package FixMyStreet::App::Form::Waste::Request::SLWP;
+package FixMyStreet::App::Form::Waste::Request::Sutton;
 
 use utf8;
 use HTML::FormHandler::Moose;

@@ -95,7 +95,9 @@ sub form : Private {
 
 sub label_for_field {
     my ($form, $field, $key) = @_;
+    my $fn = 'options_' . $field;
     my @options = $form->field($field)->options;
+    @options = $form->$fn if !@options && $form->can($fn);
     foreach (@options) {
         return $_->{label} if $_->{value} eq $key;
     }

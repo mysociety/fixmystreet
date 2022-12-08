@@ -751,7 +751,7 @@ sub process_request_data : Private {
     my @reports;
     foreach (@services) {
         my ($id) = /container-(.*)/;
-        $c->cobrand->call_hook("waste_munge_request_data", $id, $data);
+        $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
         $c->forward('add_report', [ $data ]) or return;
         push @reports, $c->stash->{report};
     }

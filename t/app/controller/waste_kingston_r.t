@@ -113,7 +113,7 @@ FixMyStreet::override_config {
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: Damaged";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Green paper and cardboard bin';
         FixMyStreet::Script::Reports::send();
@@ -132,13 +132,30 @@ FixMyStreet::override_config {
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: Missing";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing";
         is $report->title, 'Request new Green recycling box';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1';
         is $cgi->param('attribute[Reason]'), '1';
+    };
+    subtest 'Request new build container' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I am a new resident without a container";
+        is $report->title, 'Request new Brown rubbish bin (140L)';
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '1';
+        is $cgi->param('attribute[Reason]'), '4';
     };
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');

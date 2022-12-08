@@ -9,7 +9,7 @@ step1 = 'request';
     [% SET container_id = data.item('container-choice') %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
-        <dd class="govuk-summary-list__value">[% data.request_reason.ucfirst %]</dd>
+        <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]</dd>
     </div>
 [% END %]
 

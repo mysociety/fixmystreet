@@ -8,7 +8,8 @@ use JSON::MaybeXS;
 use LWP::Simple;
 use FixMyStreet::WorkingDays;
 use FixMyStreet::App::Form::Waste::Report::SLWP;
-use FixMyStreet::App::Form::Waste::Request::SLWP;
+use FixMyStreet::App::Form::Waste::Request::Kingston;
+use FixMyStreet::App::Form::Waste::Request::Sutton;
 
 sub send_questionnaires { 0 }
 
@@ -671,7 +672,8 @@ sub waste_munge_request_form_fields {
 
 sub waste_request_form_first_next {
     my $self = shift;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::SLWP';
+    my $cls = ucfirst $self->council_url;
+    $self->{c}->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
     $self->{c}->stash->{form_title} = 'Which container do you need?';
     return sub {
         my $data = shift;
@@ -689,23 +691,25 @@ sub waste_munge_request_form_data {
 }
 
 sub waste_munge_request_data {
-    my ($self, $id, $data) = @_;
+    my ($self, $id, $data, $form) = @_;
 
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $quantity = 1;
     my $reason = $data->{request_reason} || '';
+    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
-    my ($action_id, $reason_id, $nice_reason);
+    my ($action_id, $reason_id);
     if ($reason eq 'damaged') {
         $action_id = 3; # Replace
         $reason_id = 2; # Damaged
-        $nice_reason = "Damaged";
     } elsif ($reason eq 'missing') {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
-        $nice_reason = "Missing";
+    } elsif ($reason eq 'new_build') {
+        $action_id = 1; # Deliver
+        $reason_id = 4; # New
     } else {
         # No reason, must be a bag
         $action_id = 1; # Deliver
