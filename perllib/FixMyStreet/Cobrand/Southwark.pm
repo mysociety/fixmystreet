@@ -44,4 +44,39 @@ sub lookup_site_code_config {
     };
 }
 
+sub report_new_is_in_estate {
+    my ( $self ) = @_;
+
+    my ($x, $y) = Utils::convert_latlon_to_en(
+        $self->{c}->stash->{latitude},
+        $self->{c}->stash->{longitude},
+        'G'
+    );
+
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $cfg = {
+        url => "https://$host/mapserver/southwark",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "Estates",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y);
+    return scalar @$features ? 1 : 0;
+}
+
+sub munge_categories {
+    my ($self, $contacts) = @_;
+    if ( $self->report_new_is_in_estate ) {
+        @$contacts = grep {
+            $_->email !~ /^STCL_/;
+        } @$contacts;
+    } else {
+        @$contacts = grep {
+            $_->email !~ /^HOU_/;
+        } @$contacts;
+    }
+}
+
+
 1;
