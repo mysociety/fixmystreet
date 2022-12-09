@@ -1,4 +1,6 @@
+use CGI::Simple;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -8,8 +10,17 @@ END { FixMyStreet::App->log->enable('info'); }
 
 use_ok 'FixMyStreet::Cobrand::Brent';
 
-my $brent = $mech->create_body_ok(2488, 'Brent', {}, { cobrand => 'brent' });
+my $brent = $mech->create_body_ok(2488, 'Brent', {
+    api_key => 'abc',
+    jurisdiction => 'brent',
+    endpoint => 'http://endpoint.example.org',
+    send_method => 'Open311',
+}, {
+    cobrand => 'brent'
+});
 my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
+my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
+    email => 'Symology-gully', group => ['Drains and gullies']);
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
 
 for my $test (
@@ -63,6 +74,31 @@ for my $test (
         $problem->comments->first->delete;
         $problem->delete;
         }
+    };
+};
+
+subtest "UnitID on gully sent across in detail" => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
+        areas => "2488", category => 'Gully grid missing', cobrand => 'brent',
+    });
+    $problem->update_extra_field({ name => 'UnitID', value => '234' });
+    $problem->update;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_FLAGS => { send_reports => 1 },
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'anonymous'
+            },
+        },
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[UnitID]'), undef;
+        like $c->param('description'), qr/ukey: 234/;
     };
 };
 
