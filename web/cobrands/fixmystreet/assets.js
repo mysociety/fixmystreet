@@ -1439,7 +1439,8 @@ fixmystreet.message_controller = (function() {
         });
         if ($('html').hasClass('mobile')) {
             var msg = $(id).html();
-            $div = $('<div class="js-mobile-not-an-asset"></div>').html(msg);
+            var mobile_class = id.replace('#', '');
+            $div = $('<div class="js-mobile-not-an-asset mob_' + mobile_class + '"></div>').html(msg);
             $div.appendTo('#map_box');
         } else {
             $("#js-roads-responsibility").removeClass("hidden");
@@ -1456,7 +1457,9 @@ fixmystreet.message_controller = (function() {
         } else {
             $(id).addClass("hidden");
         }
-        $('.js-mobile-not-an-asset').remove();
+        var mobile_id = id.replace('#', '');
+        var mobile_class = '.mob_' + mobile_id;
+        $(mobile_class).remove();
         if (!$("#js-roads-responsibility .js-responsibility-message:not(.hidden)").length) {
             $("#js-roads-responsibility").addClass("hidden");
         }
@@ -1464,7 +1467,7 @@ fixmystreet.message_controller = (function() {
 
     // Show the reporting form, unless the road responsibility message is visible.
     function enable_report_form() {
-        if ( $('#js-roads-responsibility').is(':visible') ) {
+        if ( $('#js-roads-responsibility').is(':visible') || $('.js-mobile-not-an-asset').length ) {
             return;
         }
         $('.js-reporting-page--next').prop('disabled', false);
