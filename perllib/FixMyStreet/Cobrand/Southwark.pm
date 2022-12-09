@@ -32,4 +32,16 @@ sub disambiguate_location {
     };
 }
 
+sub lookup_site_code_config {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 50, # metres
+        url => "https://$host/mapserver/southwark",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "LSG",
+        property => "USRN",
+        accept_feature => sub { 1 }
+    };
+}
+
 1;
