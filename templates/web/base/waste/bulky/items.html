@@ -29,22 +29,29 @@
   </div>
 </div>
 
-<div class="govuk-warning-text due" style="max-width:550px">
-  <div class="govuk-warning-text__img">
-    <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
-  </div>
-  <div class="govuk-warning-text__content">
-    <span class="govuk-warning-text__assistive">Important information</span>
-    <p class="govuk-!-margin-bottom-1"><strong>Maximum numbers</strong></p>
-    <p>The following types of item have a maximum number that can be collected in one collection:</p>
-    <ul>
-      [% FOR item IN form.items_extra; IF item.value.max %]
-        <li>[% item.key %]: [% item.value.max %]</li>
-      [% END; END %]
-    </ul>
+[% item_maximums = [] %]
+[% FOR item IN form.items_extra; IF item.value.max;
+  item_maximums.push({ key = item.key, max = item.value.max });
+END; END %]
 
+[% IF item_maximums.size %]
+  <div class="govuk-warning-text due" style="max-width:550px">
+    <div class="govuk-warning-text__img">
+      <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+    </div>
+    <div class="govuk-warning-text__content">
+      <span class="govuk-warning-text__assistive">Important information</span>
+      <p class="govuk-!-margin-bottom-1"><strong>Maximum numbers</strong></p>
+      <p>The following types of item have a maximum number that can be collected in one collection:</p>
+      <ul>
+        [% FOR item IN item_maximums %]
+          <li>[% item.key %]: [% item.max %]</li>
+        [% END %]
+      </ul>
+
+    </div>
   </div>
-</div>
+[% END %]
 
 <form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data">
   [% FOR num IN [ 1 .. c.cobrand.bulky_items_maximum ] %]

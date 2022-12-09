@@ -1276,6 +1276,58 @@ FixMyStreet::override_config {
         $report->delete; # So can have another one below
     };
 
+    subtest 'Bulky collection, per item maximum message hidden if no maximums set' => sub {
+        my $cfg = $body->get_extra_metadata('wasteworks_config');
+        my $orig = $cfg->{item_list};
+        $cfg->{item_list} = [
+            {   bartec_id => '1001',
+                category  => 'Audio / Visual Elec. equipment',
+                message   => '',
+                name      => 'Amplifiers',
+                price     => '1001',
+            },
+            {   bartec_id => '1002',
+                category  => 'Baby / Toddler',
+                message   => '',
+                name      => 'Childs bed / cot',
+                price     => '4040',
+            },
+            {   bartec_id => '1002',
+                category  => 'Baby / Toddler',
+                message   => '',
+                name      => 'High chairs',
+                price     => '5050',
+            },
+
+            {   bartec_id => '1003',
+                category  => 'Bedroom',
+                message   => '',
+                name      => 'Chest of drawers',
+                price     => '6060',
+            },
+            {   bartec_id => '1003',
+                category  => 'Bedroom',
+                message   => 'Please dismantle',
+                name      => 'Wardrobes',
+                price     => '7070',
+            },
+        ];
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
+
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->content_lacks("The following types of item have a maximum number that can be collected");
+
+        $cfg->{item_list} = $orig;
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
+    };
+
     subtest 'Bulky collection, per item maximum' => sub {
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
@@ -1283,6 +1335,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->content_contains("The following types of item have a maximum number that can be collected");
         $mech->content_contains('HiFi Stereos: 2');
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'HiFi Stereos', 'item_2' => 'HiFi Stereos', item_3 => 'HiFi Stereos' } });
         $mech->content_contains('Too many of item: HiFi Stereos');
