@@ -55,6 +55,8 @@
     - Open311 improvements:
         - Increase default timeout.
         - Check for an identical latest update when adding a new one.
+    - UK:
+        - Add CAPTCHA to contact form for non-UK IP addresses
 
 * v4.0 (3rd December 2021)
     - Front end improvements:

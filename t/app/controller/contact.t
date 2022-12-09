@@ -627,4 +627,86 @@ subtest 'check redirected to correct form for general enquiries cobrand' => sub 
 
 $problem_main->delete;
 
+subtest 'recaptcha' => sub {
+    my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
+    $mod_lwp->mock(
+        'post',
+        sub {
+            HTTP::Response->new( 200, 'OK', [], '{ "success": true }' );
+        },
+    );
+    my $mod_app = Test::MockModule->new('FixMyStreet::App');
+
+    subtest 'for FMS' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'fixmystreet',
+            RECAPTCHA => { secret => 'secret', site_key => 'site_key' },
+        } => sub {
+            ok $mech->host('www.fixmystreet.com');
+            $mech->get_ok('/contact');
+            $mech->content_lacks('g-recaptcha');  # GB is default test country
+
+            $mod_app->mock( 'user_country', sub {'FR'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_contains('g-recaptcha');
+            $mech->submit_form_ok(
+                { with_fields => { %common, dest => 'help' } } );
+            $mech->content_contains('Thank you for your enquiry');
+        };
+    };
+
+    subtest 'for BathNES (has its own contact/index.html file)' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'bathnes',
+            RECAPTCHA => { secret => 'secret', site_key => 'site_key' },
+        } => sub {
+            my $bathnes = $mech->create_body_ok(
+                2551, 'Bath and North East Somerset Council',
+                {}, { cobrand => 'bathnes' },
+            );
+            ok $mech->host('https://fix.bathnes.gov.uk/');
+
+            $mod_app->mock( 'user_country', sub {'GB'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_contains('Bath & North East Somerset Council');
+            $mech->content_lacks('g-recaptcha');
+
+            $mod_app->mock( 'user_country', sub {'FR'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_contains('g-recaptcha');
+            $mech->submit_form_ok( { with_fields => \%common } );
+            $mech->content_contains('Thank you for your enquiry');
+        };
+    };
+
+    subtest 'for another cobrand (Lincolnshire)' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'lincolnshire',
+            RECAPTCHA => { secret => 'secret', site_key => 'site_key' },
+        } => sub {
+            my $lincs = $mech->create_body_ok(
+                2232, 'Lincolnshire County Council',
+                {}, { cobrand => 'lincolnshire' },
+            );
+            ok $mech->host('fixmystreet.lincolnshire.gov.uk');
+
+            $mod_app->mock( 'user_country', sub {'GB'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_contains('Lincolnshire County Council');
+            $mech->content_lacks('g-recaptcha');
+
+            $mod_app->mock( 'user_country', sub {'FR'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_contains('g-recaptcha');
+            $mech->submit_form_ok( { with_fields => \%common } );
+            $mech->content_contains('Thank you for your enquiry');
+        };
+    };
+};
+
 done_testing();
