@@ -401,6 +401,11 @@ sub munge_report_new_contacts {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_categories($contacts);
     }
+
+    if ( $bodies{'Southwark Council'} ) {
+        my $southwark = FixMyStreet::Cobrand::Southwark->new({ c => $self->{c} });
+        $southwark->munge_categories($contacts);
+    }
 }
 
 sub munge_mixed_category_groups {
