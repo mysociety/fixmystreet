@@ -70,9 +70,29 @@ sub open311_extra_data_include {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
         }
+
+        if ($contact->groups->[0] eq 'Drains and gullies') {
+            if (my $id = $row->get_extra_field_value('UnitID')) {
+                $self->{brent_original_detail} = $row->detail;
+                my $detail = $row->detail . "\n\nukey: $id";
+                $row->detail($detail);
+            }
+        }
     }
 
     return $open311_only;
+}
+
+sub open311_extra_data_exclude {
+    my ($self, $row, $h, $contact) = @_;
+
+    return ['UnitID'] if $contact->groups->[0] eq 'Drains and gullies';
+    return [];
+}
+
+sub open311_post_send {
+    my ($self, $row) = @_;
+    $row->detail($self->{brent_original_detail}) if $self->{brent_original_detail};
 }
 
 sub prevent_questionnaire_updating_status { 1 };
