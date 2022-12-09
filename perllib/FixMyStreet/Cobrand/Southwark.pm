@@ -78,5 +78,6 @@ sub munge_categories {
     }
 }
 
+sub allow_anonymous_reports { 'button' }
 
 1;
