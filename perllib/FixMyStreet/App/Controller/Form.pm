@@ -63,6 +63,7 @@ sub requires_sign_in : Private {
 sub form : Private {
     my ($self, $c) = @_;
 
+    $c->stash->{label_for_field} = \&label_for_field;
     $c->forward('pre_form');
 
     # XXX This double form load means double API calls in
@@ -90,12 +91,12 @@ sub form : Private {
     $c->stash->{template} = $c->stash->{override_template} || $form->template || $self->index_template
         unless $c->stash->{sent_confirmation_message};
     $c->stash->{form} = $form;
-    $c->stash->{label_for_field} = \&label_for_field;
 }
 
 sub label_for_field {
     my ($form, $field, $key) = @_;
-    foreach ($form->field($field)->options) {
+    my @options = $form->field($field)->options;
+    foreach (@options) {
         return $_->{label} if $_->{value} eq $key;
     }
 }

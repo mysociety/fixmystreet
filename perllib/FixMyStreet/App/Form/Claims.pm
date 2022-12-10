@@ -1078,19 +1078,11 @@ sub value_nequals {
         $form->saved_data->{$field} ne $answer;
 }
 
-sub label_for_field {
-    my ($form, $field, $key) = @_;
-    return "" unless $key;
-    foreach ($form->field($field)->options) {
-        return $_->{label} if $_->{value} eq $key;
-    }
-}
-
 sub format_for_display {
     my ($form, $field_name, $value) = @_;
     my $field = $form->field($field_name);
     if ( $field->{type} eq 'Select' ) {
-        return $form->label_for_field($field_name, $value);
+        return $form->c->stash->{label_for_field}($form, $field_name, $value);
     } elsif ( $field->{type} eq 'DateTime' ) {
         # if field was on the last screen then we get the DateTime and not
         # the hash because it's not been through the freeze/that process
