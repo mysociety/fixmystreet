@@ -104,7 +104,8 @@ $.extend(fixmystreet.utils, {
     var drag = {
         activate: function() {
             this._drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
-                onComplete: function(feature, e) {
+                //onSuccess ensures that any failure does not get read in as a usable action
+		onSuccess: function(feature, e) {
                     var geom = feature.geometry,
                         lonlat = new OpenLayers.LonLat(geom.x, geom.y);
                     fixmystreet.display.begin_report(lonlat, { noPan: true });
