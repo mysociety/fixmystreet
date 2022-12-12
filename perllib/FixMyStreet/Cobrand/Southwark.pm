@@ -86,4 +86,6 @@ sub anonymous_account {
     };
 }
 
+sub privacy_policy_url { 'https://www.southwark.gov.uk/council-and-democracy/freedom-of-information-and-data-protection/corporate-data-privacy-notice' }
+
 1;
