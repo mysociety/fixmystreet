@@ -711,8 +711,16 @@ sub waste_munge_request_data {
         $action_id = 1; # Deliver
         $reason_id = 4; # New
     } elsif ($reason eq 'more') {
-        $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
+        if ($data->{recycling_swap} eq 'Yes') {
+            # $id has to be 16 here but we want to swap it for a 12
+            $action_id = '2::1'; # Collect and Deliver
+            $reason_id = '3::3'; # Change capacity
+            $id = '16::12'; # Box and Bin
+            $container = $c->stash->{containers}{12};
+        } else {
+            $action_id = 1; # Deliver
+            $reason_id = 3; # Change capacity
+        }
     } else {
         # No reason, must be a bag
         $action_id = 1; # Deliver

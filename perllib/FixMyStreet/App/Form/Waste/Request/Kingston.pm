@@ -18,6 +18,7 @@ has_page replacement => (
         my $data = shift;
         my $choice = $data->{"container-choice"};
         my $reason = $data->{request_reason};
+        return 'recycling_swap' if $choice == 16 && $reason eq 'more';
         return 'recycling_number' if $choice == 16;
         return 'notes_missing' if $reason eq 'missing';
         return 'notes_damaged' if $reason eq 'damaged';
@@ -47,6 +48,43 @@ sub options_request_reason {
         if $green_box;
     return @options;
 }
+
+has_page recycling_swap => (
+    fields => ['recycling_swap', 'continue'],
+    title => 'Reason for request',
+    next => sub {
+        my $data = shift;
+        return 'recycling_swap_confirm' if $data->{recycling_swap} eq 'Yes';
+        return 'recycling_number';
+    },
+);
+
+has_field recycling_swap => (
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Would you like to replace your recycling box containers with a wheelie bin?',
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+    tags => {
+        hint => 'If you already have 3 or more recycling box containers, you may swap them for a recycling wheelie bin.',
+    },
+);
+
+has_page recycling_swap_confirm => (
+    fields => ['recycling_swap_confirm', 'continue'],
+    title => 'Reason for request',
+    next => 'about_you',
+);
+
+has_field recycling_swap_confirm => (
+    type => 'Checkbox',
+    required => 1,
+    label => 'Confirmation',
+    option_label => 'I confirm that I have 3 or more recycling box containers',
+);
 
 has_page recycling_number => (
     fields => ['recycling_quantity', 'continue'],
