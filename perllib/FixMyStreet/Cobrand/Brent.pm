@@ -346,4 +346,282 @@ sub waste_event_state_map {
     };
 }
 
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    return unless $now->hour < 22;
+    if ($state eq 'Outstanding') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
+    }
+}
+
+sub bin_services_for_address {
+    my $self = shift;
+    my $property = shift;
+
+# THESE ARE BROMLEY CONTAINER TYPES AS WAITING FOR CORRECT ONES
+    $self->{c}->stash->{containers} = {
+        1 => 'Green Box (Plastic)',
+        3 => 'Wheeled Bin (Plastic)',
+        12 => 'Black Box (Paper)',
+        14 => 'Wheeled Bin (Paper)',
+        9 => 'Kitchen Caddy',
+        10 => 'Outside Food Waste Container',
+        44 => 'Garden Waste Container',
+        46 => 'Wheeled Bin (Food)',
+    };
+
+    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
+
+    my %service_to_containers = (
+        262 => [ 1 ],
+        265 => [ 3 ],
+        316 => [ 12 ]
+    );
+    my %request_allowed = map { $_ => 1 } keys %service_to_containers;
+    my %quantity_max = (
+        262 => 1,
+        265 => 1,
+        316 => 1
+    );
+
+    $self->{c}->stash->{quantity_max} = \%quantity_max;
+
+    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
+
+    my $result = $self->{api_serviceunits};
+    return [] unless @$result;
+
+    my $events = $self->_parse_events($self->{api_events});
+    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
+
+# THIS IS BROMLEY GGW SUBSCRIPTION NUMBER
+    # If there is an open Garden subscription (2106) event, assume
+    # that means a bin is being delivered and so a pending subscription
+    if ($events->{enquiry}{2106}) {
+        $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
+        $self->{c}->stash->{open_garden_event} = 1;
+    }
+
+    my @to_fetch;
+    my %schedules;
+    my @task_refs;
+    my %expired;
+    foreach (@$result) {
+        my $servicetask = $self->_get_current_service_task($_) or next;
+        my $schedules = _parse_schedules($servicetask);
+        $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
+
+        next unless $schedules->{next} or $schedules->{last};
+        $schedules{$_->{Id}} = $schedules;
+        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
+        push @task_refs, $schedules->{last}{ref} if $schedules->{last};
+    }
+    push @to_fetch, GetTasks => \@task_refs if @task_refs;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 0, @to_fetch);
+
+    my @out;
+    my %task_ref_to_row;
+    foreach (@$result) {
+        my $service_id = $_->{ServiceId};
+        my $service_name = $self->service_name_override($_);
+        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden Waste' && $expired{$_->{Id}} );
+
+        my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
+        my $servicetask = $self->_get_current_service_task($_);
+
+        my $containers = $service_to_containers{$service_id};
+        my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
+
+        my $request_max = $quantity_max{$service_id};
+
+        my $garden = 0;
+        my $garden_bins;
+        my $garden_cost = 0;
+        my $garden_due = $self->waste_sub_due($schedules->{end_date});
+        my $garden_overdue = $expired{$_->{Id}};
+        if ($service_name eq 'Garden Waste') {
+            $garden = 1;
+            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+            foreach (@$data) {
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    if ( $_->{DatatypeName} eq 'Quantity' ) {
+                        $garden_bins = $_->{Value};
+                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                    }
+                }
+            }
+            $request_max = $garden_bins;
+
+            if ($self->{c}->stash->{waste_features}->{garden_disabled}) {
+                $garden = 0;
+            }
+        }
+
+        my $row = {
+            id => $_->{Id},
+            service_id => $service_id,
+            service_name => $service_name,
+            garden_waste => $garden,
+            garden_bins => $garden_bins,
+            garden_cost => $garden_cost,
+            garden_due => $garden_due,
+            garden_overdue => $garden_overdue,
+            request_allowed => $request_allowed{$service_id} && $request_max && $schedules->{next},
+            requests_open => $open_requests,
+            request_containers => $containers,
+            request_max => $request_max,
+            service_task_id => $servicetask->{Id},
+            service_task_name => $servicetask->{TaskTypeName},
+            service_task_type_id => $servicetask->{TaskTypeId},
+            schedule => $schedules->{description},
+            last => $schedules->{last},
+            next => $schedules->{next},
+            end_date => $schedules->{end_date},
+        };
+        if ($row->{last}) {
+            my $ref = join(',', @{$row->{last}{ref}});
+            $task_ref_to_row{$ref} = $row;
+
+            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
+
+            my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
+            my $missed_events = [
+                @{$events->{missed}->{$service_id} || []},
+                @{$events_unit->{missed}->{$service_id} || []},
+            ];
+            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
+            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+        }
+        push @out, $row;
+    }
+
+    $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
+
+    return \@out;
+}
+
+sub waste_container_actions {
+    return {
+        deliver => 1,
+        remove => 2
+    };
+}
+
+sub waste_subscription_types {
+    return {
+        New => 1,
+        Renew => 2,
+        Amend => 3,
+    };
+}
+
+sub _parse_events {
+    my $self = shift;
+    my $events_data = shift;
+    my $events;
+# THESE ARE BROMLEY CODES SO WILL NEED UPDATING
+    foreach (@$events_data) {
+        my $event_type = $_->{EventTypeId};
+        my $type = 'enquiry';
+        $type = 'request' if $event_type == 2104;
+        $type = 'missed' if 2095 <= $event_type && $event_type <= 2103;
+
+        # Only care about open requests/enquiries
+        my $closed = _closed_event($_);
+        next if $type ne 'missed' && $closed;
+
+        if ($type eq 'request') {
+            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+            my $container;
+            DATA: foreach (@$data) {
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    if ($_->{DatatypeName} eq 'Container Type') {
+                        $container = $_->{Value};
+                        last DATA;
+                    }
+                }
+            }
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            $events->{request}->{$container} = $report ? { report => $report } : 1;
+        } elsif ($type eq 'missed') {
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            my $service_id = $_->{ServiceId};
+            my $data = {
+                closed => $closed,
+                date => construct_bin_date($_->{EventDate}),
+            };
+            $data->{report} = $report if $report;
+            push @{$events->{missed}->{$service_id}}, $data;
+        } else { # General enquiry of some sort
+            $events->{enquiry}->{$event_type} = 1;
+        }
+    }
+    return $events;
+}
+
+sub image_for_unit {
+    my ($self, $unit) = @_;
+    my $service_id = $unit->{service_id};
+
+    my $base = '/i/waste-containers';
+    my $images = {
+        262 => "$base/bin-grey",
+        265 => "$base/bin-grey-blue-lid-recycling",
+        316 => "$base/caddy-green-recycling",
+        317 => "$base/bin-green",
+        263 => "$base/large-communal-black",
+        266 => "$base/large-communal-blue-recycling",
+        271 => "$base/bin-brown",
+        267 => "$base/sack-black",
+        269 => "$base/sack-clear",
+    };
+    return $images->{$service_id};
+}
+
+sub bin_day_format { '%A, %-d~~~ %B' }
+
+sub service_name_override {
+    my ($self, $service) = @_;
+
+    my %service_name_override = (
+
+    );
+
+    return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
+}
+
+sub clear_cached_lookups_property {
+    my ($self, $id) = @_;
+
+    my $key = "brent:echo:look_up_property:$id";
+    delete $self->{c}->session->{$key};
+    $key = "brent:echo:bin_services_for_address:$id";
+    delete $self->{c}->session->{$key};
+}
+
+sub garden_due_days { 48 }
+
+sub within_working_days {
+    my ($self, $dt, $days, $future) = @_;
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    $dt = $wd->add_days($dt, $days)->ymd;
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    if ( $future ) {
+        return $today ge $dt;
+    } else {
+        return $today le $dt;
+    }
+}
+
 1;
