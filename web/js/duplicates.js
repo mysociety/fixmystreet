@@ -124,6 +124,19 @@
                     $li.addClass('item-list__item--selected');
                     $('.g-recaptcha').appendTo($div);
                 });
+                $button.on('doubleclick', function (e) {
+                    e.preventDefault();
+                    var $div = $('.js-template-get-updates > div').clone();
+                    $div.find('input[name="id"]').val(id);
+                    $div.find('input[disabled]').prop('disabled', false);
+                    $div.hide().appendTo($li).slideDown(250, function () {
+                        $div.find('input[type="email"]').trigger('focus');
+                    });
+                    $li.find('.item-list__item--expandable__actions').slideUp(250);
+                    $li.removeClass('js-expandable');
+                    $li.addClass('item-list__item--selected');
+                    $('.g-recaptcha').appendTo($div);
+                });
                 $li.find('.item-list__item--expandable__actions').append($button);
             });
             if (fixmystreet.markers) {
@@ -189,6 +202,8 @@
     // Also want to give inspectors a way to select a *new* duplicate report.
     $(document).on('click', "#js-change-duplicate-report", refresh_duplicate_list);
 
+    // Also want to be able to doubleclick with this feature
+    $(document).on('doubleclick', "#js-change-duplicate-report", refresh_duplicate_list);
     if ( $('#problem_form').length ) {
         $('#js-duplicate-reports').removeClass('hidden'); // Handled by page code
     }
