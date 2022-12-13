@@ -611,6 +611,12 @@ sub ajax_check_auth : Path('ajax/check_auth') {
     my $code = 401;
     my $data = { not_authorized => 1 };
 
+    # iOS app can't send cookies so instead sends email/password
+    # to check login status
+    if ( ( my $username = $c->get_param('username') ) && !$c->user ) {
+        $c->forward('sign_in', [ $username ]);
+    }
+
     if ( $c->user ) {
         $data = { name => $c->user->name };
         $code = 200;

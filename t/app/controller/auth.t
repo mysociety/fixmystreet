@@ -15,6 +15,7 @@ sub password_expiry { 86400 }
 package main;
 
 use Test::MockModule;
+use JSON::MaybeXS;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -515,6 +516,17 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         $mech->get_ok($link);
         $mech->logged_in_ok;
+    };
+};
+
+subtest "Check that AJAX check_auth works for username/password" => sub {
+    $mech->log_out_ok;
+    my $u = $mech->create_user_ok('appuser@example.org', password => '1234567890abcdefgh', name => 'App User');
+    $mech->post_ok("/auth/ajax/check_auth",
+        { username => $u->email, password_sign_in => '1234567890abcdefgh' },
+        );
+    is_deeply decode_json( $mech->response->content ), {
+        name => 'App User',
     };
 };
 

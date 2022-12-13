@@ -1014,8 +1014,15 @@ sub process_user : Private {
         my $user = $c->user->obj;
         $report->user( $user );
         $report->name( $user->name );
-        $c->stash->{check_name} = 1;
-        $c->stash->{login_success} = 1;
+
+        # iOS app can't send cookies, so instead sends
+        # user's email/password when making a new report.
+        # The POST request has submit_sign_in set to 2 if
+        # the name has been checked.
+        unless ( $c->get_param('submit_sign_in') eq '2' ) {
+            $c->stash->{check_name} = 1;
+            $c->stash->{login_success} = 1;
+        }
         $c->log->info($user->id . ' logged in during problem creation');
         return 1;
     }
