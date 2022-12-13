@@ -77,7 +77,7 @@ for my $test (
     };
 };
 
-subtest "UnitID on gully sent across in detail" => sub {
+subtest "Open311 attribute changes" => sub {
     my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
         areas => "2488", category => 'Gully grid missing', cobrand => 'brent',
     });
@@ -97,8 +97,9 @@ subtest "UnitID on gully sent across in detail" => sub {
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
-        is $c->param('attribute[UnitID]'), undef;
-        like $c->param('description'), qr/ukey: 234/;
+        is $c->param('attribute[UnitID]'), undef, 'UnitID removed from attributes';
+        like $c->param('description'), qr/ukey: 234/, 'UnitID on gully sent across in detail';
+        is $c->param('attribute[title]'), $problem->title, 'Report title passed as attribute for Open311';
     };
 };
 
