@@ -80,6 +80,8 @@ sub open311_extra_data_include {
         }
     }
 
+    push @$open311_only, { name => 'title', value => $row->title };
+
     return $open311_only;
 }
 
