@@ -46,6 +46,20 @@ sub social_auth_enabled {
     return $self->feature('oidc_login') ? 1 : 0;
 }
 
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = join(" ", $payload->{given_name}, $payload->{family_name});
+    # WCC Azure provides a single email address as an array for some reason
+    my $email = $payload->{email};
+    my $emails = $payload->{emails};
+    if ($emails && @$emails) {
+        $email = $emails->[0];
+    }
+
+    return ($name, $email);
+}
+
 sub allow_anonymous_reports { 'button' }
 
 sub admin_user_domain { 'westminster.gov.uk' }

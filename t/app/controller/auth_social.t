@@ -16,11 +16,14 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body2 = $mech->create_body_ok(2508, 'Hackney Council');
+my $body3 = $mech->create_body_ok(2488, 'Brent Council');
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
 my $test_email = $report->user->email;
 my ($report2) = $mech->create_problems_for_body(1, $body2->id, 'My Test Report');
 my $test_email2 = $report->user->email;
+my ($report3) = $mech->create_problems_for_body(1, $body3->id, 'My Test Report');
+my $test_email3 = $report3->user->email;
 
 my $contact = $mech->create_contact_ok(
     body_id => $body->id, category => 'Damaged bin', email => 'BIN',
@@ -36,6 +39,14 @@ $mech->create_contact_ok(
         { code => 'bin_service', description => 'Service needed', required => 'False' },
     ]
 );
+
+$mech->create_contact_ok(
+    body_id => $body3->id, category => 'Damaged bin', email => 'BIN',
+    extra => [
+        { code => 'bin_type', description => 'Type of bin', required => 'True' },
+        { code => 'bin_service', description => 'Service needed', required => 'False' },
+    ]
+);
 # Two options, incidentally, so that the template "Only one option, select it"
 # code doesn't kick in and make the tests pass
 my $contact2 = $mech->create_contact_ok(
@@ -43,6 +54,9 @@ my $contact2 = $mech->create_contact_ok(
 );
 $mech->create_contact_ok(
     body_id => $body2->id, category => 'Whatever', email => 'WHATEVER',
+);
+$mech->create_contact_ok(
+    body_id => $body3->id, category => 'Whatever', email => 'WHATEVER',
 );
 
 my $resolver = Test::MockModule->new('Email::Valid');
@@ -101,7 +115,44 @@ for my $test (
     user_extras => [
         [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
     ],
-}, {
+},
+{
+    type => 'oidc',
+    config => {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'test',
+            },
+            oidc_login => {
+                brent => {
+                    client_id => 'example_client_id',
+                    secret => 'example_secret_key',
+                    auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                    token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                    logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                    password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
+                    display_name => 'MyAccount'
+                }
+            }
+        }
+    },
+    email => $mech->uniquify_email('oidc@example.org'),
+    uid => "brent:example_client_id:my_cool_user_id",
+    mock => 't::Mock::OpenIDConnect',
+    mock_hosts => ['oidc.example.org'],
+    host => 'oidc.example.org',
+    error_callback => '/auth/OIDC?error=ERROR',
+    success_callback => '/auth/OIDC?code=response-code&state=login',
+    redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
+    logout_redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/logout},
+    password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
+    report => $report3,
+    report_email => $test_email3,
+    pc => 'HA9 0FJ',
+},
+{
     type => 'oidc',
     config => {
         ALLOWED_COBRANDS => 'hackney',
@@ -174,6 +225,11 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
             my $mock_api = $test->{mock}->new;
+
+            if ($test->{uid} =~ /:/) {
+                my ($cobrand) = $test->{uid} =~ /^(.*?):/;
+                $mock_api->cobrand($cobrand);
+            }
             $mock_api->returns_email(0) if $state eq 'no email' || $state eq 'existing UID';
             for my $host (@{ $test->{mock_hosts} }) {
                 LWP::Protocol::PSGI->register($mock_api->to_psgi_app, host => $host);

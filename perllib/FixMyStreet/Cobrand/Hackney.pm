@@ -167,6 +167,15 @@ sub social_auth_enabled {
     return $self->feature('oidc_login') ? 1 : 0;
 }
 
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = $payload->{name};
+    my $email = $payload->{email};
+
+    return ($name, $email);
+}
+
 sub open311_skip_existing_contact {
     my ($self, $contact) = @_;
 
