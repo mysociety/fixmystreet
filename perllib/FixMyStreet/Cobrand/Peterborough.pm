@@ -495,6 +495,8 @@ sub look_up_property {
     my $self = shift;
     my $id = shift;
 
+    return unless $id;
+
     my ($pc, $uprn) = split ":", $id;
 
     my $premises = $self->_premises_for_postcode($pc);
