@@ -1,0 +1,21 @@
+[% IF contact.in_storage %]
+    <h1>[% contact.category | html %]</h1>
+    <input type="hidden" name="category" value="[% contact.category | html %]" >
+
+    <div class="admin-hint">
+        <p>A display name will be used in preference to the main category name on web pages and dropdown menus, but not in URLs.</p>
+  </div>
+
+    <p>
+      <label>
+      Display name:
+      <input type="text" class="form-control" name="extra[display_name]" id="display_name"
+        value="[% contact.get_extra_metadata('display_name') | html %]" size="30">
+      </label>
+    </p>
+
+[% ELSE %]
+    <p>
+      <strong>[% loc('Category') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
+    </p>
+[% END %]
