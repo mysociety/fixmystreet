@@ -16,13 +16,16 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body2 = $mech->create_body_ok(2508, 'Hackney Council');
+my $body3 = $mech->create_body_ok(2488, 'Brent Council');
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
 my $test_email = $report->user->email;
 my ($report2) = $mech->create_problems_for_body(1, $body2->id, 'My Test Report');
 my $test_email2 = $report->user->email;
+my ($report3) = $mech->create_problems_for_body(1, $body3->id, 'My Test Report');
+my $test_email3 = $report3->user->email;
 
-foreach ($body->id, $body2->id) {
+foreach ($body->id, $body2->id, $body3->id) {
     $mech->create_contact_ok(
         body_id => $_, category => 'Damaged bin', email => 'BIN',
         group => 'Bins',
@@ -95,7 +98,44 @@ for my $test (
     user_extras => [
         [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
     ],
-}, {
+},
+{
+    type => 'oidc',
+    config => {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'test',
+            },
+            oidc_login => {
+                brent => {
+                    client_id => 'example_client_id',
+                    secret => 'example_secret_key',
+                    auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                    token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                    logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                    password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
+                    display_name => 'MyAccount'
+                }
+            }
+        }
+    },
+    email => $mech->uniquify_email('oidc@example.org'),
+    uid => "brent:example_client_id:my_cool_user_id",
+    mock => 't::Mock::OpenIDConnect',
+    mock_hosts => ['oidc.example.org'],
+    host => 'oidc.example.org',
+    error_callback => '/auth/OIDC?error=ERROR',
+    success_callback => '/auth/OIDC?code=response-code&state=login',
+    redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
+    logout_redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/logout},
+    password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
+    report => $report3,
+    report_email => $test_email3,
+    pc => 'HA9 0FJ',
+},
+{
     type => 'oidc',
     config => {
         ALLOWED_COBRANDS => 'hackney',
