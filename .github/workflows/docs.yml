@@ -1,0 +1,41 @@
+name: Deploy POD documentation to pages
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v2
+        with:
+          path: ~/perl5
+          key: perl-pod
+      - uses: actions/configure-pages@v2
+      - name: Install packages
+        run: bin/cpanm -l ~/perl5 --quiet --notest Pod::ProjectDocs
+      - name: Generate documentation
+        run: ~/perl5/bin/pod2projdocs -out _site -lib perllib -title fixmystreet -desc 'Code documentation for the FixMyStreet platform' -nosourcecode
+        env:
+          PERL5LIB: /home/runner/perl5/lib/perl5
+      - name: Deploy to GitHub Pages
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.POD_DEPLOY_KEY }}
+        with:
+          source-directory: '_site'
+          destination-github-username: 'mysociety'
+          destination-repository-name: 'fixmystreet-pod'
+          target-branch: main

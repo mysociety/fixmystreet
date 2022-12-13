@@ -1,18 +1,56 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Greenwich - code specific to the Greenwich cobrand
+
+=head1 SYNOPSIS
+
+Greenwich use their own Open311 endpoint, backing on to MS Dynamics.
+
+=cut
+
 package FixMyStreet::Cobrand::Greenwich;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
 
+=head2 Defaults
+
+=over 4
+
+=cut
+
 sub council_area_id { return 2493; }
 sub council_area { return 'Royal Borough of Greenwich'; }
 sub council_name { return 'Royal Borough of Greenwich'; }
 sub council_url { return 'greenwich'; }
 
+=item * We use slightly different text on the geocode form.
+
+=cut
+
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter a Royal Greenwich postcode, or street name and area';
 }
+
+=item * We only shows 20 reports per page on the map.
+
+=cut
+
+sub reports_per_page { return 20; }
+
+=item * Users with a royalgreenwich.gov.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'royalgreenwich.gov.uk' }
+
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
 
 sub disambiguate_location {
     my $self    = shift;
@@ -32,6 +70,24 @@ sub disambiguate_location {
     };
 }
 
+=head2 pin_colour
+
+Greenwich uses the following pin colours:
+
+=over 4
+
+=item * grey: 'not responsible'
+
+=item * green: fixed or closed
+
+=item * red: confirmed
+
+=item * yellow: any other open state (e.g. 'action scheduled' or 'in progress')
+
+=back
+
+=cut
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey' if $p->state eq 'not responsible';
@@ -40,11 +96,13 @@ sub pin_colour {
     return 'yellow';
 }
 
-sub reports_per_page { return 20; }
+=head2 open311_extra_data_include
 
-sub admin_user_domain { 'royalgreenwich.gov.uk' }
+When sending reports via Open311, we include an C<external_id> attribute, set
+to the report ID, and a C<closest_address> attribute set to the already
+looked-up closest address.
 
-sub send_questionnaires { 0 }
+=cut
 
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
@@ -65,6 +123,13 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+=head2 open311_contact_meta_override
+
+When fetching services via Open311, make sure some fields are set to
+C<server_set> (they are not asked of the user, but set by the server).
+
+=cut
+
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
@@ -73,6 +138,13 @@ sub open311_contact_meta_override {
         $_->{automated} = 'server_set' if $server_set{$_->{code}};
     }
 }
+
+=head2 should_skip_sending_update
+
+If an update was made on a report sent to the old Greenwich Open311 server,
+skip trying to send that update.
+
+=cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;

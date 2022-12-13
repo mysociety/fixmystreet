@@ -14,7 +14,6 @@
         - Add initial update template on report sending, not creation.
         - Add option to set an emergency message on reporting pages.
         - Add label to questionnaire textarea. #3944
-        - Various accessibility improvements.
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
@@ -31,11 +30,15 @@
         - Include email_text from templates in export-import-data script. #4084
         - Stop map moving when navigating through images with arrow keys.
         - Remember category group through OpenID login.
-	- For CSV export, fetch children of all generations.
+        - For CSV export, fetch children of all generations.
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
         - Make map pan/zoom controls keyboard-accessible. #3751
+        - Add missing label to alert distance input.
+        - Give generated map tiles blank alt attribute.
+        - Add fieldset to alert list and improve sort order.
+        - Improve fancybox accessibility (text and focus).
     - Admin improvements:
         - Admin 'add user' form now always creates staff users
         - Make sure staff permissions removed when anonymized.
@@ -52,6 +55,7 @@
         - Add send_state column to updates. #3865
         - Enable alternative response from templates to be emailed to issue reporter. #4001
         - Option to read asset layers from configuration.
+        - Add GitHub Action to generate POD documentation.
     - Security
         - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
     - Open311 improvements:
