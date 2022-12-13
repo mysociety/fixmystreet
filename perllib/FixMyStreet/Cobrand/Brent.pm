@@ -95,4 +95,13 @@ sub social_auth_enabled {
     return $self->feature('oidc_login') ? 1 : 0;
 }
 
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = join(" ", $payload->{givenName}, $payload->{surname});
+    my $email = $payload->{email};
+
+    return ($name, $email);
+}
+
 1;
