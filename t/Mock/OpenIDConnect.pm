@@ -68,6 +68,10 @@ sub dispatch_request {
             $payload->{given_name} = "Andy";
             $payload->{family_name} = "Dwyer";
             $payload->{emails} = ['pkg-tappcontrollerauth_socialt-oidc@example.org'] if $self->returns_email;
+        } elsif ($self->cobrand eq 'brent') {
+            $payload->{givenName} = "Andy";
+            $payload->{surname} = "Dwyer";
+            $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc@example.org' if $self->returns_email;
         }
         my $signature = "dummy";
         my $id_token = join(".", (
