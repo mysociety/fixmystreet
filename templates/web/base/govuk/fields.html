@@ -278,9 +278,15 @@
         <span class="govuk-visually-hidden">Error:</span> [% error %]
     </span>
   [% END %]
+
+  [% options_list = field.options %]
+  [% IF !options_list.0 %]
+    [% # Single item; not an array, so force into one %]
+    [% options_list = [options_list] %]
+  [% END %]
   <select class="govuk-select[% ' js-autocomplete' IF field.get_tag('autocomplete') %]" id="[% field.id %]" name="[% field.html_name %]"[% IF field.required %] required[% END %]>
     [% '<option value=""></option>' IF field.get_tag('autocomplete') %]
-    [% FOR item IN field.options %]
+    [% FOR item IN options_list %]
       [% # Select options may be optgrouped %]
       [% IF item.group %]
         <optgroup label="[% item.group %]"></optgroup>
