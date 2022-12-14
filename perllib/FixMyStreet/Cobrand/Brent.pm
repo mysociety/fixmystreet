@@ -79,6 +79,7 @@ sub open311_extra_data_exclude {
     my ($self, $row, $h, $contact) = @_;
 
     return ['UnitID'] if $contact->groups->[0] eq 'Drains and gullies';
+    return [];
 }
 
 sub open311_post_send {
