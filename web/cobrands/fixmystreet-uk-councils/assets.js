@@ -452,6 +452,35 @@ fixmystreet.assets.buckinghamshire.speed_not_found = function(layer) {
     $('#form_speed_limit_greater_than_30').val('dont_know').trigger('change');
 };
 
+/* Camden */
+
+fixmystreet.assets.camden = {};
+fixmystreet.assets.camden.housing_estate_actions = {
+    // When a housing estate is found we want to prevent reporting,
+    // which is why we run the road_not_found function, to display
+    // the message.
+    found: function(layer) {
+        var currentCategory = fixmystreet.reporting.selectedCategory().category;
+        if (!fixmystreet.reporting_data || currentCategory === '') {
+            // Skip checks until category has been selected.
+            fixmystreet.message_controller.road_found(layer);
+            return;
+        }
+        var category = fixmystreet.reporting_data.by_category[currentCategory];
+
+        // If this category is non-TfL then disable reporting.
+        if (category.bodies.indexOf('TfL') === -1) {
+            // Need to pass a criterion function to force the not found message to be shown.
+            fixmystreet.message_controller.road_not_found(layer, function() { return true; });
+        } else {
+            fixmystreet.message_controller.road_found(layer);
+        }
+    },
+    not_found: function(layer) {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
 /* Central Bedfordshire */
 
 fixmystreet.assets.centralbedfordshire = {};
