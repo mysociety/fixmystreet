@@ -115,7 +115,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Damaged during collection";
         is $report->category, 'Request new container';
-        is $report->title, 'Request new Green paper and cardboard bin';
+        is $report->title, 'Request new Blue lid paper and cardboard bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -135,7 +135,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
-        is $report->title, 'Request new Green recycling box';
+        is $report->title, 'Request new Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -152,7 +152,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I am a new resident without a container";
-        is $report->title, 'Request new Brown rubbish bin (140L)';
+        is $report->title, 'Request new Black rubbish bin (140L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -171,7 +171,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
-        is $report->title, 'Request new Green recycling box';
+        is $report->title, 'Request new Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -190,7 +190,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 3\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
-        is $report->title, 'Request new Green recycling box';
+        is $report->title, 'Request new Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -209,7 +209,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
-        is $report->title, 'Request new Recycling bin (240L)';
+        is $report->title, 'Request new Green recycling bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -222,10 +222,10 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->submit_form_ok({ form_number => 7 });
         $mech->content_contains('name="container-choice" value="1"');
-        $mech->content_contains('Green paper and cardboard bin');
+        $mech->content_contains('Blue lid paper and cardboard bin');
         $mech->content_contains('Green recycling box');
         $mech->content_contains('Food waste bin (outdoor)');
-        $mech->content_contains('Brown rubbish bin');
+        $mech->content_contains('Black rubbish bin');
     };
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/12345/report');

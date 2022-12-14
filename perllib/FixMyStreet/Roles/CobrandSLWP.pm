@@ -290,37 +290,59 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-    $self->{c}->stash->{containers} = {
-        1 => 'Brown rubbish bin (140L)',
-        2 => 'Brown rubbish bin (240L)',
-        3 => 'Brown rubbish bin (360L)',
-        35 => 'Rubbish bin (180L)',
-        16 => 'Green recycling box',
-        19 => 'Green paper and cardboard bin',
-        23 => 'Food waste bin (kitchen)',
-        24 => 'Food waste bin (outdoor)',
-        26 => 'Garden Waste Bin',
-        27 => 'Garden Waste Bin',
-        28 => 'Garden Waste Sacks',
-        6 => 'Refuse Red Stripe Bag',
-        18 => 'Recycling Blue Stripe Bag',
-        21 => 'Paper & Card Reusable Bag',
-        30 => 'Paper Single Use Bag',
-        7 => 'Communal Refuse bin (240L)',
-        8 => 'Communal Refuse bin (360L)',
-        9 => 'Communal Refuse bin (660L)',
-        10 => 'Communal Refuse bin (1100L)',
-        11 => 'Communal Refuse Chamberlain',
-        33 => 'Communal Refuse bin (140L)',
-        34 => 'Communal Refuse bin (1280L)',
-        14 => 'Communal Recycling bin (660L)',
-        15 => 'Communal Recycling bin (1100L)',
-        25 => 'Communal Food bin (240L)',
-        12 => 'Recycling bin (240L)',
-        13 => 'Recycling bin (360L)',
-        20 => 'Paper recycling bin (360L)',
-        31 => 'Paper 55L Box',
-    };
+    my %shared = (
+            23 => 'Food waste bin (kitchen)',
+            24 => 'Food waste bin (outdoor)',
+            6 => 'Refuse Red Stripe Bag',
+            18 => 'Recycling Blue Stripe Bag',
+            21 => 'Paper & Card Reusable Bag',
+            30 => 'Paper Single Use Bag',
+            7 => 'Communal Refuse bin (240L)',
+            8 => 'Communal Refuse bin (360L)',
+            9 => 'Communal Refuse bin (660L)',
+            10 => 'Communal Refuse bin (1100L)',
+            11 => 'Communal Refuse Chamberlain',
+            33 => 'Communal Refuse bin (140L)',
+            34 => 'Communal Refuse bin (1280L)',
+            14 => 'Communal Recycling bin (660L)',
+            15 => 'Communal Recycling bin (1100L)',
+            25 => 'Communal Food bin (240L)',
+            12 => 'Recycling bin (240L)',
+            13 => 'Recycling bin (360L)',
+            20 => 'Paper recycling bin (360L)',
+            31 => 'Paper 55L Box',
+    );
+    if ($self->moniker eq 'sutton') {
+        $self->{c}->stash->{containers} = {
+            %shared,
+            1 => 'Brown rubbish bin (140L)',
+            2 => 'Brown rubbish bin (240L)',
+            3 => 'Brown rubbish bin (360L)',
+            35 => 'Rubbish bin (180L)',
+            16 => 'Green recycling box',
+            19 => 'Green paper and cardboard bin',
+            26 => 'Garden waste bin',
+            27 => 'Garden waste bin',
+            28 => 'Garden waste sacks',
+        };
+    } elsif ($self->moniker eq 'kingston') {
+        $self->{c}->stash->{containers} = {
+            %shared,
+            1 => 'Black rubbish bin (140L)',
+            2 => 'Black rubbish bin (240L)',
+            3 => 'Black rubbish bin (360L)',
+            35 => 'Black rubbish bin (180L)',
+            12 => 'Green recycling bin (240L)',
+            13 => 'Green recycling bin (360L)',
+            16 => 'Green recycling box (55L)',
+            19 => 'Blue lid paper and cardboard bin (240L)',
+            20 => 'Blue lid paper and cardboard bin (360L)',
+            36 => 'Blue lid paper and cardboard bin (180L)',
+            26 => 'Garden waste bin (240L)',
+            27 => 'Garden waste bin (140L)',
+            28 => 'Garden waste sacks',
+        };
+    }
 
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
