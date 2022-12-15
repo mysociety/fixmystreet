@@ -30,11 +30,11 @@ describe('Regression tests', function() {
         cy.route('/around\?ajax*').as('update-results');
         cy.request({
           method: 'POST',
-          url: '/auth?r=/',
+          url: 'http://fixmystreet.localhost:3001/auth?r=/',
           form: true,
           body: { username: 'cs@example.org', password_sign_in: 'password' }
         });
-        cy.visit('/report/1/moderate');
+        cy.visit('http://fixmystreet.localhost:3001/report/1/moderate');
         cy.get('[name=problem_title]').clear().type('M&S "brill" says <glob>').parents('form').submit();
         cy.title().should('contain', 'M&S "brill" says <glob>');
         cy.contains('Problems nearby').click();

@@ -414,6 +414,8 @@ sub defect_wfs_query {
 sub pins_from_wfs {
     my ($self, $bbox) = @_;
 
+    return [] if FixMyStreet->test_mode == 2; # In Cypress, we do not want to call out
+
     my $wfs = $self->defect_wfs_query($bbox);
 
     # Generate a negative fake ID so it doesn't clash with FMS report IDs.

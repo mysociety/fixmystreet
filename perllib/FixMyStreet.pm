@@ -33,8 +33,8 @@ Thus module has utility functions for the FMS project.
 
 =head2 test_mode
 
-    FixMyStreet->test_mode( $bool );
-    my $in_test_mode_bool = FixMyStreet->test_mode;
+    FixMyStreet->test_mode( $flag );
+    my $in_test_mode_flag = FixMyStreet->test_mode;
 
 Put the FixMyStreet into test mode - intended for the unit tests:
 
@@ -43,9 +43,11 @@ Put the FixMyStreet into test mode - intended for the unit tests:
         FixMyStreet->test_mode(1);
     }
 
+And set to 2 by the Cypress tests.
+
 =cut
 
-my $TEST_MODE = undef;
+my $TEST_MODE = 0;
 
 sub test_mode {
     my $class = shift;
