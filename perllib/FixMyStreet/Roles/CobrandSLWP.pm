@@ -696,7 +696,7 @@ sub waste_munge_request_data {
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
-    my $quantity = 1;
+    my $quantity = $data->{recycling_quantity} || 1;
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
@@ -710,6 +710,9 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'new_build') {
         $action_id = 1; # Deliver
         $reason_id = 4; # New
+    } elsif ($reason eq 'more') {
+        $action_id = 1; # Deliver
+        $reason_id = 3; # Change capacity
     } else {
         # No reason, must be a bag
         $action_id = 1; # Deliver

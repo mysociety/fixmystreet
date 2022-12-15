@@ -105,7 +105,6 @@ FixMyStreet::override_config {
     subtest 'Request a new bin' => sub {
         $mech->get_ok('/waste/12345/request');
 		# 19 (1), 24 (1), 16 (1), 1 (1)
-        # missing, new_build, more
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'collection' }});
@@ -128,19 +127,20 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
+        $mech->submit_form_ok({ with_fields => { 'recycling_quantity' => 2 }});
         $mech->submit_form_ok({ with_fields => { 'notes_missing' => 'Were there, now not' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
+        is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
         is $report->title, 'Request new Green recycling box';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Action]'), '1';
-        is $cgi->param('attribute[Reason]'), '1';
+        is $cgi->param('attribute[Action]'), '1::1';
+        is $cgi->param('attribute[Reason]'), '1::1';
     };
     subtest 'Request new build container' => sub {
         $mech->get_ok('/waste/12345/request');
@@ -163,19 +163,38 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
+        $mech->submit_form_ok({ with_fields => { 'recycling_quantity' => 2 }});
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'wear' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
+        is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
         is $report->title, 'Request new Green recycling box';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Action]'), '3';
-        is $cgi->param('attribute[Reason]'), '2';
+        is $cgi->param('attribute[Action]'), '3::3';
+        is $cgi->param('attribute[Reason]'), '2::2';
+    };
+    subtest 'Request more recycling boxes' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'more' }});
+        $mech->submit_form_ok({ with_fields => { 'recycling_quantity' => 3 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 3\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
+        is $report->title, 'Request new Green recycling box';
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '1::1::1';
+        is $cgi->param('attribute[Reason]'), '3::3::3';
     };
 
     subtest 'Request bins from front page' => sub {
