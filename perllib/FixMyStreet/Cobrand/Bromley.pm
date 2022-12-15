@@ -312,11 +312,16 @@ sub open311_post_send {
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
-    $contact->set_extra_metadata( id_field => 'service_request_id_ext');
-
     my %server_set = (easting => 1, northing => 1, service_request_id_ext => 1);
+    my $id_field = 0;
     foreach (@$meta) {
         $_->{automated} = 'server_set' if $server_set{$_->{code}};
+        $id_field = 1 if $_->{code} eq 'service_request_id_ext';
+    }
+    if ($id_field) {
+        $contact->set_extra_metadata( id_field => 'service_request_id_ext');
+    } else {
+        $contact->unset_extra_metadata('id_field');
     }
 
     # Lights we want to store feature ID, PROW on all categories.
