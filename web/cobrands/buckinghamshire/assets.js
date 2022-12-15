@@ -388,7 +388,7 @@ fixmystreet.assets.add(defaults, {
                             "<p>The road you have selected is on a regular " +
                             "gritting route, and will be gritted according " +
                             "to the published " +
-                            "<a href='https://www.buckscc.gov.uk/services/transport-and-roads/road-maintenance-and-repairs/winter-maintenance/'>" +
+                            "<a href='https://www.buckinghamshire.gov.uk/parking-roads-and-transport/check-to-see-which-roads-are-gritted/'>" +
                             "policy</a>.</p>" +
                             "</div>";
                 $div = $(msg);
