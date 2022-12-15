@@ -937,6 +937,7 @@ FixMyStreet::override_config {
         };
 
         sub test_summary {
+            my $date_day = shift;
             $mech->content_contains('Request a bulky waste collection');
             $mech->content_lacks('Your bulky waste collection');
             $mech->content_contains('Booking Summary');
@@ -954,6 +955,9 @@ FixMyStreet::override_config {
             $mech->content_contains('<img class="img-preview is--medium" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
             $mech->content_lacks('No image of the location has been attached.');
             $mech->content_contains('£23.50');
+            $mech->content_contains("<dd>$date_day August</dd>");
+            my $day_before = $date_day - 1;
+            $mech->content_contains("23:55 on $day_before August 2022");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
         }
@@ -982,7 +986,7 @@ FixMyStreet::override_config {
             return ($token, $new_report, $report_id);
         }
 
-        subtest 'Summary page' => \&test_summary;
+        subtest 'Summary page' => sub { test_summary(19) }; # 19th August
 
         subtest 'Slot has become fully booked' => sub {
             # Slot has become fully booked in the meantime - should
@@ -1025,7 +1029,7 @@ FixMyStreet::override_config {
             $mech->get_ok("/waste/pay_cancel/$report_id/$token?property_id=PE1%203NA:100090215480");
         };
 
-        subtest 'Summary page' => \&test_summary;
+        subtest 'Summary page' => sub { test_summary(26) }; # 26th August
         subtest 'Summary submission again' => \&test_summary_submission;
         subtest 'Payment page again' => sub {
             my ($token, $new_report, $report_id) = test_payment_page($sent_params);

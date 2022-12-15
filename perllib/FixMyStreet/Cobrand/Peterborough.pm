@@ -1640,6 +1640,15 @@ sub bulky_nice_collection_date {
     return $dt->strftime('%d %B');
 }
 
+sub bulky_nice_cancellation_cutoff_date {
+    my ( $self, $collection_date ) = @_;
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $dt
+        = $parser->parse_datetime($collection_date)->truncate( to => 'day' );
+    $dt->subtract( minutes => 5 );
+    return $dt->strftime('%H:%M on %d %B %Y');
+}
+
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
 

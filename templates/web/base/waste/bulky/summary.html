@@ -51,8 +51,8 @@
         <div class="govuk-warning-text__content">
             <span class="govuk-warning-text__assistive">Warning</span>
             <p class="govuk-!-margin-bottom-3">You can cancel this booking till
-              23:55hrs on the 2nd of August 2022. [% #XXX calculate cut off when we do cancellations  %]</p>
-            <p class="govuk-!-margin-bottom-0">You can get a refund by cancelling 24hrs
+              [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
+            <p class="govuk-!-margin-bottom-0">You can get a refund by cancelling 24 hours
                before the day of collection.</p>
         </div>
       </div>
