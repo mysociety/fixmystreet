@@ -723,6 +723,15 @@ sub waste_munge_request_data {
 
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
+    if ($data->{notes_missing}) {
+        $data->{detail} .= " - $data->{notes_missing}";
+        $c->set_param('Notes', $data->{notes_missing});
+    }
+    if ($data->{notes_damaged}) {
+        my $notes = $c->stash->{label_for_field}->($form, 'notes_damaged', $data->{notes_damaged});
+        $data->{detail} .= " - $notes";
+        $c->set_param('Notes', $notes);
+    }
     $c->set_param('Container_Type', $id);
 }
 

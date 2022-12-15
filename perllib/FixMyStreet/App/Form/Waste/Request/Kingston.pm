@@ -14,7 +14,13 @@ has_page about_you => (
 has_page replacement => (
     fields => ['request_reason', 'continue'],
     title => 'Reason for request',
-    next => 'about_you',
+    next => sub {
+        my $data = shift;
+        my $reason = $data->{request_reason};
+        return 'notes_missing' if $reason eq 'missing';
+        return 'notes_damaged' if $reason eq 'damaged';
+        return 'about_you';
+    },
 );
 
 has_field request_reason => (
@@ -34,6 +40,43 @@ sub options_request_reason {
         if !$garden;
     push @options, { value => 'damaged', label => 'My container is damaged' };
     push @options, { value => 'missing', label => 'My container is missing' };
+    return @options;
+}
+
+has_page notes_missing => (
+    fields => ['notes_missing', 'continue'],
+    title => 'Extra information',
+    next => 'about_you',
+);
+
+has_field notes_missing => (
+    required => 1,
+    type => 'Text',
+    widget => 'Textarea',
+    label => 'Can you give us any information about what happened to your container?',
+);
+
+has_page notes_damaged => (
+    fields => ['notes_damaged', 'continue'],
+    intro => 'request_notes_damaged.html',
+    title => 'Extra information',
+    next => 'about_you',
+);
+
+has_field notes_damaged => (
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'What happened to your container?',
+);
+
+sub options_notes_damaged {
+    my $form = shift;
+    my @options = (
+        { value => 'collection', label => 'Damaged during collection' },
+        { value => 'wear', label => 'Wear and tear' },
+        { value => 'other', label => 'Other damage' },
+    );
     return @options;
 }
 

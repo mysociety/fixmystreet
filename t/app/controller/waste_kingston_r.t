@@ -108,12 +108,13 @@ FixMyStreet::override_config {
         # missing, new_build, more
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
+        $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'collection' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Damaged during collection";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Green paper and cardboard bin';
         FixMyStreet::Script::Reports::send();
@@ -127,12 +128,13 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
+        $mech->submit_form_ok({ with_fields => { 'notes_missing' => 'Were there, now not' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
         is $report->title, 'Request new Green recycling box';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
@@ -157,6 +159,25 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Action]'), '1';
         is $cgi->param('attribute[Reason]'), '4';
     };
+    subtest 'Request a new damaged recycling box' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
+        $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'wear' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
+        is $report->title, 'Request new Green recycling box';
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '3';
+        is $cgi->param('attribute[Reason]'), '2';
+    };
+
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
         $mech->submit_form_ok({ form_number => 7 });
