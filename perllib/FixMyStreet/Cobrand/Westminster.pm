@@ -58,6 +58,20 @@ sub anonymous_account {
     };
 }
 
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = join(" ", $payload->{given_name}, $payload->{family_name});
+    # WCC Azure provides a single email address as an array for some reason
+    my $email = $payload->{email};
+    my $emails = $payload->{emails};
+    if ($emails && @$emails) {
+        $email = $emails->[0];
+    }
+
+    return ($name, $email);
+}
+
 sub oidc_user_extra {
     my ($self, $id_token) = @_;
 

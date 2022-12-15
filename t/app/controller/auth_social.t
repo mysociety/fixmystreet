@@ -168,6 +168,11 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
             my $mock_api = $test->{mock}->new;
+
+            if ($test->{uid} =~ /:/) {
+                my ($cobrand) = $test->{uid} =~ /^(.*?):/;
+                $mock_api->cobrand($cobrand);
+            }
             $mock_api->returns_email(0) if $state eq 'no email' || $state eq 'existing UID';
             for my $host (@{ $test->{mock_hosts} }) {
                 LWP::Protocol::PSGI->register($mock_api->to_psgi_app, host => $host);

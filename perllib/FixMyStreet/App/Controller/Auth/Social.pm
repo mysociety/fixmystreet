@@ -320,15 +320,8 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
         $c->detach('oauth_failure') unless $allowed_domains{$hd};
     }
 
-    # Some claims need parsing into a friendlier format
-    my $name = $id_token->payload->{name} || join(" ", $id_token->payload->{given_name}, $id_token->payload->{family_name});
-    my $email = $id_token->payload->{email};
-
-    # WCC Azure provides a single email address as an array for some reason
-    my $emails = $id_token->payload->{emails};
-    if ($emails && @$emails) {
-        $email = $emails->[0];
-    }
+    # Cobrands can use different fields for name and email
+    my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload);
 
     # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
     my $uid = join(":", $c->cobrand->moniker, $c->cobrand->feature('oidc_login')->{client_id}, $id_token->payload->{sub});

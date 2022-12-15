@@ -19,6 +19,12 @@ has returns_email => (
     default => 1,
 );
 
+has cobrand => (
+    is => 'rw',
+    isa => Str,
+    default => '',
+);
+
 sub dispatch_request {
     my $self = shift;
 
@@ -54,13 +60,15 @@ sub dispatch_request {
             aud => "example_client_id",
             iat => $now,
             auth_time => $now,
-            given_name => "Andy",
-            family_name => "Dwyer",
             tfp => "B2C_1_default",
             extension_CrmContactId => "1c304134-ef12-c128-9212-123908123901",
             nonce => 'MyAwesomeRandomValue',
         };
-        $payload->{emails} = ['pkg-tappcontrollerauth_socialt-oidc@example.org'] if $self->returns_email;
+        if ($self->cobrand eq 'westminster') {
+            $payload->{given_name} = "Andy";
+            $payload->{family_name} = "Dwyer";
+            $payload->{emails} = ['pkg-tappcontrollerauth_socialt-oidc@example.org'] if $self->returns_email;
+        }
         my $signature = "dummy";
         my $id_token = join(".", (
             encode_base64($self->json->encode($header), ''),
@@ -102,7 +110,7 @@ sub dispatch_request {
             nonce => 'MyAwesomeRandomValue',
             hd => 'example.org',
         };
-        $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc_google@example.org' if $self->returns_email;
+        $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc_google@example.org' if $self->returns_email && $self->cobrand eq 'hackney';
         $payload->{email_verified} = JSON->true if $self->returns_email;
         my $signature = "dummy";
         my $id_token = join(".", (

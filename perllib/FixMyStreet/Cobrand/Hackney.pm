@@ -175,6 +175,15 @@ sub anonymous_account {
     };
 }
 
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = $payload->{name};
+    my $email = $payload->{email};
+
+    return ($name, $email);
+}
+
 sub open311_skip_existing_contact {
     my ($self, $contact) = @_;
 
