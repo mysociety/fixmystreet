@@ -40,7 +40,7 @@
           },
           {
             "Data": {
-              "ExtensibleDatum": {
+              "ExtensibleDatum": [ {
                 "ChildData": {
                   "ExtensibleDatum": [
                     { "Value": "24", "DatatypeName": "Container Type" },
@@ -50,7 +50,16 @@
                 "DatatypeName": "Food Containers",
                 "DatatypeId": "3955",
                 "Value": "Food Caddy 23L"
-              }
+              }, {
+                "Value": "Paper Recycling 240L ",
+                "DatatypeName": "Recycling Containers",
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "19" },
+                    { "DatatypeName": "Quantity", "Value": "1" }
+                  ]
+                }
+              } ]
             },
             "TaskTypeId": "2239",
             "ServiceTaskSchedules": {

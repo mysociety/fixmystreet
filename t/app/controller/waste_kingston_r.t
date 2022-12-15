@@ -105,6 +105,7 @@ FixMyStreet::override_config {
     subtest 'Request a new bin' => sub {
         $mech->get_ok('/waste/12345/request');
 		# 19 (1), 24 (1), 16 (1), 1 (1)
+        $mech->content_unlike(qr/Blue lid paper.*Blue lid paper/s);
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'collection' }});

@@ -670,15 +670,18 @@ sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
 
     my @radio_options;
+    my %seen;
     for (my $i=0; $i<@$field_list; $i+=2) {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
+        next if $self->moniker eq 'kingston' && $seen{$id};
         push @radio_options, {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
             disabled => $value->{disabled},
         };
+        $seen{$id} = 1;
     }
 
     @$field_list = (
