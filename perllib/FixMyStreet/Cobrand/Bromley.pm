@@ -225,6 +225,12 @@ sub open311_extra_data_include {
         push @$open311_only, { name => 'fms_extra_title', value => $row->user->title };
     }
 
+    if (!$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row, 'usrn')) {
+            push @$open311_only, { name => 'usrn', value => $usrn };
+        }
+    }
+
     return $open311_only;
 }
 
@@ -252,6 +258,47 @@ sub open311_pre_send {
         my $text = $row->detail . "\n\nPrivate comments: $private_comments";
         $row->detail($text);
     }
+}
+
+sub lookup_site_code {
+    my $self = shift;
+    my $row = shift;
+    my $field = shift;
+
+    my ($x, $y) = $row->local_coords;
+    my $buffer = 50;
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $filter = "
+    <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
+        <ogc:And>
+            <ogc:PropertyIsNotEqualTo>
+                <ogc:PropertyName>street_type</ogc:PropertyName>
+                <ogc:Literal>Numbered Street</ogc:Literal>
+            </ogc:PropertyIsNotEqualTo>
+            <ogc:BBOX>
+                <ogc:PropertyName>geometry</ogc:PropertyName>
+                <gml:Envelope xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:27700'>
+                    <gml:lowerCorner>$w $s</gml:lowerCorner>
+                    <gml:upperCorner>$e $n</gml:upperCorner>
+                </gml:Envelope>
+                <Distance units='m'>50</Distance>
+            </ogc:BBOX>
+        </ogc:And>
+    </ogc:Filter>";
+    $filter =~ s/\n\s+//g;
+
+    my $cfg = {
+        url => "https://tilma.mysociety.org/mapserver/openusrn",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => 'usrn',
+        property => "usrn",
+        filter => $filter,
+        accept_feature => sub { 1 },
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y);
+    return $self->_nearest_feature($cfg, $x, $y, $features);
 }
 
 sub _include_user_title_in_extra {

@@ -16,6 +16,13 @@ $ukc->mock('lookup_site_code', sub {
     return "Road ID";
 });
 
+my $ukb = Test::MockModule->new('FixMyStreet::Cobrand::Bromley');
+$ukb->mock('lookup_site_code', sub {
+    my ($self, $row, $buffer) = @_;
+    is $row->latitude, 100, 'Correct latitude';
+    return "Road ID";
+});
+
 package main;
 sub test_overrides; # defined below
 
@@ -84,6 +91,7 @@ my $bromley_check =
             { name => 'email', value => TEST_USER_EMAIL },
             { name => 'fms_extra_title', value => 'MR' },
             { name => 'last_name', value => 'Bloggs' },
+            { name => 'usrn', value => 'Road ID' },
         ),
     });
 
