@@ -96,4 +96,10 @@ sub waste_payment_type {
     return ($category, $sub_type);
 }
 
+sub waste_dd_paid_date {
+    my ($self, $date) = @_;
+    my ($year, $month, $day) = ( $date =~ m#^(\d+)-(\d+)-(\d+)#);
+    return ($day, $month, $year);
+}
+
 1;
