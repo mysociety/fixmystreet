@@ -11,6 +11,7 @@ use BromleyParks;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
+with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2482; }
@@ -284,10 +285,6 @@ sub open311_post_send_updates {
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
-
-    # Waste reports are sent to our Open311 endpoint, not Bromley's,
-    # and we don't want to make changes to parameters in that case.
-    return if ($comment->problem->cobrand_data || '') eq 'waste';
 
     delete $params->{update_id};
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',

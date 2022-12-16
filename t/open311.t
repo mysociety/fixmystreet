@@ -52,26 +52,33 @@ for my $sfc (0..2) {
 
 my $dt = DateTime->now();
 
-my $user = FixMyStreet::DB->resultset('User')->new( {
+my $user = FixMyStreet::DB->resultset('User')->create( {
     name => 'Test User',
     email => 'test@example.com',
 } );
 
-my $problem = FixMyStreet::DB->resultset('Problem')->new( {
+my $bromley = FixMyStreet::DB->resultset('Body')->create({ name => 'Bromley' });
+my $problem = FixMyStreet::DB->resultset('Problem')->create( {
     id => 80,
     external_id => 81,
     state => 'confirmed',
     title => 'a problem',
     detail => 'problem detail',
+    bodies_str => $bromley->id,
     category => 'pothole',
     latitude => 1,
     longitude => 2,
     user => $user,
     name => 'Test User',
     cobrand => 'fixmystreet',
+    postcode => '',
+    areas => '',
+    used_map => 1,
+    anonymous => 1,
 } );
+$problem->user($user);
 
-my $bromley = FixMyStreet::DB->resultset('Body')->new({ name => 'Bromley' });
+my $contact = FixMyStreet::DB->resultset('Contact')->create({ body => $bromley, category => 'pothole', email => 'pothole', state => 'confirmed', 'editor' => 'Test', whenedited => \'current_timestamp', note => 'Test' });
 
 subtest 'posting service request' => sub {
     my $extra = {
@@ -350,7 +357,7 @@ for my $test (
 
 subtest 'test always_send_email' => sub {
     my $email = $user->email;
-    $user->email(undef);
+    $problem->user->email(undef);
     my $extra = { url => 'http://example.com/report/1', };
 
     my $results = make_service_req(
@@ -361,7 +368,7 @@ subtest 'test always_send_email' => sub {
     my $c = CGI::Simple->new( $results->{req}->content );
 
     is $c->param('email'), 'do-not-reply@example.org', 'correct email';
-    $user->email($email);
+    $problem->user->email($email);
 };
 
 sub make_comment {

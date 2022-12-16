@@ -104,7 +104,7 @@ sub send_service_request {
             } elsif ( my $token = $obj->{request}->[0]->{token} ) {
 
                 my $service_request_id;
-                my $polling_interval = FixMyStreet->config('O311_POLLING_INTERVAL') || 2;
+                my $polling_interval = FixMyStreet->config('O311_POLLING_INTERVAL') // 2;
                 my $polling_max_tries = FixMyStreet->config('O311_POLLING_MAX_TRIES') || 5;
 
                 for (1..$polling_max_tries) {

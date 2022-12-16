@@ -326,7 +326,7 @@ subtest 'Private comments on updates are added to open311 description' => sub {
     };
 };
 
-subtest 'Updates on waste reports don\'t have munged params' => sub {
+subtest 'Updates on waste reports still have munged params' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => ['bromley', 'tfl'],
     }, sub {
@@ -362,10 +362,10 @@ subtest 'Updates on waste reports don\'t have munged params' => sub {
 
         my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
-        is $c->param('update_id'), $comment->id;
-        is $c->param('update_id_ext'), undef;
-        is $c->param('service_request_id_ext'), undef;
-        is $c->param('public_anonymity_required'), undef;
+        is $c->param('update_id'), undef;
+        is $c->param('update_id_ext'), $comment->id;
+        is $c->param('service_request_id_ext'), $report->id;
+        is $c->param('public_anonymity_required'), 'FALSE';
         is $c->param('email_alerts_requested'), undef;
 
         $report->update({ cobrand_data => '' });
