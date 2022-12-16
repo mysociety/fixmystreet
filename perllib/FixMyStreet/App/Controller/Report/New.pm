@@ -541,7 +541,9 @@ sub oauth_callback : Private {
     my ( $self, $c, $token_code ) = @_;
     my $auth_token = $c->forward(
         '/tokens/load_auth_token', [ $token_code, 'problem/social' ]);
-    $c->stash->{oauth_report} = $auth_token->data;
+    my $data = $auth_token->data;
+    $c->stash->{filter_group} = $data->{group};
+    $c->stash->{oauth_report} = $data->{report};
     $c->detach('report_new');
 }
 
@@ -1603,7 +1605,11 @@ sub save_user_and_report : Private {
     if ( $c->stash->{is_social_user} ) {
         my $token = $c->model("DB::Token")->create( {
             scope => 'problem/social',
-            data => { $report->get_inflated_columns },
+            data => {
+                report => { $report->get_inflated_columns },
+                # Group not stored as part of report so save
+                $c->stash->{filter_group} ? ( group => $c->stash->{filter_group} ) : (),
+            },
         } );
 
         $c->stash->{detach_to} = '/report/new/oauth_callback';

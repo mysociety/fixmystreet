@@ -22,28 +22,22 @@ my $test_email = $report->user->email;
 my ($report2) = $mech->create_problems_for_body(1, $body2->id, 'My Test Report');
 my $test_email2 = $report->user->email;
 
-my $contact = $mech->create_contact_ok(
-    body_id => $body->id, category => 'Damaged bin', email => 'BIN',
-    extra => [
-        { code => 'bin_type', description => 'Type of bin', required => 'True' },
-        { code => 'bin_service', description => 'Service needed', required => 'False' },
-    ]
-);
-$mech->create_contact_ok(
-    body_id => $body2->id, category => 'Damaged bin', email => 'BIN',
-    extra => [
-        { code => 'bin_type', description => 'Type of bin', required => 'True' },
-        { code => 'bin_service', description => 'Service needed', required => 'False' },
-    ]
-);
-# Two options, incidentally, so that the template "Only one option, select it"
-# code doesn't kick in and make the tests pass
-my $contact2 = $mech->create_contact_ok(
-    body_id => $body->id, category => 'Whatever', email => 'WHATEVER',
-);
-$mech->create_contact_ok(
-    body_id => $body2->id, category => 'Whatever', email => 'WHATEVER',
-);
+foreach ($body->id, $body2->id) {
+    $mech->create_contact_ok(
+        body_id => $_, category => 'Damaged bin', email => 'BIN',
+        group => 'Bins',
+        extra => {
+            _fields => [
+                { code => 'bin_type', description => 'Type of bin', required => 'True' },
+                { code => 'bin_service', description => 'Service needed', required => 'False' },
+            ]
+        }
+    );
+    # Two options, incidentally, so that the template "Only one option, select it"
+    # code doesn't kick in and make the tests pass
+    $mech->create_contact_ok( body_id => $_, category => 'Whatever', email => 'WHATEVER' );
+    $mech->create_contact_ok( body_id => $_, category => 'Invisible bin', email => 'INVISIBLE', group => 'Bins' );
+}
 
 my $resolver = Test::MockModule->new('Email::Valid');
 my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
@@ -194,7 +188,8 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->submit_form_ok( { with_fields => { pc => $test->{pc} || 'SW1A1AA' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 $mech->submit_form(with_fields => {
-                    category => 'Damaged bin',
+                    category => 'Bins',
+                    'category.Bins' => 'Damaged bin',
                     title => 'Test title',
                     detail => 'Test detail',
                 });
@@ -230,6 +225,8 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             if ($page eq 'report') {
                 $mech->content_contains('/report/new');
                 $mech->content_contains('Salt bin');
+                $mech->content_contains('name="category" value="Bins" data-subcategory="Bins" checked');
+                $mech->content_contains('name="category.Bins" data-category_display="Damaged bin" value=\'Damaged bin\' checked');
             } elsif ($page eq 'update') {
                 $mech->content_contains('/report/update');
             }
@@ -365,7 +362,8 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->submit_form_ok( { with_fields => { pc => 'SW1A1AA' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 $mech->submit_form(with_fields => {
-                    category => 'Damaged bin',
+                    category => 'Bins',
+                    'category.Bins' =>'Damaged bin',
                     title => 'Test title',
                     detail => 'Test detail',
                 });
