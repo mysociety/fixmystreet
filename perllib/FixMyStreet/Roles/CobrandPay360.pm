@@ -123,4 +123,10 @@ sub waste_check_existing_dd {
     }
 }
 
+sub waste_dd_paid_date {
+    my ($self, $date) = @_;
+    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
+    return ($day, $month, $year);
+}
+
 1;
