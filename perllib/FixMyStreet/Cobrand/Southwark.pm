@@ -32,6 +32,31 @@ sub disambiguate_location {
     };
 }
 
+
+=item lookup_site_code
+
+Reports sent to Confirm have a "site code" which is usually the USRN of the
+street they're on. For reports made within estates Southwark don't want the
+street USRN to be used, but rather the site code of the estate.
+
+This code ensures the estate site code is used even if the report was made
+on a street that happens to be within an estate.
+
+=cut
+
+sub lookup_site_code {
+    my $self = shift;
+    my $row = shift;
+    my $field = shift;
+
+    if (my $feature = $self->estate_feature_for_point($row->latitude, $row->longitude)) {
+        return $feature->{properties}->{Site_code};
+    }
+
+    return $self->SUPER::lookup_site_code($row, $field);
+}
+
+
 sub lookup_site_code_config {
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
     return {
@@ -47,11 +72,25 @@ sub lookup_site_code_config {
 sub report_new_is_in_estate {
     my ( $self ) = @_;
 
-    my ($x, $y) = Utils::convert_latlon_to_en(
+    return $self->estate_feature_for_point(
         $self->{c}->stash->{latitude},
-        $self->{c}->stash->{longitude},
-        'G'
-    );
+        $self->{c}->stash->{longitude}
+    ) ? 1 : 0;
+}
+
+
+=item estate_feature_for_point
+
+Takes a coordinate (as latitude & longitude) and queries the Southwark Estates
+asset layer on our tilma WFS server to determine whether the coordinate lies
+within an estate. If it does, the feature is returned.
+
+=cut
+
+sub estate_feature_for_point {
+    my ( $self, $lat, $lon ) = @_;
+
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
 
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
     my $cfg = {
@@ -62,7 +101,7 @@ sub report_new_is_in_estate {
     };
 
     my $features = $self->_fetch_features($cfg, $x, $y);
-    return scalar @$features ? 1 : 0;
+    return $features->[0];
 }
 
 sub munge_categories {
