@@ -545,6 +545,20 @@ sub bulky_can_view_collection {
     return $c->user->id == $p->user_id;
 }
 
+sub bulky_can_view_cancellation {
+    my ( $self, $p ) = @_;
+
+    my $c = $self->{c};
+
+    return unless $p && $c->user_exists;
+
+    # Staff only
+    # XXX do we want a permission for this?
+    return 1
+        if $c->user->is_superuser
+        || $c->user->belongs_to_body( $self->body->id );
+}
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};
@@ -745,17 +759,36 @@ sub bulky_per_item_costs {
     return $cfg->{per_item_costs};
 }
 
-sub bulky_can_cancel {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    my $pending_collection = $c->stash->{property}{pending_bulky_collection};
+sub bulky_can_cancel_collection {
+    # There is an $ignore_external_id option because we display some
+    # cancellation messaging without needing a report in Bartec
+    my ( $self, $collection, $ignore_external_id ) = @_;
 
     return
-           $pending_collection
-        && $pending_collection->external_id
-        && $self->bulky_can_view_collection($pending_collection)
-        && $self->within_bulky_cancel_window;
+           $collection
+        && $collection->is_open
+        && ( $collection->external_id || $ignore_external_id )
+        && $self->bulky_can_view_collection($collection)
+        && $self->within_bulky_cancel_window($collection);
+}
+
+sub bulky_cancellation_report {
+    my ( $self, $collection ) = @_;
+
+    return unless $collection && $collection->external_id;
+
+    my $original_sr_number = $collection->external_id =~ s/Bartec-//r;
+
+    # A cancelled collection will have a corresponding cancellation report
+    # linked via external_id / ORIGINAL_SR_NUMBER
+    return FixMyStreet::DB->resultset('Problem')->find(
+        {   extra => {
+                      like => '%T18:ORIGINAL_SR_NUMBER,T5:value,T'
+                    . length($original_sr_number) . ':'
+                    . $original_sr_number . '%',
+            },
+        },
+    );
 }
 
 sub bulky_can_refund {
@@ -799,15 +832,11 @@ sub _check_within_bulky_refund_window {
 }
 
 sub within_bulky_cancel_window {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    my $open_collection = $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $open_collection;
+    my ( $self, $collection ) = @_;
 
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
-    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
+    my $collection_date_str = $collection->get_extra_field_value('DATE');
     my $collection_dt       = DateTime::Format::Strptime->new(
         pattern   => '%FT%T',
         time_zone => FixMyStreet->local_time_zone,

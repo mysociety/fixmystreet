@@ -1125,7 +1125,8 @@ sub bulky_cancel : Chained('property') : Args(0) {
 
     $c->detach('property_redirect')
         if !$c->stash->{waste_features}{bulky_enabled}
-        || !$c->cobrand->call_hook('bulky_can_cancel');
+        || !$c->cobrand->call_hook( 'bulky_can_cancel_collection',
+                $c->stash->{property}{pending_bulky_collection} );
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';

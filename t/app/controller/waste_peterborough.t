@@ -31,13 +31,17 @@ my $params = {
     can_be_devolved => 1,
 };
 my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
-my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $user2 = $mech->create_user_ok('test2@example.net', name => 'Very Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
+
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
+my $staff_bromley = $mech->create_user_ok('staff_bromley@example.net', name => 'Bromley Staff User', from_body => $bromley->id);
+$staff_bromley->user_body_permissions->create({ body => $bromley, permission_type => 'contribute_as_another_user' });
+$staff_bromley->user_body_permissions->create({ body => $bromley, permission_type => 'report_mark_private' });
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -1069,6 +1073,12 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('property_id'), 'PE1 3NA:100090215480';
         };
 
+        # Collection date: 2022-08-26T00:00:00
+        # Time/date that is within the cancellation & refund window:
+        my $good_date = '2022-08-25T05:44:59Z'; # 06:44:59 UK time
+        # Time/date that isn't:
+        my $bad_date = '2022-08-25T23:55:00Z';
+
         subtest 'View own booking' => sub {
             $mech->log_in_ok($user->email);
             $mech->get_ok('/report/' . $report->id);
@@ -1089,8 +1099,37 @@ FixMyStreet::override_config {
             $mech->content_contains('26 August');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
-            $mech->content_contains('Cancel this booking');
             $mech->content_contains('Show upcoming bin days');
+
+            # Cancellation messaging & options
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->content_lacks('View cancellation report');
+
+            set_fixed_time($good_date);
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains("23:55 on 25 August 2022");
+
+            # Presence of external_id in report implies we have sent request
+            # to Bartec
+            $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_lacks('Cancel this booking');
+
+            $report->external_id('Bartec-SR00100001');
+            $report->update;
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains('Cancel this booking');
+
+            # Cannot cancel if cancellation window passed
+            set_fixed_time($bad_date);
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_lacks("You can cancel this booking till");
+            $mech->content_lacks("23:55 on 25 August 2022");
+            $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_lacks('Cancel this booking');
+
+            set_fixed_time($good_date);
         };
 
         subtest "Can't view booking logged-out" => sub {
@@ -1115,6 +1154,13 @@ FixMyStreet::override_config {
 
             $mech->content_contains('Booking Summary');
             $mech->content_contains('Your bulky waste collection');
+
+            # Cancellation messaging & options
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->content_lacks('View cancellation report');
+            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains('Cancel this booking');
         };
 
         subtest "Superusers can view booking" => sub {
@@ -1123,6 +1169,13 @@ FixMyStreet::override_config {
 
             $mech->content_contains('Booking Summary');
             $mech->content_contains('Your bulky waste collection');
+
+            # Cancellation messaging & options
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->content_lacks('View cancellation report');
+            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains('Cancel this booking');
         };
 
         subtest "Can follow link to booking from bin days page" => sub {
@@ -1183,32 +1236,37 @@ FixMyStreet::override_config {
         };
 
         subtest 'Cancellation' => sub {
-            # Time/date that is within the cancellation & refund window
-            my $good_date = '2022-08-25T05:44:59Z'; # 06:44:59 UK time
             set_fixed_time($good_date);
-
-            $mech->content_lacks( 'Cancel booking',
-                'Cancel option unavailable before request sent to Bartec' );
 
             # Presence of external_id in report implies we have sent request
             # to Bartec
+            $report->external_id(undef);
+            $report->update;
+            $mech->content_lacks( 'Cancel booking',
+                'Cancel option unavailable before request sent to Bartec' );
+
             $report->external_id('Bartec-SR00100001');
             $report->update;
-            $mech->reload;
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
             $mech->content_contains( 'Cancel booking',
                 'Cancel option available after request sent to Bartec' );
 
             $mech->log_in_ok( $user2->email );
-            $mech->reload;
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
             $mech->content_lacks(
                 'Cancel booking',
                 'Cancel option unavailable if booking does not belong to user',
             );
+
+            $mech->log_in_ok( $staff->email );
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
+            $mech->content_contains( 'Cancel booking',
+                'Cancel option available to staff' );
+
             $mech->log_in_ok( $user->email );
 
-            # Collection date =  2022-08-26T00:00:00
-            set_fixed_time('2022-08-25T23:55:00Z');
-            $mech->reload;
+            set_fixed_time($bad_date);
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
             $mech->content_lacks( 'Cancel booking',
                 'Cancel option unavailable if outside cancellation window' );
 
@@ -1255,7 +1313,77 @@ FixMyStreet::override_config {
                     like $cancellation_report->detail,
                         qr/Original report ID: ${\$report->id}/,
                         'Original report ID in detail field';
+
+                    # Cancellation of own booking
+                    my $id = $cancellation_report->id;
+                    my $path = "/report/$id";
+
+                    $mech->log_in_ok($user->email);
+                    $mech->get($path);
+                    $mech->content_contains( 'Bulky goods cancellation',
+                        'User can view cancellation report' );
+
+                    # Superuser
+                    $mech->log_in_ok($super->email);
+                    $mech->get_ok($path);
+                    $mech->content_contains( 'Bulky goods cancellation',
+                        'Superuser can view cancellation report' );
+
+                    # P'bro staff
+                    $mech->log_in_ok($staff->email);
+                    $mech->get_ok($path);
+                    $mech->content_contains( 'Bulky goods cancellation',
+                        'Peterborough staff can view cancellation report' );
+
+                    # Other staff
+                    $mech->log_in_ok($staff_bromley->email);
+                    $mech->get($path);
+                    is $mech->res->code, 403,
+                        'Staff from other cobrands cannot view cancellation report';
+
+                    # Logged out
+                    $mech->log_out_ok;
+                    $mech->get($path);
+                    is $mech->res->code, 403,
+                        'Logged out users cannot view cancellation report';
+
+                    # Other user
+                    $mech->log_in_ok($user2->email);
+                    $mech->get($path);
+                    is $mech->res->code, 403,
+                        'Other logged-in user cannot view cancellation report';
                 };
+            };
+
+            subtest 'Viewing original report summary after cancellation' => sub {
+                my $id   = $report->id;
+                my $path = "/report/$id";
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok($path);
+                $mech->content_contains('This collection has been cancelled');
+                $mech->content_lacks('View cancellation report');
+                $mech->content_lacks("You can cancel this booking till");
+                $mech->content_lacks("23:55 on 25 August 2022");
+                $mech->content_lacks('Cancel this booking');
+
+                # Superuser
+                $mech->log_in_ok( $super->email );
+                $mech->get_ok($path);
+                $mech->content_contains('This collection has been cancelled');
+                $mech->content_contains('View cancellation report');
+                $mech->content_lacks("You can cancel this booking till");
+                $mech->content_lacks("23:55 on 25 August 2022");
+                $mech->content_lacks('Cancel this booking');
+
+                # P'bro staff
+                $mech->log_in_ok( $staff->email );
+                $mech->get_ok($path);
+                $mech->content_contains('This collection has been cancelled');
+                $mech->content_contains('View cancellation report');
+                $mech->content_lacks("You can cancel this booking till");
+                $mech->content_lacks("23:55 on 25 August 2022");
+                $mech->content_lacks('Cancel this booking');
             };
 
             subtest 'refund request email' => sub {

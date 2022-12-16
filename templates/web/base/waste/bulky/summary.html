@@ -34,6 +34,25 @@
   [% END %]
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      [% IF problem %]
+        [% cancellation_report = cobrand.bulky_cancellation_report(problem) %]
+        [% IF cancellation_report %]
+          <div class="govuk-warning-text due" style="padding:1em">
+            <div class="govuk-warning-text__img">
+              <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            </div>
+            <div class="govuk-warning-text__content" style="display:flex; align-items:center;">
+                <span class="govuk-warning-text__assistive">Notification of cancellation</span>
+                <p class="govuk-!-margin-bottom-0">
+                  This collection has been cancelled.
+                  [% IF cobrand.bulky_can_view_cancellation(problem) %]
+                    <a href="/report/[% cancellation_report.id %]">View cancellation report.</a>
+                  [% END %]
+                </p>
+            </div>
+          </div>
+        [% END %]
+      [% END %]
       <h3>Property details</h3>
       [% INCLUDE 'waste/_address_display_bulky_summary.html' %]
 
@@ -44,18 +63,21 @@
           <dd>[% cobrand.bulky_nice_collection_date(data.chosen_date) %]</dd>
       </dl>
 
-      <div class="govuk-warning-text due">
-        <div class="govuk-warning-text__img">
-          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      [% IF !problem
+        || cobrand.bulky_can_cancel_collection( problem, 1 ) %]
+        <div class="govuk-warning-text due">
+          <div class="govuk-warning-text__img">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          </div>
+          <div class="govuk-warning-text__content">
+              <span class="govuk-warning-text__assistive">Warning</span>
+              <p class="govuk-!-margin-bottom-3">You can cancel this booking till
+                [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
+              <p class="govuk-!-margin-bottom-0">You can get a refund by cancelling 24 hours
+                before the day of collection.</p>
+          </div>
         </div>
-        <div class="govuk-warning-text__content">
-            <span class="govuk-warning-text__assistive">Warning</span>
-            <p class="govuk-!-margin-bottom-3">You can cancel this booking till
-              [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
-            <p class="govuk-!-margin-bottom-0">You can get a refund by cancelling 24 hours
-               before the day of collection.</p>
-        </div>
-      </div>
+      [% END %]
 
       <hr>
       <h3>Items to be collected</h3>
@@ -153,9 +175,11 @@
   </div>
 
   [% IF problem %]
-    <p>
-      <a class="govuk-button govuk-button--secondary" href="# [% #XXX cancellations %]">Cancel this booking</a>
-    </p>
+    [% IF cobrand.bulky_can_cancel_collection(problem) %]
+      <p>
+        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky_cancel', [ property.id ] ) %]">Cancel this booking</a>
+      </p>
+    [% END %]
     <p>
       <a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a>
     </p>
