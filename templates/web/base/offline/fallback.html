@@ -9,4 +9,24 @@
 
 <div id="offline_clear"></div>
 
+<div>
+    <h2>Offline Draft Report</h2>
+    <form id="offline_report">
+        <input name=latitude />
+        <input name=longitude />
+        <button id=geolocate>Use my location</button>
+        
+        
+        [% DEFAULT form_title = loc('Summarise the problem') %]
+        <label for="form_title">[% form_title %]</label>
+        <input class="form-control" type="text"  name="title" autocomplete="off" id="form_title">
+
+
+        [% DEFAULT form_detail_label = loc('Explain what’s wrong') %]
+        <label for="form_detail">[% form_detail_label %]</label>
+        <textarea class="form-control" rows="7" cols="26" name=detail id="form_detail"></textarea>
+    </form>
+    <p id="draft_save_message" class="hidden"><small>Draft report saved at <span></span></small></p>
+</div>
+
 [% INCLUDE 'footer.html' %]

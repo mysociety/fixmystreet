@@ -20,6 +20,12 @@ ELSIF bodyclass.match('alertpage');
         version('/js/geolocation.js'),
     );
 ELSIF bodyclass.match('offlinepage');
+    scripts.push(
+        version('/js/geolocation.js'),
+        version('/vendor/jquery-3.6.0.min.js'),
+        version('/vendor/idb-keyval-iife.min.js'),
+        version('/cobrands/fixmystreet/offline_report.js'),
+    );
 ELSE;
     scripts.push(
         version('/js/validation_rules.js'),
