@@ -51,7 +51,7 @@ sub waste_is_dd_payment {
 sub waste_dd_paid {
     my ($self, $date) = @_;
 
-    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
+    my ($day, $month, $year) = $self->waste_dd_paid_date($date);
     my $dt = DateTime->new(day => $day, month => $month, year => $year);
     return $self->within_working_days($dt, 3, 1);
 }
