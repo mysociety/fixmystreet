@@ -617,6 +617,13 @@ h1.govuk-heading-xl {
   background-blend-mode: normal!important;
 }
 
+.waste__collections .govuk-summary-list,
+.waste__summary .govuk-summary-list,
+.waste__collections .govuk-summary-list__row,
+.waste__summary .govuk-summary-list__row{
+background-color: transparent;
+}
+
 form.waste {
     background-color: $section-background-color;
     color: $primary_b;
