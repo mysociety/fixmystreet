@@ -294,6 +294,12 @@ body:not(.admin) {
   }
 }
 
+// Prevents .multi-select-button to jump to anothe line
+.report-list-filters .multi-select-button,
+#bulk-assign-form .multi-select-button {
+  max-width: 8em;
+}
+
 input.form-error, textarea.form-error {
   border-color: $error-color;
 }
