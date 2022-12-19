@@ -281,6 +281,14 @@ body:not(.admin) {
     border-color: $white;
   }
 
+  .multi-select-container {
+    input[type='text'],
+    input[type='radio'],
+    input[type='checkbox'] {
+      border-color: $primary_b;
+    }
+  }
+
   #show_old_reports_wrapper input[type="checkbox"]:checked:after {
     @include svg-background-image("/cobrands/fixmystreet/images/check-white");
   }
