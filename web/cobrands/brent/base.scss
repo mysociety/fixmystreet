@@ -40,7 +40,7 @@ a {
   background-color: $link-focus-color;
 }
 
-.btn, .btn--primary, .btn-primary, .green-btn, #report-cta, .govuk-button {
+.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
   @include brent-btn-primary;
 }
 
@@ -595,11 +595,20 @@ body.twothirdswidthpage {
 }
 
 // Waste
-.content {
-  .waste & {
+.waste {
+  .content {
     padding-top: 0;
     margin-top: 2rem;
     background-color: $section-background-color;
+  }
+
+  .govuk-button {
+    background-color: $link-color;
+    box-shadow: 0 4px 0 $btn-primary-background-hover;
+
+    &:hover {
+      background-color: $btn-primary-background-hover;
+    }
   }
 }
 
