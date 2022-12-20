@@ -54,10 +54,10 @@
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                         <!-- <li><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="[% base %]/privacy"[% END
                             %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li> -->
-                        <li><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="[% base %]/privacy"[% END
-                            %]>Sekretess</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/about/privacy' %]span[% ELSE %]a href="[% base %]/about/privacy"[% END
+                            %]>Sekretess</[% c.req.uri.path == '/about/privacy' ? 'span' : 'a' %]></li>
                         <li><a href="https://github.com/Sambruk/fixmystreet">Öppen källkod</a></li>
-                        <li><[% IF c.req.uri.path == '/about/accessibility' %]span[% ELSE %]a href="[% base %]/faq"[% END
+                        <li><[% IF c.req.uri.path == '/about/accessibility' %]span[% ELSE %]a href="[% base %]/about/accessibility"[% END
                             %]>Tillgänglighet</[% c.req.uri.path == '/about/accessibility' ? 'span' : 'a' %]></li>
                     </ul>
                 </nav>
