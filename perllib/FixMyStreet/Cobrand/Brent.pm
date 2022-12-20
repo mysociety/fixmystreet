@@ -41,6 +41,13 @@ sub disambiguate_location { {
     bounds => [ 51.52763684136, -0.335577710963202, 51.6003693511994, -0.191492539132886 ],
 } }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    # Brent don't want TfL's River Piers category to appear on their cobrand.
+    return $rs->search( { 'me.category' => { '-not_like' => 'River Piers%' } } );
+}
+
 sub social_auth_enabled {
     my $self = shift;
 

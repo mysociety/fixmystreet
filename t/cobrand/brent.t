@@ -1,6 +1,7 @@
 use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use t::Mock::Tilma;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -100,6 +101,31 @@ subtest "Open311 attribute changes" => sub {
         is $c->param('attribute[UnitID]'), undef, 'UnitID removed from attributes';
         like $c->param('description'), qr/ukey: 234/, 'UnitID on gully sent across in detail';
         is $c->param('attribute[title]'), $problem->title, 'Report title passed as attribute for Open311';
+    };
+};
+
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest "hides the TfL River Piers category" => sub {
+
+        $brent->contacts->delete;
+        $mech->create_contact_ok(body_id => $brent->id, category => 'Potholes', email => 'potholes@brent.fixmystreet.com');
+
+        my $tfl = $mech->create_body_ok(2488, 'TfL');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers - Cleaning', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers Damage doors and glass', email => 'tfl@example.org');
+
+        ok $mech->host('brent.fixmystreet.com'), 'set host';
+        my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.55904&longitude=-0.28168');
+        is $json->{by_category}->{"River Piers"}, undef, "Brent doesn't have River Piers category";
+        is $json->{by_category}->{"River Piers - Cleaning"}, undef, "Brent doesn't have River Piers with hyphen and extra text category";
+        is $json->{by_category}->{"River Piers Damage doors and glass"}, undef, "Brent doesn't have River Piers with extra text category";
     };
 };
 
