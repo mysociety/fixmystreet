@@ -298,7 +298,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
         $c->detach('/page_error_500_internal_error', [ $message ]);
     }
 
-    $c->detach('oauth_failure') unless $id_token;
+    if (!$id_token) {
+        $c->log->info("Social::oidc_callback no id_token: " . $oidc->{last_response}->{_content});
+        $c->detach('oauth_failure');
+    }
 
     # sanity check the token audience is us...
     unless ($id_token->payload->{aud} eq $c->cobrand->feature('oidc_login')->{client_id}) {
