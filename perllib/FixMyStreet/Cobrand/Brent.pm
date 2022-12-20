@@ -108,4 +108,11 @@ sub user_from_oidc {
     return ($name, $email);
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    # Brent don't want TfL's River Piers category to appear on their cobrand.
+    return $rs->search( { 'me.category' => { '!=', 'River Piers' } } );
+}
+
 1;
