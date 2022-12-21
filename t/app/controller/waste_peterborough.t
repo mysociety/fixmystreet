@@ -1260,6 +1260,7 @@ FixMyStreet::override_config {
             my $email = $mech->get_email->as_string;
             like $email, qr/1 Pope Way/;
             like $email, qr/Collection date: 26 August/;
+            like $email, qr{rborough.example.org/waste/PE1%203NA%3A100090215480/bulky_cancel};
             $mech->clear_emails_ok;
         };
 
@@ -1271,6 +1272,8 @@ FixMyStreet::override_config {
                 my $email = $mech->get_email->as_string;
                 like $email, qr/26 August/;
                 like $email, qr/Wardrobe/;
+                like $email, qr{peterborough.example.org/waste/PE1%203NA%3A100090};
+                like $email, qr{215480/bulky_cancel};
                 if ($days == 3) {
                     like $email, qr/This is a reminder that your collection is in 3 days./;
                 } else {

@@ -35,7 +35,7 @@ INCLUDE '_email_top.html';
 [% END %]
 
   <p style="[% p_style %]">
-    If you wish to cancel your booking, please visit this link: URL XXX
+    If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky_cancel">this link</a>.
     You can obtain a refund if you cancel more than one day before your booking.
   </p>
 
