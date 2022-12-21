@@ -1,4 +1,5 @@
 [% USE date(format = c.cobrand.bin_day_format) %]
+[% USE pounds = format('%.2f'); ~%]
 [% PROCESS 'waste/header.html' %]
 
 
@@ -127,7 +128,8 @@
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Cost</dt>
             <dd class="govuk-summary-list__value">
-              [% IF free_collection_available # XXX %]
+              [% cost = cobrand.bulky_minimum_cost %]
+              [% IF cobrand.bulky_free_collection_available %]
                 <!-- #03 Should only display when: There is a free collection option and
                   the property hasn't had a collection on this tax year. -->
                 <!-- I know we are not implementing this at the moment, so feel free
@@ -136,10 +138,10 @@
                 <p class="govuk-!-margin-bottom-2"><strong>One free</strong> collection per tax year.</p>
                 <!-- END #03 -->
                 <!-- #02 Always visible EXCEPT when address is commercial-->
-                <p class="govuk-!-margin-bottom-0"><strong>From £23.50</strong> Afterwards.</p>
+                <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong> Afterwards.</p>
                 <!-- END #02 -->
               [% ELSE %]
-                  <p class="govuk-!-margin-bottom-0"><strong>£23.50</strong></p>
+                  <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong></p>
               [% END %]
             </dd>
           </div>

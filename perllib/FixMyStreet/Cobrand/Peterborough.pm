@@ -1310,21 +1310,48 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+sub bulky_free_collection_available {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $cfg = $self->wasteworks_config;
+
+    my $attributes = $c->stash->{property}->{attributes};
+    my $free_collection_available = !$attributes->{'FREE BULKY USED'};
+
+    return $cfg->{free_mode} && $free_collection_available;
+}
+
+# For displaying before user books collection. In the case of individually
+# priced items, we cannot know what the total cost will be, so we return the
+# lowest cost.
+sub bulky_minimum_cost {
+    my $self = shift;
+
+    my $cfg = $self->wasteworks_config;
+
+    if ( $cfg->{per_item_costs} ) {
+        # Get the item with the lowest cost
+        my @sorted = sort { $a <=> $b }
+            map { $_->{price} } @{ $self->bulky_items_master_list };
+
+        return $sorted[0] // 0;
+    } else {
+        return $cfg->{base_price} // 0;
+    }
+}
+
 sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
-    my $cfg = $self->body->get_extra_metadata("wasteworks_config", {});
-
-    my $attributes = $c->stash->{property}->{attributes};
-    my $free_collection_available = !$attributes->{"FREE BULKY USED"};
-
-    if ($cfg->{free_mode} && $free_collection_available) {
+    if ($self->bulky_free_collection_available) {
         $data->{extra_CHARGEABLE} = 'FREE';
         $c->stash->{payment} = 0;
     } else {
         $data->{extra_CHARGEABLE} = 'CHARGED';
 
+        my $cfg = $self->wasteworks_config;
         if ($cfg->{per_item_costs}) {
             my %prices = map { $_->{name} => $_->{price} } @{ $self->bulky_items_master_list };
             my $total = 0;

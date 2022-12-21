@@ -725,6 +725,77 @@ FixMyStreet::override_config {
 }, sub {
     my ($b, $jobs_fsd_get) = shared_bartec_mocks();
 
+    subtest 'Bulky Waste on bin days page' => sub {
+        my $bin_days_url = 'http://localhost/waste/PE1%203NA:100090215480';
+
+        note 'No pricing at all';
+        my $cfg = {};
+        $body->set_extra_metadata( wasteworks_config => $cfg );
+        $body->update;
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('<strong>One free</strong> collection');
+        $mech->content_contains('<strong>From £0.00</strong>');
+
+        note 'Base price defined';
+        $cfg = { base_price => '1525' };
+        $body->set_extra_metadata( wasteworks_config => $cfg );
+        $body->update;
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('<strong>One free</strong> collection');
+        $mech->content_contains('<strong>From £15.25</strong>');
+
+        note 'Per item cost:';
+        note '    with no items';
+        $cfg = {
+            %$cfg,
+            per_item_costs => 1,
+        };
+        $body->set_extra_metadata( wasteworks_config => $cfg );
+        $body->update;
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('<strong>One free</strong> collection');
+        $mech->content_contains('<strong>From £0.00</strong>');
+
+        note '    with a 0-cost item';
+        $cfg = {
+            %$cfg,
+            item_list => [
+                { price => 0 },
+                { price => 2000 },
+            ],
+        };
+        $body->set_extra_metadata( wasteworks_config => $cfg );
+        $body->update;
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('<strong>One free</strong> collection');
+        $mech->content_contains('<strong>From £0.00</strong>');
+
+        note '    with a non-0-cost item';
+        $cfg = {
+            %$cfg,
+            item_list => [
+                { price => 2000 },
+                { price => 1999 },
+            ],
+        };
+        $body->set_extra_metadata( wasteworks_config => $cfg );
+        $body->update;
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('<strong>One free</strong> collection');
+        $mech->content_contains('<strong>From £19.99</strong>');
+
+        note 'Free collection';
+        $cfg = {
+            %$cfg,
+            free_mode => 1,
+        };
+        $body->set_extra_metadata( wasteworks_config => $cfg );
+        $body->update;
+        $mech->get_ok($bin_days_url);
+        $mech->content_contains('<strong>One free</strong> collection');
+        $mech->content_contains('<strong>From £19.99</strong> Afterwards');
+    };
+
     $body->set_extra_metadata(
         wasteworks_config => {
             base_price => '2350',
