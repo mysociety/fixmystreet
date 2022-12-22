@@ -182,7 +182,7 @@
           [% END %]
           [% UNLESS c.user_exists %]
             <!-- #07 Should be displayed when: user HASN'T signed in -->
-            <a class="btn btn-primary govuk-!-margin-bottom-2" href="">Sign in</a>
+            <a class="btn btn-primary govuk-!-margin-bottom-2" href="/auth?r=report/[% property.pending_bulky_collection.id %]">Sign in</a>
             <!-- END #07 -->
           [% END %]
           [% UNLESS property.pending_bulky_collection %]
