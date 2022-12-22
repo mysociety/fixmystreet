@@ -773,6 +773,12 @@ FixMyStreet::override_config {
                     name      => 'Wardrobes',
                     price     => '7070',
                 },
+                {   bartec_id => '1004',
+                    category  => 'Bedroom',
+                    message   => 'Please place in a clear bag',
+                    name      => 'Linen & Bedding',
+                    price     => '7070',
+                },
             ],
         },
     );
@@ -903,6 +909,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Item 5');
             $mech->content_like(
                 qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
+            $mech->content_contains('data-extra="{&quot;message&quot;:&quot;Please place in a clear bag&quot;}"');
 
             $mech->submit_form_ok;
             $mech->content_contains(
