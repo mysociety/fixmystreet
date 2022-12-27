@@ -13,6 +13,12 @@
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
 
+        <!--
+            Hide the translation banner since it covers important UI elements
+            (https://github.com/mysociety/fixmystreet/issues/4153).
+        -->
+        <meta name="google" content="notranslate">
+
         [% INCLUDE 'header_opengraph.html' %]
         [% INCLUDE 'header/css.html' %]
         [% INCLUDE 'common_header_tags.html' %]
