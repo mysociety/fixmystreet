@@ -26,6 +26,13 @@ Run by: <a href="http://www.openlocal.org.au/">Open Local</a>
 
 <h2>Europe</h2>
 
+<h3>Croatia</h3>
+Site: <a href="https://popravi.to">Popravi.to</a>
+<br>
+Launched: 2021
+<br>
+Run by: <a href="https://codeforcroatia.org">Code for Croatia</a> and <a href="https://gong.hr">Gong</a>
+
 <h3>Kosovo</h3>
 Site: <a href="https://ndreqe.com">ndreqe.</a>
 <br>
