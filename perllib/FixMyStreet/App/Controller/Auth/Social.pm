@@ -380,7 +380,7 @@ sub oauth_success : Private {
         } elsif ( $type eq 'oidc' ) {
             $user->add_oidc_id($uid);
         }
-        $user->name($name);
+        $user->name($name) if $name;
         if ($extra) {
             $user->extra({
                 %{ $user->get_extra() },
@@ -399,7 +399,7 @@ sub oauth_success : Private {
         }
         if ($user) {
             # Matching ID in our database
-            $user->name($name);
+            $user->name($name) if $name;
             if ($extra) {
                 $user->extra({
                     %{ $user->get_extra() },
@@ -410,7 +410,7 @@ sub oauth_success : Private {
         } else {
             # No matching ID, store ID for use later
             $c->session->{oauth}{$type . '_id'} = $uid;
-            $c->session->{oauth}{name} = $name;
+            $c->session->{oauth}{name} = $name if $name;
             $c->session->{oauth}{extra} = $extra;
             $c->stash->{oauth_need_email} = 1;
         }
