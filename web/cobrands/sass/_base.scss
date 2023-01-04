@@ -230,7 +230,7 @@ a,
     // If javascript is enabled, hide the skip link off-screen,
     // but keep it visible for screen readers.
     position: absolute;
-    top: -999px;
+    top: -9999px;
 
     &:focus,
     &:focus-within {
