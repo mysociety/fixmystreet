@@ -1,5 +1,6 @@
 use Test::MockModule;
 
+use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
@@ -113,14 +114,15 @@ subtest 'check updates sent for non defects' => sub {
     is $comment->send_fail_count, 1, "comment sending attempted";
 };
 
-my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new;
+my ($res, $c) = ctx_request('/');
+my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new({ c => $c });
 
 subtest 'check updates disallowed correctly' => sub {
     is $cobrand->updates_disallowed($report), '';
     $report->update({ state => 'closed' });
-    is $cobrand->updates_disallowed($report), 1;
+    is $cobrand->updates_disallowed($report), 'open';
     $report->update({ state => 'confirmed', user => $counciluser });
-    is $cobrand->updates_disallowed($report), 1;
+    is $cobrand->updates_disallowed($report), 'notopen311';
 };
 
 subtest 'check further investigation state' => sub {

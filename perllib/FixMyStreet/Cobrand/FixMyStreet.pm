@@ -312,7 +312,7 @@ sub per_body_config {
     my $cfg = $self->feature($feature) || {};
 
     my $value;
-    my $body;
+    my $body = '';
     foreach (keys %$cfg) {
         if ($problem->to_body_named($_)) {
             $value = $cfg->{$_};
@@ -329,29 +329,14 @@ sub updates_disallowed {
     my $c = $self->{c};
 
     # If closed due to problem/category closure, want that to take precedence
-    my $parent = $self->next::method(@_);
+    my $parent = FixMyStreet::Cobrand::Default->updates_disallowed($problem);
     return $parent if $parent;
 
     my ($type, $body) = $self->per_body_config('updates_allowed', $problem);
     $type //= '';
 
-    if ($type eq 'none') {
-        return $type;
-    } elsif ($type eq 'staff') {
-        # Only staff and superusers can leave updates
-        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
-        my $superuser = $c->user_exists && $c->user->is_superuser;
-        return $type unless $staff || $superuser;
-    }
-
-    if ($type =~ /reporter/) {
-        return $type if !$c->user_exists || $c->user->id != $problem->user->id;
-    }
-    if ($type =~ /open/) {
-        return $type if $problem->is_fixed || $problem->is_closed;
-    }
-
-    return '';
+    my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
+    return $self->_updates_disallowed_check($type, $problem, $body_user);
 }
 
 sub body_disallows_state_change {

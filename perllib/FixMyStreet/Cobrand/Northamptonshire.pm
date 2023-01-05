@@ -44,9 +44,9 @@ sub updates_disallowed {
     my ($problem) = @_;
 
     # Only open reports
-    return 1 if $problem->is_fixed || $problem->is_closed;
+    return 'open' if $problem->is_fixed || $problem->is_closed;
     # Not on reports made by the body user
-    return 1 if $problem->user_id == $self->body->comment_user_id;
+    return 'notopen311' if $problem->user_id == $self->body->comment_user_id;
 
     return $self->next::method(@_);
 }

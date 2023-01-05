@@ -447,22 +447,32 @@ sub updates_disallowed {
     return $parent if $parent;
 
     my $cfg = $self->feature('updates_allowed') || '';
+
+    my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
+    return $self->_updates_disallowed_check($cfg, $problem, $body_user);
+}
+
+sub _updates_disallowed_check {
+    my ($self, $cfg, $problem, $body_user) = @_;
+
+    my $c = $self->{c};
+    my $superuser = $c->user_exists && $c->user->is_superuser;
+    my $staff = $body_user || $superuser;
+    my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
+    my $open = !($problem->is_fixed || $problem->is_closed);
+
     if ($cfg eq 'none') {
         return $cfg;
     } elsif ($cfg eq 'staff') {
         # Only staff and superusers can leave updates
-        my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
-        my $superuser = $c->user_exists && $c->user->is_superuser;
-        return $cfg unless $staff || $superuser;
+        return $cfg unless $staff;
+    } elsif ($cfg eq 'open') {
+        return $cfg unless $open;
+    } elsif ($cfg eq 'reporter') {
+        return $cfg unless $reporter;
+    } elsif ($cfg eq 'reporter-open') {
+        return $cfg unless $reporter && $open;
     }
-
-    if ($cfg =~ /reporter/) {
-        return $cfg if !$c->user_exists || $c->user->id != $problem->user->id;
-    }
-    if ($cfg =~ /open/) {
-        return $cfg if $problem->is_fixed || $problem->is_closed;
-    }
-
     return '';
 }
 
