@@ -108,6 +108,11 @@ $osm->mock('cache', sub {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'thamesmead' ],
+    COBRAND_FEATURES => {
+        updates_allowed => {
+            thamesmead => 'reporter/staff',
+        }
+    }
 }, sub {
     subtest 'Check updating a normal report' => sub {
         $mech->log_in_ok($user1->email);

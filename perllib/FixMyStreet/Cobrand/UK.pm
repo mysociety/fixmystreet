@@ -472,6 +472,10 @@ sub _updates_disallowed_check {
         return $cfg unless $reporter;
     } elsif ($cfg eq 'reporter-open') {
         return $cfg unless $reporter && $open;
+    } elsif ($cfg eq 'reporter/staff') {
+        return $cfg unless $reporter || $staff;
+    } elsif ($cfg eq 'reporter/staff-open') {
+        return $cfg unless ($reporter || $staff) && $open;
     }
     return '';
 }

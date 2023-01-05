@@ -222,13 +222,13 @@ cleaning</strong> or <strong>clearing</strong>.
         Yes, you can leave updates on open reports, by visiting a report page and
         filling in the update form.
     </p>
-[% ELSIF c.cobrand.feature('updates_allowed') == 'reporter-open' %]
+[% ELSIF c.cobrand.feature('updates_allowed') == 'reporter-open' OR c.cobrand.feature('updates_allowed') == 'reporter/staff-open' %]
     <dt>Can I make updates to my report?</dt>
     <p>
         Yes, you can leave updates on open reports you have made, by visiting a
         report page and filling in the update form.
     </p>
-[% ELSIF c.cobrand.feature('updates_allowed') == 'reporter' %]
+[% ELSIF c.cobrand.feature('updates_allowed') == 'reporter' OR c.cobrand.feature('updates_allowed') == 'reporter/staff' %]
     <dt>Can I make updates to my report?</dt>
     <p>
         Yes, you can leave updates on reports you have made, by visiting a report
