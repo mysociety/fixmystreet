@@ -460,6 +460,7 @@ sub _updates_disallowed_check {
     my $staff = $body_user || $superuser;
     my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
     my $open = !($problem->is_fixed || $problem->is_closed);
+    my $body_comment_user = $self->body && $self->body->comment_user_id && $problem->user_id == $self->body->comment_user_id;
 
     if ($cfg eq 'none') {
         return $cfg;
@@ -476,6 +477,10 @@ sub _updates_disallowed_check {
         return $cfg unless $reporter || $staff;
     } elsif ($cfg eq 'reporter/staff-open') {
         return $cfg unless ($reporter || $staff) && $open;
+    } elsif ($cfg eq 'notopen311') {
+        return $cfg unless !$body_comment_user;
+    } elsif ($cfg eq 'notopen311-open') {
+        return $cfg unless !$body_comment_user && $open;
     }
     return '';
 }

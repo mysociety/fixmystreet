@@ -117,16 +117,6 @@ sub state_groups_inspect {
     ]
 }
 
-sub updates_disallowed {
-    my $self = shift;
-    my ($problem) = @_;
-
-    # Not on reports made by the body user
-    return 1 if $self->body->comment_user_id && $problem->user_id == $self->body->comment_user_id;
-
-    return $self->next::method(@_);
-}
-
 sub open311_config {
     my ($self, $row, $h, $params) = @_;
 

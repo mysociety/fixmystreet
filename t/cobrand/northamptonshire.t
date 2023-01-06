@@ -118,11 +118,21 @@ my ($res, $c) = ctx_request('/');
 my $cobrand = FixMyStreet::Cobrand::Northamptonshire->new({ c => $c });
 
 subtest 'check updates disallowed correctly' => sub {
-    is $cobrand->updates_disallowed($report), '';
-    $report->update({ state => 'closed' });
-    is $cobrand->updates_disallowed($report), 'open';
-    $report->update({ state => 'confirmed', user => $counciluser });
-    is $cobrand->updates_disallowed($report), 'notopen311';
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS=> 'northamptonshire',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            updates_allowed => {
+                northamptonshire => 'notopen311-open',
+            }
+        }
+    }, sub {
+        is $cobrand->updates_disallowed($report), '';
+        $report->update({ state => 'closed' });
+        is $cobrand->updates_disallowed($report), 'notopen311-open';
+        $report->update({ state => 'confirmed', user => $counciluser });
+        is $cobrand->updates_disallowed($report), 'notopen311-open';
+    };
 };
 
 subtest 'check further investigation state' => sub {
