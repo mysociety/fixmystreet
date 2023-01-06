@@ -121,7 +121,7 @@
                 "ChildData": {
                   "ExtensibleDatum": [
                     { "Value": "16", "DatatypeName": "Container Type" },
-                    { "Value": "1", "DatatypeName": "Quantity" }
+                    { "Value": "3", "DatatypeName": "Quantity" }
                   ]
                 }
               }

@@ -214,9 +214,9 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Container_Type]'), '16::12';
-        is $cgi->param('attribute[Action]'), '2::1';
-        is $cgi->param('attribute[Reason]'), '3::3';
+        is $cgi->param('attribute[Container_Type]'), '16::16::16::12';
+        is $cgi->param('attribute[Action]'), '2::2::2::1';
+        is $cgi->param('attribute[Reason]'), '3::3::3::3';
     };
 
     subtest 'Request bins from front page' => sub {

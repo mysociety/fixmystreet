@@ -350,6 +350,7 @@ sub bin_services_for_address {
         2247 => 5, # Garden waste maximum
     );
     $self->{c}->stash->{quantity_max} = \%quantity_max;
+    my $quantities = $self->{c}->stash->{quantities} = {};
 
     $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
 
@@ -419,7 +420,7 @@ sub bin_services_for_address {
             $self->{c}->stash->{communal_property} = 1 if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
 
             my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
-            my ($containers, $request_max, $quantities);
+            my ($containers, $request_max);
             foreach (@$data) {
                 next if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
@@ -738,9 +739,10 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'more') {
         if ($data->{recycling_swap} eq 'Yes') {
             # $id has to be 16 here but we want to swap it for a 12
-            $action_id = '2::1'; # Collect and Deliver
-            $reason_id = '3::3'; # Change capacity
-            $id = '16::12'; # Box and Bin
+            my $q = $c->stash->{quantities}{16} || 1;
+            $action_id = ('2::' x $q) . '1'; # Collect and Deliver
+            $reason_id = ('3::' x $q) . '3'; # Change capacity
+            $id = ('16::' x $q) . '12'; # Box and Bin
             $container = $c->stash->{containers}{12};
         } else {
             $action_id = 1; # Deliver
