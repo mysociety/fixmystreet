@@ -53,6 +53,7 @@ sub categories_restriction {
     # categories as those which have a blank send_method.
     # Also National Highways categories have a blank send_method.
     return $rs->search( { -or => [
+        'me.category' => 'Idle roadworks', # Special new category
         'me.send_method' => undef, # Open311 categories
         'me.send_method' => '', # Open311 categories that have been edited in the admin
     ] } );
@@ -76,5 +77,31 @@ sub open311_contact_meta_override {
 }
 
 sub admin_user_domain { 'bristol.gov.uk' }
+
+sub post_report_sent {
+    my ($self, $problem) = @_;
+
+    if ($problem->category eq 'Idle roadworks') {
+        my @include_path = @{ $self->path_to_web_templates };
+        push @include_path, FixMyStreet->path_to( 'templates', 'web', 'default' );
+        my $tt = FixMyStreet::Template->new({
+            INCLUDE_PATH => \@include_path,
+            disable_autoescape => 1,
+        });
+        my $text;
+        $tt->process('report/new/roadworks_text.html', {}, \$text);
+
+        $problem->update({
+            state => 'closed'
+        });
+        $problem->add_to_comments({
+            text => $text,
+            user_id => $self->body->comment_user_id,
+            problem_state => 'closed',
+            cobrand => $problem->cobrand,
+            send_state => 'processed',
+        });
+    }
+}
 
 1;

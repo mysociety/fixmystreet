@@ -1,12 +1,15 @@
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
 
 # Create test data
+my $comment_user = $mech->create_user_ok('bristol@example.net');
 my $body = $mech->create_body_ok( 2561, 'Bristol County Council', {
     send_method => 'Open311',
-    can_be_devolved => 1
+    can_be_devolved => 1,
+    comment_user => $comment_user,
 }, {
     cobrand => 'bristol',
 });
@@ -26,6 +29,12 @@ my $email_contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Potholes',
     email => 'potholes@example.org',
+    send_method => 'Email'
+);
+my $roadworks = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Idle roadworks',
+    email => 'roadworks@example.org',
     send_method => 'Email'
 );
 
@@ -124,6 +133,32 @@ subtest 'check services override' => sub {
 
     $open311_contact->discard_changes;
     is_deeply $open311_contact->get_extra_fields, $extra, 'Easting has automated set';
+};
+
+subtest "idle roadworks automatically closed" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bristol',
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            cobrand => 'bristol',
+            category => 'Idle roadworks',
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[0], 'roadworks@example.org', 'sent_to extra metadata set';
+        is $p->state, 'closed', 'report closed having sent email';
+        is $p->comments->count, 1, 'comment added';
+        like $p->comments->first->text, qr/This issue has been forwarded on/, 'correct comment text';
+
+        $mech->email_count_is(1);
+    };
 };
 
 done_testing();
