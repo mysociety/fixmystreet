@@ -172,15 +172,15 @@
 	background-position: -40px -60px;
 }
 
-#fancybox-left:hover, #fancybox-right:hover {
+#fancybox-left:hover, #fancybox-right:hover, #fancybox-left:focus, #fancybox-right:focus {
 	visibility: visible; /* IE6 */
 }
 
-#fancybox-left:hover span {
+#fancybox-left:hover span, #fancybox-left:focus span {
 	left: 20px;
 }
 
-#fancybox-right:hover span {
+#fancybox-right:hover span, #fancybox-right:focus span {
 	left: auto;
 	right: 20px;
 }

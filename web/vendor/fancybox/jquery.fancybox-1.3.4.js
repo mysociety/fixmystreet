@@ -578,6 +578,7 @@
 
 			if (currentOpts.showCloseButton) {
 				close.show();
+				close[0].focus();
 			}
 
 			_set_navigation();
@@ -948,6 +949,8 @@
 
 			currentOpts.onClosed(currentArray, currentIndex, currentOpts);
 
+			currentArray[currentIndex].focus();
+
 			currentArray = selectedOpts	= [];
 			currentIndex = selectedIndex = 0;
 			currentOpts = selectedOpts	= {};
@@ -1035,14 +1038,17 @@
 
 		outer.append(
 			content = $('<div id="fancybox-content"></div>'),
-			close = $('<a id="fancybox-close"></a>'),
+			close = $('<a href="" id="fancybox-close"><span class="visuallyhidden">Close</span></a>'),
 			title = $('<div id="fancybox-title"></div>'),
 
-			nav_left = $('<a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a>'),
-			nav_right = $('<a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a>')
+			nav_left = $('<a href="" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span><span class="visuallyhidden">Previous image</span></a>'),
+			nav_right = $('<a href="" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span><span class="visuallyhidden">Next image</span></a>')
 		);
 
-		close.on('click', $.fancybox.close);
+		close.on('click', function(e) {
+			e.preventDefault();
+			$.fancybox.close();
+		});
 		loading.on('click', $.fancybox.cancel);
 
 		nav_left.on('click', function(e) {
