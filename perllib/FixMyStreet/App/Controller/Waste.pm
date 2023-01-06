@@ -1129,6 +1129,7 @@ sub bulky_cancel : Chained('property') : Args(0) {
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
+    $c->stash->{entitled_to_refund} = $c->cobrand->call_hook('bulky_can_refund');
     $c->forward('form');
 }
 

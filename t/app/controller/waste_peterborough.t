@@ -1149,6 +1149,8 @@ FixMyStreet::override_config {
         # Collection date: 2022-08-26T00:00:00
         # Time/date that is within the cancellation & refund window:
         my $good_date = '2022-08-25T05:44:59Z'; # 06:44:59 UK time
+        # Time/date that is within the cancellation but not refund window:
+        my $no_refund_date = '2022-08-25T12:00:00Z'; # 13:00:00 UK time
         # Time/date that isn't:
         my $bad_date = '2022-08-25T23:55:00Z';
 
@@ -1346,8 +1348,22 @@ FixMyStreet::override_config {
             $mech->content_lacks( 'Cancel booking',
                 'Cancel option unavailable if outside cancellation window' );
 
+            set_fixed_time($no_refund_date);
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_lacks("If you cancel this booking you will receive a refund");
+            $mech->content_contains("No Refund Will Be Issued");
+
+            $report->update_extra_field({ name => 'CHARGEABLE', value => 'FREE'});
+            $report->update;
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_lacks("If you cancel this booking you will receive a refund");
+            $mech->content_lacks("No Refund Will Be Issued");
+            $report->update_extra_field({ name => 'CHARGEABLE', value => 'CHARGED'});
+            $report->update;
+
             set_fixed_time($good_date);
             $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains("If you cancel this booking you will receive a refund");
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
             $mech->content_contains(
                 'Your booking has been cancelled',

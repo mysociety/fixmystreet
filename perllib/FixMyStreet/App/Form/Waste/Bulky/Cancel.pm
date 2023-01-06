@@ -6,6 +6,7 @@ extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
     title => 'Cancel your bulky collection',
+    intro => 'bulky/cancel_intro.html',
     fields => [ 'confirm', 'submit' ],
     finished => sub {
         return $_[0]->wizard_finished('process_bulky_cancellation');
