@@ -14,6 +14,7 @@
         - Add initial update template on report sending, not creation.
         - Add option to set an emergency message on reporting pages.
         - Add label to questionnaire textarea. #3944
+        - Various accessibility improvements.
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704

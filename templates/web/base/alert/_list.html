@@ -6,7 +6,10 @@
   <input type="hidden" name="latitude" value="[% latitude | html %]">
   <input type="hidden" name="longitude" value="[% longitude | html %]">
 
+<fieldset>
+ <legend>
   <h2>[% loc('Which problems do you want alerts about?') %]</h2>
+ </legend>
 
   [% INCLUDE 'errors.html' %]
 
@@ -22,11 +25,24 @@
     <h3>[% loc('Problems in an area') %]</h3>
   [% END %]
 
-  [% PROCESS 'alert/_list_rss_local.html' %]
+  <p id="rss_local">
+    <label class="label-containing-checkbox" for="[% rss_feed_id %]">
+      <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
+     [% IF c.cobrand.moniker == 'cheshireeast' %]
+      [% tprintf( 'Reported problems within %.1fkm of %s', population_radius, name_of_location ) %]
+     [% ELSE %]
+      [% tprintf( loc('Problems within %.1fkm of %s'), population_radius, name_of_location ) %]
+     [% END %]
+      [% loc('(covers roughly 200,000 people)') %]
+    </label>
+  </p>
 
   <p id="rss_local_alt">
     <label class="inline" for="distance">[% loc('Or specify a different radius distance:') %]</label>
     <input class="form-control" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*"> km
+    <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local">
+      <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed of nearby problems') %]" alt="[% loc('RSS feed') %]">
+    </a>
   </p>
 
   [% FOREACH option IN options %]
@@ -61,6 +77,7 @@
         </div>
     </div>
   [% END %]
+</fieldset>
 
   [% PROCESS 'auth/form_extra.html' %]
 
