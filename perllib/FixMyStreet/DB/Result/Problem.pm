@@ -1059,7 +1059,7 @@ sub as_hashref {
     my ($self, $cols) = @_;
     my $cobrand = $self->result_source->schema->cobrand;
 
-    my $state_t = FixMyStreet::DB->resultset("State")->display($self->state);
+    my $state_t = FixMyStreet::DB->resultset("State")->display($self->state, 0, $cobrand->moniker);
 
     my $out = {
         id        => $self->id,
@@ -1132,6 +1132,15 @@ has get_cobrand_logged => (
     },
 );
 
+sub cobrand_name_for_state {
+    my ($self, $cobrand) = @_;
+    my $cobrand_name = $cobrand->moniker;
+    my $names = join(',,', @{$self->body_names});
+    if ($names =~ /(Bromley|Isle of Wight|Oxfordshire|TfL)/) {
+        ($cobrand_name = lc $1) =~ s/ //g;
+    }
+    return $cobrand_name;
+}
 
 sub pin_data {
     my ($self, $page, %opts) = @_;

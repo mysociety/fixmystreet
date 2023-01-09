@@ -113,12 +113,20 @@ sub send_alert_type {
             $last_problem_state = 'confirmed';
         }
 
+        # Here because report is needed by e.g. _extra_new_update_data,
+        # and the state display function
+        if (!$data{alert_user_id} && $ref eq 'new_updates') {
+            # Get a report object for its photo and static map
+            $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
+        }
+
         # this is currently only for new_updates
         if ($row->{is_new_update}) {
             # this might throw up the odd false positive but only in cases where the
             # state has changed and there was already update text
             if ($row->{item_problem_state} && $last_problem_state ne $row->{item_problem_state}) {
-                my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand->moniker);
+                my $cobrand_name = $data{report}->cobrand_name_for_state($cobrand);
+                my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand_name);
 
                 my $update = _('State changed to:') . ' ' . $state;
                 $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
@@ -140,13 +148,6 @@ sub send_alert_type {
             $data{state_message} = _("This report is currently marked as closed.")
         } else {
             $data{state_message} = _("This report is currently marked as open.");
-        }
-
-        if (!$data{alert_user_id}) {
-            if ($ref eq 'new_updates') {
-                # Get a report object for its photo and static map
-                $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
-            }
         }
 
         # this is currently only for new_updates
