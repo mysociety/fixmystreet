@@ -358,12 +358,7 @@ sub problem_state_display {
     return '' unless $state;
 
     my $cobrand = $self->result_source->schema->cobrand;
-    my $cobrand_name = $cobrand->moniker;
-    my $names = join(',,', @{$self->problem->body_names});
-    if ($names =~ /(Bromley|Isle of Wight|TfL)/) {
-        ($cobrand_name = lc $1) =~ s/ //g;
-    }
-
+    my $cobrand_name = $self->problem->cobrand_name_for_state($cobrand);
     return FixMyStreet::DB->resultset("State")->display($state, 1, $cobrand_name);
 }
 

@@ -15,6 +15,8 @@ my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobra
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
 my $role = FixMyStreet::DB->resultset("Role")->create({ body => $oxon, name => 'Role', permissions => [] });
 $counciluser->add_to_roles($role);
+my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
+my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
 
 my $oxfordshire_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
 $oxfordshire_cobrand->mock('area_types', sub { [ 'CTY' ] });
@@ -184,11 +186,12 @@ FixMyStreet::override_config {
     $problem2->update({ external_id => "AlloyV2-687000682500b7000a1f3006", whensent => $problem2->confirmed });
 
     # reports should display the same info on both cobrands
-    for my $host ( 'oxfordshire.fixmystreet.com', 'www.fixmystreet.com' ) {
+    my %cobrands = ( oxfordshire => 'oxfordshire.fixmystreet.com', fixmystreet => 'www.fixmystreet.com' );
+    for my $cobrand ( keys %cobrands ) {
+        my $host = $cobrands{$cobrand};
+        ok $mech->host($host);
 
         subtest "$host handles external IDs/refs correctly" => sub {
-            ok $mech->host($host);
-
             $mech->get_ok('/report/' . $problem1->id);
             $mech->content_lacks($problem1->external_id, "WDM external ID not shown");
             $mech->content_contains('Council ref:</strong> ENQ12098123', "WDM customer reference is shown");
@@ -199,7 +202,52 @@ FixMyStreet::override_config {
             $mech->content_contains('Council ref:</strong> ' . $problem2->id, "FMS id is shown");
             $mech->content_contains('Asset ID:</strong> 456', "Asset ID is shown");
         };
-    }
+
+        subtest "check unable to fix label on $host" => sub {
+            my $problem = $problems[0];
+            $problem->state( 'unable to fix' );
+            $problem->update;
+
+            my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create( {
+                parameter  => $problem->id,
+                alert_type => 'new_updates',
+                user       => $user,
+            } );
+            $alert->confirm;
+            $alert->update({ cobrand => $cobrand });
+
+            FixMyStreet::DB->resultset('Comment')->create( {
+                problem_state => 'unable to fix',
+                problem_id => $problem->id,
+                user_id    => $user2->id,
+                name       => 'User',
+                mark_fixed => 'f',
+                text       => "this is an update",
+                state      => 'confirmed',
+                confirmed  => 'now()',
+                anonymous  => 'f',
+            } );
+
+
+            $mech->get_ok('/report/' . $problem->id);
+            $mech->content_contains('Investigation complete');
+
+            if ($cobrand eq 'oxfordshire') {
+                $mech->get_ok('/reports/Oxfordshire?ajax=1&status=closed');
+                $mech->content_contains('Investigation complete');
+            }
+
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(1);
+            my $email = $mech->get_email;
+            my $body = $mech->get_text_body_from_email($email);
+            like $body, qr/Investigation complete/, 'state correct in email';
+            if ($cobrand eq 'oxfordshire') {
+                like $body, qr/fix every issue reported on FixMyStreet/;
+            }
+            $mech->clear_emails_ok;
+        };
+    };
 
     # Reset for the rest of the tests
     ok $mech->host('oxfordshire.fixmystreet.com');
@@ -218,48 +266,6 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/around?pc=ENQ12456');
         is $mech->uri->path, '/report/' . $problem->id, 'redirects to report';
-    };
-
-    my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
-    my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
-
-    subtest 'check unable to fix label' => sub {
-        my $problem = $problems[0];
-        $problem->state( 'unable to fix' );
-        $problem->update;
-
-        my $alert = FixMyStreet::DB->resultset('Alert')->create( {
-            parameter  => $problem->id,
-            alert_type => 'new_updates',
-            cobrand    => 'oxfordshire',
-            user       => $user,
-        } )->confirm;
-
-        FixMyStreet::DB->resultset('Comment')->create( {
-            problem_state => 'unable to fix',
-            problem_id => $problem->id,
-            user_id    => $user2->id,
-            name       => 'User',
-            mark_fixed => 'f',
-            text       => "this is an update",
-            state      => 'confirmed',
-            confirmed  => 'now()',
-            anonymous  => 'f',
-        } );
-
-
-        $mech->get_ok('/report/' . $problem->id);
-        $mech->content_contains('Investigation complete');
-
-        $mech->get_ok('/reports/Oxfordshire?ajax=1&status=closed');
-        $mech->content_contains('Investigation complete');
-
-        FixMyStreet::Script::Alerts::send_updates();
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($email);
-        like $body, qr/Investigation complete/, 'state correct in email';
-        like $body, qr/fix every issue reported on FixMyStreet/;
     };
 
     subtest 'extra CSV columns are present' => sub {
