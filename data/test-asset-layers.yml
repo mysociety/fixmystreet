@@ -1,3 +1,51 @@
+bathnes:
+  - http_options:
+      url: "https://data.bathnes.gov.uk/geoserver/fms/ows"
+      params:
+        mapsource: "BathNES/WFS"
+        SERVICE: "WFS"
+        VERSION: "1.0.0"
+        REQUEST: "GetFeature"
+        TYPENAME: ""
+        SRSNAME: "urn:ogc:def:crs:EPSG::27700"
+        outputFormat: 'application/json'
+    format_class: OpenLayers.Format.GeoJSON
+    format_options: { ignoreExtraDims: 1 }
+    asset_category: ""
+    asset_item: "asset"
+    asset_type: 'spot'
+    max_resolution: 4.777314267158508
+    asset_id_field: 'feature_no'
+    attributes: null
+    geometryName: 'msGeometry'
+    body: "Bath and North East Somerset Council"
+    srsName: "EPSG:27700"
+  - http_options:
+      params:
+        TYPENAME: "fms:ParksOpenSpacesAssets"
+    asset_category: [ 'Abandoned vehicles', 'Dead animals', 'Dog fouling', 'Fly-tipping', 'Graffiti', 'Excessive or dangerous littering', 'Needles', 'Play area safety issue', 'Damage to bins, benches, and infrastructure', 'Allotment issue', 'Trees and woodland', 'Obstructive vegetation' ]
+    asset_item: "park"
+    disable_pin_snapping: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    attributes:
+      asset_details: fixmystreet.assets.banes.park_asset_details
+    filter_key: 'category'
+    filter_value: [ 'Flower Beds', 'Grass', 'Hard', 'Hedgerow', 'Path', 'Pitch', 'Seats' ]
+    name: "Parks and Grounds"
+  - http_options:
+      params:
+        TYPENAME: "fms:curo_land_registry"
+    asset_type: 'area'
+    stylemap: fixmystreet.assets.stylemap_invisible
+    non_interactive: true
+    always_visible: true
+    all_categories: true
+    nearest_radius: 0.1
+    road: true
+    no_asset_msg_id: '#js-curo-group-restriction'
+    actions:
+      found: fixmystreet.assets.banes.curo_found
+      not_found: fixmystreet.assets.banes.curo_not_found
 bromley:
   - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bromley_wfs"
     asset_type: 'spot'
@@ -32,3 +80,28 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+shropshire:
+  - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
+    asset_type: 'spot'
+    asset_id_field: 'CentralAssetId'
+    attributes:
+      central_asset_id: 'CentralAssetId'
+    geometryName: 'msGeometry'
+    srsName: "EPSG:27700"
+    body: "Shropshire Council"
+  - wfs_feature: "Street_Gazetteer"
+    stylemap: 'fixmystreet.assets.shropshire.street_stylemap'
+    usrn:
+      attribute: 'USRN'
+      field: 'site_code'
+    road: true
+    asset_item: 'road'
+    asset_type: 'road'
+    no_asset_msg_id: '#js-not-a-road'
+    no_asset_msgs_class: '.js-roads-shropshire'
+    always_visible: true
+    non_interactive: true
+    all_categories: true
+    actions:
+      found: 'fixmystreet.assets.shropshire.street_found'
+      not_found: 'fixmystreet.assets.shropshire.street_not_found'

@@ -59,7 +59,7 @@ sub asset_layers : Path('asset_layers.js') : Args(0) {
 sub _encode_json_with_js_classes {
     my $data = shift;
     my $json = encode_json($data);
-    $json =~ s/"(class|format_class|construct_asset_name|asset_found|asset_not_found|found|not_found|stylemap)":"(.*?)"/"$1":$2/g;
+    $json =~ s/"(class|format_class|construct_asset_name|asset_found|asset_not_found|found|not_found|stylemap|asset_details)":"(.*?)"/"$1":$2/g;
     return $json;
 }
 

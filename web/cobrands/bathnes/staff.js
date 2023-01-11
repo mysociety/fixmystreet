@@ -1,8 +1,34 @@
 (function(){
 
-if (!fixmystreet.maps || !fixmystreet.maps.banes_defaults) {
+if (!fixmystreet.maps || !window.OpenLayers) {
     return;
 }
+
+var banes_defaults = {
+    http_options: {
+        url: "https://data.bathnes.gov.uk/geoserver/fms/ows",
+        params: {
+            mapsource: "BathNES/WFS",
+            SERVICE: "WFS",
+            VERSION: "1.0.0",
+            REQUEST: "GetFeature",
+            TYPENAME: "",
+            SRSNAME: "urn:ogc:def:crs:EPSG::27700",
+            outputFormat: 'application/json'
+        }
+    },
+    format_class: OpenLayers.Format.GeoJSON,
+    format_options: {ignoreExtraDims: true},
+    asset_category: "",
+    asset_item: "asset",
+    asset_type: 'spot',
+    max_resolution: 4.777314267158508,
+    asset_id_field: 'feature_no',
+    attributes: null,
+    geometryName: 'msGeometry',
+    body: "Bath and North East Somerset Council",
+    srsName: "EPSG:27700"
+};
 
 var llpg_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -21,7 +47,7 @@ var llpg_stylemap = new OpenLayers.StyleMap({
 });
 
 
-fixmystreet.assets.add(fixmystreet.maps.banes_defaults, {
+fixmystreet.assets.add(banes_defaults, {
     http_options: {
         params: {
             TYPENAME: "LLPG"

@@ -4,12 +4,154 @@ if (!fixmystreet.maps) {
     return;
 }
 
+/* Bath & NE Somerset */
+
+fixmystreet.assets.banes = {};
+fixmystreet.assets.banes.park_asset_details = function() {
+    var a = this.attributes;
+    return a.description + " " + a.assetid;
+};
+
+/* Street lights are included/styled according to their owner. */
+
+var banes_ownernames = [
+    "B&NES CAR PARKS",
+    "B&NES PARKS",
+    "B&NES PROPERTY",
+    "B&NES HIGHWAYS"
+];
+
+// Some are excluded from the map entirely
+var banes_exclude_ownernames = [
+    "EXCEPTIONS"
+];
+
+function banes_include_feature(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.ownername &&
+           OpenLayers.Util.indexOf(banes_exclude_ownernames, f.attributes.ownername) == -1;
+}
+
+function banes_owns_feature(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.ownername &&
+           OpenLayers.Util.indexOf(banes_ownernames, f.attributes.ownername) > -1 &&
+           banes_include_feature(f);
+}
+
+function banes_does_not_own_feature(f) {
+    return !banes_owns_feature(f) &&
+           banes_include_feature(f);
+}
+
+var banes_lighting_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4,
+    title: '${unitdescription} ${unitno}\r\nNot owned by B&NES. Owned by ${ownername}.'
+});
+
+var banes_rule_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: banes_owns_feature
+    }),
+    symbolizer: {
+        fillColor: "#FFFF00",
+        pointRadius: 6,
+        title: '${unitdescription} ${unitno}',
+    }
+});
+
+var banes_rule_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: banes_does_not_own_feature
+    })
+});
+banes_lighting_default_style.addRules([banes_rule_owned, banes_rule_not_owned]);
+
+fixmystreet.assets.banes.lighting_stylemap = new OpenLayers.StyleMap({
+    'default': banes_lighting_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': new OpenLayers.Style({
+        pointRadius: 8,
+        cursor: 'pointer'
+    })
+});
+
+fixmystreet.assets.banes.lighting_asset_details = function() {
+    var a = this.attributes;
+    return "street: " + a.street + "\n" +
+           "owner: " + a.ownername + "\n" +
+           "unitno: " + a.unitno + "\n" +
+           "lamp: " + a.lamp + "\n" +
+           "lampclass: " + a.lampclass + "\n" +
+           "description: " + a.unitdescription;
+};
+
+fixmystreet.assets.banes.road_not_found = function(layer) {
+    var cat = fixmystreet.reporting.selectedCategory().category;
+    var asset_item = layer.fixmystreet.cat_map[cat];
+    if (asset_item) {
+        layer.fixmystreet.asset_item = asset_item;
+        fixmystreet.message_controller.road_not_found(layer);
+    } else {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
+// List of categories which are Curo Group's responsibility
+var curo_categories = [
+    'Allotment issue',
+    'Dead animals',
+    'Dog fouling',
+    'Excessive or dangerous littering',
+    'Litter bin damaged',
+    'Litter bin full',
+    'Needles',
+    'Obstructive vegetation',
+    'Play area safety issue',
+    'Trees and woodland'
+];
+
+fixmystreet.assets.banes.curo_found = function(layer) {
+    var category = fixmystreet.reporting.selectedCategory().category;
+    if (curo_categories.indexOf(category) === -1) {
+        fixmystreet.message_controller.road_found(layer);
+        return;
+    }
+
+    fixmystreet.message_controller.road_not_found(layer);
+    $('#js-roads-responsibility > strong').hide();
+
+    var domain = 'curo-group.co.uk';
+    var email = 'estates@' + domain;
+    var email_string = $(layer.fixmystreet.no_asset_msg_id).find('.js-roads-asset');
+    if (email_string) {
+        email_string.html('<a href="mailto:' + email + '">' + email + '</a>');
+    }
+};
+fixmystreet.assets.banes.curo_not_found = function(layer) {
+    $('#js-roads-responsibility > strong').show();
+    fixmystreet.message_controller.road_found(layer);
+};
+
+/* Bexley */
+
 fixmystreet.assets.bexley = {};
 fixmystreet.assets.bexley.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
   'select': fixmystreet.assets.construct_named_select_style("${Unit_No}")
 });
+
+/* Bristol */
 
 fixmystreet.assets.bristol = {};
 fixmystreet.assets.bristol.park_stylemap = new OpenLayers.StyleMap({
@@ -19,6 +161,8 @@ fixmystreet.assets.bristol.park_stylemap = new OpenLayers.StyleMap({
         fillOpacity: "0.25"
     })
 });
+
+/* Bromley */
 
 fixmystreet.assets.bromley = {};
 fixmystreet.assets.bromley.parks_stylemap = new OpenLayers.StyleMap({
@@ -38,6 +182,8 @@ fixmystreet.assets.bromley.prow_stylemap = new OpenLayers.StyleMap({
         strokeWidth: 6
     })
 });
+
+/* Central Bedfordshire */
 
 fixmystreet.assets.centralbedfordshire = {};
 fixmystreet.assets.centralbedfordshire.streetlight_stylemap = new OpenLayers.StyleMap({
@@ -106,12 +252,83 @@ fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
     }
 };
 
+/* Cheshire East */
+
 fixmystreet.assets.cheshireeast = {};
 fixmystreet.assets.cheshireeast.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
   'select': fixmystreet.assets.construct_named_select_style("${asset_id}")
 });
+
+/* East Sussex */
+
+OpenLayers.Format.EastSussex = OpenLayers.Class(OpenLayers.Format.JSON, {
+    read: function(json, type, filter) {
+        var obj = json;
+        if (typeof json == "string") {
+            obj = OpenLayers.Format.JSON.prototype.read.apply(this,
+                                                              [json, filter]);
+        }
+
+        var results = [];
+        for (var i=0, len=obj.length; i<len; i++) {
+            var item = obj[i];
+            var geom = new OpenLayers.Geometry.Point(item.Mid_Location__c.longitude, item.Mid_Location__c.latitude);
+            var vec = new OpenLayers.Feature.Vector(geom, item);
+            results.push(vec);
+        }
+
+        return results;
+    },
+    CLASS_NAME: "OpenLayers.Format.EastSussex"
+});
+
+OpenLayers.Protocol.EastSussex = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    read: function(options) {
+        OpenLayers.Protocol.prototype.read.apply(this, arguments);
+        options = options || {};
+        options.params = OpenLayers.Util.applyDefaults(
+            options.params, this.options.params);
+        options = OpenLayers.Util.applyDefaults(options, this.options);
+        var types = options.types.join('&types=');
+        var coords = fixmystreet.map.getCenterWGS84();
+        options.url = options.url + '?longitude=' + coords.lat + '&latitude=' + coords.lon + '&types=' + types;
+        var resp = new OpenLayers.Protocol.Response({requestType: "read"});
+        resp.priv = OpenLayers.Request.GET({
+            url: options.url,
+            callback: this.createCallback(this.handleRead, resp, options),
+            params: options.params,
+            headers: options.headers
+        });
+    },
+    CLASS_NAME: "OpenLayers.Protocol.EastSussex"
+});
+
+// can have multiple group
+$(function(){
+    $("#problem_form").on("change.category", function() {
+        var group = '';
+        if (OpenLayers.Util.indexOf(fixmystreet.bodies, 'East Sussex County Council') != -1 ) {
+          group = fixmystreet.reporting.selectedCategory().group;
+        }
+        $('#form_group').val(group);
+    });
+});
+
+fixmystreet.assets.eastsussex = {};
+fixmystreet.assets.eastsussex.construct_selected_asset_message = function(asset) {
+    var last_clean = asset.attributes.Gully_Last_Clean_Date__c || '';
+    var next_clean = asset.attributes.Gully_Next_Clean_Date__c || '';
+    if (last_clean !== '' || next_clean !== '') {
+        var message = '';
+        if (last_clean) { message += '<b>Last Cleaned</b>: ' + last_clean; }
+        if (next_clean) { message += ' <b>Next Clean</b>: ' + next_clean; }
+        return message;
+    }
+};
+
+/* Hounslow */
 
 fixmystreet.assets.hounslow = {};
 
@@ -140,6 +357,8 @@ fixmystreet.assets.hounslow.construct_asset_name = function(id) {
         return {id: code, name: 'column'};
     }
 };
+
+/* Isle of Wight */
 
 fixmystreet.assets.isleofwight = {};
 fixmystreet.assets.isleofwight.streets_stylemap = new OpenLayers.StyleMap({
@@ -183,6 +402,8 @@ fixmystreet.assets.isleofwight.line_not_found_msg_update = function(layer) {
     fixmystreet.assets.isleofwight.not_found_msg_update();
 };
 
+/* Lincolnshire */
+
 fixmystreet.assets.lincolnshire = {};
 fixmystreet.assets.lincolnshire.barrier_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -218,11 +439,102 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+/* Merton */
+
 fixmystreet.assets.merton = {};
 fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
+
+/* Shropshire */
+
+fixmystreet.assets.shropshire = {};
+
+fixmystreet.assets.shropshire.street_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        strokeColor: "#5555FF",
+        strokeOpacity: 0.1,
+        strokeWidth: 7
+    })
+});
+
+fixmystreet.assets.shropshire.street_found = function(layer, asset) {
+    fixmystreet.message_controller.road_found(layer, asset.attributes.SITE_CLASS, function(name) {
+        if (name == 'PUB' || name === 'PUPI') { return 1; }
+        else { return 0; }
+    }, "#js-not-council-road");
+};
+fixmystreet.assets.shropshire.street_not_found = function(layer) {
+      fixmystreet.message_controller.road_not_found(layer);
+};
+
+// Only parish rows have an owner
+function shropshire_light(f) {
+    return f &&
+           f.attributes &&
+           !f.attributes.OWNER;
+}
+function shropshire_parish_light(f) {
+    return !shropshire_light(f);
+}
+
+var shropshire_light_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4
+});
+var shropshire_rule_light_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: shropshire_light
+    }),
+    symbolizer: {
+        fillColor: "#FFFF00",
+        pointRadius: 6
+    }
+});
+var shropshire_rule_light_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: shropshire_parish_light
+    })
+});
+shropshire_light_default_style.addRules([ shropshire_rule_light_owned, shropshire_rule_light_not_owned ]);
+
+fixmystreet.assets.shropshire.streetlight_stylemap = new OpenLayers.StyleMap({
+    'default': shropshire_light_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': new OpenLayers.Style({
+        pointRadius: 8,
+        cursor: 'pointer'
+    })
+});
+
+fixmystreet.assets.shropshire.streetlight_found = function(asset) {
+    var controller_fn = shropshire_light(asset) ? 'asset_found' : 'asset_not_found';
+    fixmystreet.message_controller[controller_fn].call(this);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.shropshire.streetlight_not_found = function(asset) {
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
+fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
+    var out = 'You have selected streetlight <b>' + asset.attributes.FEAT_LABEL + '</b>.';
+    if (asset.attributes.PART_NIGHT === "YES") {
+        out += "<br>This light is switched off from 12am until 5.30am.";
+    }
+    if (asset.attributes.OWNER) {
+        out += " This light is the responsibility of " + asset.attributes.OWNER + " and should be reported to them, please see <a href='https://shropshire.gov.uk/committee-services/mgParishCouncilDetails.aspx?bcr=1'>the list of parish councils</a>.";
+    }
+    return out;
+};
 
 })();

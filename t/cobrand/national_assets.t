@@ -24,7 +24,7 @@ subtest 'cobrand assets includes not applied on cobrand sites', sub {
     }, sub {
         $mech->get_ok("/report/new?latitude=51.494885&longitude=-2.602237");
         $mech->content_lacks('buckinghamshire/assets.js');
-        $mech->content_contains('bathnes/assets.js');
+        $mech->content_contains('fixmystreet-uk-councils/assets.js');
     };
 };
 
