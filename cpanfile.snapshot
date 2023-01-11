@@ -7755,16 +7755,15 @@ DISTRIBUTIONS
       Test::More 0.98
       Test::UseAllModules 0
       perl 5.008001
-  Test-MockModule-0.11
-    pathname: G/GF/GFRANKS/Test-MockModule-0.11.tar.gz
+  Test-MockModule-v0.177.0
+    pathname: G/GF/GFRANKS/Test-MockModule-v0.177.0.tar.gz
     provides:
-      Test::MockModule 0.11
+      Test::MockModule v0.177.0
     requirements:
       Carp 0
       Module::Build 0.38
-      SUPER 0
+      SUPER 1.20
       Scalar::Util 0
-      Test::More 0.45
       perl 5.006
   Test-MockObject-1.20150527
     pathname: C/CH/CHROMATIC/Test-MockObject-1.20150527.tar.gz

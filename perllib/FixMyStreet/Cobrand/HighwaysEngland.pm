@@ -272,6 +272,8 @@ sub national_highways_cleaning_groups {
 sub report_new_is_on_he_road {
     my ( $self ) = @_;
 
+    return if FixMyStreet->test_mode eq 'cypress';
+
     my ($x, $y) = (
         $self->{c}->stash->{longitude},
         $self->{c}->stash->{latitude},

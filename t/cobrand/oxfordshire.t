@@ -19,33 +19,33 @@ $counciluser->add_to_roles($role);
 my $oxfordshire_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
 $oxfordshire_cobrand->mock('area_types', sub { [ 'CTY' ] });
 
-$oxfordshire_cobrand->mock('defect_wfs_query', sub {
-    return {
-        features => [
+$oxfordshire_cobrand->mock('get', sub {
+    return '{
+        "features": [
             {
-                properties => {
-                    APPROVAL_STATUS_NAME => 'With Contractor',
-                    ITEM_CATEGORY_NAME => 'Minor Carriageway',
-                    ITEM_TYPE_NAME => 'Pothole',
-                    REQUIRED_COMPLETION_DATE => '2020-11-05T16:41:00Z',
+                "properties": {
+                    "APPROVAL_STATUS_NAME": "With Contractor",
+                    "ITEM_CATEGORY_NAME": "Minor Carriageway",
+                    "ITEM_TYPE_NAME": "Pothole",
+                    "REQUIRED_COMPLETION_DATE": "2020-11-05T16:41:00Z"
                 },
-                geometry => {
-                    coordinates => [-1.3553, 51.8477],
+                "geometry": {
+                    "coordinates": [-1.3553, 51.8477]
                 }
             },
             {
-                properties => {
-                    APPROVAL_STATUS_NAME => 'With Contractor',
-                    ITEM_CATEGORY_NAME => 'Trees and Hedges',
-                    ITEM_TYPE_NAME => 'Overgrown/Overhanging',
-                    REQUIRED_COMPLETION_DATE => '2020-11-05T16:41:00Z',
+                "properties": {
+                    "APPROVAL_STATUS_NAME": "With Contractor",
+                    "ITEM_CATEGORY_NAME": "Trees and Hedges",
+                    "ITEM_TYPE_NAME": "Overgrown/Overhanging",
+                    "REQUIRED_COMPLETION_DATE": "2020-11-05T16:41:00Z"
                 },
-                geometry => {
-                    coordinates => [-1.3554, 51.8478],
+                "geometry": {
+                    "coordinates": [-1.3554, 51.8478]
                 }
             }
         ]
-    };
+    }';
 });
 
 subtest 'check /around?ajax gets extra pins from wfs' => sub {

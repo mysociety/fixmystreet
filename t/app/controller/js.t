@@ -9,7 +9,7 @@ subtest "check translation endpoint" => sub {
 
 subtest "check asset layer endpoint" => sub {
     $mech->get_ok('/js/asset_layers.js');
-    $mech->content_is('var fixmystreet = fixmystreet || {}; (function(){ if (!fixmystreet.maps) { return; } fixmystreet.asset_layers = {}; var defaults; })();' . "\n");
+    $mech->content_is('var fixmystreet = fixmystreet || {}; (function(){ if (!fixmystreet.maps) { return; } var defaults; })();' . "\n");
 
     my $defaults = { wfs_url => 'http://example.org', geometryName => 'msGeometry', srsName => 'EPSG:3857' };
     my $bridges = { wfs_feature => 'Bridges', asset_item => 'bridge', asset_category => 'Bridges' };

@@ -187,6 +187,7 @@ requires 'Sort::Key';
 requires 'Sub::Override';
 requires 'Test::Exception';
 requires 'Test::LongString';
+requires 'Test::MockModule', '0.177.0';
 requires 'Test::MockTime';
 requires 'Test::More', '0.88';
 requires 'Test::Output';

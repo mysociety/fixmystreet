@@ -360,6 +360,8 @@ sub dashboard_export_problems_add_columns {
 sub defect_wfs_query {
     my ($self, $bbox) = @_;
 
+    return if FixMyStreet->test_mode eq 'cypress';
+
     my $filter = "
     <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
         <ogc:And>

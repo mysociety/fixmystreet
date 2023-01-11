@@ -33,10 +33,11 @@ Thus module has utility functions for the FMS project.
 
 =head2 test_mode
 
-    FixMyStreet->test_mode( $bool );
-    my $in_test_mode_bool = FixMyStreet->test_mode;
+    FixMyStreet->test_mode( $type );
+    my $test_mode = FixMyStreet->test_mode;
 
-Put the FixMyStreet into test mode - intended for the unit tests:
+Put the FixMyStreet into test mode, intended for the tests. Anything true
+means in test mode; Perl tests set '1', Cypress sets 'cypress'.
 
     BEGIN {
         use FixMyStreet;

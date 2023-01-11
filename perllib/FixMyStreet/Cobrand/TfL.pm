@@ -368,6 +368,8 @@ sub report_new_munge_before_insert {
 sub report_new_is_on_tlrn {
     my ( $self ) = @_;
 
+    return if FixMyStreet->test_mode eq 'cypress';
+
     my ($x, $y) = Utils::convert_latlon_to_en(
         $self->{c}->stash->{latitude},
         $self->{c}->stash->{longitude},

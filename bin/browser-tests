@@ -241,7 +241,7 @@ sub run {
     } else {
         # Child, run the server on port 3001
         require FixMyStreet;
-        FixMyStreet->test_mode(1); # So email doesn't try to send
+        FixMyStreet->test_mode('cypress'); # So email doesn't try to send, and things know we're in Cypress
         local $ENV{FIXMYSTREET_APP_DEBUG} = 0;
         require Plack::Runner;
         my $runner = Plack::Runner->new;
