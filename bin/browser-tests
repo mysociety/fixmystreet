@@ -137,6 +137,9 @@ sub run {
     if ($run_server) {
         require FixMyStreet::TestAppProve;
         require t::Mock::MapIt;
+        require YAML;
+        require Path::Tiny;
+        my $asset_layers = YAML::Load(Path::Tiny::path('data/test-asset-layers.yml')->slurp);
         my $config_out = FixMyStreet::TestAppProve->get_config({
             config_file => $config_file,
             # Want this to be like .com
@@ -148,59 +151,7 @@ sub run {
             COBRAND_FEATURES => {
                 category_groups => { map { $_ => 1 } @$cobrand },
                 suggest_duplicates => { map { $_ => 1 } @$cobrand },
-                asset_layers => {
-                    bromley => [
-                        {
-                            http_wfs_url => "https://tilma.staging.mysociety.org/mapserver/bromley_wfs",
-                            asset_type => 'spot',
-                            max_resolution => 4.777314267158508,
-                            asset_id_field => 'CENTRAL_AS',
-                            geometryName => 'msGeometry',
-                            srsName => "EPSG:3857",
-                            body => "Bromley Council",
-                        },
-                        {
-                            wfs_feature => "Streetlights",
-                            asset_id_field => 'FEATURE_ID',
-                            attributes => {
-                                feature_id => 'FEATURE_ID'
-                            },
-                            asset_category => ["Lamp Column Damaged", "Light Not Working", "Light On All Day", "Light blocked by vegetation"],
-                            asset_item => 'street light',
-                        },
-                        {
-                            wfs_feature => "PROW",
-                            stylemap => 'fixmystreet.assets.bromley.prow_stylemap',
-                            always_visible => 1,
-                            non_interactive => 1,
-                            road => 1,
-                            all_categories => 1,
-                            usrn => {
-                                attribute => 'PROW_REFER',
-                                field => 'prow_reference'
-                            }
-                        },
-                    ],
-                    lincolnshire => [
-                        {
-                            wfs_url => "https://tilma.staging.mysociety.org/mapserver/lincs",
-                            geometryName => 'msGeometry',
-                            srsName => "EPSG:3857",
-                            body => "Lincolnshire County Council"
-                        },
-                        {
-                            wfs_feature => "Carriageway",
-                            asset_category => [
-                                "Damaged/missing cats eye",
-                                "Pothole on road/cycleway",
-                            ],
-                            asset_item => 'road',
-                            asset_item_message => '',
-                            disable_pin_snapping => 1,
-                            stylemap => 'fixmystreet.assets.stylemap_invisible'
-                        },
-                    ],
-                },
+                asset_layers => $asset_layers,
             }
         });
         $ENV{FMS_OVERRIDE_CONFIG} = $config_out;

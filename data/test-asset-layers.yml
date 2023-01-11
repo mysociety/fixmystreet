@@ -1,0 +1,34 @@
+bromley:
+  - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bromley_wfs"
+    asset_type: 'spot'
+    max_resolution: 4.777314267158508
+    asset_id_field: 'CENTRAL_AS'
+    geometryName: 'msGeometry'
+    srsName: "EPSG:3857"
+    body: "Bromley Council"
+  - wfs_feature: "Streetlights"
+    asset_id_field: 'FEATURE_ID'
+    attributes:
+      feature_id: 'FEATURE_ID'
+    asset_category: ["Lamp Column Damaged", "Light Not Working", "Light On All Day", "Light blocked by vegetation"]
+    asset_item: 'street light'
+  - wfs_feature: "PROW"
+    stylemap: 'fixmystreet.assets.bromley.prow_stylemap'
+    always_visible: true
+    non_interactive: true
+    road: true
+    all_categories: true
+    usrn:
+      attribute: 'PROW_REFER'
+      field: 'prow_reference'
+lincolnshire:
+  - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
+    geometryName: 'msGeometry'
+    srsName: "EPSG:3857"
+    body: "Lincolnshire County Council"
+  - wfs_feature: "Carriageway"
+    asset_category: [ "Damaged/missing cats eye", "Pothole on road/cycleway" ]
+    asset_item: 'road'
+    asset_item_message: ''
+    disable_pin_snapping: true
+    stylemap: 'fixmystreet.assets.stylemap_invisible'
