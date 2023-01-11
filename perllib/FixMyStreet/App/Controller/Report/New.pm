@@ -1021,7 +1021,7 @@ sub process_user : Private {
         # user's email/password when making a new report.
         # The POST request has submit_sign_in set to 2 if
         # the name has been checked.
-        unless ( $c->get_param('submit_sign_in') eq '2' ) {
+        unless ( ($c->get_param('submit_sign_in')||'') eq '2' ) {
             $c->stash->{check_name} = 1;
             $c->stash->{login_success} = 1;
         }
