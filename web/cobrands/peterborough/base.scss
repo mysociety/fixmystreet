@@ -83,16 +83,6 @@ h1, h2 {
         color: $primary_text;
         background: $primary;
     }
-
-    &.is--next {
-        @include svg-background-image('/cobrands/peterborough/images/chevron-next-white');
-        @include next-back-button(right);
-    }
-
-    &.is--back {
-        @include svg-background-image('/cobrands/peterborough/images/chevron-back-white');
-        @include next-back-button(left);
-    }
 }
 
 .btn-secondary, input.btn-secondary {
@@ -115,26 +105,6 @@ h1, h2 {
         border: 0.2em solid $primary;
         opacity: 0.5;
         pointer-events: none;
-    }
-
-    &.is--next {
-        @include svg-background-image('/cobrands/peterborough/images/chevron-next-green');
-        @include next-back-button(right);
-
-        &:hover,
-        &:active {
-            @include svg-background-image('/cobrands/peterborough/images/chevron-next-white');
-        }
-    }
-
-    &.is--back {
-        @include svg-background-image('/cobrands/peterborough/images/chevron-back-green');
-        @include next-back-button(left);
-
-        &:hover,
-        &:active {
-            @include svg-background-image('/cobrands/peterborough/images/chevron-back-white');
-        }
     }
 }
 
