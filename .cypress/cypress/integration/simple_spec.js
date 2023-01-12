@@ -74,6 +74,7 @@ describe('Leaving updates', function() {
         cy.get('#map_sidebar').should('contain', 'check and confirm your details');
         cy.get('[name=submit_register]').parents('form').submit();
         cy.get('body').should('contain', 'Thank you for updating this issue');
+        cy.visit('/auth/sign_out'); // Cookies shouldn't be remembered between tests, and yet
     }
 
     it('works when visited directly', function() {

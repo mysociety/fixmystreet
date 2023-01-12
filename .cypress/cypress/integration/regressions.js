@@ -28,13 +28,11 @@ describe('Regression tests', function() {
     it('Does not escape HTML entities in the title', function() {
         cy.server();
         cy.route('/around\?ajax*').as('update-results');
-        cy.request({
-          method: 'POST',
-          url: '/auth?r=/',
-          form: true,
-          body: { username: 'cs@example.org', password_sign_in: 'password' }
-        });
-        cy.visit('/report/1/moderate');
+        cy.visit('/auth?r=report/1/moderate');
+        cy.get('[name=username]').type('cs@example.org');
+        cy.contains('Sign in with a password').click();
+        cy.get('[name=password_sign_in]').type('password');
+        cy.get('[name=sign_in_by_password]').last().click();
         cy.get('[name=problem_title]').clear().type('M&S "brill" says <glob>').parents('form').submit();
         cy.title().should('contain', 'M&S "brill" says <glob>');
         cy.contains('Problems nearby').click();
