@@ -2,7 +2,7 @@
 scripts.push(
     version('/js/lazyload.js'),
 );
-IF bodyclass.match('mappage');
+IF bodyclass.match('mappage') AND NOT bodyclass.match('accountpage');
     scripts.push( version('/cobrands/fixmystreet/assets.js') );
     scripts.push( version('/cobrands/bathnes/assets.js') );
     scripts.push( version('/cobrands/buckinghamshire/assets.js') );
