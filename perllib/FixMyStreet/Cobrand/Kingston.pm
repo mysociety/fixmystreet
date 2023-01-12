@@ -51,10 +51,16 @@ sub image_for_unit {
         return "$base/bin-grey-green-lid-recycling" if $container == 26 || $container == 27;
         return "";
     }
+
+    # Base mixed recycling (2241) on the container itself
+    my %containers = map { $_ => 1 } @{$unit->{request_containers}};
+    return "$base/bin-green" if $containers{12};
+    return "$base/box-green-mix" if $containers{16};
+
     my $service_id = $unit->{service_id};
     my $images = {
         2238 => "$base/bin-black", # refuse
-        2239 => "$base/bin-brown", # food
+        2239 => "$base/caddy-brown-large", # food
         2240 => "$base/bin-grey-blue-lid-recycling", # paper and card
         2241 => "$base/bin-green", # dry mixed
         2242 => "$base/sack-clear-red", # domestic refuse bag
