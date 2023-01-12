@@ -30,6 +30,9 @@
     </button>
   [% END %]
     <button type="button" class="btn btn--block hidden-nojs js-reporting-page--next[% IF type != 'report' %] js-new-report-user-show[% END %]">[% loc('Log in with email') %]</button>
+  [% IF c.cobrand.moniker == 'brent' %]
+    <small>Receive updates and view your reports</small>
+  [% END %]
 [% END %]
   <div class="js-show-if-anonymous
     [%~ ' hidden-js' UNLESS type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]">
