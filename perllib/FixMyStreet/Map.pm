@@ -28,7 +28,9 @@ are permitted by the config.
 =cut
 
 sub allowed_maps {
-    my @allowed = split /,/, ( FixMyStreet->config('MAP_TYPE') or "");
+    my $cfg = FixMyStreet->config('MAP_TYPE') || [];
+    $cfg = [ split /,/, $cfg ] unless ref $cfg eq 'ARRAY';
+    my @allowed = @$cfg;
     push @allowed, 'OSM'; # OSM is always allowed
     @allowed = map { __PACKAGE__.'::'.$_ } @allowed;
     my %avail = map { $_ => 1 } __PACKAGE__->maps;

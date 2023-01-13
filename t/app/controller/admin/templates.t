@@ -360,9 +360,6 @@ subtest "category groups are shown" => sub {
             category_groups => {
                 oxfordshire => 1,
             },
-            multiple_category_groups => {
-                oxfordshire => 1,
-            },
         },
     }, sub {
 

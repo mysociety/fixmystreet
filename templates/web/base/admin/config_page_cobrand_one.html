@@ -1,0 +1,30 @@
+[% INCLUDE 'admin/header.html' title=loc('Configuration') -%]
+
+<p>This site’s <strong>[% cob %]</strong> <code>COBRAND_FEATURES</code> configuration.
+</p>
+
+<table>
+  <tr>
+      <th>Feature</th><th>Value</th>
+  </tr>
+
+  [% FOR feature IN config %]
+    <tr>
+        <td>[% feature.key %]</td>
+        <td>[% INCLUDE 'admin/config_page_value.html', key=feature.key value=feature.value %]</td>
+    </tr>
+  [% END %]
+
+  <tr>
+      <th colspan="2" align="left">Fallback values</th>
+  </tr>
+
+  [% FOR feature IN fallback %]
+    <tr>
+        <td>[% feature.key %]</td>
+    <td>[% INCLUDE 'admin/config_page_value.html', key=feature.key value=feature.value %]</td>
+  [% END %]
+
+</table>
+
+[% INCLUDE 'admin/footer.html' %]

@@ -1,0 +1,81 @@
+[% INCLUDE 'admin/header.html' title=loc('Configuration') -%]
+
+<p>This site’s <code>COBRAND_FEATURES</code> configuration.
+</p>
+
+<h2>By feature</h2>
+
+<table>
+    <tr>
+        <th scope="col">Cobrand</th><th scope="col">Value</th>
+    </tr>
+[% FOR feature IN c.config.COBRAND_FEATURES %]
+    <tr>
+        <th align="left" colspan="2">[% feature.key %]
+    [% SWITCH feature.key %]
+    [% CASE 'address_api' %] - (Hackney only, unused) API details for address lookup
+    [% CASE 'always_use_reply_to' %] - to deal with DMARC
+    [% CASE 'anonymous_account' %] - account to use for anonymous reporting (needs code as well)
+    [% CASE 'area_code_mapping' %] - (Central Bedfordshire only) special lookup for data to send via Open311
+    [% CASE 'bartec' %] - login details, plus any blocked UPRNs
+    [% CASE 'base_url' %] - the main URL of the site
+    [% CASE 'borough_email_addresses' %] - report email sending based upon a sub-area (e.g. Bucks districts, TfL boroughs)
+    [% CASE 'bottomline' %] - login details (why not in payment_gateway?)
+    [% CASE 'category_groups' %] - enables category groups
+    [% CASE 'claims' %] - enabling of the claims section
+    [% CASE 'contact_email' %] - for sending of abuse emails
+    [% CASE 'contact_name' %] - for use in emails
+    [% CASE 'contact_us_url' %] - separate contact us form
+    [% CASE 'content_security_policy' %] - security hardening where possible
+    [% CASE 'do_not_reply_email' %] - special do not reply email if possible, needs them setting up SPF/DMARC or delegation
+    [% CASE 'echo' %] - login details for sending and receiving, plus address types and NLPG
+    [% CASE 'example_places' %] - front page examples to use
+    [% CASE 'extra_state_mapping' %] - allows special mapping of extra states (used for Northamptonshire, could be consolidated with State display special cases?)
+    [% CASE 'govuk_notify' %] - configuration details for Notify
+    [% CASE 'heatmap' %] - heatmap enabled
+    [% CASE 'heatmap_dashboard_body' %] - anyone with council gov.uk email can access the heatmap
+    [% CASE 'internal_ips' %] - (TfL only) IPs that can skip 2FA
+    [% CASE 'noise' %] - enabling of the noise section
+    [% CASE 'oidc_login' %] - third party OIDC login details
+    [% CASE 'open311_email' %] - special additional emails to Open311 (e.g. Bexley out of hours or Bucks flytipping)
+    [% CASE 'open311_token' %] - token to enable updates to be pushed to us via Open311
+    [% CASE 'os_maps_licence' %] - licence ID to show on map
+    [% CASE 'os_maps_premium' %] - boolean as to whether is premium or not
+    [% CASE 'os_maps_url' %] - URL to use for OS Maps API
+    [% CASE 'payment_gateway' %] - cost and configuration details for payments
+    [% CASE 'public_asset_ids' %] - Asset IDs to display on a report page
+    [% CASE 'safety_critical_categories:' %] - (TfL only) categories that are safety critical
+    [% CASE 'send_questionnaire' %] - whether to send or not on .com (cobrand setting in code)
+    [% CASE 'sms_authentication' %] - SMS confirmation/updates enabled
+    [% CASE 'staff_url' %] - special different URL for staff in category
+    [% CASE 'suggest_duplicates' %] - duplicates are suggested to the user
+    [% CASE 'throttle_username' %] - authentication throttling
+    [% CASE 'update_states_disallowed' %] - normal user not allowed to mark fixed (or reopen if reporter)
+    [% CASE 'updates_allowed' %] - who is allowed to leave updates
+    [% CASE 'verp_email_domain' %] - custom domain to handle VERP bounces
+    [% CASE 'waste' %] - enabling of the waste section
+    [% CASE 'waste_features' %] - waste configuration
+    [% END %]
+        </th>
+    </tr>
+
+      [% FOR cobrand IN feature.value %]
+    <tr>
+        <td>[% cobrand.key %]</td>
+        <td>[% INCLUDE 'admin/config_page_value.html' key=feature.key value=cobrand.value %]</td>
+    </tr>
+      [% END %]
+
+[% END %]
+</table>
+
+<h2>By cobrand</h2>
+
+<ul>
+[% FOR cobrand IN c.config.ALLOWED_COBRANDS %]
+[% NEXT IF cobrand.values.size %]
+<li><a href="cobrand_features/[% cobrand %]">[% cobrand %]</a></li>
+[% END %]
+</ul>
+
+[% INCLUDE 'admin/footer.html' %]

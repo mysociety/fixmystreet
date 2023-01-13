@@ -1,0 +1,122 @@
+[% SWITCH key %]
+
+[% CASE [ # Booleans
+    'always_use_reply_to',
+    'category_groups',
+    'claims',
+    'heatmap',
+    'heatmap_dashboard_body',
+    'noise',
+    'os_maps_premium',
+    'sms_authentication',
+    'suggest_duplicates',
+    'update_states_disallowed',
+    'waste',
+    ] %]
+    [% IF value %]Yes[% ELSE %]No[% END %]
+
+[% CASE [ # Strings
+    'anonymous_account',
+    'base_url',
+    'contact_email',
+    'contact_name',
+    'contact_us_url',
+    'content_security_policy',
+    'do_not_reply_email',
+    'open311_token',
+    'os_maps_licence',
+    'os_maps_url',
+    'updates_allowed',
+    'verp_email_domain',
+    ] %]
+    [% value %]
+
+[% CASE [ # List
+    'example_places',
+    'internal_ips',
+    'public_asset_ids',
+    ] %]
+    [% value.join(', ') %]
+
+[%# Simple display %]
+[% CASE 'address_api' %]
+    URL: [% value.url %]
+[% CASE 'area_code_mapping' %]
+    <i>Mapping</i>
+[% CASE 'asset_layers' %]
+    [% value.size - 1 %] layers
+[% CASE 'bartec' %]
+    Blocked UPRNs: [% value.blocked_uprns.join(', ') %]
+[% CASE 'bottomline' %]
+    Endpoint: [% value.endpoint %]
+[% CASE 'echo' %]
+    Username: [% value.username %]
+[% CASE 'govuk_notify' %]
+    Template ID: [% value.template_id %]
+[% CASE 'oidc_login' %]
+    Display name: [% value.display_name %]
+[% CASE 'throttle_username' %]
+    [% value.attempts %] per [% value.time %]s
+
+[% CASE 'borough_email_addresses' %]
+    <ul>
+    [% FOR e IN value %]
+        <li><i>[% e.key %]</i> <dl>
+            [% FOR ee IN e.value %] <dt>[% ee.areas.join(', ') %]</dt> <dd>[% ee.email %]</dd> [% END %]
+            </dl> </li>
+    [% END %]
+    </ul>
+[% CASE 'extra_state_mapping' %]
+    <ul>
+    [% FOR e IN value %]
+        <li><i>[% e.key %]</i> <dl>
+            [% FOR ee IN e.value %] <dt>[% ee.key %]</dt> <dd>[% ee.value %]</dd> [% END %]
+            </dl> </li>
+    [% END %]
+    </ul>
+[% CASE 'open311_email' %]
+    &nbsp;
+    <dl>
+      [% FOR ee IN value %]
+        <dt>[% ee.key %]</dt>
+        <dd>[% ee.value %]</dd>
+      [% END %]
+    </dl>
+[% CASE 'safety_critical_categories' %]
+    <ul>
+    [% FOR e IN value %]
+        <li>[% e.key %][% IF e.value != 1 %]:
+                [% FOR ee IN e.value %]
+                    [% ee.key %] = [% ee.value.join(', ') %]
+                [% END %]
+            [% END %]
+    [% END %]
+    </ul>
+[% CASE 'send_questionnaire' %]
+    <ul>
+    [% FOR e IN value %]
+        <li>[% e.key %]: [% e.value %]</li>
+    [% END %]
+    </ul>
+[% CASE 'staff_url' %]
+    <ul>
+    [% FOR e IN value %]
+        <li>[% e.key %]: [% e.value.join(', ') %]
+    [% END %]
+    </ul>
+
+[% CASE 'payment_gateway' %]
+    [% SET any = 0 %][% FOR k IN value %]
+    [% IF k.key.match('^ggw_|^pro_rata') %][% any = 1 %][% k.key %]: [% k.value %]<br>[% END %]
+    [% END %]
+    [% IF NOT any %]-[% END %]
+[% CASE 'waste_features' %]
+    [% SET any = 0 %][% FOR k IN value %]
+    [% any = 1 %][% k.key %]: [% k.value %]<br>
+    [% END %]
+    [% IF NOT any %]-[% END %]
+
+[% CASE %]
+    [% value %]
+
+[% END %]
