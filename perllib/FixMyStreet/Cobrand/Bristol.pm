@@ -27,11 +27,11 @@ sub council_area { return 'Bristol'; }
 sub council_name { return 'Bristol County Council'; }
 sub council_url { return 'bristol'; }
 
-=item * Bristol uses its own mapping tiles
+=item * Bristol use the OS Maps API at all zoom levels.
 
 =cut
 
-sub map_type { 'Bristol' }
+sub map_type { 'OS::API' }
 
 =item * Users with a bristol.gov.uk email can always be found in the admin.
 
