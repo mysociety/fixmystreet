@@ -12,7 +12,9 @@ subtest "check asset layer endpoint" => sub {
     $mech->content_is('var fixmystreet = fixmystreet || {}; (function(){ if (!fixmystreet.maps) { return; } var defaults; })();' . "\n");
 
     my $defaults = { wfs_url => 'http://example.org', geometryName => 'msGeometry', srsName => 'EPSG:3857' };
-    my $bridges = { wfs_feature => 'Bridges', asset_item => 'bridge', asset_category => 'Bridges' };
+    my $bridges = { wfs_feature => 'Bridges', asset_item => 'bridge', asset_category => 'Bridges',
+        attributes => { asset_details => "hello" },
+    };
 
     foreach ('fixmystreet', 'lincolnshire', 'greenwich') {
         FixMyStreet::override_config {
