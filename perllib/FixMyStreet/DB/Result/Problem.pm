@@ -93,6 +93,8 @@ __PACKAGE__->add_columns(
   { data_type => "jsonb", is_nullable => 1 },
   "response_priority_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "send_state",
+  { data_type => "text", default_value => "unprocessed", is_nullable => 0 },
   "send_fail_count",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "send_fail_reason",
@@ -175,8 +177,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:09:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:j4rW2OqSWiUON0skMn7qfw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-06-30 10:16:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ixrwVkFgOn2KJLGaBrKRww
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(

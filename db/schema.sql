@@ -227,6 +227,13 @@ create table problem (
     geocode jsonb,
     response_priority_id int REFERENCES response_priorities(id),
 
+    send_state text not null default 'unprocessed' check (
+        send_state = 'unprocessed'
+        or send_state = 'processed'
+        or send_state = 'skipped'
+        or send_state = 'sent'
+        or send_state = 'acknowledged'
+    ),
     -- logging sending failures (used by webservices)
     send_fail_count integer not null default 0,
     send_fail_reason text,
@@ -253,6 +260,7 @@ create index problem_state_latitude_longitude_idx on problem(state, latitude, lo
 create index problem_user_id_idx on problem ( user_id );
 create index problem_external_id_idx on problem(external_id);
 create index problem_external_body_idx on problem(lower(external_body));
+create index problem_send_state_state_idx on problem(send_state, state);
 create index problem_radians_latitude_longitude_idx on problem(radians(latitude), radians(longitude));
 create index problem_bodies_str_array_idx on problem USING gin(regexp_split_to_array(bodies_str, ','));
 create index problem_fulltext_idx on problem USING GIN(
