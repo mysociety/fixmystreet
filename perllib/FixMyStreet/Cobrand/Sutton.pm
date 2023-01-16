@@ -69,7 +69,7 @@ sub image_for_unit {
         2240 => "$base/bin-green", # paper and card
         2241 => "$base/box-green-mix", # dry mixed
         2242 => "$base/sack-clear-red", # domestic refuse bag
-        2243 => "$base/large-communal-black", # Communal refuse
+        2243 => "$base/large-communal-grey-black-lid", # Communal refuse
         2246 => "$base/sack-clear-blue", # domestic recycling bag
         2248 => "$base/bin-brown", # Communal food
         2249 => "$base/bin-grey-blue-lid-recycling", # Communal paper

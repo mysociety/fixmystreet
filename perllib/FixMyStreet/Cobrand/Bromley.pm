@@ -402,7 +402,7 @@ sub image_for_unit {
     my $images = {
         531 => "$base/sack-black",
         532 => "$base/sack-black",
-        533 => "$base/large-communal-black",
+        533 => "$base/large-communal-grey-black-lid",
         535 => "$base/box-green-mix",
         536 => "$base/bin-grey-green-lid-recycling",
         537 => "$base/box-black-paper",
