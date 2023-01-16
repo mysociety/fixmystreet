@@ -605,6 +605,21 @@ body.bulky {
       color: darken($primary_text, 80%);
     }
   }
+
+  // Summary page
+  .summary-section-header {
+    margin-top: 1.2em;
+    margin-bottom: 0.8em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .summary-section--heading {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
 }
 
 // Bulky item selection
