@@ -15,6 +15,7 @@
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
         - Auto-spot a default favicon.ico.
+        - Add `send_state` column to reports. #4048
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 
