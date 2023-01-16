@@ -105,7 +105,6 @@
       <table class="item-summary-table govuk-!-margin-bottom-9">
         <thead>
           <tr>
-              <th></th>
               <th>Item</th>
               <th>
                 <span class="govuk-text__assistive">Item images preview</span>
@@ -116,7 +115,6 @@
           [% FOR item IN items %]
           [% extra_text = form.items_extra.${item.item}.message %]
           <tr [% IF extra_text %]class="is--no-border-bottom"[% END %]>
-              <td class="item-number-cell">[% loop.index + 1 %]</td>
               <td>
                 <p class="govuk-!-margin-bottom-0">[% item.item %]</p>
               </td>
