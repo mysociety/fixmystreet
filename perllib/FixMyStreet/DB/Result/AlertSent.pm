@@ -22,21 +22,20 @@ __PACKAGE__->add_columns(
   "whenqueued",
   {
     data_type     => "timestamp",
-    default_value => \"current_timestamp",
+    default_value => \"CURRENT_TIMESTAMP",
     is_nullable   => 0,
-    original      => { default_value => \"now()" },
   },
 );
 __PACKAGE__->belongs_to(
   "alert",
   "FixMyStreet::DB::Result::Alert",
   { id => "alert_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  { is_deferrable => 0, on_delete => "CASCADE,", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2019-04-25 12:06:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xriosaSCkOo/REOG1OxdQA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-01-17 09:56:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1KKtNyeJJNc24sAVhmi0jQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

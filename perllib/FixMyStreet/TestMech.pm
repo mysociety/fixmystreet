@@ -181,13 +181,9 @@ sub delete_user {
     for my $p ( $user->problems ) {
         $p->comments->delete;
         $p->questionnaires->delete;
-        $p->user_planned_reports->delete;
         $p->delete;
     }
-    for my $a ( $user->alerts ) {
-        $a->alerts_sent->delete;
-        $a->delete;
-    }
+    $user->alerts->delete;
     $_->delete for $user->comments;
     $_->delete for $user->admin_logs;
     $_->delete for $user->user_body_permissions;

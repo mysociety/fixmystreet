@@ -215,6 +215,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0081' if constraint_delete_cascade('alert_sent_alert_id_fkey');
     return '0080' if column_exists('roles', 'extra');
     return '0079' if column_exists('response_templates', 'email_text');
     return '0078' if column_exists('problem','send_fail_body_ids');
@@ -333,6 +334,14 @@ sub constraint_contains {
     my ($consrc) = $db->dbh->selectrow_array('select pg_get_expr(conbin, conrelid) from pg_constraint where conname = ?', {}, $constraint);
     return unless $consrc;
     return $consrc =~ /$check/;
+}
+
+# Returns true if a constraint has on delete cascade set
+sub constraint_delete_cascade {
+    my ( $constraint, $check ) = @_;
+    my ($deltype) = $db->dbh->selectrow_array('select confdeltype from pg_constraint where conname = ?', {}, $constraint);
+    return unless $deltype;
+    return $deltype eq 'c';
 }
 
 # Returns true if a function exists

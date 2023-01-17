@@ -432,7 +432,7 @@ create index alert_whensubscribed_confirmed_cobrand_idx on alert(whensubscribed,
 -- Possible indexes - unique (alert_type,user_id,parameter)
 
 create table alert_sent (
-    alert_id integer not null references alert(id),
+    alert_id integer not null references alert(id) ON DELETE CASCADE,
     parameter text, -- e.g. Update ID for new updates
     whenqueued timestamp not null default current_timestamp
 );
@@ -523,8 +523,8 @@ create table user_body_permissions (
 
 create table user_planned_reports (
     id serial not null primary key,
-    user_id int references users(id) not null,
-    report_id int references problem(id) not null,
+    user_id int references users(id) ON DELETE CASCADE not null,
+    report_id int references problem(id) ON DELETE CASCADE not null,
     added timestamp not null default current_timestamp,
     removed timestamp
 );
