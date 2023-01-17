@@ -1951,6 +1951,16 @@ function setup_popstate() {
                 return;
             }
 
+            // Reset subcategory selection on new report form. A subcategory
+            // may trigger a stopper message that also disables the form; if
+            // the user presses the back button, we want to re-enable the
+            // form.
+            var $subcats = $('input[name^="category."]:checked');
+            var $curr = $('.js-reporting-page--active');
+            if ($curr.data('pageName') == 'subcategory' && $subcats.length) {
+                $subcats.prop('checked', false).trigger('change');
+            }
+
             var reports_list_trigger;
             if ('initial' in e.state) {
                 if (fixmystreet.original.page === 'new') {
