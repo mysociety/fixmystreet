@@ -1417,18 +1417,6 @@ OpenLayers.Renderer.SVGBig = OpenLayers.Class(OpenLayers.Renderer.SVG, {
 
 });
 
-/* Stop sending a needless header so that no preflight CORS request */
-OpenLayers.Request.XMLHttpRequest.prototype.setRequestHeader = function(sName, sValue) {
-    if (sName.toLowerCase() == 'x-requested-with') {
-        return;
-    }
-    if (!this._headers) {
-        this._headers = {};
-    }
-    this._headers[sName] = sValue;
-    return this._object.setRequestHeader(sName, sValue);
-};
-
 /* This is similar to OpenLayers' own KeyboardDefaults, but switches to using
  * key rather than keyCode (OL zoom out does not work in Firefox), works better
  * with modifier keys, and adds FMS specific handling for showing help and
