@@ -10,6 +10,8 @@ sub council_name { return 'Camden Council'; }
 sub council_url { return 'camden'; }
 sub get_geocoder { 'OSM' }
 
+sub enter_postcode_text { 'Enter a Camden postcode or street name' }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
