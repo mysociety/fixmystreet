@@ -14,9 +14,17 @@ INCLUDE '_email_top.html';
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
-  <p style="[% p_style %]">Your report to [% report.body %] has been logged on [% site_name %].</p>
 
 [% INCLUDE '_council_reference.html' problem=report %]
+
+[% IF report.category == 'Report missed collection' %]
+  <p style="[% p_style %]">We will arrange another collection as soon as possible
+  in the next 2 working days (not including Saturday and Sunday).</p>
+[% ELSIF report.category == 'Request new container' %]
+  <p style="[% p_style %]">We aim to deliver this container to you within 20
+  working days. If you have requested a replacement bin please leave your
+  broken one available for collection at the front of your property.</p>
+[% END %]
 
   [% end_padded_box | safe %]
 </th>
