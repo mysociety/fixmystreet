@@ -12,6 +12,7 @@ use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
 use FixMyStreet::App::Form::Waste::Request::Peterborough;
+use FixMyStreet::App::Form::Waste::Request::Brent;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
@@ -725,11 +726,11 @@ sub construct_bin_request_form {
 
 sub request : Chained('property') : Args(0) {
     my ($self, $c) = @_;
-
     my $field_list = construct_bin_request_form($c);
 
     $c->stash->{first_page} = 'request';
     my $next = $c->cobrand->call_hook('waste_request_form_first_next');
+
     $c->stash->{page_list} = [
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
