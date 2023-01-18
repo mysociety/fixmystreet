@@ -1,22 +1,10 @@
 @import "../sass/h5bp";
-@import "./_colours";
+@import "./_variables";
 @import "../sass/mixins";
 
 @import "../sass/base";
 
-.item-list--reports__item {
-  color: #666;
-  a {
-    color: #666;
-  }
-}
-
-h1.main {
-    color: #000;
-    text-align: center;
-    margin: 0.5em 0;
-}
-
+// Header
 #site-header {
     .mobile-header-nav {
         height: 56px;
@@ -31,37 +19,89 @@ h1.main {
                 background-repeat: no-repeat;
                 background-position: 50% 50%;
             }
-            .home-icon { background-image: url('/cobrands/hart/home_mobile.png'); }
-            .search-icon { background-image: url('/cobrands/hart/search_mobile.png'); }
-            .menu-icon { background-image: url('/cobrands/hart/menu_mobile.png'); }
         }
     }
 }
 
 #site-logo {
     display: block;
-    background: url("/cobrands/hart/hart-logo-mobile.png") 0 50% no-repeat;
+    background: none;
+    text-indent: 0;
+    color: $primary_text;
+    line-height: $mobile-header-height;
+    height: $mobile-header-height;
+    text-decoration: none;
+    font-size: 24px;
+    font-family: $heading-font;
+    font-weight: 600;
 }
 
-.hart-header-menu {
-    display: none;
+#report-cta, #nav-link {
+    background-color: $nav_hover_background_colour;
+    @include border-radius(0);
+    padding: 12px 10px;
+    font-size: 18px;
+    line-height: 100%;
+    border: 1px solid $primary_b;
+    text-decoration: none;
+
+    &:focus {
+        outline: 3px solid $hart_yellow;
+    }
+}
+
+#report-cta {
+    right: 7.5em
+}
+
+#nav-link {
+    width: auto;
+    height: auto;
+    overflow: visible;
+    background-size: 19px 18px;
+    background-position: right 0.5em center;
+    padding-right: 40px;
+    right: 1em;
 }
 
 .nav-menu {
+    background-color: $primary;
+    padding-bottom: 1em;
+
     a,
     span,
     span.report-a-problem-btn {
-        color: $link-color;
-        background-color: #fff;
+
+        font-size: 18px;
+        text-decoration: none;
+        color: $primary_text;
+        background-color: $primary;
+        padding: 17px 0px;
+        margin: 0 1em;
+        border-color:#444D46;;
 
         &:visited {
-            color: $link-color;
+            color: $primary_text;
         }
 
-        &:hover {
-            background-color: #fff;
-            color: $link-hover-color;
-            text-decoration: underline;
+        &:hover, &:focus {
+            background-color: $primary_b;
+            color: $primary_text;
+            text-decoration: none;
+        }
+    }
+
+    :first-child {
+        a,
+        span,
+        span.report-a-problem-btn {
+            margin-top: 0;
+        }
+    }
+
+    :last-child {
+        a, span{
+            border-bottom: 0;
         }
     }
 
@@ -70,25 +110,54 @@ h1.main {
     }
 }
 
+.map-fullscreen {
+    #map_box {
+      top: $mobile-header-height;
+    }
+  }
+
+.item-list--reports__item {
+    small, .small-print {
+        color: $primary_b;
+    }
+
+    a {
+        text-decoration: none;
+        &:focus {
+            color: $primary_b;
+        }
+    }
+}
+
 .big-green-banner {
     text-transform: none;
-    color: #000;
+    color: $primary_b;
 }
 
 #form_sign_in {
     margin-top: 1em;
 }
 
-#postcode-intro {
-    padding: 1em 0;
-    background-color: #FFF;
-}
+#front-main {
+    color: $primary_text;
+    background-color: $primary_b;
+    margin: 2em 0 0 0;
 
-#front-main #postcodeForm {
-    color: inherit;
+    #postcode-intro {
+        padding: 1em 1em;
+        h2 {
+            font-family: $heading-font;
+            color: $primary_text;
+        }
+    }
 
-    .form-hint {
-        color: inherit;
+    #postcodeForm {
+        background-color: $primary_b;
+        margin: 0;
+
+        .form-hint {
+            color: $primary_text;
+        }
     }
 }
 
@@ -97,17 +166,23 @@ h1.main {
 }
 
 a#geolocate_link {
-    font-weight: normal;
-    color: #000;
+    border-radius: 0;
+    &:focus {
+        color: $primary_b;
+    }
 
     &:hover {
-        color: #000;
-        background: #fff;
+        color: $primary_b;
+        background: $base_bg;
     }
 }
 
-#front_stats {
-    color: #000;
+@if $form-box-inverse {
+    .form-box {
+        #geolocate_link {
+            filter: invert(100%);
+        }
+    }
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";

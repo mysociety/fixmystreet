@@ -1,225 +1,173 @@
-/*
-
-    CARGO CULTED FROM BROMLEY FOR NOW
-
-    */
-
 @import "../sass/mixins";
-@import "_colours";
+@import "_variables";
 
-.green-btn {
-    background: #5b7189;
-    border: 1px solid #8e9eb0;
-    color: #fff;
-    font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif;
-    font-weight: normal;
-    margin: 0; min-height: 23px;
-    /* outline: 1px solid #405062; */
-    padding: 4px 8px;
-    text-transform: uppercase;
+// Styleguide: https://www.figma.com/file/Zzi2zXmTs00hbpBKtV5yJP/Hart-DC-Artwork-Supply?node-id=598%3A14329&t=31PBlHdmLYdgauzk-1
+
+// Tipography
+// The sizes of the headings on the figma file are quite big. Therefore I used this instead
+// https://hart-council.demo.bbdtest.co.uk/themes/custom/bbd_localgov/style/css/bbd_classy.css
+
+h1, .h1, 
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+    font-weight: 700;
+    line-height: 120%;
 }
-.green-btn:hover {
-    background: #5b7189; border: 1px solid #8e9eb0;
+
+h4, .h4, h3, .h3, .form-section-heading {
+    font-family: $heading-font;
+}
+
+// Using this variable to decrese font-size
+$type-hart-adjustment: 0.8;
+
+h1, .h1 {
+    font-size: 35px;
+}
+h2:not(.form-section-heading), .h2 {
+    font-size: 30px;
+}
+h3, .h3 {
+    font-size: 24px;
+}
+h4, .h4 {
+    font-size: 24px;
+}
+h5, .h5 {
+    font-size: 16px; 
+}
+h6, .h6 {
+    font-size: 14px;
+}
+p {
+    font-size: 16px;
 }
 
 
-h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; }
-body { color: #000; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
-
-/* -------- For Google translate select box only */
-.header-nav div#google_translate_element .goog-te-gadget { font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif;    }
-.header-nav div#google_translate_element .goog-te-gadget .goog-te-combo { margin:5px 0 0 5px; padding:0 0 0 2px; background: #9b9b9b; color: #fff; border: 1px solid #606060; font-size: 12px; width: 138px;}
-.header-nav div#google_translate_element .goog-te-gadget .goog-te-combo option { background:#fff; color: #666; padding: 1px 0; margin: 0; }
-/* --- */
-
-.sign-in {
-    display: none;
-}
-@media only screen and (min-width:48em) {
-    .sign-in {
-      display: block;
-      float:right;
-      margin-top:-87px;
-      height: 2em;
+@media only screen and (min-width: 48em) {
+    // min-width:(1024px) same as 768px
+    h1, .h1 {
+        font-size: 42px;
     }
-}
-.sign-in a:link, .sign-in a:visited {color:#333; font-weight:bold; text-decoration:none;}
-.sign-in a:hover, .sign-in a:active {text-decoration:underline;}
-
-.content,
-body.frontpage .table-cell .content {
-  margin-bottom: 2em;
-}
-
-#hart-footer {
-  box-shadow: 0px 500px 0px 500px #4F5757;
-  background: #4F5757;
-  color: #fff;
-
-  @media only screen and (max-width:48em) {
-    font-size: 1em;
-    margin: 0 !important;
-  }
-
-  #footer-inner {
-    @media only screen and (max-width:48em) {
-      padding: 15px;
+    h2:not(.form-section-heading), .h2 {
+        font-size: 34px;
     }
-  }
-
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    li {
-      display: inline-block;
+    h3, .h3 {
+        font-size: 28px;
     }
-  }
-
-  a {
-    color: #fff;
-  }
-
-  p {
-    padding: 0;
-    margin: 0;
-  }
-
-  #footer-row-1 {
-    padding: 1.5em 0 0.5em 0;
-
-    @media only screen and (max-width:48em) {
-      margin: 0;
-      padding: 0;
+    h4, .h4 {
+        font-size: 24px;
     }
-
+    h5, .h5 {
+        font-size: 18px; 
+    }
+    h6, .h6 {
+        font-size: 16px;
+    }
     p {
-      float: left;
-
-      .hart {
-        margin: 0 5px 0 0;
-        padding: 0 10px 0 0;
-        border-right: 1px solid #fff;
-      }
-
+        font-size: 18px;
     }
+}
 
-    #footer-nav {
-      float: right;
-
-      li {
-        margin: 0 0 0 10px;
-        padding: 0 0 0 10px;
-        float: right;
-
-        &:first-child {
-          border-left: 1px solid #fff;
-        }
-      }
-
-      @media only screen and (max-width:48em) {
-        float: none;
-        width: 100%;
-
-        ul {
-          margin: 15px 0px 0px -2%;
-        }
-
-        li {
-          float: left;
-          width: 45%;
-          display: block;
-          border-left: none !important;
-          border-bottom: 1px solid #797f7f;
-          padding: 2px 0px;
-          margin: 0 2%;
-
-          &.bottom {
-            border: none !important;
-          }
-        }
-      }
-
+@media only screen and (min-width: 90em) {
+    h1, .h1 {
+        font-size: 42px;
     }
+    h2:not(.form-section-heading), .h2 {
+        font-size: 34px;
+    }
+    h3, .h3 {
+        font-size: 28px;
+    }
+    h4, .h4 {
+        font-size: 24px;
+    }
+    h5, .h5 {
+        font-size: 18px; 
+    }
+    h6, .h6 {
+        font-size: 16px;
+    }
+    p {
+        font-size: 18px;
+    }
+}
+
+.lgd-footer .block-webform h2, #block-bbd-socials-media-links h2 {
+  @extend .h4;
+}
+
+// Buttons
+
+a {
+  &:focus {
+    background-color: $hart_yellow;
+    color: $primary;
   }
 
-  #footer-row-2 {
-    margin: 0.5em 0;
-
-    @media only screen and (max-width:48em) {
-      margin: 1.5em 0 1em 0;
+  &:visited {
+    &:focus {
+      background-color: $hart_yellow;
+      color: $primary;
     }
-
-    li {
-      margin: 0 2px;
-
-      @media only screen and (max-width:48em) {
-        float: left;
-        margin-right: 5px;
-      }
-    }
-
-    li.web-chat {
-      float: right;
-
-      @media only screen and (max-width:48em) {
-        float: left;
-      }
-
-      a {
-        span {
-          float: left;
-          line-height: 50px;
-          margin: 0 10px 0 0;
-        }
-      }
-    }
-
-  }
-
-  #footer-row-3 {
-    padding: 0 0 1.5em 0;
-    margin: 0.5em 0;
   }
 }
 
-// mySociety additions
-.hart-header {
-  font-size: 12px;
-  clear: both;
+.btn, 
+.btn--primary, .btn--primary,
+.btn--secondary, .btn--secondary,
+#front-main #postcodeForm div input#sub {
+  @include border-radius($button-border-radius);
+  @extend .h6;
 }
 
-.header-nav ul {
-  margin: 0;
+.btn ,.btn--primary, .btn--primary, .green-btn {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  @include hart-boxshadow(6px, 6px, 0 , 0, $hart_primary_light);
 }
 
-.header-nav li {
-  list-style-type: none;
+.btn--secondary, .btn--secondary, .form-submit {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
 }
 
-//#search input { display: inline; margin: 0; @include border-radius(0em); }
-//#search input.button { font-weight: normal; text-transform: none; }
-// The footer breaks the map pages layout, easier to exclude it than
-// work out how to make it not be broken.
-body.mappage .hart-footer-wrapper {
-  display: none;
+// Green button not the same as .green-btn
+#front-main #postcodeForm div input#sub {
+  @include button-variant($bg-top: $primary, $bg-bottom: $primary, $border: $primary, $text: $primary_text, $hover-bg-bottom: $primary_b, $hover-bg-top: $primary_b, $hover-border: $primary_text, $hover-text: $primary_text);
 }
 
-#hart-powered-by {
-    float: left;
-    width: 50%;
-    a {
-        margin-left: 10px;
-    }
-    @media only screen and (min-width:48em) {
-        a {
-            margin-left: 1em;
-        }
-    }
-    img {
-        float: none;
-        margin-top: 0;
-    }
+.segmented-control--radio input:checked+label+input+label {
+  @include hart-boxshadow(0px, 0px, 0 , 0, transparent);
+  filter: invert(100%);
+}
+
+.segmented-control--radio input:first-child+label {
+  @include hart-boxshadow(0px, 0px, 0 , 0, transparent);
+  background-color: $primary_text;
+  color: $primary_b !important; // Override .btn
+
+  &:hover {
+    background-color: $primary_b;
+    color: $primary_text !important; // Override .btn
+  }
+}
+
+.segmented-control--radio input:checked+label {
+  @include hart-boxshadow(0px, 0px, 0 , 0, transparent);
+  background-color: $primary_b;
+  color: $primary_text !important; // Override .btn
+}
+
+.form-submit {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 100%;
+  padding: 10px 20px;
+  text-align: center;
+  font-family: $heading-font;
+  text-decoration: none;
 }
 
 .item-list--reports__item small {
@@ -230,4 +178,274 @@ body.mappage .hart-footer-wrapper {
     background-color: lighten($hart_primary, 30%);
     padding: 0.5em;
     font-size: 0.8em;
+}
+
+// Footer
+.lgd-footer {
+  margin-top: 5em;
+  .lgd-footer__pre-footer {
+      margin: 0;
+      padding: 0;
+      background: none;
+      color: #fff;
+  }
+
+  .lgd-container {
+      max-width: $container-max-width;
+      margin-right: auto;
+      margin-left: auto;
+  }
+
+  .lgd-row {
+      display: flex;
+      flex-wrap: wrap;
+  }
+
+  .lgd-region--footer-first {
+      background: $primary;
+      padding: 35px 20px;
+      position: relative;
+
+      &:after {
+          content: '';
+          position: absolute;
+          left: 50%;
+          top: 0;
+          transform: translateX(-50%);
+          height: 100%;
+          width: 100vw;
+          z-index: -1;
+          background: $primary;
+      }
+  }
+
+  .block-webform form {
+      display: flex;
+      flex-wrap: wrap;
+
+      .form-item {
+          position: relative;
+
+          label {
+              display: none;
+          }
+      }
+  }
+
+  .form-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+
+      .form-item-email {
+          flex-basis: 70%;
+      }
+  }
+
+  #block-bbd-socials-media-links ul.social-media-links--platforms, #block-bbd-socials-media-links--2 ul.social-media-links--platforms {
+      margin: 27px 0 0;
+      display: flex;
+      align-items: center;
+      padding-left: 0;
+  
+      
+      li {
+          display: inline-block;
+          vertical-align: middle;
+          margin: 0 35px 0 0;
+  
+  
+          a {
+              display: block;
+              color: $primary_text;
+  
+              &:hover {
+                  transform: scale(1.1);
+              }
+              &:focus {
+                  background-color: $primary_b;
+              }
+  
+              & > span:not(.extlink) {
+                  display: block;
+                  background-size: contain;
+                  background-repeat: no-repeat;
+                  height: 30px;
+              }
+  
+              &.social-media-link-icon--facebook > span:not(.extlink) {
+                  @include svg-background-image('/cobrands/hart//images/social-fb');
+                  width: 16px;
+              }
+  
+              &.social-media-link-icon--twitter > span:not(.extlink) {
+                  @include svg-background-image('/cobrands/hart//images/social-tw');
+                  width: 29px;
+              }
+  
+              &.social-media-link-icon--youtube > span:not(.extlink) {
+                  @include svg-background-image('/cobrands/hart//images/social-yt');
+                  width: 33px;
+              }
+  
+              &.social-media-link-icon--instagram > span:not(.extlink) {
+                  background-image: url('/cobrands/hart//images/social-in.png');
+                  width: 25px;
+              }
+  
+              .extlink {
+                  display: block;
+                  margin-top: 6px;
+                  width: 33px;
+                  height: 15px;
+                  background-size: contain;
+                  background-repeat: no-repeat;
+                  @include svg-background-image('/cobrands/hart//images/external-link');
+              }
+          }
+      }
+  }
+
+  .lgd-region--footer-second {
+      background: $primary_b;
+      padding: 35px 20px;
+      position: relative;
+
+      &:after {
+          content: '';
+          position: absolute;
+          left: 50%;
+          top: 0;
+          transform: translateX(-50%);
+          height: 100%;
+          width: 100vw;
+          z-index: -1;
+          background: $primary_b;
+      }
+
+      .padding-horizontal {
+          padding: 0;
+      }
+
+      .lgd-region__inner--footer-second {
+          position: relative;
+      
+          @media (min-width: 64em) {
+              justify-content: flex-start;
+          }
+      
+          @media (min-width: 48em) {
+              display: flex;
+              flex-wrap: nowrap;
+              justify-content: space-between;
+          }
+      }
+
+      #block-sitebranding {
+          margin-bottom: 20px;
+
+          @media (min-width: 64em) {
+              max-width: 130px;
+              margin-right: 80px;
+          }
+          
+          @media (min-width: 48em) {
+              margin: 0;
+              width: 100%;
+              max-width: 90px;
+              margin-right: 40px;
+          }
+      }
+
+      #block-sitebranding .branding__item--logo {
+          a {
+              display: block;
+              width: auto;
+              @include svg-background-image('/cobrands/hart/images/logo');
+              background-size: contain;
+              background-repeat: no-repeat;
+              width: 71px;
+              height: 83px;
+
+              &:hover {
+                  transform: scale(1.1);
+              }
+              &:focus {
+                  background-color: $primary_b;
+              }
+          }
+      }
+  }
+
+  .block-menu {
+      margin-bottom: 30px;
+      @media (min-width: 80em) {
+          max-width: unset;
+          min-width: 660px;
+      }
+      
+      @media (min-width: 64em) {
+          margin-bottom: 0;
+          max-width: 450px;
+      }
+      
+      @media (min-width: 48em) {
+          margin-bottom: 0;
+          max-width: 50%;
+          align-self: center;
+      }
+
+      ul:not(.contextual-links) {
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+
+          li {
+              margin-bottom: 0;
+              width: 45%;
+              margin-bottom: 5px;
+              list-style: none;
+
+              @media (min-width: 48em) {
+                  width: 31%;
+              }
+
+              a {
+                  color: $primary_text;
+                  font-size: 14px;
+                  text-decoration: underline;
+              }
+          }
+      }
+  }
+  #block-copyrightfooter {
+      font-size: 14px;
+      line-height: 20px;
+      text-transform: capitalize;
+  }
+}
+
+a.bbd-web-chat {
+  color: $primary_text;
+  padding-right: 60px;
+  background-image: url('/cobrands/hart//images/chat.png');
+  background-size: 50px;
+  background-repeat: no-repeat;
+  background-position: right center;
+  height: 60px;
+  display: inline-block;
+  line-height: 60px;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  word-wrap: normal;
 }
