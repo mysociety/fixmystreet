@@ -721,11 +721,11 @@ sub construct_bin_request_form {
 
 sub request : Chained('property') : Args(0) {
     my ($self, $c) = @_;
-
     my $field_list = construct_bin_request_form($c);
 
     $c->stash->{first_page} = 'request';
     my $next = $c->cobrand->call_hook('waste_request_form_first_next');
+
     $c->stash->{page_list} = [
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],

@@ -27,6 +27,8 @@ Uses SCP for accepting payments.
 Uses OpenUSRN for locating nearest addresses on the Highway
 
 =cut
+
+use FixMyStreet::App::Form::Waste::Request::Brent;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';
@@ -364,30 +366,31 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-# THESE ARE BROMLEY CONTAINER TYPES AS WAITING FOR CORRECT ONES
     $self->{c}->stash->{containers} = {
-        1 => 'Green Box (Plastic)',
-        3 => 'Wheeled Bin (Plastic)',
-        12 => 'Black Box (Paper)',
-        14 => 'Wheeled Bin (Paper)',
-        9 => 'Kitchen Caddy',
-        10 => 'Outside Food Waste Container',
-        44 => 'Garden Waste Container',
-        46 => 'Wheeled Bin (Food)',
+        1 => 'Blue rubbish sack',
+        16 => 'General rubbish bin (grey bin)',
+        8 => 'Clear recycling sack',
+        6 => 'Recycling bin (blue bin)',
+        11 => 'Food waste caddy',
+        13 => 'Garden waste (green bin)',
     };
 
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
-        262 => [ 1 ],
-        265 => [ 3 ],
-        316 => [ 12 ]
+        262 => [ 16 ],
+        265 => [ 6 ],
+        269 => [ 8 ],
+        316 => [ 11 ],
+        317 => [ 13 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
         262 => 1,
         265 => 1,
-        316 => 1
+        269 => 1,
+        316 => 1,
+        317 => 1,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -400,10 +403,9 @@ sub bin_services_for_address {
     my $events = $self->_parse_events($self->{api_events});
     $self->{c}->stash->{open_service_requests} = $events->{enquiry};
 
-# THIS IS BROMLEY GGW SUBSCRIPTION NUMBER
-    # If there is an open Garden subscription (2106) event, assume
+    # If there is an open Garden subscription (1159) event, assume
     # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{2106}) {
+    if ($events->{enquiry}{1159}) {
         $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
         $self->{c}->stash->{open_garden_event} = 1;
     }
@@ -525,15 +527,20 @@ sub waste_subscription_types {
     };
 }
 
+sub _closed_event {
+    my $event = shift;
+    return 1 if $event->{ResolvedDate};
+    return 0;
+}
+
 sub _parse_events {
     my $self = shift;
     my $events_data = shift;
     my $events;
-# THESE ARE BROMLEY CODES SO WILL NEED UPDATING
     foreach (@$events_data) {
         my $event_type = $_->{EventTypeId};
         my $type = 'enquiry';
-        $type = 'request' if $event_type == 2104;
+        $type = 'request' if $event_type == 1062;
         $type = 'missed' if $event_type == 918;
 
         # Only care about open requests/enquiries
@@ -634,6 +641,115 @@ sub waste_munge_report_data {
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
+}
+
+# Replace the usual checkboxes grouped by service with one radio list
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
+
+    my @radio_options;
+    my %seen;
+    for (my $i=0; $i<@$field_list; $i+=2) {
+        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+        next unless $key =~ /^container-(\d+)/;
+        my $id = $1;
+        push @radio_options, {
+            value => $id,
+            label => $self->{c}->stash->{containers}->{$id},
+            disabled => $value->{disabled},
+        };
+        $seen{$id} = 1;
+    }
+
+    @$field_list = (
+        "container-choice" => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            label => 'Which container do you need?',
+            options => \@radio_options,
+            required => 1,
+        }
+    );
+}
+
+sub waste_munge_request_data {
+    my ($self, $id, $data, $form) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $container = $c->stash->{containers}{$id};
+    my $reason = $data->{request_reason} || '';
+    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
+
+    my ($action_id, $reason_id);
+    my $type = $id;
+    my $quantity = 1;
+    if ($reason eq 'damaged') {
+        $action_id = '2::1'; # Collect/Deliver
+        $reason_id = '4::4'; # Damaged
+        $type = $id . '::' . $id;
+        $quantity = '1::1';
+    } elsif ($reason eq 'missing') {
+        $action_id = 1; # Deliver
+        $reason_id = 1; # Missing
+    } elsif ($reason eq 'new_build') {
+        $action_id = 1; # Deliver
+        $reason_id = 6; # New Property
+    } elsif ($reason eq 'extra') {
+        $action_id = 1; # Deliver
+        $reason_id = 9; # Increase capacity
+    }
+
+    $c->set_param('Container_Request_Action', $action_id);
+    $c->set_param('Container_Request_Reason', $reason_id);
+    $c->set_param('Container_Request_Container_Type', $type);
+    $c->set_param('Container_Request_Quantity', $quantity);
+
+    $data->{title} = "Request new $container";
+    $data->{detail} = "Quantity: 1\n\n$address";
+    $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
+
+    my $notes;
+    if ($data->{notes_damaged}) {
+        $notes = $c->stash->{label_for_field}->($form, 'notes_damaged', $data->{notes_damaged});
+        $data->{detail} .= " - $notes";
+    }
+    if ($data->{details_damaged}) {
+        $data->{detail} .= "\n\nDamage reported during collection: " . $data->{details_damaged};
+        $notes .= " - " . $data->{details_damaged};
+    }
+    $c->set_param('Container_Request_Notes', $notes) if $notes;
+
+    # XXX Share somewhere with reverse?
+    my %service_id = (
+        16 => 262,
+        6 => 265,
+        8 => 269,
+        11 => 316,
+        13 => 317,
+    );
+    $c->set_param('service_id', $service_id{$id});
+}
+
+sub waste_request_form_first_next {
+    my $self = shift;
+
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Brent';
+    $self->{c}->stash->{form_title} = 'Which container do you need?';
+
+    return sub {
+        my $data = shift;
+        my $choice = $data->{"container-choice"};
+        return 'replacement';
+    };
+}
+
+# Take the chosen container and munge it into the normal data format
+sub waste_munge_request_form_data {
+    my ($self, $data) = @_;
+    my $container_id = delete $data->{'container-choice'};
+    $data->{"container-$container_id"} = 1;
 }
 
 1;
