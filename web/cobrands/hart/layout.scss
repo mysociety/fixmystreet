@@ -1,4 +1,4 @@
-@import "_colours";
+@import "_variables";
 @import "../sass/layout";
 
 body.twothirdswidthpage .content {
@@ -9,131 +9,129 @@ body.twothirdswidthpage .content {
     }
 }
 
-.mobile-header-nav {
-    display: none;
-}
-
 #site-logo {
-    padding: 1em 0;
-    background: url("/cobrands/hart/hart-logo.png") 0 50% no-repeat;
-    width: 123px;
-    height: 132px;
-}
-
-// "Home | My Services | Residents" etc menu *in* the header
-.hart-header-menu {
-    @include list-reset-soft;
-
-    display: block;
-    left: 150px;
-    position: absolute;
-    top: 110px;
-    float: none;
-    
-    li {
-        float: left;
-        text-transform: uppercase;
-        border-right: solid 1px #000;
-        color: #000;
-
-        &:last-child {
-            border-right: none;
-        }
-    }
-    
-    a {
-        display: block;
-        padding: 5px 15px;
-        color: inherit;
-    }
-    
-    li:hover, li:hover a {
-        background-color: white;
-        text-decoration: none;
-    }
-}
-
-#main-nav {
-    min-height: 0;
-    float: none;
-    background-color: #fff;
-    height: auto;
-
-    // #main-nav acts a bit like a .container, so we give it the same max-width.
-    max-width: $container-max-width;
-
-    body.mappage & {
-        // And, like other .containers, we remove the max-width on the map page.
-        max-width: none;
-
-        position: absolute;
-        top: 165px;
-        box-shadow: 0 2px 4px rgba(#000, 0.2);
-    }
-}
-
-
-.nav-wrapper {
-    position: static;
-    margin-top: 0.5em;
+    height: $mappage-header-height;
+    font-size: 30px;
 }
 
 .nav-menu {
+    padding-bottom: 0;
     a,
     span,
     a.report-a-problem-btn,
     span.report-a-problem-btn {
-        font-size: 1em;
         line-height: 1em;
-        color: $link-color !important;
-        background-color: transparent !important;
+        font-size: 18px;
         cursor: pointer;
+        padding: 0.75em 1em;
+        margin: 1em 0;
+        margin-left: 0.5em;
     }
 
-    a {
-        &:visited {
-            color: $link-color;
-        }
+    span.report-a-problem-btn, span {
+        background-color: $primary_b;
+        color: $nav_colour;
 
-        &:hover,
-        &:focus {
-            background-color: transparent !important;
-            color: $link-hover-color !important;
-            text-decoration: underline;
+        &:hover {
+            background-color: $primary_b;
+            color: $nav_colour;
+            cursor: auto;
         }
     }
 
-    a.report-a-problem-btn,
-    span.report-a-problem-btn {
-        padding: 0.75em;
-        margin: 0;
+    :first-child {
+        a,
+        span,
+        span.report-a-problem-btn {
+            margin-top: 1em;
+        }
+    }
+
+    a.report-a-problem-btn {
         @include border-radius(0);
+        &:hover {
+            background-color: $primary_b;
+            color: $nav_colour;
+        }
     }
 }
 
 #front-main {
-    color: #000;
     background: transparent;
     padding: 0 1em;
+    margin: 3em auto 5em auto;
+    max-width: $container-max-width;
+
+    #front-main-container {
+        max-width: 40em;
+        text-align: left;
+        padding: 1.5em 0 2em 0;
+        margin-left: 1em;
+        @include hart-boxshadow(20px, 20px, 0 , 0, $primary);
+        background-color: $primary_b;
+    }
 
     a,
     a:hover {
-        color: inherit;
+        color: $geolocation-link; // Geolocate link
+        margin-left: 2em;
+        &:hover {
+            color: $primary_b;
+        }
+    }
+
+    #postcode-intro {
+        margin-right: 1em;
+        margin-left: 1em;
+    }
+
+    #postcodeForm {
+        padding: 0 2em;
+        div {
+            margin-left: 0;
+        }
     }
 }
 
-#front-main-container {
-    background-color: $hart_primary;
-}
-
-#postcode-intro {
-    padding: 2em 0;
-}
-
 #front_stats big {
-    color: #000;
+    color: $col_big_numbers;
 }
 
 .big-green-banner {
-    background: $col_click_map inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
+    color: $primary_text;
+    background: $col_click_map inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
+}
+
+// Footer
+.lgd-footer {
+    .block-webform {
+        margin-bottom: 0;
+        @media (min-width: 64em) {
+            max-width: 400px;
+        }
+    }
+    .block-bbd-custom.block-bbd-web-chat {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    #block-copyrightfooter {
+        align-self: flex-end;
+        text-align: right;
+    }
+}
+
+.lgd-row__one-third {
+    margin: 0;
+    width: 100%;
+}
+
+.lgd-region__inner--footer-first {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    & > .block {
+        width: 44%;
+    }
 }

@@ -1,0 +1,108 @@
+/* COLOURS */
+
+$hart_primary: #528063;
+$hart_primary_light: #a0ecd0;
+$hart_red: #9A1920;
+$hart_red_light: #efa8b8;
+$hart_blue: #24234E;
+$hart_blue_light: #92dce5;
+$hart_white: #fff;
+$hart_black: #282827;
+$hart_yellow: #fd0;
+
+$primary: $hart_primary;
+
+$primary_b: $hart_black;
+$primary_text: $hart_white;
+
+$base_bg: $hart_white;
+$base_fg: $hart_black;
+
+/* LINKS */
+
+$primary_link_color: $hart_primary;
+$primary_link_hover_color: $hart_primary;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: none;
+
+$link-color: $hart_primary;
+$link-hover-color: $hart_primary;
+$link-visited-color: $link-color;
+$link-text-decoration: underline;
+$link-hover-text-decoration: none;
+
+/* BUTTONS */
+
+$button-padding-top: 10px;
+$button-padding-bottom: 10px;
+$button-padding-left: 10px;
+$button-padding-right: 10px;
+$button-border-radius: 0; // This var doesn't exist in other cobrands
+
+// Usage 
+/*
+  .btn, .btn--primary, .btn--primary {
+      @include border-radius($button-border-radius);
+      @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  }
+*/
+$button-primary-bg-top: $primary_b;
+$button-primary-bg-bottom: $primary_b;
+$button-primary-border: $primary_b;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $base_bg;
+$button-primary-hover-bg-top: $base_bg;
+$button-primary-hover-border: $primary_b;
+$button-primary-hover-text: $primary_b;
+
+$geolocation-link: $primary_text;
+$geolocation-link-border: $geolocation-link;
+$form-box-inverse: true; 
+
+/* FONTS */
+
+$heading-font: 'Roboto', sans-serif;
+$body-font: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+$meta-font: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $primary_text;
+$nav_background_colour: $primary;
+$nav_hover_background_colour: $primary_b;
+
+$mappage-header-height: 91px; //According to the demo, the figma file is taller.
+$mobile-header-height: 84px;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+// $menu-image: "menu-white";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 80em; // In the styleguide is 90em, but it looks a bit odd
+
+$col_click_map: $primary_b;
+$col_fixed_label: $hart_primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  darken($base_bg, 5%);
+$itemlist_item_background_hover: $hart_primary_light;
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+
+/* MIXINS */
+//Usage     @include hart-boxshadow(6px, 6px, 0 , 0, $hart_primary_light)
+@mixin hart-boxshadow($x: 0, $y: 0, $blur: 0, $spread: 0, $color: $primary_b) {
+  -webkit-box-shadow: $x $y $blur $spread $color;
+  -moz-box-shadow:    $x $y $blur $spread $color;
+  box-shadow:         $x $y $blur $spread $color;
+}

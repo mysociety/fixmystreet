@@ -6,7 +6,7 @@ use warnings;
 
 sub council_area_id { return 2333; } # http://mapit.mysociety.org/area/2333.html
 sub council_area { return 'Hart'; }
-sub council_name { return 'Hart Council'; }
+sub council_name { return 'Hart District Council'; }
 sub council_url { return 'hart'; }
 sub is_two_tier { return 1; }
 

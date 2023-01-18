@@ -1153,7 +1153,7 @@ subtest "test Hart" => sub {
                 MAPIT_URL => 'http://mapit.uk/',
             }, sub {
                 $mech->get_ok('/around');
-                $mech->content_contains( "Hart Council" );
+                $mech->content_contains( "Hart District Council" );
                 $mech->submit_form_ok( { with_fields => { pc => 'GU51 4AE' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 my %optional_fields = $test->{confirm} ?  () :
@@ -1207,9 +1207,9 @@ subtest "test Hart" => sub {
 
                 # does it reference the fact that this report hasn't been sent to Hart?
                 if ( $test->{national} ) {
-                    like $body, qr/Hart Council is not responsible for this type/i, "mentions report hasn't gone to Hart";
+                    like $body, qr/Hart District Council is not responsible for this type/i, "mentions report hasn't gone to Hart";
                 } else {
-                    unlike $body, qr/Hart Council is not responsible for this type/i, "doesn't mention report hasn't gone to Hart";
+                    unlike $body, qr/Hart District Council is not responsible for this type/i, "doesn't mention report hasn't gone to Hart";
                 }
 
                 my $url = $mech->get_link_from_email($email);
