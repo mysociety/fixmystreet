@@ -105,4 +105,44 @@ subtest 'test setting of notification preferences' => sub {
     };
 };
 
+subtest 'test display of bulky cancellation reports' => sub {
+    my $body = $mech->create_body_ok(
+        2566, 'Peterborough City Council',
+        {}, { cobrand => 'peterborough' },
+    );
+
+    FixMyStreet::override_config { ALLOWED_COBRANDS => 'peterborough' }, sub {
+        my $standard_user = $mech->log_in_ok('standard@example.net');
+        $mech->create_problems_for_body(
+            1, $body->id,
+            'Bulky collection report',
+            { category => 'Bulky collection', user => $standard_user },
+        );
+        $mech->create_problems_for_body(
+            1, $body->id,
+            'Bulky cancel report',
+            { category => 'Bulky cancel', user => $standard_user },
+        );
+
+        $mech->get_ok('/my');
+        $mech->content_contains(
+            'Bulky collection report',
+            'Bulky collection report shown',
+        );
+        $mech->content_like(
+            qr/<option value="Bulky collection">/,
+            'Bulky collection filter available',
+        );
+
+        $mech->content_lacks(
+            'Bulky cancel report',
+            'Bulky cancel report not shown',
+        );
+        $mech->content_unlike(
+            qr/<option value="Bulky cancel">/,
+            'Bulky cancel filter unavailable',
+        );
+    };
+};
+
 done_testing();

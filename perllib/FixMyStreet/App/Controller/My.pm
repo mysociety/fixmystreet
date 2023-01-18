@@ -140,9 +140,12 @@ sub get_problems : Private {
         "$table.state" => [ keys %$states ],
     };
 
+    # We do not want to show bulky goods cancellation reports
+    $params->{"$table.category"}{'!='} = 'Bulky cancel';
+
     my $categories = [ $c->get_param_list('filter_category', 1) ];
     if ( @$categories ) {
-        $params->{"$table.category"} = $categories;
+        $params->{"$table.category"}{'='} = $categories;
         $c->stash->{filter_category} = { map { $_ => 1 } @$categories };
     }
 
@@ -191,6 +194,7 @@ sub setup_page_data : Private {
     my $table = $c->action eq 'my/planned' ? 'report' : 'me';
     my @categories = $c->stash->{problems_rs}->search({
         "$table.state" => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        "$table.category" => { '!=', 'Bulky cancel' },
     }, {
         join => 'contact',
         columns => [ "$table.category", 'contact.extra', 'contact.category' ],
