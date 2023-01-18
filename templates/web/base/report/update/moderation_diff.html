@@ -1,7 +1,7 @@
 <ul>
     [% IF diff.title %]<li>[% loc('Subject:') %] [% diff.title %][% END %]
     [% IF diff.detail %]<li>[% loc('Details:') %] [% diff.detail %][% END %]
-    [% IF diff.photo %]<li>[% loc('Photo') %]: [% diff.photo %][% END %]
+    [% IF diff.photo %]<li>[% INCLUDE 'report/update/moderation_photo_diff.html' added=diff.photo.added deleted=diff.photo.deleted %][% END %]
     [% IF diff.anonymous %]<li>[% loc('Anonymous:') %] [% diff.anonymous %][% END %]
     [% IF diff.coords %]<li>[% loc('Latitude/Longitude:') %] [% diff.coords %][% END %]
     [% IF diff.category %]<li>[% loc('Category:') %] [% diff.category %][% END %]

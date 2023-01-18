@@ -139,26 +139,30 @@ sub compare_coords {
 sub compare_photo {
     my ($self, $other) = @_;
 
-    my $old = $self->photo || '';
-    my $new = $other->photo || '';
-    return '' if $old eq $new;
+    my $old = $self->photos;
+    my $new = $other->photos;
 
-    $old = [ split /,/, $old ];
-    $new = [ split /,/, $new ];
-
-    my $diff = Algorithm::Diff->new( $old, $new );
     my (@added, @deleted);
-    while ( $diff->Next ) {
-        next if $diff->Same;
-        push @deleted, $diff->Items(1);
-        push @added, $diff->Items(2);
+
+    my %old_photo_ids_set = map { $_->{id} => 1 } @$old;
+
+    my %new_photo_ids_set;
+    foreach (@$new) {
+        $new_photo_ids_set{ $_->{id} } = 1;
+        push @added, $_ unless $old_photo_ids_set{ $_->{id} };
     }
-    my $s = (join ', ', map {
-            "<del style='background-color:#fcc'>$_</del>";
-        } @deleted) . (join ', ', map {
-            "<ins style='background-color:#cfc'>$_</ins>";
-        } @added);
-    return FixMyStreet::Template::SafeString->new($s);
+    foreach (@$old) {
+        push @deleted, $_ unless $new_photo_ids_set{ $_->{id} };
+    }
+
+    if (!@added && !@deleted) {
+        return "";
+    }
+
+    return {
+       added => \@added,
+       deleted => \@deleted,
+    };
 }
 
 # This is a list of extra keys that could be set on a report after a moderation

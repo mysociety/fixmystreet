@@ -1,0 +1,26 @@
+[% IF added %]
+    [% loc('Photos added') %]:
+    <div class="update-img-set">
+    [% FOR photo IN added %]
+        <div class="update-img">
+            <a href="[% photo.url_temp_full %]" rel="fancy">
+                <img alt="[% loc('Photo added to this report in this moderation update') %]" src="[% photo.url_temp %]">
+                <span>zoom</span>
+            </a>
+        </div>
+    [% END %]
+    </div>
+[% END %]
+[% IF deleted %]
+    [% loc('Photos deleted') %]:
+    <div class="update-img-set">
+    [% FOR photo IN deleted %]
+        <div class="update-img">
+            <a href="[% photo.url_temp_full %]" rel="fancy">
+                <img alt="[% loc('Photo deleted from this report in this moderation update') %]" src="[% photo.url_temp %]">
+                <span>zoom</span>
+            </a>
+        </div>
+    [% END %]
+    </div>
+[% END %]
