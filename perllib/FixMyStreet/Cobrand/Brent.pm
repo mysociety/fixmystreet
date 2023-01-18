@@ -534,7 +534,7 @@ sub _parse_events {
         my $event_type = $_->{EventTypeId};
         my $type = 'enquiry';
         $type = 'request' if $event_type == 2104;
-        $type = 'missed' if 2095 <= $event_type && $event_type <= 2103;
+        $type = 'missed' if $event_type == 918;
 
         # Only care about open requests/enquiries
         my $closed = _closed_event($_);
@@ -622,6 +622,18 @@ sub within_working_days {
     } else {
         return $today le $dt;
     }
+}
+
+sub waste_munge_report_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $service = $c->stash->{services}{$id}{service_name};
+    $data->{title} = "Report missed $service";
+    $data->{detail} = "$data->{title}\n\n$address";
+    $c->set_param('service_id', $id);
 }
 
 1;
