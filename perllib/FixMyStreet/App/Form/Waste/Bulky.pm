@@ -249,12 +249,13 @@ sub _build_items_extra {
 
     my $per_item = $self->c->cobrand->bulky_per_item_costs;
 
+    my $json = JSON::MaybeXS->new;
     my %hash;
     for my $item ( @{ $self->items_master_list } ) {
         $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
         $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
         $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
-        $hash{ $item->{name} }{json} = encode_json($hash{$item->{name}}) if $hash{$item->{name}};
+        $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
     }
     return \%hash;
 }

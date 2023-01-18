@@ -1,3 +1,4 @@
+use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::Cobrand::Peterborough;
 use FixMyStreet::TestMech;
@@ -61,7 +62,7 @@ my $body = $mech->create_body_ok(
                 },
                 {   bartec_id => '1003',
                     category  => 'Bedroom',
-                    message   => 'Please dismantle',
+                    message   => 'Please dismantlé',
                     name      => 'Wardrobes',
                     price     => '',
                 },
@@ -82,6 +83,6 @@ is_deeply $form->items_by_category => {
     'Baby / Toddler' => [ 'Childs bed / cot', 'High chairs' ],
     'Bedroom'        => [ 'Chest of drawers', 'Wardrobes' ]
 };
-is_deeply $form->items_extra => { 'Wardrobes' => { message => "Please dismantle", json => '{"message":"Please dismantle"}' } };
+is_deeply $form->items_extra => { 'Wardrobes' => { message => "Please dismantlé", json => '{"message":"Please dismantlé"}' } };
 
 done_testing;
