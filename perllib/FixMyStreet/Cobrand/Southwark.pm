@@ -30,6 +30,16 @@ sub disambiguate_location {
     };
 }
 
+sub reopening_disallowed {
+    my ($self, $problem) = @_;
+    # allow admins to restrict staff from reopening categories using category control
+    return 1 if $self->next::method($problem);
+    # only Southwark staff may reopen reports
+    my $user = $self->{c}->user_exists ? $self->{c}->user : undef;
+    return 0 if ($user && $user->from_body && $user->from_body->cobrand_name eq $self->council_name);
+    return 1;
+}
+
 sub lookup_site_code {
     my $self = shift;
     my $row = shift;
