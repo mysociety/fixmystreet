@@ -99,5 +99,6 @@ body_validation_rules = {
             validUkPhone: true,
             maxlength: 20
         }
-    }
+    },
+    'Southwark Council': confirm_validation_rules
 };
