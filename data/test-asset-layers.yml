@@ -16,7 +16,7 @@ bathnes:
     asset_type: 'spot'
     max_resolution: 4.777314267158508
     asset_id_field: 'feature_no'
-    attributes: null
+    attributes: ~
     geometryName: 'msGeometry'
     body: "Bath and North East Somerset Council"
     srsName: "EPSG:27700"
@@ -69,6 +69,60 @@ bromley:
     usrn:
       attribute: 'PROW_REFER'
       field: 'prow_reference'
+buckinghamshire:
+  - - name: 'default'
+      http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"
+      asset_type: 'spot'
+      max_resolution: 4.777314267158508
+      asset_id_field: 'central_as'
+      attributes:
+        central_asset_id: 'central_as'
+        site_code: 'site_code'
+      geometryName: 'msGeometry'
+      srsName: "EPSG:27700"
+      body: "Buckinghamshire Council"
+  - wfs_feature: "Whole_Street"
+    propertyNames: ['msGeometry', 'site_code', 'feature_ty']
+    stylemap: fixmystreet.assets.buckinghamshire.street_stylemap
+    non_interactive: true
+    road: true
+    asset_item: 'road'
+    asset_type: 'road'
+    asset_group: [ 'Drainage issues', 'Flytipping', 'Roads & Pavements', 'Salt & Gritting', 'Street Lights', 'Street Signs', 'Traffic Lights and crossings', 'Trees and vegetation', 'Trees', 'Grass, hedges and weeds' ]
+    actions:
+      found: fixmystreet.assets.buckinghamshire.street_found
+      not_found: fixmystreet.assets.buckinghamshire.street_not_found
+    no_asset_msg_id: '#js-not-a-road'
+    no_asset_msgs_class: '.js-roads-bucks'
+    usrn:
+      attribute: 'site_code'
+      field: 'site_code'
+    filter_key: 'feature_ty'
+    filter_value: fixmystreet.assets.buckinghamshire.types_to_show
+  - wfs_feature: "WinterRoutes"
+    asset_category: "Snow and ice problem/winter salting"
+    asset_item: "road"
+    asset_type: "road"
+    non_interactive: true
+    road: true
+    actions:
+      found: fixmystreet.assets.buckinghamshire.winter_found
+      not_found: fixmystreet.assets.buckinghamshire.winter_not_found
+  - http_wfs_url: 'https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer'
+    wfs_feature: "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed"
+    propertyNames: ['speed', 'shape']
+    actions:
+      found: fixmystreet.assets.buckinghamshire.speed_found
+      not_found: fixmystreet.assets.buckinghamshire.speed_not_found
+    no_asset_msg_id: '#js-not-a-road'
+    asset_category: ["Grass cutting", "Hedge problem", "Dirty signs"]
+    non_interactive: true
+    road: true
+    asset_item: 'road'
+    asset_type: 'road'
+    stylemap: fixmystreet.assets.stylemap_invisible
+    # Want to use this for parish categories as well as Bucks, so skip body checks.
+    body: ~
 lincolnshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
     geometryName: 'msGeometry'

@@ -11,7 +11,7 @@ subtest 'cobrand assets includes cobrand assets javascript', sub {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok("/report/new?latitude=51.494885&longitude=-2.602237");
-        $mech->content_contains('buckinghamshire/assets.js');
+        $mech->content_contains('westminster/assets.js');
     };
 };
 
@@ -23,7 +23,7 @@ subtest 'cobrand assets includes not applied on cobrand sites', sub {
         STAGING_FLAGS => { skip_checks => 1 },
     }, sub {
         $mech->get_ok("/report/new?latitude=51.494885&longitude=-2.602237");
-        $mech->content_lacks('buckinghamshire/assets.js');
+        $mech->content_lacks('westminster/assets.js');
         $mech->content_contains('fixmystreet-uk-councils/assets.js');
     };
 };
