@@ -28,7 +28,7 @@ my $template = $contact->response_templates->create({
 });
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
-    external_id => '4123',
+    external_id => '87654321',
 });
 my $report_id = $report->id;
 
@@ -74,6 +74,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'Report new vehicle claim, report id known' => sub {
         $mech->get_ok('/claims');
+        my $fault_id = "12345678"; # fault IDs must be 8 chars
         $mech->submit_form_ok({ button => 'start' });
         $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'Yes' } }, "claim type screen");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, "about you screen");
@@ -84,7 +85,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
         $mech->submit_form_ok({ with_fields => { report_id => "hmm" } }, "report id");
         $mech->content_contains('Please provide a valid report ID');
-        $mech->submit_form_ok({ with_fields => { report_id => $report_id } }, "report id");
+        $mech->submit_form_ok({ with_fields => { report_id => "1234567" } }, "report id");
+        $mech->content_contains('Please provide a valid report ID');
+        $mech->submit_form_ok({ with_fields => { report_id => $fault_id } }, "report id");
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
         $mech->submit_form_ok({ with_fields => { latitude => 51.81386, longitude => -.82973 } }, 'location details');
         $mech->submit_form_ok({ with_fields => { 'incident_date.year' => 2020, 'incident_date.month' => '09', 'incident_date.day' => 10, incident_time => 'morning' } }, "incident time");
@@ -122,7 +125,7 @@ Full address: 12 A Street
 A Town
 Has the highways fault been fixed?: No
 Have you reported the fault to the Council?: Yes
-Fault ID: $report_id
+Fault ID: $fault_id
 Postcode, or street name and area of the source: A street
 Latitude: 51.81386
 Longitude: -0.82973
@@ -162,9 +165,9 @@ EOF
         FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>';
-        is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $report_id - Rain Road, Aylesbury";
+        is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $fault_id - Rain Road, Aylesbury";
         like $email[1]->header('To'), qr/madeareport\@/;
-        is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref $fault_id";
         my $req = Open311->test_req_used;
         is $req, undef, 'Nothing sent by Open311';
         is $report->user->alerts->count, 1, 'User has an alert for this report';

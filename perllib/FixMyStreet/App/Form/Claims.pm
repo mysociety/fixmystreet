@@ -166,7 +166,7 @@ has_field report_id => (
         my $self = shift;
         my $c = $self->form->c;
         return if $self->has_errors; # Called even if already failed
-        unless ($self->value =~ /^[0-9]+$/) {
+        unless ($self->value =~ /^[0-9]{8}$/) {
             $self->add_error('Please provide a valid report ID');
         }
     },
