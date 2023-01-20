@@ -537,6 +537,7 @@ sub _cleaning_categories { [
     'Fly-Tipping',
     'Fly tipping - Enforcement Request',
     'Graffiti and Flyposting', # Bromley
+    'Street cleaning/sweeping', # Camden
 
     # Merton want all of their street cleaning categories visible on Red Routes
     'Abandoned Vehicles',
