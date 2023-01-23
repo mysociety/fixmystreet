@@ -32,27 +32,24 @@ sub asset_layers : Path('asset_layers.js') : Args(0) {
 
     $c->res->content_type( 'application/javascript' );
 
+    my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
+    my $cobrands = $features->{asset_layers} || {};
+    my @cobrands;
     if ($c->cobrand->moniker eq 'fixmystreet') {
         # Combine all the layers together for .com
-        my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
-        my $cobrands = $features->{asset_layers} || {};
-        my $layers = $c->stash->{asset_layers} = [];
-        for my $moniker ( keys %$cobrands ) {
-            my @layers = @{ $cobrands->{$moniker} };
-            push @$layers, _add_layer($moniker, @layers);
-        }
+        @cobrands = keys %$cobrands;
     } elsif ($c->cobrand->moniker eq 'greenwich' || $c->cobrand->moniker eq 'bexley') {
-        my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
-        my $cobrands = $features->{asset_layers} || {};
-        my $layers = $c->stash->{asset_layers} = [];
-        for my $moniker ($c->cobrand->moniker, 'thamesmead') {
-            my @layers = @{ $cobrands->{$moniker} || [] };
-            push @$layers, _add_layer($moniker, @layers) if @layers;
-        }
+        # Special case for Thamesmead crossing the border
+        @cobrands = ($c->cobrand->moniker, 'thamesmead');
     } else {
-        my @layers = @{ $c->cobrand->feature('asset_layers') || [] };
-        return unless @layers;
-        $c->stash->{asset_layers} = [ _add_layer($c->cobrand->moniker, @layers) ];
+        # Only the cobrand's assets itself
+        @cobrands = ($c->cobrand->moniker);
+    }
+
+    my $layers = $c->stash->{asset_layers} = [];
+    for my $moniker (@cobrands) {
+        my @layers = @{ $cobrands->{$moniker} || [] };
+        push @$layers, _add_layer($moniker, @layers) if @layers;
     }
 }
 
@@ -69,12 +66,19 @@ sub _add_layer {
     unless (ref $default eq 'ARRAY') {
         $default = [ $default ];
     }
-    $default = { map {
+    my $default_lookup = { map {
         ($_->{name} || 'default') => $_
     } @$default };
+    foreach (@$default) {
+        if ($_->{template}) {
+            my %d = %$_;
+            my $template = delete $d{template};
+            $default_lookup->{$d{name}} = { %{$default_lookup->{$template}}, %d };
+        }
+    }
     return {
         moniker => $moniker,
-        default => _encode_json_with_js_classes($default),
+        default => _encode_json_with_js_classes($default_lookup),
         layers => [ map {
             my $default = $_->{template} || 'default';
             my $json = _encode_json_with_js_classes($_);
