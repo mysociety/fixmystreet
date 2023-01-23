@@ -58,7 +58,7 @@ sub asset_layers : Path('asset_layers.js') : Args(0) {
 
 sub _encode_json_with_js_classes {
     my $data = shift;
-    my $json = encode_json($data);
+    my $json = JSON::MaybeXS->new->encode($data);
     $json =~ s/"([^"]*)":"((?:fixmystreet|OpenLayers)\..*?)"/"$1":$2/g;
     return $json;
 }
