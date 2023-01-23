@@ -4,6 +4,18 @@ if (!fixmystreet.maps) {
     return;
 }
 
+// ArcGIS wants to receive the bounding box as a 'geometry' parameter, not 'bbox'
+var arcgis_format = new OpenLayers.Format.QueryStringFilter();
+OpenLayers.Protocol.ArcgisHTTP = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    filterToParams: function(filter, params) {
+        params = arcgis_format.write(filter, params);
+        params.geometry = params.bbox;
+        delete params.bbox;
+        return params;
+    },
+    CLASS_NAME: "OpenLayers.Protocol.ArcgisHTTP"
+});
+
 /* Bath & NE Somerset */
 
 fixmystreet.assets.banes = {};
@@ -186,18 +198,6 @@ fixmystreet.assets.bromley.prow_stylemap = new OpenLayers.StyleMap({
 /* Buckinghamshire */
 
 fixmystreet.assets.buckinghamshire = {};
-
-// ArcGIS wants to receive the bounding box as a 'geometry' parameter, not 'bbox'
-var bucks_format = new OpenLayers.Format.QueryStringFilter();
-OpenLayers.Protocol.BuckinghamshireHTTP = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
-    filterToParams: function(filter, params) {
-        params = bucks_format.write(filter, params);
-        params.geometry = params.bbox;
-        delete params.bbox;
-        return params;
-    },
-    CLASS_NAME: "OpenLayers.Protocol.BuckinghamshireHTTP"
-});
 
 fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
@@ -754,6 +754,67 @@ fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'hover': fixmystreet.assets.style_default_hover,
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
+
+/* Peterborough */
+
+var pboro_NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';
+var pboro_UNKNOWN_LIGHT_CATEGORY_NAME = 'Problem with a light not shown on map';
+
+fixmystreet.assets.peterborough = {};
+
+fixmystreet.assets.peterborough.trees_relevant = function(options) {
+    return options.group === 'Trees' && options.category !== pboro_NEW_TREE_CATEGORY_NAME;
+};
+
+fixmystreet.assets.peterborough.streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': fixmystreet.assets.style_default,
+  'hover': fixmystreet.assets.style_default_hover,
+  'select': fixmystreet.assets.construct_named_select_style("${UNITNO}")
+});
+
+fixmystreet.assets.peterborough.lighting_asset_details = function() {
+    var a = this.attributes;
+    return "street: " + a.FULLSTREET + "\n" +
+        "locality: " + a.LOCALITY + "\n" +
+        "unitno: " + a.UNITNO + "\n" +
+        "unitid: " + a.UNITID;
+};
+
+fixmystreet.assets.peterborough.lighting_relevant = function(options) {
+    return  ( options.group === 'Street lighting' &&
+              options.category !== pboro_UNKNOWN_LIGHT_CATEGORY_NAME
+            ) || options.category === "Lighting enquiry";
+};
+fixmystreet.assets.peterborough.lighting_asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.peterborough.lighting_asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
+fixmystreet.assets.peterborough.bin_asset_details = function() {
+    var a = this.attributes;
+    return a.Reference + ", " + a.Location;
+};
+
+fixmystreet.assets.peterborough.flytipping_pcc_found = function(layer) {
+    $("#js-environment-message").addClass("hidden");
+};
+fixmystreet.assets.peterborough.flytipping_pcc_not_found = function() {
+    for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
+        var layer = fixmystreet.assets.layers[i];
+        if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
+            $('#js-environment-message').addClass('hidden');
+            return;
+        }
+    }
+    $('#js-environment-message').removeClass('hidden');
+};
+fixmystreet.assets.peterborough.flytipping_leased_found = function() {
+    $('#js-environment-message').removeClass('hidden');
+};
 
 /* Shropshire */
 

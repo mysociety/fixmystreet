@@ -134,6 +134,88 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+peterborough:
+  - - name: 'default'
+      max_resolution: 4.777314267158508
+      srsName: "EPSG:3857"
+      body: "Peterborough City Council"
+    - name: 'tilma'
+      template: 'default'
+      http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/peterborough"
+      geometryName: 'msGeometry'
+    - name: 'arcgis'
+      template: 'default'
+      protocol_class: OpenLayers.Protocol.ArcgisHTTP
+      format_class: OpenLayers.Format.GeoJSON
+      http_options:
+        params:
+          inSR: '3857'
+          outSR: '3857'
+          f: 'geojson'
+      geometryName: 'SHAPE'
+    - name: 'trees'
+      template: 'tilma'
+      class: OpenLayers.Layer.VectorAssetMove
+      select_action: true
+      actions:
+        asset_found: fixmystreet.message_controller.asset_found
+        asset_not_found: fixmystreet.message_controller.asset_not_found
+      attributes:
+        tree_code: 'TREE_CODE'
+      asset_id_field: 'TREE_CODE'
+      asset_group: 'Trees'
+      relevant: fixmystreet.assets.peterborough.trees_relevant
+    - name: 'lights'
+      template: 'tilma'
+      wfs_feature: "StreetLights"
+      asset_id_field: 'UNITID'
+      asset_type: 'spot'
+      asset_item: 'light'
+    - name: 'flytipping'
+      template: 'arcgis'
+      http_options:
+        params:
+          inSR: '3857'
+          outSR: '3857'
+          f: 'geojson'
+          outFields: ''
+      nearest_radius: 0.01
+      stylemap: fixmystreet.assets.stylemap_invisible
+      asset_category: ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ]
+      non_interactive: true
+      road: true
+      asset_item: 'road'
+      asset_type: 'road'
+  - template: 'trees'
+    wfs_feature: "tree_points"
+    asset_type: 'spot'
+    asset_item: 'tree'
+  - template: 'lights'
+    class: OpenLayers.Layer.VectorAssetMove
+    stylemap: fixmystreet.assets.peterborough.streetlight_stylemap
+    feature_code: 'UNITNO'
+    attributes:
+      asset_details: fixmystreet.assets.peterborough.lighting_asset_details
+    asset_group: 'Street lighting'
+    asset_category: 'Lighting enquiry'
+    relevant: fixmystreet.assets.peterborough.lighting_relevant
+    select_action: true
+    actions:
+      asset_found: fixmystreet.assets.peterborough.lighting_asset_found
+      asset_not_found: fixmystreet.assets.peterborough.lighting_asset_not_found
+  # PCC Property Combined
+  - template: 'flytipping'
+    http_options:
+      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
+    actions:
+      found: fixmystreet.assets.peterborough.flytipping_pcc_found
+      not_found: fixmystreet.assets.peterborough.flytipping_pcc_not_found
+  # PCC Property Leased Out NOT Responsible
+  - template: 'flytipping'
+    http_options:
+      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
+    actions:
+      found: fixmystreet.assets.peterborough.flytipping_leased_found
 shropshire:
   - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
     asset_type: 'spot'
