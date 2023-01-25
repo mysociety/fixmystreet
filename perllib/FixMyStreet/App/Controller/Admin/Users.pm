@@ -561,7 +561,11 @@ sub user_alert_details : Private {
 
     my $page = $c->get_param('p') || 1;
 
-    my $alerts = $c->stash->{user}->alerts({}, { prefetch => 'alert_type', rows => 100 })->page( $page );
+    my $alerts = $c->stash->{user}->alerts({}, {
+        prefetch => 'alert_type',
+        rows => 100,
+        order_by => 'whensubscribed',
+    })->page( $page );
     my @alerts = $alerts->all;
 
     $c->stash->{alerts} = \@alerts;
