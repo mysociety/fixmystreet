@@ -99,6 +99,10 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'Container_Request_Notes', required => 0, automated => 'hidden_field' },
     { code => 'Container_Request_Reason', required => 0, automated => 'hidden_field' },
     { code => 'service_id', required => 0, automated => 'hidden_field' },
+    { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
+    { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'payment', required => 1, automated => 'hidden_field' },
 );
 
 for my $test (
@@ -407,6 +411,10 @@ FixMyStreet::override_config {
         echo => { brent => { sample_data => 1 } },
         waste => { brent => 1 },
         anonymous_account => { brent => 'anonymous' },
+        payment_gateway => { brent => {
+            cc_url => 'http://example.com',
+            request_cost => 5000,
+        } },
     },
 }, sub {
     my $echo = shared_echo_mocks();
@@ -552,7 +560,92 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
         is $report->get_extra_field_value('service_id'), '265';
     };
+
+    subtest 'test paying for a missing refuse container' => sub {
+        my $sent_params;
+        my $pay = Test::MockModule->new('Integrations::SCP');
+
+        $pay->mock(pay => sub {
+            my $self = shift;
+            $sent_params = shift;
+            return {
+                transactionState => 'IN_PROGRESS',
+                scpReference => '12345',
+                invokeResult => {
+                    status => 'SUCCESS',
+                    redirectUrl => 'http://example.org/faq'
+                }
+            };
+        });
+        $pay->mock(query => sub {
+            my $self = shift;
+            $sent_params = shift;
+            return {
+                transactionState => 'COMPLETE',
+                paymentResult => {
+                    status => 'SUCCESS',
+                    paymentDetails => {
+                        paymentHeader => {
+                            uniqueTranId => 54321
+                        }
+                    }
+                }
+            };
+        });
+
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose general rubbish bin");
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+        $mech->content_contains('grey bin');
+        $mech->content_contains('Test McTest');
+        $mech->content_contains($user1->email);
+        $mech->content_contains("Continue to payment");
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
+
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $new_report->category, 'Request new container', 'correct category on report';
+        is $new_report->title, 'Request new General rubbish bin (grey bin)', 'correct title on report';
+        is $new_report->get_extra_field_value('payment'), 5000, 'correct payment';
+        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        #is $new_report->get_extra_field_value('Container_Task_New_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Request_Container_Type'), 16, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Request_Action'), 1, 'correct container request action';
+        is $new_report->state, 'unconfirmed', 'report not confirmed';
+        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        is $sent_params->{items}[0]{amount}, 5000, 'correct amount used';
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+        $new_report->discard_changes;
+        is $new_report->state, 'confirmed', 'report confirmed';
+        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $new_report->delete;
+    };
 };
+
+sub get_report_from_redirect {
+    my $url = shift;
+
+    my ($report_id, $token) = ( $url =~ m#/(\d+)/([^/]+)$# );
+    my $new_report = FixMyStreet::DB->resultset('Problem')->find( {
+            id => $report_id,
+    });
+
+    return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
+    return ($token, $new_report, $report_id);
+}
 
 sub shared_echo_mocks {
     my $e = Test::MockModule->new('Integrations::Echo');

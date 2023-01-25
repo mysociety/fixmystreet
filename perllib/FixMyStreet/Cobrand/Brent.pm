@@ -32,6 +32,7 @@ use FixMyStreet::App::Form::Waste::Request::Brent;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2488; }
 sub council_area { return 'Brent'; }
@@ -750,6 +751,30 @@ sub waste_munge_request_form_data {
     my ($self, $data) = @_;
     my $container_id = delete $data->{'container-choice'};
     $data->{"container-$container_id"} = 1;
+
+    # Best place for this?
+    if ($data->{"container-16"} && $data->{request_reason} eq "missing") {
+        $data->{payment} = $self->feature('payment_gateway')->{request_cost};
+    }
+}
+
+sub bin_payment_types {
+    return {
+        'csc' => 1,
+        'credit_card' => 2,
+        'direct_debit' => 3,
+        'cheque' => 4,
+    };
+}
+
+sub waste_cc_payment_line_item_ref {
+    my ($self, $p) = @_;
+    return "Brent-" . $p->id;
+}
+
+sub waste_cc_payment_sale_ref {
+    my ($self, $p) = @_;
+    return "Brent-" . $p->id;
 }
 
 1;

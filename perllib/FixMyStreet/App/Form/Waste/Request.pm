@@ -21,6 +21,16 @@ has_page summary => (
     finished => sub {
         return $_[0]->wizard_finished('process_request_data');
     },
+    # For payments, updating the submit button
+    update_field_list => sub {
+        my $form = shift;
+        if ($form->can('summary_submit_button_label')) {
+            if (my $label = $form->summary_submit_button_label($form->saved_data)) {
+                return { submit => { value => $label } };
+            }
+        }
+        return {};
+    },
     next => 'done',
 );
 

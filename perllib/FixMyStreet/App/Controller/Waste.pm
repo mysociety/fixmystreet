@@ -744,6 +744,29 @@ sub process_request_data : Private {
     $c->cobrand->call_hook("waste_munge_request_form_data", $data);
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
+
+    if (my $payment = $data->{payment}) {
+        # Will only be the one container
+        my $container = shift @services;
+        my ($id) = $container =~ /container-(.*)/;
+        $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
+        $c->set_param('payment', $data->{payment});
+        $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+        $c->forward('add_report', [ $data, 1 ]) or return;
+        if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+            $c->stash->{message} = 'Payment skipped on staging';
+            $c->stash->{reference} = $c->stash->{report}->id;
+            $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+        } else {
+            if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
+                $c->forward('csc_code');
+            } else {
+                $c->forward('pay', [ 'request' ]);
+            }
+        }
+        return 1;
+    }
+
     foreach (@services) {
         my ($id) = /container-(.*)/;
         $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
