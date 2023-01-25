@@ -45,6 +45,7 @@ sub options_request_reason {
     push @options, { value => 'new_build', label => 'I am a new resident without a container' } if !$refuse_bin && !$garden_bin;
     push @options, { value => 'damaged', label => 'My container is damaged' };
     push @options, { value => 'missing', label => 'My container is missing' };
+    $options[-1]{hint} = 'There is a £50 cost for replacing a missing refuse bin' if $refuse_bin;
     push @options, { value => 'extra', label => 'I would like an extra container' } if !$refuse_bin && !$garden_bin;
     return @options;
 }
@@ -91,6 +92,13 @@ has_field details_damaged => (
     widget => 'Textarea',
     label => 'Please describe how your container was damaged',
 );
+
+sub summary_submit_button_label {
+    my ($self, $data) = @_;
+    if ($data->{"container-choice"} == CONTAINER_GREY_BIN && $data->{request_reason} eq "missing") {
+        return 'Continue to payment';
+    }
+}
 
 has_field submit => (
     type => 'Submit',
