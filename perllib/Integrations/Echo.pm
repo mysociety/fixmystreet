@@ -197,7 +197,8 @@ sub FindPoints {
 sub GetServiceUnitsForObject {
     my $self = shift;
     my $id = shift;
-    my $obj = _id_ref($id, 'PointAddress');
+    my $type = shift;
+    my $obj = _id_ref($id, 'PointAddress', $type);
     my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->add(days => -20);
     return [ {
         Id => 1001,

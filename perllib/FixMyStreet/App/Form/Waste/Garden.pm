@@ -27,6 +27,7 @@ sub details_update_fields {
     $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
 
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+
     return {
         current_bins => { default => $existing, range_end => $max_bins },
         bins_wanted => { default => $bin_count, range_end => $max_bins },
