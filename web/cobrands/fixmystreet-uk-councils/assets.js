@@ -481,6 +481,13 @@ fixmystreet.assets.camden.housing_estate_actions = {
     }
 };
 
+// Filter to check for symlink != 0
+fixmystreet.assets.camden.filter_column = new OpenLayers.Filter.Comparison({
+    type: OpenLayers.Filter.Comparison.NOT_EQUAL_TO,
+    property: "symlink",
+    value: "0"
+});
+
 /* Central Bedfordshire */
 
 fixmystreet.assets.centralbedfordshire = {};
