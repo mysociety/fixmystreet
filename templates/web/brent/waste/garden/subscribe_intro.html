@@ -1,0 +1,77 @@
+[% SET bodyclass = 'waste' %]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+  <p>
+    Our green garden waste wheelie bin collection, exclusive to residents in the borough, is ideal if you are frequent gardener or if you are unable to home compost large amounts of garden waste yourself.
+  </p>
+
+  <h3>How much does it cost?</h3>
+
+  <p>
+    The Brent Garden Waste service runs from 1st April - 31st March and costs £60.
+  </p>
+  <p>
+    If you sign up to the service between the 1st October and the 31st December, a discount will apply. You will be charged £30 for the service until the end of March (a 6 month period).
+  </p>
+  <p>
+    If you sign up to the service between the 1st January and the 31st March, the service will not begin until 1st April.
+  </p>
+  <p>
+    If you are in receipt of certain benefits, you may be entitled to a 20 percent discount on the total cost of the garden waste service. For more information please see our <a href='https://www.brent.gov.uk/bins-rubbish-and-recycling/garden-waste-collections#discountedservice'>Garden Waste information page</a> Please note that the discount cannot be applied to online sign ups.
+  </p>
+
+  <h3>
+      Delivery times
+  </h3>
+
+  <p>
+    We will deliver as soon as possible
+  </p>
+
+  <h3>
+      What can go in the wheelie bin?
+  </h3>
+
+  <ul>
+      <li>grass clippings</li>
+      <li>leaves</li>
+      <li>plants and prunings</li>
+      <li>garden weeds</li>
+      <li>small tree branches</li>
+      <li>hedge trimmings</li>
+      <li>fallen fruit (in small amounts)</li>
+
+  </ul>
+
+  <p>
+  We won't take:
+  </p>
+
+    <ul>
+        <li>soil</li>
+        <li>food waste</li>
+        <li>bricks or rubble</li>
+        <li>plastic plant pots or bags</li>
+        <li>large tree branches</li>
+        <li>other non-garden waste like oil canisters</li>
+        <li>Japanese knotweed</li>
+
+    </ul>
+
+    <h3>
+        How often is my garden waste collected?
+    </h3>
+
+    <p>
+      Every 2 weeks from March to November and once a month from December to February
+    </p>
+
+<form method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]
