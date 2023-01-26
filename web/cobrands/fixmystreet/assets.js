@@ -709,7 +709,9 @@ function construct_layer_options(options, protocol) {
         layer_options.projection = new OpenLayers.Projection(fixmystreet.wmts_config.map_projection);
     }
 
-    if (options.filter_key) {
+    if (options.filter) {
+        layer_options.filter = options.filter;
+    } else if (options.filter_key) {
         // Add this filter to the layer, so it can potentially be
         // used in the request if non-HTTP WFS
         if (OpenLayers.Util.isArray(options.filter_value)) {
@@ -735,11 +737,12 @@ function construct_layer_options(options, protocol) {
                 value: options.filter_value
             });
         }
-        // If using HTTP WFS, add a strategy filter to the layer,
-        // to filter the incoming results after being received.
-        if (options.http_options) {
-            layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
-        }
+    }
+
+    // If using HTTP WFS, add a strategy filter to the layer,
+    // to filter the incoming results after being received.
+    if (layer_options.filter && options.http_options) {
+        layer_options.strategies.push(new OpenLayers.Strategy.Filter({filter: layer_options.filter}));
     }
 
     return layer_options;
