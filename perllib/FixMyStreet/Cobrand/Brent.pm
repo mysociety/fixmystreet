@@ -400,7 +400,7 @@ sub bin_services_for_address {
         265 => 1,
         269 => 1,
         316 => 1,
-        317 => 1,
+        317 => 5,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -464,12 +464,9 @@ sub bin_services_for_address {
             $garden = 1;
             my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
             foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ( $_->{DatatypeName} eq 'Quantity' ) {
-                        $garden_bins = $_->{Value};
-                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
-                    }
+                if ( $_->{DatatypeName} eq 'BRT - Paid Collection Container Quantity' ) {
+                    $garden_bins = $_->{Value};
+                    $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
                 }
             }
             $request_max = $garden_bins;
@@ -635,8 +632,6 @@ sub clear_cached_lookups_property {
     delete $self->{c}->session->{$key};
 }
 
-sub garden_due_days { 48 }
-
 sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
@@ -775,6 +770,31 @@ sub waste_munge_request_form_data {
     }
 }
 
+sub waste_staff_choose_payment_method { 0 }
+sub waste_cheque_payments { 0 }
+
+use constant GARDEN_WASTE_SERVICE_ID => 317;
+use constant GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE => 1;
+sub garden_service_name { 'Garden waste collection service' }
+sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
+sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
+sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
+sub garden_due_days { 28 }
+
+sub garden_current_service_from_service_units {
+    my ($self, $services) = @_;
+
+    my $garden;
+    for my $service ( @$services ) {
+        if ( $service->{ServiceId} == GARDEN_WASTE_SERVICE_ID ) {
+            $garden = $self->_get_current_service_task($service);
+            last;
+        }
+    }
+
+    return $garden;
+}
+
 sub bin_payment_types {
     return {
         'csc' => 1,
@@ -807,5 +827,36 @@ sub waste_munge_enquiry_data {
     $detail .= $address;
     $data->{detail} = $detail;
 }
+
+sub waste_cc_payment_admin_fee_line_item_ref {
+    my ($self, $p) = @_;
+    return "Brent-" . $p->id;
+}
+
+
+sub waste_garden_sub_params {
+    my ($self, $data, $type) = @_;
+    my $c = $self->{c};
+
+    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+    $c->set_param('Paid_Collection_Container_Type', GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE);
+    $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
+    $c->set_param('Payment_Value', $data->{cost_pa});
+    # $c->set_param('Payment Authorisation Code') is possibly set as payment_reference
+    if ( $data->{new_bins} > 0 ) {
+        $c->set_param('Container_Type', GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE);
+        $c->set_param('Container_Quantity', $data->{new_bins});
+    }
+}
+
+sub garden_waste_cost_pa {
+    my ($self, $bin_count) = @_;
+
+    $bin_count ||= 1;
+
+    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
+}
+
+sub garden_waste_new_bin_admin_fee { 0 }
 
 1;
