@@ -693,3 +693,17 @@ form.waste {
       margin-top: 1rem;
     }
 }
+
+/* New report conditional questions */
+
+@supports( #{"selector(:has(*))"} ) {
+    #form_Are_you_willing_to_be_a_WItness\3F_,
+    label[for="form_Are_you_willing_to_be_a_WItness\3F_"] {
+        .extra-category-questions & {
+            display: none;
+        }
+        .extra-category-questions:has(#form_Did_you_see_the_Flytip_take_place\3F_ option[value="1"]:checked) & {
+            display: block;
+        }
+    }
+}
