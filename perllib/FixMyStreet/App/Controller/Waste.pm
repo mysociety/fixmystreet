@@ -1044,7 +1044,6 @@ sub bulky : Chained('bulky_setup') : Args(0) {
                 label => 'Upload image (optional)',
                 tags => { max_photos => 1 },
                 # XXX Limit to JPG etc.
-                # XXX Save to DB
             },
             "item_photo_${num}_fileid" => {
                 type => 'FileIdPhoto',
@@ -1699,6 +1698,17 @@ sub add_report : Private {
     $c->set_param('detail', $data->{detail});
     $c->set_param('uprn', $c->stash->{property}{uprn});
     $c->set_param('property_id', $c->stash->{property}{id});
+
+    # Data may contain duplicate photo data under different keys e.g.
+    # 'item_photo_1' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg',
+    # 'item_photo_1_fileid' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg'.
+    # So ignore keys that end with 'fileid'.
+    # XXX Should fix this so there isn't duplicate data across different keys.
+    my @bulky_photo_data;
+    for (grep { /^(item|location)_photo(_\d+)?$/ } keys %$data) {
+        push @bulky_photo_data, $data->{$_} if $data->{$_};
+    }
+    $c->stash->{bulky_photo_data} = \@bulky_photo_data;
 
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;

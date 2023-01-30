@@ -161,15 +161,27 @@ sub process_photo : Private {
 
 sub process_photo_upload_or_cache : Private {
     my ( $self, $c ) = @_;
-    my $photo_prefix = $c->stash->{photo_upload_prefix} || 'photo';
-    my $fileid_field = $c->stash->{photo_upload_fileid_field} || 'upload_fileid';
-    my @items = (
-        ( map {
-            /^$photo_prefix/ ? # photo, photo1, photo2 etc.
-                ($c->req->upload($_)) : ()
-        } sort $c->req->upload),
-        grep { $_ } split /,/, ($c->get_param($fileid_field) || '')
-    );
+
+    my $fileid_field
+        = $c->stash->{photo_upload_fileid_field} || 'upload_fileid';
+
+    # Use bulky collection photo data, if there is any
+    my @items = @{ $c->stash->{bulky_photo_data} // [] };
+
+    if ( !@items ) {
+        my $photo_prefix = $c->stash->{photo_upload_prefix} || 'photo';
+        @items        = (
+            (   map {
+                    /^$photo_prefix/
+                        ?    # photo, photo1, photo2 etc.
+                        ( $c->req->upload($_) )
+                        : ()
+                } sort $c->req->upload
+            ),
+            grep {$_} split /,/,
+            ( $c->get_param($fileid_field) || '' )
+        );
+    }
 
     my $photoset = FixMyStreet::App::Model::PhotoSet->new({
         c => $c,

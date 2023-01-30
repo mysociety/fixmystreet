@@ -1142,6 +1142,8 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('ITEM_04'), '';
             is $report->get_extra_field_value('ITEM_05'), '';
             is $report->get_extra_field_value('property_id'), 'PE1 3NA:100090215480';
+            is $report->photo,
+                '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
 
         # Collection date: 2022-08-26T00:00:00
