@@ -156,29 +156,72 @@ body.fullwidthpage {
 }
 
 body.frontpage {
+    $fms-logo-width: 250px;
+    $fms-logo-height: 50px;
+    $fms-logo-vertical-margin: 2em;
+    $mysociety-badge-width: (190px * 0.5);
+    $mysociety-badge-height: (254px * 0.5);
+
     #site-logo {
-        margin: 2em 0;
-        width: 300px;
-        height: 60px;
+        margin: $fms-logo-vertical-margin 0;
+        // width: 300px; Size without the mySociety badge
+        width: $fms-logo-width;
+        margin-left: $mysociety-badge-width;
+        position: relative;
+        height: $fms-logo-height;
         background: none;
 
         // Override the width="175" height="35" attributes on the svg element,
         // forcing the SVG contents to stretch to the new, larger, size.
         svg {
-            width: 300px;
-            height: 60px;
+            // width: 300px; Size without the mySociety badge
+            width: $fms-logo-width;
+            float: right;
+            height: $fms-logo-height;
             margin-top: 0; // no need for the vertical centering any more
         }
     }
 
+    #mysociety-badge {
+        top: -($fms-logo-vertical-margin + $header-top-border-width);
+        width: $mysociety-badge-width;
+        height: $mysociety-badge-height;
+        outline-offset: -10px;
+
+        svg {
+            &:nth-child(1) {
+                display: none; // Hides the mobile version
+            }
+            &:nth-child(2) {
+                display: block;
+            }
+        }
+    }
+
+    #front-main {
+        margin-top: 0;
+    }
+
+    #main-nav {
+        height: calc(#{$fms-logo-height} + #{$fms-logo-vertical-margin} * 2);
+        margin-top: 0;
+        margin-left: 380px; // Prevent overlapping with logo
+    }
+
+    .nav-menu li {
+        // When list items wrap onto two lines, reduce vertical space between the lines.
+        margin-top: -0.25em;
+        margin-bottom: -0.25em;
+    }
+
     .site-logo__fallback {
-        width: 300px;
+        width: $fms-logo-width;
         padding-top: 60px;
         // No need for svg-background-image() here because the
         // logo on the homepage is an inline SVG, and the only browsers
         // not to show it will be IE8 and below, which are @1x.
         background-image: url("/cobrands/fixmystreet.com/images/site-logo-homepage.png");
-        background-size: 300px 60px;
+        background-size: $fms-logo-width 60px;
     }
 
     .content {

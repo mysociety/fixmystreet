@@ -1,3 +1,10 @@
+[% IF c.req.uri.path == '/' %]
+    <a href="https://www.mysociety.org/about/anniversary" id="mysociety-badge" aria-label="Visit mySociety 20 years anniversary">
+        [% INSERT badge_mysociety_mobile.svg %]
+        [% INSERT badge_mysociety_desktop.svg %]
+    </a>
+[% END %]
+
 <a href="[% c.cobrand.base_url IF admin %]/" id="site-logo" aria-label="Fix My Street">[% FILTER collapse %]
     [% IF c.req.uri.path == '/' %]
         [% INSERT site_logo_with_fallback.svg %]
