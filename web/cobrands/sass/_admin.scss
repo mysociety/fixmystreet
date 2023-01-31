@@ -52,7 +52,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
             text-decoration: line-through;
           }
         }
-        thead.sticky th {
+        thead.sticky th, tr.sticky th {
             position: sticky;
             top: 0;
         }

@@ -10,7 +10,7 @@
         <th scope="col">Cobrand</th><th scope="col">Value</th>
     </tr>
 [% FOR feature IN c.config.COBRAND_FEATURES %]
-    <tr>
+    <tr class="sticky" id="feature-[% feature.key %]" >
         <th align="left" colspan="2">[% feature.key %]
     [% SWITCH feature.key %]
     [% CASE 'address_api' %] - (Hackney only, unused) API details for address lookup
@@ -30,7 +30,7 @@
     [% CASE 'do_not_reply_email' %] - special do not reply email if possible, needs them setting up SPF/DMARC or delegation
     [% CASE 'echo' %] - login details for sending and receiving, plus address types and NLPG
     [% CASE 'example_places' %] - front page examples to use
-    [% CASE 'extra_state_mapping' %] - allows special mapping of extra states (used for Northamptonshire, could be consolidated with State display special cases?)
+    [% CASE 'extra_state_mapping' %] - allows special mapping of extra states (for Northants, could be consolidated with State display special cases?)
     [% CASE 'govuk_notify' %] - configuration details for Notify
     [% CASE 'heatmap' %] - heatmap enabled
     [% CASE 'heatmap_dashboard_body' %] - anyone with council gov.uk email can access the heatmap
@@ -61,7 +61,7 @@
 
       [% FOR cobrand IN feature.value %]
     <tr>
-        <td>[% cobrand.key %]</td>
+        <td><a href="cobrand_features/[% cobrand.key %]">[% cobrand.key %]</a></td>
         <td>[% INCLUDE 'admin/config_page_value.html' key=feature.key value=cobrand.value %]</td>
     </tr>
       [% END %]
