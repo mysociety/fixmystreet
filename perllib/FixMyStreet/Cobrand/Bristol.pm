@@ -44,6 +44,8 @@ sub send_questionnaires {
     return 0;
 }
 
+use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
+
 sub categories_restriction {
     my ($self, $rs) = @_;
     # Categories covering the Bristol area have a mixture of Open311 and Email
@@ -53,7 +55,7 @@ sub categories_restriction {
     # categories as those which have a blank send_method.
     # Also National Highways categories have a blank send_method.
     return $rs->search( { -or => [
-        'me.category' => 'Idle roadworks', # Special new category
+        'me.category' => ROADWORKS_CATEGORY, # Special new category
         'me.send_method' => undef, # Open311 categories
         'me.send_method' => '', # Open311 categories that have been edited in the admin
     ] } );
@@ -81,7 +83,7 @@ sub admin_user_domain { 'bristol.gov.uk' }
 sub post_report_sent {
     my ($self, $problem) = @_;
 
-    if ($problem->category eq 'Idle roadworks') {
+    if ($problem->category eq ROADWORKS_CATEGORY) {
         my @include_path = @{ $self->path_to_web_templates };
         push @include_path, FixMyStreet->path_to( 'templates', 'web', 'default' );
         my $tt = FixMyStreet::Template->new({

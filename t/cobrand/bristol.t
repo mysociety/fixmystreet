@@ -33,7 +33,7 @@ my $email_contact = $mech->create_contact_ok(
 );
 my $roadworks = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Idle roadworks',
+    category => 'Inactive roadworks',
     email => 'roadworks@example.org',
     send_method => 'Email'
 );
@@ -145,7 +145,7 @@ subtest "idle roadworks automatically closed" => sub {
 
         my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', {
             cobrand => 'bristol',
-            category => 'Idle roadworks',
+            category => $roadworks->category,
         } );
 
         FixMyStreet::Script::Reports::send();
