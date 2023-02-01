@@ -1,0 +1,127 @@
+/* This styling is based on https://www.northumberland.gov.uk/
+The style guide provided here https://drive.google.com/drive/folders/1hsULEiZ9FwZlW1s3M6cOIU2ybfnfRGo7?usp=share_link
+is more focused on printed material than web design, a lot of the colours used in 
+the drive are not being used on their website, this could make the FMS cobrand look
+different to their current website.
+*/
+
+/* COLOURS */
+// No primary colour at first sight, they mainly used blue, 
+// but only for interaction purposes.
+
+$northumber_blue: #005092; // Links
+$northumber_blue_button: #00488d; // Buttons
+$northumber_primary: $northumber_blue;
+$northumber_primary_light: #cadcea;
+$northumber_red: red;
+$northumber_red_light: #FFC8C8;
+$northumber_blue_dark: #0b2559;
+$northumber_white: #fff;
+$northumber_light_grey:#f3f3f5; // For bg
+$northumber_mid_grey:#d3d3d3; // For bg
+$northumber_dark_grey: #000c24;
+$northumber_black_heading: #333a41;
+$northumber_black: #000;
+$northumber_yellow: #ffc107; // For alerts
+
+$primary: $northumber_primary;
+$yellow: $northumber_yellow;
+
+$primary_b: $northumber_black;
+$primary_text: $northumber_white;
+
+$base_bg: $northumber_white;
+$base_fg: $northumber_black;
+$front_main_bg: $northumber_light_grey;
+$front_stats_bg: $northumber_mid_grey;
+$layout_front_stats_color: $primary_b;
+
+/* LINKS */
+
+$primary_link_color: $northumber_primary;
+$primary_link_hover_color: $northumber_primary;
+$primary_link_decoration: none;
+$primary_link_hover_decoration: underline;
+
+$link-color: $northumber_primary;
+$link-hover-color: $northumber_primary;
+$link-visited-color: $link-color;
+$link-text-decoration: none;
+$link-hover-text-decoration: underline;
+
+/* BUTTONS */
+$button-border-width: 2px;
+$button-padding-top: 10px;
+$button-padding-bottom: 10px;
+$button-padding-left: 10px;
+$button-padding-right: 10px;
+$button-border-radius: 0; // This var doesn't exist in other cobrands
+
+// Usage 
+/*
+  .btn, .btn--primary, .btn--primary {
+      @include border-radius($button-border-radius);
+      @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  }
+*/
+$button-primary-bg-top: $primary_text;
+$button-primary-bg-bottom: $primary_text;
+$button-primary-border: $northumber_blue_button;
+$button-primary-text: $northumber_blue_button;
+$button-primary-hover-bg-bottom: $northumber_blue_button;
+$button-primary-hover-bg-top: $northumber_blue_button;
+$button-primary-hover-border: $northumber_blue_button;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $northumber_blue;
+$geolocation-link-border: $northumber_blue;
+$form-box-inverse: true; 
+
+/* FONTS */
+
+$heading-font: 'Montserrat', sans-serif;
+$body-font: 'Montserrat', sans-serif;
+$meta-font: 'Montserrat', sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $northumber_blue_dark;
+$nav_background_colour: $northumber_white;
+$nav_hover_background_colour: $northumber_white;
+
+$mappage-header-height: 91px;
+$mobile-header-height: 56px;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-black";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 80em;
+
+$col_click_map: $northumber_blue_button;
+$col_fixed_label: $northumber_primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  darken($base_bg, 5%);
+$itemlist_item_background_hover: $northumber_primary_light;
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+
+/* Cobrand MIXINS */
+// Their current website doens't have focus state;
+@mixin focus-state {
+  &:focus {
+    background-color: $yellow !important; // Overrides any other nested styling, like the navbar
+    color: $primary_b !important; // Overrides button-variant mixin
+  }
+}
