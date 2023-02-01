@@ -131,6 +131,27 @@ sub waste_on_the_day_criteria {
     }
 }
 
+sub waste_event_state_map {
+    return {
+        New => { New => 'confirmed' },
+        Pending => {
+            Unallocated => 'action scheduled',
+            Accepted => 'action scheduled',
+            'Allocated to Crew' => 'in progress',
+            'Allocated to EM' => 'investigating',
+        },
+        Closed => {
+            Closed => 'fixed - council',
+            Completed => 'fixed - council',
+            'Not Completed' => 'unable to fix',
+            'Partially Completed' => 'closed',
+        },
+        Cancelled => {
+            Rejected => 'not responsible',
+        },
+    };
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
