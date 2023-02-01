@@ -6,6 +6,7 @@ use warnings;
 use Moo;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
+with 'FixMyStreet::Roles::CobrandEcho';
 
 sub council_area_id { return 2488; }
 sub council_area { return 'Brent'; }
@@ -123,5 +124,28 @@ sub open311_post_send {
 }
 
 sub prevent_questionnaire_updating_status { 1 };
+
+sub waste_event_state_map {
+    return {
+        New => { New => 'confirmed' },
+        Pending => {
+            Unallocated => 'action scheduled',
+            Accepted => 'action scheduled',
+            'Allocated to Crew' => 'in progress',
+            'Allocated to EM' => 'investigating',
+            'Replacement Bin Required' => 'action scheduled',
+        },
+        Closed => {
+            Closed => 'fixed - council',
+            Completed => 'fixed - council',
+            'Not Completed' => 'unable to fix',
+            'Partially Completed' => 'closed',
+            'No Repair Required' => 'unable to fix',
+        },
+        Cancelled => {
+            Rejected => 'closed',
+        },
+    };
+}
 
 1;

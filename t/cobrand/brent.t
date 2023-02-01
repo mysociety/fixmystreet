@@ -2,6 +2,8 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use t::Mock::Tilma;
+use Test::MockModule;
+use Test::Output;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -11,11 +13,14 @@ END { FixMyStreet::App->log->enable('info'); }
 
 use_ok 'FixMyStreet::Cobrand::Brent';
 
+my $comment_user = $mech->create_user_ok('comment@example.org', email_verified => 1, name => 'Brent');
 my $brent = $mech->create_body_ok(2488, 'Brent', {
     api_key => 'abc',
     jurisdiction => 'brent',
     endpoint => 'http://endpoint.example.org',
     send_method => 'Open311',
+    comment_user => $comment_user,
+    send_extended_statuses => 1,
 }, {
     cobrand => 'brent'
 });
@@ -102,6 +107,8 @@ subtest "Open311 attribute changes" => sub {
         like $c->param('description'), qr/ukey: 234/, 'UnitID on gully sent across in detail';
         is $c->param('attribute[title]'), $problem->title, 'Report title passed as attribute for Open311';
     };
+
+    $problem->delete;
 };
 
 my $tilma = t::Mock::Tilma->new;
@@ -126,6 +133,137 @@ FixMyStreet::override_config {
         is $json->{by_category}->{"River Piers"}, undef, "Brent doesn't have River Piers category";
         is $json->{by_category}->{"River Piers - Cleaning"}, undef, "Brent doesn't have River Piers with hyphen and extra text category";
         is $json->{by_category}->{"River Piers Damage doors and glass"}, undef, "Brent doesn't have River Piers with extra text category";
+    };
+};
+
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'push updating of reports' => sub {
+    my $integ = Test::MockModule->new('SOAP::Lite');
+    $integ->mock(call => sub {
+        my ($cls, @args) = @_;
+        my $method = $args[0]->name;
+        if ($method eq 'GetEvent') {
+            my ($key, $type, $value) = ${$args[3]->value}->value;
+            my $external_id = ${$value->value}->value->value;
+            my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            return SOAP::Result->new(result => {
+                EventStateId => $event_state_id,
+                EventTypeId => '943',
+                LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
+                ResolutionCodeId => $resolution_code,
+            });
+        } elsif ($method eq 'GetEventType') {
+            return SOAP::Result->new(result => {
+                Workflow => { States => { State => [
+                    { CoreState => 'New', Name => 'New', Id => 7671 },
+                    { CoreState => 'Cancelled', Name => 'Rejected ', Id => 7672,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 48, Name => 'Duplicate' },
+                        { ResolutionCodeId => 100, Name => 'No Access' },
+                      ] } },
+                    { CoreState => 'Pending', Name => 'Accepted', Id => 7673 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 7679 },
+                    { CoreState => 'Closed', Name => 'Completed ', Id => 7680 },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 7681,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 67, Name => 'Nothing Found' },
+                        { ResolutionCodeId => 31, Name => 'Breakdown' },
+                        { ResolutionCodeId => 14, Name => 'Inclement weather conditions ' },
+                      ] } },
+                    { CoreState => 'Pending', Name => 'Re-Open', Id => 14683 },
+                ] } },
+            });
+        } else {
+            is $method, 'UNKNOWN';
+        }
+    });
+
+    my $report;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        COBRAND_FEATURES => {
+            echo => { brent => { url => 'https://www.example.org/' } },
+            #waste => { brent => 1 }
+        },
+    }, sub {
+        $brent->response_templates->create({
+            title => 'Allocated title', text => 'This has been allocated',
+            'auto_response' => 1, state => 'in progress',
+        });
+
+        ($report) = $mech->create_problems_for_body(1, $brent->id, 'Graffiti', {
+            category => 'Graffiti',
+        });
+        my $cobrand = FixMyStreet::Cobrand::Brent->new;
+
+        $report->update({ external_id => 'Echo-waste-7671-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 0, 'No new update';
+        is $report->state, 'confirmed', 'No state change';
+
+        $report->update({ external_id => 'Echo-waste-7679-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state in progress, Allocated to Crew/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'A new update';
+        my $update = $report->comments->first;
+        is $update->text, 'This has been allocated';
+        is $report->state, 'in progress', 'A state change';
+
+        $report->update({ external_id => 'Echo-waste-7681-67' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state unable to fix, Nothing Found/;
+        $report->discard_changes;
+        is $report->comments->count, 2, 'A new update';
+        is $report->state, 'unable to fix', 'Changed to no further action';
+    };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        COBRAND_FEATURES => {
+            echo => { brent => {
+                url => 'https://www.example.org/',
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { brent => 1 }
+        },
+    }, sub {
+        my $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-7681-67</Guid>
+        <EventTypeId>943</EventTypeId>
+        <EventStateId>7672</EventStateId>
+        <ResolutionCodeId>100</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+        my $mech2 = $mech->clone;
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 3, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'closed', 'A state change';
     };
 };
 
