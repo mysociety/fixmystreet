@@ -448,7 +448,21 @@ sub should_skip_sending_update {
     return $update->user_id != $update->problem->user_id;
 }
 
-sub disable_phone_number_entry { 1 }
+
+=head2 disable_phone_number_entry
+
+Hides the phone number field on report/update forms for anyone but Bucks staff.
+
+=cut
+
+sub disable_phone_number_entry {
+    my $self = shift;
+    my $c = $self->{c};
+
+    # Only show the phone number field for Bucks staff
+    my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->id == $self->body->id;
+    return $staff ? 0 : 1;
+}
 
 sub report_sent_confirmation_email {
     my ($self, $report) = @_;

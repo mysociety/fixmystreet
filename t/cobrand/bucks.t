@@ -616,6 +616,16 @@ subtest "Only the contact with prefer_if_multiple is returned for the Flyposting
     is $json->{by_category}->{'Flyposting'}->{bodies}->[0], 'Adstock Parish Council', "Correct contact returned";
 };
 
+subtest 'phone number field only appears for staff' => sub {
+    $mech->log_out_ok;
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
+    $mech->content_lacks("Phone number (optional)");
+    $mech->log_in_ok($counciluser->email);
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
+    $mech->content_contains("Phone number (optional)");
+    $mech->log_out_ok;
+}
+
 };
 
 done_testing();
