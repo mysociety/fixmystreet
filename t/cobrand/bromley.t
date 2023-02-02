@@ -14,10 +14,6 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-# Mock fetching bank holidays
-my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-$uk->mock('_fetch_url', sub { '{}' });
-
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
 LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');

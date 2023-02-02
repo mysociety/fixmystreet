@@ -7,10 +7,6 @@ use FixMyStreet::Script::Reports;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-# Mock fetching bank holidays
-my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-$uk->mock('_fetch_url', sub { '{}' });
-
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });

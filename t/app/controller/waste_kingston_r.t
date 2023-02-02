@@ -11,10 +11,6 @@ use CGI::Simple;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-# Mock fetching bank holidays
-my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-$uk->mock('_fetch_url', sub { '{}' });
-
 my $mech = FixMyStreet::TestMech->new;
 
 my $bin_data = decode_json(path(__FILE__)->sibling('waste_4443082.json')->slurp_utf8);
