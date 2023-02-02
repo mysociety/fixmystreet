@@ -261,6 +261,11 @@ sub open311_pre_send {
         my $text = $row->detail . "\n\nPrivate comments: $private_comments";
         $row->detail($text);
     }
+
+    if (my $handover_notes = $row->get_extra_metadata('handover_notes')) {
+        my $text = $row->detail . " | Handover notes: $handover_notes";
+        $row->detail($text);
+    }
 }
 
 sub _include_user_title_in_extra {
@@ -300,6 +305,60 @@ sub open311_munge_update_params {
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
     $params->{update_id_ext} = $comment->id;
     $params->{service_request_id_ext} = $comment->problem->id;
+
+    if ($comment->problem_state eq 'Referred to LBB Streets') {
+        $params->{status} = 'REFERRED_TO_LBB_STREETS';
+    }
+}
+
+=head2 open311_get_update_munging
+
+This is used to perform Bromley's custom redirecting between Confirm and Echo
+backends. If we receive an update with a particular status/resolution, we need
+to make some changes to the update and associated report so that it is resent
+appropriately.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state) = @_;
+
+    # An update from Bromley with a special referral state
+    if ($state eq 'referred to veolia streets') {
+        my $problem = $comment->problem;
+        # Do we want to store the old category somewhere for display?
+        $problem->category('Referred to Veolia'); # Will be an Echo Event Type ID
+        if (!$problem->is_open) {
+            $problem->state('in progress');
+            $comment->problem_state('in progress');
+        }
+        $problem->set_extra_metadata( original_bromley_external_id => $problem->external_id );
+        $problem->update_extra_field({ name => 'HandoverNotes', value => $comment->text });
+        # Resending report, don't need comment to be public
+        $comment->state('hidden');
+        $problem->resend;
+        return;
+    }
+
+    # An update from Echo with resolution code 999 XXX
+    my $code = $comment->get_extra_metadata('external_status_code') || '';
+    if ($code eq '999,,') {
+        my $problem = $comment->problem;
+        $problem->category('Referred to Bromley Streets'); # Will be LBB_RRE_FROM_VEOLIA_STREETS
+        if (!$problem->is_open) {
+            $problem->state('in progress');
+            $comment->problem_state('in progress');
+        }
+        $problem->set_extra_metadata(handover_notes => '???');
+        if (my $original_external_id = $problem->get_extra_metadata('original_bromley_external_id')) {
+            $problem->external_id($original_external_id);
+            $comment->problem_state('Referred to Bromley Streets');
+        } else {
+            # Resending report, don't need comment to be public
+            $comment->state('hidden');
+            $problem->resend;
+        }
+    }
 }
 
 sub open311_post_send {
