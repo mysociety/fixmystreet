@@ -33,7 +33,7 @@ has statusField => (
 
 has paymentTakenCode => (
     is => 'ro',
-    default => 'SUCCESS',
+    default => '', # Would be SUCCESS in live
 );
 
 # XXX

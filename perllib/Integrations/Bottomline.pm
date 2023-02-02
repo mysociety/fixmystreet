@@ -144,6 +144,7 @@ sub call_paged {
 
 sub call {
     my ($self, $path, $data, $method) = @_;
+    $method ||= '';
     my $ua = $self->auth_details;
 
     my $req;
