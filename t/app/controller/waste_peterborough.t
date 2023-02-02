@@ -10,10 +10,6 @@ use CGI::Simple;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-# Mock fetching bank holidays
-my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-$uk->mock('_fetch_url', sub { '{}' });
-
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
 $mock->mock('_fetch_features', sub { [] });
 

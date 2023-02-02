@@ -446,9 +446,9 @@ subtest 'geocoder' => sub {
 };
 
 subtest 'out of hours' => sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock('get', sub {
-        HTTP::Response->new(200, 'OK', [], <<EOF);
+    my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+    $ukc->mock('_fetch_url', sub {
+        <<EOF;
 {
     "england-and-wales": {
         "events": [

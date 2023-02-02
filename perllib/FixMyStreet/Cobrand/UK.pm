@@ -577,6 +577,8 @@ sub _fetch_url {
     my $url = shift;
     my $ua = LWP::UserAgent->new;
     $ua->timeout(5);
+    return if FixMyStreet->test_mode;
+    # uncoverable statement
     $ua->get($url)->content;
 }
 

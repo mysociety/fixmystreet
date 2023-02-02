@@ -11,10 +11,6 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-# Mock fetching bank holidays
-my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-$uk->mock('_fetch_url', sub { '{}' });
-
 # Create test data
 my $user = $mech->create_user_ok( 'sutton@example.com', name => 'Sutton Council' );
 my $normal_user = $mech->create_user_ok( 'user@example.com', name => 'Norma Normal' );
