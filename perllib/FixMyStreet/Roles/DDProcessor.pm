@@ -7,7 +7,14 @@ has payer => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->refe
 has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->paymentDateField} } );
 has status => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->statusField} } );
 has type => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->paymentTypeField} } );
-has oneOffRef => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->oneOffReferenceField} } );
+has oneOffRef => (
+    is => 'lazy',
+    default => sub {
+        my $ref = $_[0]->data->{$_[0]->cobrand->oneOffReferenceField};
+        $ref = undef if $ref && $ref eq 'Recurring';
+        return $ref;
+    }
+);
 
 package DDCancelPayment;
 use Moo;
@@ -84,7 +91,7 @@ sub waste_reconcile_direct_debits {
         $self->log( "payment date: " . $payment->date );
 
         next unless $self->waste_dd_paid($payment->date);
-        next unless $payment->status eq $self->paymentTakenCode;
+        next unless !$self->paymentTakenCode || $payment->status eq $self->paymentTakenCode;
 
         my ($category, $type) = $self->waste_payment_type($payment->type, $payment->oneOffRef);
         next unless $category;

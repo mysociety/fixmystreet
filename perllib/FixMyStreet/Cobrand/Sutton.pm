@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
+with 'FixMyStreet::Roles::Bottomline';
 use Digest::SHA qw(sha1_hex);
 
 sub council_area_id { return 2498; }
