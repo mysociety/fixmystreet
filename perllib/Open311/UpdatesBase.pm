@@ -289,7 +289,7 @@ sub _process_update {
         || ($comment->problem_state && $state ne $old_state);
 
     my $cobrand = $body->get_cobrand_handler;
-    $cobrand->call_hook(open311_get_update_munging => $comment)
+    $cobrand->call_hook(open311_get_update_munging => $comment, $state)
         if $cobrand;
 
     # As comment->created has been looked at above, its time zone has been shifted

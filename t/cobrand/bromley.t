@@ -10,6 +10,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
+use Open311::GetServiceRequestUpdates;
 use Open311::PopulateServiceList;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -669,5 +670,183 @@ subtest 'Can select asset that is in Lewisham area on FMS' => sub {
     };
 };
 
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'redirecting of reports between backends' => sub {
+    my $integ = Test::MockModule->new('SOAP::Lite');
+    $integ->mock(call => sub {
+        my ($cls, @args) = @_;
+        my $method = $args[0]->name;
+        if ($method eq 'GetEventType') {
+            return SOAP::Result->new(result => {
+                Workflow => { States => { State => [
+                    { CoreState => 'New', Name => 'New', Id => 15001 },
+                    { CoreState => 'Pending', Name => 'Unallocated', Id => 15002 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
+                    { CoreState => 'Closed', Name => 'Completed', Id => 15004,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 201, Name => '' },
+                        { ResolutionCodeId => 202, Name => 'Spillage on Arrival' },
+                      ] } },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 15005,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 203, Name => 'Nothing Found' },
+                        { ResolutionCodeId => 204, Name => 'Too Heavy' },
+                        { ResolutionCodeId => 205, Name => 'Inclement Weather' },
+                      ] } },
+                    { CoreState => 'Closed', Name => 'Rejected', Id => 15006,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 206, Name => 'Out of Time' },
+                        { ResolutionCodeId => 207, Name => 'Duplicate' },
+                      ] } },
+                ] } },
+            });
+        } elsif ($method eq 'GetEvent') {
+            return SOAP::Result->new(result => {
+                Guid => 'hmm',
+                Id => 'id',
+                Data => {
+                    ExtensibleDatum => [
+                        {
+                            DatatypeId => 55418,
+                            DatatypeName => "Veolia Notes",
+                            Value => "Outgoing notes from Echo",
+                        },
+                    ],
+                },
+            });
+        } else {
+            is $method, 'UNKNOWN';
+        }
+    });
+
+    $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Environmental Services',
+        email => 'LBB_RRE_FROM_VEOLIA_STREETS',
+    );
+    $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Street Services',
+        email => '3045',
+    );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => {
+                url => 'https://www.example.org/',
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { bromley => 1 },
+        },
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Street issue', {
+            category => 'Street issue',
+            whensent => DateTime->now,
+        });
+
+        my $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>guid</Guid>
+        <EventTypeId>2104</EventTypeId>
+        <EventStateId>15004</EventStateId>
+        <ResolutionCodeId>1252</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+
+        subtest 'A report sent to Confirm, then redirected to Echo' => sub {
+            $report->update({ external_id => 12345 });
+
+            my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+                <service_requests_updates>
+                <request_update>
+                <update_id>UPDATE_1</update_id>
+                <service_request_id>12345</service_request_id>
+                <status>REFERRED_TO_VEOLIA_STREETS</status>
+                <description>This is a handover note</description>
+                <updated_datetime>UPDATED_DATETIME</updated_datetime>
+                </request_update>
+                </service_requests_updates>
+            };
+            my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+            $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
+
+            my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+            Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+            my $update = Open311::GetServiceRequestUpdates->new(
+                system_user => $staffuser,
+                current_open311 => $o,
+                current_body => $body,
+            );
+            $update->process_body;
+            $report->discard_changes;
+            is $report->comments->count, 1;
+            is $report->whensent, undef;
+            is $report->get_extra_field_value('Notes'), 'This is a handover note';
+            is $report->category, 'Street Services';
+        };
+        subtest '...then redirected back to Confirm' => sub {
+            $report->update({ external_id => 'guid', whensent => DateTime->now, send_method_used => 'Open311' });
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 2, 'A new update';
+            $report->discard_changes;
+            is $report->external_id, 12345, 'ID changed back';
+            is $report->state, 'in progress', 'A state change';
+            is $report->category, 'Environmental Services';
+            isnt $report->whensent, undef;
+
+        Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
+
+            my $updates = Open311::PostServiceRequestUpdates->new();
+            $updates->send;
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('status'), 'REFERRED_TO_LBB_STREETS';
+            is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
+            is $c->param('description'), 'Outgoing notes from Echo';
+        };
+        subtest 'A report sent to Echo, redirected to Confirm' => sub {
+            $report->comments->delete;
+            $report->unset_extra_metadata('original_bromley_external_id');
+            $report->update({ external_id => 'guid' });
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 1, 'A new update';
+            $report->discard_changes;
+            is $report->whensent, undef;
+            is $report->external_id, 'guid', 'ID not changed';
+            is $report->state, 'in progress', 'A state change';
+            is $report->category, 'Environmental Services';
+            FixMyStreet::Script::Reports::send();
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
+            like $c->param('description'), qr/Handover notes - Outgoing notes from Echo/;
+        };
+    };
+
+};
 
 done_testing();
