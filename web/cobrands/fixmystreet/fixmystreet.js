@@ -1932,6 +1932,17 @@ $(function() {
     }
 });
 
+window.addEventListener('pagehide', function(e) {
+    // If we are leaving a page, and we're not being persisted, reset
+    // subcategory selection on new report form. A subcategory may trigger a
+    // stopper message that also disables the form; if the user presses the
+    // back button, we want to re-enable the form.
+    var $subcats = $('input[name^="category."]:checked');
+    if (!e.persisted && $subcats.length) {
+        $subcats.prop('checked', false);
+    }
+});
+
 function setup_popstate() {
     setTimeout(function () {
         if (!window.addEventListener) { return; }
