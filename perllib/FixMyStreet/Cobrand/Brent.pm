@@ -94,9 +94,18 @@ sub open311_extra_data_include {
                 $row->detail($detail);
             }
         }
+    } elsif ($contact->email =~ /^Echo/) {
+        my $type = $contact->get_extra_metadata('type') || '';
+        # Same as above, but different attribute name
+        if ($type ne 'waste' && !$row->get_extra_field_value('usrn')) {
+            if (my $ref = $self->lookup_site_code($row, 'usrn')) {
+                $row->update_extra_field({ name => 'usrn', description => 'USRN', value => $ref });
+            }
+        }
     }
 
     push @$open311_only, { name => 'title', value => $row->title };
+    push @$open311_only, { name => 'description', value => $row->detail };
 
     return $open311_only;
 }
