@@ -32,6 +32,9 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 h1, .h1 {
   font-size: $h1-size-small-view;
   line-height: 120%;
+  input {
+    @include cobrand-body; // Prevents inputs nested inside a h1 having a big size.
+  }
 }
 
 h2, .h2 {
@@ -141,7 +144,7 @@ a {
 }
 
 // * FORMS AND INPUTS
-body:not(.admin) {
+body:not(.admin, .mappage.with-actions) {
   .multi-select-button,
   .form-control#sort,
   input[type='text'],
