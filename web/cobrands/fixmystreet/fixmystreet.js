@@ -1996,7 +1996,9 @@ function setup_popstate() {
                     var qs = fixmystreet.utils.parse_query_string();
                     page = qs.p || 1;
                     $('#show_old_reports').prop('checked', qs.show_old_reports || '');
-                    fixmystreet.markers.protocol.use_page = true;
+                    if (fixmystreet.markers.protocol) {
+                        fixmystreet.markers.protocol.use_page = true;
+                    }
                     $('.pagination').first().data('page', page);
                 }
                 reports_list_trigger = $('.pagination').first();
@@ -2012,7 +2014,9 @@ function setup_popstate() {
                     saveHistoryState: false
                 });
             } else if ('page_change' in e.state) {
-                fixmystreet.markers.protocol.use_page = true;
+                if (fixmystreet.markers.protocol) {
+                    fixmystreet.markers.protocol.use_page = true;
+                }
                 $('#show_old_reports').prop('checked', e.state.page_change.show_old_reports);
                 $('.pagination').first().data('page', e.state.page_change.page);
                 reports_list_trigger = $('.pagination').first();
