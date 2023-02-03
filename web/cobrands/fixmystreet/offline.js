@@ -434,3 +434,5 @@ if ($('#offline_list').length) {
         fixmystreet.offline.removeReports(['/report/' + id]);
     });
 }
+
+window.addEventListener('pagehide', idbKeyval.close);
