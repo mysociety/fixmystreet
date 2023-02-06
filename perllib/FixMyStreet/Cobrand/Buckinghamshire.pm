@@ -899,4 +899,9 @@ sub about_hook {
     }
 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a Buckinghamshire postcode, street name and area, or report reference number';
+}
+
 1;
