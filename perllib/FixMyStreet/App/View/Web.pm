@@ -4,6 +4,7 @@ use base 'Catalyst::View::TT';
 use strict;
 use warnings;
 
+use Digest::MD5;
 use FixMyStreet;
 use FixMyStreet::Template;
 use FixMyStreet::Template::SafeString;
@@ -147,23 +148,32 @@ my %version_hash;
 sub version {
     my ( $self, $c, $file, $url ) = @_;
     $url ||= $file;
-    _version_get_mtime($file);
+    _version_get_details($file);
     if ($version_hash{$file} && $file =~ /\.js$/) {
         # See if there's an auto.min.js version and use that instead if there is
         (my $file_min = $file) =~ s/\.js$/.auto.min.js/;
-        _version_get_mtime($file_min);
-        $url = $file = $file_min if $version_hash{$file_min} >= $version_hash{$file};
+        _version_get_details($file_min);
+        $url = $file = $file_min if $version_hash{$file_min}{mtime} >= $version_hash{$file}{mtime};
     }
     my $admin = $self->template->context->stash->{admin} ? FixMyStreet->config('ADMIN_BASE_URL') : '';
-    return "$admin$url?$version_hash{$file}";
+    return "$admin$url?$version_hash{$file}{digest}";
 }
 
-sub _version_get_mtime {
+sub _version_get_details {
     my $file = shift;
-    unless (defined $version_hash{$file} && !FixMyStreet->config('STAGING_SITE')) {
-        my $path = FixMyStreet->path_to('web', $file);
-        $version_hash{$file} = ( stat( $path ) )[9] || 0;
+    return if $version_hash{$file} && !FixMyStreet->config('STAGING_SITE');
+    my $path = FixMyStreet->path_to('web', $file);
+    my ($digest, $mtime);
+    if (open (my $fh, '<', $path)) {
+        binmode $fh;
+        $digest = Digest::MD5->new->addfile($fh)->hexdigest;
+        $mtime = ( stat( $path ) )[9];
+        close $fh;
     }
+    $version_hash{$file} = {
+        digest => substr($digest || '', 0, 12),
+        mtime => $mtime || 0,
+    };
 }
 
 sub decode {
