@@ -33,6 +33,10 @@ sub service_worker : Path("/service-worker.js") {
 
 sub fallback : Local {
     my ($self, $c) = @_;
+
+    # Fetch git version
+    $c->forward('/admin/config_page');
+
 }
 
 sub manifest_waste: Path('/.well-known/manifest-waste.webmanifest') {

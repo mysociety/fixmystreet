@@ -1,3 +1,4 @@
+[% USE date %]
 <div class="mysoc-footer" role="contentinfo">
     <div class="container">
         <div class="row">
@@ -7,6 +8,9 @@
                 <div class="mysoc-footer__site-description">
                     <p>Mapping and reporting street problems to the councils responsible for fixing them &ndash; anywhere in the UK.</p>
                 </div>
+                [% IF bodyclass.match('offlinepage') %]
+                    <pre>[% date.format(date.now) %] [% git_version %]</pre>
+                [% END %]
 
                 <div class="fms-app-badges">
                     <a class="js-lazyload fms-app-badge fms-app-badge--ios" href="https://itunes.apple.com/gb/app/fixmystreet/id297456545">
