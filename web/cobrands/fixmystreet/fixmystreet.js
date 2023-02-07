@@ -776,7 +776,6 @@ $.extend(fixmystreet.set_up, {
         var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
         var max_photos = !isNaN($originalInput.data('max-photos')) ? $originalInput.data('max-photos') : 3;
 
-        $originalLabel.removeAttr('for');
         $('[data-plural]', $originalLabel).text(
             $('[data-plural]', $originalLabel).attr('data-plural')
         );
@@ -804,21 +803,20 @@ $.extend(fixmystreet.set_up, {
             dictMaxFilesExceeded: translation_strings.upload_max_files_exceeded,
 
             fallback: function() {
-            $dropzone.remove();
-            $originalLabel.attr('for', 'form_photo');
-            $('[data-singular]', $originalLabel).text(
+              $dropzone.remove();
+              $('[data-singular]', $originalLabel).text(
                 $('[data-singular]', $originalLabel).attr('data-singular')
-            );
-            $originalInput.show();
+              );
+              $originalInput.show();
             },
             init: function() {
-            this.on("addedfile", function(file) {
+              this.on("addedfile", function(file) {
                 $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
-            });
-            this.on("queuecomplete", function() {
+              });
+              this.on("queuecomplete", function() {
                 $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
-            });
-            this.on("success", function(file, xhrResponse) {
+              });
+              this.on("success", function(file, xhrResponse) {
                 var $upload_fileids = $('input[name="' + $fileid_input + '"]', $context);
                 var ids = [];
                 // only split if it has a value otherwise you get a spurious empty string
@@ -830,16 +828,16 @@ $.extend(fixmystreet.set_up, {
                     l = ids.push(id);
                 newstr = ids.join(',');
                 $upload_fileids.val(newstr);
-            });
-            this.on("error", function(file, errorMessage, xhrResponse) {
-            });
-            this.on("removedfile", function(file) {
+              });
+              this.on("error", function(file, errorMessage, xhrResponse) {
+              });
+              this.on("removedfile", function(file) {
                 var $upload_fileids = $('input[name="' + $fileid_input + '"]', $context);
                 var ids = $upload_fileids.val().split(','),
                     newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
                 $upload_fileids.val(newstr);
-            });
-            this.on("maxfilesexceeded", function(file) {
+              });
+              this.on("maxfilesexceeded", function(file) {
                 this.removeFile(file);
                 var $message = $('<div class="dz-message dz-error-message">');
                 $message.text(translation_strings.upload_max_files_exceeded);
@@ -849,7 +847,7 @@ $.extend(fixmystreet.set_up, {
                     $message.remove();
                 });
                 }, 2000);
-            });
+              });
             }
         });
 
@@ -891,7 +889,7 @@ $.extend(fixmystreet.set_up, {
     $('.js-multiple').make_multi();
 
     function update_label(id, str) {
-        $(id).prev('label').replaceWith(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).prev('label').addClass('hidden-js').after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
         $(id).next('.multi-select-container').children('.multi-select-button').attr('aria-label', str);
     }
     update_label('#statuses', translation_strings.select_status_aria_label);
@@ -903,7 +901,7 @@ $.extend(fixmystreet.set_up, {
     // proper aria-label to improve accessibility.
     function replace_label(id, sibling_class, sibling_child, str) {
         $(id).siblings(sibling_class).children(sibling_child).attr('aria-label', str);
-        $(id).replaceWith(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).addClass('hidden-js').after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
     }
     replace_label('#photo-upload-label','.dropzone.dz-clickable', '.dz-default.dz-message', translation_strings.upload_aria_label);
   },

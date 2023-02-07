@@ -23,7 +23,7 @@ describe('buckinghamshire cobrand', function() {
     cy.pickSubcategory('Roads & Pavements', 'Parks');
     cy.get('[name=site_code]').should('have.value', '7300268');
     cy.nextPageReporting();
-    cy.contains('Photo').should('be.visible');
+    cy.get('span').contains('Photo').should('be.visible');
   });
 
   it('uses the label "Full name" for the name field', function() {
