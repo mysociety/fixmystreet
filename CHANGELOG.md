@@ -41,6 +41,7 @@
         - Give generated map tiles blank alt attribute.
         - Add fieldset to alert list and improve sort order.
         - Improve fancybox accessibility (text and focus).
+        - Add visually-hidden nearest address in report list.
     - Admin improvements:
         - Admin 'add user' form now always creates staff users
         - Make sure staff permissions removed when anonymized.
