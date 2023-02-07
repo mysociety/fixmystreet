@@ -20,7 +20,6 @@ END
 <form method="post" name="change_email">
     <input type="hidden" name="token" value="[% csrf_token %]">
 
-    <fieldset>
     [% IF username_error;
         errors = {
             missing_email = loc('Please enter your email'),
@@ -45,8 +44,6 @@ END
         <input type="submit" class="btn" value="[% title %]">
     </div>
 
-    </fieldset>
 </form>
-
 
 [% INCLUDE 'footer.html' %]

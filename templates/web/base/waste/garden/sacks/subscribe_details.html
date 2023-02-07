@@ -8,7 +8,7 @@
 [% PROCESS errors %]
 
 <form method="post" id="subscribe_details">
-  <fieldset class="govuk-fieldset" style="margin-top: 1.5em;">
+  <div style="margin-top: 1.5em;">
     <hr class="fieldset-hr">
 
     <div class="cost-pa__total js-bin-costs">
@@ -16,7 +16,7 @@
           Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
       </span>
     </div>
-  </fieldset>
+  </div>
 
   [% PROCESS 'waste/garden/_payment_field.html' %]
 

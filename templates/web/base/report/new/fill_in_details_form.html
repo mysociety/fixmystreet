@@ -4,8 +4,7 @@
 [% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
 </div>
 
-<fieldset>
-    <div id="problem_form">
+<div id="problem_form">
 
 [% IF report.used_map;
     url_skip = c.uri_for(
@@ -35,8 +34,7 @@
 
 [% INCLUDE 'errors.html' %]
 
-        [% PROCESS 'report/new/form_report.html' %]
-        [% PROCESS 'report/new/form_user.html' %]
+    [% PROCESS 'report/new/form_report.html' %]
+    [% PROCESS 'report/new/form_user.html' %]
 
-    </div>
-</fieldset>
+</div>

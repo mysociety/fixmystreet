@@ -14,9 +14,8 @@
 [% END %]
 
 <form action="/auth" method="post" name="general_auth" class="validate">
-    <fieldset>
 
-        <input type="hidden" name="r" value="[% c.req.params.r | html %]">
+    <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
 [% IF NOT oauth_need_email AND c.cobrand.social_auth_enabled AND c.cobrand.feature('oidc_login') %]
 
@@ -36,26 +35,25 @@
     [% SET username_label = loc('Your email') %]
 [% END %]
 
-        <label class="n" for="username">[% username_label %]</label>
-      [% IF loc_username_error %]
-        <div class="form-error">[% loc_username_error %]</div>
-      [% END %]
-        <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autocomplete="username"
-        autofocus>
+    <label class="n" for="username">[% username_label %]</label>
+  [% IF loc_username_error %]
+    <div class="form-error">[% loc_username_error %]</div>
+  [% END %]
+    <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autocomplete="username"
+    autofocus>
 
-        <div id="form_sign_in">
-          [% IF oauth_need_email %]
-            [% INCLUDE form_sign_in_no %]
-            <input type="hidden" name="oauth_need_email" value="1">
-          [% ELSE %]
-            [% INCLUDE form_sign_in_yes %]
-            [% INCLUDE form_sign_in_no %]
-          [% END %]
-        </div>
+    <div id="form_sign_in">
+      [% IF oauth_need_email %]
+        [% INCLUDE form_sign_in_no %]
+        <input type="hidden" name="oauth_need_email" value="1">
+      [% ELSE %]
+        [% INCLUDE form_sign_in_yes %]
+        [% INCLUDE form_sign_in_no %]
+      [% END %]
+    </div>
 
 [% END %]
 
-    </fieldset>
 </form>
 
 [% INCLUDE 'footer.html' %]

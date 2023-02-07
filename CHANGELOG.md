@@ -40,6 +40,7 @@
         - Add missing label to alert distance input.
         - Give generated map tiles blank alt attribute.
         - Add fieldset to alert list and improve sort order.
+        - Remove unnecessary and add some missing fieldsets.
         - Improve fancybox accessibility (text and focus).
         - Add visually-hidden nearest address in report list.
     - Admin improvements:

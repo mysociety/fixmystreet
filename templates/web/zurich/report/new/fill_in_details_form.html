@@ -4,7 +4,6 @@
     <h1>[% loc('Reporting a problem') %]</h1>
 
     [% INCLUDE 'errors.html' %]
-    <fieldset>
         <div id="problem_form">
 
             [% INCLUDE 'report/new/form_after_heading.html' %]
@@ -52,7 +51,6 @@
                 </div>
 
         </div>
-    </fieldset>
 
     [% IF partial_token %]
         <input type="hidden" name="partial" value="[% partial_token.token %]">

@@ -61,7 +61,9 @@ li .my-account-buttons a {
       [% END %]
     </p>
 [% current_pref = c.user.get_extra_metadata('update_notify') %]
-<li>[% loc('Receive update notifications by') %]:
+<li>
+    <fieldset>
+        <legend>[% loc('Receive update notifications by') %]:</legend>
     <p class="segmented-control segmented-control--radio">
       [% IF c.user.email_verified %]
         <input type="radio" name="update_notify" id="update_notify_email" value="email"[% ' checked' IF current_pref == 'email' OR NOT current_pref %]>
@@ -74,9 +76,12 @@ li .my-account-buttons a {
         <input type="radio" name="update_notify" id="update_notify_none" value="none"[% ' checked' IF current_pref == 'none' %]>
         <label class="btn" for="update_notify_none">[% loc('None') %]</label>
     </p>
+    </fieldset>
 </li>
 [% current_pref = c.user.get_extra_metadata('alert_notify') %]
-<li>[% loc('Receive local alert notifications by') %]:
+<li>
+    <fieldset>
+        <legend>[% loc('Receive local alert notifications by') %]:</legend>
     <p class="segmented-control segmented-control--radio">
       [% IF c.user.email_verified %]
         <input type="radio" name="alert_notify" id="alert_notify_email" value="email"[% ' checked' IF current_pref == 'email' OR NOT current_pref %]>
@@ -85,6 +90,7 @@ li .my-account-buttons a {
         <input type="radio" name="alert_notify" id="alert_notify_none" value="none"[% ' checked' IF current_pref == 'none' %]>
         <label class="btn" for="alert_notify_none">[% loc('None') %]</label>
     </p>
+    </fieldset>
     <p>
         <input class="btn btn--block" type="submit" value="[% loc('Update') %]">
     </p>

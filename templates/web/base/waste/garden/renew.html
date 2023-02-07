@@ -10,7 +10,6 @@
 [% PROCESS 'waste/garden/renew_bin_desc.html' %]
 
 <form method="post" id="renew">
-  <fieldset class="govuk-fieldset">
     [% INCLUDE waste/garden/_bin_quantities.html form_page='renew' %]
   <hr class="fieldset-hr">
     <div class="cost-pa__total js-bin-costs"
@@ -30,7 +29,6 @@
           Total to pay now: £<span id="cost_now">[% tprintf( '%.2f', cost_now ) %]</span>
       </span>
     </div>
-  </fieldset>
 
   <hr class="fieldset-hr">
   [% PROCESS 'waste/garden/_payment_field.html' %]

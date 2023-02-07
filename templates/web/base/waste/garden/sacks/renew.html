@@ -8,7 +8,6 @@
 [% PROCESS errors %]
 
 <form method="post" id="renew">
-  <fieldset class="govuk-fieldset">
   <hr class="fieldset-hr">
     <div class="cost-pa__total js-bin-costs"
         data-per_bin_cost="[% per_bin_cost %]"
@@ -20,7 +19,6 @@
           Total to pay now: £<span id="cost_now">[% tprintf( '%.2f', cost_now ) %]</span>
       </span>
     </div>
-  </fieldset>
 
   <hr class="fieldset-hr">
   [% PROCESS 'waste/garden/_payment_field.html' %]

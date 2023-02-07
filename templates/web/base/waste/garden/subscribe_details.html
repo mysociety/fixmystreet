@@ -10,7 +10,7 @@
 [% PROCESS 'waste/garden/subscribe_details_bin_desc.html' %]
 
 <form method="post" id="subscribe_details">
-  <fieldset class="govuk-fieldset" style="margin-top: 1.5em;">
+  <div style="margin-top: 1.5em;">
     [% INCLUDE waste/garden/_bin_quantities.html form_page='subscribe' %]
     <hr class="fieldset-hr">
 
@@ -31,7 +31,7 @@
           Total to pay now: £<span id="cost_now">[% tprintf( '%.2f', cost_now ) %]</span>
       </span>
     </div>
-  </fieldset>
+  </div>
 
   [% PROCESS 'waste/garden/_payment_field.html' %]
 

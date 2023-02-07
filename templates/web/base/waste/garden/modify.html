@@ -13,7 +13,6 @@
 </dl>
 
 <form method="post" id="modify">
-  <fieldset class="govuk-fieldset">
     [% INCLUDE waste/garden/_bin_quantities.html form_page='modify' %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total js-bin-costs"
@@ -34,7 +33,6 @@
         Total to pay now (<span id="new_bin_count">[% new_bin_count %]</span> new <span id="new_bin_text">[% nget( 'bin', 'bins', new_bin_count) %]</span>): £<span id="pro_rata_cost">[% tprintf('%.2f', pro_rata) %]</span>
     </span>
   </div>
-  </fieldset>
 
     [% IF staff_payments_allowed %]
     [% PROCESS form override_fields=['name', 'email', 'phone'] %]

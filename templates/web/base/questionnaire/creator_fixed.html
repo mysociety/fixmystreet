@@ -5,16 +5,18 @@
 
 [% INCLUDE 'errors.html' %]
 
-<p>
-[% loc("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?") %]
-</p>
+<fieldset>
+    <legend>
+    [% loc("Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?") %]
+    </legend>
 
-<p class="segmented-control segmented-control--radio">
-    <input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
-    <label class="btn" for="reported_yes">[% loc('Reported before') %]</label>
-    <input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
-    <label class="btn" for="reported_no">[% loc('First time') %]</label>
-</p>
+    <p class="segmented-control segmented-control--radio">
+        <input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
+        <label class="btn" for="reported_yes">[% loc('Reported before') %]</label>
+        <input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
+        <label class="btn" for="reported_no">[% loc('First time') %]</label>
+    </p>
+</fieldset>
 
 <p><input type="submit" class="btn btn--primary" name="submit" value="[% loc('Submit') %]"></p>
 

@@ -9,14 +9,12 @@
 
 [% INCLUDE 'errors.html' %]
 
-<fieldset>
-    <div id="problem_form" class="js-reporting-page--single">
-        <div id="form_sign_in">
-            [% PROCESS 'report/form/user_loggedout_by_email.html' object=report type='report' email_required=1 %]
-        </div>
-
-        <input type="hidden" name="oauth_need_email" value="1">
-        [% PROCESS 'report/new/form_report.html' %]
-        [% PROCESS 'report/form/submit.html' %]
+<div id="problem_form" class="js-reporting-page--single">
+    <div id="form_sign_in">
+        [% PROCESS 'report/form/user_loggedout_by_email.html' object=report type='report' email_required=1 %]
     </div>
-</fieldset>
+
+    <input type="hidden" name="oauth_need_email" value="1">
+    [% PROCESS 'report/new/form_report.html' %]
+    [% PROCESS 'report/form/submit.html' %]
+</div>

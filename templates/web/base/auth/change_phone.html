@@ -24,7 +24,6 @@ END
 <form method="post" name="change_phone">
     <input type="hidden" name="token" value="[% csrf_token %]">
 
-    <fieldset>
     [% loc_username_error = INCLUDE 'auth/_username_error.html' default='phone' %]
     [% IF loc_username_error  %]
     <div class="form-error">[% loc_username_error %]</div>
@@ -44,8 +43,6 @@ END
         <input type="submit" class="btn" value="[% title %]">
     </div>
 
-    </fieldset>
 </form>
-
 
 [% INCLUDE 'footer.html' %]
