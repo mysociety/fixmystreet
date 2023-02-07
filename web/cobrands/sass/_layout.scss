@@ -671,6 +671,10 @@ body.authpage {
   }
 }
 
+// These never appear on desktop
+.map-crosshairs, .map-mobile-report-button {
+    display: none !important;
+}
 
 // Wraps around #key-tools box - sticks to the bottom of the screen on desktop
 .shadow-wrap {

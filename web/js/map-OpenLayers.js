@@ -1389,11 +1389,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             return true;
         }
 
-        var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
-        fixmystreet.display.begin_report(lonlat);
+        if (!$("html").hasClass("mobile")) {
+            var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
+            fixmystreet.display.begin_report(lonlat);
 
-        if ( typeof ga !== 'undefined' && fixmystreet.cobrand == 'fixmystreet' ) {
-            ga('send', 'pageview', { 'page': '/map_click' } );
+            if ( typeof ga !== 'undefined' && fixmystreet.cobrand == 'fixmystreet' ) {
+                ga('send', 'pageview', { 'page': '/map_click' } );
+            }
         }
     }
 });
@@ -1523,10 +1525,54 @@ OpenLayers.Control.KeyboardDefaultsFMS = OpenLayers.Class(OpenLayers.Control, {
     CLASS_NAME: "OpenLayers.Control.KeyboardDefaultsFMS"
 });
 
+OpenLayers.Control.ActionAfterDrag = OpenLayers.Class(OpenLayers.Control, {
+    defaultHandlerOptions: {
+        'stopDown': false
+        /* important, otherwise it prevent the click-drag event from
+           triggering the normal click-drag behavior on the map to pan it */
+    },
+
+    panned: false,
+
+    initialize: function(options) {
+        this.handlerOptions = OpenLayers.Util.extend(
+            {}, this.defaultHandlerOptions
+        );
+        OpenLayers.Control.prototype.initialize.apply(
+            this, arguments
+        );
+        this.handler = new OpenLayers.Handler.Drag(
+            this, {
+                'move': this.onDragStart,
+                'done': this.onDragDone
+            }, this.handlerOptions
+        );
+    },
+
+    onDragStart: function(evt) {
+        if (!this.panned) {
+            this.panned = true;
+            $('html').addClass('map-with-crosshairs3');
+            $('html').removeClass('map-with-crosshairs2');
+        }
+    },
+
+    onDragDone: function(evt) {
+        if (this.panned) {
+            this.deactivate();
+            this.panned = false;
+        }
+    },
+
+    CLASS_NAME: 'OpenLayers.Control.ActionAfterDrag'
+});
+
+fixmystreet.maps.reposition_control = new OpenLayers.Control.ActionAfterDrag({id: 'fms_reposition' });
 fixmystreet.maps.controls = [
     new OpenLayers.Control.ArgParserFMS(),
     new OpenLayers.Control.KeyboardDefaultsFMS(),
     new OpenLayers.Control.Navigation(),
+    fixmystreet.maps.reposition_control,
     new OpenLayers.Control.PermalinkFMS('map'),
     new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
 ];

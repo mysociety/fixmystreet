@@ -2,6 +2,7 @@
 
 * Unreleased
     - Front end improvements:
+        - Use crosshairs for mobile reporting.
         - Enable keyboard navigation of map. #3321
         - Highlight pin on sidebar focus as well as hover.
         - Map page pagination links now styled as links rather than buttons. #3727

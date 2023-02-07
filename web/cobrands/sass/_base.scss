@@ -2108,10 +2108,66 @@ html.js #map .noscript {
 
 // Want some visual consistency between the top and bottom bars on mobile.
 .mobile-map-banner,
+.map-mobile-report-button,
 .sub-map-links {
   background-color: #333;
   background-color: rgba(#000, 0.7);
   color: #fff;
+}
+
+.map-mobile-report-button {
+  display: none;
+
+  position: absolute;
+  #{$left}: 25%;
+  #{$right}: 25%;
+  bottom: 0;
+  margin: 0;
+  margin-bottom: 6em;
+
+  @include border-radius(0.5em);
+
+  padding: 0.5em;
+  font-size: 1em;
+  text-align: center;
+
+  &:hover,
+  &:focus {
+    background-color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+}
+.map-with-crosshairs1 .map-mobile-report-button,
+.map-with-crosshairs3 .map-mobile-report-button {
+  display: block;
+}
+.map-mobile-report-button span {
+    display: none;
+    .map-with-crosshairs1 &.map-mobile-report-button__new,
+    .map-with-crosshairs3 &.map-mobile-report-button__reposition {
+        display: block;
+    }
+}
+
+.map-crosshairs {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 106px;
+    height: 106px;
+    margin-left: -53px;
+    margin-top: -53px;
+    pointer-events: none;
+    background-size: 106px 106px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    @include svg-background-image("/i/crosshairs");
+    .map-with-crosshairs1 &, .map-with-crosshairs2 &, .map-with-crosshairs3 & {
+        display: block;
+    }
 }
 
 // "Selected" styling for the report-list-filter toggle when selected.

@@ -32,9 +32,14 @@ describe('Around page responsive design tests', function() {
         cy.get('.mobile-map-banner').should('be.visible');
         cy.get('#sub_map_links').should('be.visible');
         cy.get('#map_links_toggle').should('not.be.visible');
-        cy.get('#map_box').click(200, 200);
+        cy.get('.map-mobile-report-button').click();
         cy.get('#sub_map_links').should('not.be.visible');
         cy.get('#problems_nearby').should('be.visible');
+        cy.get('.olMapViewport')
+            .trigger('mousedown', { which: 1, clientX: 160, clientY: 284 })
+            .trigger('mousemove', { which: 1, clientX: 200, clientY: 284 })
+            .trigger('mouseup', { which: 1, clientX: 200, clientY: 284 });
+        cy.get('.map-mobile-report-button').click();
         cy.get('#mob_ok').click();
         cy.cleanUpXHR();
     });

@@ -171,7 +171,8 @@ fixmystreet.mobile_reporting = {
   apply_ui: function() {
     // Creates the "app-like" mobile reporting UI with full screen map
     // and special "OK/Cancel" buttons etc.
-    $('html').addClass('map-fullscreen only-map map-reporting');
+    $('html').addClass('map-fullscreen only-map map-reporting map-with-crosshairs1');
+    $('html').removeClass('map-with-crosshairs3 map-with-crosshairs2');
     $('#map_box').removeClass('hidden-js');
 
     if (fixmystreet.page === 'new') {
@@ -209,7 +210,7 @@ fixmystreet.mobile_reporting = {
   remove_ui: function() {
     // Removes the "app-like" mobile reporting UI, reverting all the
     // changes made by fixmystreet.mobile_reporting.apply_ui().
-    $('html').removeClass('map-fullscreen only-map map-reporting map-page');
+    $('html').removeClass('map-fullscreen only-map map-reporting map-page map-with-crosshairs1');
     $('#mob_sub_map_links').remove();
 
     // Turn off the mobile map filters.
@@ -316,7 +317,9 @@ fixmystreet.pageController = {
     },
     mapStepButtons: function() {
         // We are now in the reporting flow, so set the page flag used for error display
-        $('html').addClass('map-page');
+        $('html').addClass('map-page map-with-crosshairs2');
+        $('html').removeClass('map-with-crosshairs1 map-with-crosshairs3');
+        fixmystreet.maps.reposition_control.autoActivate = true;
 
         var $map_box = $('#map_box');
         var links = '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>';
@@ -330,6 +333,7 @@ fixmystreet.pageController = {
         // mobile user clicks 'ok' on map
         $('#mob_ok').on('click', function(e){
             e.preventDefault();
+            $('html').removeClass('map-with-crosshairs2 map-with-crosshairs3');
             var $page = $('.js-reporting-page--active');
             var first_page = $('.js-reporting-page').first().data('pageName');
             if ($page.data('pageName') === first_page || !$page.length) {
@@ -951,7 +955,7 @@ $.extend(fixmystreet.set_up, {
   },
 
   clicking_banner_begins_report: function() {
-    $('.big-green-banner').on('click', function(){
+    $('.big-green-banner,.map-mobile-report-button').on('click', function(){
       if (fixmystreet.map.getCenter) {
         fixmystreet.display.begin_report( fixmystreet.map.getCenter() );
       }
@@ -1665,6 +1669,10 @@ fixmystreet.display = {
     // Store pin location in form fields, and check coverage of point
     fixmystreet.update_pin(lonlat, opts.saveHistoryState);
 
+    $('html').addClass('map-with-crosshairs2');
+    $('html').removeClass('map-with-crosshairs1 map-with-crosshairs3');
+    fixmystreet.map.getControl('fms_reposition').activate();
+
     // It's possible to invoke this multiple times in a row
     // (eg: by clicking on the map multiple times, to
     // reposition your report). But there is some stuff we
@@ -1883,6 +1891,8 @@ fixmystreet.display = {
         }
         $('.map-pins-toggle').show();
         fixmystreet.set_up.map_controls();
+
+        fixmystreet.map.getControl('fms_reposition').deactivate();
 
         fixmystreet.update_report_a_problem_btn();
 

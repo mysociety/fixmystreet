@@ -30,7 +30,7 @@ it('prevents clicking unless asset selected, mobile flow', function() {
   cy.get('[name=pc]').type('NN1 1NS');
   cy.get('[name=pc]').parents('form').submit();
 
-  cy.get('#map_box').click();
+  cy.get('.map-mobile-report-button').click();
   cy.wait('@report-ajax');
   cy.get('#mob_ok').click();
 
@@ -53,7 +53,12 @@ it('selecting an asset allows a report, mobile flow', function() {
   cy.get('[name=pc]').type('NN1 2NS');
   cy.get('[name=pc]').parents('form').submit();
 
-  cy.get('#map_box').click(240, 315);
+  cy.get('.olMapViewport')
+    .trigger('mousedown', { which: 1, clientX: 160, clientY: 284 })
+    .trigger('mousemove', { which: 1, clientX: 160, clientY: 337 })
+    .trigger('mouseup', { which: 1, clientX: 160, clientY: 337 });
+  cy.get('.map-mobile-report-button').click();
+
   cy.wait('@report-ajax');
   cy.get('#mob_ok').click();
 

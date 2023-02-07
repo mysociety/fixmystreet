@@ -83,7 +83,13 @@ describe('National Highways litter picking test', function() {
         cy.get('[name=pc]').type(Cypress.env('postcode'));
         cy.get('[name=pc]').parents('form').submit();
         cy.url().should('include', '/around');
-        cy.get('#map_box').click(80, 249);
+
+        cy.get('.olMapViewport')
+            .trigger('mousedown', { which: 1, clientX: 160, clientY: 284 })
+            .trigger('mousemove', { which: 1, clientX: 240, clientY: 284 })
+            .trigger('mouseup', { which: 1, clientX: 240, clientY: 284 });
+
+        cy.get('.map-mobile-report-button').click();
         cy.wait('@highways-tilma');
         cy.wait('@report-ajax');
         cy.contains('report on roads directly maintained').should('be.visible');

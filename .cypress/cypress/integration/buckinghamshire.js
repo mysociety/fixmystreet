@@ -158,7 +158,7 @@ describe('buckinghamshire roads handling', function() {
     cy.get('[name=pc]').type('SL9 0NX');
     cy.get('[name=pc]').parents('form').submit();
 
-    cy.get('#map_box').click(290, 307);
+    cy.get('.map-mobile-report-button').click();
     cy.wait('@report-ajax');
     cy.get('#mob_ok').should('be.visible').click();
   });
