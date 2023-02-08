@@ -140,6 +140,15 @@ sub waste_on_the_day_criteria {
     }
 }
 
+sub waste_check_staff_payment_permissions {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->stash->{is_staff};
+
+    $c->stash->{staff_payments_allowed} = 'paye';
+}
+
 sub waste_event_state_map {
     return {
         New => { New => 'confirmed' },
