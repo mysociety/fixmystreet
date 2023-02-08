@@ -1,12 +1,25 @@
 #!/usr/bin/perl
 
+=head1 USAGE
+
+bin/fixmystreet.com/generate_council_location <mapit_area_id>
+
+=head1 DESCRIPTION
+
+Generates a location hash for a council, which can be used in the cobrand's
+disambiguate_location method.
+
+=cut
+
 use strict;
 use JSON;
 use LWP::Simple;
 
 my $id = shift;
 
-my $url = sprintf( 'http://mapit.mysociety.org/area/%s/geometry', $id);
+die "Usage: $0 <mapit_area_id>\n" unless $id;
+
+my $url = sprintf( 'https://mapit.mysociety.org/area/%s/geometry', $id);
 
 my $json = get( $url );
 my $geo = decode_json( $json );
