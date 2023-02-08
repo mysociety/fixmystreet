@@ -9,6 +9,10 @@
         %]
 
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
+            <p class="hidden js-continue-draft">
+                <a href="#" class="btn continue-draft-btn">Continue draft report...</a><br />
+                - or -
+            </p>
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
             <div>

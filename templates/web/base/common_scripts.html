@@ -11,6 +11,10 @@ scripts.push(
 
 IF bodyclass.match('frontpage');
     scripts.push(
+        # Hmmm, how to keep front page JS tiny?
+        version('/vendor/idb-keyval-iife.min.js'),
+        version('/cobrands/fixmystreet/offline_report.js'),
+
         version('/js/front.js'),
         version('/js/geolocation.js'),
         version('/js/loading-attribute-polyfill.js'),
@@ -32,6 +36,8 @@ ELSE;
         version('/vendor/jquery-3.6.0.min.js'),
         version('/vendor/jquery.multi-select.min.js'),
         version('/vendor/jquery.validate.min.js'),
+        version('/vendor/idb-keyval-iife.min.js'),
+        version('/cobrands/fixmystreet/offline_report.js'),
         version('/cobrands/fixmystreet/fixmystreet.js'),
     );
 END;

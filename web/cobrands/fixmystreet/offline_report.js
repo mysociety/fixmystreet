@@ -1,13 +1,15 @@
 fixmystreet.offlineReporting = (function() {
-    $("form#offline_report").find("input, textarea").change(function() {
-        fixmystreet.offlineReporting.saveDraft();
-    });
-
     function updateDraftSavedTimestamp(ts) {
         $("#draft_save_message").removeClass("hidden").find("span").text(ts);
     }
 
     return {
+        offlineFormSetup: function() {
+            $("form#offline_report").find("input, textarea").on("input", function() {
+                fixmystreet.offlineReporting.saveDraft();
+            });
+            fixmystreet.offlineReporting.restoreDraft();
+        },
          geolocate: function(pos) {
             $("input[name=latitude]").val(pos.coords.latitude.toFixed(6));
             $("input[name=longitude]").val(pos.coords.longitude.toFixed(6));
@@ -16,7 +18,6 @@ fixmystreet.offlineReporting = (function() {
          },
 
          saveDraft: function() {
-            console.log("saveDraft");
             var ts = (new Date()).toISOString();
             idbKeyval.set('draftOfflineReports', [{
                 latitude: $("input[name=latitude]").val(),
@@ -41,6 +42,37 @@ fixmystreet.offlineReporting = (function() {
                 }
             });
          },
+
+         reportNewSetup: function() {
+            if (location.search.indexOf("restoreDraft=1") > 0) {
+                idbKeyval.get('draftOfflineReports').then(function(drafts) {
+                    if (drafts && drafts.length) {
+                        var d = drafts[0];
+                        $("input[name=title]").val(d.title);
+                        $("textarea[name=detail]").val(d.detail);
+
+                        $("input[name=title], textarea[name=detail]").on("input", function() {
+                            fixmystreet.offlineReporting.saveDraft();
+                        });
+                    }
+                });
+            }
+         },
+
+         frontPageSetup: function() {
+            if (!window.idbKeyval) {
+                return;
+            }
+            idbKeyval.get('draftOfflineReports').then(function(drafts) {
+                if (drafts && drafts.length) {
+                    var d = drafts[0];
+                    document.querySelector(".js-continue-draft").className = "";
+                    var lk = document.querySelector('a.continue-draft-btn');
+                    lk.href = "/report/new?restoreDraft=1&latitude=" + d.latitude + "&longitude=" + d.longitude;
+                }
+            });
+
+         },
     };
 })();
 
@@ -51,5 +83,7 @@ if (fixmystreet.geolocate && link) {
     fixmystreet.geolocate(link, fixmystreet.offlineReporting.geolocate);
 }
 
-fixmystreet.offlineReporting.restoreDraft();
+if (document.getElementById('offline_report')) {
+    fixmystreet.offlineReporting.offlineFormSetup();
+}
 })();
