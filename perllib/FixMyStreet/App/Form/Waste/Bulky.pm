@@ -134,7 +134,7 @@ has_field resident => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Are you the resident of this property or booking on behalf of the property resident?',
+    label => 'Do you live at the property or are you booking on behalf of the householder?',
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -265,7 +265,7 @@ has_field tandc => (
     required => 1,
     label => 'Terms and conditions',
     option_label => FixMyStreet::Template::SafeString->new(
-        'I agree to the <a href="/about/bulky_terms" target="_blank">terms and conditions</a>',
+        'I agree to the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">terms and conditions</a>',
     ),
 );
 
@@ -273,9 +273,6 @@ has_field location => (
     type => 'Text',
     widget => 'Textarea',
     label => "Please tell us about anything else you feel is relevant",
-    tags => {
-        hint => "(e.g. 'The large items are in the front garden which can be accessed via the gate.')",
-    },
 );
 
 has_field location_photo_fileid => (
@@ -290,7 +287,7 @@ has_field location_photo => (
         max_photos => 1,
     },
     label => <<HERE,
-Items should be left as close to your usual bin collection point as possible. Items must not cause an obstruction on the footpath. We can collect items from your front garden assuming we can gain access and there are no vehicles or gates blocking or limiting access.
+Please check the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.
 
 Help us by attaching a photo of where the items will be left for collection.
 HERE

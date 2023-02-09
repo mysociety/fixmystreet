@@ -304,7 +304,7 @@
 
 [% BLOCK photo %]
     <label class="govuk-label js-photo-label" for="[% field.id %]">
-        [% field.label | html_para %]
+        [% mark_safe( field.label ) | html_para %]
     </label>
   [% IF field.get_tag('hint') %]
     <span id="[% field.id %]-hint" class="govuk-hint">
