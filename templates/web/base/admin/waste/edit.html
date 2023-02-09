@@ -44,24 +44,25 @@
     <input type="submit" class="btn" value="Save changes" />
 </form>
 
-<details[% IF errors.body_config %] open[% END %]>
-    <summary>JSON</summary>
-    <form method="post">
-    <p>
-        <label for="body_config">JSON:</label>
-        <small>Use <code>0</code>/<code>1</code> instead of <code>false</code>/<code>true</code>.</small>
-        [% IF errors.body_config %]
-            <div class="form-error">[% errors.body_config %]</div>
-        [% END %]
-        <textarea cols="80" rows="15" required name="body_config" class="code">
-            [%~ body_config_json ~%]
-        </textarea>
-    </p>
-    <p>
-        <input type="hidden" name="token" value="[% csrf_token %]" >
-        <input type="submit" class="btn" value="Save JSON" />
-    </p>
-    </form>
-</details>
-
+[% IF c.user.is_superuser %]
+    <details[% IF errors.body_config %] open[% END %]>
+        <summary>JSON</summary>
+        <form method="post">
+        <p>
+            <label for="body_config">JSON:</label>
+            <small>Use <code>0</code>/<code>1</code> instead of <code>false</code>/<code>true</code>.</small>
+            [% IF errors.body_config %]
+                <div class="form-error">[% errors.body_config %]</div>
+            [% END %]
+            <textarea cols="80" rows="15" required name="body_config" class="code">
+                [%~ body_config_json ~%]
+            </textarea>
+        </p>
+        <p>
+            <input type="hidden" name="token" value="[% csrf_token %]" >
+            <input type="submit" class="btn" value="Save JSON" />
+        </p>
+        </form>
+    </details>
+[% END %]
 [% INCLUDE 'admin/footer.html' %]

@@ -1744,10 +1744,15 @@ FixMyStreet::override_config {
             $staff->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
 
             $mech->get_ok('/admin/waste/' . $body->id);
+            $mech->content_lacks("Save JSON");
+            $mech->log_out_ok;
         };
 
         subtest 'Submitting JSON with invalid syntax shows error' => sub {
             is $body->get_extra_metadata('wasteworks_config'), undef;
+
+            $mech->log_in_ok($super->email);
+            $mech->get_ok('/admin/waste/' . $body->id);
 
             $mech->submit_form_ok({ with_fields => { body_config => '{"foo": "bar",}' } });
             $mech->content_contains("Please correct the errors below");
