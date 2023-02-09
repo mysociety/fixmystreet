@@ -27,8 +27,7 @@ sub index : Path : Args(0) {
     if ($user->is_superuser) {
         $c->forward('fetch_wasteworks_bodies');
     } elsif ( $user->from_body ) {
-        $c->forward('load_wasteworks_body', [ $user->from_body->id ]);
-        $c->res->redirect( $c->uri_for_action( 'admin/waste/edit', $c->stash->{body}->id ) );
+        $c->res->redirect( $c->uri_for_action( 'admin/waste/edit', [ $user->from_body->id ] ) );
     } else {
         $c->detach( '/page_error_404_not_found', [] );
     }
@@ -43,7 +42,7 @@ sub body : Chained('/') : PathPart('admin/waste') : CaptureArgs(1) {
 
     # Regular users can only view their own body's config
     if ( !$c->user->is_superuser && $body_id ne $c->user->from_body->id ) {
-        $c->res->redirect( $c->uri_for_action( '/admin/waste/edit', $c->user->from_body->id ) );
+        $c->res->redirect( $c->uri_for_action( '/admin/waste/edit', [ $c->user->from_body->id ] ) );
     }
 
     $c->stash->{body} = $c->model('DB::Body')->find($body_id)
