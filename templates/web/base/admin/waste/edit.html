@@ -31,6 +31,11 @@
         value="[% base_price %]">
 
     <p>
+    <label for="waste_daily_slots">Available slots each day</label>
+    <input class="form-control" type=text name="daily_slots" id="waste_daily_slots"
+        value="[% daily_slots %]">
+
+    <p>
     <input type=checkbox name="free_mode" value="1" id="waste_free_mode"
         [% 'checked' IF free_mode %]>
     <label class="inline" for="waste_free_mode">Free collection allowed</label>

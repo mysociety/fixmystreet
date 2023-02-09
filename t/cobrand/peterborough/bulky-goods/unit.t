@@ -5,6 +5,7 @@ use Test::MockTime 'set_fixed_time';
 use Test::More;
 use DateTime;
 use DateTime::Format::Strptime;
+use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Peterborough;
 
 subtest '_bulky_collection_window' => sub {
@@ -43,6 +44,8 @@ subtest 'find_available_bulky_slots' => sub {
         },
     );
 
+    my $mech = FixMyStreet::TestMech->new;
+    my $body = $mech->create_body_ok(2566, 'Peterborough City Council', {}, { cobrand => 'peterborough', wasteworks_config => { daily_slots => 40 } });
     my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
     $cobrand->{c} = Test::MockObject->new;
     my %session_hash;

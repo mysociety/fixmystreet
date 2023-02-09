@@ -48,7 +48,6 @@ sub service_name_override {
 
 # XXX Use config to set max daily slots etc.
 sub bulky_collection_window_days     {90}
-sub max_daily_bulky_collection_slots {40}
 sub max_bulky_collection_dates       {4}
 sub bulky_workpack_name {
     qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
@@ -709,7 +708,7 @@ sub check_bulky_slot_available {
 
     my $total_collection_slots = keys %jobs_per_uprn;
 
-    return $total_collection_slots < max_daily_bulky_collection_slots();
+    return $total_collection_slots < $self->bulky_daily_slots;
 }
 
 sub _bulky_collection_window {
@@ -752,6 +751,7 @@ has wasteworks_config => (
 
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
+sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 
 sub bulky_per_item_costs {
     my $self = shift;

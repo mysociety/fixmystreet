@@ -1794,11 +1794,11 @@ FixMyStreet::override_config {
         };
 
         subtest 'Submitting valid inputs gets stored OK' => sub {
-            $mech->submit_form_ok({ with_fields => { per_item_costs => 1, base_price => 1234, items_per_collection_max => 7 } });
+            $mech->submit_form_ok({ with_fields => { per_item_costs => 1, daily_slots => 50, base_price => 1234, items_per_collection_max => 7 } });
             $mech->content_contains("Updated!");
             $body->discard_changes;
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
-                daily_slots => 40, # from before
+                daily_slots => 50,
                 free_mode => 0, # not checked
                 base_price => 1234, per_item_costs => 1, items_per_collection_max => 7 };
         };
