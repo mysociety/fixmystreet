@@ -6,7 +6,7 @@ use warnings;
 
 use Path::Tiny;
 use Moo;
-with 'FixMyStreet::Roles::ConfirmOpen311';
+with 'FixMyStreet::Roles::Open311Alloy';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::BoroughEmails';
 use SUPER;

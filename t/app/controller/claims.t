@@ -1,7 +1,6 @@
 use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
-use CGI::Simple;
 use Path::Tiny;
 use Test::MockModule;
 
@@ -225,11 +224,16 @@ EOF
         like $text, qr/reference number is 248/;
         like $text, qr/is a lengthy process/;
         my $req = Open311->test_req_used;
-        my $c = CGI::Simple->new($req->content);
-        is $c->param('service_code'), 'CLAIM';
-        is $c->param('attribute[title]'), 'east';
-        is $c->param('attribute[description]'), 'a cause';
-        is $c->param('attribute[site_code]'), 'Road ID';
+        foreach ($req->parts) {
+            my $h = $_->header('Content-Disposition');
+            if ($h =~ /name="service_code"/) {
+                is $_->content, 'CLAIM';
+            } elsif ($h =~ /name="attribute\[title\]/) {
+                is $_->content, 'east';
+            } elsif ($h =~ /name="attribute\[description\]/) {
+                is $_->content, 'a cause';
+            }
+        }
     };
 
     subtest 'Report new property claim, report id known' => sub {
