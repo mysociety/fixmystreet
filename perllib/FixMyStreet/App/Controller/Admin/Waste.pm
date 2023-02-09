@@ -170,7 +170,8 @@ sub bulky_items : Chained('body') {
             }
         }
         unless ($c->stash->{has_errors}) {
-            $cfg->{item_list} = \@items;
+            my @sorted = sort { $a->{name} cmp $b->{name} } @items;
+            $cfg->{item_list} = \@sorted;
             $c->stash->{body}->set_extra_metadata("wasteworks_config", $cfg);
             $c->stash->{body}->update;
             $c->flash->{status_message} = _("Updated!");

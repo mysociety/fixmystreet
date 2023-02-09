@@ -1870,20 +1870,20 @@ FixMyStreet::override_config {
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
                 item_list => [
                     {
-                        bartec_id => "1234",
-                        category => "Furniture",
-                        message => "test",
-                        name => "Sofa",
-                        max => "",
-                        price => "0"
-                    },
-                    {
                         bartec_id => "4567",
                         category => "Furniture",
                         message => "",
                         name => "Armchair",
                         max => "",
                         price => "10"
+                    },
+                    {
+                        bartec_id => "1234",
+                        category => "Furniture",
+                        message => "test",
+                        name => "Sofa",
+                        max => "",
+                        price => "0"
                     },
                 ]
             };
@@ -1900,12 +1900,12 @@ FixMyStreet::override_config {
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
                 item_list => [
                     {
-                        bartec_id => "4567",
+                        bartec_id => "1234",
                         category => "Furniture",
-                        message => "",
-                        name => "Armchair",
+                        message => "test",
+                        name => "Sofa",
                         max => "",
-                        price => "10"
+                        price => "0"
                     },
                 ]
             };
