@@ -4,7 +4,9 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use List::Util qw(any);
 use Moo;
+
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 
@@ -98,17 +100,58 @@ sub estate_feature_for_point {
     return $features->[0];
 }
 
+# Southwark do not want certain TfL categories to appear, dependent on
+# whether an 'estates' or 'street' area has been selected
+sub category_groups_to_skip {
+    return {
+        estates => [
+            'Bus Stations',
+            'Bus Stops and Shelters',
+            'River Piers',
+            'Traffic Lights',
+        ],
+        street => [
+            'River Piers',
+        ],
+    };
+}
+
 sub munge_categories {
-    my ($self, $contacts) = @_;
+    my ( $self, $contacts ) = @_;
+
     if ( $self->report_new_is_in_estate ) {
         @$contacts = grep {
             $_->email !~ /^STCL_/;
         } @$contacts;
+
+        @$contacts = _filter_categories_by_group( $contacts, 'estates' );
     } else {
         @$contacts = grep {
             $_->email !~ /^HOU_/;
         } @$contacts;
+
+        @$contacts = _filter_categories_by_group( $contacts, 'street' );
     }
+}
+
+sub _filter_categories_by_group {
+    # $area_type is either 'estates' or 'street'
+    my ( $contacts, $area_type ) = @_;
+
+    my %contacts_hash = map { $_->category => $_ } @$contacts;
+
+    for my $contact ( values %contacts_hash ) {
+        for my $group ( @{ $contact->groups } ) {
+            if ( any { $_ eq $group }
+                @{ category_groups_to_skip()->{$area_type} } )
+            {
+                delete $contacts_hash{ $contact->category };
+                last;
+            }
+        }
+    }
+
+    return values %contacts_hash;
 }
 
 sub allow_anonymous_reports { 'button' }

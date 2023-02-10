@@ -94,7 +94,7 @@ my @PLACES = (
     ['?', 51.511258, -0.011937, 2506, 'Tower Hamlets Borough Council', 'LBO'],
     ['?', 51.512139, -0.013074, 2506, 'Tower Hamlets Borough Council', 'LBO'],
     ['WC1H 8EQ', 51.529432, -0.124514, 2505, 'Camden Borough Council', 'LBO'],
-
+    [ 'SE1 2QH', 51.50351, -0.08051, 2491, 'Southwark Council', 'LBO' ],
 );
 
 sub dispatch_request {
