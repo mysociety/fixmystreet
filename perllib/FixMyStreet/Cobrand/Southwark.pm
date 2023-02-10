@@ -4,7 +4,9 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use List::Util qw(any);
 use Moo;
+
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 
@@ -137,17 +139,86 @@ sub estate_feature_for_point {
     return $features->[0];
 }
 
+
+=item category_groups_to_skip
+
+Southwark do not want certain TfL categories to appear, dependent on
+whether an 'estates' or 'street' area has been selected
+
+=cut
+
+sub category_groups_to_skip {
+    return {
+        estates => [
+            'Bus Stations',
+            'Bus Stops and Shelters',
+            'River Piers',
+            'Traffic Lights',
+        ],
+        street => [
+            'River Piers',
+        ],
+    };
+}
+
+
+=item munge_categories
+
+Southwark have two distinct sets of categories that are shown to the user
+depending on whether the report they're making is inside or outside an estate.
+
+Categories for estates have service codes that start with HOU_, and street
+categories start with STCL_.
+
+Some additional filtering is done on top of that to remove some TfL categories,
+as determined by C<category_groups_to_skip>.
+
+=cut
+
 sub munge_categories {
-    my ($self, $contacts) = @_;
+    my ( $self, $contacts ) = @_;
+
     if ( $self->report_new_is_in_estate ) {
         @$contacts = grep {
             $_->email !~ /^STCL_/;
         } @$contacts;
+
+        @$contacts = _filter_categories_by_group( $contacts, 'estates' );
     } else {
         @$contacts = grep {
             $_->email !~ /^HOU_/;
         } @$contacts;
+
+        @$contacts = _filter_categories_by_group( $contacts, 'street' );
     }
+}
+
+
+=item _filter_categories_by_group
+
+Returns an array of contacts that have some TfL categories removed, according
+to the list specified in C<category_groups_to_skip>.
+
+=cut
+
+sub _filter_categories_by_group {
+    # $area_type is either 'estates' or 'street'
+    my ( $contacts, $area_type ) = @_;
+
+    my %contacts_hash = map { $_->category => $_ } @$contacts;
+
+    for my $contact ( values %contacts_hash ) {
+        for my $group ( @{ $contact->groups } ) {
+            if ( any { $_ eq $group }
+                @{ category_groups_to_skip()->{$area_type} } )
+            {
+                delete $contacts_hash{ $contact->category };
+                last;
+            }
+        }
+    }
+
+    return values %contacts_hash;
 }
 
 sub allow_anonymous_reports { 'button' }
