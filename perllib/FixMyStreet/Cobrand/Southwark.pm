@@ -74,6 +74,15 @@ sub lookup_site_code {
 }
 
 
+=item lookup_site_code_config
+
+When looking up the USRN of a street where a report was made, A-roads within
+Southwark must be ignored as Southwark's Confirm system is setup to reject
+reports made on such streets. The majority of these street features actually
+have an overlapping non-A-road which will be found and used instead.
+
+=cut
+
 sub lookup_site_code_config {
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
     return {
@@ -82,7 +91,14 @@ sub lookup_site_code_config {
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "LSG",
         property => "USRN",
-        accept_feature => sub { 1 }
+        accept_feature => sub {
+            # Roads that only have a number, not a name, mustn't be used for
+            # site codes as they're not something Southwark can deal with.
+            # For example "A201", "A3202".
+            my $feature = shift;
+            my $name = $feature->{properties}->{Street_or_numbered_street} || "";
+            return ( $name =~ /^A[\d]+/ ) ? 0 : 1;
+        }
     };
 }
 
