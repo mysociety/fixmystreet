@@ -61,7 +61,14 @@ sub lookup_site_code_config {
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "LSG",
         property => "USRN",
-        accept_feature => sub { 1 }
+        accept_feature => sub {
+            # Roads that only have a number, not a name, mustn't be used for
+            # site codes as they're not something Southwark can deal with.
+            # For example "A201", "A3202".
+            my $feature = shift;
+            my $name = $feature->{properties}->{Street_or_numbered_street} || "";
+            return ( $name =~ /^A[\d]+/ ) ? 0 : 1;
+        }
     };
 }
 
