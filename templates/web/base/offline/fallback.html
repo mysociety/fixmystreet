@@ -1,14 +1,9 @@
 [% SET bodyclass = "fullwidthpage offlinepage" ~%]
-[%~ USE date ~%]
 [% INCLUDE 'header.html' %]
 
 <h1>[% loc('Offline') %]</h1>
 
 <p>[% loc('Sorry, we don’t have a good enough connection to fetch that page.') %]</p>
-
-<p>Generated: [% date.format(date.now) %]<p>
-
-<p>PWA: [% pwa_platform %]</p>
 
 <ul class="item-list item-list--reports" id="offline_list"></ul>
 
