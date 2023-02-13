@@ -144,4 +144,20 @@ sub open311_config {
     $params->{upload_files} = 1;
 }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        private_report => 'Private'
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            private_report => $report->non_public ? 'Yes' : 'No'
+        };
+    });
+}
+
 1;

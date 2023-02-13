@@ -170,4 +170,26 @@ subtest 'check open311_contact_meta_override' => sub {
     is $extra_fields[0][1]->{fieldtype}, undef, "not added fieldtype 'date' to 'Registration Mark'";
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'shropshire',
+}, sub {
+    subtest 'Dashboard CSV adds column "Private" for "non_public" attribute' => sub {
+        my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+            from_body => $body, password => 'password');
+
+        $mech->log_in_ok( $staffuser->email );
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report->non_public(1);
+        $report->update;
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As",Private');
+        $mech->content_contains('website,shropshire,,Yes');
+        $report->non_public(0);
+        $report->update;
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('website,shropshire,,No');
+    };
+};
+
 done_testing();
