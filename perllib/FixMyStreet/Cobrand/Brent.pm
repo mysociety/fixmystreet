@@ -415,10 +415,15 @@ sub image_for_unit {
 
     my $base = '/i/waste-containers';
     my $images = {
-        262 => "$base/bin-black",
+        262 => "$base/bin-grey",
         265 => "$base/bin-grey-blue-lid-recycling",
         316 => "$base/caddy-green-recycling",
-        317 => "$base/caddy-green-recycling",
+        317 => "$base/bin-green",
+        263 => "$base/large-communal-black",
+        266 => "$base/large-communal-blue-recycling",
+        271 => "$base/bin-brown",
+        267 => "$base/sack-black",
+        269 => "$base/sack-clear",
     };
     return $images->{$service_id};
 }
