@@ -153,16 +153,18 @@ sub waste_event_state_map {
     return {
         New => { New => 'confirmed' },
         Pending => {
-            Unallocated => 'investigating',
-            'Allocated to Crew' => 'action scheduled',
+            Unallocated => 'action scheduled',
             Accepted => 'action scheduled',
+            'Allocated to Crew' => 'in progress',
         },
         Closed => {
             Closed => 'fixed - council',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
             'Partially Completed' => 'closed',
-            Rejected => 'closed',
+        },
+        Cancelled => {
+            Rejected => 'not responsible',
         },
     };
 }
