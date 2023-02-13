@@ -104,9 +104,32 @@ fixmystreet.offlineReporting = (function() {
             $("input[name=title]").val(draft.title);
             $("textarea[name=detail]").val(draft.detail);
             updateDraftSavedTimestamp(draft.saved);
+
+            restoreDraftPhotos(draft.photos, $("#form_photos").get(0).dropzone);
         });
      }
 
+    function restoreDraftPhotos(photos, dropzone) {
+        Object.values(photos).map(function (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                addDropzoneThumbnail(file, e.target.result, dropzone);
+            };
+            reader.readAsDataURL(file.blob);
+        });
+    }
+
+    function addDropzoneThumbnail(photo, datauri, dropzone) {
+        var mockFile = { name: photo.name, server_id: photo.name, dataURL: datauri };
+        dropzone.emit("addedfile", mockFile);
+        dropzone.createThumbnailFromUrl(mockFile,
+            dropzone.options.thumbnailWidth, dropzone.options.thumbnailHeight,
+            dropzone.options.thumbnailMethod, true, function(thumbnail) {
+                dropzone.emit('thumbnail', mockFile, thumbnail);
+            });
+        dropzone.emit("complete", mockFile);
+        dropzone.options.maxFiles -= 1;
+    }
 
     return {
         offlineFormSetup: function() {
@@ -130,6 +153,9 @@ fixmystreet.offlineReporting = (function() {
                 loadDraft().then(function(draft) {
                     $("input[name=title]").val(draft.title);
                     $("textarea[name=detail]").val(draft.detail);
+
+                    // XXX at this point, try sending them to FMS and using real IDs?
+                    restoreDraftPhotos(draft.photos, $('.dropzone').get(0).dropzone);
 
                     $("input[name=title], textarea[name=detail]").on("input", function() {
                         updateDraft();
