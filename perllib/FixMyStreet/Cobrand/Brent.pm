@@ -47,7 +47,7 @@ sub categories_restriction {
     my ($self, $rs) = @_;
 
     # Brent don't want TfL's River Piers category to appear on their cobrand.
-    return $rs->search( { 'me.category' => { '!=', 'River Piers' } } );
+    return $rs->search( { 'me.category' => { '-not_like' => 'River Piers%' } } );
 }
 
 sub social_auth_enabled {
