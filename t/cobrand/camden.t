@@ -25,6 +25,8 @@ FixMyStreet::override_config {
 
         my $tfl = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'TfL');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers - Cleaning', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers Damage doors and glass', email => 'tfl@example.org');
 
         ok $mech->host('camden.fixmystreet.com'), 'set host';
 
