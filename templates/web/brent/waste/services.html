@@ -25,7 +25,7 @@
   <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="container-choice" value="[% unit.request_containers.0 %]">
-    <input type="submit" value="Request a [% unit.service_name == 'Garden Waste' ? 'replacement ' : '' %][% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="Request a [% unit.service_name == 'Garden waste' ? 'replacement ' : '' %][% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
   </form>
 [% ELSIF unit.garden_waste AND NOT waste_features.garden_modify_disabled AND NOT unit.garden_due %]
   <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">

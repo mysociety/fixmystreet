@@ -495,7 +495,7 @@ FixMyStreet::override_config {
     subtest 'test requesting a container' => sub {
         $mech->log_in_ok($user1->email);
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Request a domestic dry recycling collection container');
+        $mech->content_contains('Request a recycling container');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose general rubbish bin");
 
