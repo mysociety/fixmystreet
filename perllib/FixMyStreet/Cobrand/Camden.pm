@@ -107,13 +107,9 @@ sub social_auth_enabled {
 sub user_from_oidc {
     my ($self, $payload) = @_;
 
-    # TODO: Remove this once we know which fields the name/email are in.
-    use Data::Dumper;
-    $self->{c}->log->info("Camden OIDC payload: " . Dumper($payload));
-
     # Extract the user's name and email address from the payload.
     my $name = $payload->{name};
-    my $email = $payload->{email};
+    my $email = $payload->{preferred_username};
 
     return ($name, $email);
 }
