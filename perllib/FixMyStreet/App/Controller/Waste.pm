@@ -1781,7 +1781,11 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     $c->detach('soap_ok') if !$request->{status} || $request->{status} eq 'confirmed'; # Ignore new events
 
     $request->{updated_datetime} = DateTime::Format::W3CDTF->format_datetime(DateTime->now);
-    $request->{service_request_id} = $event->{Guid};
+    if ($c->cobrand->moniker eq 'brent') {
+        $request->{service_request_id} = "Echo-" . $event->{Guid};
+    } else {
+        $request->{service_request_id} = $event->{Guid};
+    }
 
     my $updates = Open311::GetServiceRequestUpdates->new(
         system_user => $body->comment_user,
