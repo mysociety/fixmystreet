@@ -1,0 +1,19 @@
+[% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe OR (domestic_collection AND (c.user.from_body OR c.user.is_superuser)) %]
+   <h3>More services</h3>
+   <ul>
+     [% IF any_report_allowed %]
+       <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
+     [% END %]
+     [% IF any_request_allowed %]
+       <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
+     [% END %]
+     [% IF show_garden_subscribe %]
+       <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+     [% END %]
+     [% IF domestic_collection AND (c.user.from_body OR c.user.is_superuser) %]
+     <!--
+       <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=262">Set up for assisted collection</a></li>
+     -->
+     [% END %]
+   </ul>
+[% END %]

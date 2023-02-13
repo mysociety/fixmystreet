@@ -76,6 +76,7 @@ my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graff
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
+my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
 
 $mech->create_contact_ok(body_id => $brent->id, category => 'Potholes', email => 'potholes@brent.example.org');
 
@@ -103,6 +104,10 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
+);
+create_contact({ category => 'Assisted collection add', email => 'assisted' },
+    { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
 );
 
 for my $test (
@@ -632,6 +637,21 @@ FixMyStreet::override_config {
 
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
         $new_report->delete;
+    };
+
+    subtest 'test staff-only assisted collection form' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Set up for assisted collection');
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=262');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Behind the garden gate' } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Nearly done!');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Behind the garden gate\n\n2 Example Street, Brent, NW2 1AA";
+        is $report->user->email, 'anne@example.org';
+        is $report->name, 'Anne Assist';
     };
 };
 
