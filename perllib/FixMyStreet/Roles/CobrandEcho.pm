@@ -93,7 +93,7 @@ sub _get_current_service_task {
             my $end = construct_bin_date($schedule->{EndDate});
 
             next if $last_date && $end && $end < $last_date;
-            next if $end && $end < $today && $service_name ne 'Garden Waste';
+            next if $end && $end < $today && $service_name !~ /Garden Waste/i;
             $last_date = $end;
             $current = $task;
         }

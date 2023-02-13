@@ -445,7 +445,7 @@ sub bin_services_for_address {
     foreach (@$result) {
         my $service_id = $_->{ServiceId};
         my $service_name = $self->service_name_override($_);
-        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden Waste' && $expired{$_->{Id}} );
+        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden waste' && $expired{$_->{Id}} );
 
         my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
         my $servicetask = $self->_get_current_service_task($_);
@@ -460,7 +460,7 @@ sub bin_services_for_address {
         my $garden_cost = 0;
         my $garden_due = $self->waste_sub_due($schedules->{end_date});
         my $garden_overdue = $expired{$_->{Id}};
-        if ($service_name eq 'Garden Waste') {
+        if ($service_name eq 'Garden waste') {
             $garden = 1;
             my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
             foreach (@$data) {
@@ -612,7 +612,15 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-
+        262 => 'Rubbish',
+        265 => 'Recycling',
+        316 => 'Food waste',
+        317 => 'Garden waste',
+        263 => 'Communal rubbish',
+        266 => 'Communal recycling',
+        271 => 'Communal food waste',
+        267 => 'Rubbish (black sacks)',
+        269 => 'Recycling (clear sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
