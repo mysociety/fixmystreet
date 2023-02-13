@@ -86,6 +86,13 @@ addEventListener('fetch',  fetchEvent => {
     }());
   }
 
+  if (request.method === "POST" && RegExp('/photo/upload/offline').test(url)) {
+    // Pretend that the upload worked, to keep Dropzone happy.
+    // XXX could maybe actually cache photo here and upload automatically when
+    // online? But how to calculate same ID as server and give that to Dropzone...
+    fetchEvent.respondWith(new Response("OK"));
+  }
+
   if (request.method !== "GET") {
       return;
   }

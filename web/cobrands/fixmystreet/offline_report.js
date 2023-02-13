@@ -3,58 +3,137 @@ fixmystreet.offlineReporting = (function() {
         $("#draft_save_message").removeClass("hidden").find("span").text(ts);
     }
 
+    function dropzoneSetup() {
+        if ('Dropzone' in window) {
+            Dropzone.autoDiscover = false;
+        } else {
+            return;
+        }
+
+        var dz = new Dropzone('#form_photos', {
+            url: '/photo/upload/offline',
+            paramName: 'photo',
+            maxFiles: 3,
+            addRemoveLinks: true,
+            thumbnailHeight: 256,
+            thumbnailWidth: 256,
+            resizeHeight: 2048,
+            resizeWidth: 2048,
+            resizeQuality: 0.6,
+            acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png,.png,.tiff,.tif,.gif,.jpeg,.jpg',
+            transformFile: function(file, done) {
+                // We have to intercept this as it seems the only place the
+                // resized image is available, and a good place to store it
+                // in IndexedDB.
+                return this.resizeImage(file, this.options.resizeWidth, this.options.resizeHeight, this.options.resizeMethod, function(blob) {
+                    storeDraftPhoto(file, blob);
+                    return done(blob);
+                });
+            }
+        });
+        dz.on("removedfile", function(file) {
+            removeDraftPhoto(file);
+        });
+    }
+
+    function storeDraftPhoto(file, blob) {
+        loadDraft().then(function(draft) {
+            draft.photos[file.name] = {
+                name: file.name,
+                type: file.type,
+                blob: blob
+            };
+
+            return storeDraft(draft);
+        });
+    }
+
+    function removeDraftPhoto(file) {
+        loadDraft().then(function(draft) {
+            if (file.name in draft.photos) {
+                delete draft.photos[file.name];
+            }
+
+            return storeDraft(draft);
+        });
+    }
+
+    function loadDraft() {
+        return idbKeyval.get('draftOfflineReports').then(function(drafts) {
+            var draft = {
+                latitude: 0,
+                longitude: 0,
+                title: "",
+                detail: "",
+                photos: {},
+                saved: null
+            };
+
+            if (drafts && drafts.length) {
+                draft = drafts[0];
+            }
+
+            return draft;
+        });
+    }
+
+    function storeDraft(draft) {
+        var ts = (new Date()).toISOString();
+        draft.saved = ts;
+
+        return idbKeyval.set('draftOfflineReports', [draft]).then(function() {
+            updateDraftSavedTimestamp(ts);
+        });
+    }
+
+    function updateDraft() {
+        loadDraft().then(function(draft) {
+            draft.latitude = $("input[name=latitude]").val();
+            draft.longitude = $("input[name=longitude]").val();
+            draft.title = $("input[name=title]").val();
+            draft.detail = $("textarea[name=detail]").val();
+
+            return storeDraft(draft);
+        });
+    }
+
+    function restoreDraft() {
+        loadDraft().then(function(draft) {
+            $("input[name=latitude]").val(draft.latitude);
+            $("input[name=longitude]").val(draft.longitude);
+            $("input[name=title]").val(draft.title);
+            $("textarea[name=detail]").val(draft.detail);
+            updateDraftSavedTimestamp(draft.saved);
+        });
+     }
+
+
     return {
         offlineFormSetup: function() {
+            dropzoneSetup();
+
             $("form#offline_report").find("input, textarea").on("input", function() {
-                fixmystreet.offlineReporting.saveDraft();
+                updateDraft();
             });
-            fixmystreet.offlineReporting.restoreDraft();
+            restoreDraft();
         },
-         geolocate: function(pos) {
+
+        geolocate: function(pos) {
             $("input[name=latitude]").val(pos.coords.latitude.toFixed(6));
             $("input[name=longitude]").val(pos.coords.longitude.toFixed(6));
             $("#geolocate").hide();
-            fixmystreet.offlineReporting.saveDraft();
-         },
-
-         saveDraft: function() {
-            var ts = (new Date()).toISOString();
-            idbKeyval.set('draftOfflineReports', [{
-                latitude: $("input[name=latitude]").val(),
-                longitude: $("input[name=longitude]").val(),
-                title: $("input[name=title]").val(),
-                detail: $("textarea[name=detail]").val(),
-                saved: ts
-            }]).then(function() {
-                updateDraftSavedTimestamp(ts);
-            });
-         },
-
-         restoreDraft: function() {
-            idbKeyval.get('draftOfflineReports').then(function(drafts) {
-                if (drafts && drafts.length) {
-                    var d = drafts[0];
-                    $("input[name=latitude]").val(d.latitude);
-                    $("input[name=longitude]").val(d.longitude);
-                    $("input[name=title]").val(d.title);
-                    $("textarea[name=detail]").val(d.detail);
-                    updateDraftSavedTimestamp(d.saved);
-                }
-            });
+            updateDraft();
          },
 
          reportNewSetup: function() {
             if (location.search.indexOf("restoreDraft=1") > 0) {
-                idbKeyval.get('draftOfflineReports').then(function(drafts) {
-                    if (drafts && drafts.length) {
-                        var d = drafts[0];
-                        $("input[name=title]").val(d.title);
-                        $("textarea[name=detail]").val(d.detail);
+                loadDraft().then(function(draft) {
+                    $("input[name=title]").val(draft.title);
+                    $("textarea[name=detail]").val(draft.detail);
 
-                        $("input[name=title], textarea[name=detail]").on("input", function() {
-                            fixmystreet.offlineReporting.saveDraft();
-                        });
-                    }
+                    $("input[name=title], textarea[name=detail]").on("input", function() {
+                        updateDraft();
+                    });
                 });
             }
          },
