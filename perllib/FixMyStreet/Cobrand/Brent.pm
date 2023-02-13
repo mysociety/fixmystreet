@@ -794,4 +794,18 @@ sub waste_cc_payment_sale_ref {
     return "Brent-" . $p->id;
 }
 
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    foreach (sort grep { /^extra_/ } keys %$data) {
+        $detail .= "$data->{$_}\n\n";
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+}
+
 1;
