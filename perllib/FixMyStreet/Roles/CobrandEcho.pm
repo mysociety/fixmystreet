@@ -71,25 +71,6 @@ sub construct_bin_date {
     return $date;
 }
 
-sub available_bin_services_for_address {
-    my ($self, $property) = @_;
-
-    my $services = $self->{c}->stash->{services};
-    return {} unless keys %$services;
-
-    my $available_services = {};
-    for my $service ( values %$services ) {
-        my $name = $service->{service_name};
-        $name =~ s/ /_/g;
-        $available_services->{$name} = {
-            service_id => $service->{service_id},
-            is_active => 1,
-        };
-    }
-
-    return $available_services;
-}
-
 sub _get_service_tasks {
     my ($self, $service) = @_;
 

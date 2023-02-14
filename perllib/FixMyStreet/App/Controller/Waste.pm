@@ -574,7 +574,6 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
-    $c->stash->{services_available} = $c->cobrand->call_hook(available_bin_services_for_address => $property) || {};
 
     $c->forward('get_pending_subscription');
 }
