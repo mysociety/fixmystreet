@@ -918,6 +918,7 @@ subtest "can view pagination on list of user's alerts" => sub {
     }
     my $first_alert = $user->alerts->first;
     my $last_alert = $alert;
+    $last_alert->update({ whensubscribed => DateTime->now->add(minutes => 5) });
 
     $mech->get_ok( '/admin/users/' . $user->id );
     $mech->content_contains("User's alerts", 'has list of alerts');
