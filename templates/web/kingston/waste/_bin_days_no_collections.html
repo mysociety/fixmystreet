@@ -9,7 +9,7 @@ If you believe that your address is eligible for waste services, please call our
 [% ELSE %]
 
 
-[% SET show_garden_subscribe = NOT pending_subscription AND NOT services_available.Garden_Waste.is_active %]
+[% SET show_garden_subscribe = NOT pending_subscription AND NOT c.cobrand.garden_current_subscription %]
 [% IF show_garden_subscribe %]
 <h3 class="govuk-heading-m waste-service-name">Garden waste collection service</h3>
 <ul>
