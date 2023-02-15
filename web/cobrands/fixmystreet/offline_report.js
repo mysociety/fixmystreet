@@ -1,6 +1,10 @@
 fixmystreet.offlineReporting = (function() {
     function updateDraftSavedTimestamp(ts) {
-        $("#draft_save_message").removeClass("hidden").find("span").text(ts);
+        if (ts) {
+            $("#draft_save_message").removeClass("hidden").find("span").text(ts);
+        } else {
+            $("#draft_save_message").addClass("hidden").find("span").text("");
+        }
     }
 
     function dropzoneSetup() {
@@ -61,8 +65,8 @@ fixmystreet.offlineReporting = (function() {
     function loadDraft() {
         return idbKeyval.get('draftOfflineReports').then(function(drafts) {
             var draft = {
-                latitude: 0,
-                longitude: 0,
+                latitude: "",
+                longitude: "",
                 title: "",
                 detail: "",
                 photos: {},
@@ -101,6 +105,11 @@ fixmystreet.offlineReporting = (function() {
         loadDraft().then(function(draft) {
             $("input[name=latitude]").val(draft.latitude);
             $("input[name=longitude]").val(draft.longitude);
+            if (draft.longitude || draft.latitude) {
+                $("#geolocate span").text("Update location");
+            } else {
+                $("#geolocate span").text("Use my location");
+            }
             $("input[name=title]").val(draft.title);
             $("textarea[name=detail]").val(draft.detail);
             updateDraftSavedTimestamp(draft.saved);
@@ -110,6 +119,7 @@ fixmystreet.offlineReporting = (function() {
      }
 
     function restoreDraftPhotos(photos, dropzone) {
+        dropzone.removeAllFiles();
         Object.values(photos).map(function (file) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -131,9 +141,20 @@ fixmystreet.offlineReporting = (function() {
         dropzone.options.maxFiles -= 1;
     }
 
+    function deleteDrafts() {
+        return idbKeyval.set('draftOfflineReports', []).then(function() {
+            return restoreDraft();
+        });
+    }
+
     return {
         offlineFormSetup: function() {
             dropzoneSetup();
+            $(".js-delete-drafts").on("click", function() {
+                if (confirm(this.getAttribute('data-confirm'))) {
+                    deleteDrafts();
+                }
+            });
 
             $("form#offline_report").find("input, textarea").on("input", function() {
                 updateDraft();
@@ -144,7 +165,7 @@ fixmystreet.offlineReporting = (function() {
         geolocate: function(pos) {
             $("input[name=latitude]").val(pos.coords.latitude.toFixed(6));
             $("input[name=longitude]").val(pos.coords.longitude.toFixed(6));
-            $("#geolocate").hide();
+            $("#geolocate span").text("Update location");
             updateDraft();
          },
 

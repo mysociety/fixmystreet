@@ -12,11 +12,13 @@
 <div>
     <h2>Offline Draft Report</h2>
     <form id="offline_report">
-        <input name=latitude />
-        <input name=longitude />
-        <button id=geolocate>Use my location</button>
+        <input name=latitude type=hidden />
+        <input name=longitude type=hidden />
+        <p>
+        <button id=geolocate class="btn">[% INCLUDE 'around/geolocate_link_icon.html' %]<span>Use my location</span></button>
+        </p>
 
-        <div id="form_photos" class="dropzone"></div>
+        <div style="max-width: 27em" id="form_photos" class="dropzone"></div>
 
         [% DEFAULT form_title = loc('Summarise the problem') %]
         <label for="form_title">[% form_title %]</label>
@@ -28,6 +30,8 @@
         <textarea class="form-control" rows="7" cols="26" name=detail id="form_detail"></textarea>
     </form>
     <p id="draft_save_message" class="hidden"><small>Draft report saved at <span></span></small></p>
+    <hr>
+    <p><button class="btn-danger js-delete-drafts" data-confirm="sure?">Delete draft</button></p>
 </div>
 
 [% INCLUDE 'footer.html' %]
