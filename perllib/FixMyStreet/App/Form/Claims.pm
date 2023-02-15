@@ -584,7 +584,7 @@ has_field photos => (
 );
 
 has_page about_vehicle => (
-    fields => ['make', 'registration', 'mileage', 'v5', 'v5_in_name', 'insurer_address', 'damage_claim', 'vat_reg', 'continue'],
+    fields => ['registration', 'mileage', 'v5', 'v5_in_name', 'insurer_address', 'damage_claim', 'vat_reg', 'continue'],
     title => 'About the vehicle',
     tags => {
         hide => sub { $_[0]->form->value_nequals('what', 'vehicle'); }
@@ -602,12 +602,6 @@ has_page about_vehicle => (
 
         $form->process_upload('v5');
     },
-);
-
-has_field make => (
-    required => 1,
-    type => 'Text',
-    label => 'Make and model',
 );
 
 has_field registration => (
@@ -738,8 +732,8 @@ has_field tyre_damage => (
 );
 
 has_field tyre_mileage => (
-    type => 'Text',
-    label => 'Age and Mileage of the tyre(s) at the time of the incident',
+    type => 'Integer',
+    label => 'Mileage of the tyre(s) at the time of the incident',
     tags => {
         hide => sub { $_[0]->form->value_equals('tyre_damage', 'No') }
     },

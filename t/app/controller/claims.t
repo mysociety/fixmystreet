@@ -97,7 +97,7 @@ FixMyStreet::override_config {
             photos => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
             photos2 => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
         } }, "cause screen");
-        $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20',
+        $mech->submit_form_ok({ with_fields => { registration => 'rego!', mileage => '20',
             v5 => [ $sample_pdf, undef, Content_Type => 'application/octet-stream', filename => 'v5.pdf' ],
             v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No',
         } }, "car details");
@@ -146,7 +146,6 @@ Were you aware of it before?: Yes
 Where was the cause of the incident?: Bridge
 Describe the incident cause: a cause
 Please provide two dated photos of the incident: 2 photos
-Make and model: a car
 Registration number: rego!
 Vehicle mileage: 20
 Copy of the vehicle’s V5 Registration Document: sample.pdf
@@ -158,7 +157,7 @@ Describe the damage to the vehicle: the car was broken
 Please provide two photos of the damage to the vehicle: 2 photos
 Please provide receipted invoices for repairs: sample.pdf
 Are you claiming for tyre damage?: Yes
-Age and Mileage of the tyre(s) at the time of the incident: 20
+Mileage of the tyre(s) at the time of the incident: 20
 EOF
         is $report->detail, $expected_detail;
         is $report->latitude, 51.81386;
@@ -194,7 +193,7 @@ EOF
         $mech->submit_form_ok({ with_fields => { what_cause => 'other', what_cause_other => 'Duck', aware => 'Yes', where_cause => 'bridge', describe_cause => 'a cause',
             photos => [ $sample_file, undef, Content_Type => 'application/octet-stream' ],
         } }, 'cause details');
-        $mech->submit_form_ok({ with_fields => { make => 'a car', registration => 'rego!', mileage => '20',
+        $mech->submit_form_ok({ with_fields => { registration => 'rego!', mileage => '20',
             v5 => [ $sample_pdf, undef, Content_Type => 'application/octet-stream' ],
             v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No',
         } }, 'vehicle details');
