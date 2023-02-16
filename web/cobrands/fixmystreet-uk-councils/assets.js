@@ -233,10 +233,23 @@ fixmystreet.assets.bromley.prow_stylemap = new OpenLayers.StyleMap({
 
 fixmystreet.assets.buckinghamshire = {};
 
+// Since the move to Alloy street light features are suffixed with road name
+// in the title attribute. We don't want to display this so we strip it.
+// Title is of the form "XX111,STREET NAME" e.g. "LC004,MARKET SQUARE" -
+// we only want the "LC004" bit.
+OpenLayers.Layer.BuckinghamshireLights = OpenLayers.Class(OpenLayers.Layer.VectorAssetMove, {
+    preFeatureInsert: function(feature) {
+        if (feature.attributes.title && feature.attributes.title.split) {
+            feature.attributes.title = feature.attributes.title.split(",")[0];
+        }
+    },
+    CLASS_NAME: 'OpenLayers.Layer.BuckinghamshireLights'
+});
+
 fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${feature_id}")
+  'select': fixmystreet.assets.construct_named_select_style("${title}")
 });
 
 // The "whole street asset" layer indicates who is responsible for maintaining
