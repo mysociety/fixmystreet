@@ -10,6 +10,7 @@ END { FixMyStreet::App->log->enable('info'); }
 # Mock fetching bank holidays
 my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
 $uk->mock('_fetch_url', sub { '{}' });
+set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -238,63 +239,81 @@ FixMyStreet::override_config {
         is $mech->value('current_bins'), 1, "current bins is set to 1";
     };
 
-    subtest 'check new sub credit card payment' => sub {
-        $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 1 });
-        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
-        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 0,
-            bins_wanted => 1,
-            payment_method => 'credit_card',
-            name => 'Test McTest',
-            email => 'test@example.net'
-        } });
-        $mech->content_contains('Test McTest');
-        $mech->content_contains('£50.00');
-        $mech->content_contains('1 bin');
-        $mech->submit_form_ok({ with_fields => { goto => 'details' } });
-        $mech->content_contains('<span id="cost_pa">50.00');
-        $mech->content_contains('<span id="cost_now">50.00');
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 0,
-            bins_wanted => 1,
-            payment_method => 'credit_card',
-            name => 'Test McTest',
-            email => 'test@example.net'
-        } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+    for my $test (
+        {
+            month => '01',
+            pounds_cost => '50.00',
+            pence_cost => '5000'
+        },
+        {
+            month => '10',
+            pounds_cost => '25.00',
+            pence_cost => '2500'
+        }
+    ) {
 
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        subtest 'check new sub credit card payment' => sub {
+            set_fixed_time("2021-$test->{month}-09T17:00:00Z");
+            $mech->get_ok('/waste/12345/garden');
+            $mech->submit_form_ok({ form_number => 1 });
+            $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+            $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+            $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+            } });
+            $mech->content_contains('Test McTest');
+            $mech->content_contains('£' . $test->{pounds_cost});
+            $mech->content_contains('1 bin');
+            $mech->submit_form_ok({ with_fields => { goto => 'details' } });
+            $mech->content_contains('<span id="cost_pa">' . $test->{pounds_cost});
+            $mech->content_contains('<span id="cost_now">' . $test->{pounds_cost});
+            $mech->submit_form_ok({ with_fields => {
+                current_bins => 0,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net'
+            } });
+            # external redirects make Test::WWW::Mechanize unhappy so clone
+            # the mech for the redirect
+            my $mech2 = $mech->clone;
+            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+            is $mech2->res->previous->code, 302, 'payments issues a redirect';
+            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
 
-        is $sent_params->{items}[0]{amount}, 5000, 'correct amount used';
-        check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1);
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        $mech->get('/waste/pay/xx/yyyyyyyyyyy');
-        ok !$mech->res->is_success(), "want a bad response";
-        is $mech->res->code, 404, "got 404";
-        $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
-        ok !$mech->res->is_success(), "want a bad response";
-        is $mech->res->code, 404, "got 404";
-        $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+            is $sent_params->{items}[0]{amount}, $test->{pence_cost}, 'correct amount used';
+            check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1);
 
-        check_extra_data_post_confirm($new_report);
+            $mech->get('/waste/pay/xx/yyyyyyyyyyy');
+            ok !$mech->res->is_success(), "want a bad response";
+            is $mech->res->code, 404, "got 404";
+            $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
+            ok !$mech->res->is_success(), "want a bad response";
+            is $mech->res->code, 404, "got 404";
+            $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
 
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+            check_extra_data_post_confirm($new_report);
 
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?50.00/;
-    };
+            $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+            FixMyStreet::Script::Reports::send();
+            my @emails = $mech->get_email;
+            my $body = $mech->get_text_body_from_email($emails[1]);
+            like $body, qr/Number of bin subscriptions: 1/;
+            like $body, qr/Bins to be delivered: 1/;
+            like $body, qr/Total:.*?$test->{pounds_cost}/;
+            $mech->clear_emails_ok;
+        };
+    }
+
+    set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
 
     subtest 'check new sub credit card payment with no bins required' => sub {
         $mech->get_ok('/waste/12345/garden');
