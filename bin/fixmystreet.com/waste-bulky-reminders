@@ -11,7 +11,11 @@ BEGIN {
 }
 
 use Getopt::Long::Descriptive;
+use CronFns;
 use FixMyStreet::Cobrand;
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+CronFns::language($site);
 
 my ($opts, $usage) = describe_options(
     '%c %o',
