@@ -4,6 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use Moo;
+use DateTime;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';
@@ -622,7 +623,14 @@ sub garden_waste_cost_pa {
 
     $bin_count ||= 1;
 
-    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
+    my $cost = $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+
+    if ($now->month =~ /^(10|11|12)$/ ) {
+        $cost = $cost/2;
+    }
+
+    return $cost;
 }
 
 sub garden_waste_new_bin_admin_fee { 0 }
