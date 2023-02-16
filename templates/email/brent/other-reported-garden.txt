@@ -54,12 +54,12 @@ Total: £[% pounds(total / 100) %]
 [% END %]
 
 [% IF type == 'new' OR type == 'renew' ~%]
-Your subscription will last for 12 months and starts from the following
+Your subscription will last until the end of March and starts from the following
 collection date[% IF new_bins > 0 %] once your bins have been delivered[% END %].
 [% END %]
 
 You can check your collection day online:
-https://www.kingston.gov.uk/bins-recycling-rubbish/find-waste-recycling-collection-day/1
+https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work
 
 [% IF new_bins > 0 ~%]
 We will aim to deliver your new bin(s) within 20 working days.
@@ -68,7 +68,7 @@ You don't need to be at home for the delivery - we'll leave them outside your ad
 
 Your garden waste needs to be at the boundary of your property by 6.30am on the
 day of collection. Find out what you can put in your garden waste:
-https://www.kingston.gov.uk/bins-recycling-rubbish/recycling-rubbish-collections-guide/3
+https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work
 
 [% signature %]
 
