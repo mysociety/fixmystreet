@@ -591,7 +591,7 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my $cfg = $c->cobrand->feature('waste_features');
 
     # Bulky goods has a new design for the bin days page
-    if ($cfg->{bulky_enabled}) {
+    if ($c->cobrand->call_hook('bulky_enabled')) {
         $c->stash->{template} = 'waste/bin_days_bulky.html';
     }
 
@@ -974,7 +974,7 @@ sub check_if_staff_can_pay : Private {
 sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    if (  !$c->stash->{waste_features}{bulky_enabled}
+    if (  !$c->cobrand->call_hook('bulky_enabled')
         || $c->stash->{property}{pending_bulky_collection} )
     {
         $c->detach('property_redirect');
@@ -1123,7 +1123,7 @@ sub bulky_cancel : Chained('property') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->detach('property_redirect')
-        if !$c->stash->{waste_features}{bulky_enabled}
+        if !$c->cobrand->call_hook('bulky_enabled')
         || !$c->cobrand->call_hook( 'bulky_can_cancel_collection',
                 $c->stash->{property}{pending_bulky_collection} );
 

@@ -34,7 +34,7 @@
           </form>
     </li>
   [% END %]
-  [% IF waste_features.bulky_enabled %]
+  [% IF c.cobrand.call_hook('bulky_enabled') %]
    [% IF NOT property.commercial_property %]
     <li>
         <a href="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">Book bulky goods collection</a>

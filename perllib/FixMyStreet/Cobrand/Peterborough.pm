@@ -1671,10 +1671,26 @@ sub available_permissions {
     return $perms;
 }
 
+sub bulky_enabled {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $cfg = $self->feature('waste_features') || {};
+
+    if ($cfg->{bulky_enabled} && $cfg->{bulky_enabled} eq 'staff') {
+        return $c->user_exists && (
+            $c->user->is_superuser
+            || ( $c->user->from_body && $c->user->from_body->name eq $self->council_name)
+        );
+    } else {
+        return $cfg->{bulky_enabled};
+    }
+}
+
 sub bulky_available_feature_types {
     my $self = shift;
 
-    return unless $self->feature('waste_features')->{bulky_enabled};
+    return unless $self->bulky_enabled;
 
     my $cfg = $self->feature('bartec');
     my $bartec = Integrations::Bartec->new(%$cfg);

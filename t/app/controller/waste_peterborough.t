@@ -1716,6 +1716,52 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => {
+            sample_data => 1,
+        } },
+        waste => { peterborough => 1 },
+        waste_features => { peterborough => {
+            bulky_enabled => 'staff',
+        } },
+    },
+}, sub {
+    my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+
+    my $bin_days_url = 'http://localhost/waste/PE1%203NA:100090215480';
+
+    subtest 'Logged-out users can’t see bulky goods when set to staff-only' => sub {
+        $mech->log_out_ok;
+
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('Bulky Waste');
+    };
+
+    subtest 'Logged-in users can’t see bulky goods when set to staff-only' => sub {
+        $mech->log_in_ok($user->email);
+
+        $mech->get_ok($bin_days_url);
+        $mech->content_lacks('Bulky Waste');
+    };
+
+    subtest 'Logged-in staff can see bulky goods when set to staff-only' => sub {
+        $mech->log_in_ok($staff->email);
+
+        $mech->get_ok($bin_days_url);
+        $mech->content_contains('Bulky Waste');
+    };
+
+    subtest 'Logged-in superusers can see bulky goods when set to staff-only' => sub {
+        $mech->log_in_ok($super->email);
+
+        $mech->get_ok($bin_days_url);
+        $mech->content_contains('Bulky Waste');
+    };
+};
+
+FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'peterborough', 'bromley' ],
     COBRAND_FEATURES => {
         bartec => { peterborough => {
