@@ -3,6 +3,7 @@ package Integrations::Bottomline;
 use Moo;
 
 use Data::Dumper;
+use DateTime::Format::W3CDTF;
 use LWP::UserAgent;
 use HTTP::CookieJar::LWP;
 use HTTP::Headers;
@@ -238,9 +239,11 @@ sub one_off_payment {
         }
     }
 
+    $args->{date}->set_time_zone('UTC');
+    my $dueDate = DateTime::Format::W3CDTF->format_datetime($args->{date});
     my $data = {
         amount => $args->{amount},
-        dueDate => $args->{date},
+        dueDate => $dueDate,
         comments => $args->{reference},
         paymentType => "DEBIT",
     };
