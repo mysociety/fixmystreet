@@ -158,7 +158,7 @@ sub waste_event_state_map {
             Accepted => 'action scheduled',
             'Allocated to Crew' => 'in progress',
             'Allocated to EM' => 'investigating',
-            'Replacement Bin Required' => 'fixed - council',
+            'Replacement Bin Required' => 'action scheduled',
         },
         Closed => {
             Closed => 'fixed - council',
