@@ -1684,7 +1684,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('pro_rata'), '2000', 'pro rata payment correctly set';
         is $new_report->get_extra_field_value('admin_fee'), '1500', 'adming fee payment correctly set';
 
-        my $ad_hoc_payment_date = '2021-01-15T17:00:00';
+        my $ad_hoc_payment_date = '2021-01-15T17:00:00Z';
 
         is_deeply $dd_sent_params->{one_off_payment}, {
             comments => $new_report->id,
