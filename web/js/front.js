@@ -36,7 +36,7 @@ document.getElementById('pc').focus();
                 nav.style.maxHeight = h + 'px';
                 modal.style.top = nav_top + 'px';
             }
-            nav_link.setAttribute('aria-expanded', opened);
+            nav_checkbox.setAttribute('aria-expanded', opened);
             nav_checkbox.checked = opened;
         };
 
