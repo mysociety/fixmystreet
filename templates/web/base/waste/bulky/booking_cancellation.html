@@ -13,7 +13,7 @@
         <dt><strong>Booking reference number</strong></dt>
         <dd class="govuk-!-margin-bottom-4">[% property.pending_bulky_collection.id %]</dd>
         [% IF entitled_to_refund %]
-            <p class="govuk-!-margin-bottom-2">Your refund is on its way. It usually takes between x-x working days.</p>
+            <p class="govuk-!-margin-bottom-2">Your refund is on its way.</p>
         [% END %]
         <a href="[% c.uri_for_action('waste/bin_days', [ property.id ]) %]" class="btn btn-primary">Go back home</a>
     </div>
