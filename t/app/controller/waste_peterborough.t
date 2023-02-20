@@ -1602,6 +1602,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains("Confirm Booking");
+        $mech->content_lacks("Confirm Subscription");
         $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
