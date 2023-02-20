@@ -1673,7 +1673,11 @@ sub available_permissions {
 
 sub bulky_enabled {
     my $self = shift;
-    my $c = $self->{c};
+
+    # $self->{c} is undefined if this cobrand was instantiated by
+    # get_cobrand_handler instead of being the current active cobrand
+    # for this request.
+    my $c = $self->{c} || FixMyStreet::DB->schema->cobrand->{c};
 
     my $cfg = $self->feature('waste_features') || {};
 
