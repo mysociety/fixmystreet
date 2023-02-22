@@ -112,6 +112,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, "Claim";
         is $report->bodies_str, $body->id;
+        my $report_id = $report->id;
         my $expected_detail = <<EOF;
 What are you claiming for?: Vehicle damage
 Have you ever filed a Claim for damages with Buckinghamshire Council?: Yes
@@ -163,7 +164,7 @@ EOF
         is $email[0]->header('To'), 'TfB <claims@example.net>, TfB <claims2@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $fault_id - Rain Road, Aylesbury";
         like $email[1]->header('To'), qr/madeareport\@/;
-        is $email[1]->header('Subject'), "Your claim has been submitted, ref $fault_id";
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
         my $req = Open311->test_req_used;
         is $req, undef, 'Nothing sent by Open311';
         is $report->user->alerts->count, 1, 'User has an alert for this report';
@@ -211,6 +212,7 @@ EOF
         $mech->content_contains('Claim submitted');
         $mech->content_contains('is a lengthy process');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report_id = $report->id;
         is $report->comments->count, 0, 'No updates added to report';
         FixMyStreet::Script::Reports::send();
         $report->discard_changes;
@@ -220,8 +222,8 @@ EOF
         my $bucks_text = $mech->get_html_body_from_email($email[0]);
         like $bucks_text, qr/Confirm reference: 248/, 'confirm reference included in bucks email';
         my $text = $mech->get_text_body_from_email($email[1]);
-        is $email[1]->header('Subject'), "Your claim has been submitted, ref 248";
-        like $text, qr/reference number is 248/;
+        is $email[1]->header('Subject'), "Your claim has been submitted, ref $report_id";
+        like $text, qr/reference number is $report_id/;
         like $text, qr/is a lengthy process/;
         my $req = Open311->test_req_used;
         foreach ($req->parts) {

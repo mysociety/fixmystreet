@@ -12,11 +12,11 @@ INCLUDE '_email_top.html';
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Your claim has been&nbsp;submitted</h1>
  [% IF report.external_id %]
-  <p style="[% p_style %]">Ref: [% report.external_id %].</p>
+  <p style="[% p_style %]">Ref: [% report.id %].</p>
  [% END %]
   <p style="[% p_style %]">Thank you for your submitted claim form.
    [% IF report.external_id %]
-    The reference number is [% report.external_id %].
+    The reference number is [% report.id %].
    [% END %]
   </p>
 
