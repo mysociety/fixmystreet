@@ -2,8 +2,14 @@ Subject: There was a problem with your payment: [% report.title %]
 
 Hello [% report.name %],
 
+[% IF report.category == 'Bulky collection' ~%]
+There was a problem taking payment for your [% report.title %]. No details have been saved for the booking.
+
+Please contact 01733 747474 to start again; if you feel you will have difficulty with the auto payment system please advise the call handler at the start of the call.
+[% ELSE ~%]
 There was a problem collecting payment for your [% report.title %]. Please
 contact the Customer Service Centre to try again.
+[%~ END %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

@@ -11,9 +11,15 @@ INCLUDE '_email_top.html';
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">There was a problem with your payment</h1>
-  <p style="[% p_style %]">There was a problem taking payment for your [% report.title %]</p>
+  [% IF report.category == 'Bulky collection' %]
+    <p style="[% p_style %]">There was a problem taking payment for your [% report.title %]. No details have been saved for the booking.</p>
 
-  <p style="[% p_style %]">Please contact the Customer Service Centre to try again.</p>
+    <p style="[% p_style %]">Please contact 01733 747474 to start again; if you feel you will have difficulty with the auto payment system please advise the call handler at the start of the call.</p>
+  [% ELSE %]
+    <p style="[% p_style %]">There was a problem taking payment for your [% report.title %]</p>
+
+    <p style="[% p_style %]">Please contact the Customer Service Centre to try again.</p>
+  [% END %]
 
   [% end_padded_box | safe %]
 </th>
