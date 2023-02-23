@@ -795,6 +795,12 @@ sub bulky_can_refund {
     my $self = shift;
     my $c    = $self->{c};
 
+    # Skip refund eligibility check for bulky goods soft launch; just
+    # assume if a collection can be cancelled, it can be refunded
+    # (see https://3.basecamp.com/4020879/buckets/26662378/todos/5870058641)
+    return $self->within_bulky_cancel_window
+        if $self->bulky_enabled_staff_only;
+
     return $c->stash->{property}{pending_bulky_collection}
         ->get_extra_field_value('CHARGEABLE') ne 'FREE'
         && $self->within_bulky_refund_window;
@@ -834,6 +840,10 @@ sub _check_within_bulky_refund_window {
 sub within_bulky_cancel_window {
     my ( $self, $collection ) = @_;
 
+    my $c = $self->{c};
+    $collection //= $c->stash->{property}{pending_bulky_collection};
+    return 0 unless $collection;
+
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
     my $collection_date_str = $collection->get_extra_field_value('DATE');
@@ -849,6 +859,7 @@ sub within_bulky_cancel_window {
 sub _check_within_bulky_cancel_window {
     my ( undef, $now_dt, $collection_dt ) = @_;
 
+    # 23:55 day before collection
     my $cutoff_dt = $collection_dt->clone->subtract( minutes => 5 );
     return $now_dt < $cutoff_dt;
 }
@@ -1681,7 +1692,7 @@ sub bulky_enabled {
 
     my $cfg = $self->feature('waste_features') || {};
 
-    if ($cfg->{bulky_enabled} && $cfg->{bulky_enabled} eq 'staff') {
+    if ($self->bulky_enabled_staff_only) {
         return $c->user_exists && (
             $c->user->is_superuser
             || ( $c->user->from_body && $c->user->from_body->name eq $self->council_name)
@@ -1689,6 +1700,14 @@ sub bulky_enabled {
     } else {
         return $cfg->{bulky_enabled};
     }
+}
+
+sub bulky_enabled_staff_only {
+    my $self = shift;
+
+    my $cfg = $self->feature('waste_features') || {};
+
+    return $cfg->{bulky_enabled} && $cfg->{bulky_enabled} eq 'staff';
 }
 
 sub bulky_available_feature_types {

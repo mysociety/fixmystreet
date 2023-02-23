@@ -6,5 +6,7 @@
     <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
     <li>Before confirming your booking, check all the info provided is correct</li>
     <li>You can cancel your booking anytime up until 23:55 the day before the collection is scheduled</li>
+    [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
     <li><strong>Cancellations made more than 24 hours</strong> before collection is scheduled are entitled to a refund.</li>
+    [% END %]
 </ol>

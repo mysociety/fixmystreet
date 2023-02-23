@@ -48,15 +48,15 @@ INCLUDE '_email_top.html';
   [%~ IF staff_cancellation %]
     If you wish to cancel your booking, please call 01733 74 74 74.
   [% ELSE %]
-  If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky_cancel">this link</a>.
-  [% END %]
+    If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky_cancel">this link</a>.
 
-[% IF days == 1 %]
-You can still cancel your booking, but a refund is no longer available.
-[% ELSE %]
-You can obtain a refund if you cancel more than one day before your booking.
-[% END %]
-  </p>
+    [% IF days == 1 %]
+      You can still cancel your booking, but a refund is no longer available.
+    [% ELSE %]
+      You can obtain a refund if you cancel more than one day before your booking.
+    [% END %]
+  [% END %]
+</p>
 
   <p style="[% p_style %]">
     <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections">Terms and Conditions</a>
