@@ -9,19 +9,35 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Peterborough;
 
 subtest '_bulky_collection_window' => sub {
-    set_fixed_time('2021-12-31T14:00:00Z');
+    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+    $mock_pbro->mock(
+        'bulky_cancellation_cutoff_time', sub {
+            { hours => 15, minutes => 15 }
+        },
+    );
+    set_fixed_time('2021-12-31T15:00:00Z');
     is_deeply(
         FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
         {   date_from => '2022-01-01',
             date_to   => '2022-02-26',
         },
+        'before cutoff time',
     );
-    set_fixed_time('2021-12-31T23:00:00Z');
+    set_fixed_time('2021-12-31T15:15:00Z');
     is_deeply(
         FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
         {   date_from => '2022-01-02',
             date_to   => '2022-02-26',
         },
+        'at cutoff time',
+    );
+    set_fixed_time('2021-12-31T16:00:00Z');
+    is_deeply(
+        FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
+        {   date_from => '2022-01-02',
+            date_to   => '2022-02-26',
+        },
+        'greater than cutoff hours, less than cutoff minutes',
     );
 };
 
@@ -396,28 +412,23 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        subtest 'Now time earlier than 23:55' => sub {
-            $now_dt->set( hour => 23, minute => 54, second => 59 );
-            ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_cancel_window(
-                    $now_dt, $collection_dt
-                    )
-            );
-        };
-        subtest 'Now time equals 23:55' => sub {
-            $now_dt->set( hour => 23, minute => 55 );
-            ok !(
-                FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_cancel_window(
+        subtest 'Now time earlier than 15:00' => sub {
+            $now_dt->set( hour => 14, minute => 59, second => 59 );
+            ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
                     $now_dt, $collection_dt
                 )
             );
         };
-        subtest 'Now time later than 23:55' => sub {
-            $now_dt->set( hour => 23, minute => 56 );
-            ok !(
-                FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_cancel_window(
+        subtest 'Now time equals 15:00' => sub {
+            $now_dt->set( hour => 15, minute => 0 );
+            ok!( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+                    $now_dt, $collection_dt
+                )
+            );
+        };
+        subtest 'Now time later than 15:00' => sub {
+            $now_dt->set( hour => 15, minute => 1 );
+            ok!( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
                     $now_dt, $collection_dt
                 )
             );
@@ -438,9 +449,7 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        ok !(
-            FixMyStreet::Cobrand::Peterborough
-            ->_check_within_bulky_cancel_window(
+        ok !( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
                 $now_dt, $collection_dt
             )
         );
@@ -460,9 +469,7 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        ok !(
-            FixMyStreet::Cobrand::Peterborough
-            ->_check_within_bulky_cancel_window(
+        ok !( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
                 $now_dt, $collection_dt
             )
         );
@@ -483,10 +490,9 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        ok( FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_cancel_window(
+        ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
                 $now_dt, $collection_dt
-                )
+            )
         );
     };
 
@@ -504,10 +510,9 @@ subtest '_check_within_bulky_cancel_window' => sub {
             time_zone => 'Europe/London',
         );
 
-        ok( FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_cancel_window(
+        ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
                 $now_dt, $collection_dt
-                )
+            )
         );
     };
 };

@@ -1000,7 +1000,7 @@ FixMyStreet::override_config {
             # XXX make this dynamic according to config in DB
             $mech->content_contains('You can request up to <strong>5 items per collection');
             # XXX and this one too
-            $mech->content_contains('You can cancel your booking anytime up until 23:55 the day before the collection is scheduled');
+            $mech->content_contains('You can cancel your booking anytime up until 15:00 the day before the collection is scheduled');
             $mech->submit_form_ok;
         };
 
@@ -1090,7 +1090,7 @@ FixMyStreet::override_config {
             $mech->content_contains('£23.50');
             $mech->content_contains("<dd>$date_day August</dd>");
             my $day_before = $date_day - 1;
-            $mech->content_contains("23:55 on $day_before August 2022");
+            $mech->content_contains("15:00 on $day_before August 2022");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
         }
@@ -1210,7 +1210,7 @@ FixMyStreet::override_config {
         # Time/date that is within the cancellation but not refund window:
         my $no_refund_date = '2022-08-25T12:00:00Z'; # 13:00:00 UK time
         # Time/date that isn't:
-        my $bad_date = '2022-08-25T23:55:00Z';
+        my $bad_date = '2022-08-25T15:00:00Z';
 
         subtest 'View own booking' => sub {
             $mech->log_in_ok($user->email);
@@ -1241,7 +1241,7 @@ FixMyStreet::override_config {
             set_fixed_time($good_date);
             $mech->get_ok('/report/' . $report->id);
             $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("23:55 on 25 August 2022");
+            $mech->content_contains("15:00 on 25 August 2022");
 
             # Presence of external_id in report implies we have sent request
             # to Bartec
@@ -1258,7 +1258,7 @@ FixMyStreet::override_config {
             set_fixed_time($bad_date);
             $mech->get_ok('/report/' . $report->id);
             $mech->content_lacks("You can cancel this booking till");
-            $mech->content_lacks("23:55 on 25 August 2022");
+            $mech->content_lacks("15:00 on 25 August 2022");
             $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky_cancel');
             $mech->content_lacks('Cancel this booking');
 
@@ -1550,7 +1550,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('This collection has been cancelled');
                 $mech->content_lacks('View cancellation report');
                 $mech->content_lacks("You can cancel this booking till");
-                $mech->content_lacks("23:55 on 25 August 2022");
+                $mech->content_lacks("15:00 on 25 August 2022");
                 $mech->content_lacks('Cancel this booking');
 
                 # Superuser
@@ -1559,7 +1559,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('This collection has been cancelled');
                 $mech->content_contains('View cancellation report');
                 $mech->content_lacks("You can cancel this booking till");
-                $mech->content_lacks("23:55 on 25 August 2022");
+                $mech->content_lacks("15:00 on 25 August 2022");
                 $mech->content_lacks('Cancel this booking');
 
                 # P'bro staff
@@ -1568,7 +1568,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('This collection has been cancelled');
                 $mech->content_contains('View cancellation report');
                 $mech->content_lacks("You can cancel this booking till");
-                $mech->content_lacks("23:55 on 25 August 2022");
+                $mech->content_lacks("15:00 on 25 August 2022");
                 $mech->content_lacks('Cancel this booking');
             };
 

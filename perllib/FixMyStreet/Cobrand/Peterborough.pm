@@ -54,6 +54,11 @@ sub max_bulky_collection_dates       {2}
 sub bulky_workpack_name {
     qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
 }
+sub bulky_cancellation_cutoff_time {
+    {   hours   => 15,
+        minutes => 0,
+    }
+}
 
 sub disambiguate_location {
     my $self    = shift;
@@ -751,8 +756,14 @@ sub _bulky_collection_window {
         $start_date->add( days => 1 );
     } else {
         $start_date = $tomorrow->clone;
-        # Can only book the next day up to 3pm
-        if ($now->hour >= 15) {
+
+        # If now is past cutoff time, push start date one day later
+        my $cutoff_time = bulky_cancellation_cutoff_time();
+        if ((      $now->hour == $cutoff_time->{hours}
+                && $now->minute >= $cutoff_time->{minutes}
+            )
+            || $now->hour > $cutoff_time->{hours}
+        ){
             $start_date->add( days => 1 );
         }
     }
@@ -886,16 +897,29 @@ sub within_bulky_cancel_window {
         time_zone => FixMyStreet->local_time_zone,
     )->parse_datetime($collection_date_str);
 
-    return $self->_check_within_bulky_cancel_window( $now_dt,
+    return _check_within_bulky_cancel_window( $now_dt,
         $collection_dt );
 }
 
 sub _check_within_bulky_cancel_window {
-    my ( undef, $now_dt, $collection_dt ) = @_;
-
-    # 23:55 day before collection
-    my $cutoff_dt = $collection_dt->clone->subtract( minutes => 5 );
+    my ( $now_dt, $collection_dt ) = @_;
+    my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_dt);
     return $now_dt < $cutoff_dt;
+}
+
+sub _bulky_cancellation_cutoff_date {
+    my $collection_date = shift;
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $dt
+        = $parser->parse_datetime($collection_date)->truncate( to => 'day' );
+
+    my $cutoff_time = bulky_cancellation_cutoff_time();
+    $dt->subtract( days => 1 )->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    );
+
+    return $dt;
 }
 
 sub unset_free_bulky_used {
@@ -1793,13 +1817,17 @@ sub bulky_nice_collection_date {
     return $dt->strftime('%d %B');
 }
 
+sub bulky_nice_cancellation_cutoff_time {
+    my $time = bulky_cancellation_cutoff_time();
+    return
+          sprintf( "%02d", $time->{hours} ) . ':'
+        . sprintf( "%02d", $time->{minutes} // 0 );
+}
+
 sub bulky_nice_cancellation_cutoff_date {
-    my ( $self, $collection_date ) = @_;
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-    my $dt
-        = $parser->parse_datetime($collection_date)->truncate( to => 'day' );
-    $dt->subtract( minutes => 5 );
-    return $dt->strftime('%H:%M on %d %B %Y');
+    my ( undef, $collection_date ) = @_;
+    my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_date);
+    return $cutoff_dt->strftime('%H:%M on %d %B %Y');
 }
 
 sub bulky_nice_item_list {
