@@ -984,39 +984,16 @@ sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
 sub bulky_item_options_method {
     my $field = shift;
 
-    # JS autocomplete ignores optgroups, but we want them in case
-    # a user has JS disabled.
-    # In order to display under optgroups, we have to build
-    # data structures like the following:
-    # {   group   => 'First Group',
-    #     options => [
-    #         { value => 1, label => 'One' },
-    #         { value => 2, label => 'Two' },
-    #         { value => 3, label => 'Three' },
-    #     ],
-    # },
-    my @option_groups;
+    my @options;
 
-    for my $cat ( sort keys %{ $field->form->items_by_category } )
-    {
-        my @options;
-
-        for my $name (
-            @{ $field->form->items_by_category->{$cat} } )
-        {
-            push @options => {
-                label => $name,
-                value => $name,
-            };
-        }
-
-        push @option_groups => {
-            group   => $cat,
-            options => \@options,
+    for my $item ( @{ $field->form->items_master_list } ) {
+        push @options => {
+            label => $item->{name},
+            value => $item->{name},
         };
     }
 
-    return \@option_groups;
+    return \@options;
 };
 
 sub bulky : Chained('bulky_setup') : Args(0) {

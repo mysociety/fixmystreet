@@ -216,24 +216,8 @@ has items_master_list => (
 );
 
 sub _build_items_master_list {
-    $_[0]->c->cobrand->call_hook('bulky_items_master_list');
-}
-
-has items_by_category => (
-    is      => 'ro',
-    isa     => 'HashRef',
-    lazy    => 1,
-    builder => '_build_items_by_category',
-);
-
-sub _build_items_by_category {
-    my $self = shift;
-
-    my %hash;
-    for my $item ( @{ $self->items_master_list } ) {
-        push @{ $hash{ $item->{category} } }, $item->{name};
-    }
-    return \%hash;
+    [ sort { lc $a->{name} cmp lc $b->{name} }
+            @{ $_[0]->c->cobrand->call_hook('bulky_items_master_list') } ];
 }
 
 # Hash of item names mapped to extra text

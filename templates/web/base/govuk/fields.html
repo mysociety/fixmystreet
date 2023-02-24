@@ -296,7 +296,9 @@
           <option value="[% opt.value %]"[% IF extra %] data-extra="[% extra.json %]"[% END %][% ' selected' IF field.fif == val_safe %]>[% opt.label %]</option>
         [% END %]
       [% ELSE  %]
-        <option value="[% item.value %]"[% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
+        [% SET val_safe = mark_safe(item.value) %]
+        [% extra = form.items_extra.${val_safe} %]
+        <option value="[% item.value %]"[% IF extra %] data-extra="[% extra.json %]"[% END %][% ' selected' IF field.fif == item.value %]>[% item.label %]</option>
       [% END %]
 	[% END %]
   </select>

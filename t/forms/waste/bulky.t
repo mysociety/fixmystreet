@@ -37,7 +37,7 @@ my $body = $mech->create_body_ok(
                 {   bartec_id => '1001',
                     category  => 'Audio / Visual Elec. equipment',
                     message   => '',
-                    name      => 'HiFi Stereos',
+                    name      => 'e-Scooters',
                     price     => '',
                 },
 
@@ -77,12 +77,16 @@ my $form = FixMyStreet::App::Form::Waste::Bulky->new(
     page_name => 'intro',
 );
 
-is_deeply $form->items_by_category => {
-    'Audio / Visual Elec. equipment' =>
-        [ 'Amplifiers', 'DVD/BR Video players', 'HiFi Stereos' ],
-    'Baby / Toddler' => [ 'Childs bed / cot', 'High chairs' ],
-    'Bedroom'        => [ 'Chest of drawers', 'Wardrobes' ]
-};
+my @master_list = map { $_->{name} } @{ $form->items_master_list };
+is_deeply \@master_list => [
+    'Amplifiers',
+    'Chest of drawers',
+    'Childs bed / cot',
+    'DVD/BR Video players',
+    'e-Scooters',
+    'High chairs',
+    'Wardrobes',
+];
 is_deeply $form->items_extra => { 'Wardrobes' => { message => "Please dismantlé", json => '{"message":"Please dismantlé"}' } };
 
 done_testing;
