@@ -650,4 +650,39 @@ subtest 'check parishes work on Bucks okay' => sub {
     };
 };
 
+subtest 'check editing a contact when category groups disabled does not remove existing groups' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAPIT_TYPES => [ 'UTA' ],
+        COBRAND_FEATURES => {
+           category_groups => { default => 1 },
+        }
+    }, sub {
+        $mech->post_ok( '/admin/body/' . $body->id, {
+            posted     => 'new',
+            token      => $mech->form_id('category_edit')->value('token'),
+            category   => 'group editing test category',
+            email      => 'test@example.com',
+            note       => 'test note',
+            'group'    => [ 'group 1', 'group 2'],
+            non_public => undef,
+            state => 'unconfirmed',
+        } );
+        my $contact = $body->contacts->find({ category => 'group editing test category' });
+        is_deeply $contact->get_extra_metadata('group'), ['group 1', 'group 2'], "groups set-up correctly";
+    };
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAPIT_TYPES => [ 'UTA' ],
+    }, sub {
+        $mech->get_ok('/admin/body/' . $body->id .'/group%20editing%20test%20category');
+        $mech->content_lacks('Parent categories');
+        $mech->submit_form_ok( { with_fields => {
+            email => 'test2@example.com',
+        } } );
+        my $contact = $body->contacts->find({ category => 'group editing test category' });
+        is_deeply $contact->get_extra_metadata('group'), ['group 1', 'group 2'], "groups not removed after edit";
+    };
+};
+
 done_testing();

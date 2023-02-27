@@ -21,6 +21,11 @@
         </p>
       </label>
     </p>
+  [% ELSIF contact.extra.group %]
+        [% # Add existing groups as hidden fields so they are not unset when the contact is edited. %]
+        [% FOR group IN contact.extra.group %]
+        <input type="hidden" name="group" value="[% group %]">
+        [% END %]
   [% END %]
 
     <label for="destination">[% loc('Destination') %]</label>

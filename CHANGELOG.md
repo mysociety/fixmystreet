@@ -33,6 +33,7 @@
         - For CSV export, fetch children of all generations.
         - Reset subcategory selection on clicking browser 'back' button during new report journey
         - Fix JS error going back from page to report page to map page
+        - Fix existing groups being removed when a contact is edited with the category_groups flag unset.
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
