@@ -51,6 +51,7 @@
         - Alerts are paginated on user edit page. #4158
         - Restrict flagging users and reports to superusers.
         - Display photos in report moderation updates, rather than just the image hashes.
+        - Add 'admin_contact_validate_category' cobrand hook to validate category names when editing or creating contacts.
     - Development improvements:
         - Default make_css to `web/cobrands` rather than `web`.
         - Ability to pass custom arguments (eg: SSL config) to server when running via Docker

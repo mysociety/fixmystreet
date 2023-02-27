@@ -234,6 +234,14 @@ sub update_contact : Private {
 
     my $category = $self->trim( $c->get_param('category') );
     $errors{category} = _("Please choose a category") unless $category;
+
+    my $body = $c->model('DB::Body')->find({
+        id => $c->stash->{body_id},
+    });
+    my $cobrand = $body->get_cobrand_handler;
+    my $category_validation_error = $cobrand ? $cobrand->call_hook(admin_contact_validate_category => $category) : "";
+    $errors{category} = $category_validation_error if $category_validation_error;
+
     $errors{note} = _('Please enter a message') unless $c->get_param('note') || FixMyStreet->config('STAGING_SITE');
 
     my $contact = $c->model('DB::Contact')->find_or_new(
@@ -263,7 +271,6 @@ sub update_contact : Private {
         $email =~ s/\s+//g;
     }
     my $email_unchanged = $contact->email && $email && $contact->email eq $email;
-    my $cobrand = $contact->body->get_cobrand_handler;
     my $cobrand_valid = $cobrand && $cobrand->call_hook(validate_contact_email => $email);
     unless ( $send_method eq 'Open311' || $email_unchanged || $cobrand_valid ) {
         $errors{email} = _('Please enter a valid email') unless is_valid_email_list($email) || $email eq 'REFUSED';
