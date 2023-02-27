@@ -225,4 +225,53 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,"Area 7","Search engine"');
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'highwaysengland' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'Categories must end with (NH)' => sub {
+        my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin',
+            from_body => $highways, password => 'password', is_superuser => 1);
+        $mech->log_in_ok( $superuser->email );
+
+        my $expected_error = 'Category must end with (NH).';
+
+        $mech->get_ok('/admin/body/' . $highways->id);
+        $mech->submit_form_ok( { with_fields => {
+            category   => 'no suffix category',
+            title_hint => 'test',
+            email      => 'test@example.com',
+            note       => 'test note',
+            non_public => undef,
+            state => 'unconfirmed',
+        } } );
+        $mech->content_contains($expected_error);
+
+        $mech->submit_form_ok( { with_fields => {
+            category   => 'suffix category (NH)',
+            title_hint => 'test',
+            email      => 'test@example.com',
+            note       => 'test note',
+            non_public => undef,
+            state => 'unconfirmed',
+        } } );
+        $mech->content_lacks($expected_error);
+        my $contact = $highways->contacts->find({ category => "suffix category (NH)" });
+        is defined($contact), 1, "Contact with valid category suffix was created.";
+
+        $mech->get_ok('/admin/body/' . $highways->id .'/suffix%20category%20%28NH%29');
+        $mech->submit_form_ok( { with_fields => {
+            category   => 'suffix removed category',
+        } } );
+        $mech->content_contains($expected_error);
+
+        $mech->submit_form_ok( { with_fields => {
+            category   => 'suffix category edited (NH)',
+        } } );
+        $mech->content_lacks($expected_error);
+        my $edited_contact = $highways->contacts->find({ category => "suffix category edited (NH)" });
+        is defined($contact), 1, "Contact category was edited to one with a valid suffix.";
+    };
+};
+
 done_testing();

@@ -431,4 +431,9 @@ sub _cleaning_categories { [
     #Street Cleaning Enquiry,
 ] }
 
+sub admin_contact_validate_category {
+    my ( $self, $category ) = @_;
+    return "(NH)" eq substr($category, -4) ? "" : "Category must end with (NH).";
+}
+
 1;
