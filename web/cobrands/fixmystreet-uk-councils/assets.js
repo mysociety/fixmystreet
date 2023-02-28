@@ -357,7 +357,7 @@ fixmystreet.assets.buckinghamshire.streetlight_construct_selected_asset_message 
         return;
     }
     var data = this.fixmystreet.construct_asset_name(id);
-    var extra = '. Only ITEMs maintained by Transport for Buckinghamshire are displayed.';
+    var extra = '. Only ITEMs maintained by Buckinghamshire Highways are displayed.';
     extra = extra.replace(/ITEM/g, data.name);
     return 'You have selected ' + data.name + ' <b>' + data.id + '</b>' + extra;
 };
