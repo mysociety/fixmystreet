@@ -258,18 +258,15 @@ a,
   font-size: 0.75em;
 }
 
-h4.static {
+h2.static-with-rule {
   font-family: $meta-font;
   text-transform: uppercase;
   font-size: 0.875em;
   line-height: 1.71428em;
   color: #666;
-  margin-top: 2em;
-}
-h4.static-with-rule {
-  @extend.static;
   background: #f6f6f6;
   border-top: 0.25em solid $primary;
+  margin-top: 2em;
   margin-bottom: 0.25em;
   padding: 0.5em 1em;
 }

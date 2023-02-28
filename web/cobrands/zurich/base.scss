@@ -99,7 +99,7 @@
 // The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
 // Also look into why full-width pulls things out, but then it is its children
 // that have to recompensate with padding.
-h4.static-with-rule {
+h2.static-with-rule {
     color: black;
     font-size: 1em;
     font-weight: bold;

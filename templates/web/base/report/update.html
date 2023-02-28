@@ -1,7 +1,7 @@
 [% can_moderate = NOT update.whenanswered AND update.type != 'moderation' AND (permissions.moderate OR c.user.can_moderate(update, staff = permissions.moderate)) %]
 [% IF loop.first %]
 <section class="full-width">
-    <h4 class="static-with-rule">[% loc('Updates') %]</h4>
+    <h2 class="static-with-rule">[% loc('Updates') %]</h2>
     <ul class="item-list item-list--updates">
 [% END %]
         <li class="item-list__item item-list__item--updates

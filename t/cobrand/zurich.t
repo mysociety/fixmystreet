@@ -1048,7 +1048,7 @@ subtest 'Status update shown as appropriate' => sub {
 
         if ($public) {
             $mech->get_ok( '/report/' . $report->id );
-            $mech->content_contains('Antwort</h4>');
+            $mech->content_contains('Antwort</h2>');
         }
     }
 };
