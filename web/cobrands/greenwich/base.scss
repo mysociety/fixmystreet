@@ -39,6 +39,11 @@ body.frontpage {
     padding-top: 60px;
 }
 
+html.js-nav-open #nav-link {
+    @include svg-background-image("/cobrands/greenwich/images/menu-close");
+    background-size: 20px 20px;
+}
+
 .main-menu-container {
     background: $greenwich_dark_grey;
     color: $contrast_text;
