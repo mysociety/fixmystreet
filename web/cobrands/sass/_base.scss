@@ -2701,10 +2701,24 @@ a#geolocate_link {
 .alerts__nearby-activity__photos {
   white-space: nowrap;
   overflow: hidden;
+  margin: 0 -1rem;
 
   a {
     margin-#{$right}: 0.5em;
     text-decoration: none; // avoid underline showing between images
+
+    img {
+      margin: 0.5rem;
+    }
+
+    &:focus {
+      background-color: transparent !important; // Overrides any focus state
+      outline:0px solid transparent !important; // Overrides any focus state
+      img {
+        outline: 2px solid #333333;
+      }
+    }
+
   }
 }
 
