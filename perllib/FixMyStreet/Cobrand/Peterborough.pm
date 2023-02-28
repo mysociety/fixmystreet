@@ -1563,6 +1563,11 @@ sub waste_munge_problem_data {
 sub waste_munge_problem_form_fields {
     my ($self, $field_list) = @_;
 
+    my $not_staff = !($self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council");
+    my $label_497 = $not_staff 
+    ? 'The bin wasn’t returned to the collection point (Please phone 01733 747474 to report this issue)'
+    : 'The bin wasn’t returned to the collection point';
+
     my %services_problems = (
         538 => {
             container => 6533,
@@ -1606,7 +1611,8 @@ sub waste_munge_problem_form_fields {
         },
         497 => {
             container_name => "General",
-            label => "The bin wasn’t returned to the collection point",
+            label => $label_497,
+            disabled => $not_staff,
         },
     );
     $self->{c}->stash->{services_problems} = \%services_problems;
@@ -1654,8 +1660,9 @@ sub waste_munge_problem_form_fields {
         type => 'Checkbox',
         label => $self->{c}->stash->{services_problems}->{497}->{container_name},
         option_label => $self->{c}->stash->{services_problems}->{497}->{label},
-        disabled => $open_requests->{497},
+        disabled => $open_requests->{497} || $self->{c}->stash->{services_problems}->{497}->{disabled},
     };
+
     push @$field_list, "extra_detail" => {
         type => 'Text',
         widget => 'Textarea',

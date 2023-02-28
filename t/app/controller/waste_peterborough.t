@@ -482,7 +482,20 @@ FixMyStreet::override_config {
         $mech->content_contains('You have already submitted this form.');
     };
     subtest 'Report bin not returned' => sub {
+        $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+        my $tree = HTML::TreeBuilder->new_from_content($mech->content());
+        my $checkbox_497 = $tree->look_down(
+            'id' => 'service-497-0'
+        );
+        is ($checkbox_497->attr('disabled'), 'disabled', '"Bin not returned to collection point" disabled for user');
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+        $tree = HTML::TreeBuilder->new_from_content($mech->content());
+        $checkbox_497 = $tree->look_down(
+            'id' => 'service-497-0'
+        );
+        is ($checkbox_497->attr('disabled'), undef, '"Bin not returned to collection point" enabled for staff');
         $mech->submit_form_ok({ with_fields => { 'service-497' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
