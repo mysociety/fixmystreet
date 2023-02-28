@@ -46,6 +46,46 @@ bathnes:
     actions:
       found: fixmystreet.assets.banes.curo_found
       not_found: fixmystreet.assets.banes.curo_not_found
+brent:
+  - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/brent"
+    max_resolution: 4.777314267158508
+    geometryName: 'msGeometry'
+    srsName: "EPSG:3857"
+    body: "Brent Council"
+  - wfs_feature: "Housing"
+    asset_type: 'area'
+    stylemap: 'fixmystreet.assets.stylemap_invisible'
+    nearest_radius: '0.1'
+    always_visible: 1
+    non_interactive: 1
+    all_categories: 1
+    no_asset_msg_id: '#js-brent-tenant-services'
+    road: 1
+    actions:
+      found: "fixmystreet.assets.brent.found"
+      not_found: "fixmystreet.assets.brent.not_found"
+  - wfs_feature: "Highways"
+    asset_type: 'area'
+    stylemap: 'fixmystreet.assets.stylemap_invisible'
+    nearest_radius: '0.1'
+    non_interactive: 1
+    asset_category: [ 'Pavement damage', 'Grass verges / shrub beds - littering' ]
+    no_asset_msg_id: '#js-brent-road-services'
+    road: 1
+    actions:
+     found: "fixmystreet.assets.brent.found_filter"
+     not_found: "fixmystreet.assets.brent.not_found_filter"
+  - wfs_feature: "Parks_and_Open_Spaces"
+    asset_type: 'area'
+    stylemap: 'fixmystreet.assets.stylemap_invisible'
+    nearest_radius: '0.1'
+    non_interactive: 1
+    asset_category: [ 'Grass verges / shrub beds - littering' ]
+    no_asset_msg_id: '#js-brent-park-services'
+    road: 1
+    actions:
+     found: "fixmystreet.assets.brent.found_filter"
+     not_found: "fixmystreet.assets.brent.not_found_filter"
 bromley:
   - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bromley_wfs"
     asset_type: 'spot'
@@ -285,3 +325,4 @@ shropshire:
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
+

@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.mysociety.org:80/mapserver/brent?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Highways&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:3857">
+      		<gml:lowerCorner>-31624.435800 6720684.289126</gml:lowerCorner>
+      		<gml:upperCorner>-30924.435800 6720887.157800</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31114.375465 6720684.289126</gml:lowerCorner>
+        		<gml:upperCorner>-31067.856330 6720687.157800</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31069.805145 6720684.451510 -31114.375465 6720684.289126 -31113.891111 6720687.157800 -31067.856330 6720687.157800 -31069.805145 6720684.451510 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31224.435800 6720690.168627</gml:lowerCorner>
+        		<gml:upperCorner>-31124.435800 6720714.234040</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31158.916223 6720693.921555 -31163.169822 6720690.316354 -31211.985320 6720690.168627 -31211.789235 6720693.348258 -31224.435800 6720693.511089 -31224.435800 6720714.114889 -31205.401456 6720714.168854 -31199.754137 6720714.192924 -31194.122014 6720714.216925 -31192.453300 6720714.224279 -31185.764450 6720714.234040 -31165.703793 6720714.149113 -31124.435800 6720714.004725 -31124.435800 6720693.668384 -31158.916223 6720693.921555 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31324.435800 6720693.511089</gml:lowerCorner>
+        		<gml:upperCorner>-31224.435800 6720714.114889</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31324.435800 6720693.925720 -31324.435800 6720713.972590 -31256.842301 6720713.986590 -31240.719861 6720713.875374 -31235.651714 6720714.083091 -31224.435800 6720714.114889 -31224.435800 6720693.511089 -31263.762152 6720694.017434 -31324.435800 6720693.925720 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31624.435800 6720687.157800</gml:lowerCorner>
+        		<gml:upperCorner>-31524.435800 6720713.691491</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31540.863498 6720694.133003 -31550.496417 6720693.554629 -31560.523727 6720691.906763 -31569.939242 6720690.324996 -31579.777100 6720687.851504 -31581.610797 6720687.157800 -31624.435800 6720687.157800 -31624.435800 6720713.691491 -31622.817180 6720713.597745 -31619.460119 6720713.403313 -31613.879106 6720713.080434 -31609.038346 6720712.910834 -31600.453463 6720712.610049 -31592.030165 6720712.622816 -31579.755195 6720712.640194 -31572.986650 6720712.649768 -31570.529529 6720712.653141 -31565.282819 6720712.661723 -31561.615234 6720712.667124 -31555.043182 6720712.676798 -31547.031035 6720712.687922 -31547.028328 6720712.254743 -31541.904679 6720712.288747 -31535.472405 6720712.314495 -31530.332818 6720712.343286 -31525.455039 6720712.370185 -31525.459622 6720713.271945 -31524.435800 6720713.276889 -31524.435800 6720693.993468 -31540.863498 6720694.133003 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31524.435800 6720693.796561</gml:lowerCorner>
+        		<gml:upperCorner>-31424.435800 6720721.475253</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31439.223592 6720693.810502 -31457.508740 6720693.797304 -31501.253657 6720693.796561 -31524.435800 6720693.993468 -31524.435800 6720713.276889 -31518.874645 6720713.303746 -31517.849960 6720713.308613 -31517.807036 6720712.378544 -31513.773892 6720712.353176 -31513.672713 6720713.276067 -31503.198928 6720713.164806 -31501.230284 6720713.450403 -31499.081385 6720714.620042 -31497.929028 6720716.027522 -31497.478811 6720717.935694 -31497.586642 6720721.027575 -31479.699925 6720720.784788 -31476.974547 6720720.795785 -31474.795006 6720720.804578 -31472.978552 6720720.811732 -31459.845766 6720720.864848 -31453.842330 6720720.887746 -31442.281882 6720720.934377 -31442.284531 6720721.438399 -31439.684446 6720721.443197 -31437.952962 6720721.451565 -31436.053068 6720721.460746 -31434.146619 6720721.470602 -31433.044854 6720721.475253 -31424.435800 6720721.257213 -31424.435800 6720693.821092 -31439.223592 6720693.810502 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31424.435800 6720693.821092</gml:lowerCorner>
+        		<gml:upperCorner>-31324.435800 6720721.257213</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31365.938394 6720693.862985 -31424.435800 6720693.821092 -31424.435800 6720721.257213 -31418.580954 6720721.108929 -31404.982792 6720721.227214 -31405.142517 6720713.955875 -31324.435800 6720713.972590 -31324.435800 6720693.925720 -31365.938394 6720693.862985 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31026.416084 6720787.157800</gml:lowerCorner>
+        		<gml:upperCorner>-31024.435800 6720887.157800</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31026.102840 6720794.463363 -31026.163739 6720810.993463 -31026.202233 6720821.326479 -31026.322052 6720853.919726 -31026.322972 6720854.906753 -31026.326727 6720863.983107 -31026.336479 6720866.372762 -31026.371730 6720875.749356 -31026.399873 6720882.988164 -31026.416084 6720887.157800 -31024.435800 6720887.157800 -31024.435800 6720787.157800 -31026.075925 6720787.157800 -31026.102840 6720794.463363 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31124.435800 6720687.157800</gml:lowerCorner>
+        		<gml:upperCorner>-31024.435800 6720787.157800</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31062.816526 6720694.156500 -31067.856330 6720687.157800 -31113.891111 6720687.157800 -31112.806267 6720693.582994 -31124.435800 6720693.668384 -31124.435800 6720714.004725 -31109.581800 6720713.952754 -31106.991558 6720714.017251 -31103.123887 6720714.112802 -31102.913403 6720714.117499 -31097.320851 6720714.130247 -31093.825064 6720714.138214 -31081.152124 6720714.167752 -31074.487503 6720714.171553 -31061.559516 6720714.188603 -31035.378761 6720714.375989 -31034.174994 6720714.347587 -31033.447068 6720714.571927 -31033.124175 6720714.644813 -31032.961784 6720714.721486 -31030.772341 6720715.635885 -31030.527810 6720715.791125 -31030.203028 6720715.944472 -31029.713967 6720716.254952 -31029.547799 6720716.492545 -31029.058738 6720716.803025 -31028.319480 6720717.510126 -31028.235452 6720717.669152 -31027.989033 6720717.904853 -31027.820976 6720718.222906 -31027.572668 6720718.539067 -31027.406500 6720718.776661 -31027.158192 6720719.092821 -31026.822079 6720719.728929 -31026.736162 6720719.968416 -31026.400048 6720720.604524 -31026.310354 6720721.004931 -31026.134743 6720721.644826 -31026.048826 6720721.884314 -31026.039383 6720722.286615 -31025.951577 6720722.606563 -31025.942134 6720723.008864 -31025.856217 6720723.248351 -31025.822222 6720724.696636 -31025.893030 6720725.100831 -31025.929755 6720747.482077 -31026.075925 6720787.157800 -31024.435800 6720787.157800 -31024.435800 6720694.246857 -31062.816526 6720694.156500 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31024.435800 6720787.157800</gml:lowerCorner>
+        		<gml:upperCorner>-31006.227069 6720887.157800</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-31006.435468 6720882.867461 -31006.367513 6720852.241279 -31006.363773 6720846.927790 -31006.347722 6720846.927411 -31006.288195 6720826.203776 -31006.251204 6720801.629817 -31006.235938 6720791.488496 -31006.227069 6720787.157800 -31024.435800 6720787.157800 -31024.435800 6720887.157800 -31006.448207 6720887.157800 -31006.435468 6720882.867461 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways>
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-31024.435800 6720694.246857</gml:lowerCorner>
+        		<gml:upperCorner>-30924.435800 6720787.157800</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-30932.891577 6720694.455569 -30964.786509 6720694.387284 -31024.435800 6720694.246857 -31024.435800 6720787.157800 -31006.227069 6720787.157800 -31006.219187 6720783.308746 -31006.130810 6720728.241135 -31006.124775 6720727.130026 -31006.078707 6720726.356092 -31006.016588 6720725.581779 -31005.906318 6720724.806331 -31005.679735 6720723.512906 -31005.504887 6720722.752035 -31005.297561 6720722.006498 -31005.009606 6720721.275160 -31004.611188 6720720.460710 -31004.379878 6720720.052728 -31004.148191 6720719.660837 -31003.884026 6720719.284281 -31003.603810 6720718.907347 -31003.323217 6720718.546505 -31003.010145 6720718.200997 -31002.696696 6720717.871581 -31001.758237 6720716.802873 -31000.657387 6720715.810838 -30999.468731 6720715.138750 -30999.233644 6720714.891688 -30997.880708 6720714.376732 -30996.443744 6720714.020803 -30995.962237 6720714.009440 -30989.794796 6720714.041005 -30974.843934 6720714.122206 -30962.619307 6720714.188580 -30924.435800 6720714.381241 -30924.435800 6720694.538034 -30932.891577 6720694.455569 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+      </ms:Highways>
+    </gml:featureMember>
+</wfs:FeatureCollection>

@@ -163,6 +163,8 @@ fixmystreet.assets.bexley.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${Unit_No}")
 });
 
+/* Brent */
+
 fixmystreet.assets.brent = {};
 
 // The label for street light markers should be everything after the final
@@ -195,6 +197,56 @@ fixmystreet.assets.brent.found = function(layer) {
 
 fixmystreet.assets.brent.not_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
+};
+
+fixmystreet.assets.brent.no_asset_message_defaults = {
+    'Parks_and_Open_Spaces' : '#js-brent-park-services',
+    'Highways' : '#js-brent-road-services'
+};
+
+var brent_parkRoadIsFound = {
+    park: false,
+    road: false,
+    isParkorRoad: function() { return this.park || this.road; }
+};
+
+fixmystreet.assets.brent.found_filter = function(layer) {
+    if (fixmystreet.reporting.selectedCategory().category === 'Grass verges / shrub beds - littering' ||
+    fixmystreet.reporting.selectedCategory().category === 'Grass verge / shrub beds - maintenance issue') {
+        if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
+            brent_parkRoadIsFound.park = true;
+        }
+        if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
+            brent_parkRoadIsFound.road = true;
+        }
+    }
+    fixmystreet.message_controller.road_found(layer);
+};
+
+fixmystreet.assets.brent.not_found_filter = function(layer) {
+    if (fixmystreet.reporting.selectedCategory().category === 'Grass verges / shrub beds - littering'||
+    fixmystreet.reporting.selectedCategory().category === 'Grass verge / shrub beds - maintenance issue') {
+        layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
+        if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
+            brent_parkRoadIsFound.park = false;
+        }
+        if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
+            brent_parkRoadIsFound.road = false;
+        }
+        if (brent_parkRoadIsFound.isParkorRoad()) {
+            fixmystreet.message_controller.road_found(layer);
+        } else {
+            fixmystreet.message_controller.road_not_found(layer);
+        }
+    } else {
+        // Need to clear parks/highways message as may still be there
+        // if we have changed category while it was in place
+        layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
+        fixmystreet.message_controller.road_found(layer);
+
+        layer.fixmystreet.no_asset_msg_id = fixmystreet.assets.brent.no_asset_message_defaults[layer.fixmystreet.http_options.params.TYPENAME];
+        fixmystreet.message_controller.road_not_found(layer);
+    }
 };
 
 /* Bristol */

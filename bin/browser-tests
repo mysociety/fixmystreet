@@ -14,6 +14,7 @@ BEGIN {
     $cobrand = [qw(
         bathnes
         borsetshire
+        brent
         bromley
         buckinghamshire
         fixmystreet
