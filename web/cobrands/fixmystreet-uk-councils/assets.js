@@ -755,6 +755,301 @@ fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
 
+/* Oxfordshire */
+
+fixmystreet.assets.oxfordshire = {};
+
+var occ_asset_fillColor = fixmystreet.cobrand === "oxfordshire" ? "#007258" : "#FFFF00";
+
+var occ_default = $.extend({}, fixmystreet.assets.style_default.defaultStyle, {
+    fillColor: occ_asset_fillColor
+});
+
+var occ_hover = new OpenLayers.Style({
+    pointRadius: 8,
+    cursor: 'pointer'
+});
+
+fixmystreet.assets.oxfordshire.stylemap = new OpenLayers.StyleMap({
+    'default': occ_default,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': occ_hover
+});
+
+var occ_ownernames = [
+    "LocalAuthority", "CountyCouncil", 'ODS'
+];
+
+fixmystreet.assets.oxfordshire.owns_feature = function(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.maintained_by &&
+           OpenLayers.Util.indexOf(occ_ownernames, f.attributes.maintained_by) > -1;
+};
+
+function occ_does_not_own_feature(f) {
+    return !fixmystreet.assets.oxfordshire.owns_feature(f);
+}
+
+var occ_owned_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4,
+    title: 'Not maintained by Oxfordshire County Council. Maintained by ${maintained_by}.'
+});
+
+var occ_rule_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: fixmystreet.assets.oxfordshire.owns_feature
+    }),
+    symbolizer: {
+        fillColor: occ_asset_fillColor,
+        pointRadius: 6,
+        title: ''
+    }
+});
+
+var occ_rule_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: occ_does_not_own_feature
+    })
+});
+
+occ_owned_default_style.addRules([occ_rule_owned, occ_rule_not_owned]);
+
+fixmystreet.assets.oxfordshire.owned_stylemap = new OpenLayers.StyleMap({
+    'default': occ_owned_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': occ_hover
+});
+
+fixmystreet.assets.oxfordshire.owned_asset_found = function(asset) {
+    var is_occ = this.fixmystreet.owns_function(asset);
+    if (!is_occ) {
+        fixmystreet.message_controller.asset_not_found.call(this);
+    } else {
+        fixmystreet.message_controller.asset_found.call(this);
+    }
+};
+
+fixmystreet.assets.oxfordshire.drain_construct_selected_asset_message = function(asset) {
+    var type = this.fixmystreet.http_options.params.TYPENAME.slice(0, -1);
+    var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
+        return elem.fixmystreet.body == "Oxfordshire County Council" &&
+        elem.fixmystreet.http_options &&
+        elem.fixmystreet.http_options.format.featureType == type + '_inspections';
+    });
+    var inspection;
+    if (junctionInspectionLayer[0]) {
+        inspection = junctionInspectionLayer[0].features.filter(function(elem) {
+            return elem.attributes.asset_id == asset.attributes.asset_id &&
+            occ_format_date(elem.attributes.created) == occ_format_date(asset.attributes.last_inspected);
+        });
+    }
+    var last_clean = '';
+    var message = ' ';
+    if (inspection && inspection[0]) {
+        if (asset.attributes.last_inspected && (inspection[0].attributes.junction_cleaned === 'true' || inspection[0].attributes.channel_cleaned === 'true')) {
+            last_clean = occ_format_date(asset.attributes.last_inspected);
+            message = 'This gully was last cleaned on ' + last_clean;
+        }
+    }
+    return message;
+};
+
+function occ_format_date(date_field) {
+    var regExDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
+    var myMatch = regExDate.exec(date_field);
+    if (myMatch) {
+        return myMatch[3] + '/' + myMatch[2] + '/' + myMatch[1];
+    } else {
+        return '';
+    }
+}
+
+// Junction/channel inspection layers (not shown on the map, but used by the layers below)
+
+// When the auto-asset selection of a layer occurs, the data for inspections
+// may not have loaded. So make sure we poke for a check when the data comes
+// in.
+function occ_inspection_layer_loadend() {
+    var type = this.fixmystreet.http_options.params.TYPENAME.replace('_inspections', 's');
+    var layer = fixmystreet.assets.layers.filter(function(elem) {
+        return elem.fixmystreet.body == "Oxfordshire County Council" &&
+        elem.fixmystreet.http_options &&
+        elem.fixmystreet.http_options.params &&
+        elem.fixmystreet.http_options.params.TYPENAME == type;
+    });
+    layer[0].checkSelected();
+}
+
+if (fixmystreet.cobrand == 'oxfordshire' || fixmystreet.cobrand == 'fixmystreet') {
+    $(function(){
+        var layer;
+        layer = fixmystreet.map.getLayersByName('Oxon Junction Inspections')[0];
+        if (layer) {
+            layer.events.register( 'loadend', layer, occ_inspection_layer_loadend);
+        }
+        layer = fixmystreet.map.getLayersByName('Oxon Channel Inspections')[0];
+        if (layer) {
+            layer.events.register( 'loadend', layer, occ_inspection_layer_loadend);
+        }
+    });
+}
+
+// Bridges
+
+fixmystreet.assets.oxfordshire.owns_bridge = function(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.MAINTENANCE_AUTHORITY_UID &&
+           f.attributes.MAINTENANCE_AUTHORITY_UID == 1;
+};
+
+function occ_does_not_own_bridge(f) {
+    return !fixmystreet.assets.oxfordshire.owns_bridge(f);
+}
+
+var occ_bridge_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4,
+    title: 'Not maintained by Oxfordshire County Council.'
+});
+
+var occ_rule_bridge_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: fixmystreet.assets.oxfordshire.owns_bridge
+    }),
+    symbolizer: {
+        fillColor: occ_asset_fillColor,
+        pointRadius: 6,
+        title: ''
+    }
+});
+
+var occ_rule_bridge_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: occ_does_not_own_bridge
+    })
+});
+
+occ_bridge_default_style.addRules([occ_rule_bridge_owned, occ_rule_bridge_not_owned]);
+
+fixmystreet.assets.oxfordshire.bridge_stylemap = new OpenLayers.StyleMap({
+    'default': occ_bridge_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': occ_hover
+});
+
+// Alloy street lighting
+
+var occ_streetlight_select = $.extend({
+    label: "${title}",
+    fontColor: "#FFD800",
+    labelOutlineColor: "black",
+    labelOutlineWidth: 3,
+    labelYOffset: 69,
+    fontSize: '18px',
+    fontWeight: 'bold'
+}, fixmystreet.assets.style_default_select.defaultStyle);
+
+function oxfordshire_light(f) {
+    return f && f.attributes && !f.attributes.private;
+}
+function oxfordshire_light_not(f) {
+    return !oxfordshire_light(f);
+}
+
+var occ_light_default_style = new OpenLayers.Style(occ_default);
+var occ_rule_light_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: oxfordshire_light
+    })
+});
+var occ_rule_light_not_owned = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: oxfordshire_light_not
+    }),
+    symbolizer: {
+        fillColor: "#868686",
+        strokeWidth: 1,
+        pointRadius: 4
+    }
+});
+occ_light_default_style.addRules([ occ_rule_light_owned, occ_rule_light_not_owned ]);
+
+fixmystreet.assets.oxfordshire.streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': occ_light_default_style,
+  'select': new OpenLayers.Style(occ_streetlight_select),
+  'hover': occ_hover
+});
+
+fixmystreet.assets.oxfordshire.light_construct_selected_asset_message = function(asset) {
+    var out = 'You have selected ';
+    out += asset.attributes.unit_type || "street light";
+    out += " <b>" + asset.attributes.title + '</b>.';
+    if (asset.attributes.private) {
+        out += " This private street light asset is not under the responsibility of Oxfordshire County Council and therefore we are unable to accept reports for the asset.";
+    }
+    return out;
+};
+
+fixmystreet.assets.oxfordshire.light_asset_found = function(asset) {
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+    if (asset.attributes.private) {
+        fixmystreet.message_controller.asset_not_found.call(this);
+        return;
+    } else if (fixmystreet.message_controller.asset_found.call(this)) {
+        return;
+    }
+
+    var lonlat = asset.geometry.getBounds().getCenterLonLat();
+    // Features considered overlapping if within 1M of each other
+    // TODO: Should zoom/marker size be considered when determining if markers overlap?
+    var overlap_threshold = 1;
+    var overlapping_features = this.getFeaturesWithinDistance(
+        new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+        overlap_threshold
+    );
+    if (overlapping_features.length > 1) {
+        // TODO: In an ideal world we'd be able to show the user a photo of each
+        // of the assets and ask them to pick one.
+        // However the Alloy API requires authentication for photos which we
+        // don't have in FMS JS. Instead, we tell the user there are multiple things here
+        // and ask them to describe the asset in the description field.
+        var $p = $("#overlapping_features_msg");
+        if (!$p.length) {
+            $p = $("<p id='overlapping_features_msg' class='hidden box-warning'>" +
+            "There is more than one <span class='overlapping_item_name'></span> at this location. " +
+            "Please describe which <span class='overlapping_item_name'></span> has the problem clearly.</p>");
+            $('#category_meta').before($p).closest('.js-reporting-page').removeClass('js-reporting-page--skip');
+        }
+        $p.find(".overlapping_item_name").text(this.fixmystreet.asset_item);
+        $p.removeClass('hidden');
+    } else {
+        $("#overlapping_features_msg").addClass('hidden');
+    }
+};
+
+fixmystreet.assets.oxfordshire.light_asset_not_found = function() {
+    $("#overlapping_features_msg").addClass('hidden');
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
 /* Peterborough */
 
 var pboro_NEW_TREE_CATEGORY_NAME = 'Request for tree to be planted';

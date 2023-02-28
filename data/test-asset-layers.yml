@@ -134,6 +134,35 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+oxfordshire:
+  - - name: 'alloy'
+      format_class: OpenLayers.Format.GeoJSON
+      srsName: "EPSG:4326"
+      class: OpenLayers.Layer.VectorAssetMove
+      body: "Oxfordshire County Council"
+      attributes:
+        # feature_id
+        unit_number: "title"
+        unit_type: "unit_type"
+        asset_resource_id: "itemId"
+      select_action: true
+      feature_code: 'title'
+      asset_id_field: 'itemId'
+      construct_selected_asset_message: fixmystreet.assets.oxfordshire.light_construct_selected_asset_message
+      actions:
+        asset_found: fixmystreet.assets.oxfordshire.light_asset_found
+        asset_not_found: fixmystreet.assets.oxfordshire.light_asset_not_found
+  - template: 'alloy'
+    http_options:
+      url: "https://tilma.staging.mysociety.org/alloy/layer.php"
+      params:
+        url: "https://oxfordshire.staging"
+        layer: designs_streetLights
+    stylemap: fixmystreet.assets.oxfordshire.streetlight_stylemap
+    asset_category: [ "Lamp Out of Light" ]
+    max_resolution: 1.194328566789627
+    asset_item: "street light"
+    asset_type: "spot"
 peterborough:
   - - name: 'default'
       max_resolution: 4.777314267158508
