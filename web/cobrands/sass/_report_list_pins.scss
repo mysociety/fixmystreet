@@ -45,8 +45,6 @@ $pin_prefix: '/i/' !default;
   margin: -1em -1em 0; // overlap padding on parents
   padding: 18px;
   border-bottom: 1px solid #e5e5e5;
-  // TODO This is not right-to-left enabled yet
-  background: #fff url('/i/click-map-chevron-big.gif') 90% 12px no-repeat;
 
   h1 {
     font-size: 1.5em;
