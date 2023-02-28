@@ -43,28 +43,39 @@ also link to an `/around` page with parameters `latitude` and `longitude`.
 
 ## Specific category page
 
-On a category page, you can also do either of the above things, but also
-include an extra parameter that will restrict the default map view and
-reporting to a particular category, categories, or parent category if you use
-subcategories.
+On a category page, you can include a direct link or embedded form while
+also including parameters that will restrict the default map
+view - and the reporting page reached by clicking the map - to particular categories (including top-level categories and subcategories, if applicable to your installation).
 
 ### Direct link
 
-To link to one category, add a `filter_category` parameter with the
-category/subcategory you wish to pre-filter, or provide multiple categories
-separated by a comma (if one of your categories contains a comma, surround it
-with double quotes). If you use subcategories in your installation and wish to
-restrict the map to a particular top-level category, not an individual
-subcategory, you should use a `filter_group` parameter with the name of the
-top-level category.
+To restrict the map and reporting pages to a single category that is neither a top-level category nor subcategory, you need only add a `filter_category` parameter:
 
 * https://your.fixmystreet.example/?filter_category=Graffiti
 
-* https://your.fixmystreet.example/?filter_category="A,+B,+and+C"
+If you use subcategories in your installation and you wish to restrict pages to a particular **top-level** category, you should use a `filter_group` parameter:
+
+* https://your.fixmystreet.example/?filter_group=Street+Lighting
+
+If you wish to restrict pages to a particular **subcategory**, you need to provide the top-level category (using `filter_group`) alongside the subcategory (`filter_category`):
+
+* https://your.fixmystreet.example/?filter_group=Street+Lighting&filter_category=Flashing+Lamp
+
+**Additional notes**
+
+Any space should be replaced by a **+** sign.
+
+To link to multiple categories, separate them with a comma. Note that this will only work for `filter_category`, not `filter_group`; additionally, this will prevent a category from being preselected on the reporting page.
 
 * https://your.fixmystreet.example/?filter_category=Graffiti,Flyposting
 
-* https://your.fixmystreet.example/?filter_group=Road+defects
+* https://your.fixmystreet.example/?filter_group=Trees&filter_category=Tree+stumps,Other+tree+issue
+
+If a category itself contains a comma, surround the category with double quotes:
+
+* https://your.fixmystreet.example/?filter_group=Trees&filter_category="Blocking+TV,+satellite+or+radio+signal",Other+tree+issue
+
+Please note that if you use the **'Display name'** feature for categories, you must use original category names, not display names.
 
 ### Embedded form
 
