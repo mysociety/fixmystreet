@@ -18,7 +18,11 @@
         </dt>
         <dd class="govuk-summary-list__value">
             [% IF firstamount %]
+              [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' %]
+                £[% firstamount %]
+              [% ELSE %]
                 An initial payment of £[% firstamount %] and subsequently £[% amount %].
+              [% END %]
             [% ELSE %]
                 £[% amount %]
             [% END %]
