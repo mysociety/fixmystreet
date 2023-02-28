@@ -50,7 +50,7 @@ $button-margin-left: 0 !default;
     }
 }
 
-@mixin button-variant($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit) {
+@mixin button-variant($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit, $focus-bg-bottom: #ffe100, $focus-bg-top: #ffe100, $focus-border: #333333, $focus-text: #333333) {
     color: $text !important; // !important to override more specific selectors like `a:link`
     background: $bg-bottom;
     @if $bg-top != $bg-bottom {
@@ -62,8 +62,7 @@ $button-margin-left: 0 !default;
         border: none;
     }
 
-    &:hover,
-    &:focus {
+    &:hover {
         color: $hover-text !important;
         background: $hover-bg-bottom;
         @if $hover-bg-top != $hover-bg-bottom {
@@ -75,6 +74,19 @@ $button-margin-left: 0 !default;
             border: none;
         }
     }
+
+    &:focus {
+      color: $focus-text !important;
+      background: $focus-bg-bottom;
+      @if $focus-bg-top != $focus-bg-bottom {
+          @include linear-gradient($focus-bg-top, $focus-bg-bottom);
+      }
+      @if $focus-border {
+          border-color: $focus-border;
+      } @else {
+          border: none;
+      }
+  }
 
     &:disabled {
         color: desaturate(darken($bg-bottom, 50%), 50%) !important;

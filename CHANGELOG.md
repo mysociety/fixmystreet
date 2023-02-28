@@ -44,6 +44,7 @@
         - Remove unnecessary and add some missing fieldsets.
         - Improve fancybox accessibility (text and focus).
         - Add visually-hidden nearest address in report list.
+        - Add a focus state for button-variant mixin.
     - Admin improvements:
         - Admin 'add user' form now always creates staff users
         - Make sure staff permissions removed when anonymized.
