@@ -47,8 +47,8 @@ sub service_name_override {
 }
 
 # XXX Use config to set max daily slots etc.
-sub bulky_collection_window_days     {90}
-sub max_bulky_collection_dates       {4}
+sub bulky_collection_window_days     {56}
+sub max_bulky_collection_dates       {2}
 sub bulky_workpack_name {
     qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
 }

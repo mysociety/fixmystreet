@@ -18,12 +18,7 @@
 [% END %]
 
 <form class="waste" method="post">
-  [% # 'Show later / earlier dates' functionality has been implemented but at the time of writing, Peterborough have requested it not be made available %]
-  [% PROCESS form override_fields = [
-    'chosen_date', 'continue',
-    'process', 'token', 'saved_data', 'unique_id'
-    ]
-  %]
+  [% PROCESS form %]
   [% IF form.current_page.name == 'choose_date_earlier' && !form.field('chosen_date').options.size %]
     <p>
       There are no slots available in the next 90 days. Please refer to information regarding and link to information about taking waste to the local <a href='https://www.peterborough.gov.uk/residents/rubbish-and-recycling/household-recycling-centre'>Household Waste Recycling Centre</a>.

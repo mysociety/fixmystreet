@@ -961,12 +961,10 @@ FixMyStreet::override_config {
             $mech->content_contains('Available dates');
             $mech->content_contains('05 August');
             $mech->content_contains('12 August');
-            $mech->content_contains('19 August');
-            $mech->content_contains('26 August');
-            $mech->content_lacks('02 September'); # Max of 4 dates fetched
+            $mech->content_lacks('19 August'); # Max of 2 dates fetched
             $mech->submit_form_ok(
                 {   with_fields =>
-                        { chosen_date => '2022-08-19T00:00:00' }
+                        { chosen_date => '2022-08-12T00:00:00' }
                 }
             );
         };
@@ -1057,7 +1055,7 @@ FixMyStreet::override_config {
             return ($token, $new_report, $report_id);
         }
 
-        subtest 'Summary page' => sub { test_summary(19) }; # 19th August
+        subtest 'Summary page' => sub { test_summary(12) }; # 12th August
 
         subtest 'Slot has become fully booked' => sub {
             # Slot has become fully booked in the meantime - should
@@ -1067,8 +1065,8 @@ FixMyStreet::override_config {
             $b->mock(
                 'WorkPacks_Get',
                 sub {
-                    [   {   'ID'   => '190822',
-                            'Name' => 'Waste-BULKY WASTE-190822',
+                    [   {   'ID'   => '120822',
+                            'Name' => 'Waste-BULKY WASTE-120822',
                         },
                     ];
                 },
@@ -1083,7 +1081,7 @@ FixMyStreet::override_config {
             $mech->content_contains(
                 'Unfortunately, the slot you originally chose has become fully booked. Please select another date.',
             );
-            $mech->content_lacks( '2022-08-19T00:00:00', 'Original date no longer an option' );
+            $mech->content_lacks( '2022-08-12T00:00:00', 'Original date no longer an option' );
         };
 
         subtest 'New date selected, submit pages again' => sub {

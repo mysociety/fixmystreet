@@ -13,14 +13,14 @@ subtest '_bulky_collection_window' => sub {
     is_deeply(
         FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
         {   date_from => '2022-01-01',
-            date_to   => '2022-04-01',
+            date_to   => '2022-02-26',
         },
     );
     set_fixed_time('2021-12-31T23:00:00Z');
     is_deeply(
         FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
         {   date_from => '2022-01-02',
-            date_to   => '2022-04-01',
+            date_to   => '2022-02-26',
         },
     );
 };
@@ -59,12 +59,6 @@ subtest 'find_available_bulky_slots' => sub {
             },
             {   date        => '2022-09-02T00:00:00',
                 workpack_id => 75496,
-            },
-            {   date        => '2022-09-09T00:00:00',
-                workpack_id => 75497,
-            },
-            {   date        => '2022-09-16T00:00:00',
-                workpack_id => 75498,
             },
         ],
     );
