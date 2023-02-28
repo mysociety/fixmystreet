@@ -48,9 +48,10 @@ $pin_prefix: '/i/' !default;
   // TODO This is not right-to-left enabled yet
   background: #fff url('/i/click-map-chevron-big.gif') 90% 12px no-repeat;
 
-  h2 {
+  h1 {
+    font-size: 1.5em;
     font-family: inherit;
-    margin: 0 0 5px;
+    margin: 0 0 10px;
   }
 
   p {
