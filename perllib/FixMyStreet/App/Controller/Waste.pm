@@ -1314,6 +1314,8 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
 sub garden_renew : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_renew_disabled};
+
     $c->forward('get_original_sub', ['any']);
 
     # direct debit renewal is automatic so you should not

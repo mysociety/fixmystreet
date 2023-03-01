@@ -1780,6 +1780,40 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'kingston',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        echo => { kingston => { url => 'http://example.org' } },
+        waste => { kingston => 1 },
+        waste_features => { kingston => { garden_renew_disabled => 1 } },
+        payment_gateway => { kingston => { ggw_cost => 2000 } },
+    },
+}, sub {
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock('GetEventsForObject', sub { [] });
+    $echo->mock('GetTasks', sub { [] });
+    $echo->mock('GetPointAddress', sub {
+        return {
+            Id => 12345,
+            SharedRef => { Value => { anyType => '1000000002' } },
+            PointType => 'PointAddress',
+            PointAddressType => { Name => 'House' },
+            Coordinates => { GeoPoint => { Latitude => 51.408688, Longitude => -0.304465 } },
+            Description => '2 Example Street, Kingston, KT1 1AA',
+        };
+    });
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+
+    subtest 'check overdue, soon due messages and modify link' => sub {
+        set_fixed_time('2021-03-05T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Your subscription is soon due for renewal', "renewal disabled");
+        $mech->get_ok('/waste/12345/garden_renew');
+        is $mech->uri->path, '/waste/12345', 'link redirect to bin list if renewal when disabled';
+    };
+};
+
 sub get_report_from_redirect {
     my $url = shift;
 
