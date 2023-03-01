@@ -11,6 +11,49 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+my $osm = Test::MockModule->new('FixMyStreet::Geocode');
+
+$osm->mock('cache', sub {
+    [
+        {
+          'osm_type' => 'way',
+          'type' => 'tertiary',
+          'display_name' => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom',
+          'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+          'lat' => '51.55904',
+          'importance' => '0.40001',
+          'class' => 'highway',
+          'place_id' => 216542819,
+          'lon' => '-0.28168',
+          'boundingbox' => [
+                             '51.5585904',
+                             '51.5586096',
+                             '-0.2833485',
+                             '-0.27861'
+                           ],
+          'osm_id' => 507095202
+        },
+        { # duplicate so we don't jump straight to report page with only one result
+          'osm_type' => 'way',
+          'type' => 'tertiary',
+          'display_name' => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom',
+          'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+          'lat' => '51.55904',
+          'importance' => '0.40001',
+          'class' => 'highway',
+          'place_id' => 216542819,
+          'lon' => '-0.28168',
+          'boundingbox' => [
+                             '51.5585904',
+                             '51.5586096',
+                             '-0.2833485',
+                             '-0.27861'
+                           ],
+          'osm_id' => 507095202
+        }
+    ]
+});
+
 use_ok 'FixMyStreet::Cobrand::Brent';
 
 my $comment_user = $mech->create_user_ok('comment@example.org', email_verified => 1, name => 'Brent');
@@ -265,6 +308,22 @@ EOF
         $report->discard_changes;
         is $report->state, 'closed', 'A state change';
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent' ],
+    MAPIT_URL => 'http://mapit.uk/'
+}, sub {
+    subtest 'test geocoder_munge_results returns nicely named options' => sub {
+        $mech->get_ok('/', "Get search page");
+        $mech->submit_form_ok(
+            { with_fields => {
+                pc => 'Engineers Way'
+            }
+        }, "Search for Engineers Way");
+
+        $mech->content_contains('Engineers Way, HA9 0FJ', 'Strips out extra Brent text');
+    }
 };
 
 done_testing();
