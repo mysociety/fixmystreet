@@ -118,7 +118,12 @@ fixmystreet.offlineReporting = (function() {
      }
 
     function restoreDraftPhotos(photos) {
-        var dropzone = $("#form_photos").get(0).dropzone;
+        var $dropzone = $('#form_photos');
+        if (!$dropzone.length) {
+            return;
+        }
+
+        var dropzone =$dropzone.get(0).dropzone;
         dropzone.removeAllFiles();
         Object.values(photos).map(function (file) {
             var reader = new FileReader();
@@ -131,7 +136,12 @@ fixmystreet.offlineReporting = (function() {
     }
 
     function uploadDraftPhotos(photos) {
-        var dropzone = $('.dropzone').get(0).dropzone;
+        var $dropzone = $('.dropzone');
+        if (!$dropzone.length) {
+            return;
+        }
+
+        var dropzone =$dropzone.get(0).dropzone;
         dropzone.on("complete", function(file) {
             // Photo was sent to server so store its server_id so we don't have
             // to upload it again
@@ -198,6 +208,10 @@ fixmystreet.offlineReporting = (function() {
             restoreDraft();
         },
 
+        deleteCurrentDraft: function() {
+            deleteDrafts();
+        },
+
         geolocate: function(pos) {
             $("input[name=latitude]").val(pos.coords.latitude.toFixed(6));
             $("input[name=longitude]").val(pos.coords.longitude.toFixed(6));
@@ -248,4 +262,9 @@ if (fixmystreet.geolocate && link) {
 if (document.getElementById('offline_report')) {
     fixmystreet.offlineReporting.offlineFormSetup();
 }
+
+if (document.querySelector('.confirmation-header')) {
+    fixmystreet.offlineReporting.deleteCurrentDraft();
+}
+
 })();
