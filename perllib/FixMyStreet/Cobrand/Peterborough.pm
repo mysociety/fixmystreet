@@ -59,6 +59,11 @@ sub bulky_cancellation_cutoff_time {
         minutes => 0,
     }
 }
+sub bulky_collection_time {
+    {   hours   => 6,
+        minutes => 45,
+    }
+}
 
 sub disambiguate_location {
     my $self    = shift;
@@ -851,7 +856,6 @@ sub bulky_can_refund {
         && $self->within_bulky_refund_window;
 }
 
-# Collections are scheduled to begin at 06:45 each day.
 # A cancellation made less than 24 hours before the collection is scheduled to
 # begin is not entitled to a refund.
 sub within_bulky_refund_window {
@@ -876,8 +880,11 @@ sub within_bulky_refund_window {
 sub _check_within_bulky_refund_window {
     my ( undef, $now_dt, $collection_dt ) = @_;
 
-    my $cutoff_dt = $collection_dt->clone->set( hour => 6, minute => 45 )
-        ->subtract( hours => 24 );
+    my $collection_time = bulky_collection_time();
+    my $cutoff_dt       = $collection_dt->clone->set(
+        hour   => $collection_time->{hours},
+        minute => $collection_time->{minutes},
+    )->subtract( hours => 24 );
 
     return $now_dt <= $cutoff_dt;
 }
@@ -1828,6 +1835,13 @@ sub bulky_nice_cancellation_cutoff_date {
     my ( undef, $collection_date ) = @_;
     my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_date);
     return $cutoff_dt->strftime('%H:%M on %d %B %Y');
+}
+
+sub bulky_nice_collection_time {
+    my $time = bulky_collection_time();
+    return
+          sprintf( "%02d", $time->{hours} ) . ':'
+        . sprintf( "%02d", $time->{minutes} // 0 );
 }
 
 sub bulky_nice_item_list {
