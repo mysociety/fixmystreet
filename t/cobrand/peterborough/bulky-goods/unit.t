@@ -35,7 +35,7 @@ subtest '_bulky_collection_window' => sub {
     is_deeply(
         FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
         {   date_from => '2022-01-02',
-            date_to   => '2022-04-01',
+            date_to   => '2022-02-26',
         },
         'greater than cutoff hours, less than cutoff minutes',
     );
