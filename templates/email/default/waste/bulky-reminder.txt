@@ -47,7 +47,7 @@ If you wish to cancel your booking, please visit:
 [% IF days == 1 %]
 You can still cancel your booking, but a refund is no longer available.
 [% ELSE %]
-You can obtain a refund if you cancel more than one day before your booking.
+You can obtain a refund if you cancel by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
 [% END %]
 
 [% END ~%]
