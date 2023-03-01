@@ -610,6 +610,10 @@ body.twothirdswidthpage {
       background-color: $btn-primary-background-hover;
     }
   }
+
+  .govuk-button--secondary {
+    @include brent-btn-secondary;
+  }
 }
 
 h1.govuk-heading-xl {
