@@ -113,31 +113,67 @@ fixmystreet.offlineReporting = (function() {
             $("input[name=title]").val(draft.title);
             $("textarea[name=detail]").val(draft.detail);
             updateDraftSavedTimestamp(draft.saved);
-
-            restoreDraftPhotos(draft.photos, $("#form_photos").get(0).dropzone);
+            restoreDraftPhotos(draft.photos);
         });
      }
 
-    function restoreDraftPhotos(photos, dropzone) {
+    function restoreDraftPhotos(photos) {
+        var dropzone = $("#form_photos").get(0).dropzone;
         dropzone.removeAllFiles();
         Object.values(photos).map(function (file) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                addDropzoneThumbnail(file, e.target.result, dropzone);
+                var mockFile = { name: file.name, dataURL: e.target.result };
+                addDropzoneThumbnail(mockFile, dropzone);
             };
             reader.readAsDataURL(file.blob);
         });
     }
 
-    function addDropzoneThumbnail(photo, datauri, dropzone) {
-        var mockFile = { name: photo.name, server_id: photo.name, dataURL: datauri };
-        dropzone.emit("addedfile", mockFile);
-        dropzone.createThumbnailFromUrl(mockFile,
+    function uploadDraftPhotos(photos) {
+        var dropzone = $('.dropzone').get(0).dropzone;
+        dropzone.on("complete", function(file) {
+            // Photo was sent to server so store its server_id so we don't have
+            // to upload it again
+            updateDraftPhotoServerID(file);
+        });
+        Object.values(photos).map(function (photo) {
+            if (photo.server_id) {
+                // Has already been saved on server, only need to display thumbnail
+                // and chuck server_id in upload_fileid field
+                addDropzoneThumbnail({name: photo.name, server_id: photo.server_id, dataURL: '/photo/temp.' + photo.server_id}, dropzone);
+                var $input = $("[name=upload_fileid]");
+                var ids = ($input.val() || "").split(",").filter(function(v){ return v; });
+                ids.push(photo.server_id);
+                $input.val(ids.join(","));
+            } else {
+                var file = photo.blob;
+                file.name = photo.name;
+                dropzone.addFile(file);
+            }
+        });
+    }
+
+    function updateDraftPhotoServerID(file) {
+        if (!file.server_id || !file.name) {
+            return;
+        }
+        loadDraft().then(function(draft) {
+            if (draft.photos[file.name]) {
+                draft.photos[file.name].server_id = file.server_id;
+            }
+            return storeDraft(draft);
+        });
+    }
+
+    function addDropzoneThumbnail(photo, dropzone) {
+        dropzone.emit("addedfile", photo);
+        dropzone.createThumbnailFromUrl(photo,
             dropzone.options.thumbnailWidth, dropzone.options.thumbnailHeight,
             dropzone.options.thumbnailMethod, true, function(thumbnail) {
-                dropzone.emit('thumbnail', mockFile, thumbnail);
+                dropzone.emit('thumbnail', photo, thumbnail);
             });
-        dropzone.emit("complete", mockFile);
+        dropzone.emit("complete", photo);
         dropzone.options.maxFiles -= 1;
     }
 
@@ -175,8 +211,8 @@ fixmystreet.offlineReporting = (function() {
                     $("input[name=title]").val(draft.title);
                     $("textarea[name=detail]").val(draft.detail);
 
-                    // XXX at this point, try sending them to FMS and using real IDs?
-                    restoreDraftPhotos(draft.photos, $('.dropzone').get(0).dropzone);
+                    // We're online so try and send up photos
+                    uploadDraftPhotos(draft.photos);
 
                     $("input[name=title], textarea[name=detail]").on("input", function() {
                         updateDraft();
