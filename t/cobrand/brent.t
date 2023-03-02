@@ -56,6 +56,7 @@ $osm->mock('cache', sub {
 
 use_ok 'FixMyStreet::Cobrand::Brent';
 
+my $super_user = $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $comment_user = $mech->create_user_ok('comment@example.org', email_verified => 1, name => 'Brent');
 my $brent = $mech->create_body_ok(2488, 'Brent', {
     api_key => 'abc',
@@ -123,6 +124,51 @@ for my $test (
         $problem->comments->first->delete;
         $problem->delete;
         }
+    };
+};
+
+for my $test (
+    {
+        desc => 'No commas when only resolution coded',
+        resolution_code => 60,
+        task_type => '',
+        task_state => '',
+        result => 60,
+    },
+    {
+        desc => 'Commas in full waste details',
+        resolution_code => 60,
+        task_type => 20,
+        task_state => 40,
+        result => '60,20,40',
+    },
+    {
+        desc => 'Commas if only task_state ',
+        resolution_code => '',
+        task_type => '',
+        task_state => 40,
+        result => ',,40',
+    },
+) {
+    subtest 'Brent templates provide external_status_code for non-waste reports' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+    }, sub {
+        $mech->log_in_ok($super_user->email);
+        $mech->get_ok('/admin/templates/' . $brent->id . '/new');
+        $mech->submit_form_ok({ with_fields => {
+            title => 'We are investigating your report',
+            text => 'We are now looking into your report and will update you soon.',
+            resolution_code => $test->{resolution_code},
+            task_type => $test->{task_type},
+            task_state => $test->{task_state},
+        } });
+        my $template = $brent->response_templates->first;
+        is($template->external_status_code, $test->{result}, $test->{desc});
+        $template->delete;
+        $template->update;
+        $mech->log_out_ok;
+        };
     };
 };
 

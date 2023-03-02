@@ -132,6 +132,21 @@ sub open311_post_send {
 
 sub prevent_questionnaire_updating_status { 1 };
 
+sub admin_templates_external_status_code_hook {
+    my ($self) = @_;
+    my $c = $self->{c};
+
+    my $res_code = $c->get_param('resolution_code') || '';
+    my $task_type = $c->get_param('task_type') || '';
+    my $task_state = $c->get_param('task_state') || '';
+
+    my $code = "$res_code,$task_type,$task_state";
+    $code = '' if $code eq ',,';
+    $code =~ s/,,$// if $code;
+
+    return $code;
+}
+
 sub waste_event_state_map {
     return {
         New => { New => 'confirmed' },
