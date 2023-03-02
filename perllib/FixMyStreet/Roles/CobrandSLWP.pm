@@ -475,6 +475,8 @@ sub bin_services_for_address {
                 next if $container == 6; # Red stripe bag
                 next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
                 if ($container && $quantity) {
+                    # Store this fact here for use in new request flow
+                    $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
                     push @$containers, $container;
                     next if $container == 28; # Garden waste bag
                     # The most you can request is one
@@ -487,6 +489,11 @@ sub bin_services_for_address {
                 # Can always request a food caddy
                 push @$containers, 23; # Food waste bin (kitchen)
                 $request_max->{23} = 1;
+            }
+            if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
+                # Can request a bin if you have a box
+                push @$containers, CONTAINER_RECYCLING_BIN;
+                $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
             }
 
             my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
@@ -749,7 +756,8 @@ sub waste_munge_request_form_fields {
 =head2 waste_request_form_first_next
 
 After picking a container, we jump straight to the about you page if they've
-picked a bag, otherwise we move to asking for a reason.
+picked a bag, to the swap-for-a-bin page if they've picked a bin, don't already
+have a bin and are on Kingston; otherwise we move to asking for a reason.
 
 =cut
 
@@ -762,6 +770,10 @@ sub waste_request_form_first_next {
         my $data = shift;
         my $choice = $data->{"container-choice"};
         return 'about_you' if $choice == 18 || $choice == 30;
+        if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
+            $data->{request_reason} = 'more';
+            return 'recycling_swap';
+        }
         return 'replacement';
     };
 }

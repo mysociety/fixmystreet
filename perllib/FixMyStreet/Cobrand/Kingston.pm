@@ -54,7 +54,7 @@ sub image_for_unit {
 
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return "$base/bin-green" if $containers{12};
+    return "$base/bin-green" if $containers{12} && $self->{c}->stash->{container_recycling_bin};
     return "$base/box-green-mix" if $containers{16};
 
     my $service_id = $unit->{service_id};
