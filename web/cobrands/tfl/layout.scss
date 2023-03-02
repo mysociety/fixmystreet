@@ -21,6 +21,7 @@ h1 {
 #main-nav {
   float: none;
   margin-top: $mappage-header-height;
+  overflow: hidden;
 
   .ie9 & > * {
     #{$right}: auto;
