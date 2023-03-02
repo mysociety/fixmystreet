@@ -1,3 +1,11 @@
+=head1 NAME
+
+FixMyStreet::Roles::CobrandSLWP - shared code for Kingston and Sutton WasteWorks
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Roles::CobrandSLWP;
 
 use Moo::Role;
@@ -11,9 +19,25 @@ use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::Kingston;
 use FixMyStreet::App::Form::Waste::Request::Sutton;
 
+=head2 Defaults
+
+=over 4
+
+=item * We do not send questionnaires.
+
+=cut
+
 sub send_questionnaires { 0 }
 
+=item * The contact form is for abuse reports only
+
+=cut
+
 sub abuse_reports_only { 1 }
+
+=item * Only waste reports are shown on the cobrand
+
+=cut
 
 around problems_restriction => sub {
     my ($orig, $self, $rs) = @_;
@@ -37,6 +61,10 @@ sub problems_on_dashboard {
     });
     return $rs;
 }
+
+=item * When a garden subscription is sent to Echo, we include payment details
+
+=cut
 
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
@@ -65,6 +93,10 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+=item * If Echo errors, we try and deal with standard issues - a renewal on an expired subscription, or a duplicate event
+
+=cut
+
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
     my $error = $sender->error;
@@ -87,6 +119,10 @@ sub open311_post_send {
     }
 }
 
+=item * No updates on waste reports
+
+=cut
+
 around updates_disallowed => sub {
     my ($orig, $self, $problem) = @_;
 
@@ -95,6 +131,10 @@ around updates_disallowed => sub {
 
     return $orig->($self, $problem);
 };
+
+=item * Allow both Kingston and Sutton users access to the cobrand admin
+
+=cut
 
 sub admin_allow_user {
     my ( $self, $user ) = @_;
@@ -204,6 +244,9 @@ sub waste_event_state_map {
         },
     };
 }
+
+use constant CONTAINER_RECYCLING_BIN => 12;
+use constant CONTAINER_RECYCLING_BOX => 16;
 
 use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
@@ -602,9 +645,7 @@ sub _parse_events {
 
 sub bin_day_format { '%A, %-d~~~ %B' }
 
-=over
-
-=item within_working_days
+=head2 within_working_days
 
 Given a DateTime object and a number, return true if today is less than or
 equal to that number of working days (excluding Sundays and bank holidays)
@@ -660,13 +701,24 @@ sub waste_report_extra_dd_data {
     }
 }
 
-# This form adds some text to the About you page
+=head2 waste_munge_report_form_fields
+
+We use a custom report form to add some text to the "About you" page.
+
+=cut
+
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
-# Replace the usual checkboxes grouped by service with one radio list
+=head2 waste_munge_request_form_fields
+
+Replace the usual checkboxes grouped by service with one radio list of
+containers.
+
+=cut
+
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
 
@@ -695,6 +747,13 @@ sub waste_munge_request_form_fields {
         }
     );
 }
+
+=head2 waste_request_form_first_next
+
+After picking a container, we jump straight to the about you page if they've
+picked a bag, otherwise we move to asking for a reason.
+
+=cut
 
 sub waste_request_form_first_next {
     my $self = shift;
@@ -739,11 +798,11 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'more') {
         if ($data->{recycling_swap} eq 'Yes') {
             # $id has to be 16 here but we want to swap it for a 12
-            my $q = $c->stash->{quantities}{16} || 1;
+            my $q = $c->stash->{quantities}{+CONTAINER_RECYCLING_BOX} || 1;
             $action_id = ('2::' x $q) . '1'; # Collect and Deliver
             $reason_id = ('3::' x $q) . '3'; # Change capacity
-            $id = ('16::' x $q) . '12'; # Box and Bin
-            $container = $c->stash->{containers}{12};
+            $id = ((CONTAINER_RECYCLING_BOX . '::') x $q) . CONTAINER_RECYCLING_BIN;
+            $container = $c->stash->{containers}{+CONTAINER_RECYCLING_BIN};
         } else {
             $action_id = 1; # Deliver
             $reason_id = 3; # Change capacity
@@ -946,6 +1005,14 @@ sub _get_addressable_object {
     return $ao;
 }
 
+=head2 admin_templates_external_status_code_hook
+
+In order to provide more nuanced messaging on the bin day page with regards to
+not complete collections, the external status code admin is split into three
+fields, which are then combined here for storage.
+
+=cut
+
 sub admin_templates_external_status_code_hook {
     my ($self) = @_;
     my $c = $self->{c};
@@ -958,6 +1025,14 @@ sub admin_templates_external_status_code_hook {
     $code = '' if $code eq ',,';
     return $code;
 }
+
+=head2 Dashboard export
+
+The CSV export includes all reports, including unconfirmed and hidden, and is
+adapted in a few ways for Waste reports - including extra columns such as UPRN,
+email/phone, payment amount and method.
+
+=cut
 
 # Include unconfirmed and hidden reports in CSV export
 sub dashboard_export_include_all_states { 1 }
