@@ -1,8 +1,30 @@
+=head1 NAME
+
+FixMyStreet::App::Form::Waste::Request::Kingston - Kingston-specific request new container form
+
+=head1 SYNOPSIS
+
+The Kingston container request form lets you request one container at a time
+(code for that in L<FixMyStreet::Roles::CobrandSLWP>).
+
+=head1 PAGES
+
+=cut
+
 package FixMyStreet::App::Form::Waste::Request::Kingston;
 
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
+
+use constant CONTAINER_RECYCLING_BIN => 12;
+use constant CONTAINER_RECYCLING_BOX => 16;
+
+=head2 About you
+
+At the last step of the form, the user is asked for their personal details.
+
+=cut
 
 has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
@@ -11,6 +33,13 @@ has_page about_you => (
     next => 'summary',
 );
 
+=head2 Reason for replacement
+
+The user is asked why they need a new container - damaged, missing, new
+resident (unless a garden bin) or they require more (if they have a green box).
+
+=cut
+
 has_page replacement => (
     fields => ['request_reason', 'continue'],
     title => 'Reason for request',
@@ -18,8 +47,8 @@ has_page replacement => (
         my $data = shift;
         my $choice = $data->{"container-choice"};
         my $reason = $data->{request_reason};
-        return 'recycling_swap' if $choice == 16 && $reason eq 'more';
-        return 'recycling_number' if $choice == 16;
+        return 'recycling_swap' if $choice == CONTAINER_RECYCLING_BOX && $reason eq 'more';
+        return 'recycling_number' if $choice == CONTAINER_RECYCLING_BOX;
         return 'notes_missing' if $reason eq 'missing';
         return 'notes_damaged' if $reason eq 'damaged';
         return 'about_you';
@@ -38,7 +67,7 @@ sub options_request_reason {
     my $data = $form->saved_data;
     my $choice = $data->{'container-choice'} || 0;
     my $garden = $data->{'container-26'} || $data->{'container-27'} || $choice == 26 || $choice == 27;
-    my $green_box = $data->{'container-16'} || ($data->{'container-choice'}||0) == 16;
+    my $green_box = $data->{'container-' . CONTAINER_RECYCLING_BOX} || $choice == CONTAINER_RECYCLING_BOX;
     my @options;
     push @options, { value => 'new_build', label => 'I am a new resident without a container' }
         if !$garden;
@@ -48,6 +77,13 @@ sub options_request_reason {
         if $green_box;
     return @options;
 }
+
+=head2 Swapping boxes for a bin
+
+If they've got recycling boxes, and have asked for more,
+the user is asked if they'd like to swap their boxes for a bin.
+
+=cut
 
 has_page recycling_swap => (
     fields => ['recycling_swap', 'continue'],
@@ -73,6 +109,13 @@ has_field recycling_swap => (
     },
 );
 
+=head2 Swapping confirmation
+
+They have to confirm that they have three or more recycling boxes if asking to
+swap.
+
+=cut
+
 has_page recycling_swap_confirm => (
     fields => ['recycling_swap_confirm', 'continue'],
     title => 'Reason for request',
@@ -85,6 +128,12 @@ has_field recycling_swap_confirm => (
     label => 'Confirmation',
     option_label => 'I confirm that I have 3 or more recycling box containers',
 );
+
+=head2 Quantity required
+
+If they've asked for replacement boxes, ask how many they need.
+
+=cut
 
 has_page recycling_number => (
     fields => ['recycling_quantity', 'continue'],
@@ -118,6 +167,12 @@ sub options_recycling_quantity {
     return @options;
 }
 
+=head2 Missing notes
+
+If they've said the container is missing, ask for free text extra information.
+
+=cut
+
 has_page notes_missing => (
     fields => ['notes_missing', 'continue'],
     title => 'Extra information',
@@ -130,6 +185,12 @@ has_field notes_missing => (
     widget => 'Textarea',
     label => 'Can you give us any information about what happened to your container?',
 );
+
+=head2 Damaged notes
+
+If they've said the container is damaged, ask for the reason from a drop-down.
+
+=cut
 
 has_page notes_damaged => (
     fields => ['notes_damaged', 'continue'],
