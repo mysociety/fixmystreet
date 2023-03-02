@@ -346,13 +346,19 @@ sub construct_waste_open311_update {
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $status = $event_type->{states}{$state_id}{state};
     my $description = $event_type->{resolution}{$resolution_id} || $event_type->{states}{$state_id}{name};
+    my $external_status_code;
+    if ($self->moniker eq "brent") {
+        $external_status_code = $resolution_id ? "$resolution_id" : "",
+    } else {
+        $external_status_code = $resolution_id ? "$resolution_id,," : "",
+    }
     return {
         description => $description,
         status => $status,
         update_id => 'waste',
-        external_status_code => $resolution_id ? "$resolution_id,," : "",
+        external_status_code => $external_status_code,
         prefer_template => 1,
-    };
+    }
 }
 
 sub waste_get_event_type {
