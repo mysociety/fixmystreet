@@ -134,6 +134,21 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+northamptonshire:
+  - wfs_url: "https://tilma.staging.mysociety.org/mapserver/northamptonshire"
+    geometryName: 'msGeometry'
+    srsName: "EPSG:3857"
+    body: "Northamptonshire Highways"
+    attributes:
+      asset_resource_id: "asset_id"
+    select_action: true
+    actions:
+      asset_found: fixmystreet.assets.northamptonshire.asset_found
+      asset_not_found: fixmystreet.assets.northamptonshire.asset_not_found
+    class: OpenLayers.Layer.VectorAssetMove
+  - asset_category: [ "Shelter Damaged", "Sign/Pole Damaged" ]
+    asset_item: "bus stop"
+    wfs_feature: "Bus_Stop"
 oxfordshire:
   - - name: 'alloy'
       format_class: OpenLayers.Format.GeoJSON

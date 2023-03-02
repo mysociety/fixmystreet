@@ -789,6 +789,71 @@ fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
 
+/* Northamptonshire */
+
+fixmystreet.assets.northamptonshire = {};
+
+fixmystreet.assets.northamptonshire.asset_found = function(asset) {
+    if (fixmystreet.message_controller.asset_found.call(this)) {
+        return;
+    }
+    var lonlat = asset.geometry.getBounds().getCenterLonLat();
+    // Features considered overlapping if within 1M of each other
+    // TODO: Should zoom/marker size be considered when determining if markers overlap?
+    var overlap_threshold = 1;
+    var overlapping_features = this.getFeaturesWithinDistance(
+        new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+        overlap_threshold
+    );
+    if (overlapping_features.length > 1) {
+        // TODO: In an ideal world we'd be able to show the user a photo of each
+        // of the assets and ask them to pick one.
+        // Instead, we tell the user there are multiple things here
+        // and ask them to describe the asset in the description field.
+        var $p = $("#overlapping_features_msg");
+        if (!$p.length) {
+            $p = $("<p id='overlapping_features_msg' class='hidden box-warning'>" +
+            "There is more than one <span class='overlapping_item_name'></span> at this location. " +
+            "Please describe which <span class='overlapping_item_name'></span> has the problem clearly.</p>");
+            $('#category_meta').before($p).closest('.js-reporting-page').removeClass('js-reporting-page--skip');
+        }
+        $p.find(".overlapping_item_name").text(this.fixmystreet.asset_item);
+        $p.removeClass('hidden');
+    } else {
+        $("#overlapping_features_msg").addClass('hidden');
+    }
+};
+
+fixmystreet.assets.northamptonshire.asset_not_found = function() {
+    $("#overlapping_features_msg").addClass('hidden');
+    if (this.fixmystreet.snap_threshold === 0) {
+        // Not a typo, asset selection is not mandatory
+        fixmystreet.message_controller.asset_found.call(this);
+    } else {
+        fixmystreet.message_controller.asset_not_found.call(this);
+    }
+};
+
+fixmystreet.assets.northamptonshire.highways_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        strokeColor: "#111111",
+        strokeOpacity: 0.1,
+        strokeWidth: 7
+    })
+});
+
+fixmystreet.assets.northamptonshire.prow_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        strokeColor: "#115511",
+        strokeOpacity: 0.8,
+        strokeWidth: 7
+    })
+});
+
+fixmystreet.message_controller.add_ignored_body("Northamptonshire Highways");
+
 /* Oxfordshire */
 
 fixmystreet.assets.oxfordshire = {};
