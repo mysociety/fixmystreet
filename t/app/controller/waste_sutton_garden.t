@@ -284,8 +284,26 @@ FixMyStreet::override_config {
         waste => { sutton => 1 },
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
-            ggw_cost => 2000,
-            ggw_sacks_cost => 4100,
+            ggw_cost => [
+                {
+                    start_date => '2020-01-01',
+                    cost => 2000,
+                },
+                {
+                    start_date => '2023-01-06 00:00',
+                    cost => 2500,
+                }
+            ],
+            ggw_sacks_cost => [
+                {
+                    start_date => '2020-01-01',
+                    cost => 4100,
+                },
+                {
+                    start_date => '2023-01-06 00:00',
+                    cost => 4300,
+                },
+            ],
             ggw_new_bin_first_cost => 0,
             ggw_new_bin_cost => 0,
             hmac => '1234',
@@ -1303,6 +1321,49 @@ FixMyStreet::override_config {
 
     remove_test_subs( 0 );
 
+    subtest 'check new sub price changes at fixed time' => sub {
+        set_fixed_time('2023-01-05T23:59:59Z');
+        $mech->log_out_ok;
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->content_contains('A 12 month subscription is £20.00 per bin');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_contains('<span class="cost-pa">£20.00 per bin per year</span>');
+
+        set_fixed_time('2023-01-06T00:00:00Z'); # New pricing should be in effect
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->content_contains('A 12 month subscription is £25.00 per bin');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_contains('<span class="cost-pa">£25.00 per bin per year</span>');
+
+        restore_time;
+    };
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_only_refuse_sacks);
+
+    subtest 'sacks, subscription price changes at fixed time' => sub {
+        set_fixed_time('2023-01-05T23:59:59Z');
+        $mech->log_out_ok;
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->content_contains('A roll of 20 garden waste sacks also costs £41.00');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
+        $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
+
+        set_fixed_time('2023-01-06T00:00:00Z'); # New pricing should be in effect
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->content_contains('A roll of 20 garden waste sacks also costs £43.00');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
+        $mech->content_like(qr#Total per year: £<span[^>]*>43.00#, "new cost correct");
+
+        restore_time;
+    };
 };
 
 sub get_report_from_redirect {

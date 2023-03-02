@@ -458,6 +458,42 @@ sub waste_sub_overdue {
     return 0;
 }
 
+sub _get_cost_from_array {
+    my ($self, $costs) = @_;
 
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
+    foreach my $cost (@sorted) {
+        return $cost->{cost} if $cost->{start_date} le $now->strftime('%Y-%m-%d %H:%M')
+    }
+
+    die("Couldn't find a valid cost item");
+}
+
+sub garden_waste_sacks_cost_pa {
+    my ($self) = @_;
+    my $cost = $self->feature('payment_gateway')->{ggw_sacks_cost};
+
+    if (ref $cost eq 'ARRAY') {
+        $cost = $self->_get_cost_from_array($cost);
+    }
+
+    return $cost;
+}
+
+sub garden_waste_cost_pa {
+    my ($self, $bin_count) = @_;
+
+    $bin_count ||= 1;
+
+    my $per_bin_cost = $self->feature('payment_gateway')->{ggw_cost};
+
+    if (ref $per_bin_cost eq 'ARRAY') {
+        $per_bin_cost = $self->_get_cost_from_array($per_bin_cost);
+    }
+
+    my $cost = $per_bin_cost * $bin_count;
+    return $cost;
+}
 
 1;

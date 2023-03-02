@@ -13,16 +13,16 @@ You can subscribe to our garden waste collection service if you are a frequent g
 <h2>Costs</h2>
 
 <p>
-A 12 month subscription is £82 per bin.
+A 12 month subscription is £[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin.
 </p>
 
 <p>
-If you need us to deliver bins to you, there is a fee of £15 per bin for admin and delivery. If you order more than one bin at once, the admin and delivery fee will be £7.50 for each additional bin.
+If you need us to deliver bins to you, there is a fee of £[% tprintf('%.2f', per_new_bin_first_cost / 100 ) %] per bin for admin and delivery. If you order more than one bin at once, the admin and delivery fee will be £[% tprintf('%.2f', per_new_bin_cost / 100 ) %] for each additional bin.
 </p>
 
 [% IF garden_sacks %]
 <p>
-A roll of 10 garden waste sacks costs £41.
+A roll of 10 garden waste sacks costs £[% tprintf('%.2f', per_sack_cost / 100 ) %].
 </p>
 [% END %]
 

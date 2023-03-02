@@ -13,12 +13,12 @@ You can subscribe to our garden waste collection service if you are a frequent g
 <h2>Costs</h2>
 
 <p>
-A 12 month subscription is £70.52 per bin.
+A 12 month subscription is £[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin.
 </p>
 
 [% IF garden_sacks %]
 <p>
-A roll of 20 garden waste sacks also costs £70.52.
+A roll of 20 garden waste sacks also costs £[% tprintf('%.2f', per_sack_cost / 100 ) %].
 </p>
 [% END %]
 

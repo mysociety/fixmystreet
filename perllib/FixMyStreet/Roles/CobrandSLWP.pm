@@ -788,8 +788,7 @@ sub waste_munge_report_data {
 # Same as full cost
 sub waste_get_pro_rata_cost {
     my ($self, $bins, $end) = @_;
-    my $cost = $bins * $self->feature('payment_gateway')->{ggw_cost};
-    return $cost;
+    return $self->garden_waste_cost_pa($bins);
 }
 
 sub waste_display_payment_method {
@@ -801,22 +800,6 @@ sub waste_display_payment_method {
     };
 
     return $display->{$method};
-}
-
-sub garden_waste_sacks_cost_pa {
-    my ($self) = @_;
-    my $cost = $self->feature('payment_gateway')->{ggw_sacks_cost};
-    return $cost;
-}
-
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
-
-    $bin_count ||= 1;
-
-    my $per_bin_cost = $self->feature('payment_gateway')->{ggw_cost};
-    my $cost = $per_bin_cost * $bin_count;
-    return $cost;
 }
 
 sub garden_waste_new_bin_admin_fee {
