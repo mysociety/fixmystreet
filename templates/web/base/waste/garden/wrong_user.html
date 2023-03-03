@@ -1,0 +1,22 @@
+[% INCLUDE waste/header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+
+  [% IF property %]
+  <dl class="waste__address">
+    <dt class="waste__address__title">Collection address</dt>
+    <dd class="waste__address__property">[% property.address %]</dd>
+  </dl>
+  [% END %]
+
+[% IF c.action == 'waste/garden_cancel' %]
+<p>Only the account that created the garden waste subscription can cancel it.</p>
+[% ELSIF c.action == 'waste/garden_modify' %]
+<p>Only the account that created the garden waste subscription can modify it.</p>
+[% END %]
+
+<p><a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a></p>
+
+[% INCLUDE footer.html %]
