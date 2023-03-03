@@ -195,7 +195,7 @@ hx-trigger="every [% page_refresh %]s"
           [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
             <!-- #05 Should only display when: There IS a booking AND is a signed user -->
             <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% property.pending_bulky_collection.id %]">Check collection details</a>
-            [% IF c.cobrand.bulky_can_cancel_collection(property.pending_bulky_collection) %]
+            [% IF c.cobrand.bulky_collection_can_be_cancelled(property.pending_bulky_collection) %]
               <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky_cancel', [ property.id ]) %]">Cancel booking</a>
             [% END %]
             <!-- END #05 -->
