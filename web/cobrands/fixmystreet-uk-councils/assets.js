@@ -852,6 +852,17 @@ fixmystreet.assets.northamptonshire.prow_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+var northants_barrier_style = $.extend({
+    strokeColor: '#1BE547',
+    strokeWidth: 4,
+}, fixmystreet.assets.style_default_select.defaultStyle);
+
+fixmystreet.assets.northamptonshire.stylemap_barriers = new OpenLayers.StyleMap({
+    'default': fixmystreet.assets.style_default,
+    'select': new OpenLayers.Style(northants_barrier_style),
+    'hover': fixmystreet.assets.style_default_hover
+});
+
 fixmystreet.message_controller.add_ignored_body("Northamptonshire Highways");
 
 /* Oxfordshire */
