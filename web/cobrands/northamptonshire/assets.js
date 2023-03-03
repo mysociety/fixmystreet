@@ -4,6 +4,19 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var northants_barrier_style = $.extend({
+    strokeColor: '#1BE547',
+    strokeWidth: 4,
+}, fixmystreet.assets.style_default_select.defaultStyle);
+northants_barrier_style = new OpenLayers.Style(northants_barrier_style);
+
+fixmystreet.assets.northamptonshire = {};
+fixmystreet.assets.northamptonshire.stylemap_barriers = new OpenLayers.StyleMap({
+    'default': fixmystreet.assets.style_default,
+    'select': northants_barrier_style,
+    'hover': fixmystreet.assets.style_default_hover
+});
+
 var layers = [
 {
   "categories": [
@@ -92,6 +105,7 @@ var layers = [
 },
 {
   "categories": [ "Pedestrian Barriers - Damaged / Missing" ],
+  "stylemap": fixmystreet.assets.northamptonshire.stylemap_barriers,
   "item_name": "pedestrian barrier",
   "layer_name": "Pedestrian_Barrier"
 }
