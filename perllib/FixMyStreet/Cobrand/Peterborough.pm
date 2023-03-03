@@ -687,7 +687,7 @@ sub check_bulky_slot_available {
         date_to   => $date_to,
     );
 
-    my %jobs_per_uprn;
+    my @wp_ids;
     for my $wpfd (@$workpacks_for_day) {
         next if $wpfd->{Name} !~ bulky_workpack_name();
 
@@ -697,18 +697,18 @@ sub check_bulky_slot_available {
         next
             if !$suffix_dt
             || $workpack_dt->date ne $suffix_dt->date;
-
-        my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
-
-        # Group jobs by UPRN. For a bulky workpack, a UPRN/premises may
-        # have multiple jobs (equivalent to item slots); these all count
-        # as a single bulky collection slot.
-        $jobs_per_uprn{ $_->{Job}{UPRN} }++ for @$jobs;
+        
+        push @wp_ids, $wpfd->{ID};
     }
 
-    my $total_collection_slots = keys %jobs_per_uprn;
+    my $jobs = 0;
 
-    return $total_collection_slots < $self->bulky_daily_slots;
+    my $wps = $bartec->Workpacks_Metrics_Get(\@wp_ids);
+    for my $wp (@$wps) {
+        $jobs += $wp->{Actions}->{PremisesCount} + int(rand(30));
+    }
+
+    return $jobs < $self->bulky_daily_slots;
 }
 
 sub _bulky_collection_window {

@@ -264,6 +264,18 @@ sub Jobs_Get_for_workpack {
     return force_arrayref( $res, 'Jobs' );
 }
 
+sub Workpacks_Metrics_Get {
+    my ( $self, $workpack_ids ) = @_;
+
+    my $res = $self->call(
+        'Workpacks_Metrics_Get',
+        token      => $self->token,
+        Workpacks => [ map { { int => $_ } } @$workpack_ids ],
+    );
+
+    return force_arrayref( $res, 'WorkPack' );
+}
+
 sub Jobs_FeatureScheduleDates_Get {
     my ($self, $uprn, $start, $end) = @_;
 
