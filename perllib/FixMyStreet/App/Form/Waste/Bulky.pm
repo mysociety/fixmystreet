@@ -229,19 +229,7 @@ has items_extra => (
 );
 
 sub _build_items_extra {
-    my $self = shift;
-
-    my $per_item = $self->c->cobrand->bulky_per_item_costs;
-
-    my $json = JSON::MaybeXS->new;
-    my %hash;
-    for my $item ( @{ $self->items_master_list } ) {
-        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
-        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
-        $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
-        $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
-    }
-    return \%hash;
+    shift->c->cobrand->bulky_items_extra;
 }
 
 has_field tandc => (

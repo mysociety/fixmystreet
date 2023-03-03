@@ -1094,16 +1094,9 @@ sub bulky_view : Private {
     my $items_list = $c->cobrand->call_hook('bulky_items_master_list');
     my $per_item = $c->cobrand->bulky_per_item_costs;
 
-    # XXX copied from Form::Waste::Bulky, can it be refactored?
-    my %hash;
-    for my $item ( @$items_list ) {
-        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
-        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
-        $hash{ $item->{name} }{json} = encode_json($hash{$item->{name}}) if $hash{$item->{name}};
-    }
     $c->stash->{form} = {
-        items_extra => \%hash,
-        saved_data => $saved_data,
+        items_extra => $c->cobrand->call_hook('bulky_items_extra'),
+        saved_data  => $saved_data,
     };
 }
 

@@ -775,6 +775,22 @@ sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 
+sub bulky_items_extra {
+    my $self = shift;
+
+    my $per_item = $self->bulky_per_item_costs;
+
+    my $json = JSON::MaybeXS->new;
+    my %hash;
+    for my $item ( @{ $self->bulky_items_master_list } ) {
+        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
+        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
+        $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
+        $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
+    }
+    return \%hash;
+}
+
 sub bulky_per_item_costs {
     my $self = shift;
     my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
@@ -1789,8 +1805,17 @@ sub bulky_nice_cancellation_cutoff_date {
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
 
-    my @fields = grep { $_->{name} =~ /ITEM_/ } @{$report->get_extra_fields};
-    return [ map { $_->{value} || () } @fields ];
+    my @fields = grep { $_->{value} && $_->{name} =~ /ITEM_/ } @{$report->get_extra_fields};
+
+    my $items_extra = $self->bulky_items_extra;
+
+    return [
+        map {
+            value       => $_->{value},
+            message     => $items_extra->{ $_->{value} }{message},
+        },
+        @fields,
+    ];
 }
 
 sub bulky_reminders {
