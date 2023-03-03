@@ -1110,10 +1110,14 @@ sub bulky_view : Private {
 sub bulky_cancel : Chained('property') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->detach( '/auth/redirect' ) unless $c->user_exists;
+
     $c->detach('property_redirect')
         if !$c->cobrand->call_hook('bulky_enabled')
-        || !$c->cobrand->call_hook( 'bulky_can_cancel_collection',
-                $c->stash->{property}{pending_bulky_collection} );
+            || !$c->cobrand->call_hook( 'bulky_can_view_collection',
+            $c->stash->{property}{pending_bulky_collection} )
+            || !$c->cobrand->call_hook( 'bulky_collection_can_be_cancelled',
+            $c->stash->{property}{pending_bulky_collection} );
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';

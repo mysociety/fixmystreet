@@ -781,7 +781,9 @@ sub bulky_per_item_costs {
     return $cfg->{per_item_costs};
 }
 
-sub bulky_can_cancel_collection {
+# Returns whether a collection can be cancelled, irrespective of logged-in
+# user or lack thereof
+sub bulky_collection_can_be_cancelled {
     # There is an $ignore_external_id option because we display some
     # cancellation messaging without needing a report in Bartec
     my ( $self, $collection, $ignore_external_id ) = @_;
@@ -790,7 +792,6 @@ sub bulky_can_cancel_collection {
            $collection
         && $collection->is_open
         && ( $collection->external_id || $ignore_external_id )
-        && $self->bulky_can_view_collection($collection)
         && $self->within_bulky_cancel_window($collection);
 }
 

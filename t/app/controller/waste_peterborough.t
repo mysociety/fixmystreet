@@ -1373,54 +1373,94 @@ FixMyStreet::override_config {
 
         subtest 'Cancellation' => sub {
             set_fixed_time($good_date);
+            my $base_path = '/waste/PE1%203NA:100090215480';
 
-            # Presence of external_id in report implies we have sent request
-            # to Bartec
-            $report->external_id(undef);
-            $report->update;
-            $mech->content_lacks( 'Cancel booking',
-                'Cancel option unavailable before request sent to Bartec' );
+            subtest 'Before request sent to Bartec' => sub {
+                # Presence of external_id in report implies we have sent request
+                # to Bartec
+                $report->external_id(undef);
+                $report->update;
+                $mech->get_ok($base_path);
+                $mech->content_lacks(
+                    'Cancel booking',
+                    'Cancel option unavailable',
+                );
+                $mech->get_ok("$base_path/bulky_cancel");
+                is $mech->uri->path, $base_path,
+                    'Cancel link redirects to bin days';
+            };
 
-            $report->external_id('Bartec-SR00100001');
-            $report->update;
-            $mech->get_ok('/waste/PE1%203NA:100090215480');
-            $mech->content_contains( 'Cancel booking',
-                'Cancel option available after request sent to Bartec' );
+            subtest 'After request sent to Bartec' => sub {
+                $report->external_id('Bartec-SR00100001');
+                $report->update;
+                $mech->get_ok($base_path);
+                $mech->content_contains(
+                    'Cancel booking',
+                    'Cancel option available',
+                );
+                $mech->get_ok("$base_path/bulky_cancel");
+                is $mech->uri->path, "$base_path/bulky_cancel",
+                    'Cancel link does not redirect';
+            };
 
-            $mech->log_in_ok( $user2->email );
-            $mech->get_ok('/waste/PE1%203NA:100090215480');
-            $mech->content_lacks(
-                'Cancel booking',
-                'Cancel option unavailable if booking does not belong to user',
-            );
+            subtest 'User logged out' => sub {
+                $mech->log_out_ok;
+                $mech->get_ok($base_path);
+                $mech->content_lacks(
+                    'Cancel booking',
+                    'Cancel option unavailable',
+                );
+                $mech->get_ok("$base_path/bulky_cancel");
+                like $mech->uri->path, qr/auth/,
+                    'Cancel link redirects to /auth';
+            };
 
-            $mech->log_in_ok( $staff->email );
-            $mech->get_ok('/waste/PE1%203NA:100090215480');
-            $mech->content_contains( 'Cancel booking',
-                'Cancel option available to staff' );
+            subtest 'Other user logged in' => sub {
+                $mech->log_in_ok( $user2->email );
+                $mech->get_ok($base_path);
+                $mech->content_lacks(
+                    'Cancel booking',
+                    'Cancel option unavailable if booking does not belong to user',
+                );
+                $mech->get_ok("$base_path/bulky_cancel");
+                is $mech->uri->path, $base_path,
+                    'Cancel link redirects to bin days';
+            };
+
+            subtest 'Staff user logged in' => sub {
+                $mech->log_in_ok( $staff->email );
+                $mech->get_ok($base_path);
+                $mech->content_contains(
+                    'Cancel booking',
+                    'Cancel option available',
+                );
+                $mech->get_ok("$base_path/bulky_cancel");
+                is $mech->uri->path, "$base_path/bulky_cancel",
+                    'Cancel link does not redirect';
+            };
 
             $mech->log_in_ok( $user->email );
 
             set_fixed_time($bad_date);
-            $mech->get_ok('/waste/PE1%203NA:100090215480');
+            $mech->get_ok($base_path);
             $mech->content_lacks( 'Cancel booking',
                 'Cancel option unavailable if outside cancellation window' );
 
             set_fixed_time($no_refund_date);
-            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->get_ok("$base_path/bulky_cancel");
             $mech->content_lacks("If you cancel this booking you will receive a refund");
             $mech->content_contains("No Refund Will Be Issued");
 
             $report->update_extra_field({ name => 'CHARGEABLE', value => 'FREE'});
             $report->update;
-            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->get_ok("$base_path/bulky_cancel");
             $mech->content_lacks("If you cancel this booking you will receive a refund");
             $mech->content_lacks("No Refund Will Be Issued");
             $report->update_extra_field({ name => 'CHARGEABLE', value => 'CHARGED'});
             $report->update;
 
             set_fixed_time($good_date);
-            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->get_ok("$base_path/bulky_cancel");
             $mech->content_contains("If you cancel this booking you will receive a refund");
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
             $mech->content_contains(
@@ -1428,7 +1468,7 @@ FixMyStreet::override_config {
                 'Cancellation confirmation page shown',
             );
             $mech->follow_link_ok( { text => 'Go back home' } );
-            is $mech->uri->path, '/waste/PE1%203NA:100090215480',
+            is $mech->uri->path, $base_path,
                 'Returned to bin days';
             $mech->content_lacks( 'Cancel booking',
                 'Cancel option unavailable if already cancelled' );
