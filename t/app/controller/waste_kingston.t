@@ -356,6 +356,8 @@ FixMyStreet::override_config {
         } elsif ( $method and $method eq 'DELETE' ) {
             $dd_sent_params->{cancel_plan} = {};
             return {};
+        } elsif ( $path eq 'query/execute#getMandateFromReference' ) {
+            return {};
         } elsif ( $path eq 'query/execute#getContactFromEmail' ) {
             return {
                 rows => [ {
@@ -708,7 +710,13 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/12345');
         $mech->content_contains('You have a pending garden subscription');
-        $mech->content_lacks('Subscribe to garden waste collection');
+        $mech->content_contains('Subscribe to garden waste collection'); # Nothing in DD system yet, might have given up and want to pay by CC instead
+
+        $dd->mock('get_mandate_from_reference', sub { { status => 'DRAFT' } });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to garden waste collection'); # Now pending in DD system
+        $dd->mock('get_mandate_from_reference', sub { });
 
         $mech->email_count_is( 1, "email sent for direct debit sub");
         my $email = $mech->get_email;
