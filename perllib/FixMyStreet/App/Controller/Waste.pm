@@ -1261,15 +1261,18 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->forward('get_original_sub', ['user']);
 
+        if (!$c->stash->{orig_sub}) {
+            $c->stash->{template} = 'waste/garden/wrong_user.html';
+            $c->detach;
+        }
+
         my $service_id = $c->cobrand->garden_service_id;
         my $max_bins = $c->stash->{quantity_max}->{$service_id};
 
         my $payment_method = 'credit_card';
-        if ( $c->stash->{orig_sub} ) {
-            my $orig_sub = $c->stash->{orig_sub};
-            my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
-            $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
-        }
+        my $orig_sub = $c->stash->{orig_sub};
+        my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
+        $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
 
         $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
@@ -1305,6 +1308,11 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     $c->forward('get_original_sub', ['user']);
+
+    if (!$c->stash->{orig_sub}) {
+        $c->stash->{template} = 'waste/garden/wrong_user.html';
+        $c->detach;
+    }
 
     my $payment_method = $c->forward('get_current_payment_method');
     $c->forward('check_if_staff_can_pay', [ $payment_method ]);

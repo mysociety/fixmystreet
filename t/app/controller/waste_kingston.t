@@ -1708,52 +1708,6 @@ FixMyStreet::override_config {
     # remove all reports
     remove_test_subs( 0 );
 
-    subtest 'modify sub with no existing waste sub - credit card payment' => sub {
-        set_fixed_time('2021-01-09T17:00:00Z');
-        $mech->log_out_ok();
-        $mech->get_ok('/waste/12345/garden_modify');
-        is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_modify');
-        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
-        $mech->content_contains('40.00');
-        $mech->content_contains('15.00');
-        $mech->content_contains('35.00');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-        is $sent_params->{items}[1]{amount}, 1500, 'correct amount used';
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-        check_extra_data_post_confirm($new_report);
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-    };
-
-    remove_test_subs( 0 );
-
-    subtest 'cancel credit card sub with no record in waste' => sub {
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_cancel');
-        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
-
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
-
-        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
-        is $new_report->state, 'confirmed', 'report confirmed';
-    };
-
-    remove_test_subs( 0 );
-
     subtest 'check staff renewal with no existing sub' => sub {
         $mech->log_out_ok;
         $mech->log_in_ok($staff_user->email);
