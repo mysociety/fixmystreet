@@ -20,12 +20,8 @@
        [% END %]
 
        [% SET show_garden_subscribe = NOT waste_features.garden_disabled AND NOT waste_features.garden_new_disabled AND NOT c.cobrand.garden_current_subscription %]
-    [% IF c.cobrand.moniker == 'bromley' %]
        [% message = WRAPPER 'waste/_garden_status_messages.html' %][% END %]
        [% show_garden_subscribe = show_garden_subscribe AND NOT message %]
-    [% ELSE %]
-       [% show_garden_subscribe = show_garden_subscribe AND NOT pending_subscription %]
-    [% END %]
 
        [% TRY %][% PROCESS waste/_more_services_sidebar.html %][% CATCH file %]
        [% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]

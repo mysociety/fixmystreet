@@ -42,16 +42,13 @@
       </div>
     </dl>
 
-  [% IF ( unit.garden_due && current_payment_method != 'direct_debit' ) %]
-      [% IF current_payment_method == 'direct_debit' %]
-        <p>This property may have an existing direct debit subscription which will renew automatically, please check before renewing.</p>
-      [% END %]
-    [% IF NOT waste_features.garden_renew_disabled %]
-      <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
-        <input type="hidden" name="token" value="[% csrf_token %]">
-        <input type="submit" value="Renew your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
-      </form>
-    [% END %]
+  [% WRAPPER 'waste/_garden_status_messages.html' %]
+   [% IF unit.garden_due AND NOT waste_features.garden_renew_disabled %]
+    <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" value="Renew your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+  </form>
+   [% END %]
   [% END %]
 
   [% IF NOT pending_cancellation %]
