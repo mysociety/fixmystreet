@@ -319,6 +319,15 @@ sub admin_templates_external_status_code_hook {
     return $code;
 }
 
+sub waste_check_staff_payment_permissions {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->stash->{is_staff};
+
+    $c->stash->{staff_payments_allowed} = 'paye';
+}
+
 =head2 waste_event_state_map
 
 State map for Echo states - not actually waste only as Echo
