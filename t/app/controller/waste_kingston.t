@@ -1150,6 +1150,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->content_contains('"direct_debit"', 'Direct debit for bins');
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
             current_bins => 0,
@@ -1204,6 +1205,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
         $mech->content_lacks('"cheque"');
+        $mech->content_lacks('"direct_debit"', 'No direct debit for sacks');
         $mech->submit_form_ok({ with_fields => {
             payment_method => 'credit_card',
             name => 'Test McTest',

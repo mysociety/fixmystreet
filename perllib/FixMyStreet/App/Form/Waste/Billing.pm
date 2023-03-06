@@ -13,14 +13,16 @@ has_field payment_method => (
 
 sub options_payment_method {
     my $form = shift;
+    my $c = $form->{c};
+    my $sack_choice = $c->stash->{slwp_garden_sacks} && $form->saved_data->{container_choice} eq 'sack';
     my @options = (
         { value => 'direct_debit', label => 'Direct Debit', hint => 'Set up your payment details once, and we’ll automatically renew your subscription each year, until you tell us to stop. You can cancel or amend at any time.', data_hide => '#form-cheque_reference-row' },
         { value => 'credit_card', label => 'Debit or Credit Card', data_hide => '#form-cheque_reference-row' },
     );
-    if ($form->{c}->stash->{waste_features}->{dd_disabled}) {
+    if ($c->stash->{waste_features}->{dd_disabled} || $sack_choice) {
         shift @options;
     }
-    if ($form->{c}->cobrand->waste_cheque_payments) {
+    if ($c->cobrand->waste_cheque_payments) {
         push @options, { label => 'Telephone or Cheque Payment', value => 'cheque', data_show => '#form-cheque_reference-row' };
     }
     return @options;
