@@ -17,6 +17,8 @@ my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
 my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council', {}, { cobrand => 'westminster' })->id;
 my $body_fife_id = $mech->create_body_ok(2649, 'Fife Council')->id;
 my $body_slash_id = $mech->create_body_ok(10000, 'Electricity/Gas Council')->id;
+$mech->create_body_ok(2488, 'Brent Council');
+$mech->create_body_ok(2309, 'Brentwood Borough Council');
 
 $mech->create_contact_ok(body_id => $body_edin_id, category => 'Potholes', email => 'potholes@example.org');
 $mech->create_contact_ok(body_id => $body_west_id, category => 'Graffiti', email => 'graffiti@example.org');
@@ -488,6 +490,15 @@ subtest "can use translated body name" => sub {
     }, sub {
         $mech->get_ok('/reports/De Westminster');
         $mech->title_like(qr/Westminster City Council/);
+    };
+};
+
+subtest 'Prefix with just Council is okay' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->get_ok('/reports/Brent');
+        $mech->title_like(qr/Brent Council/);
     };
 };
 
