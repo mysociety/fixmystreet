@@ -975,7 +975,7 @@ sub bin_services_for_address {
         # Need to set the custom template here because Waste::bin_days
         # doesn't actually get run because of the detach
         # XXX This can be removed when the bulky template is removed
-        if ( $self->feature('waste_features')->{bulky_enabled} ) {
+        if ( $self->bulky_enabled ) {
             $self->{c}->stash->{template} = 'waste/bin_days_bulky.html';
         }
         $self->{c}->stash->{data_loading} = 1;
