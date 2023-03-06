@@ -62,6 +62,7 @@ sub call_api {
             # uncoverable statement
             system(@cmd);
             $data = retrieve($tmp);
+            unlink $tmp; # don't want to inadvertently cache forever
         }
     }
     if ($data) {
