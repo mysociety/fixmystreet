@@ -285,15 +285,18 @@ subtest 'push updating of reports' => sub {
             'auto_response' => 1, state => 'in progress',
         });
 
-        ($report) = $mech->create_problems_for_body(1, $brent->id, 'Graffiti', {
+        my $report2;
+        ($report, $report2) = $mech->create_problems_for_body(2, $brent->id, 'Graffiti', {
             category => 'Graffiti',
         });
+        my $report_id = $report->id;
         my $cobrand = FixMyStreet::Cobrand::Brent->new;
 
+        $report2->update({ external_id => 'Symology-123' });
         $report->update({ external_id => 'Echo-waste-7671-' });
-        stdout_like {
+        stdout_is {
             $cobrand->waste_fetch_events({ verbose => 1 });
-        } qr/Fetching data for report/;
+        } "Fetching data for report $report_id\n";
         $report->discard_changes;
         is $report->comments->count, 0, 'No new update';
         is $report->state, 'confirmed', 'No state change';

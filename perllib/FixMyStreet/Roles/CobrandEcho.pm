@@ -278,6 +278,9 @@ sub waste_fetch_events {
         die "Could not find any devolved contacts\n" unless @contacts;
         $conf = $contacts[0];
         $report_params = { category => [ map { $_->category } @contacts ] };
+    } elsif ($self->moniker eq 'brent') {
+        $conf = $body;
+        $report_params = { external_id => { like => 'Echo%' } };
     } else {
         $conf = $body;
     }
