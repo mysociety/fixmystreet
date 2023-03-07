@@ -1534,9 +1534,18 @@ fixmystreet.fetch_reporting_data = function() {
         }
         $('#side-form-error').hide();
         $('#side-form').show();
+        var filter_categories = $("#filter_categories").val() || '';
         var selected = fixmystreet.reporting.selectedCategory(),
             old_category_group = selected.group || $('#filter_group').val() || '',
-            old_category = selected.category || $("#filter_categories").val() || '';
+            old_category = selected.category || filter_categories;
+
+        // If we have one filter category selected and no group, try and get it from filter
+        if (!old_category_group && !selected.category && filter_categories.length == 1) {
+            var og = $("#filter_categories option:selected").parent().attr('label');
+            if (og) {
+                old_category_group = og;
+            }
+        }
 
         fixmystreet.reporting_data = data;
 
