@@ -14,7 +14,7 @@ FixMyStreet::override_config {
     $image_path->copy($theme_dir->child('sample.jpg'));
     subtest 'manifest' => sub {
         Memcached::delete("manifest_theme:test");
-        my $j = $mech->get_ok_json('/.well-known/manifest.webmanifest');
+        my $j = $mech->get_ok_json('/.well-known/manifest-fms.webmanifest');
         is $j->{name}, 'FixMyStreet', 'correct name';
         is $j->{theme_color}, '#ffd000', 'correct theme colour';
         is_deeply $j->{icons}[0], {
@@ -23,30 +23,44 @@ FixMyStreet::override_config {
             sizes => '133x100'
         }, 'correct icon';
     };
-    subtest 'themed manifest' => sub {
-        Memcached::delete("manifest_theme:test");
-        FixMyStreet::DB->resultset('ManifestTheme')->create({
-            cobrand => "test",
-            name => "My Test Cobrand FMS",
-            short_name => "Test FMS",
-            background_colour => "#ff00ff",
-            theme_colour => "#ffffff",
-        });
 
-        my $j = $mech->get_ok_json('/.well-known/manifest.webmanifest');
-        is $j->{name}, 'My Test Cobrand FMS', 'correctly overridden name';
-        is $j->{short_name}, 'Test FMS', 'correctly overridden short_name';
-        is $j->{background_color}, '#ff00ff', 'correctly overridden background colour';
-        is $j->{theme_color}, '#ffffff', 'correctly overridden theme colour';
-    };
-    $theme_dir->remove_tree;
+    for my $test (
+        {
+            url => '/.well-known/manifest-fms.webmanifest',
+            start_url => '/?pwa',
+        },
+        {
+            url => '/.well-known/manifest-waste.webmanifest',
+            start_url => '/waste?pwa',
+        },
+    ) {
+        subtest 'themed manifest' => sub {
+            Memcached::delete("manifest_theme:test");
+            my $theme = FixMyStreet::DB->resultset('ManifestTheme')->create({
+                cobrand => "test",
+                name => "My Test Cobrand FMS",
+                short_name => "Test FMS",
+                background_colour => "#ff00ff",
+                theme_colour => "#ffffff",
+            });
+
+            my $j = $mech->get_ok_json($test->{url});
+            is $j->{name}, 'My Test Cobrand FMS', 'correctly overridden name';
+            is $j->{short_name}, 'Test FMS', 'correctly overridden short_name';
+            is $j->{background_color}, '#ff00ff', 'correctly overridden background colour';
+            is $j->{theme_color}, '#ffffff', 'correctly overridden theme colour';
+            is $j->{start_url}, $test->{start_url}, 'correct start url';
+            $theme->delete;
+        };
+        $theme_dir->remove_tree;
+    }
 };
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet'
 }, sub {
     subtest '.com manifest' => sub {
-        my $j = $mech->get_ok_json('/.well-known/manifest.webmanifest');
+        my $j = $mech->get_ok_json('/.well-known/manifest-fms.webmanifest');
         is $j->{related_applications}[0]{platform}, 'play', 'correct app';
         is $j->{icons}[0]{sizes}, '192x192', 'correct fallback size';
     };

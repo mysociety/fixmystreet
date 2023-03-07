@@ -1,7 +1,11 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<link rel="manifest" href="/.well-known/manifest.webmanifest">
+[% IF c.req.uri.path.match('^/waste') %]
+    <link rel="manifest" href=".well-known/manifest-waste.webmanifest">
+[% ELSE %]
+    <link rel="manifest" href=".well-known/manifest-fms.webmanifest">
+[% END %]
 [% IF manifest_theme %]
     <meta name='theme-color' content='[% manifest_theme.theme_colour %]'>
     [% FOREACH icon IN manifest_theme.icons %]

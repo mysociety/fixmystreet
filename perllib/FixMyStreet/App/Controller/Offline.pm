@@ -35,9 +35,29 @@ sub fallback : Local {
     my ($self, $c) = @_;
 }
 
-sub manifest: Path("/.well-known/manifest.webmanifest") {
+sub manifest_waste: Path('/.well-known/manifest-waste.webmanifest') {
     my ($self, $c) = @_;
+
+    $c->forward('send_manifest', [ 'ww']);
+}
+
+sub manifest_fms: Path('/.well-known/manifest-fms.webmanifest') {
+    my ($self, $c) = @_;
+
+    $c->forward('send_manifest', ['fms']);
+}
+
+sub send_manifest: Private {
+    my ($self, $c, $app) = @_;
+
     $c->res->content_type('application/manifest+json');
+
+    my $start_url;
+    if ($app eq 'ww') {
+       $start_url = '/waste?pwa';
+    } else {
+       $start_url = '/?pwa';
+    }
 
     my $data = {
         name => $c->stash->{manifest_theme}->{name},
@@ -47,7 +67,7 @@ sub manifest: Path("/.well-known/manifest.webmanifest") {
         icons => $c->stash->{manifest_theme}->{icons},
         lang => $c->stash->{lang_code},
         display => "minimal-ui",
-        start_url => "/?pwa",
+        start_url => $start_url,
         scope => "/",
     };
     if ($c->cobrand->can('manifest')) {
