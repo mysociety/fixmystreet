@@ -22,7 +22,7 @@ Offline pages Catalyst Controller - service worker handling
 
 sub service_worker : Path("/service-worker.js") {
     my ($self, $c) = @_;
-    if (FixMyStreet->test_mode eq 'cypress') {
+    if (FixMyStreet->test_mode && FixMyStreet->test_mode eq 'cypress') {
         $c->res->status(404);
         $c->res->body('');
         return;
