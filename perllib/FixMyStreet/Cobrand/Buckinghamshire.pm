@@ -15,6 +15,7 @@ use SUPER;
 use LWP::Simple;
 use URI;
 use Try::Tiny;
+use Utils;
 
 sub council_area_id { return 163793; }
 sub council_area { return 'Buckinghamshire'; }
@@ -109,6 +110,38 @@ sub send_questionnaires {
 }
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
+
+
+=head2 open311_extra_data_include
+
+All reports sent to Alloy should have a parent asset they're associated with.
+This is indicated by the value in the asset_resource_id field. For certain
+categories (e.g. street lights, grit bins) this will be the asset the user
+selected from the map. For other categories (e.g. potholes) or if the user
+didn't select an asset then we look up the nearest road from Buckinghamshire's
+Alloy server and use that as the parent.
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
+
+    # If the report doesn't already have an asset, associate it with the
+    # closest feature from the Alloy highways network layer.
+    # This may happen because the report was made on the app, without JS,
+    # using a screenreader, etc.
+    if (!$row->get_extra_field_value('asset_resource_id')) {
+        if (my $item_id = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
+        }
+    }
+
+    return $open311_only;
+};
+
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
@@ -489,12 +522,16 @@ sub categories_restriction {
     return $rs->search( { category => { '!=', 'Flytipping (off-road)'} } );
 }
 
-sub lookup_site_code_config { {
+sub lookup_site_code_config {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $suffix = FixMyStreet->config('STAGING_SITE') ? "staging" : "assets";
+    return {
     buffer => 200, # metres
-    url => "https://tilma.mysociety.org/mapserver/bucks",
-    srsname => "urn:ogc:def:crs:EPSG::27700",
-    typename => "Whole_Street",
-    property => "site_code",
+    _nearest_uses_latlon => 1,
+    proxy_url => "https://$host/alloy/layer.php",
+    layer => "designs_highwaysNetworkAsset_62d68698e5a3d20155f5831d",
+    url => "https://buckinghamshire.$suffix",
+    property => "itemId",
     accept_feature => sub {
         my $feature = shift;
 
@@ -506,6 +543,27 @@ sub lookup_site_code_config { {
         return $valid_types{$type};
     }
 } }
+
+sub _fetch_features_url {
+    my ($self, $cfg) = @_;
+
+    # Buckinghamshire's asset proxy is Alloy, not a standard WFS server.
+
+    my ($w, $s, $e, $n) = split(/,/, $cfg->{bbox});
+    ($s, $w) = Utils::convert_en_to_latlon($w, $s);
+    ($n, $e) = Utils::convert_en_to_latlon($e, $n);
+    my $bbox = "$w,$s,$e,$n";
+
+    my $uri = URI->new($cfg->{proxy_url});
+    $uri->query_form(
+        layer => $cfg->{layer},
+        url => $cfg->{url},
+        bbox => $bbox,
+    );
+
+    return $uri;
+}
+
 
 sub _lookup_site_name {
     my $self = shift;

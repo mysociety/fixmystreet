@@ -25,6 +25,69 @@ sub as_json {
 sub dispatch_request {
     my $self = shift;
 
+    sub (GET + /alloy/layer.php + ?*) {
+        my ($self, $args) = @_;
+        my $features = [];
+        if (
+            $args->{url} eq 'https://buckinghamshire.staging'
+            && $args->{layer} eq 'designs_highwaysNetworkAsset_62d68698e5a3d20155f5831d'
+            && $args->{bbox} eq '-0.830314942133343,51.8104703988955,-0.824420654281584,51.8140082035939'
+        ) {
+            $features = [
+                {
+                    type => "Feature",
+                    geometry => {
+                        type => "MultiLineString",
+                        coordinates => [
+                            [
+                                [
+                                    -0.8271352889663803,
+                                    51.81223799453361
+                                ],
+                                [
+                                    -0.8292204779165135,
+                                    51.81274102101397
+                                ]
+                            ]
+                        ]
+                    },
+                    properties => {
+                        itemId => "62d6e394942fae016cae1124",
+                        usrn => "01401076",
+                        title => " FOWLER ROAD - 01401076",
+                        feature_ty => "3B"
+                    }
+                },
+                {
+                    type => "Feature",
+                    geometry => {
+                        type => "MultiLineString",
+                        coordinates => [
+                            [
+                                [
+                                    -0.8301593482038864,
+                                    51.813671000615024
+                                ],
+                                [
+                                    -0.8288245117326856,
+                                    51.813136003982514
+                                ]
+                            ]
+                        ]
+                    },
+                    properties => {
+                        itemId => "62d6e394942fae016cae1246",
+                        usrn => "01401222",
+                        title => " MASONS COURT - 01401222",
+                        feature_ty => "4B"
+                    }
+                }
+            ];
+        }
+        my $json = $self->as_json($features);
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+    },
+
     sub (GET + /mapserver/tfl + ?*) {
         my ($self, $args) = @_;
         my $features = [];

@@ -2,6 +2,10 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 
+use t::Mock::Tilma;
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
+
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -61,12 +65,6 @@ $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Dirty s
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Flyposting', email => 'flyposting-parish@example.org', send_method => 'Email');
 $contact->set_extra_metadata(prefer_if_multiple => 1);
 $contact->update;
-
-my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
-$cobrand->mock('lookup_site_code', sub {
-    my ($self, $row) = @_;
-    return "Road ID" if $row->latitude == 51.812244;
-});
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'buckinghamshire', 'fixmystreet' ],
@@ -134,12 +132,13 @@ subtest 'flytipping on road sent to extra email' => sub {
     dt => DateTime->now()->subtract(minutes => 9),
 });
 
-subtest 'pothole on road not sent to extra email, only confirm sent' => sub {
+subtest 'pothole on road not sent to extra email, only Open311 sent' => sub {
     $mech->clear_emails_ok;
     FixMyStreet::Script::Reports::send();
     $mech->email_count_is(1);
     like $mech->get_text_body_from_email, qr/report's reference number/;
     $report->discard_changes;
+    is $report->get_extra_field_value("asset_resource_id"), "62d6e394942fae016cae1124", "correct asset found";
     is $report->external_id, 248, 'Report has right external ID';
 };
 
@@ -233,7 +232,7 @@ subtest 'blocked drain sent to extra email' => sub {
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number/;
 };
 
-$cobrand = FixMyStreet::Cobrand::Buckinghamshire->new();
+my $cobrand = FixMyStreet::Cobrand::Buckinghamshire->new();
 
 for my $test (
     {

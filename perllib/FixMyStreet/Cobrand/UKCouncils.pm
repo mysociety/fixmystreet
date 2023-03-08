@@ -433,6 +433,11 @@ service at the point we're sending the report over Open311.
 NB this requires the cobrand to implement `lookup_site_code_config` -
 see Buckinghamshire or Lincolnshire for an example.
 
+Assumes all coordinates are in eastings/northings (EPSG 27700), unless the
+_nearest_uses_latlon config key is set by lookup_site_code_config, in which
+case lat/lons (EPSG 4326) are used. Useful if the assets are served by e.g.
+Alloy, not Confirm.
+
 
 =cut
 
@@ -445,6 +450,9 @@ sub lookup_site_code {
     my ($x, $y) = $row->local_coords;
 
     my $features = $self->_fetch_features($cfg, $x, $y);
+    if ($cfg->{_nearest_uses_latlon}) {
+        ($x, $y) = ($row->longitude, $row->latitude);
+    }
     return $self->_nearest_feature($cfg, $x, $y, $features);
 }
 
