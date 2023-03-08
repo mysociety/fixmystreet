@@ -66,21 +66,32 @@ sub call_api {
     # We cannot fork directly under mod_fcgid, so
     # call an external script that calls back in.
     my $data;
+    my $start_call = 1;
 
     # uncoverable branch false
     if (FixMyStreet->test_mode || $self->sample_data) {
+        $start_call = 0;
         $data = $self->_parallel_api_calls(@_);
     } elsif (-e $tmp) {
+        $start_call = 0;
         # if output file is already there, we can only open it if it's finished with
         try {
             open(my $fd, "<", $tmp) or die;
             flock($fd, LOCK_SH|LOCK_NB) or die;
-            $data = retrieve_fd($fd);
-            flock($fd, LOCK_UN);
-            close($fd);
-            unlink $tmp; # don't want to inadvertently cache forever
+            try {
+                $data = retrieve_fd($fd);
+            } catch {
+                $start_call = 1;
+            } finally {
+                flock($fd, LOCK_UN);
+                close($fd);
+                unlink $tmp; # don't want to inadvertently cache forever
+            };
         };
-    } else {
+    }
+
+    # Either the temp file wasn't there, or it had bad data
+    if ($start_call) {
         if ($background) {
             # wrap the $calls value in single quotes
             push(@cmd, "'" . pop(@cmd) . "'");
