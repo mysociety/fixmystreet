@@ -1,3 +1,18 @@
+=head1 NAME
+
+FixMyStreet::Roles::ParallelAPI - code for calling external APIs in parallel
+
+=head1 SYNOPSIS
+
+To improve performance, we can sometimes make multiple external API calls in
+parallel - this is complicated by forking not being available, so this code
+sorts it all out. It can either wait for the results or run the request in the
+background (relying on the parent to deal with 'please wait' pages).
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Roles::ParallelAPI;
 use Moo::Role;
 use JSON::MaybeXS;
@@ -8,12 +23,26 @@ use Digest::MD5 qw(md5_hex);
 use Try::Tiny;
 use Fcntl qw(:flock);
 
-# ---
-# Calling things in parallel
+=head2 call_api
+
+  call_api($c, "bromley", "look_up_property:123", 0,
+    GetPointAddress => [ 123 ],
+    GetServiceUnitsForObject => [ 123 ],
+  )
+
+Called with a Catalyst object, a cobrand moniker, a key for the batch (for
+caching), whether the call should be backgrounded or not, and then a list of
+calls to be made (as methods on the integration object) and their arguments as
+an array ref.
+
+It returns either the data (if not sent to background, or if the data is now
+available) or nothing if it's started off a background process.
+
+=cut
 
 sub call_api {
     # Shifting because the remainder of @_ is passed along further down
-    my ($self, $c, $cobrand, $key, $fork) = (shift, shift, shift, shift, shift);
+    my ($self, $c, $cobrand, $key, $background) = (shift, shift, shift, shift, shift);
 
     my $type = $self->backend_type;
     $key = "$cobrand:$type:$key";
@@ -37,6 +66,7 @@ sub call_api {
     # We cannot fork directly under mod_fcgid, so
     # call an external script that calls back in.
     my $data;
+
     # uncoverable branch false
     if (FixMyStreet->test_mode || $self->sample_data) {
         $data = $self->_parallel_api_calls(@_);
@@ -51,7 +81,7 @@ sub call_api {
             unlink $tmp; # don't want to inadvertently cache forever
         };
     } else {
-        if ($fork) {
+        if ($background) {
             # wrap the $calls value in single quotes
             push(@cmd, "'" . pop(@cmd) . "'");
             # run it in the background
@@ -65,6 +95,7 @@ sub call_api {
             unlink $tmp; # don't want to inadvertently cache forever
         }
     }
+
     if ($data) {
         $c->session->{$key} = $data;
         my $time = Time::HiRes::time() - $start;
@@ -72,6 +103,14 @@ sub call_api {
     }
     return $data;
 }
+
+=head2 _parallel_api_calls
+
+This uses L<Parallel::ForkManager> to actually fork and make the requested API
+calls. Called either directly (if running in tests) or from the external script
+called by call_api.
+
+=cut
 
 sub _parallel_api_calls {
     my $self = shift;
