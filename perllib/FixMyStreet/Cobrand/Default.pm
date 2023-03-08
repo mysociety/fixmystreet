@@ -696,16 +696,15 @@ sub admin_pages {
 
     my $pages = {
          'summary' => [_('Summary'), 0],
-         'timeline' => [_('Timeline'), 5],
-         'stats'  => [_('Stats'), 8.5],
+         'stats'  => [_('Stats'), 8],
     };
 
     # There are some pages that only super users can see
     if ( $user->is_superuser ) {
-        $pages->{flagged} = [ _('Flagged'), 7 ];
-        $pages->{states} = [ _('States'), 8 ];
-        $pages->{config} = [ _('Configuration'), 9];
-        $pages->{manifesttheme} = [ _('Manifest Theme'), 11];
+        $pages->{flagged} = [ _('Flagged'), 101 ];
+        $pages->{states} = [ _('States'), 102 ];
+        $pages->{config} = [ _('Configuration'), 103 ];
+        $pages->{manifesttheme} = [ _('Manifest Theme'), 104 ];
         $pages->{user_import} = [ undef, undef ];
     };
     # And some that need special permissions
@@ -716,6 +715,7 @@ sub admin_pages {
     }
     if ( $user->has_body_permission_to('report_edit') ) {
         $pages->{reports} = [ _('Reports'), 2 ];
+        $pages->{timeline} = [_('Timeline'), 7];
         $pages->{report_edit} = [ undef, undef ];
         $pages->{update_edit} = [ undef, undef ];
     }
@@ -729,8 +729,8 @@ sub admin_pages {
     };
     if ( $user->has_body_permission_to('user_edit') ) {
         $pages->{reports} = [ _('Reports'), 2 ];
-        $pages->{users} = [ _('Users'), 6 ];
-        $pages->{roles} = [ _('Roles'), 7 ];
+        $pages->{users} = [ _('Users'), 5 ];
+        $pages->{roles} = [ _('Roles'), 6 ];
         $pages->{user_edit} = [ undef, undef ];
     }
     if ( $self->allow_report_extra_fields && $user->has_body_permission_to('category_edit') ) {
@@ -741,7 +741,7 @@ sub admin_pages {
         $pages->{emergencymessage} = [ _('Emergency message'), 12 ];
     }
     if ( $user->has_body_permission_to('wasteworks_config') ) {
-        $pages->{waste} = [ _('WasteWorks config'), 14];
+        $pages->{waste} = [ _('WasteWorks config'), 201];
     }
 
     return $pages;
