@@ -567,7 +567,9 @@ sub sign_out : Local {
     $c->logout();
 
     if ( $c->sessionid && $c->session->{oauth} && $c->session->{oauth}{logout_redirect_uri} ) {
-        $c->response->redirect($c->session->{oauth}{logout_redirect_uri});
+        my $url = $c->session->{oauth}{logout_redirect_uri};
+        $url .= '&id_token_hint=' . $c->session->{oauth}{id_token} if $c->session->{oauth}{id_token};
+        $c->response->redirect($url);
         delete $c->session->{oauth}{logout_redirect_uri};
         $c->detach;
     }

@@ -93,7 +93,7 @@ for my $test (
     error_callback => '/auth/OIDC?error=ERROR',
     success_callback => '/auth/OIDC?code=response-code&state=login',
     redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
-    logout_redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/logout},
+    logout_redirect_pattern => qr{http://oidc\.example\.org/oauth2/v2\.0/logout\?post_logout_redirect_uri=http%3A%2F%2Foidc.example.org%2Fauth%2Fsign_out&id_token_hint=},
     password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
     user_extras => [
         [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],

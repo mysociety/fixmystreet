@@ -323,6 +323,9 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
         $c->detach('oauth_failure') unless $allowed_domains{$hd};
     }
 
+    # Store the token for logout use
+    $c->session->{oauth}{id_token} = $id_token->token_string;
+
     # Cobrands can use different fields for name and email
     my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload);
     $name = '' if $name && $name !~ /\w/;
