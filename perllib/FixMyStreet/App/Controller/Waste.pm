@@ -408,6 +408,8 @@ sub populate_dd_details : Private {
     if ( $admin_fee ) {
         my $first_payment = $admin_fee + $payment;
         $c->stash->{firstamount} = sprintf( '%.2f', $first_payment / 100 );
+    } elsif ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') {
+        $c->stash->{firstamount} = sprintf( '%.2f', $payment / 100 );
     }
     $c->stash->{amount} = sprintf( '%.2f', $payment / 100 );
     $c->stash->{payment_date} = $dt;

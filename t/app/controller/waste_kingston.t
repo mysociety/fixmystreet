@@ -1054,7 +1054,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         $mech->content_like( qr/ddregularamount[^>]*"20.00"/, 'payment amount correct');
-        $mech->content_lacks( "ddfirstamount", "no different first payment");
+        $mech->content_like( qr/ddfirstamount[^>]*"20.00"/, 'first payment amount the same');
         $mech->content_like( qr{rbk/rbk_user_form}, 'uses standard form');
 
         my ($token, $report_id) = ( $mech->content =~ m#reference:([^\^]*)\^report_id:(\d+)"# );
