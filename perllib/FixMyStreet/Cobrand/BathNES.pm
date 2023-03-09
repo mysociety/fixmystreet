@@ -20,8 +20,6 @@ sub council_url { return 'bathnes'; }
 
 sub admin_user_domain { 'bathnes.gov.uk' }
 
-sub map_type { 'OSM' }
-
 sub on_map_default_status { 'open' }
 
 sub get_geocoder {
