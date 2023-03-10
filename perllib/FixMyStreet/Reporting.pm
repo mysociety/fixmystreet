@@ -371,9 +371,10 @@ sub kick_off_process {
     foreach (qw(type category state start_date end_date)) {
         $cmd .= " --$_ " . quotemeta($self->$_) if $self->$_;
     }
-    foreach (qw(body user role_id)) {
+    foreach (qw(body user)) {
         $cmd .= " --$_ " . $self->$_->id if $self->$_;
     }
+    $cmd .= " --role_id " . $self->role_id if $self->role_id;
     $cmd .= " --wards " . join(',', map { quotemeta } @{$self->wards}) if @{$self->wards};
     $cmd .= ' &' unless FixMyStreet->test_mode;
 

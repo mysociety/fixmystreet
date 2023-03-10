@@ -191,6 +191,8 @@ FixMyStreet::override_config {
         # All the fixed (Pothole) reports only
         $mech->get_ok("/dashboard?group_by=category&role=" . $role->id);
         test_table($mech->content, 0, 0, 4, 0, 4);
+        $mech->get_ok("/dashboard?export=2&group_by=category&role=" . $role->id);
+        $mech->content_contains('role-' . $role->id, "File link created with role");
     };
 
     subtest 'export as csv' => sub {
