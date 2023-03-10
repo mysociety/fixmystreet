@@ -270,6 +270,7 @@ FixMyStreet::override_config {
 
     subtest 'extra CSV columns are present' => sub {
 
+        $problems[1]->update_extra_field({ name => 'usrn', value => '20202020' });
         $problems[1]->update({ external_id => $problems[1]->id });
         $problems[2]->update({ external_id => "123098123" });
 
@@ -279,7 +280,7 @@ FixMyStreet::override_config {
 
         my @rows = $mech->content_as_csv;
         is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
-        is scalar @{$rows[0]}, 22, '22 columns present';
+        is scalar @{$rows[0]}, 23, '23 columns present';
 
         is_deeply $rows[0],
             [
@@ -287,12 +288,14 @@ FixMyStreet::override_config {
                 'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
                 'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
                 'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
-                'Reported As', 'HIAMS/Exor Ref',
+                'Reported As', 'HIAMS/Exor Ref', 'USRN',
             ],
             'Column headers look correct';
 
         is $rows[1]->[21], 'ENQ12456', 'HIAMS reference included in row';
+        is $rows[1]->[22], '', 'Report without USRN has empty usrn field';
         is $rows[2]->[21], '', 'Report without HIAMS ref has empty ref field';
+        is $rows[2]->[22], '20202020', 'USRN included in row if present';
         is $rows[3]->[21], '123098123', 'Older Exor report has correct ref';
     };
 
