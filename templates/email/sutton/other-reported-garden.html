@@ -82,17 +82,6 @@ INCLUDE '_email_top.html';
   </p>
 [% END %]
 
-[% IF type == 'renew' ~%]
-  <p style="[% p_style %]">
-    Your subscription will last for 12 months and starts from the following collection date
-    [% IF new_bins > 0 %]
-        once your
-        [% IF sacks %]sacks[% ELSE %]bins[% END %]
-        have been delivered
-    [% END %].
-  </p>
-[% END %]
-
   <p style="[% p_style %]">
     You can <a href="https://www.sutton.gov.uk/-/check-your-bin-collection-days">check your collection day online</a>.
   </p>
