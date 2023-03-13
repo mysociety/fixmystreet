@@ -10,9 +10,11 @@
 [% message %]
 </p>
 
+[% IF reference %]
 <p>
 Payment reference: [% reference %]
 </p>
+[% END %]
 
 [% FOR unit IN service_data %]
   [% NEXT UNLESS unit.service_id == 545 AND unit.next %]
