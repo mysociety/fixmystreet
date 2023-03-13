@@ -781,7 +781,6 @@ FixMyStreet::override_config {
         is $new_sub->get_extra_metadata('payerReference'), get_reference("RBK-NEW_SUB-654321", $id_replacements), "payer reference set";
         is $new_sub->get_extra_field_value('PaymentCode'), get_reference("RBK-NEW_SUB-654321", $id_replacements), 'correct echo payment code field';
         is $new_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
-        is $new_sub->get_extra_metadata('dd_mandate_id'), 1, 'correct mandate id set';
 
         $renewal_from_cc_sub->discard_changes;
         is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";

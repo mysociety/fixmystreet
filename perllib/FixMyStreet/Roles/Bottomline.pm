@@ -57,13 +57,7 @@ sub add_new_sub_metadata {
     my ($self, $new_sub, $payment) = @_;
 
     $new_sub->set_extra_metadata('dd_profile_id', $payment->data->{profileId});
-    $new_sub->set_extra_metadata('dd_mandate_id', $payment->data->{mandateId});
     $new_sub->set_extra_metadata('dd_instruction_id', $payment->data->{instructionId});
-
-    my $contact = $self->get_dd_integration->get_contact_from_email($new_sub->user->email);
-    if ($contact) {
-        $new_sub->set_extra_metadata('dd_contact_id', $contact->{id});
-    }
 }
 
 sub get_dd_integration {
@@ -111,6 +105,7 @@ sub waste_check_existing_dd {
     my $i = $self->get_dd_integration;
     my $mandate = $i->get_mandate_from_reference($payer_reference) || {};
     my $dd_status = $mandate->{status} || '';
+    $c->stash->{direct_debit_mandate} = $mandate;
 
     if ($dd_status eq 'DRAFT') {
         $c->stash->{direct_debit_status} = 'pending';

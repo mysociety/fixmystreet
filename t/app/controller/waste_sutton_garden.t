@@ -49,8 +49,6 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_canc
     { code => 'Bin_Delivery_Detail_Containers', required => 1, automated => 'hidden_field' },
     { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
-    { code => 'dd_contact_id', required => 0, automated => 'hidden_field' },
-    { code => 'dd_mandate_id', required => 0, automated => 'hidden_field' },
 );
 
 package SOAP::Result;

@@ -507,6 +507,7 @@ sub direct_debit_modify : Private {
                 comments => '',
                 date => $c->cobrand->waste_get_next_dd_day('ad-hoc'),
                 orig_sub => $c->stash->{orig_sub},
+                mandate => $c->stash->{direct_debit_mandate},
         } );
     }
 
@@ -514,6 +515,7 @@ sub direct_debit_modify : Private {
         payer_reference => $ref,
         amount => sprintf('%.2f', $total / 100),
         orig_sub => $c->stash->{orig_sub},
+        mandate => $c->stash->{direct_debit_mandate},
     } );
 }
 
@@ -532,6 +534,7 @@ sub direct_debit_cancel_sub : Private {
     my $update_ref = $i->cancel_plan( {
         payer_reference => $ref,
         report => $p,
+        mandate => $c->stash->{direct_debit_mandate},
     } );
 }
 
@@ -1158,7 +1161,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->forward('get_original_sub', ['user']);
 
-        if (!$c->stash->{orig_sub}) {
+        if (!$c->stash->{orig_sub} || $c->stash->{direct_debit_status} eq 'none') {
             $c->stash->{template} = 'waste/garden/wrong_user.html';
             $c->detach;
         }
@@ -1206,7 +1209,7 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
 
     $c->forward('get_original_sub', ['user']);
 
-    if (!$c->stash->{orig_sub}) {
+    if (!$c->stash->{orig_sub} || $c->stash->{direct_debit_status} eq 'none') {
         $c->stash->{template} = 'waste/garden/wrong_user.html';
         $c->detach;
     }
@@ -1330,6 +1333,7 @@ sub get_original_sub : Private {
     }
 
     my $r = $c->stash->{orig_sub} = $p->first;
+    $c->stash->{direct_debit_status} = '';
     $c->cobrand->call_hook(waste_check_existing_dd => $r)
         if $r && ($r->get_extra_field_value('payment_method') || '') eq 'direct_debit';
 }
