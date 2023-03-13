@@ -135,20 +135,28 @@ sub open311_post_send {
     # For certain categories, send an email also
     my $emails = $self->feature('open311_email');
     my $addresses = {
-        'Flytipping' => [ $emails->{flytipping}, "TfB" ],
-        'Blocked drain' => [ $emails->{flood}, "Flood Management" ],
-        'Ditch issue' => [ $emails->{flood}, "Flood Management" ],
-        'Flooded subway' => [ $emails->{flood}, "Flood Management" ],
-        'Claim' => [ $emails->{claim}, 'TfB' ],
+        'Flytipping' => [ email_list($emails->{flytipping}, "TfB") ],
+        'Blocked drain' => [ email_list($emails->{flood}, "Flood Management") ],
+        'Ditch issue' => [ email_list($emails->{flood}, "Flood Management") ],
+        'Flooded subway' => [ email_list($emails->{flood}, "Flood Management") ],
+        'Claim' => [ email_list($emails->{claim}, 'TfB') ],
     };
     my $dest = $addresses->{$row->category};
     return unless $dest;
 
-    my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
+    my $sender = FixMyStreet::SendReport::Email->new( to => $dest );
     $sender->send($row, $h);
     if ($sender->success) {
         $row->set_extra_metadata(extra_email_sent => 1);
     }
+}
+
+sub email_list {
+    my ($emails, $name) = @_;
+    return unless $emails;
+    my @emails = split /,/, $emails;
+    my @to = map { [ $_, $name ] } @emails;
+    return @to;
 }
 
 sub open311_config_updates {

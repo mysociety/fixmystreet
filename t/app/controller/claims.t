@@ -67,7 +67,7 @@ FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1 },
     COBRAND_FEATURES => {
         claims => { buckinghamshire => 1 },
-        open311_email => { buckinghamshire => { claim => 'claims@example.net' } },
+        open311_email => { buckinghamshire => { claim => 'claims@example.net,claims2@example.net' } },
     },
     PHONE_COUNTRY => 'GB',
     MAPIT_URL => 'http://mapit.uk/',
@@ -163,7 +163,7 @@ EOF
         is $report->latitude, 51.81386;
         FixMyStreet::Script::Reports::send();
         my @email = $mech->get_email;
-        is $email[0]->header('To'), 'TfB <claims@example.net>';
+        is $email[0]->header('To'), 'TfB <claims@example.net>, TfB <claims2@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $fault_id - Rain Road, Aylesbury";
         like $email[1]->header('To'), qr/madeareport\@/;
         is $email[1]->header('Subject'), "Your claim has been submitted, ref $fault_id";
@@ -219,7 +219,7 @@ EOF
         $report->discard_changes;
         is $report->comments->count, 1, 'updates added to report post send';
         my @email = $mech->get_email;
-        is $email[0]->header('To'), 'TfB <claims@example.net>';
+        is $email[0]->header('To'), 'TfB <claims@example.net>, TfB <claims2@example.net>';
         my $bucks_text = $mech->get_html_body_from_email($email[0]);
         like $bucks_text, qr/Confirm reference: 248/, 'confirm reference included in bucks email';
         my $text = $mech->get_text_body_from_email($email[1]);
