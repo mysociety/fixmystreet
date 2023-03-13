@@ -11,10 +11,14 @@
   </dl>
   [% END %]
 
-[% IF c.action == 'waste/garden_cancel' %]
-<p>Only the account that created the garden waste subscription can cancel it.</p>
-[% ELSIF c.action == 'waste/garden_modify' %]
-<p>Only the account that created the garden waste subscription can modify it.</p>
+[% IF direct_debit_status == 'none' %]
+    <p>We could not locate an existing Direct Debit associated with this account.</p>
+[% ELSE %]
+    [% IF c.action == 'waste/garden_cancel' %]
+        <p>Only the account that created the garden waste subscription can cancel it.</p>
+    [% ELSIF c.action == 'waste/garden_modify' %]
+        <p>Only the account that created the garden waste subscription can modify it.</p>
+    [% END %]
 [% END %]
 
 <p><a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a></p>

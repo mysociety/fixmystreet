@@ -694,20 +694,6 @@ sub waste_garden_sub_params {
     }
 }
 
-sub waste_report_extra_dd_data {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    if (my $orig = $c->stash->{orig_sub}) {
-        my $p = $c->stash->{report};
-        $p->set_extra_metadata(dd_contact_id => $orig->get_extra_metadata('dd_contact_id'))
-            if $orig->get_extra_metadata('dd_contact_id');
-        $p->set_extra_metadata(dd_mandate_id => $orig->get_extra_metadata('dd_mandate_id'))
-            if $orig->get_extra_metadata('dd_mandate_id');
-        $p->update;
-    }
-}
-
 =head2 waste_munge_report_form_fields
 
 We use a custom report form to add some text to the "About you" page.

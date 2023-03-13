@@ -1007,11 +1007,10 @@ FixMyStreet::override_config {
 
     remove_test_subs( $p->id );
     $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
-    $p->set_extra_metadata('dd_mandate_id', '100');
-    $p->set_extra_metadata('dd_contact_id', '101');
     $p->update;
 
     subtest 'cancel direct debit sub' => sub {
+        $dd->mock('get_mandate_from_reference', sub { { status => 'ACTIVE', payerId => 619, id => 444 } });
         $mech->get_ok('/waste/12345/garden_cancel');
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
@@ -1028,6 +1027,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Cancellation in progress');
+        $dd->mock('get_mandate_from_reference', sub { });
     };
 
     remove_test_subs( $p->id );
@@ -1665,12 +1665,11 @@ FixMyStreet::override_config {
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
     $p->set_extra_metadata('payerReference', 'RBK-' . $p->id . '1000000002');
-    $p->set_extra_metadata('dd_mandate_id', '100');
-    $p->set_extra_metadata('dd_contact_id', '101');
     $p->update;
 
     subtest 'check modify sub direct debit payment' => sub {
         set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
+        $dd->mock('get_mandate_from_reference', sub { { status => 'ACTIVE', payerId => 619, id => 444 } });
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
@@ -1703,6 +1702,7 @@ FixMyStreet::override_config {
             paymentType => 'DEBIT',
         }, "correct direct debit ad hoc payment params sent";
         is $dd_sent_params->{amend_plan}->{regularAmount}, '40.00', "correct direct debit amendment params sent";
+        $dd->mock('get_mandate_from_reference', sub { });
     };
 
     $dd_sent_params = {};

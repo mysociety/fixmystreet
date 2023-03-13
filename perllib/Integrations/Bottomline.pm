@@ -228,16 +228,8 @@ sub call {
 sub one_off_payment {
     my ($self, $args) = @_;
 
-    my $sub = $args->{orig_sub};
-
-    if ( $sub->get_extra_metadata('dd_contact_id') ) {
-        $args->{dd_contact_id} = $sub->get_extra_metadata('dd_contact_id');
-    } else {
-        my $contact = $self->get_contact_from_email($sub->user->email);
-        if ( $contact and !$contact->{error} ) {
-            $args->{dd_contact_id} = $contact->{id};
-        }
-    }
+    my $contact_id = $args->{mandate}{payerId};
+    my $mandate_id = $args->{mandate}{id};
 
     $args->{date}->set_time_zone('UTC');
     my $dueDate = DateTime::Format::W3CDTF->format_datetime($args->{date});
@@ -250,8 +242,8 @@ sub one_off_payment {
 
     my $path = sprintf(
         "ddm/contacts/%s/mandates/%s/transaction",
-        $args->{dd_contact_id},
-        $sub->get_extra_metadata('dd_mandate_id'),
+        $contact_id,
+        $mandate_id,
     );
     my $resp = $self->call($path, $data);
 
@@ -265,10 +257,10 @@ sub one_off_payment {
 sub amend_plan {
     my ($self, $args) = @_;
 
-    my $sub = $args->{orig_sub};
-    my $current_plan = $self->get_plan_for_mandate(
-        $sub->get_extra_metadata('dd_mandate_id')
-    );
+    my $contact_id = $args->{mandate}{payerId};
+    my $mandate_id = $args->{mandate}{id};
+
+    my $current_plan = $self->get_plan_for_mandate($mandate_id);
 
     return 0 unless $current_plan->{regularAmount};
 
@@ -301,8 +293,8 @@ sub amend_plan {
 
     my $path = sprintf(
         "ddm/contacts/%s/mandates/%s/payment-plans/%s",
-        $sub->get_extra_metadata('dd_contact_id'),
-        $sub->get_extra_metadata('dd_mandate_id'),
+        $contact_id,
+        $mandate_id,
         $plan->{id},
     );
 
@@ -531,50 +523,6 @@ sub get_cancelled_payers {
     return $self->parse_results("MandateDTO", $resp);
 }
 
-sub get_contact_from_email {
-    my ($self, $email) = @_;
-
-    my $data = $self->build_query(ixhash(
-        entity => ixhash(
-           "name" => "Contacts",
-           "symbol" => "com.bottomline.ddm.model.contact",
-           "key" => "com.bottomline.ddm.model.contact"
-       ),
-       field => ixhash(
-            name => "Contacts",
-            symbol => "com.bottomline.ddm.model.contact.Contact",
-        ),
-        query => [ ixhash(
-            '@type' => "QueryParameter",
-            "field" => ixhash(
-                "name" => "email",
-                "symbol" => "com.bottomline.ddm.model.contact.Contact.email",
-                "fieldType" => "STRING",
-                "key" => JSON()->false,
-            ),
-            "operator" => {
-                "symbol" => "="
-            },
-            "queryValues" => [ ixhash(
-               '@type' => "string",
-               '$value' => $email,
-            ) ]
-        ) ]
-    ));
-
-    my $resp = $self->call("query/execute#getContactFromEmail", $data);
-    my $contacts = $self->parse_results("ContactDTO", $resp);
-
-    if ( ref $resp eq 'HASH' and $resp->{error} ) {
-        return $resp;
-    } elsif ( @$contacts ) {
-        return $contacts->[0];
-    }
-
-    return undef;
-}
-
-
 sub get_mandate_from_reference {
     my ($self, $reference) = @_;
 
@@ -621,12 +569,12 @@ sub get_mandate_from_reference {
 sub cancel_plan {
     my ($self, $args) = @_;
 
-    my $sub = $args->{report};
-
+    my $contact_id = $args->{mandate}{payerId};
+    my $mandate_id = $args->{mandate}{id};
     my $path = sprintf(
         "ddm/contacts/%s/mandates/%s",
-        $sub->get_extra_metadata('dd_contact_id'),
-        $sub->get_extra_metadata('dd_mandate_id'),
+        $contact_id,
+        $mandate_id,
     );
 
     my $resp = $self->call($path, undef, 'DELETE');
