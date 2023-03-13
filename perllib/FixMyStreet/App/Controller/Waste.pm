@@ -1222,6 +1222,7 @@ sub garden_check : Chained('garden_setup') : Args(0) {
 sub garden : Chained('garden_setup') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_new_disabled};
     $c->detach('property_redirect') if $c->cobrand->garden_current_subscription;
 
     $c->stash->{first_page} = 'intro';
@@ -1241,6 +1242,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
     my $service = $c->cobrand->garden_current_subscription;
     $c->detach('property_redirect') unless $service && !$service->{garden_due};
+    $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_modify_disabled};
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
