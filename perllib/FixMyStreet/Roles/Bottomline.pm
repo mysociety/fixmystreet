@@ -47,6 +47,11 @@ has cancelReferenceField => (
     default => 'reference',
 );
 
+has adHocDelay => (
+    is => 'ro',
+    default => 10,
+);
+
 sub get_config {
     return shift->feature('bottomline');
 }

@@ -194,7 +194,7 @@ sub call {
             $self->endpoint . $path,
             %{ $self->headers },
         );
-    } elsif ( $data ) {
+    } elsif ( $method eq 'POST' || $data ) {
         $req = HTTP::Request::Common::POST(
             $self->endpoint . $path,
             %{ $self->headers },
@@ -266,6 +266,7 @@ sub amend_plan {
 
     $current_plan->{description} =~ s/$current_plan->{regularAmount}/$args->{amount}/g;
 
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
     my $plan = ixhash(
         '@type' => $current_plan->{'@type'},
         amountType => $current_plan->{amountType},
@@ -284,7 +285,7 @@ sub amend_plan {
             schedulePattern => $current_plan->{schedule}->{schedulePattern},
             frequencyEnd => $current_plan->{schedule}->{frequencyEnd},
             comments => $current_plan->{schedule}->{comments},
-            startDate => $current_plan->{schedule}->{startDate},
+            startDate => $today,
             endDate => $current_plan->{schedule}->{endDate},
         ),
         monthOfYear => $current_plan->{monthOfYear},
@@ -495,8 +496,8 @@ sub get_cancelled_payers {
            "key" => "com.bottomline.ddm.model.mandate"
        ),
        field => ixhash(
-            name => "Mandates",
-            symbol => "com.bottomline.ddm.model.mandate.Mandates",
+            name => "Mandate",
+            symbol => "com.bottomline.ddm.model.mandate.Mandate",
         ),
         query => [
          ixhash(
@@ -572,12 +573,12 @@ sub cancel_plan {
     my $contact_id = $args->{mandate}{payerId};
     my $mandate_id = $args->{mandate}{id};
     my $path = sprintf(
-        "ddm/contacts/%s/mandates/%s",
+        "ddm/contacts/%s/mandates/%s/status/CANCELLED",
         $contact_id,
         $mandate_id,
     );
 
-    my $resp = $self->call($path, undef, 'DELETE');
+    my $resp = $self->call($path, undef, 'POST');
 
     # if there's not an error then return success as there's no content
     # returned

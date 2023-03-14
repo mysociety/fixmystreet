@@ -500,8 +500,8 @@ sub waste_get_next_dd_day {
     # new DD mandates must have a 10-day wait
     my $dd_delay = 10;
 
-    # ad-hoc payments on an existing mandate only need a 5-day wait
-    if ($payment_type && ($payment_type eq 'ad-hoc')) { $dd_delay = 5; }
+    # ad-hoc payments on an existing mandate sometimes only need a 5-day wait
+    if ($payment_type && $payment_type eq 'ad-hoc') { $dd_delay = $self->adHocDelay; }
 
     my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());

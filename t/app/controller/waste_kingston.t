@@ -361,7 +361,7 @@ FixMyStreet::override_config {
         } elsif ( $path =~ m#mandates/[^/]*/payment-plans# ) {
             $dd_sent_params->{'amend_plan'} = $data;
             return {};
-        } elsif ( $method and $method eq 'DELETE' ) {
+        } elsif ( $path =~ m#mandates/[^/]*/status/CANCELLED# ) {
             $dd_sent_params->{cancel_plan} = {};
             return {};
         } elsif ( $path eq 'query/execute#getMandateFromReference' ) {
@@ -1667,7 +1667,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('pro_rata'), '2000', 'pro rata payment correctly set';
         is $new_report->get_extra_field_value('admin_fee'), '1500', 'adming fee payment correctly set';
 
-        my $ad_hoc_payment_date = '2021-01-15T17:00:00Z';
+        my $ad_hoc_payment_date = '2021-01-22T17:00:00Z';
 
         is_deeply $dd_sent_params->{one_off_payment}, {
             comments => $new_report->id,

@@ -47,6 +47,11 @@ has cancelledDateField => (
     default => 'CancelledDate',
 );
 
+has adHocDelay => (
+    is => 'ro',
+    default => 5,
+);
+
 sub get_config {
     return shift->feature('payment_gateway');
 }
