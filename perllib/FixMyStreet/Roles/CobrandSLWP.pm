@@ -688,6 +688,7 @@ sub waste_garden_sub_payment_params {
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
+        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         $c->set_param('payment', $cost_pa);
     }
 }

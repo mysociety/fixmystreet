@@ -41,21 +41,25 @@ sub options_container_choice {
 has_page sacks_details => (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/sacks/renew.html',
-    fields => ['bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'continue_review'],
+    fields => ['bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'apply_discount', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
         push @fields, 'payment_method', 'cheque_reference' if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
         push @fields, 'bins_wanted' unless $page->form->with_bins_wanted;
+        push @fields, 'apply_discount' if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff}));
         return \@fields;
     },
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
-        my $data = $c->stash->{garden_form_data};
-        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || 1;
+        my $data = $form->saved_data;
+        my $bin_count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+        if ($data->{apply_discount}) {
+            ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa);
+        }
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
         $form->{c}->stash->{cost_now} = $cost_pa / 100;
         return {
