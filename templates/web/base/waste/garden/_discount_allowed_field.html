@@ -1,0 +1,5 @@
+[% IF c.stash.is_staff AND c.stash.waste_features.ggw_discount_as_percent %]
+
+    [% PROCESS form override_fields=['apply_discount'] %]
+
+[% END %]

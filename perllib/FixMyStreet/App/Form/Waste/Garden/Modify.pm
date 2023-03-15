@@ -7,8 +7,15 @@ extends 'FixMyStreet::App::Form::Waste';
 has_page intro => (
     title => 'Modify your green garden waste subscription',
     template => 'waste/garden/modify_pick.html',
-    fields => ['task', 'continue'],
+    fields => ['task', 'apply_discount', 'continue'],
     next => 'alter',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff})) {
+            return ['apply_discount']
+        }
+    },
 );
 
 has_page alter => (
@@ -41,6 +48,15 @@ has_page alter => (
             my $cost_pro_rata = $c->cobrand->waste_get_pro_rata_cost($new_bins, $data->{end_date});
             $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
         }
+        if ($data->{apply_discount}) {
+            ($c->stash->{cost_pa}, $c->stash->{cost_now_admin}, $c->stash->{pro_rata}) =
+            $c->cobrand->apply_garden_waste_discount(
+                $c->stash->{cost_pa},
+                $c->stash->{cost_now_admin},
+                $c->stash->{pro_rata},
+                );
+        }
+
         my $max_bins = $data->{max_bins};
         my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
         return {
@@ -133,6 +149,16 @@ has_field bins_wanted => (
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     }
+);
+
+has_field apply_discount => (
+    type => 'Checkbox',
+    build_label_method => sub {
+        my $self = shift;
+        my $percent = $self->parent->{c}->stash->{waste_features}->{ggw_discount_as_percent};
+        return "$percent" . '% Customer discount';
+    },
+    option_label => 'Check box if customer is entitled to a discount',
 );
 
 has_field tandc => (

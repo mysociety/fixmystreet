@@ -59,9 +59,14 @@ has_page sacks_details => (
     },
     update_field_list => sub {
         my $form = shift;
+        my $data = $form->saved_data;
         my $c = $form->{c};
-        my $count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || 1;
+        my $count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $count;
+        if ($data->{apply_discount}) {
+            ($cost_pa, $c->stash->{per_sack_cost}) =
+                $c->cobrand->apply_garden_waste_discount($cost_pa, $c->stash->{per_sack_cost});
+        }
         $c->stash->{cost_pa} = $cost_pa / 100;
         return {
             bins_wanted => { default => $count },

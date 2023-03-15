@@ -22,10 +22,25 @@ sub details_update_fields {
 
     my $cost_pa = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
     my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-    $form->{c}->stash->{cost_pa} = $cost_pa / 100;
-    $form->{c}->stash->{cost_now_admin} = $cost_now_admin / 100;
-    $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
-
+    $c->stash->{cost_pa} = $cost_pa / 100;
+    $c->stash->{cost_now_admin} = $cost_now_admin / 100;
+    if ($data->{apply_discount}) {
+        (
+            $c->stash->{cost_pa},
+            $c->stash->{cost_now_admin},
+            $c->stash->{per_bin_cost},
+            $c->stash->{per_new_bin_cost},
+            $c->stash->{per_new_bin_first_cost},
+            ) =
+        $c->cobrand->apply_garden_waste_discount(
+            $c->stash->{cost_pa},
+            $c->stash->{cost_now_admin},
+            $c->stash->{per_bin_cost},
+            $c->stash->{per_new_bin_cost},
+            $c->stash->{per_new_bin_first_cost},
+            );
+    }
+    $c->stash->{cost_now} = $c->stash->{cost_now_admin} + $c->stash->{cost_pa};
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
 
     return {
@@ -39,12 +54,19 @@ sub with_sacks_choice { 0 }
 has_page intro => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_intro.html',
-    fields => ['continue'],
+    fields => ['continue', 'apply_discount'],
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
         $data->{_garden_sacks} = 1 if $form->with_sacks_choice;
         return {};
+    },
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff})) {
+            return ['apply_discount']
+        }
     },
     next => sub {
         return 'choice' if $_[0]->{_garden_sacks};
@@ -94,6 +116,10 @@ has_page summary => (
             $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
         }
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        if ($data->{apply_discount}) {
+            ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
+                $cost_pa, $cost_now_admin);
+        }
 
         my $total = $cost_now_admin + $cost_pa;
 
@@ -175,6 +201,16 @@ has_field bins_wanted => (
     tags => {
         hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
     },
+);
+
+has_field apply_discount => (
+    type => 'Checkbox',
+    build_label_method => sub {
+        my $self = shift;
+        my $percent = $self->parent->{c}->stash->{waste_features}->{ggw_discount_as_percent};
+        return "$percent" . '% Customer discount';
+    },
+    option_label => 'Check box if customer is entitled to a discount',
 );
 
 with 'FixMyStreet::App::Form::Waste::Billing';

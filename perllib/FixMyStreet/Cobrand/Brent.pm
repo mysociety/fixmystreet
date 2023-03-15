@@ -860,6 +860,7 @@ sub waste_garden_sub_payment_params {
         $data->{bin_count} = $bin_count;
         $data->{new_bins} = $bin_count;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         $c->set_param('payment', $cost_pa);
     }
 }
@@ -896,6 +897,15 @@ sub garden_waste_cost_pa {
     }
 
     return $cost;
+}
+
+sub apply_garden_waste_discount {
+    my ($self, @charges ) = @_;
+
+    my $discount = $self->{c}->stash->{waste_features}->{ggw_discount_as_percent};
+    my $proportion_to_pay = 1 - $discount / 100;
+    my @discounted = map { $_ ? $_ * $proportion_to_pay : $_ } @charges;
+    return @discounted;
 }
 
 sub garden_waste_new_bin_admin_fee { 0 }
