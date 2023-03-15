@@ -248,10 +248,38 @@ sub _witnessed_general_flytipping {
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
     return 'SKIP' if _witnessed_general_flytipping($row);
+
+    # This is a temporary addition to workaround an issue with the bulky goods
+    # backend Peterborough are using.
+    # In addition to sending the booking details as extra fields in the usual
+    # manner, we concatenate all relevant details into the report's title field,
+    # which is displayed as a service request note in Bartec.
+    if ($row->category eq 'Bulky collection') {
+        # We don't want to persist our changes to the DB, so keep a copy
+        # of the original title so it can be restored by open311_post_send.
+        $self->{pboro_original_title} = $row->get_extra_field_value("title");
+
+        my $title = "Crew notes: " . ( $row->get_extra_field_value("CREW NOTES") || "" );
+        $title .= "\n\nItems:\n";
+
+        my $max = $self->bulky_items_maximum;
+        for (1..$max) {
+            my $two = sprintf("%02d", $_);
+            if (my $item = $row->get_extra_field_value("ITEM_$two")) {
+                $title .= "$two. $item\n";
+            }
+        }
+        $row->update_extra_field({ name => "title", value => $title});
+    }
 }
 
 sub open311_post_send {
     my ($self, $row, $h) = @_;
+
+    if ($row->category eq 'Bulky collection') {
+        # Restore problem's original title before it's stored to DB.
+        $row->update_extra_field({ name => "title", value => $self->{pboro_original_title} });
+    }
 
     # Check Open311 was successful
     my $send_email = $row->external_id || _witnessed_general_flytipping($row);
