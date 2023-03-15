@@ -16,7 +16,15 @@
         data-per_bin_cost="[% per_bin_cost %]"
         data-per_new_bin_first_cost="[% per_new_bin_first_cost %]"
         data-per_new_bin_cost="[% per_new_bin_cost %]"
+      [% IF is_staff && waste_features.ggw_discount_as_percent %]
+        data-discount_percent="[% waste_features.ggw_discount_as_percent %]"
+      [% END %]
     >
+    [% IF is_staff && waste_features.ggw_discount_as_percent %]
+        <span hidden class="cost-pa__total-costs">
+            <span id="apply_discount_wrapper" hidden>Discount applied: <span id="apply_discount_amount">[% tprintf( '%.0f', waste_features.ggw_discount_as_percent ) %]%</span></span>
+        </span>
+    [% END %]
       <span class="cost-pa__total-costs">
           Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
       </span>
@@ -33,6 +41,8 @@
   <hr class="fieldset-hr">
   [% PROCESS 'waste/garden/_payment_field.html' %]
 
+  [% PROCESS 'waste/garden/_discount_allowed_field.html' %]
+
   [% IF property %]
   <dl class="waste__address">
     <dt class="waste__address__title"><h2 class="govuk-fieldset__heading">Collection address</h2></dt>
@@ -40,7 +50,8 @@
   </dl>
   [% END %]
 
-  [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
+  [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+  [% PROCESS form override_fields=['continue_review'] %]
   [% PROCESS form override_fields=['saved_data', 'token', 'process', 'unique_id'] %]
 
 </form>

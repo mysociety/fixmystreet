@@ -13,12 +13,19 @@ extends 'FixMyStreet::App::Form::Waste::Garden';
 has_page intro => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_intro.html',
-    fields => ['continue'],
+    fields => ['apply_discount', 'continue'],
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
         $form->intro_field_data($data);
         return {};
+    },
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff})) {
+            return ['apply_discount']
+        }
     },
     next => sub {
         return 'choice' if $_[0]->{_garden_sacks};
@@ -74,9 +81,14 @@ has_page sacks_details => (
     },
     update_field_list => sub {
         my $form = shift;
+        my $data = $form->saved_data;
         my $c = $form->{c};
-        my $count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || 1;
+        my $count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $count;
+        if ($data->{apply_discount}) {
+            ($cost_pa, $c->stash->{per_bin_cost}) =
+                $c->cobrand->apply_garden_waste_discount($cost_pa, $c->stash->{per_bin_cost});
+        }
         $c->stash->{cost_pa} = $cost_pa / 100;
         return {
             bins_wanted => { default => $count },

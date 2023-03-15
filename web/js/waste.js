@@ -3,6 +3,15 @@ window.addEventListener("pagehide", function() {
         .prop('disabled', false)
         .parents('.govuk-form-group').removeClass('loading');
 });
+
+function apply_discount (admin_fee, total_per_year, pro_rata_cost) {
+    var costs = $('.js-bin-costs'),
+        discount_percent = costs.data('discount_percent');
+    $('#apply_discount_wrapper').show();
+    var discount = 1 - discount_percent / 100;
+    return [admin_fee, total_per_year, pro_rata_cost].map(function(x) { if (x) { return x * discount; } else { return 0;}});
+}
+
 $(function() {
     $('form.waste').on('submit', function(e) {
         var $btn = $('input[type="submit"]', this);
@@ -27,6 +36,11 @@ $(function() {
               admin_fee += (new_bins-1) * per_new_bin_cost;
           }
       }
+      $('#apply_discount_wrapper').hide();
+      if ($('[name=apply_discount]')[0] && $('[name=apply_discount]')[0].checked) {
+         var charges = apply_discount(admin_fee, total_per_year);
+         admin_fee = charges[0]; total_per_year = charges[1];
+        }
       var total_cost = total_per_year + admin_fee;
 
       $('#cost_pa').text(total_per_year.toFixed(2));
@@ -35,6 +49,7 @@ $(function() {
     }
     $('#subscribe_details #bins_wanted, #subscribe_details #current_bins').on('change', bin_cost_new);
     $('#renew #bins_wanted, #renew #current_bins').on('change', bin_cost_new);
+    $('#renew [name=apply_discount]').on('change', bin_cost_new);
 
     function modify_cost() {
       var total_bins = parseInt($('#bins_wanted').val() || 0);
@@ -59,11 +74,17 @@ $(function() {
       } else {
           $('#new_bin_count').text(0);
       }
+      $('#apply_discount_wrapper').hide();
+      if ($('[name=apply_discount]')[0] && $('[name=apply_discount]')[0].checked) {
+         var charges = apply_discount(admin_fee, total_per_year, pro_rata_cost);
+         admin_fee = charges[0]; total_per_year = charges[1]; pro_rata_cost = charges[2];
+        }
       $('#cost_per_year').text(total_per_year.toFixed(2));
       $('#cost_now_admin').text(admin_fee.toFixed(2));
       $('#pro_rata_cost').text(pro_rata_cost.toFixed(2));
     }
     $('#modify #bins_wanted, #modify #current_bins').on('change', modify_cost);
+    $('#modify [name=apply_discount]').on('change', modify_cost);
 });
 
 // Bulky waste
