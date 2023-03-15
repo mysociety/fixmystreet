@@ -455,6 +455,138 @@ FixMyStreet::override_config {
         like $body, qr/Garden waste sack collection: 1/;
         like $body, qr/Total:.*?50.00/;
     };
+
+    for my $test(
+        {
+            box_ticked => 1,
+            cost => '£20.00',
+            cost_pence => '2000',
+            description => '20 per cent off half price with checkbox ticked',
+            date => '2023-10-09T17:00:00Z',
+        },
+        {
+            box_ticked => 1,
+            cost => '£40.00',
+            cost_pence => '4000',
+            description => '20 per cent off with checkbox ticked',
+            date => '2023-01-09T17:00:00Z',
+        },
+        {
+            box_ticked => 0,
+            cost => '£50.00',
+            cost_pence => '5000',
+            description => 'Full price with checkbox not ticked',
+            date => '2023-01-09T17:00:00Z',
+        }) {
+            subtest 'check discount on new ggw can be applied by staff user' => sub {
+                FixMyStreet::override_config {
+                    ALLOWED_COBRANDS => 'brent',
+                    MAPIT_URL => 'http://mapit.uk/',
+                    STAGING_FLAGS => { skip_waste_payment => 1},
+                    COBRAND_FEATURES => {
+                        echo => { brent => { url => 'http://example.org' } },
+                        waste => { brent => 1 },
+                        waste_features => { brent => { ggw_discount_as_percent => 20, dd_disabled => 1 } },
+                        payment_gateway => { brent => {
+                            ggw_cost => 5000,
+                            cc_url => 'http://example.org/cc_submit',
+                            hmac => '1234',
+                            hmac_id => '1234',
+                            scpID => '1234',
+                        }   },
+                        anonymous_account => { brent => 'anonymous.customer' },
+                },
+            }, sub {
+                set_fixed_time($test->{date});
+                $mech->log_in_ok($staff_user->email);
+                $mech->get_ok('/waste/12345/garden');
+                $mech->submit_form_ok({ with_fields => { apply_discount => $test->{box_ticked} }}, 'Discount box available');
+                $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
+                $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+                $mech->submit_form_ok({ with_fields => {
+                    current_bins => 1,
+                    bins_wanted => 1,
+                    name => 'Test McTest',
+                    email => 'test@example.net'
+                } });
+                $mech->content_contains('Test McTest');
+                $mech->content_contains($test->{cost}, $test->{description});
+                $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+                my ($report_id) = $mech->content =~ /<strong>(\d+)<\/strong>/;
+                my $report = FixMyStreet::DB->resultset('Problem')->find( {
+                    id => $report_id,
+                });
+                is $report->get_extra_field_value('payment'), $test->{cost_pence}, 'Correct payment set on report';
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Reports::send();
+                my @emails = $mech->get_email;
+                my $body = $mech->get_text_body_from_email($emails[1]);
+                like $body, qr /Total: $test->{cost}/, 'Email contains correct subscription';
+            };
+        };
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden');
+        $mech->content_lacks('id="apply_discount', 'Discount not available for non-staff');
+    };
+
+    for my $test(
+    {
+        box_ticked => 1,
+        cost => '£40.00',
+        cost_pence => '4000',
+        description => '20 per cent off with checkbox ticked',
+    }) {
+        subtest 'check discount on renew ggw can be applied by staff user' => sub {
+            FixMyStreet::override_config {
+                ALLOWED_COBRANDS => 'brent',
+                MAPIT_URL => 'http://mapit.uk/',
+                STAGING_FLAGS => { skip_waste_payment => 1},
+                COBRAND_FEATURES => {
+                    echo => { brent => { url => 'http://example.org' } },
+                    waste => { brent => 1 },
+                    waste_features => { brent => { ggw_discount_as_percent => 20, dd_disabled => 1 } },
+                    payment_gateway => { brent => {
+                    ggw_cost => 5000,
+                    cc_url => 'http://example.org/cc_submit',
+                    hmac => '1234',
+                    hmac_id => '1234',
+                    scpID => '1234',
+                    }   },
+                    anonymous_account => { brent => 'anonymous.customer' },
+                },
+            }, sub {
+                $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+                set_fixed_time('2021-03-09T17:00:00Z');
+                $mech->log_in_ok($staff_user->email);
+                $mech->get_ok('/waste/12345/garden_renew');
+                $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
+                $mech->submit_form_ok({ with_fields => {
+                    current_bins => 1,
+                    bins_wanted => 1,
+                    name => 'Test McTest',
+                    email => 'test@example.net',
+                    apply_discount => 1,
+                    } }), ;
+                $mech->content_contains($test->{cost}, $test->{description});
+                $mech->submit_form_ok({ with_fields => {
+                    tandc => 1,
+                    } });
+                my ($report_id) = $mech->content =~ /<strong>(\d+)<\/strong>/;
+                my $report = FixMyStreet::DB->resultset('Problem')->find( {
+                     id => $report_id,
+                });
+                is $report->get_extra_field_value('payment'), $test->{cost_pence}, 'Correct payment set on report';
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Reports::send();
+                my @emails = $mech->get_email;
+                my $body = $mech->get_text_body_from_email($emails[1]);
+                like $body, qr /Total: $test->{cost}/, 'Email contains correct subscription';
+            };
+        };
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_lacks('id="apply_discount', 'Discount not available for non-staff');
+    };
 };
 
 sub get_report_from_redirect {
