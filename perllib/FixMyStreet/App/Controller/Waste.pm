@@ -1480,6 +1480,7 @@ sub process_garden_modification : Private {
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
         $payment_method = 'credit_card';
+        ($payment) = $c->cobrand->apply_garden_waste_discount($payment) if $data->{apply_discount};
         $pro_rata = $payment; # Set so goes through flow below
     } else {
         my $bin_count = $data->{bins_wanted};
@@ -1488,11 +1489,13 @@ sub process_garden_modification : Private {
         $data->{new_bins} = $new_bins;
 
         my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-
+        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         # One-off ad-hoc payment to be made now
         if ( $new_bins > 0 ) {
             my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
             $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
+            ($cost_now_admin, $pro_rata) = $c->cobrand->apply_garden_waste_discount(
+                $cost_now_admin, $pro_rata) if $data->{apply_discount};
             $c->set_param('pro_rata', $pro_rata);
             $c->set_param('admin_fee', $cost_now_admin);
         }
@@ -1555,6 +1558,8 @@ sub process_garden_renew : Private {
 
         my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
+        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
+            $cost_pa, $cost_now_admin) if $data->{apply_discount};
 
         $c->set_param('payment', $cost_pa);
         $c->set_param('admin_fee', $cost_now_admin);
@@ -1607,7 +1612,8 @@ sub process_garden_data : Private {
 
         my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-
+        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
+            $cost_pa, $cost_now_admin) if $data->{apply_discount};
         $c->set_param('payment', $cost_pa);
         $c->set_param('admin_fee', $cost_now_admin);
     }
