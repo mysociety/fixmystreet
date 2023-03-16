@@ -94,10 +94,10 @@ sub create_contact {
 
 create_contact({ category => 'Report missed collection', email => 'missed' });
 create_contact({ category => 'Request new container', email => 'request@example.org' },
-    { code => 'Container_Task_New_Quantity', required => 1, automated => 'hidden_field' },
-    { code => 'Container_Task_New_Container_Type', required => 1, automated => 'hidden_field' },
-    { code => 'Container_Task_New_Actions', required => 0, automated => 'hidden_field' },
-    { code => 'Container_Task_New_Notes', required => 0, automated => 'hidden_field' },
+    { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Request_Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Request_Action', required => 0, automated => 'hidden_field' },
+    { code => 'Container_Request_Notes', required => 0, automated => 'hidden_field' },
     { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -556,9 +556,9 @@ FixMyStreet::override_config {
         $mech->content_contains('Your container request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->get_extra_field_value('Container_Task_New_Container_Type'), '11::11';
-        is $report->get_extra_field_value('Container_Task_New_Actions'), '2::1';
-        is $report->get_extra_field_value('Container_Task_New_Notes'), '';
+        is $report->get_extra_field_value('Container_Request_Container_Type'), '11::11';
+        is $report->get_extra_field_value('Container_Request_Action'), '2::1';
+        is $report->get_extra_field_value('Container_Request_Notes'), '';
     };
 
     subtest 'test paying for a missing refuse container' => sub {
@@ -613,9 +613,9 @@ FixMyStreet::override_config {
         is $new_report->title, 'Request new General rubbish bin (grey bin)', 'correct title on report';
         is $new_report->get_extra_field_value('payment'), 5000, 'correct payment';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-        #is $new_report->get_extra_field_value('Container_Task_New_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Task_New_Container_Type'), 3, 'correct bin type';
-        is $new_report->get_extra_field_value('Container_Task_New_Actions'), 1, 'correct container request action';
+        #is $new_report->get_extra_field_value('Container_Request_Quantity'), 1, 'correct bin count';
+        is $new_report->get_extra_field_value('Container_Request_Container_Type'), 3, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Request_Action'), 1, 'correct container request action';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 

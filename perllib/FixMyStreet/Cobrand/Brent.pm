@@ -519,11 +519,11 @@ sub waste_munge_request_data {
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
     if ($reason eq 'damaged') {
-        $c->set_param('Container_Task_New_Actions', '2::1'); # Collect/Deliver
-        $c->set_param('Container_Task_New_Container_Type', $id . '::' . $id);
+        $c->set_param('Container_Request_Action', '2::1'); # Collect/Deliver
+        $c->set_param('Container_Request_Container_Type', $id . '::' . $id);
     } else {
-        $c->set_param('Container_Task_New_Actions', 1); # Deliver
-        $c->set_param('Container_Task_New_Container_Type', $id);
+        $c->set_param('Container_Request_Action', 1); # Deliver
+        $c->set_param('Container_Request_Container_Type', $id);
     }
 
     $data->{title} = "Request new $container";
@@ -539,7 +539,7 @@ sub waste_munge_request_data {
         $data->{detail} .= "\n\nDamage reported during collection: " . $data->{details_damaged};
         $notes .= " - " . $data->{details_damaged};
     }
-    $c->set_param('Container_Task_New_Notes', $notes) if $notes;
+    $c->set_param('Container_Request_Notes', $notes) if $notes;
 }
 
 sub waste_request_form_first_next {
