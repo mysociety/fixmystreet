@@ -296,6 +296,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
         $mech->content_like(qr/If your bin is not received two working days before scheduled collection\s+please call 01733 747474 to discuss alternative arrangements./);
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
@@ -310,6 +312,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
         $mech->content_contains('Please leave your bin accessible');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
@@ -327,6 +331,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: (Other - PD STAFF)";
@@ -340,6 +346,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
@@ -365,6 +373,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Request sent');
         $mech->content_contains('Food bags will be supplied by the crew on your next collection day.');
         $mech->content_lacks('Bins arrive typically within two weeks');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
     };
     subtest 'Request food bins from front page' => sub {
         $mech->log_in_ok($staff->email);
@@ -388,6 +398,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
@@ -399,6 +411,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: This is the extra detail.";
@@ -411,6 +425,8 @@ FixMyStreet::override_config {
         $mech->content_lacks('Friday, 6 August'); # No date for food bins
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed Food bins';
@@ -441,6 +457,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->detail, "Green bin\n\n1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed assisted collection';
@@ -474,6 +492,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
         $mech->content_contains('Please leave your bin accessible');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, 'Damaged 240L Black bin';
         is $report->detail, "The bin’s lid is damaged\n\n1 Pope Way, Peterborough, PE1 3NA";
@@ -501,6 +521,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
         $mech->content_lacks('Please leave your bin accessible');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, 'Bin not returned';
         is $report->detail, "The bin wasn’t returned to the collection point\n\n1 Pope Way, Peterborough, PE1 3NA";
@@ -520,6 +542,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
         $mech->content_contains('Please leave your bin accessible');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
 
         FixMyStreet::Script::Reports::send();
 
@@ -547,6 +571,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bins reported');
         $mech->content_contains('Please leave your bin accessible');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
 
         is $problems->count, 2;
 
@@ -570,6 +596,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Damaged bin reported');
         $mech->content_contains('Please leave your bin accessible');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, '360L Black';
         is $report->detail, "The bin’s lid is damaged, exchange bin\n\n1 Pope Way, Peterborough, PE1 3NA";
@@ -585,6 +613,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Missed collection reported');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 360L Black bin';

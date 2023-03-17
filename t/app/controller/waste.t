@@ -177,6 +177,8 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         $mech->get_ok($link);
         $mech->content_contains('Your missed collection has been reported');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Bromley Council" <missed@example.org>';
@@ -250,6 +252,8 @@ FixMyStreet::override_config {
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
@@ -269,6 +273,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->title, 'Request new Garden Waste Container';
         is $report->get_extra_field_value('uprn'), 1000000002;
@@ -289,6 +295,8 @@ FixMyStreet::override_config {
         my $link = $mech->get_link_from_email; # Only one email sent, this also checks
         $mech->get_ok($link);
         $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         is $emails[0]->header('To'), '"Bromley Council" <request@example.org>';
@@ -339,6 +347,8 @@ FixMyStreet::override_config {
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
@@ -360,6 +370,8 @@ FixMyStreet::override_config {
         $mech->content_contains($staff_user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
@@ -375,6 +387,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Reason'), 'Reason';
         is $report->detail, "Behind the garden gate\n\nReason\n\n2 Example Street, Bromley, BR1 1AA";

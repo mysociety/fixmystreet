@@ -82,6 +82,12 @@ $container-max-width: 1100px;
     // This gets rid of the .govuk-button box-shadow
     box-shadow: none;
 
+    // Make sure a.govuk-button elements with have visible text
+    &:link, &:visited {
+        color: $color;
+        background: $background-color;
+    }
+
     &:hover {
         background: $color;
         color: $background-color;
