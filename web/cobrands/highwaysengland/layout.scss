@@ -86,3 +86,19 @@ p.form-error {
     padding-bottom: 2em;
     margin-top: 2em;
 }
+
+// NH want the inspector form to be a bit wider
+.with-actions {
+    #map_box {
+        left: 60em;
+    }
+    #map_sidebar {
+        width: 60em;
+    }
+    #side-inspect {
+        width: 100%;
+        input[type=text], input[type=password], input[type=email], textarea {
+            max-width: 100%;
+        }
+    }
+}
