@@ -4,6 +4,9 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
+
 sub council_area_id { 2248 }
 sub council_area { 'Northumberland' }
 sub council_name { 'Northumberland County Council' }
