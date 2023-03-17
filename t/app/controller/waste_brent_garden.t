@@ -37,6 +37,8 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'Request_Type', required => 1, automated => 'hidden_field' },
     { code => 'Paid_Collection_Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Paid_Collection_Container_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Type', required => 0, automated => 'hidden_field' },
+    { code => 'Container_Quantity', required => 0, automated => 'hidden_field' },
     { code => 'Payment_Value', required => 1, automated => 'hidden_field' },
     { code => 'current_containers', required => 1, automated => 'hidden_field' },
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
@@ -287,7 +289,7 @@ FixMyStreet::override_config {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
             is $sent_params->{items}[0]{amount}, $test->{pence_cost}, 'correct amount used';
-            check_extra_data_pre_confirm($new_report);
+            check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1);
 
             $mech->get('/waste/pay/xx/yyyyyyyyyyy');
             ok !$mech->res->is_success(), "want a bad response";
@@ -415,6 +417,8 @@ sub check_extra_data_pre_confirm {
         action => 1,
         bin_type => 1,
         payment_method => 'credit_card',
+        new_quantity => '',
+        new_bin_type => '',
         @_
     );
     $report->discard_changes;
@@ -423,6 +427,8 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
     is $report->get_extra_field_value('Paid_Collection_Container_Quantity'), $params{quantity}, 'correct bin count';
     is $report->get_extra_field_value('Paid_Collection_Container_Type'), $params{bin_type}, 'correct bin type';
+    is $report->get_extra_field_value('Container_Quantity'), $params{new_quantity}, 'correct bin count';
+    is $report->get_extra_field_value('Container_Type'), $params{new_bin_type}, 'correct bin type';
     is $report->state, $params{state}, 'report state correct';
     if ($params{state} eq 'unconfirmed') {
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';

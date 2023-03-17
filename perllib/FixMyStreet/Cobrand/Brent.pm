@@ -640,6 +640,10 @@ sub waste_garden_sub_params {
     $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
     $c->set_param('Payment_Value', $data->{cost_pa});
     # $c->set_param('Payment Authorisation Code') is possibly set as payment_reference
+    if ( $data->{new_bins} > 0 ) {
+        $c->set_param('Container_Type', GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE);
+        $c->set_param('Container_Quantity', $data->{new_bins});
+    }
 }
 
 sub garden_waste_cost_pa {
