@@ -22,6 +22,8 @@ sub disambiguate_location {
 
 sub admin_user_domain { 'northumberland.gov.uk' }
 
+sub allow_anonymous_reports { 'button' }
+
 sub reopening_disallowed {
     my ($self, $problem) = @_;
 
