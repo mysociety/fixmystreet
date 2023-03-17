@@ -42,6 +42,7 @@ sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0
 sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction($_[0], $_[1]) }
 sub site_key { FixMyStreet::Cobrand::UKCouncils::site_key($_[0], $_[1]) }
 sub all_reports_single_body { FixMyStreet::Cobrand::UKCouncils::all_reports_single_body($_[0], $_[1]) }
+sub suggest_duplicates { FixMyStreet::Cobrand::UKCouncils::suggest_duplicates($_[0]) }
 
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
