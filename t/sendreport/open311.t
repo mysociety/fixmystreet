@@ -221,13 +221,42 @@ test_overrides fixmystreet =>
     }),
     [ { name => 'site_code', value => 'Road ID' } ];
 
+test_overrides fixmystreet =>
+    {
+        body_name => 'Shropshire',
+        body_cobrand => 'shropshire',
+        area_id   => 2238,
+        row_data  => {
+            used_map => 0,
+            postcode => 'WV7 3EX',
+        },
+    },
+    superhashof({
+        handler => isa('FixMyStreet::Cobrand::Shropshire'),
+        'open311' => noclass(superhashof({
+            %standard_open311_parameters,
+        })),
+        problem_extra => bag(
+            { name => 'report_url',  value => undef     },
+            { name => 'title',       value => 'Problem' },
+            { name => 'site_code',   value => 'Road ID' },
+            { name => 'description', value => qq/NOTE:
+Map was not used; location may not be accurate.
+Search string used: WV7 3EX
+
+A big problem/
+            },
+        ),
+    }),
+    [ { name => 'site_code', value => 'Road ID' } ];
+
 sub test_overrides {
     # NB: Open311 and ::SendReport::Open311 are mocked below in BEGIN { ... }
     my ($cobrand, $input, $expected_data, $end_extra) = @_;
     subtest "$cobrand ($input->{body_name}) overrides" => sub {
 
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney'],
+            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney', 'shropshire'],
         }, sub {
             my $db = FixMyStreet::DB->schema;
             #$db->txn_begin;

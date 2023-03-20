@@ -144,6 +144,38 @@ sub open311_config {
     $params->{upload_files} = 1;
 }
 
+=head2 open311_extra_data_include
+
+Adds extra information to certain fields passed to Open311.
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self, $row, $h) = @_;
+
+    my $open311_only = $self->$orig($row, $h);
+
+    if (!$row->used_map) {
+        for (@$open311_only) {
+            if ($_->{name} eq 'description') {
+                my $search_string
+                    = $row->postcode
+                    ? 'Search string used: ' . $row->postcode . "\n"
+                    : '';
+
+                my $prefix =<<"HERE";
+NOTE:
+Map was not used; location may not be accurate.
+$search_string
+HERE
+                $_->{value} = $prefix . $_->{value};
+            }
+        }
+    }
+
+    return $open311_only;
+};
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
