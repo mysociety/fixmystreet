@@ -41,4 +41,27 @@ sub reopening_disallowed {
     return 1;
 }
 
+sub open311_extra_data_include {
+    my ($self, $row, $h) = @_;
+
+    my $open311_only = [
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category },
+    ];
+
+    return $open311_only;
+}
+
+sub open311_title_fetched_report {
+    my ($self, $request) = @_;
+    my ($group, $category) = split(/_/, $request->{service_name});
+    return sprintf("%s: %s", $group, $category);
+}
+
 1;
