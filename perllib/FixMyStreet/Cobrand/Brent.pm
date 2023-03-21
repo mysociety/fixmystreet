@@ -294,21 +294,21 @@ sub bin_services_for_address {
 
     $self->{c}->stash->{containers} = {
         1 => 'Blue rubbish sack',
-        3 => 'General rubbish bin (grey bin)',
+        16 => 'General rubbish bin (grey bin)',
         8 => 'Clear recycling sack',
-        11 => 'Recycling bin (blue bin)',
-        23 => 'Food waste caddy',
-        25 => 'Garden waste (green bin)',
+        6 => 'Recycling bin (blue bin)',
+        11 => 'Food waste caddy',
+        13 => 'Garden waste (green bin)',
     };
 
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
-        262 => [ 3 ],
-        265 => [ 11 ],
+        262 => [ 16 ],
+        265 => [ 6 ],
         269 => [ 8 ],
-        316 => [ 23 ],
-        317 => [ 25 ],
+        316 => [ 11 ],
+        317 => [ 13 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -668,7 +668,7 @@ sub waste_munge_request_form_data {
     $data->{"container-$container_id"} = 1;
 
     # Best place for this?
-    if ($data->{"container-3"} && $data->{request_reason} eq "missing") {
+    if ($data->{"container-16"} && $data->{request_reason} eq "missing") {
         $data->{payment} = $self->feature('payment_gateway')->{request_cost};
     }
 }

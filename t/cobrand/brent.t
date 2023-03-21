@@ -501,7 +501,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Request a recycling container');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 } }, "Choose general rubbish bin");
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose general rubbish bin");
 
         $mech->content_contains("Why do you need a replacement container?");
         $mech->content_contains("My container is damaged", "Can report damaged container");
@@ -530,7 +530,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'other' } });
         $mech->content_contains("About you", "No notes required for other damage");
 
-        for my $test ({ id => 23, name => 'food waste caddy'}, { id => 11, name => 'Recycling bin (blue bin)'}) {
+        for my $test ({ id => 11, name => 'food waste caddy'}, { id => 6, name => 'Recycling bin (blue bin)'}) {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
             $mech->submit_form_ok({ with_fields => { 'container-choice' => $test->{id} } }, "Choose " . $test->{name});
@@ -557,7 +557,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your container request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->get_extra_field_value('Container_Request_Container_Type'), '11::11';
+        is $report->get_extra_field_value('Container_Request_Container_Type'), '6::6';
         is $report->get_extra_field_value('Container_Request_Action'), '2::1';
         is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
         is $report->get_extra_field_value('Container_Request_Notes'), '';
@@ -596,7 +596,7 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 } }, "Choose general rubbish bin");
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose general rubbish bin");
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
         $mech->content_contains('grey bin');
@@ -616,7 +616,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('payment'), 5000, 'correct payment';
         is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         #is $new_report->get_extra_field_value('Container_Request_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Container_Type'), 3, 'correct bin type';
+        is $new_report->get_extra_field_value('Container_Request_Container_Type'), 16, 'correct bin type';
         is $new_report->get_extra_field_value('Container_Request_Action'), 1, 'correct container request action';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
         is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';

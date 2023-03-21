@@ -4,10 +4,10 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
-use constant CONTAINER_GREY_BIN => 3;
-use constant CONTAINER_BLUE_BIN => 11;
-use constant CONTAINER_FOOD_CADDY => 23;
-use constant CONTAINER_GREEN_BIN => 25;
+use constant CONTAINER_GREY_BIN => 16;
+use constant CONTAINER_BLUE_BIN => 6;
+use constant CONTAINER_FOOD_CADDY => 11;
+use constant CONTAINER_GREEN_BIN => 13;
 
 has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
@@ -95,7 +95,7 @@ has_field details_damaged => (
 
 sub summary_submit_button_label {
     my ($self, $data) = @_;
-    if ($data->{"container-choice"} == 3 && $data->{request_reason} eq "missing") {
+    if ($data->{"container-choice"} == CONTAINER_GREY_BIN && $data->{request_reason} eq "missing") {
         return 'Continue to payment';
     }
 }
