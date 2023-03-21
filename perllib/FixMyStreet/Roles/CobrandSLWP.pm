@@ -583,19 +583,17 @@ sub _parse_events {
         next if $type ne 'missed' && $closed;
 
         if ($type eq 'request') {
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
             my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            my $container;
-            DATA: foreach (@$data) {
+            foreach (@$data) {
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
                 foreach (@$moredata) {
                     if ($_->{DatatypeName} eq 'Container Type') {
-                        $container = $_->{Value};
-                        last DATA;
+                        my $container = $_->{Value};
+                        $events->{request}->{$container} = $report ? { report => $report } : 1;
                     }
                 }
             }
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            $events->{request}->{$container} = $report ? { report => $report } : 1;
         } elsif ($type eq 'missed') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
             my $event = {

@@ -256,6 +256,12 @@ FixMyStreet::override_config {
                         { Value => 16, DatatypeName => 'Container Type' },
                     ] },
                 },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 12, DatatypeName => 'Container Type' },
+                    ] },
+                },
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
@@ -263,6 +269,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Report a mixed recycling collection as missed');
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/name="container-choice" value="16"\s+disabled/s); # green
+        $mech->content_like(qr/name="container-choice" value="12"\s+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
