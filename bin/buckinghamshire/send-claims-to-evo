@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+#
+# This script sends claims to EvoClaim.
+# - Claim data is stored in the Problem model's extra field.
+# - The script is run by cron every 5 minutes.
+# - Claim data from the Problem model is sent to EvoClaim via the API.
+
+use strict;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+use FixMyStreet::Cobrand;
+use Integrations::EvoClaim;
+
+# Get the Buckinghamshire cobrand config
+my $bucks = FixMyStreet::DB->resultset('Body')->find( { name => 'Buckinghamshire Council' } );
+my $cobrand = $bucks->get_cobrand_handler;
+my $config = $cobrand->feature('dwf_evo_claim');
+
+my $evo = Integrations::EvoClaim->new(
+    base_url => $config->{base_url},
+    app_id => $config->{app_id},
+    api_key => $config->{api_key},
+    verbose => $ARGV[0] && $ARGV[0] eq '--verbose' ? 1 : 0,
+);
+
+# Don't look for claims created before this date.
+my $earliest_claim_date = $config->{earliest_claim_date};
+
+# Get all claims that haven't been sent to EvoClaim.
+my $claims = FixMyStreet::DB->resultset('Problem')->search(
+    {
+        category => 'Claim',
+        cobrand => 'buckinghamshire',
+        cobrand_data => 'claim',
+        created => { '>=', $earliest_claim_date },
+        -not => { extra => { '\?' => 'sent_to_evo' } },
+    }
+);
+
+$evo->send_claims($claims, $cobrand);

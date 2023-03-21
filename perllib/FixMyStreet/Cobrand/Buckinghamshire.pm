@@ -593,6 +593,18 @@ sub _lookup_site_name {
     return $self->_nearest_feature($cfg, $x, $y, $features);
 }
 
+sub claim_location {
+    my ($self, $row) = @_;
+
+    my $road = $self->_lookup_site_name($row);
+    my $site_name = $road->{properties}->{site_name};
+    $site_name =~ s/([\w']+)/\u\L$1/g;
+    my $area_name = $road->{properties}->{area_name};
+    $area_name =~ s/([\w']+)/\u\L$1/g;
+
+    return "$site_name, $area_name";
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
@@ -603,13 +615,9 @@ around 'munge_sendreport_params' => sub {
         # Update subject
         my $type = $row->get_extra_metadata('what');
         my $name = $row->name;
-        my $road = $self->_lookup_site_name($row);
-        my $site_name = $road->{properties}->{site_name};
-        $site_name =~ s/([\w']+)/\u\L$1/g;
-        my $area_name = $road->{properties}->{area_name};
-        $area_name =~ s/([\w']+)/\u\L$1/g;
+        my $location = $self->claim_location($row);
         my $external_id = $row->external_id || $row->get_extra_metadata('report_id') || '(no ID)';
-        my $subject = "New claim - $type - $name - $external_id - $site_name, $area_name";
+        my $subject = "New claim - $type - $name - $external_id - $location";
         $params->{Subject} = $subject;
 
         my $user = $self->body->comment_user;
