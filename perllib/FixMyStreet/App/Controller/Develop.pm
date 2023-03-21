@@ -288,10 +288,48 @@ sub report_new_preview : Path('/_dev/report_new') : Args(0) {
     $c->stash->{email_type} = $c->get_param('email_type');
 }
 
+
+=head2 asset_layers
+
+Shows the YAML asset layers configuration for all cobrands on the site.
+Can be filtered to a specific cobrand with the ?cobrand= parameter.
+Use /_dev/asset_layers.yml for a plaintext version.
+
+=cut
+
 sub asset_layers : Path('/_dev/asset_layers') : Args(0) {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $format ) = @_;
+
+    $format //= 'html';
+
     my $cobrands = $c->config->{COBRAND_FEATURES}->{asset_layers};
-    $c->stash->{config} = YAML::Dump($cobrands);
+
+    if ( my $cobrand = $c->get_param("cobrand") ) {
+        if ( my $cfg = $cobrands->{$cobrand} ) {
+            $cobrands = { $cobrand => $cfg };
+            $c->stash->{cobrand_param} = $cobrand;
+        };
+    }
+    my $config = YAML::Dump($cobrands);
+
+    if ($format eq 'yml') {
+        $c->res->content_type('text/plain; charset=utf-8');
+        $c->res->body($config);
+    } else {
+        $c->stash->{config} = $config;
+    }
+}
+
+
+=head2 asset_layers_yml
+
+Plaintext YAML version of the asset layers config for easier copy/pasting.
+
+=cut
+
+sub asset_layers_yml : Path('/_dev/asset_layers.yml') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->forward('asset_layers', [ 'yml' ]);
 }
 
 __PACKAGE__->meta->make_immutable;

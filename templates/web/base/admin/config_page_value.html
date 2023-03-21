@@ -44,7 +44,7 @@
 [% CASE 'area_code_mapping' %]
     <i>Mapping</i>
 [% CASE 'asset_layers' %]
-    [% value.size - 1 %] layers
+    [% value.size - 1 %] layers (<a href="/_dev/asset_layers?cobrand=[% cobrand %]">View config</a>)
 [% CASE 'bartec' %]
     Blocked UPRNs: [% value.blocked_uprns.join(', ') %]
 [% CASE 'bottomline' %]
