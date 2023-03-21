@@ -611,13 +611,26 @@ sub waste_munge_request_data {
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
+    my ($action_id, $reason_id);
+    my $type = $id;
     if ($reason eq 'damaged') {
-        $c->set_param('Container_Request_Action', '2::1'); # Collect/Deliver
-        $c->set_param('Container_Request_Container_Type', $id . '::' . $id);
-    } else {
-        $c->set_param('Container_Request_Action', 1); # Deliver
-        $c->set_param('Container_Request_Container_Type', $id);
+        $action_id = '2::1'; # Collect/Deliver
+        $reason_id = '4::4'; # Damaged
+        $type = $id . '::' . $id;
+    } elsif ($reason eq 'missing') {
+        $action_id = 1; # Deliver
+        $reason_id = 1; # Missing
+    } elsif ($reason eq 'new_build') {
+        $action_id = 1; # Deliver
+        $reason_id = 6; # New Property
+    } elsif ($reason eq 'extra') {
+        $action_id = 1; # Deliver
+        $reason_id = 9; # Increase capacity
     }
+
+    $c->set_param('Container_Request_Action', $action_id);
+    $c->set_param('Container_Request_Reason', $reason_id);
+    $c->set_param('Container_Request_Container_Type', $type);
 
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: 1\n\n$address";
