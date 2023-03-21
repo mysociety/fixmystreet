@@ -1821,11 +1821,24 @@ sub bulky_reminders {
         my $r3 = $report->get_extra_metadata('reminder_3');
         next if $r1; # No reminders left to do
 
-        # XXX Need to check if the subscription has been cancelled and if so,
-        # do not send out the email.
-
         my $date = $report->get_extra_field_value('DATE');
+
+        # Shouldn't happen, but better to be safe.
+        next unless $date;
+
         my $dt = $parser->parse_datetime($date)->truncate( to => 'day' );
+
+        # If booking has been cancelled (or somehow the collection date has
+        # already passed) then mark this report as done so we don't see it
+        # again tomorrow.
+        my $cancelled = $self->bulky_cancellation_report($report);
+        if ( $cancelled || $dt < $now) {
+            $report->set_extra_metadata(reminder_1 => 1);
+            $report->set_extra_metadata(reminder_3 => 1);
+            $report->update;
+            next;
+        }
+
         my $d1 = $dt->clone->subtract(days => 1);
         my $d3 = $dt->clone->subtract(days => 3);
 
