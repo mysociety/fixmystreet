@@ -67,6 +67,7 @@
         - Option to read asset layers from configuration.
         - Add GitHub Action to generate POD documentation.
         - Use digest rather than last modified time for static versioning. #4280
+        - Add 'open311_title_fetched_report' cobrand hook for customising how titles are created for fetch reports.
     - Security
         - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
     - Open311 improvements:
