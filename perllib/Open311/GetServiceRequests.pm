@@ -168,11 +168,14 @@ sub create_problems {
         my $non_public = $request->{non_public} ? 1 : 0;
         $non_public ||= $contacts[0] ? $contacts[0]->non_public : 0;
 
+        my $title = $request->{title} || $cobrand && $cobrand->call_hook('open311_title_fetched_report', $request) || $request->{service_name} . ' problem';
+        my $detail = $request->{description} || $title;
+
         my $params = {
             user => $self->system_user,
             external_id => $request_id,
-            detail => $request->{description} || $request->{service_name} . ' problem',
-            title => $request->{title} || $request->{service_name} . ' problem',
+            detail => $detail,
+            title => $title,
             anonymous => 0,
             name => $self->system_user->name,
             confirmed => $created_time,
