@@ -631,6 +631,7 @@ sub waste_munge_request_data {
     $c->set_param('Container_Request_Action', $action_id);
     $c->set_param('Container_Request_Reason', $reason_id);
     $c->set_param('Container_Request_Container_Type', $type);
+    $c->set_param('Container_Request_Quantity', 1);
 
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: 1\n\n$address";
