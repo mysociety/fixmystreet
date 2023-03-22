@@ -646,6 +646,16 @@ sub waste_munge_request_data {
         $notes .= " - " . $data->{details_damaged};
     }
     $c->set_param('Container_Request_Notes', $notes) if $notes;
+
+    # XXX Share somewhere with reverse?
+    my %service_id = (
+        16 => 262,
+        6 => 265,
+        8 => 269,
+        11 => 316,
+        13 => 317,
+    );
+    $c->set_param('service_id', $service_id{$id});
 }
 
 sub waste_request_form_first_next {

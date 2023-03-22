@@ -99,6 +99,7 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'Container_Request_Action', required => 0, automated => 'hidden_field' },
     { code => 'Container_Request_Notes', required => 0, automated => 'hidden_field' },
     { code => 'Container_Request_Reason', required => 0, automated => 'hidden_field' },
+    { code => 'service_id', required => 0, automated => 'hidden_field' },
     { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -561,6 +562,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Action'), '2::1';
         is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
         is $report->get_extra_field_value('Container_Request_Notes'), '';
+        is $report->get_extra_field_value('service_id'), '265';
     };
 
     subtest 'test paying for a missing refuse container' => sub {
