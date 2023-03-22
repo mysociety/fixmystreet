@@ -104,6 +104,7 @@ has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
         map {
             my $value = $where{$_};
             (my $nosp = $value || '') =~ s/[ \/\\]/-/g;
+            $nosp =~ s/[^[:ascii:]]//g;
             (defined $value and length $value) ? ($_, $nosp) : ()
         } sort keys %where
 });
