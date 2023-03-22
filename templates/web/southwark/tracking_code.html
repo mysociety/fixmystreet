@@ -1,4 +1,14 @@
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" OR 1 # remove `OR 1` for go-live %]
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl+ '&gtm_auth=PWSs7he9lnpCBHS8pH7n4w&gtm_preview=env-1&gtm_cookies_win=x';f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5LB59KV');</script>
+<!-- End Google Tag Manager -->
+
+[% ELSIF c.config.BASE_URL == "https://staging.fixmystreet.com" %]
 
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -8,6 +18,4 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-5LB59KV');</script>
 <!-- End Google Tag Manager -->
 
-[% ELSE %]
-<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
 [% END %]
