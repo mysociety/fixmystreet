@@ -418,7 +418,7 @@ FixMyStreet::override_config {
         anonymous_account => { brent => 'anonymous' },
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
-            request_cost => 5000,
+            ggw_cost => 6000,
         } },
     },
 }, sub {
@@ -488,6 +488,35 @@ FixMyStreet::override_config {
                     },
                 } },
             } },
+        }, {
+            Id => 1004,
+            ServiceId => 317,
+            ServiceName => 'Garden waste collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 405,
+                TaskTypeId => 1689,
+                Data => { ExtensibleDatum => [ {
+                    DatatypeName => 'BRT - Paid Collection Container Quantity',
+                    Value => 1,
+                }, {
+                    DatatypeName => 'BRT - Paid Collection Container Type',
+                    Value => 1,
+                } ] },
+                ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                    ScheduleDescription => 'every other Monday',
+                    StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 567, 890 ] } },
+                    },
+                } ] },
+            } }
         }, ]
     });
 
@@ -502,34 +531,19 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Request a recycling container');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose general rubbish bin");
 
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+        $mech->content_contains('please call');
+        $mech->back;
+
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 13 } }, "Choose garden bin");
         $mech->content_contains("Why do you need a replacement container?");
         $mech->content_contains("My container is damaged", "Can report damaged container");
         $mech->content_contains("My container is missing", "Can report missing container");
-        $mech->content_lacks("I am a new resident without a container", "Can not request new container as new resident");
+        $mech->content_lacks("I am a new resident without a container", "Can request new container as new resident");
         $mech->content_lacks("I would like an extra container", "Can not request an extra container");
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } }, "Choose damaged as replacement reason");
-
-        $mech->content_contains("Damaged during collection");
-        $mech->content_contains("Wear and tear");
-        $mech->content_contains("Other damage");
-        $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'collection' } });
-
-        $mech->content_contains("Collection damage");
-        $mech->submit_form_ok({ with_fields => { 'details_damaged' => '' } }, "Put nothing in obligatory field");
-        $mech->content_contains("Please describe how your container was damaged field is required", "Error message for empty field");
-        $mech->submit_form_ok({ with_fields => { 'details_damaged' => 'Bin man brutalised my bin' } }, "Put reason in for obligatory field");
         $mech->content_contains("About you");
-
-        $mech->back; $mech->back; $mech->back; # Going back to choose different type of damage
-
-        $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'wear' } });
-        $mech->content_contains("About you", "No notes required for wear and tear damage");
-        $mech->back;
-
-        $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'other' } });
-        $mech->content_contains("About you", "No notes required for other damage");
 
         for my $test ({ id => 11, name => 'food waste caddy'}, { id => 6, name => 'Recycling bin (blue bin)'}) {
             $mech->get_ok('/waste/12345');
@@ -564,79 +578,6 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Notes'), '';
         is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
         is $report->get_extra_field_value('service_id'), '265';
-    };
-
-    subtest 'test paying for a missing refuse container' => sub {
-        my $sent_params;
-        my $pay = Test::MockModule->new('Integrations::SCP');
-
-        $pay->mock(pay => sub {
-            my $self = shift;
-            $sent_params = shift;
-            return {
-                transactionState => 'IN_PROGRESS',
-                scpReference => '12345',
-                invokeResult => {
-                    status => 'SUCCESS',
-                    redirectUrl => 'http://example.org/faq'
-                }
-            };
-        });
-        $pay->mock(query => sub {
-            my $self = shift;
-            $sent_params = shift;
-            return {
-                transactionState => 'COMPLETE',
-                paymentResult => {
-                    status => 'SUCCESS',
-                    paymentDetails => {
-                        paymentHeader => {
-                            uniqueTranId => 54321
-                        }
-                    }
-                }
-            };
-        });
-
-        $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose general rubbish bin");
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' } });
-        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
-        $mech->content_contains('grey bin');
-        $mech->content_contains('Test McTest');
-        $mech->content_contains($user1->email);
-        $mech->content_contains("Continue to payment");
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-        is $new_report->category, 'Request new container', 'correct category on report';
-        is $new_report->title, 'Request new General rubbish bin (grey bin)', 'correct title on report';
-        is $new_report->get_extra_field_value('payment'), 5000, 'correct payment';
-        is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-        #is $new_report->get_extra_field_value('Container_Task_New_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Container_Request_Container_Type'), 16, 'correct bin type';
-        is $new_report->get_extra_field_value('Container_Request_Action'), 1, 'correct container request action';
-        is $new_report->state, 'unconfirmed', 'report not confirmed';
-        is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
-
-        is $sent_params->{items}[0]{amount}, 5000, 'correct amount used';
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-
-        $new_report->discard_changes;
-        is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
-        is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-        $new_report->delete;
     };
 
     subtest 'test staff-only assisted collection form' => sub {
