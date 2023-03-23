@@ -754,6 +754,7 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
+        return 'request_refuse_call_us' if $choice == 16;
         return 'replacement';
     };
 }
@@ -763,11 +764,6 @@ sub waste_munge_request_form_data {
     my ($self, $data) = @_;
     my $container_id = delete $data->{'container-choice'};
     $data->{"container-$container_id"} = 1;
-
-    # Best place for this?
-    if ($data->{"container-16"} && $data->{request_reason} eq "missing") {
-        $data->{payment} = $self->feature('payment_gateway')->{request_cost};
-    }
 }
 
 sub waste_staff_choose_payment_method { 0 }
