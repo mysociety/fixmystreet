@@ -562,7 +562,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Action'), '2::1';
         is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
         is $report->get_extra_field_value('Container_Request_Notes'), '';
-        is $report->get_extra_field_value('Container_Request_Quantity'), 1;
+        is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
         is $report->get_extra_field_value('service_id'), '265';
     };
 

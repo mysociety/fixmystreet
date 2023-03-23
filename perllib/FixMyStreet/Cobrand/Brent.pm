@@ -613,10 +613,12 @@ sub waste_munge_request_data {
 
     my ($action_id, $reason_id);
     my $type = $id;
+    my $quantity = 1;
     if ($reason eq 'damaged') {
         $action_id = '2::1'; # Collect/Deliver
         $reason_id = '4::4'; # Damaged
         $type = $id . '::' . $id;
+        $quantity = '1::1';
     } elsif ($reason eq 'missing') {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
@@ -631,7 +633,7 @@ sub waste_munge_request_data {
     $c->set_param('Container_Request_Action', $action_id);
     $c->set_param('Container_Request_Reason', $reason_id);
     $c->set_param('Container_Request_Container_Type', $type);
-    $c->set_param('Container_Request_Quantity', 1);
+    $c->set_param('Container_Request_Quantity', $quantity);
 
     $data->{title} = "Request new $container";
     $data->{detail} = "Quantity: 1\n\n$address";
