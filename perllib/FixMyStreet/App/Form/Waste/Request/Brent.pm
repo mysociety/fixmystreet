@@ -15,17 +15,15 @@ has_page about_you => (
     next => 'summary',
 );
 
+has_page request_refuse_call_us => (
+    fields => [],
+    template => 'waste/refuse_call_us.html',
+);
+
 has_page replacement => (
     fields => ['request_reason', 'continue'],
     title => 'Reason for request',
-    next => sub {
-        my $data = shift;
-        my $choice = $data->{"container-choice"};
-        my $refuse_bin = ($choice == CONTAINER_GREY_BIN);
-        my $reason = $data->{request_reason};
-        return 'notes_damaged' if $reason eq 'damaged' && $refuse_bin;
-        return 'about_you';
-    },
+    next => 'about_you',
 );
 
 has_field request_reason => (
@@ -39,65 +37,13 @@ sub options_request_reason {
     my $form = shift;
     my $data = $form->saved_data;
     my $choice = $data->{'container-choice'} || 0;
-    my $refuse_bin = ($choice == CONTAINER_GREY_BIN);
     my $garden_bin = ($choice == CONTAINER_GREEN_BIN);
     my @options;
-    push @options, { value => 'new_build', label => 'I am a new resident without a container' } if !$refuse_bin && !$garden_bin;
+    push @options, { value => 'new_build', label => 'I am a new resident without a container' } if !$garden_bin;
     push @options, { value => 'damaged', label => 'My container is damaged' };
     push @options, { value => 'missing', label => 'My container is missing' };
-    $options[-1]{hint} = 'There is a £50 cost for replacing a missing refuse bin' if $refuse_bin;
-    push @options, { value => 'extra', label => 'I would like an extra container' } if !$refuse_bin && !$garden_bin;
+    push @options, { value => 'extra', label => 'I would like an extra container' } if !$garden_bin;
     return @options;
-}
-
-has_page notes_damaged => (
-    fields => ['notes_damaged', 'continue'],
-    title => 'Extra information',
-    next => sub {
-        my $data = shift;
-        if ($data->{'notes_damaged'} eq 'collection') {
-            return 'details_damaged';
-        } else {
-            return 'about_you';
-        }
-    },
-);
-
-has_field notes_damaged => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'What happened to your container?',
-);
-
-sub options_notes_damaged {
-    my $form = shift;
-    my @options = (
-        { value => 'collection', label => 'Damaged during collection' },
-        { value => 'wear', label => 'Wear and tear' },
-        { value => 'other', label => 'Other damage' },
-    );
-    return @options;
-}
-
-has_page details_damaged => (
-    fields => ['details_damaged', 'continue'],
-    title => 'Collection damage',
-    next => 'about_you',
-);
-
-has_field details_damaged => (
-    required => 1,
-    type => 'Text',
-    widget => 'Textarea',
-    label => 'Please describe how your container was damaged',
-);
-
-sub summary_submit_button_label {
-    my ($self, $data) = @_;
-    if ($data->{"container-choice"} == CONTAINER_GREY_BIN && $data->{request_reason} eq "missing") {
-        return 'Continue to payment';
-    }
 }
 
 has_field submit => (
