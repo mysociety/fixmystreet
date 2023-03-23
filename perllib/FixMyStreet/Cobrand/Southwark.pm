@@ -78,10 +78,10 @@ sub lookup_site_code {
 
 =item lookup_site_code_config
 
-When looking up the USRN of a street where a report was made, A-roads within
+When looking up the USRN of a street where a report was made, numbered roads within
 Southwark must be ignored as Southwark's Confirm system is setup to reject
 reports made on such streets. The majority of these street features actually
-have an overlapping non-A-road which will be found and used instead.
+have an overlapping named road which will be found and used instead.
 
 =cut
 
@@ -96,10 +96,10 @@ sub lookup_site_code_config {
         accept_feature => sub {
             # Roads that only have a number, not a name, mustn't be used for
             # site codes as they're not something Southwark can deal with.
-            # For example "A201", "A3202".
+            # For example "A201", "A3202", "B205", "C5840067" etc.
             my $feature = shift;
             my $name = $feature->{properties}->{Street_or_numbered_street} || "";
-            return ( $name =~ /^A[\d]+/ ) ? 0 : 1;
+            return ( $name =~ /^[ABC][\d]+/ ) ? 0 : 1;
         }
     };
 }
