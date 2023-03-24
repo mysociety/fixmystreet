@@ -8,11 +8,11 @@
             question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
         %]
 
+        <div class="hidden js-continue-draft">
+            <p>You have a draft report made while offline:<br>
+            <a href="#" class="btn continue-draft-btn">Continue draft report</a>
+        </div>
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
-            <p class="hidden js-continue-draft">
-                <a href="#" class="btn continue-draft-btn">Continue draft report...</a><br />
-                - or -
-            </p>
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
             <div>

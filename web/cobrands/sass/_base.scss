@@ -753,6 +753,16 @@ label[for="main-nav-btn"] {
   html.js-nav-open & {
     background-image: inline-image("../fixmystreet/images/#{$close-menu-image}.svg");
   }
+
+  // Sometimes we want to display a little red dot on the mobile nav
+  &.indicator:after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border-radius: 100%;
+    border: solid 5px red;
+  }
 }
 
 #nav-link,
@@ -2992,14 +3002,36 @@ a#geolocate_link {
   visibility: hidden;
 }
 
+// Offline reporting UI
+#front-main {
+  .js-continue-draft {
+    display:flex;
+    justify-content:center;
+  }
+  .js-continue-draft p {
+    background-color: #ff3333;
+    padding: 0.5em 1em;
+  }
+}
+
+#main-nav {
+  .js-continue-draft a {
+    background-color: #ffc2b3;
+
+    &:hover {
+      background-color: #ff3333;
+    }
+  }
+}
+
 .submit-and-cancel {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 .submit-and-cancel a {
-    border-left: solid 1px #999;
-    padding-left: 1em;
-    margin-left: 1em;
+  border-left: solid 1px #999;
+  padding-left: 1em;
+  margin-left: 1em;
 }
 
 @media screen {

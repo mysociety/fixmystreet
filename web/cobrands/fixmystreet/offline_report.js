@@ -253,21 +253,6 @@ fixmystreet.offlineReporting = (function() {
                 });
             }
          },
-
-         frontPageSetup: function() {
-            if (!window.idbKeyval) {
-                return;
-            }
-            idbKeyval.get('draftOfflineReports').then(function(drafts) {
-                if (drafts && drafts.length) {
-                    var d = drafts[0];
-                    document.querySelector(".js-continue-draft").className = "";
-                    var lk = document.querySelector('a.continue-draft-btn');
-                    lk.href = "/report/new?restoreDraft=1&latitude=" + d.latitude + "&longitude=" + d.longitude;
-                }
-            });
-
-         },
     };
 })();
 

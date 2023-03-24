@@ -30,3 +30,5 @@
 [%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
   [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]
 [%~ END ~%]
+
+[%~ INCLUDE navitem uri='/report/new' liattrs='class="hidden js-continue-draft"' always_url=1 label=loc('Continue draft report...') ~%]

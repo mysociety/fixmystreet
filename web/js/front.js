@@ -95,8 +95,4 @@ document.getElementById('pc').focus();
         });
     }
 
-    if (fixmystreet && fixmystreet.offlineReporting) {
-        fixmystreet.offlineReporting.frontPageSetup();
-    }
-
 })();

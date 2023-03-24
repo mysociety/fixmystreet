@@ -907,6 +907,21 @@ textarea.form-error {
     background-position: $left 2em;
 }
 
+// Offline reporting UI
+#front-main {
+  .js-continue-draft p {
+      background-color: white;
+      border: solid 2px #ff3333;
+  }
+}
+
+#main-nav {
+  .js-continue-draft {
+    display: none;
+  }
+}
+
+
 /* Admin interface */
 
 .fms-admin-floated {
