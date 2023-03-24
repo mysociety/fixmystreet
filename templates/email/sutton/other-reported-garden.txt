@@ -58,7 +58,7 @@ Total: £[% pounds(total / 100) %]
 [% END %]
 
 [% IF type == 'new' ~%]
-Your subscription will last for 12 months and starts from the following
+Your subscription will last for 12 months and starts from your first
 collection date[% IF new_bins > 0 %] once your [% IF sacks %]sacks[% ELSE %]bins[% END %] have been delivered[% END %].
 [% END %]
 

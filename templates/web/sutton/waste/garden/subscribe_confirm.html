@@ -48,7 +48,8 @@ You have signed up for the garden waste collection at [% ADDRESS %].
     address after the delivery of your garden waste [% container_str %]. We will email you again
     when our waste team have delivered your [% container_str %].
     [% ELSE %]
-    Your subscription will start from the following collection.
+    For new customers, your subscription starts from your first collection.
+    If you are a returning customer, your service will continue from your last subscription end date.
     [% END %]
 [% ELSIF action == 'add_containers' %]
     We will aim to deliver your garden waste [% container_str %] within 20 working days.
