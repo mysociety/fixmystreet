@@ -1,0 +1,27 @@
+[% SET bodyclass = "fullwidthpage" ~%]
+[% INCLUDE 'header.html' %]
+
+<h1>[% loc('Draft reports') %]</h1>
+
+<p>[% loc('Here is a list of draft reports you made offline. Click Continue to finish making a report online, or Delete to remove a draft report.') %]</p>
+
+<div>
+    <ul class="item-list item-list--reports" id="offline_draft_list">
+    </ul>
+    <template id="draft-item">
+        <li class="item-list__item" style="display:flex" data-id="">
+        <img style="margin-right: 0.5em" height="60" width="90" src="" alt="" data-template-field="photo" class="hidden">
+        <div style="flex:1">
+        <h3 class="item-list__heading" data-template-field="title"></h3>
+        <small><span data-template-field="location"></span><span data-template-field="date"></span></small>
+        </div>
+        <div align="center">
+        <button class="btn js-continue-draft">Continue</button>
+        <br>
+        <button class="fake-link js-delete-draft" data-confirm="[% loc('Are you sure you wish to delete this draft report?') %]">Delete</button>
+        </div>
+        </li>
+    </template>
+</div>
+
+[% INCLUDE 'footer.html' %]

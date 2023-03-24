@@ -4,16 +4,37 @@
 <h1>[% loc('Offline') %]</h1>
 
 <p>
-    [% loc('You are currently offline. You can still make a draft report below, to finish and submit when you have signal again.') %]
+    [% loc('You are currently offline. You can still make draft reports below, to finish and submit when you have signal again.') %]
 </p>
 
 <ul class="item-list item-list--reports" id="offline_list"></ul>
 <div id="offline_clear" align="right"></div>
 
-<div>
+<div id="offline_drafts" class="hidden">
+    <h2>Your existing draft reports</h2>
+    <ul class="item-list item-list--reports" id="offline_draft_list">
+    </ul>
+    <template id="draft-item">
+        <li class="item-list__item" style="display:flex" data-id="">
+        <img style="margin-right: 0.5em" height="60" width="90" src="" alt="" data-template-field="photo" class="hidden">
+        <div style="flex:1">
+        <h3 class="item-list__heading" data-template-field="title"></h3>
+        <small><span data-template-field="location"></span><span data-template-field="date"></span></small>
+        </div>
+        <div align="center">
+        <button class="btn btn--small js-edit-draft">Edit</button>
+        <br>
+        <button class="fake-link js-delete-draft" data-confirm="[% loc('Are you sure you wish to delete this draft report?') %]">Delete</button>
+        </div>
+        </li>
+    </template>
+</div>
+
+<div id="offline_form">
     <h2>[% loc('New offline draft report') %]</h2>
     <p>[% loc('Anything you enter here is automatically saved for finishing and submitting when you’re back online.') %]</p>
     <form id="offline_report">
+        <input name=id type=hidden />
         <input name=latitude type=hidden />
         <input name=longitude type=hidden />
         <p align="center">
@@ -34,7 +55,6 @@
     <p id="draft_save_message" class="hidden"><small>[% tprintf(loc('Draft report saved on %s'), '<span></span>') %]</small></p>
     <p class="submit-and-cancel">
         <button class="btn btn-primary js-save-draft">[% loc('Save draft') %]</button>
-        <a href="" class="js-delete-drafts" data-confirm="[% loc('Are you sure?') %]">[% loc('Delete draft') %]</a>
     </p>
 </div>
 

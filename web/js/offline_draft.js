@@ -8,7 +8,7 @@
         document.querySelectorAll(".js-continue-draft").forEach(function(p) {
             p.classList.remove("hidden");
             p.querySelectorAll("a").forEach(function(a) {
-                a.href = "/report/new?restoreDraft=1&latitude=" + d.latitude + "&longitude=" + d.longitude;
+                a.href = "/offline/drafts";
             });
         });
 

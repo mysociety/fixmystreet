@@ -1,3 +1,5 @@
+// jshint esversion: 8
+
 fixmystreet.offlineReporting = (function() {
     function updateDraftSavedTimestamp(ts) {
         if (ts) {
@@ -8,6 +10,49 @@ fixmystreet.offlineReporting = (function() {
         } else {
             $("#draft_save_message").addClass("hidden").find("span").text("");
         }
+    }
+
+    function blobToBase64(blob) {
+        return new Promise((resolve, _) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    function updateDraftList() {
+        loadDrafts().then(async function(drafts) {
+            $("#offline_drafts").toggleClass("hidden", drafts.length < 1);
+            var tpl = $('#draft-item').html();
+            if (!tpl) {
+                // confirmation page?
+                return;
+            }
+            var $list = $('#offline_draft_list').clone();
+            $list.empty();
+            for (var i=0; i<drafts.length; i++) {
+                var draft = drafts[i];
+                var loc = draft.latitude ? '(' + draft.latitude + ',' + draft.longitude + '), ' : '';
+                var b = draft.saved.split(/\D+/);
+                var d = new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
+                var ts = new Intl.DateTimeFormat(undefined, { timeStyle: 'short', dateStyle: 'long' }).format(d);
+
+                var $entry = $(tpl);
+                $entry.find('[data-template-field="title"]').text(draft.title);
+                $entry.find('[data-template-field="location"]').text(loc);
+                $entry.find('[data-template-field="date"]').text(ts);
+                $entry.attr('data-id', i);
+
+                var photo_keys = Object.keys(draft.photos);
+                if (photo_keys.length) {
+                    var blob = draft.photos[photo_keys[0]].blob;
+                    var base64data = await blobToBase64(blob);
+                    $entry.find('[data-template-field="photo"]').attr('src', base64data).removeClass('hidden');
+                }
+                $list.append($entry);
+            }
+            $('#offline_draft_list').replaceWith($list);
+        });
     }
 
     function dropzoneSetup() {
@@ -21,10 +66,11 @@ fixmystreet.offlineReporting = (function() {
         if ($("html").hasClass("mobile")) {
             default_message = translation_strings.upload_default_message_mobile;
         }
+        const MAX_FILES = 3;
         var dz = new Dropzone('#form_photos', {
             url: '/photo/upload/offline',
             paramName: 'photo',
-            maxFiles: 3,
+            maxFiles: MAX_FILES,
             addRemoveLinks: true,
             thumbnailHeight: 256,
             thumbnailWidth: 256,
@@ -49,6 +95,14 @@ fixmystreet.offlineReporting = (function() {
         dz.on("removedfile", function(file) {
             removeDraftPhoto(file);
         });
+        dz.on("reset", function() {
+            // the call to dropzone.removeAllFiles() can leave Dropzone in a confused
+            // state - dropzone.files is empty, the image thumbnails get
+            // left behind, and maxFiles can be negative.
+            // We manually tidy up here to ensure a known-good state.
+            $(dz.element).find(".dz-preview").remove();
+            dz.options.maxFiles = MAX_FILES;
+        });
     }
 
     function storeDraftPhoto(file, blob) {
@@ -59,7 +113,7 @@ fixmystreet.offlineReporting = (function() {
                 blob: blob
             };
 
-            return storeDraft(draft);
+            return storeDraft(undefined, draft);
         });
     }
 
@@ -69,12 +123,24 @@ fixmystreet.offlineReporting = (function() {
                 delete draft.photos[file.name];
             }
 
-            return storeDraft(draft);
+            return storeDraft(undefined, draft);
         });
     }
 
-    function loadDraft() {
-        return idbKeyval.get('draftOfflineReports').then(function(drafts) {
+    function loadDrafts() {
+        return idbKeyval.get('draftOfflineReports').then(function (drafts) {
+            return drafts || [];
+        });
+    }
+
+    /* Loads the provided draft from the list, or if no ID provided,
+     * the draft of the report form, or if that's blank, starts a new
+     * one at the end of the list */
+    function loadDraft(draft_id) {
+        if (draft_id === undefined) {
+            draft_id = $('input[name=id]').val();
+        }
+        return loadDrafts().then(function(drafts) {
             var draft = {
                 latitude: "",
                 longitude: "",
@@ -83,21 +149,30 @@ fixmystreet.offlineReporting = (function() {
                 photos: {},
                 saved: null
             };
-
-            if (drafts && drafts.length) {
-                draft = drafts[0];
+            if (draft_id === '') {
+                drafts.push(draft);
+                $('input[name=id]').val(drafts.length-1);
+                return draft;
+            } else {
+                return drafts[draft_id];
             }
-
-            return draft;
         });
     }
 
-    function storeDraft(draft) {
+    function storeDraft(draft_id, draft) {
         var ts = (new Date()).toISOString();
         draft.saved = ts;
 
-        return idbKeyval.set('draftOfflineReports', [draft]).then(function() {
-            updateDraftSavedTimestamp(ts);
+        if (draft_id === undefined) {
+            draft_id = $('input[name=id]').val();
+        }
+
+        loadDrafts().then(function(drafts) {
+            drafts[draft_id] = draft;
+            return idbKeyval.set('draftOfflineReports', drafts).then(function() {
+                updateDraftSavedTimestamp(ts);
+                updateDraftList();
+            });
         });
     }
 
@@ -108,27 +183,51 @@ fixmystreet.offlineReporting = (function() {
             draft.title = $("input[name=title]").val();
             draft.detail = $("textarea[name=detail]").val();
 
-            return storeDraft(draft);
+            return storeDraft(undefined, draft);
         });
     }
 
-    function restoreDraft() {
-        loadDraft().then(function(draft) {
-            $("input[name=latitude]").val(draft.latitude);
-            $("input[name=longitude]").val(draft.longitude);
-            if (draft.longitude || draft.latitude) {
-                $("#offline_geolocate span").text("Update location");
-                $('#offline_geolocate_location').text('Location stored: (' + draft.latitude + ',' + draft.longitude + ')');
-            } else {
-                $('#offline_geolocate_location').text('');
-                $("#offline_geolocate span").text("Use my location");
-            }
-            $("input[name=title]").val(draft.title);
-            $("textarea[name=detail]").val(draft.detail);
-            updateDraftSavedTimestamp(draft.saved);
-            restoreDraftPhotos(draft.photos);
-        });
-     }
+    function validateDraftForm() {
+        // Don't want to save a totally empty report so consider
+        // form invalid if none of the following elements have a value.
+        return [
+            $("input[name=latitude]").val(),
+            $("input[name=longitude]").val(),
+            $("input[name=title]").val(),
+            $("textarea[name=detail]").val()
+        ].reduce((acc, curr) => {
+            return acc || !!curr;
+        }, false);
+    }
+
+    function restoreDraft(id, draft) {
+        $("input[name=id]").val(id);
+        $("input[name=latitude]").val(draft.latitude);
+        $("input[name=longitude]").val(draft.longitude);
+        if (draft.longitude || draft.latitude) {
+            $("#offline_geolocate span").text("Update location");
+            $('#offline_geolocate_location').text('Location stored: (' + draft.latitude + ',' + draft.longitude + ')');
+        } else {
+            $('#offline_geolocate_location').text('');
+            $("#offline_geolocate span").text("Use my location");
+        }
+        $("input[name=title]").val(draft.title);
+        $("textarea[name=detail]").val(draft.detail);
+        updateDraftSavedTimestamp(draft.saved);
+        restoreDraftPhotos(draft.photos);
+    }
+
+    function resetDraftForm() {
+        $("input[name=id]").val('');
+        $("input[name=latitude]").val('');
+        $("input[name=longitude]").val('');
+        $('#offline_geolocate_location').text('');
+        $("#offline_geolocate span").text("Use my location");
+        $("input[name=title]").val('');
+        $("textarea[name=detail]").val('');
+        updateDraftSavedTimestamp(null);
+        restoreDraftPhotos({});
+    }
 
     function restoreDraftPhotos(photos) {
         var $dropzone = $('#form_photos');
@@ -138,6 +237,7 @@ fixmystreet.offlineReporting = (function() {
 
         var dropzone =$dropzone.get(0).dropzone;
         dropzone.removeAllFiles();
+        dropzone.emit("reset");
         Object.values(photos).map(function (file) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -148,7 +248,7 @@ fixmystreet.offlineReporting = (function() {
         });
     }
 
-    function uploadDraftPhotos(photos) {
+    function uploadDraftPhotos(draft_id, photos) {
         var $dropzone = $('.dropzone');
         if (!$dropzone.length) {
             return;
@@ -158,7 +258,7 @@ fixmystreet.offlineReporting = (function() {
         dropzone.on("complete", function(file) {
             // Photo was sent to server so store its server_id so we don't have
             // to upload it again
-            updateDraftPhotoServerID(file);
+            updateDraftPhotoServerID(draft_id, file);
         });
         Object.values(photos).map(function (photo) {
             if (photo.server_id) {
@@ -177,15 +277,15 @@ fixmystreet.offlineReporting = (function() {
         });
     }
 
-    function updateDraftPhotoServerID(file) {
+    function updateDraftPhotoServerID(draft_id, file) {
         if (!file.server_id || !file.name) {
             return;
         }
-        loadDraft().then(function(draft) {
+        loadDraft(draft_id).then(function(draft) {
             if (draft.photos[file.name]) {
                 draft.photos[file.name].server_id = file.server_id;
             }
-            return storeDraft(draft);
+            return storeDraft(draft_id, draft);
         });
     }
 
@@ -200,32 +300,92 @@ fixmystreet.offlineReporting = (function() {
         dropzone.options.maxFiles -= 1;
     }
 
-    function deleteDrafts() {
-        return idbKeyval.set('draftOfflineReports', []).then(function() {
-            return restoreDraft();
+    function deleteDraft(i) {
+        loadDrafts().then(function(drafts) {
+            drafts.splice(i, 1);
+            return idbKeyval.set('draftOfflineReports', drafts).then(function() {
+                resetDraftForm();
+                updateDraftList();
+            });
         });
+    }
+
+    function setCurrentDraftID(draft_id) {
+        return idbKeyval.set('currentOfflineDraftID', draft_id);
+    }
+
+    // Wraps a function to ensure it's only called at most once every
+    // <limit> milliseconds. We use it here to limit the per-keystroke draft
+    // saving which is a bit slow on some mobile devices. Once per second is
+    // reasonable enough.
+    function throttle(fn, limit) {
+        var wait = false;
+        var that, args;
+
+        var throttled = function() {
+            if (args == null) {
+                wait = false;
+            } else {
+                fn.apply(that, args);
+                args = null;
+                setTimeout(throttled, limit);
+            }
+        };
+
+        return function () {
+            if (wait) {
+                that = this;
+                args = arguments;
+            } else {
+                fn.apply(that, args);
+                wait = true;
+                setTimeout(throttled, limit);
+            }
+        };
     }
 
     return {
         offlineFormSetup: function() {
             dropzoneSetup();
-            $(".js-delete-drafts").on("click", function(e) {
+
+            $(document).on('click', '.js-continue-draft', function() {
+                var id = parseInt(this.parentNode.parentNode.getAttribute('data-id'), 10);
+                loadDraft(id).then(function(d) {
+                    location.href = "/report/new?restoreDraft=" + id + "&latitude=" + d.latitude + "&longitude=" + d.longitude;
+                });
+            });
+            $(document).on('click', ".js-edit-draft", function() {
+                var id = parseInt(this.parentNode.parentNode.getAttribute('data-id'), 10);
+                loadDraft(id).then(function(d) {
+                    restoreDraft(id, d);
+                    window.scroll(0, document.querySelector('#offline_form').offsetTop);
+                });
+            });
+            $(document).on('click', ".js-delete-draft", function(e) {
                 e.preventDefault();
                 if (confirm(this.getAttribute('data-confirm'))) {
-                    deleteDrafts();
+                    deleteDraft(this.parentNode.parentNode.getAttribute('data-id'));
+                }
+            });
+            $('.js-save-draft').on('click', function() {
+                if (validateDraftForm()) {
+                    updateDraft();
+                    resetDraftForm();
+                    scrollTo(0,0);
                 }
             });
 
-            $(".js-save-draft").on("click", updateDraft);
-
-            $("form#offline_report").find("input, textarea").on("input", function() {
+            $("form#offline_report").find("input, textarea").on("input", throttle(function () {
                 updateDraft();
-            });
-            restoreDraft();
+            }, 1000));
+
+            updateDraftList();
         },
 
         deleteCurrentDraft: function() {
-            deleteDrafts();
+            return idbKeyval.get('currentOfflineDraftID').then(function(draft_id) {
+                deleteDraft(draft_id);
+            });
         },
 
         geolocate: function(pos) {
@@ -238,18 +398,21 @@ fixmystreet.offlineReporting = (function() {
             updateDraft();
          },
 
-         reportNewSetup: function() {
-            if (location.search.indexOf("restoreDraft=1") > 0) {
-                loadDraft().then(function(draft) {
+        reportNewSetup: function() {
+            var params = new URLSearchParams(location.search);
+            var draft_id = params.get('restoreDraft');
+            if (draft_id) {
+                loadDraft(draft_id).then(function(draft) {
                     $("input[name=title]").val(draft.title);
                     $("textarea[name=detail]").val(draft.detail);
 
                     // We're online so try and send up photos
-                    uploadDraftPhotos(draft.photos);
+                    uploadDraftPhotos(draft_id, draft.photos);
 
-                    $("input[name=title], textarea[name=detail]").on("input", function() {
-                        updateDraft();
-                    });
+                    $("input[name=title], textarea[name=detail]").on("input", throttle(function () {
+                        updateDraft(draft_id);
+                    }, 1000));
+                    setCurrentDraftID(draft_id);
                 });
             }
          },
@@ -263,7 +426,7 @@ if (fixmystreet.geolocate && link) {
     fixmystreet.geolocate(link, fixmystreet.offlineReporting.geolocate);
 }
 
-if (document.getElementById('offline_report')) {
+if (document.getElementById('offline_draft_list')) {
     fixmystreet.offlineReporting.offlineFormSetup();
 }
 

@@ -39,6 +39,10 @@ sub fallback : Local {
 
 }
 
+sub drafts : Local {
+    my ($self, $c) = @_;
+}
+
 sub manifest_waste: Path('/.well-known/manifest-waste.webmanifest') {
     my ($self, $c) = @_;
 
