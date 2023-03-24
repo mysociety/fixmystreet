@@ -74,7 +74,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'Report new vehicle claim, report id known' => sub {
         $mech->get_ok('/claims');
-        my $fault_id = "12345678"; # fault IDs must be 8 chars
+        my $fault_id = "12345678";
         $mech->submit_form_ok({ button => 'start' });
         $mech->submit_form_ok({ with_fields => { what => 'vehicle', claimed_before => 'Yes' } }, "claim type screen");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org', phone => '01234 567890', address => "12 A Street\nA Town" } }, "about you screen");
@@ -84,8 +84,6 @@ FixMyStreet::override_config {
         $mech->clone->log_in_ok('madeareport@example.org'); # Clone so as to remain on same page here (but clones share cookie jar)
         $mech->submit_form_ok({ with_fields => { fault_reported => 'Yes' } }, "fault reported");
         $mech->submit_form_ok({ with_fields => { report_id => "hmm" } }, "report id");
-        $mech->content_contains('Please provide a valid report ID');
-        $mech->submit_form_ok({ with_fields => { report_id => "1234567" } }, "report id");
         $mech->content_contains('Please provide a valid report ID');
         $mech->submit_form_ok({ with_fields => { report_id => $fault_id } }, "report id");
         $mech->submit_form_ok({ with_fields => { location => 'A street' } }, 'location details');
