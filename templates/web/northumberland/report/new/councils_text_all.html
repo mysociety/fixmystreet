@@ -1,0 +1,25 @@
+[% IF NOT list_of_names %]
+    [% SET default_list = [] %][% FOR b IN bodies_to_list.values %][% default_list.push(b.cobrand_name) %][% END %]
+    [% SET list_of_names = default_list %]
+[% END %]
+[% category = mark_safe(category) %]
+
+<p>
+[% UNLESS non_public_categories.$category;
+
+    tprintf(
+        loc('These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href="%s" target="_blank">privacy policy</a>.'),
+        mark_safe(list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )), c.cobrand.privacy_policy_url
+    );
+
+ELSE;
+
+    tprintf(
+        loc('These will be sent to <strong>%s</strong> but not published online.'),
+        mark_safe(list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ))
+    );
+
+END %]
+
+[% TRY %][% INCLUDE 'report/new/councils_extra_text.html' %][% CATCH file %][% END %]
+</p>
