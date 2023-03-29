@@ -547,6 +547,11 @@ sub lookup_site_code_config {
 sub _fetch_features_url {
     my ($self, $cfg) = @_;
 
+    # For red claims site lookup we're still using the old WFS assets for now
+    if ($cfg->{typename} && $cfg->{typename} eq 'Whole_Street') {
+        return $self->next::method($cfg);
+    }
+
     # Buckinghamshire's asset proxy is Alloy, not a standard WFS server.
 
     my ($w, $s, $e, $n) = split(/,/, $cfg->{bbox});
