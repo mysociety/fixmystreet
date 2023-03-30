@@ -427,7 +427,7 @@ sub bin_services_for_address {
             next unless $service_name;
 
             if ($service_id == 2242) { # Collect Domestic Refuse Bag
-                $self->{c}->stash->{garden_sacks} = 1;
+                $self->{c}->stash->{slwp_garden_sacks} = 1;
             }
 
             my $schedules = _parse_schedules($task, 'task');
@@ -675,13 +675,29 @@ sub within_working_days {
     }
 }
 
+# Not in the function below because it needs to set things needed before then
+# (perhaps could be refactored better at some point). Used for new/renew
+sub waste_garden_sub_payment_params {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    # Special sack form handling
+    if ($c->stash->{slwp_garden_sacks} && !$data->{bins_wanted}) {
+        $data->{slwp_garden_sacks} = 1;
+        $data->{bin_count} = 1;
+        $data->{new_bins} = 1;
+        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
+        $c->set_param('payment', $cost_pa);
+    }
+}
+
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
 
     my $service = $self->garden_current_subscription;
     my $existing = $service ? $service->{garden_container} : undef;
-    my $container = $data->{garden_sacks} ? 28 : $existing || 26;
+    my $container = $data->{slwp_garden_sacks} ? 28 : $existing || 26;
 
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);
