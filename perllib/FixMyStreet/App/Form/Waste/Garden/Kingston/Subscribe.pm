@@ -12,7 +12,7 @@ has_page intro => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        $data->{_garden_sacks} = $c->stash->{garden_sacks};
+        $data->{_garden_sacks} = $c->stash->{slwp_garden_sacks};
         return {};
     },
     next => sub {

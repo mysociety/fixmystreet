@@ -8,7 +8,7 @@ step1 = 'details';
 [% BLOCK answers %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste subscription</dt>
-        <dd class="govuk-summary-list__value">[% data.total_bins %] [% nget('bin', 'bins', data.total_bins) %]</dd>
+        <dd class="govuk-summary-list__value">[% data.bins_wanted %] [% nget('bin', 'bins', data.bins_wanted) %]</dd>
     </div>
   [% IF data.cost_pa %]
     <div class="govuk-summary-list__row">

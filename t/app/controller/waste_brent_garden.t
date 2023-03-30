@@ -312,7 +312,8 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok;
         };
     }
-set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
+
+    set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
 
     subtest 'check new sub credit card payment with no bins required' => sub {
         $mech->get_ok('/waste/12345/garden');
