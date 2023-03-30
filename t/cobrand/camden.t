@@ -15,7 +15,7 @@ my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Council', {}, {
 });
 
 $mech->create_contact_ok(body_id => $camden->id, category => 'Potholes', email => 'potholes@camden.fixmystreet.com');
-
+my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $camden );
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'camden', 'tfl' ],
@@ -103,6 +103,13 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('This is a test comment');
         $mech->content_lacks('Test User');
+    };
+
+    subtest 'Dashboard CSV extra columns' => sub {
+        $mech->log_in_ok($staffuser->email);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As","User Name","User Email"');
+        $mech->content_like(qr/default,,"Test User",pkg-tcobrandcamdent-test\@example.com/);
     };
 };
 

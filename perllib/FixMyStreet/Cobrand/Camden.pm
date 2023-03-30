@@ -1,3 +1,14 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Camden - code specific to the Camden cobrand
+
+=head1 SYNOPSIS
+
+Camden is a London borough using FMS with a Symology integration
+
+=cut
+
+
 package FixMyStreet::Cobrand::Camden;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -112,6 +123,30 @@ sub user_from_oidc {
     my $email = $payload->{preferred_username};
 
     return ($name, $email);
+}
+
+=head2 dashboard_export_problems_add_columns
+
+Has user name and email fields added to their csv export
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        user_name => 'User Name',
+        user_email => 'User Email',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            user_name => $report->user->name || '',
+            user_email => $report->user->email || '',
+        };
+    });
 }
 
 1;
