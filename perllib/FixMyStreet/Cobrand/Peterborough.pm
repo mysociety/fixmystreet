@@ -11,6 +11,7 @@ use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::Email;
 use FixMyStreet::WorkingDays;
+use FixMyStreet::App::Form::Waste::Request::Peterborough;
 use Utils;
 
 use Moo;

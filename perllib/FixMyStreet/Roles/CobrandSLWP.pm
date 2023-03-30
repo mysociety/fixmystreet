@@ -15,6 +15,8 @@ use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
 use FixMyStreet::WorkingDays;
+use FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe;
+use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::Kingston;
 use FixMyStreet::App::Form::Waste::Request::Sutton;
@@ -689,6 +691,21 @@ sub waste_garden_sub_params {
         $c->set_param('Bin_Delivery_Detail_Containers', $c->stash->{container_actions}->{$action});
         $c->set_param('Bin_Delivery_Detail_Container', $container);
         $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
+    }
+}
+
+sub waste_garden_subscribe_form_setup {
+    my ($self) = @_;
+    my $c = $self->{c};
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe';
+}
+
+sub waste_garden_renew_form_setup {
+    my ($self) = @_;
+    my $c = $self->{c};
+    if ($c->stash->{slwp_garden_sacks}) {
+        $c->stash->{first_page} = 'sacks_choice';
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Renew';
     }
 }
 
