@@ -1,3 +1,16 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::CheshireEast - code specific to the CheshireEast cobrand [incomplete]
+
+
+=head1 SYNOPSIS
+
+We integrate with CheshireEast's Confirm back end.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::CheshireEast;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -8,10 +21,70 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 
+=head2 Defaults
+
+=over 4
+
+=cut
+
 sub council_area_id { 21069 }
 sub council_area { 'Cheshire East' }
 sub council_name { 'Cheshire East Council' }
 sub council_url { 'cheshireeast' }
+
+=item * We restrict use of the contact form to abuse reports only.
+
+=cut
+
+sub abuse_reports_only { 1 }
+
+=item * Users with a cheshireeast.gov.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'cheshireeast.gov.uk' }
+
+=item * The default map zoom is set to 3.
+
+=cut
+
+=item * Map type is CheshireEast.
+
+=cut
+
+sub map_type { 'CheshireEast' }
+
+sub default_map_zoom { 3 }
+
+=item * Fetched report description is not shown.
+
+=cut
+
+sub filter_report_description { "" }
+
+=item * Uses the OSM geocoder.
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
+=item * /around map shows only open reports by default.
+
+=cut
+
+sub on_map_default_status { 'open' }
+
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+=pod
+
+=back
+
+=cut
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
@@ -36,10 +109,6 @@ sub enter_postcode_text {
     'Enter a postcode, or a road and place name';
 }
 
-sub admin_user_domain { 'cheshireeast.gov.uk' }
-
-sub get_geocoder { 'OSM' }
-
 around open311_extra_data_include => sub {
     my ($orig, $self, $row, $h) = @_;
     my $open311_only = $self->$orig($row, $h);
@@ -60,16 +129,6 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, UK$//;
     $result->{display_name} =~ s/, Cheshire East, North West England, England//;
 }
-
-sub map_type { 'CheshireEast' }
-
-sub default_map_zoom { 3 }
-
-sub on_map_default_status { 'open' }
-
-sub abuse_reports_only { 1 }
-
-sub send_questionnaires { 0 }
 
 =head2 lookup_site_code_config
 
@@ -131,10 +190,6 @@ sub council_rss_alert_options {
     return ( \@options, undef );
 }
 
-# Make sure fetched report description isn't shown.
-sub filter_report_description { "" }
-
-
 =head2 open311_extra_data_include
 
 For reports made by staff on behalf of another user, append the staff
@@ -171,6 +226,5 @@ sub open311_post_send {
 
     $row->detail($h->{ce_original_detail});
 }
-
 
 1;
