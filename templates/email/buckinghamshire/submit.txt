@@ -14,11 +14,16 @@ please visit the following link:
 [% has_photo %]----------
 
 Name: [% report.name %]
+[% report.get_extra_metadata('contributed_as') %]
+[% IF report.get_extra_metadata('contributed_as' == 'anonymous_user') %]
+Reported anonymously
+[% ELSE %]
 
 Email: [% report.user.email OR "None provided" %]
 
 Phone: [% report.user.phone OR "None provided" %]
 
+[% END %]
 Category: [% report.category %]
 
 Subject: [% report.title %]

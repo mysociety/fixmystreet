@@ -122,6 +122,26 @@ subtest 'flytipping on road sent to extra email' => sub {
     is $report->external_id, 248, 'Report has right external ID';
 };
 
+    ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
+    category => 'Flytipping', cobrand => 'fixmystreet',
+    latitude => 51.812244, longitude => -0.827363,
+    extra => {
+        contributed_as => 'anonymous_user',
+        contributed_by => $counciluser->id,
+    },
+    dt => DateTime->now()->subtract(minutes => 10),
+});
+
+subtest 'report made by council on behalf of anonymous user doesn\'t give staff name/email' => sub {
+    $mech->clear_emails_ok;
+    FixMyStreet::Script::Reports::send();
+    my @email = $mech->get_email;
+    is $email[0]->header('To'), 'TfB <flytipping@example.com>';
+    is $email[0]->header('Reply-To'), undef, 'No reply-to header';
+    like $mech->get_text_body_from_email($email[0]), qr/Reported anonymously/;
+    $report->delete;
+};
+
 ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
     category => 'Potholes', cobrand => 'fixmystreet',
     latitude => 51.812244, longitude => -0.827363,

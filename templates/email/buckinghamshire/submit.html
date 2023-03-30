@@ -19,6 +19,9 @@ of a local problem that they believe might require your attention.</p>
   <p style="margin: 20px auto; text-align: center">
     <a style="[% button_style %]" href="[% url %]">Show full report</a>
   </p>
+  [% IF report.get_extra_metadata('contributed_as') == 'anonymous_user' %]
+  <h2 style="[% h2_style %] margin: 30px 0 10px 0">Reported anonymously</h2>
+  [% ELSE %]
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Reported by:</h2>
   <table [% table_reset | safe %]>
     <tr>
@@ -42,6 +45,7 @@ of a local problem that they believe might require your attention.</p>
       </tr>
     [%~ END %]
   </table>
+  [% END %]
   <p style="[% p_style %] margin-top: 0.5em;">
     Replies to this email will go to FixMyStreet and updated according to the
     SC code used in the Subject line.
