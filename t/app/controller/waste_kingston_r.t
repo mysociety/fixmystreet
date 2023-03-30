@@ -129,6 +129,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
+        $mech->content_contains('>Return to property details<', "Button text changed for Kingston");
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
