@@ -29,6 +29,8 @@ Uses OpenUSRN for locating nearest addresses on the Highway
 =cut
 
 use FixMyStreet::App::Form::Waste::Request::Brent;
+use FixMyStreet::App::Form::Waste::Garden::Sacks;
+use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';
@@ -770,7 +772,8 @@ sub waste_staff_choose_payment_method { 0 }
 sub waste_cheque_payments { 0 }
 
 use constant GARDEN_WASTE_SERVICE_ID => 317;
-use constant GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE => 1;
+use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
+use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
@@ -810,6 +813,23 @@ sub waste_cc_payment_sale_ref {
     return "Brent-" . $p->id;
 }
 
+sub waste_garden_subscribe_form_setup {
+    my ($self) = @_;
+    my $c = $self->{c};
+    if ($c->stash->{is_staff}) {
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
+    }
+}
+
+sub waste_garden_renew_form_setup {
+    my ($self) = @_;
+    my $c = $self->{c};
+    if ($c->stash->{is_staff}) {
+        $c->stash->{first_page} = 'sacks_choice';
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
+    }
+}
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
@@ -830,19 +850,37 @@ sub waste_cc_payment_admin_fee_line_item_ref {
 }
 
 
+sub waste_garden_sub_payment_params {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $container = $data->{container_choice} || '';
+    if ($container eq 'sack') {
+        my $bin_count = 1; # $data->{bins_wanted};
+        $data->{bin_count} = $bin_count;
+        $data->{new_bins} = $bin_count;
+        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+        $c->set_param('payment', $cost_pa);
+    }
+}
+
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
 
-    my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
-    $c->set_param('Paid_Collection_Container_Type', GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE);
-    $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
+    my $container = $data->{container_choice} || '';
+    $container = $container eq 'sack' ? GARDEN_WASTE_PAID_COLLECTION_SACK : GARDEN_WASTE_PAID_COLLECTION_BIN;
+    $c->set_param('Paid_Collection_Container_Type', $container);
+    $c->set_param('Paid_Collection_Container_Quantity', $data->{bin_count});
     $c->set_param('Payment_Value', $data->{cost_pa});
-    # $c->set_param('Payment Authorisation Code') is possibly set as payment_reference
-    if ( $data->{new_bins} > 0 ) {
-        $c->set_param('Container_Type', GARDEN_WASTE_PAID_COLLECTION_CONTAINER_TYPE);
+    if ( $data->{new_bins} > 0 && $container != GARDEN_WASTE_PAID_COLLECTION_SACK ) {
+        $c->set_param('Container_Type', $container);
         $c->set_param('Container_Quantity', $data->{new_bins});
     }
+}
+
+sub garden_waste_sacks_cost_pa {
+    return $_[0]->garden_waste_cost_pa();
 }
 
 sub garden_waste_cost_pa {

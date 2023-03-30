@@ -44,7 +44,7 @@ INCLUDE '_email_top.html';
   </p>
 [% END %]
 
-[% IF quantity ~%]
+[% IF quantity AND NOT sacks ~%]
   <p style="[% p_style %]">
     Number of bin subscriptions: [% quantity %]
   </p>
@@ -52,9 +52,13 @@ INCLUDE '_email_top.html';
 
 [% IF new_bins > 0 ~%]
   <p style="[% p_style %]">
+    [% IF sacks ~%]
+    Garden waste sack collection: [% new_bins %]
+    [% ELSE ~%]
     Bins to be delivered: [% new_bins %]
+    [% END ~%]
   </p>
-[% ELSIF new_bins < 0 ~%]
+[% ELSIF new_bins < 0 AND NOT sacks ~%]
   <p style="[% p_style %]">
     Bins to be removed: [% 0 - new_bins %]
   </p>
@@ -82,7 +86,7 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">
     Your subscription will last for 12 months and starts from the following collection date
     [% IF new_bins > 0 %]
-        once your bins have been delivered
+        once your [% IF sacks %]sacks[% ELSE %]bins[% END %] have been delivered
     [% END %].
   </p>
 [% END %]
@@ -93,7 +97,7 @@ INCLUDE '_email_top.html';
 
 [% IF new_bins > 0 ~%]
   <p style="[% p_style %]">
-    We will aim to deliver your new bin(s) within 20 working days.
+  We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
     You don’t need to be at home for the delivery - we’ll leave them outside your address.
   </p>
 [% END %]

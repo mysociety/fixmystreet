@@ -33,13 +33,17 @@ You have signed up for:
 
 [% report.detail %]
 
-[% IF quantity ~%]
+[% IF quantity AND NOT sacks ~%]
 Number of bin subscriptions: [% quantity %]
 [% END %]
 
 [% IF new_bins > 0 ~%]
+[% IF sacks ~%]
+Garden waste sack collection: [% new_bins %]
+[% ELSE ~%]
 Bins to be delivered: [% new_bins %]
-[% ELSIF new_bins < 0 ~%]
+[% END ~%]
+[% ELSIF new_bins < 0 AND NOT sacks ~%]
 Bins to be removed: [% 0 - new_bins %]
 [% END %]
 
@@ -55,14 +59,14 @@ Total: £[% pounds(total / 100) %]
 
 [% IF type == 'new' OR type == 'renew' ~%]
 Your subscription will last until the end of March and starts from the following
-collection date[% IF new_bins > 0 %] once your bins have been delivered[% END %].
+collection date[% IF new_bins > 0 %] once your [% IF sacks %]sacks[% ELSE %]bins[% END %] have been delivered[% END %].
 [% END %]
 
 You can check your collection day online:
 https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work
 
 [% IF new_bins > 0 ~%]
-We will aim to deliver your new bin(s) within 20 working days.
+We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
 You don't need to be at home for the delivery - we'll leave them outside your address.
 [% END %]
 

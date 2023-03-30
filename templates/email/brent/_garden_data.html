@@ -1,6 +1,7 @@
 [%
 
 SET container = report.get_extra_field_value('Paid_Collection_Container_Type');
+SET sacks = (container == 2);
 SET quantity = report.get_extra_field_value('Paid_Collection_Container_Quantity');
 SET new_bins = report.get_extra_field_value('new_containers') || 0;
 
