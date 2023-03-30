@@ -77,7 +77,6 @@ has_page summary => (
         my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         my $total = $cost_now_admin + $cost_pa;
 
-        $data->{total_bins} = $data->{bins_wanted};
         $data->{cost_now_admin} = $cost_now_admin / 100;
         $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;

@@ -1193,7 +1193,7 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_disabled};
 
     $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
-    if ($c->stash->{garden_sacks}) {
+    if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
     }
     $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
@@ -1358,11 +1358,11 @@ sub process_garden_cancellation : Private {
     $c->set_param('Subscription_End_Date', $now->ymd);
 
     my $service = $c->cobrand->garden_current_subscription;
-    if (!$c->stash->{garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
+    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
     } else {
-        $data->{garden_sacks} = 1;
+        $data->{slwp_garden_sacks} = 1;
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
@@ -1454,7 +1454,7 @@ sub process_garden_modification : Private {
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
     if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
-        $data->{garden_sacks} = 1;
+        $data->{slwp_garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
@@ -1526,19 +1526,13 @@ sub process_garden_renew : Private {
         $type = $c->stash->{garden_subs}->{Renew};
     }
 
-    if ($c->stash->{garden_sacks} && !$data->{bins_wanted}) {
-        $data->{garden_sacks} = 1;
-        $data->{bin_count} = 1;
-        $data->{new_bins} = 1;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
-        $c->set_param('payment', $cost_pa);
-    } else {
-        my $total_bins = $data->{bins_wanted};
-        my $current_bins = $data->{current_bins};
-        $data->{bin_count} = $total_bins;
-        $data->{new_bins} = $total_bins - $current_bins;
+    $c->cobrand->call_hook(waste_garden_sub_payment_params => $data);
+    if (!$c->get_param('payment')) {
+        my $bin_count = $data->{bins_wanted};
+        $data->{bin_count} = $bin_count;
+        $data->{new_bins} = $bin_count - $data->{current_bins};
 
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($total_bins);
+        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
 
         $c->set_param('payment', $cost_pa);
@@ -1584,16 +1578,11 @@ sub process_garden_data : Private {
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - New';
 
-    if ($c->stash->{garden_sacks} && !$data->{bins_wanted}) {
-        $data->{garden_sacks} = 1;
-        $data->{bin_count} = 1;
-        $data->{new_bins} = 1;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
-        $c->set_param('payment', $cost_pa);
-    } else {
+    $c->cobrand->call_hook(waste_garden_sub_payment_params => $data);
+    if (!$c->get_param('payment')) {
         my $bin_count = $data->{bins_wanted};
         $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $data->{bins_wanted} - $data->{current_bins};
+        $data->{new_bins} = $bin_count - $data->{current_bins};
 
         my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});

@@ -20,7 +20,7 @@ A 12 month subscription is £[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin.
 If you need us to deliver bins to you, there is a fee of £[% tprintf('%.2f', per_new_bin_first_cost / 100 ) %] per bin for admin and delivery. If you order more than one bin at once, the admin and delivery fee will be £[% tprintf('%.2f', per_new_bin_cost / 100 ) %] for each additional bin.
 </p>
 
-[% IF garden_sacks %]
+[% IF slwp_garden_sacks %]
 <p>
 A roll of 10 garden waste sacks costs £[% tprintf('%.2f', per_sack_cost / 100 ) %].
 </p>
@@ -28,7 +28,7 @@ A roll of 10 garden waste sacks costs £[% tprintf('%.2f', per_sack_cost / 100 )
 
 <h2>Delivery time</h2>
 
-[% IF garden_sacks %]
+[% IF slwp_garden_sacks %]
 <p>
 We will aim to deliver your garden waste bin or roll of sacks within 20 working days.
 </p>
@@ -67,7 +67,7 @@ We will aim to deliver your garden waste bin within 20 working days.
 We collect garden waste every 2 weeks.
 </p>
 
-[% IF garden_sacks %]
+[% IF slwp_garden_sacks %]
 <p>
 You can fill your sacks whenever you need to during your 12 month subscription and put them out on your next garden waste collection day.
 </p>
