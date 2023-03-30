@@ -34,11 +34,22 @@ sub details_update_fields {
     };
 }
 
+sub with_sacks_choice { 0 }
+
 has_page intro => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_intro.html',
     fields => ['continue'],
-    next => 'existing',
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        $data->{_garden_sacks} = 1 if $form->with_sacks_choice;
+        return {};
+    },
+    next => sub {
+        return 'choice' if $_[0]->{_garden_sacks};
+        'existing';
+    }
 );
 
 has_page existing => (
@@ -70,12 +81,20 @@ has_page summary => (
     update_field_list => sub {
         my $form = shift;
         my $data = $form->saved_data;
+        my $c = $form->{c};
 
-        my $current_bins = $data->{current_bins};
-        my $bin_count = $data->{bins_wanted};
+        # Might not have these fields (e.g. SLWP), so include defaults
+        my $current_bins = $data->{current_bins} || 0;
+        my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
-        my $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
-        my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $cost_pa;
+        if (($data->{container_choice}||'') eq 'sack') {
+            $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+        } else {
+            $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        }
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+
         my $total = $cost_now_admin + $cost_pa;
 
         $data->{cost_now_admin} = $cost_now_admin / 100;
@@ -142,13 +161,15 @@ has_field current_bins => (
     range_start => 0,
 );
 
+sub bins_wanted_label_method {
+    my $self = shift;
+    my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+    return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
+}
+
 has_field bins_wanted => (
     type => 'Integer',
-    build_label_method => sub {
-        my $self = shift;
-        my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
-        return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
-    },
+    build_label_method => \&bins_wanted_label_method,
     required => 1,
     range_start => 1,
     tags => {

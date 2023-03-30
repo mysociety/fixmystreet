@@ -15,8 +15,8 @@ use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
 use FixMyStreet::WorkingDays;
-use FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe;
-use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
+use FixMyStreet::App::Form::Waste::Garden::Sacks;
+use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::Kingston;
 use FixMyStreet::App::Form::Waste::Request::Sutton;
@@ -682,7 +682,8 @@ sub waste_garden_sub_payment_params {
     my $c = $self->{c};
 
     # Special sack form handling
-    if ($c->stash->{slwp_garden_sacks} && !$data->{bins_wanted}) {
+    my $container = $data->{container_choice} || '';
+    if ($container eq 'sack') {
         $data->{slwp_garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
@@ -713,7 +714,9 @@ sub waste_garden_sub_params {
 sub waste_garden_subscribe_form_setup {
     my ($self) = @_;
     my $c = $self->{c};
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe';
+    if ($c->stash->{slwp_garden_sacks}) {
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
+    }
 }
 
 sub waste_garden_renew_form_setup {
@@ -721,7 +724,7 @@ sub waste_garden_renew_form_setup {
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{first_page} = 'sacks_choice';
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Renew';
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
     }
 }
 
