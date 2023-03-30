@@ -682,7 +682,8 @@ sub waste_garden_sub_payment_params {
     my $c = $self->{c};
 
     # Special sack form handling
-    if ($c->stash->{slwp_garden_sacks} && !$data->{bins_wanted}) {
+    my $container = $data->{container_choice} || '';
+    if ($container eq 'sack') {
         $data->{slwp_garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
