@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Moo;
 use DateTime;
+use FixMyStreet::App::Form::Waste::Request::Brent;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';

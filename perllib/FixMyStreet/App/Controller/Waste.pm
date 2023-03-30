@@ -10,9 +10,6 @@ use List::Util qw(any);
 use FixMyStreet::App::Form::Field::JSON;
 use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
-use FixMyStreet::App::Form::Waste::Request::Bromley;
-use FixMyStreet::App::Form::Waste::Request::Peterborough;
-use FixMyStreet::App::Form::Waste::Request::Brent;
 use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
@@ -23,8 +20,6 @@ use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
-use FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe;
-use FixMyStreet::App::Form::Waste::Garden::Kingston::Renew;
 use Open311::GetServiceRequestUpdates;
 use Digest::MD5 qw(md5_hex);
 use Memcached;
@@ -1254,9 +1249,7 @@ sub garden : Chained('garden_setup') : Args(0) {
         max_bins => $c->stash->{quantity_max}->{$service}
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
-    if ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') {
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Subscribe';
-    }
+    $c->cobrand->call_hook('waste_garden_subscribe_form_setup');
     $c->forward('form');
 }
 
@@ -1361,14 +1354,9 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         max_bins => $max_bins,
         bins => $service->{garden_bins},
     };
+
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
-    if (
-           ( $c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton' ) &&
-            $c->stash->{garden_sacks}
-        ) {
-        $c->stash->{first_page} = 'sacks_choice';
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Kingston::Renew';
-    }
+    $c->cobrand->call_hook('waste_garden_renew_form_setup');
     $c->forward('form');
 }
 
