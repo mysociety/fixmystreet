@@ -1,14 +1,63 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::CentralBedfordshire - code specific to the Central Bedfordshire cobrand [incomplete]
+
+
+=head1 SYNOPSIS
+
+We integrate with Central Bedfordshire's Symology back end.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::CentralBedfordshire;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
 
+=head2 Defaults
+
+=over 4
+
+=cut
+
 sub council_area_id { 21070 }
 sub council_area { 'Central Bedfordshire' }
 sub council_name { 'Central Bedfordshire Council' }
 sub council_url { 'centralbedfordshire' }
+
+=item * Users with a centralbedfordshire.gov.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'centralbedfordshire.gov.uk' }
+
+=item * We do not show reports made before 2020-12-02.
+
+=cut
+
+# Don't show any reports made before the go-live date at all.
+sub cut_off_date { '2020-12-02' }
+
+=item * We send an acknowledgement email when a report is sent; email includes the C<external_id> (Symology reference).
+
+=cut
+
+sub report_sent_confirmation_email { 'external_id' }
+
+=item * We do not send questionnaires.
+
+=cut
+
 sub send_questionnaires { 0 }
+
+=pod
+
+=back
+
+=cut
 
 sub disambiguate_location {
     my $self    = shift;
@@ -25,8 +74,6 @@ sub disambiguate_location {
 }
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
-
-sub admin_user_domain { 'centralbedfordshire.gov.uk' }
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
@@ -121,12 +168,6 @@ sub open311_post_send {
     my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $dest, "Central Bedfordshire" ] ] );
     $sender->send($row, $h);
 }
-
-
-sub report_sent_confirmation_email { 'external_id' }
-
-# Don't show any reports made before the go-live date at all.
-sub cut_off_date { '2020-12-02' }
 
 sub front_stats_show_middle { 'completed' }
 
