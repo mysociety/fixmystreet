@@ -8,6 +8,7 @@ use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
 use Integrations::Echo;
 use BromleyParks;
+use FixMyStreet::App::Form::Waste::Request::Bromley;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
