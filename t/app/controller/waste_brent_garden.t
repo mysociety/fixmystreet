@@ -393,7 +393,68 @@ FixMyStreet::override_config {
         like $body, qr/Total:.*?50.00/;
     };
 
+    subtest 'check new staff subscription of sacks' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
+        $mech->submit_form_ok({ with_fields => {
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£50.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payenet_code => 54321 }});
 
+        my $content = $mech->content;
+        my ($report_id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $report_id });
+        check_extra_data_pre_confirm($report, new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2);
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
+        is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+        is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Garden waste sack collection: 1/;
+        like $body, qr/Total:.*?50.00/;
+    };
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    set_fixed_time('2021-03-09T17:00:00Z');
+
+    subtest 'check renew staff subscription of sacks' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
+        $mech->submit_form_ok({ with_fields => {
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£50.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payenet_code => 54321 }});
+
+        my $content = $mech->content;
+        my ($report_id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $report_id });
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2);
+        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
+        is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+        is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Garden waste sack collection: 1/;
+        like $body, qr/Total:.*?50.00/;
+    };
 };
 
 sub get_report_from_redirect {

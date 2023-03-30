@@ -48,10 +48,15 @@ has_page summary => (
         my $c = $form->{c};
         my $data = $form->saved_data;
 
-        my $current_bins = $data->{current_bins};
-        my $bin_count = $data->{bins_wanted};
+        my $current_bins = $data->{current_bins} || 0;
+        my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
-        my $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_pa;
+        if (($data->{container_choice}||'') eq 'sack') {
+            $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+        } else {
+            $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+        }
         my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         my $total = $cost_now_admin + $cost_pa;
 
@@ -86,9 +91,13 @@ has_field current_bins => (
     range_start => 1,
 );
 
+sub bins_wanted_label_method {
+    'Number of bins to be emptied (including bins already on site)';
+}
+
 has_field bins_wanted => (
     type => 'Integer',
-    label => 'Number of bins to be emptied (including bins already on site)',
+    build_label_method => \&bins_wanted_label_method,
     tags => { number => 1 },
     required => 1,
     range_start => 1,
