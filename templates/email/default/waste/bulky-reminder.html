@@ -33,24 +33,6 @@ INCLUDE '_email_top.html';
     Collection date: [% collection_date %]
   </p>
 
-  <p style="[% p_style %]">
-    Items to be collected:
-    <ul>
-      [% FOR item IN item_list %]
-        <li>
-          [% item.value %]
-          [% IF item.message %]
-            <ul>
-              <li>
-                [% item.message %]
-              </li>
-            </ul>
-          [% END %]
-        </li>
-      [% END %]
-    </ul>
-  </p>
-
 [% IF payment %]
   <p style="[% p_style %]">
     Total cost: £[% pounds(payment / 100) %]
