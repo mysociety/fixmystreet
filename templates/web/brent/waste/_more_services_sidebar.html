@@ -11,7 +11,9 @@
        <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
      [% END %]
      [% IF domestic_collection AND (c.user.from_body OR c.user.is_superuser) %]
+     <!--
        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=262">Set up for assisted collection</a></li>
+     -->
      [% END %]
    </ul>
 [% END %]
