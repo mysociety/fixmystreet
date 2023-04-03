@@ -127,7 +127,12 @@ has_page summary => (
         $data->{cost_pa} = $cost_pa / 100;
         $data->{display_total} = $total / 100;
 
-        return {};
+        my $button_text = 'Continue to payment';
+        my $features = $c->cobrand->feature('waste_features');
+        if ($c->stash->{is_staff} && $features->{text_for_waste_payment}) {
+            $button_text = $features->{text_for_waste_payment};
+        }
+        return { submit => { value => $button_text }};
     },
     finished => sub {
         return $_[0]->wizard_finished('process_garden_data');
@@ -247,7 +252,6 @@ has_field continue_review => (
 
 has_field submit => (
     type => 'Submit',
-    value => 'Continue to payment',
     element_attr => { class => 'govuk-button' },
     order => 999,
 );

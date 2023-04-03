@@ -139,6 +139,7 @@ FixMyStreet::override_config {
             hmac_id => '1234',
             scpID => '1234',
         } },
+        waste_features => { brent => {text_for_waste_payment => 'Payment processed'} },
         anonymous_account => { brent => 'anonymous.customer' },
     },
 }, sub {
@@ -281,6 +282,7 @@ FixMyStreet::override_config {
             # external redirects make Test::WWW::Mechanize unhappy so clone
             # the mech for the redirect
             my $mech2 = $mech->clone;
+            $mech2->content_contains('Continue to payment', 'Waste features text_for_waste_payment not used for non-staff payment');
             $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
 
             is $mech2->res->previous->code, 302, 'payments issues a redirect';
@@ -404,6 +406,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£50.00');
+        $mech->content_contains('Payment processed');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->submit_form_ok({ with_fields => { payenet_code => 54321 }});
 
@@ -438,6 +441,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£50.00');
+        $mech->content_contains('Payment processed');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->submit_form_ok({ with_fields => { payenet_code => 54321 }});
 
@@ -487,7 +491,11 @@ FixMyStreet::override_config {
                     COBRAND_FEATURES => {
                         echo => { brent => { url => 'http://example.org' } },
                         waste => { brent => 1 },
-                        waste_features => { brent => { ggw_discount_as_percent => 20, dd_disabled => 1 } },
+                        waste_features => { brent => {
+                            ggw_discount_as_percent => 20,
+                            dd_disabled => 1,
+                            text_for_waste_payment => 'Payment processed'
+                            } },
                         payment_gateway => { brent => {
                             ggw_cost => 5000,
                             cc_url => 'http://example.org/cc_submit',
@@ -512,6 +520,7 @@ FixMyStreet::override_config {
                 } });
                 $mech->content_contains('Test McTest');
                 $mech->content_contains($test->{cost}, $test->{description});
+                $mech->content_contains('Payment processed');
                 $mech->submit_form_ok({ with_fields => { tandc => 1 } });
                 my ($report_id) = $mech->content =~ /<strong>(\d+)<\/strong>/;
                 my $report = FixMyStreet::DB->resultset('Problem')->find( {
