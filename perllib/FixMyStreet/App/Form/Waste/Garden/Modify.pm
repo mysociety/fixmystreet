@@ -98,12 +98,16 @@ has_page summary => (
             $data->{phone} ||= $c->user->phone;
         }
         my $button_text = 'Continue to payment';
+        my $features = $form->{c}->cobrand->feature('waste_features');
         if ( $data->{payment_method} eq 'credit_card' || $data->{payment_method} eq 'csc' ) {
             if ( $new_bins <= 0 ) {
                 $button_text = 'Confirm changes';
             }
         } elsif ( $data->{payment_method} eq 'direct_debit' ) {
             $button_text = 'Amend Direct Debit';
+        }
+        if ($c->stash->{is_staff} && $features->{text_for_waste_payment}) {
+            $button_text =  $features->{text_for_waste_payment};
         }
         return {
             submit => { default => $button_text },
