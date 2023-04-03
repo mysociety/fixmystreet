@@ -21,14 +21,6 @@ This is a reminder that your collection is tomorrow.
 
 Collection date: [% collection_date %]
 
-Items to be collected:
-[% FOR item IN item_list %]
-    - [% item.value %]
-[% IF item.message %]
-        - [% item.message %]
-[% END %]
-[% END %]
-
 [% IF payment ~%]
 Total cost: £[% pounds(payment / 100) %]
 

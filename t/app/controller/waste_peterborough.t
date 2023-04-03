@@ -1333,7 +1333,6 @@ FixMyStreet::override_config {
             if ($days) {
                 my $email = $mech->get_email->as_string;
                 like $email, qr/26 August/;
-                like $email, qr/Wardrobe/;
                 like $email, qr{peterborough.example.org/waste/PE1%203NA%3A100090};
                 like $email, qr{215480/bulky_cancel};
                 if ($days == 3) {
