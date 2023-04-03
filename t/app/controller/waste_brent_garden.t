@@ -409,6 +409,7 @@ FixMyStreet::override_config {
 
         my $content = $mech->content;
         my ($report_id) = ($content =~ m#reference number is <strong>(\d+)<#);
+        $mech->content_contains('Changes to your subscription will show up within 24 hours', 'Sack text manages expectations');
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $report_id });
         check_extra_data_pre_confirm($report, new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2);
         is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
