@@ -29,7 +29,11 @@ We have sent a confirmation email (you may also receive a payment receipt separa
   [% ELSIF action == 'add_containers' %]
     Bins typically arrive within two weeks, but this may vary due to demand.
   [% ELSE %]
+    [%- IF c.cobrand.moniker == 'brent' -%]
+    Changes to your subscription will show up within 24 hours.
+    [%- ELSE -%]
     Changes to your subscription will show up on your bin calender shortly.
+    [%- END -%]
   [% END %]
 </p>
 
