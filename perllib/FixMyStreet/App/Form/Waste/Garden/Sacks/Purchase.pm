@@ -44,7 +44,13 @@ has_page summary => (
             $data->{email} = $c->user->email;
             $data->{phone} ||= $c->user->phone;
         }
-        return {};
+
+        my $button_text = 'Continue to payment';
+        my $features = $form->{c}->cobrand->feature('waste_features');
+        if ($c->stash->{is_staff} && $features->{text_for_waste_payment}) {
+            $button_text = $features->{text_for_waste_payment};
+        }
+        return {submit => { value => $button_text }};
     },
     finished => sub {
         return $_[0]->wizard_finished('process_garden_modification');
