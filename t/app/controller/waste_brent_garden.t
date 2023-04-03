@@ -411,7 +411,7 @@ FixMyStreet::override_config {
         my $content = $mech->content;
         my ($report_id) = ($content =~ m#reference number is <strong>(\d+)<#);
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $report_id });
-        check_extra_data_pre_confirm($report, new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2, new_bin_type => 2, new_quantity => 1);
+        check_extra_data_pre_confirm($report, new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2);
         is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
         is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
@@ -445,7 +445,7 @@ FixMyStreet::override_config {
         my $content = $mech->content;
         my ($report_id) = ($content =~ m#reference number is <strong>(\d+)<#);
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $report_id });
-        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2, new_bin_type => 2, new_quantity => 2, quantity => 2);
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc', state => 'confirmed', bin_type => 2, quantity => 2);
         is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
         is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
