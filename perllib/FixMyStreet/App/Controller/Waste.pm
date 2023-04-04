@@ -1797,9 +1797,11 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
         $request->{service_request_id} = $event->{Guid};
     }
 
+    my $suppress_alerts = $event->{EventTypeId} == 1159 ? 1 : 0;
     my $updates = Open311::GetServiceRequestUpdates->new(
         system_user => $body->comment_user,
         current_body => $body,
+        suppress_alerts => $suppress_alerts,
     );
 
     my $p = $updates->find_problem($request);

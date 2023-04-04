@@ -335,6 +335,9 @@ sub waste_fetch_events {
         $request->{comment_time} = $last_updated;
 
         print "  Updating report to state $request->{status}, $request->{description} ($request->{external_status_code})\n" if $cfg->{verbose};
+        if ($cobrand->moniker eq 'brent') {
+            $cfg->{updates}->suppress_alerts($event->{EventTypeId} == 1159 ? 1 : 0);
+        }
         $cfg->{updates}->process_update($request, $report);
     }
 }

@@ -273,10 +273,11 @@ subtest 'push updating of reports' => sub {
         if ($method eq 'GetEvent') {
             my ($key, $type, $value) = ${$args[3]->value}->value;
             my $external_id = ${$value->value}->value->value;
-            my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            my ($waste, $event_state_id, $resolution_code, $event_type) = split /-/, $external_id;
+            $event_type ||= '943';
             return SOAP::Result->new(result => {
                 EventStateId => $event_state_id,
-                EventTypeId => '943',
+                EventTypeId => $event_type,
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
                 ResolutionCodeId => $resolution_code,
             });
@@ -306,7 +307,7 @@ subtest 'push updating of reports' => sub {
         }
     });
 
-    my $report;
+    my ($report, $alert);
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'brent',
         COBRAND_FEATURES => {
@@ -325,6 +326,13 @@ subtest 'push updating of reports' => sub {
         });
         my $report_id = $report->id;
         my $cobrand = FixMyStreet::Cobrand::Brent->new;
+
+        $alert = FixMyStreet::DB->resultset('Alert')->create({
+            alert_type => 'new_updates',
+            parameter  => $report->id,
+            confirmed  => 1,
+            user_id    => $report->user->id,
+        });
 
         $report2->update({ external_id => 'Symology-123' });
         $report->update({ external_id => 'Echo-waste-7671-' });
@@ -352,6 +360,23 @@ subtest 'push updating of reports' => sub {
         $report->discard_changes;
         is $report->comments->count, 2, 'A new update';
         is $report->state, 'unable to fix', 'Changed to no further action';
+
+        $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
+        is $sent, undef;
+
+        $report->update({ external_id => 'Echo-waste-7680--1159', state => 'confirmed' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state fixed - council, Completed/;
+        $report->discard_changes;
+        is $report->comments->count, 3, 'A new update';
+        is $report->state, 'fixed - council', 'Changed to fixed';
+        $report->update({ external_id => 'Echo-waste-7681-67' });
+
+        $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
+        isnt $sent, undef;
     };
 
     FixMyStreet::override_config {
@@ -387,9 +412,26 @@ subtest 'push updating of reports' => sub {
 EOF
         my $mech2 = $mech->clone;
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
-        is $report->comments->count, 3, 'A new update';
+        is $report->comments->count, 4, 'A new update';
         $report->discard_changes;
         is $report->state, 'closed', 'A state change';
+
+        my $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
+        is $sent, undef;
+
+        $report->update({ state => 'confirmed' });
+        $in =~ s/943/1159/;
+        $in =~ s/7672/7680/;
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 5, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'fixed - council', 'A state change';
+
+        $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
+        isnt $sent, undef;
+
     };
 };
 
