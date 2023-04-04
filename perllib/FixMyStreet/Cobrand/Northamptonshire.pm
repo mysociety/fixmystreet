@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Northamptonshire - code specific to the Northamptonshire cobrand
+
+=head1 SYNOPSIS
+
+
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Northamptonshire;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -8,10 +20,58 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
 
+=head2 Defaults
+
+=over 4
+
+=cut
+
 sub council_area_id { [ 164185, 164186 ] }
 sub council_area { 'Northamptonshire' }
 sub council_name { 'Northamptonshire Highways' }
 sub council_url { 'northamptonshire' }
+
+=item * Users with a northamptonshire.gov.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'northamptonshire.gov.uk' }
+
+=item * Uses the OSM geocoder
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
+=item * This is a two-tier authority
+
+=cut
+
+sub is_two_tier { 1 }
+
+=item * /around map shows only open reports by default.
+
+=cut
+
+sub on_map_default_status { 'open' }
+
+=item * We send a confirmation email when report is sent.
+
+=cut
+
+sub report_sent_confirmation_email { 'id' }
+
+=item * We do not send questionnaires.
+
+=cut
+
+=pod
+
+=back
+
+=cut
+
+sub send_questionnaires { 0 }
 
 sub enter_postcode_text { 'Enter a Northamptonshire postcode, street name and area, or check an existing report number' }
 
