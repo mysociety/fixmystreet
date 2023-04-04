@@ -1,6 +1,9 @@
 fixmystreet.offlineReporting = (function() {
     function updateDraftSavedTimestamp(ts) {
         if (ts) {
+            var b = ts.split(/\D+/);
+            var d = new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
+            ts = new Intl.DateTimeFormat(undefined, { timeStyle: 'short', dateStyle: 'long' }).format(d);
             $("#draft_save_message").removeClass("hidden").find("span").text(ts);
         } else {
             $("#draft_save_message").addClass("hidden").find("span").text("");
@@ -14,6 +17,10 @@ fixmystreet.offlineReporting = (function() {
             return;
         }
 
+        var default_message = translation_strings.upload_default_message;
+        if ($("html").hasClass("mobile")) {
+            default_message = translation_strings.upload_default_message_mobile;
+        }
         var dz = new Dropzone('#form_photos', {
             url: '/photo/upload/offline',
             paramName: 'photo',
@@ -25,6 +32,10 @@ fixmystreet.offlineReporting = (function() {
             resizeWidth: 2048,
             resizeQuality: 0.6,
             acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png,.png,.tiff,.tif,.gif,.jpeg,.jpg',
+            dictDefaultMessage: default_message,
+            dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
+            dictInvalidFileType: translation_strings.upload_invalid_file_type,
+            dictMaxFilesExceeded: translation_strings.upload_max_files_exceeded,
             transformFile: function(file, done) {
                 // We have to intercept this as it seems the only place the
                 // resized image is available, and a good place to store it
@@ -106,9 +117,11 @@ fixmystreet.offlineReporting = (function() {
             $("input[name=latitude]").val(draft.latitude);
             $("input[name=longitude]").val(draft.longitude);
             if (draft.longitude || draft.latitude) {
-                $("#geolocate span").text("Update location");
+                $("#offline_geolocate span").text("Update location");
+                $('#offline_geolocate_location').text('Location stored: (' + draft.latitude + ',' + draft.longitude + ')');
             } else {
-                $("#geolocate span").text("Use my location");
+                $('#offline_geolocate_location').text('');
+                $("#offline_geolocate span").text("Use my location");
             }
             $("input[name=title]").val(draft.title);
             $("textarea[name=detail]").val(draft.detail);
@@ -196,11 +209,14 @@ fixmystreet.offlineReporting = (function() {
     return {
         offlineFormSetup: function() {
             dropzoneSetup();
-            $(".js-delete-drafts").on("click", function() {
+            $(".js-delete-drafts").on("click", function(e) {
+                e.preventDefault();
                 if (confirm(this.getAttribute('data-confirm'))) {
                     deleteDrafts();
                 }
             });
+
+            $(".js-save-draft").on("click", updateDraft);
 
             $("form#offline_report").find("input, textarea").on("input", function() {
                 updateDraft();
@@ -213,9 +229,12 @@ fixmystreet.offlineReporting = (function() {
         },
 
         geolocate: function(pos) {
-            $("input[name=latitude]").val(pos.coords.latitude.toFixed(6));
-            $("input[name=longitude]").val(pos.coords.longitude.toFixed(6));
-            $("#geolocate span").text("Update location");
+            var lat = pos.coords.latitude.toFixed(6);
+            var lon = pos.coords.longitude.toFixed(6);
+            $("input[name=latitude]").val(lat);
+            $("input[name=longitude]").val(lon);
+            $("#offline_geolocate span").text("Update location");
+            $('#offline_geolocate_location').text('Location stored: (' + lat + ',' + lon + ')');
             updateDraft();
          },
 
@@ -254,7 +273,7 @@ fixmystreet.offlineReporting = (function() {
 
 (function(){
 
-var link = document.getElementById('geolocate');
+var link = document.getElementById('offline_geolocate');
 if (fixmystreet.geolocate && link) {
     fixmystreet.geolocate(link, fixmystreet.offlineReporting.geolocate);
 }

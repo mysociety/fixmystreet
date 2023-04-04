@@ -399,7 +399,7 @@ if ($('#offline_list').length) {
                 }
             });
         });
-        $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-storage">'+translation_strings.offline.clear_data+'</button>');
+        $('#offline_clear').css('margin-top', '2em').html('<button id="js-clear-storage">'+translation_strings.offline.clear_data+'</button>');
         $('#js-clear-storage').on('click', function() {
             if (window.confirm(translation_strings.offline.are_you_sure)) {
                 fixmystreet.offlineData.getCachedReports().then(function(reports) {

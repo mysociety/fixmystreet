@@ -2992,6 +2992,16 @@ a#geolocate_link {
   visibility: hidden;
 }
 
+.submit-and-cancel {
+    display: flex;
+    align-items: center;
+}
+.submit-and-cancel a {
+    border-left: solid 1px #999;
+    padding-left: 1em;
+    margin-left: 1em;
+}
+
 @media screen {
   .print-only {
     display: none !important;

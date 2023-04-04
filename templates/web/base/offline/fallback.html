@@ -3,19 +3,22 @@
 
 <h1>[% loc('Offline') %]</h1>
 
-<p>[% loc('Sorry, we don’t have a good enough connection to fetch that page.') %]</p>
+<p>
+    [% loc('You are currently offline. You can still make a draft report below, to finish and submit when you have signal again.') %]
+</p>
 
 <ul class="item-list item-list--reports" id="offline_list"></ul>
-
-<div id="offline_clear"></div>
+<div id="offline_clear" align="right"></div>
 
 <div>
-    <h2>Offline Draft Report</h2>
+    <h2>[% loc('New offline draft report') %]</h2>
+    <p>[% loc('Anything you enter here is automatically saved for finishing and submitting when you’re back online.') %]</p>
     <form id="offline_report">
         <input name=latitude type=hidden />
         <input name=longitude type=hidden />
-        <p>
-        <button id=geolocate class="btn">[% INCLUDE 'around/geolocate_link_icon.html' %]<span>Use my location</span></button>
+        <p align="center">
+        <button id=offline_geolocate class="btn">[% INCLUDE 'around/geolocate_link_icon.html' %]<span>[% loc('Use my location') %]</span></button>
+        <br><small id=offline_geolocate_location></small>
         </p>
 
         <div style="max-width: 27em" id="form_photos" class="dropzone"></div>
@@ -24,14 +27,15 @@
         <label for="form_title">[% form_title %]</label>
         <input class="form-control" type="text"  name="title" autocomplete="off" id="form_title">
 
-
         [% DEFAULT form_detail_label = loc('Explain what’s wrong') %]
         <label for="form_detail">[% form_detail_label %]</label>
         <textarea class="form-control" rows="7" cols="26" name=detail id="form_detail"></textarea>
     </form>
-    <p id="draft_save_message" class="hidden"><small>Draft report saved at <span></span></small></p>
-    <hr>
-    <p><button class="btn-danger js-delete-drafts" data-confirm="sure?">Delete draft</button></p>
+    <p id="draft_save_message" class="hidden"><small>[% tprintf(loc('Draft report saved on %s'), '<span></span>') %]</small></p>
+    <p class="submit-and-cancel">
+        <button class="btn btn-primary js-save-draft">[% loc('Save draft') %]</button>
+        <a href="" class="js-delete-drafts" data-confirm="[% loc('Are you sure?') %]">[% loc('Delete draft') %]</a>
+    </p>
 </div>
 
 [% INCLUDE 'footer.html' %]
