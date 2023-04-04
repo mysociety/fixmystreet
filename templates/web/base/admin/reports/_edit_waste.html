@@ -163,6 +163,35 @@ END
 </ul>
 [% END %]
 
+[% IF c.cobrand.moniker == 'brent' %]
+    [% IF problem.get_extra_field_value('Container_Request_Container_Type') %]
+        <h2>Request information</h2>
+        <ul>
+        [% INCLUDE show_fields fields=[
+            [ 'Container type', 'Container_Request_Container_Type' ],
+            [ 'Quantity', 'Container_Request_Quantity' ],
+            [ 'Action', 'Container_Request_Action' ],
+            [ 'Reason', 'Container_Request_Reason' ],
+            [ 'Notes', 'Container_Request_Notes' ],
+        ] %]
+        </ul>
+    [% END %]
+    [% IF problem.get_extra_field_value('Paid_Collection_Container_Type') %]
+        <h2>Subscription information</h2>
+        <ul>
+        [% INCLUDE show_fields fields=[
+            [ 'Subscription container', 'Paid_Collection_Container_Type' ],
+            [ 'Subscription quantity', 'Paid_Collection_Container_Quantity' ],
+            [ 'Delivery container', 'Container_Type' ],
+            [ 'Delivery quantity', 'Container_Quantity' ],
+            [ 'End date', 'Subscription_End_Date' ],
+            [ 'Current containers', 'current_containers' ],
+            [' New containers', 'new_containers' ],
+        ] %]
+        </ul>
+    [% END %]
+[% END %]
+
 <h2>Payment information</h2>
 <ul>
 [% INCLUDE show_fields fields=[
