@@ -1,3 +1,16 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::IsleOfWight - code specific to the Island Roads cobrand [incomplete]
+
+
+=head1 SYNOPSIS
+
+We integrate with Island Roads' Confirm back end.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::IsleOfWight;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -7,6 +20,12 @@ use warnings;
 use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
+
+=head2 Defaults
+
+=over 4
+
+=cut
 
 sub council_area_id { 2636 }
 sub council_area { 'Isle of Wight' }
@@ -20,15 +39,61 @@ sub enter_postcode_text {
     return 'Enter an ' . $self->council_area . ' postcode, or street name and area';
 }
 
+=item * Users with an islandroads.com email can always be found in the admin.
+
+=cut
+
 sub admin_user_domain { ('islandroads.com') }
+
+=item * We do not show reports made before 2019-09-30.
+
+=cut
+
+# Island Roads don't want any reports made before their go-live date visible on
+# their cobrand at all.
+sub cut_off_date { '2019-09-30' }
+
+=item * The default map zoom is set to 4.
+
+=cut
+
+sub default_map_zoom { 4 }
+
+=item * Fetched report description is not shown.
+
+=cut
+
+sub filter_report_description { "" }
+
+=item * Uses the OSM geocoder.
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
+=item * /around map shows only open reports by default.
+
+=cut
 
 sub on_map_default_status { 'open' }
 
-sub send_questionnaires { 0 }
+=item * We send a confirmation email when report is sent.
+
+=cut
 
 sub report_sent_confirmation_email { 'external_id' }
 
-sub default_map_zoom { 4 }
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+=pod
+
+=back
+
+=cut
 
 sub disambiguate_location {
     my $self    = shift;
@@ -41,12 +106,6 @@ sub disambiguate_location {
     };
 }
 
-# Island Roads don't want any reports made before their go-live date visible on
-# their cobrand at all.
-sub cut_off_date { '2019-09-30' }
-
-sub get_geocoder { 'OSM' }
-
 sub lookup_site_code_config { {
     buffer => 50, # metres
     url => "https://tilma.mysociety.org/mapserver/iow",
@@ -57,9 +116,6 @@ sub lookup_site_code_config { {
 } }
 
 sub open311_extra_data_exclude { [ '^urgent$' ] }
-
-# Make sure fetched report description isn't shown.
-sub filter_report_description { "" }
 
 around 'open311_config' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
