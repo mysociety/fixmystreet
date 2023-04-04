@@ -22,7 +22,9 @@
 We have sent a confirmation email (you may also receive a payment receipt separately) to [% report.user.email %].
 [% END %]
 </p>
-
+[%- IF c.cobrand.moniker == 'brent' -%]
+  <p>For new subscribers, and existing subscribers who did not renew before the deadline (31st March 2023), it may take up to 14 working days for your first collection to take place.</p>
+[%- END -%]
 <p>
   [% IF action == 'new_subscription' %]
     Your Garden Waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered. Containers typically arrive within two weeks, but this may vary due to demand.
