@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Westminster - code specific to the Westminster cobrand [incomplete]
+
+=head1 SYNOPSIS
+
+
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Westminster;
 use base 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -5,6 +17,12 @@ use strict;
 use warnings;
 
 use URI;
+
+=head2 Defaults
+
+=over 4
+
+=cut
 
 sub council_area_id { return 2504; }
 sub council_area { return 'Westminster'; }
@@ -21,9 +39,49 @@ sub disambiguate_location {
     };
 }
 
+=item * Users with a westminster.gov.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'westminster.gov.uk' }
+
+=item * Anonymises report if 'Report anonymously' button clicked.
+
+=cut
+
+sub allow_anonymous_reports { 'button' }
+
+=item * Uses the OSM geocoder.
+
+=cut
+
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
+
+=item * /around map shows only open reports by default.
+
+=cut
+
+sub on_map_default_status { 'open' }
+
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+=item * We do not send alerts to report authors.
+
+=cut
+
+sub suppress_reporter_alerts { 1 }
+
+=pod
+
+=back
+
+=cut
 
 sub enter_postcode_text {
     my ($self) = @_;
@@ -32,23 +90,13 @@ sub enter_postcode_text {
 
 sub front_stats_show_middle { 'none' }
 
-sub send_questionnaires { 0 }
-
-sub suppress_reporter_alerts { 1 }
-
 sub report_age { '3 months' }
-
-sub on_map_default_status { 'open' }
 
 sub social_auth_enabled {
     my $self = shift;
 
     return $self->feature('oidc_login') ? 1 : 0;
 }
-
-sub allow_anonymous_reports { 'button' }
-
-sub admin_user_domain { 'westminster.gov.uk' }
 
 sub user_from_oidc {
     my ($self, $payload) = @_;
