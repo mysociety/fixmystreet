@@ -45,15 +45,18 @@ while ( $current_date < $end_date ) {
     my $current_plus_24 = $current_date->clone;
     $current_plus_24->add( hours => 24 );
 
+    # Never go past given end date
+    $current_plus_24 = $end_date if $end_date < $current_plus_24;
+
     print "fetching updates from $current_date till $current_plus_24\n" if $opt->verbose;
 
     my %params = (
         verbose => $opt->verbose,
-        start_date => DateTime::Format::W3CDTF->format_datetime( $current_date ),
-        end_date => DateTime::Format::W3CDTF->format_datetime( $current_plus_24 )
+        start_date => $current_date,
+        end_date => $current_plus_24
     );
 
-    $params{body} = $opt->body if $opt->body;
+    $params{bodies} = [ $opt->body ] if $opt->body;
 
     my $updates = Open311::GetServiceRequestUpdates->new( %params );
     $updates->fetch;
