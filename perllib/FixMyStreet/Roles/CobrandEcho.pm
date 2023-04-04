@@ -343,6 +343,7 @@ sub construct_waste_open311_update {
     my ($self, $cfg, $event) = @_;
 
     return undef unless $event;
+    return if $event->{EventTypeId} == 1159; # Brent garden subscription
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}} ||= $self->waste_get_event_type($cfg, $event->{EventTypeId});
     my $state_id = $event->{EventStateId};
     my $resolution_id = $event->{ResolutionCodeId} || '';
