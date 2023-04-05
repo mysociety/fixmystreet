@@ -371,7 +371,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Submit bin request');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
-        $mech->content_contains('Food bags will be supplied by the crew on your next collection day.');
+        $mech->content_contains('Bin liners will be delivered in due course');
         $mech->content_lacks('Bins arrive typically within two weeks');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
