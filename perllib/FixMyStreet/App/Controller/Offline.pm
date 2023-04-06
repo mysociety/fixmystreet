@@ -82,6 +82,44 @@ sub send_manifest: Private {
     $c->res->body($json);
 }
 
+
+=head2 assetlinks_json
+
+This serves a JSON file which establishes a link between the FMS website
+and the Android app. In practical terms this allows the PWA installed from
+the Play Store to render without an address bar on the user's device.
+
+For more info:
+    https://developer.android.com/training/app-links/verify-android-applinks
+
+=cut
+
+sub assetlinks_json: Path('/.well-known/assetlinks.json') {
+    my ($self, $c) = @_;
+
+    my $cfg = $c->cobrand->feature("android_assetlinks");
+
+    unless ($cfg) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    my $data = [{
+        relation => ["delegate_permission/common.handle_all_urls"],
+        target => {
+            namespace => "android_app",
+            package_name => $cfg->{package},
+            sha256_cert_fingerprints => $cfg->{fingerprints}
+        }
+    }];
+
+    $c->res->content_type('application/json; charset=utf-8');
+    my $json = encode_json($data);
+    $c->res->body($json);
+}
+
+
 sub _stash_manifest_theme : Private {
     my ($self, $c, $cobrand) = @_;
 
