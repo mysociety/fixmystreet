@@ -321,6 +321,12 @@ sub admin_templates_external_status_code_hook {
     return $code;
 }
 
+=head2 waste_check_staff_payment_permissions
+
+Staff can make payments via entering a PAYE code.
+
+=cut
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
@@ -768,6 +774,21 @@ sub waste_munge_request_form_data {
     $data->{"container-$container_id"} = 1;
 }
 
+=head2 Waste configuration
+
+=over 4
+
+=item * Waste reports do not have email confirmation.
+
+=item * Staff cannot choose the payment method (if there were multiple)
+
+=item * Cheque payments are not an option
+
+=item * Renewals can happen within 28 days
+
+=cut
+
+sub waste_never_confirm_reports { 1 }
 sub waste_staff_choose_payment_method { 0 }
 sub waste_cheque_payments { 0 }
 
@@ -812,6 +833,10 @@ sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
     return "Brent-" . $p->id;
 }
+
+=item * Staff can pick between sacks/bins for garden waste subscription/renewal
+
+=cut
 
 sub waste_garden_subscribe_form_setup {
     my ($self) = @_;
@@ -880,9 +905,17 @@ sub waste_garden_sub_params {
     }
 }
 
+=item * Sacks cost the same as bins
+
+=cut
+
 sub garden_waste_sacks_cost_pa {
     return $_[0]->garden_waste_cost_pa();
 }
+
+=item * Garden subscription is half price in October-December.
+
+=cut
 
 sub garden_waste_cost_pa {
     my ($self, $bin_count) = @_;
@@ -898,6 +931,12 @@ sub garden_waste_cost_pa {
 
     return $cost;
 }
+
+=item * Staff can apply a fixed discount to the garden subscription cost via a checkbox.
+
+=back
+
+=cut
 
 sub apply_garden_waste_discount {
     my ($self, @charges ) = @_;

@@ -630,7 +630,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { extra_Notes => 'Behind the garden gate' } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Nearly done!');
+        $mech->content_contains('Enquiry has been submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->detail, "Behind the garden gate\n\n2 Example Street, Brent, NW2 1AA";
         is $report->user->email, 'anne@example.org';
