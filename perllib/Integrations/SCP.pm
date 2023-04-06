@@ -2,9 +2,8 @@ package Integrations::SCP;
 
 use Moo;
 with 'FixMyStreet::Roles::SOAPIntegration';
+with 'FixMyStreet::Roles::Syslog';
 
-use Data::Dumper;
-use Sys::Syslog;
 use DateTime;
 use MIME::Base64;
 use Digest::HMAC;
@@ -27,37 +26,10 @@ has endpoint => (
     }
 );
 
-has log_open => (
-    is => 'ro',
-    lazy => 1,
-    builder => '_syslog_open',
+has log_ident => (
+    is => 'lazy',
+    default => sub { $_[0]->config->{log_ident}; },
 );
-
-sub _syslog_open {
-    my $self = shift;
-    my $ident = $self->config->{log_ident} or return 0;
-    my $opts = 'pid,ndelay';
-    my $facility = 'local6';
-    my $log;
-    eval {
-        Sys::Syslog::setlogsock('unix');
-        openlog($ident, $opts, $facility);
-        $log = $ident;
-    };
-    $log;
-}
-
-sub DEMOLISH {
-    my $self = shift;
-    closelog() if $self->log_open;
-}
-
-sub log {
-    my ($self, $str) = @_;
-    $self->log_open or return;
-    $str = Dumper($str) if ref $str;
-    syslog('debug', '%s', $str);
-}
 
 sub call {
     my ($self, $method, @params) = @_;
