@@ -919,12 +919,18 @@ sub defect_types {
     return $self->result_source->schema->resultset('DefectType')->for_bodies($self->bodies_str_ids, $self->category);
 }
 
-# returns true if the external id is the council's ref, i.e., useful to publish it
-# (by way of an example, the Open311 send method returns a useful reference when
-# it succeeds, so that is the ref we should show on the problem report page).
-#     Future: this is installation-dependent so maybe should be using the contact
-#             data to determine if the external id is public on a council-by-council basis.
-#     Note:   this only makes sense when called on a problem that has been sent!
+=head2 can_display_external_id
+
+Returns true if the external id is the council's ref, i.e., useful to publish
+it (by way of an example, the Open311 send method returns a useful reference
+when it succeeds, so that is the ref we should show on the problem report
+page).
+Future: this is installation-dependent so maybe should be using the contact
+data to determine if the external id is public on a council-by-council basis.
+Note: this only makes sense when called on a problem that has been sent!
+
+=cut
+
 sub can_display_external_id {
     my $self = shift;
     if ( $self->external_id && $self->to_body_named('Lincolnshire|Isle of Wight|East Sussex|Central Bedfordshire|Shropshire|Merton') ) {
@@ -939,7 +945,6 @@ sub duration_string {
     my $cobrand = $problem->result_source->schema->cobrand;
     my $body = $cobrand->call_hook( link_to_council_cobrand => $problem )
         || $problem->body(1);
-    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $problem);
     return unless $problem->whensent;
     my $s = sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')

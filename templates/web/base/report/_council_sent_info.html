@@ -1,17 +1,34 @@
+[% IF c.cobrand.moniker == 'hounslow' %]
+  [% SET can_display_external_id = problem.external_id AND c.user_exists AND c.user.belongs_to_body(problem.bodies_str) %]
+[% ELSE %]
+  [% SET can_display_external_id = problem.can_display_external_id %]
+[% END %]
 [% SET duration_clause = problem.duration_string %]
-[% IF duration_clause || problem.can_display_external_id %]
-    <p class="council_sent_info">
-    [%- IF problem.can_display_external_id %]
-        [%- IF duration_clause %]
-            [%- external_ref_clause = tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %]
+<p class="council_sent_info">
+    [% duration_clause %][% IF duration_clause %]. [% END %]
+    <strong>
+    [%- IF can_display_external_id %]
+        [%- IF c.cobrand.moniker == 'hounslow' %]
+            [%- tprintf('Reference:&nbsp;%s', problem.external_id) %].
+        [%- ELSIF c.cobrand.moniker == 'isleofwight' %]
+            [%- tprintf('Enquiry ref:&nbsp;%s', problem.external_id) %].
         [%- ELSE %]
-            [%- external_ref_clause = tprintf(loc('%s ref:&nbsp;%s'), problem.external_body, problem.external_id) %]
+            [%- tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %].
+        [%- END %]
+    [%- ELSE -%]
+        [%- IF c.cobrand.moniker == 'bathnes' OR c.cobrand.moniker == 'cheshireeast' OR c.cobrand.moniker == 'peterborough' %]
+            [%- tprintf(loc('Council ref:&nbsp;%s'), problem.id) %].
+        [%- ELSIF c.cobrand.moniker == 'bexley' %]
+            [%- tprintf('Report ref:&nbsp;%s', problem.id) %].
+        [%- ELSIF c.cobrand.moniker == 'tfl' %]
+            [%- tprintf('TfL ref:&nbsp;FMS%s', problem.id) %].
+        [%- ELSIF c.cobrand.moniker == 'northamptonshire' %]
+            [%- IF NOT c.cobrand.is_defect(problem) %]
+                [% tprintf(loc('ref:&nbsp;%s'), problem.id) %].
+            [%- END -%]
+        [%- ELSE %]
+            [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
         [%- END %]
     [%- END -%]
-    [% duration_clause %]
-    [%- IF external_ref_clause %]
-        [%- IF duration_clause %]. [% END %]
-        <strong>[% external_ref_clause %].</strong>
-    [%- END %]
-    </p>
-[% END %]
+    </strong>
+</p>
