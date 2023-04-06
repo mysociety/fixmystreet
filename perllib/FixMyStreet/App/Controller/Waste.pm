@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
+with 'FixMyStreet::Roles::Syslog';
+
 use utf8;
 use Lingua::EN::Inflect qw( NUMWORDS );
 use List::Util qw(any);
@@ -1752,6 +1754,18 @@ sub setup_categories_and_bodies : Private {
     $c->forward('/report/new/setup_categories_and_bodies');
 }
 
+has log_ident => (
+    is => 'ro',
+    default => sub {
+        my $feature = 'echo';
+        my $features = FixMyStreet->config('COBRAND_FEATURES');
+        return unless $features && ref $features eq 'HASH';
+        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+        my $f = $features->{$feature}->{_fallback};
+        return $f->{log_ident};
+    }
+);
+
 sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     my ($self, $c) = @_;
     $c->stash->{format} = 'xml';
@@ -1767,7 +1781,7 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     # Make sure we log entire request for debugging
     $c->detach('soap_error', [ 'Missing body' ]) unless $c->req->body;
     my $soap = join('', $c->req->body->getlines);
-    $c->log->debug($soap);
+    $self->log($soap);
 
     my $body = $c->cobrand->body;
     $c->detach('soap_error', [ 'Bad jurisdiction' ]) unless $body;
