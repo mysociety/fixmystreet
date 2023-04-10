@@ -66,6 +66,7 @@ a, .fake-link {
 // Front page
 
 #front-main {
+    text-align: left;
     h1 {
         font-size: 1.7em;
     }
@@ -90,6 +91,11 @@ a, .fake-link {
 
 #front-main #postcodeForm {
     margin-top: 1em;
+    background-color: #fff;
+
+    div {
+        margin-left: 0;
+    }
 
     label {
         color: $primary_b;

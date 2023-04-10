@@ -42,7 +42,7 @@
 
 #front-main {
     padding: 2em 1em;
-    background-color: $front_main_background;
+    background-color: #fff;
     color: $primary_b;
 
     h1 {
@@ -55,18 +55,30 @@
     }
     #postcodeForm {
         margin-top: 0;
-        padding: 0;
+        padding-top: 0;
+        div {
+            margin-left: 0;
+        }
     }
 
     a {
         color: $primary_b;
+
+        &:hover {
+            color: $primary_b;
+            text-decoration: none;
+        }
     }
 
     .front-main-other-issues-wrapper {
-        padding: 1em;
-        background: $bathens-cyan;
-        max-width: 500px;
-        margin: 1em auto;
+        margin-top: 3em;
+        margin-left: 0;
+        margin-right: 0;
+        border: 5px solid #6F777B;
+        padding: 20px;
+        margin-bottom: 50px;
+        background: #ffffff;
+        max-width: 100%;
 
         a {
             &:hover {
