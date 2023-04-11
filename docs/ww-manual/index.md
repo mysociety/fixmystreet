@@ -22,13 +22,13 @@ Being a long-term user of FixMyStreet Pro, Bromley Council shared our desire to 
 
 Similarly to FixMyStreet Pro, WasteWorks integrates with in-cab systems, facilitating a two-way flow of data between council and resident, as well as helping to streamline processes without adding any complexity for residents.
 
-WasteWorks was shortlisted for an LGA Award within its first year of launch.
+WasteWorks was shortlisted for an LGC Award within its first year of launch.
 
 ## WasteWorks features for residents
 
 - Check bin days
 - Report missed bins
-- Report other problem with collections
+- Report other problems with collections
 - Request new or extra containers
 - Pay for a bulky or green waste collection or subscription
 - Renew or cancel subscriptions

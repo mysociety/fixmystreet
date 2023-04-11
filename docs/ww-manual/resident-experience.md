@@ -41,7 +41,7 @@ They will then be asked for some basic information before being able to submit t
 
 ### Reporting a missed collection
 
-To report a missed collection, from the main ‘Your bin days’ page the resident will be asked to select the bin in question and provide their contact details so that updates can be provided.
+To report a missed collection, from the main ‘Your bin days’ page the resident will be asked to select the bin in question and provide their contact details so that updates can be provided. They can also find a link to report a missed collection beneath each available bin collection listed on the main page.
 
 <img alt="Report a missed collection" src="/assets/img/ww-user-guide/WasteWorks-report-missed-collection.png" class="admin-screenshot" />
 
