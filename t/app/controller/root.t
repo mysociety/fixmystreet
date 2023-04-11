@@ -1,5 +1,8 @@
 use FixMyStreet::TestMech;
 use Test::MockModule;
+use Storable;
+use MIME::Base64;
+
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
@@ -75,4 +78,91 @@ subtest "check_login_disallowed cobrand hook" => sub {
     is $mech->uri->path_query, '/auth?r=', 'redirects to auth page';
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        android_assetlinks => {
+            fixmystreet => {
+                package => "org.mysociety.FixMyStreet"
+            }
+        }
+    }
+}, sub {
+
+    subtest "Session not created if PWA not used" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        $mech->get_ok('/'); # we're a regular front page visitor, not using app
+        my $count = FixMyStreet::DB->resultset("Session")->count;
+        is $count, 0, "session not created";
+    };
+
+    subtest "Android start URL stores platform in session" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        $mech->get_ok('/?pwa=android');
+        my $session = FixMyStreet::DB->resultset("Session")->first;
+        my $data = Storable::thaw(MIME::Base64::decode($session->session_data));
+
+        is $data->{app_platform}, "Android";
+    };
+
+    subtest "iOS start URL stores platform in session" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        $mech->get_ok('/?pwa=ios');
+        my $session = FixMyStreet::DB->resultset("Session")->first;
+        my $data = Storable::thaw(MIME::Base64::decode($session->session_data));
+
+        is $data->{app_platform}, "iOS";
+    };
+
+    subtest "Invalid start URL pwa parameter doesn't create session" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        $mech->get_ok('/?pwa=unknown');
+        my $count = FixMyStreet::DB->resultset("Session")->count;
+        is $count, 0, "session not created";
+    };
+
+    subtest "iOS User-Agent header stores platform in session" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        my $agent = $mech->agent;
+        $mech->agent("Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1 iospwa");
+
+        $mech->get_ok('/');
+        my $session = FixMyStreet::DB->resultset("Session")->first;
+        my $data = Storable::thaw(MIME::Base64::decode($session->session_data));
+
+        is $data->{app_platform}, "iOS";
+
+        $mech->agent($agent);
+    };
+
+    subtest "Android android-app:// referer stores platform in session" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        $mech->add_header(Referer => "android-app://org.mysociety.FixMyStreet/");
+        $mech->get_ok('/');
+        my $session = FixMyStreet::DB->resultset("Session")->first;
+        my $data = Storable::thaw(MIME::Base64::decode($session->session_data));
+
+        is $data->{app_platform}, "Android";
+
+        $mech->delete_header('Referer');
+    };
+
+    subtest "Android android-app:// referer from another app doesn't create session" => sub {
+        FixMyStreet::DB->resultset("Session")->delete_all;
+
+        $mech->add_header(Referer => "android-app://com.google.android.gm/");
+        $mech->get_ok('/');
+        my $count = FixMyStreet::DB->resultset("Session")->count;
+        is $count, 0, "session not created";
+
+        $mech->delete_header('Referer');
+    };
+};
 done_testing();

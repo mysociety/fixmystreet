@@ -43,6 +43,7 @@ sub auto : Private {
     $c->detach('/auth/redirect') if $c->cobrand->call_hook('check_login_disallowed');
 
     $c->forward('/offline/_stash_manifest_theme', [ $c->cobrand->moniker ]);
+    $c->forward('store_app_platform');
 
     return 1;
 }
@@ -189,6 +190,47 @@ sub set_app_cors_header : Private {
     my ($self, $c) = @_;
     my $origin = $c->req->header('Origin') || '';
     $c->response->header('Access-Control-Allow-Origin' => 'app://localhost') if $origin eq 'app://localhost';
+}
+
+
+=head2 store_app_platform
+
+If the user is accessing the site via the wrapped PWA from the app store, we want
+to record this fact with the reports they make as it can be helpful for debugging
+or analysis later on.
+
+This method attempts to determine if the user is on the iOS or Android device
+by looking at the C<pwa> query parameter used for the request (if present) and
+the User-Agent and Referer headers.
+
+iOS users will start at /?pwa=ios and all requests will have 'iospwa' at the end
+of their User-Agent header.
+
+Android users will start at /?pwa=android and the first request they make will
+have a Referer header of android-app://org.mysociety.fixmystreet/ (NB the actual
+package ID is pulled from COBRAND_FEATURES so as to make this feature reusable
+across installations.)
+
+This method is called for every URL, rather than just /, because we can't
+assume the user will always start at / - they may follow a link in an alert
+email to a particular report, or a report confirmation email etc.
+
+=cut
+
+sub store_app_platform : Private {
+    my ($self, $c) = @_;
+
+    my $referer = $c->req->referer || "";
+    my $ua = $c->req->user_agent || "";
+    my $param = $c->get_param("pwa") || "";
+    my $cfg = $c->cobrand->feature("android_assetlinks") || {};
+    my $package = $cfg->{package} || "";
+
+    if ( $param =~ /ios/i || $ua =~ /iospwa/i ) {
+        $c->session->{app_platform} = "iOS";
+    } elsif ( $param =~ /android/i || $referer =~ m{android-app://$package/}i ) {
+        $c->session->{app_platform} = "Android";
+    }
 }
 
 =head2 end

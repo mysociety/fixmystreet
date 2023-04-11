@@ -1072,10 +1072,20 @@ sub process_report : Private {
         'may_show_name',                         #
         'subcategory',                              #
         'partial',                               #
-        'service',                               #
         'non_public',
       );
     $params{category} = $c->stash->{category};
+
+
+    # If this report is being made by the wrapped PWA then the platform
+    # (iOS/Android) is stored in the session, so use that for the service field.
+    # NB the $c->sessionid check is necessary because we don't want to actually
+    # create a session here if it doesn't already exist (which accessing
+    # $c->session does) as that can cause CSRF failures for e.g. visitors coming
+    # directly to /report/new (as tested in camden.t)
+    my $service = $c->session->{app_platform} if $c->sessionid;
+    # The old app sends the platform as a query parameter when POSTing reports.
+    $service ||= $c->get_param('service');
 
     # load the report
     my $report = $c->stash->{report};
@@ -1124,8 +1134,8 @@ sub process_report : Private {
     $report->detail( $detail );
 
     # mobile device type
-    if ($params{service}) {
-        $report->service($params{service});
+    if ($service) {
+        $report->service($service);
     } elsif ($c->get_param('submit_register_mobile')) {
         $report->service('mobile');
     } elsif ($c->get_param('submit_register')) {
