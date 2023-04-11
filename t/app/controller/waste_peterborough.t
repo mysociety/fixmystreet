@@ -359,6 +359,26 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-428' => 1 } });
         $mech->content_contains('About you');
     };
+    subtest 'Request food bags link can be disabled via config' => sub {
+        $mech->log_in_ok($user->email);
+
+        $body->set_extra_metadata( wasteworks_config => {} );
+        $body->update;
+
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_contains("Request more food bags");
+        $mech->content_lacks("Food bags currently out of stock");
+
+        $body->set_extra_metadata( wasteworks_config => { food_bags_disabled => 1 } );
+        $body->update;
+
+        $mech->get_ok('/waste/PE1 3NA:100090215480');
+        $mech->content_contains("Food bags currently out of stock");
+        $mech->content_lacks("Request more food bags");
+
+        $body->set_extra_metadata( wasteworks_config => {} );
+        $body->update;
+    };
     subtest 'Request food bags from front page as non-staff' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
@@ -1901,6 +1921,7 @@ FixMyStreet::override_config {
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
                 daily_slots => 50,
                 free_mode => 0, # not checked
+                food_bags_disabled => 0, # not checked
                 base_price => 1234, per_item_costs => 1, items_per_collection_max => 7 };
         };
     };
