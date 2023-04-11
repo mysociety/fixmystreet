@@ -1,0 +1,121 @@
+/* This styling is based on https://www.gloucestershire.gov.uk/
+The style guide provided here https://drive.google.com/file/d/1P2ibLLL7WhEGhRKEbZRZJdl2nhqapnEp/view
+is more focused on printed material than web design.
+*/
+
+/* COLOURS */
+// No primary colour at first sight, they mainly used blue, but only for interaction purposes.
+
+$gloucestershire_blue: #0054a4; // Links
+$gloucestershire_blue_button: #337ab7; // Buttons
+$gloucestershire_primary: #00669b;
+$gloucestershire_primary_light: #cadcea;
+$gloucestershire_primary_dark: #004f79;
+$gloucestershire_red: #c0232e;
+$gloucestershire_white: #fff;
+$gloucestershire_grey: #f0f0f0; // Body bg
+$gloucestershire_black_heading: #333;
+$gloucestershire_black: #333333;
+$gloucestershire_yellow: #ffae04;
+
+$primary: $gloucestershire_primary;
+$yellow: $gloucestershire_yellow;
+
+$primary_b: $gloucestershire_black;
+$primary_text: $gloucestershire_white;
+
+/* FRONTPAGE */
+$base_bg: $gloucestershire_grey;
+$base_fg: $gloucestershire_black;
+$front_main_bg: $gloucestershire_white;
+$front_stats_bg: $gloucestershire_white;
+$layout_front_stats_color: $primary_b;
+
+/* LINKS */
+$primary_link_color: $gloucestershire_blue;
+$primary_link_hover_color: #2e8aca;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: underline;
+
+$link-color: $gloucestershire_primary;
+$link-hover-color: #2e8aca;
+$link-visited-color: $link-color;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline;
+
+/* BUTTONS */
+$button-border-width: 2px;
+$button-padding-top: 6px;
+$button-padding-bottom: 6px;
+$button-padding-left: 25px;
+$button-padding-right: 25px;
+$button-border-radius: 10px; // This var doesn't exist in other cobrands
+
+// Usage 
+/*
+  .btn, .btn--primary, .btn--primary {
+      @include border-radius($button-border-radius);
+      @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  }
+*/
+$button-primary-bg-top: $gloucestershire_primary;
+$button-primary-bg-bottom: $gloucestershire_primary;
+$button-primary-border: $gloucestershire_primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $gloucestershire_primary_dark;
+$button-primary-hover-bg-top: $gloucestershire_primary_dark;
+$button-primary-hover-border: $gloucestershire_primary_dark;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $gloucestershire_blue_button;
+$geolocation-link-border: $gloucestershire_blue_button;
+$form-box-inverse: true; 
+
+/* FONTS */
+
+$heading-font: 'Arial', sans-serif;
+$body-font: 'Arial', sans-serif;
+$meta-font: 'Arial', sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $gloucestershire_white;
+$nav_background_colour: $gloucestershire_primary;
+$nav_hover_background_colour: $gloucestershire_primary_dark;
+
+$mappage-header-height: 75px;
+$mobile-header-height: 56px;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-white";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 73em;
+
+$col_click_map: $gloucestershire_blue_button;
+$col_fixed_label: $gloucestershire_primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  darken($base_bg, 5%);
+$itemlist_item_background_hover: $gloucestershire_primary_light;
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+
+/* Cobrand MIXINS */
+// Some elements of their current website don't have focus state or it's too subtle;
+@mixin focus-state {
+  &:focus {
+    background-color: $yellow !important; // Overrides any other nested styling, like the navbar
+    color: $primary_b !important; // Overrides button-variant mixin
+  }
+}
