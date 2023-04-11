@@ -244,7 +244,7 @@ has_field tandc => (
 has_field location => (
     type => 'Text',
     widget => 'Textarea',
-    label => "Please tell us about anything else you feel is relevant",
+    label => "Please provide the exact location where the items will be left (e.g., On the driveway; To the left of the front door; By the front hedge, etc.)",
 );
 
 has_field location_photo_fileid => (

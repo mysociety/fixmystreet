@@ -1061,7 +1061,7 @@ FixMyStreet::override_config {
 
         subtest 'Location details page' => sub {
             $mech->content_contains('Location details');
-            $mech->content_contains('Please tell us about anything else you feel is relevant');
+            $mech->content_contains('Please provide the exact location where the items will be left');
             $mech->content_contains('Help us by attaching a photo of where the items will be left for collection');
             $mech->submit_form_ok({ with_fields => {
                 location => 'behind the hedge in the front garden',
