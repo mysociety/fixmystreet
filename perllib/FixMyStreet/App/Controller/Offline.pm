@@ -87,7 +87,9 @@ sub send_manifest: Private {
 
 This serves a JSON file which establishes a link between the FMS website
 and the Android app. In practical terms this allows the PWA installed from
-the Play Store to render without an address bar on the user's device.
+the Play Store to render without an address bar on the user's device, as well
+as allowing links to FMS to be opened in the FMS app (e.g. when tapping a link
+in a report confirmation or login email).
 
 For more info:
     https://developer.android.com/training/app-links/verify-android-applinks
@@ -116,6 +118,44 @@ sub assetlinks_json: Path('/.well-known/assetlinks.json') {
 
     $c->res->content_type('application/json; charset=utf-8');
     my $json = encode_json($data);
+    $c->res->body($json);
+}
+
+
+=head2 apple_app_site_association
+
+This serves a JSON file which enables "Universal Links" on the iOS app.
+Much like the assetlinks_json above, this allows links to FMS to be opened in
+the FMS app (e.g. when tapping a link in a report confirmation or login email).
+
+For more info:
+    https://developer.apple.com/documentation/xcode/supporting-associated-domains
+
+=cut
+
+sub apple_app_site_association: Path('/.well-known/apple-app-site-association') {
+    my ($self, $c) = @_;
+
+    my $cfg = $c->cobrand->feature("ios_site_association");
+
+    unless ($cfg) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    my $data = {
+        applinks => {
+            apps => [],
+            details => [{
+                appID => $cfg->{appID},
+                paths => ["/", "*"]
+            }]
+        }
+    };
+
+    $c->res->content_type('application/json; charset=utf-8');
+    my $json = JSON->new->utf8(1)->pretty->canonical->encode($data);
     $c->res->body($json);
 }
 
