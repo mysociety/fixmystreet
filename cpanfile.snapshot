@@ -7517,6 +7517,16 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Term::ProgressBar::Quiet 0
+  Term-ReadLine-Gnu-1.45
+    pathname: H/HA/HAYASHI/Term-ReadLine-Gnu-1.45.tar.gz
+    provides:
+      Term::ReadLine::Gnu 1.45
+      Term::ReadLine::Gnu::AU 1.45
+      Term::ReadLine::Gnu::Var 1.45
+      Term::ReadLine::Gnu::XS 1.45
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.008001
   TermReadKey-2.37
     pathname: J/JS/JSTOWE/TermReadKey-2.37.tar.gz
     provides:

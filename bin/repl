@@ -1,0 +1,71 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Term::ReadLine;
+use Data::Dumper;
+
+$Data::Dumper::Terse = 1;
+$Data::Dumper::Indent = 0;
+
+# Define convenience functions for accessing models like Problem, Comment, User, etc.
+# These are defined in the REPL package so that they don't pollute the main namespace.
+#
+# This allows you to do things like:
+#
+#   >> Problem->search({ category => 'Pothole' })
+#   >> Comment->search({ state => 'confirmed' })
+#   >> User->search({ email => 'user@example.com' })
+{
+    no strict 'refs';
+    no warnings 'redefine';
+
+    use FixMyStreet::DB;
+    use Module::Pluggable search_path => ['FixMyStreet::DB::Result'], require => 1, sub_name => 'resultsets';
+
+    for my $resultset_name (resultsets()) {
+        $resultset_name =~ s/^FixMyStreet::DB::Result:://;
+
+        *{"REPL::$resultset_name"} = sub {
+            FixMyStreet::DB->resultset($resultset_name);
+        };
+    }
+}
+
+my $term = Term::ReadLine->new('FixMyStreet REPL');
+my $prompt = "FMS> ";
+
+while (defined(my $input = $term->readline($prompt))) {
+    my $output;
+    my $code = "package REPL; no strict; no warnings; sub { $input }";
+
+    local $@;
+    my $eval_result = eval $code;
+
+    if ($@) {
+        $output = "Error: $@";
+    } else {
+        local $@;
+        my $result = eval { $eval_result->() };
+
+        if ($@) {
+            $output = "Error: $@";
+        } elsif ($input =~ /;\s*$/) {
+            # Input ends with a semi-colon, suppress the output.
+            $output = '';
+        } elsif (defined $result) {
+            $output = Dumper($result);
+        } else {
+            $output = 'undef';
+        }
+    }
+
+    print "$output\n";
+}

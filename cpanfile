@@ -173,6 +173,8 @@ requires 'Plack::Middleware::Debug';
 requires 'Plack::Middleware::Debug::DBIC::QueryLog';
 requires 'Plack::Middleware::Debug::LWP';
 requires 'Plack::Middleware::Debug::Template';
+requires 'Term::ReadLine';
+requires 'Term::ReadLine::Gnu';
 recommends 'Linux::Inotify2' if $^O eq 'linux';
 recommends 'Mac::FSEvents' if $^O eq 'darwin';
 
