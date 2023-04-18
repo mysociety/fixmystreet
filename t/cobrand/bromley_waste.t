@@ -537,6 +537,7 @@ EOF
     <NotifyEventUpdated>
       <event>
         <Guid>waste-15005-205</Guid>
+        <ClientReference>FMS-%%%</ClientReference>
         <EventTypeId>2104</EventTypeId>
         <EventStateId>15006</EventStateId>
         <ResolutionCodeId>207</ResolutionCodeId>
@@ -545,6 +546,9 @@ EOF
   </Body>
 </Envelope>
 EOF
+        my $report_id = $report->id;
+        $in =~ s/%%%/$report_id/;
+
         $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         #$report->update({ external_id => 'waste-15005-205', state => 'confirmed' });
         is $report->comments->count, 4, 'A new update';

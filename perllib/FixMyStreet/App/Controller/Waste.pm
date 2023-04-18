@@ -1810,6 +1810,10 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     } else {
         $request->{service_request_id} = $event->{Guid};
     }
+    my $ref = $event->{ClientReference} || '';
+    if (my ($fms_id) = $ref =~ /^[A-Z]*-(.*)$/) {
+        $request->{fixmystreet_id} = $fms_id;
+    }
 
     my $suppress_alerts = $event->{EventTypeId} == 1159 ? 1 : 0;
     my $updates = Open311::GetServiceRequestUpdates->new(
