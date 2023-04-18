@@ -303,7 +303,7 @@ sub add_links {
     my $text = shift;
     $text = conditional_escape($text);
     $text =~ s/\r//g;
-    $text =~ s{(?<!["'])(https?://)([^\s]+)}{"<a href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
+    $text =~ s{(?<!["'])(https?://)([^\s]+)}{"<a rel=\"nofollow\" href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
     return FixMyStreet::Template::SafeString->new($text);
 }
 

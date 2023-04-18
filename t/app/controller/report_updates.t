@@ -2258,7 +2258,7 @@ subtest 'check that only staff can display HTML in updates' => sub {
     $mech->content_contains("3. &lt;script&gt;some disallowed HTML&lt;/script&gt;");
     $mech->content_lacks("<script>some disallowed HTML</script>");
 
-    $mech->content_contains('4. An automatic link: <a href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>') or diag $mech->content;
+    $mech->content_contains('4. An automatic link: <a rel="nofollow" href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>') or diag $mech->content;
 
     $mech->content_contains("5. A block-level element: &lt;p&gt;This is its own para&lt;/p&gt;");
     $mech->content_lacks("5. A block-level element: <p>This is its own para</p>");
@@ -2277,7 +2277,7 @@ subtest 'check that only staff can display HTML in updates' => sub {
 
     $mech->content_lacks("some disallowed HTML");
 
-    $mech->content_contains('4. An automatic link: <a href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>');
+    $mech->content_contains('4. An automatic link: <a rel="nofollow" href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>');
 
     $mech->content_contains("5. A block-level element: <p>This is its own para</p>");
     $mech->content_lacks("<p>\n5. A block-level element: <p>This is its own para</p></p>");
@@ -2297,7 +2297,7 @@ subtest 'check that only staff can display HTML in updates' => sub {
 
     $mech->content_lacks("some disallowed HTML");
 
-    $mech->content_contains('4. An automatic link: <a href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>');
+    $mech->content_contains('4. An automatic link: <a rel="nofollow" href="https://myfancylink.fixmystreet.com/">https://myfancylink.fixmystreet.com/</a>');
 
     $mech->content_contains("5. A block-level element: <p>This is its own para</p>");
     $mech->content_lacks("<p>\n5. A block-level element: <p>This is its own para</p></p>");

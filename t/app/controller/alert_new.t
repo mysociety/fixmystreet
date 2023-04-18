@@ -960,7 +960,7 @@ subtest 'check staff updates can include sanitized HTML' => sub {
     like $plain, qr/Public users <i>cannot<\/i> use HTML\./, 'plain text part contains exactly what was entered';
 
     my $html = $mech->get_html_body_from_email($email);
-    like $html, qr{This is some update text with <strong>HTML</strong> and <i>italics</i> and <a href="https://www.google.com">https://www.google.com</a> remains\.}, 'HTML part contains HTML tags';
+    like $html, qr{This is some update text with <strong>HTML</strong> and <i>italics</i> and <a rel="nofollow" href="https://www.google.com">https://www.google.com</a> remains\.}, 'HTML part contains HTML tags';
     unlike $html, qr/<script>/, 'HTML part contains no script tags';
 
     $mech->delete_user( $user1 );
