@@ -2,7 +2,6 @@ package FixMyStreet::Queue::Item::Report;
 
 use Moo;
 use DateTime::Format::Pg;
-use Time::HiRes;
 
 use Utils::OpenStreetMap;
 
@@ -302,8 +301,8 @@ sub _post_send {
     my $send_confirmation_email = $self->cobrand_handler->report_sent_confirmation_email($self->report);
     unless ($result) {
         $self->report->update( {
-            whensent => \'current_timestamp',
-            lastupdate => \'current_timestamp',
+            whensent => \'statement_timestamp()',
+            lastupdate => \'statement_timestamp()',
         } );
         if ($send_confirmation_email && !$self->h->{anonymous_report}) {
             $self->h->{sent_confirm_id_ref} = $self->report->$send_confirmation_email;
@@ -320,32 +319,11 @@ sub _post_send {
 sub _add_confirmed_update {
     my $self = shift;
 
-    # If there is a special template, create a comment using that
+    # If an auto-internal update has been created, confirm it
     my $problem = $self->report;
     my $existing = $problem->comments->search({ external_id => 'auto-internal' })->first;
-    return if $existing;
-    foreach my $body (values %{$problem->bodies}) {
-        my $user = $body->comment_user or next;
-
-        my $updates = Open311::GetServiceRequestUpdates->new(
-            system_user => $user,
-            current_body => $body,
-            blank_updates_permitted => 1,
-        );
-
-        my $template = $problem->response_template_for('confirmed', 'dummy', '', '');
-        my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
-        next unless $description;
-
-        my $request = {
-            service_request_id => $problem->id,
-            update_id => 'auto-internal',
-            comment_time => DateTime->from_epoch( epoch => Time::HiRes::time ),
-            email_text => $email_text,
-            status => 'open',
-            description => $description,
-        };
-        $updates->process_update($request, $problem);
+    if ($existing) {
+        $existing->update({ state => 'confirmed' });
     }
 }
 

@@ -13,6 +13,7 @@ use Utils;
 use mySociety::EmailUtil;
 use JSON::MaybeXS;
 use Text::CSV;
+use Time::HiRes;
 use FixMyStreet::SMS;
 
 =head1 NAME
@@ -1871,6 +1872,32 @@ sub redirect_or_confirm_creation : Private {
 
 sub create_related_things : Private {
     my ( $self, $c, $problem ) = @_;
+
+    # If there is a special template, create a comment using that
+    foreach my $body (values %{$problem->bodies}) {
+        my $user = $body->comment_user or next;
+
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_body => $body,
+            blank_updates_permitted => 1,
+        );
+
+        my $template = $problem->response_template_for('confirmed', 'dummy', '', '');
+        my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
+        next unless $description;
+
+        my $request = {
+            service_request_id => $problem->id,
+            update_id => 'auto-internal',
+            comment_time => DateTime->from_epoch( epoch => Time::HiRes::time ),
+            status => 'open',
+            email_text => $email_text,
+            description => $description,
+        };
+        my $update = $updates->process_update($request, $problem);
+        $update->update({ state => 'unconfirmed' });
+    }
 
     # And now the reporter alert
     return if $c->stash->{no_reporter_alert};

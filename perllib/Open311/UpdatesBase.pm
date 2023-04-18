@@ -174,14 +174,8 @@ sub process_update {
         if ($request->{comment_time} <= $auto_comment->confirmed) {
             $request->{comment_time} = $auto_comment->confirmed + DateTime::Duration->new( seconds => 1 );
         }
-    } else {
-        # A report that has not yet reached the database may have a value of 'current_timestamp'
-        # for its whensent value
-        if ($p->whensent && ref($p->whensent) eq 'SCALAR' && ${$p->whensent} =~ /current_timestamp/) {
-            $request->{comment_time} = DateTime->now() + DateTime::Duration->new( seconds => 1 );
-        } elsif ($p->whensent && $request->{comment_time} <= $p->whensent) {
-            $request->{comment_time} = $p->whensent + DateTime::Duration->new( seconds => 1 );
-        }
+    } elsif ($p->whensent && $request->{comment_time} <= $p->whensent) {
+        $request->{comment_time} = $p->whensent + DateTime::Duration->new( seconds => 1 );
     }
 
     my $comment = $self->schema->resultset('Comment')->new(
