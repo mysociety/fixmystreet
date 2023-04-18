@@ -56,9 +56,7 @@ sub around_nearby_filter {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    # updated to match Oxon CC
-    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
-    return 'grey' if $p->is_closed;
+    return 'grey' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
     return 'green' if $p->is_fixed;
     return 'yellow' if $p->state eq 'confirmed';
     return 'orange'; # all the other `open_states` like "in progress"
