@@ -53,7 +53,7 @@ sub council_url { return 'brent'; }
 
 =item * Use their own brand colours for pins
 
-=cut 
+=cut
 
 sub path_to_pin_icons {
     return '/cobrands/brent/images/';
@@ -67,19 +67,25 @@ sub admin_user_domain { 'brent.gov.uk' }
 
 =item * Allows anonymous reporting
 
-=cut 
+=cut
 
 sub allow_anonymous_reports { 'button' }
 
 =item * Has a default map zoom of 6
 
-=cut 
+=cut
 
 sub default_map_zoom { 6 }
 
+=item * Doesn't show reports before go live date 2023-03-06
+
+=cut
+
+sub cut_off_date { '2023-03-06'}
+
 =item * Uses their own privacy policy
 
-=cut 
+=cut
 
 sub privacy_policy_url {
     'https://www.brent.gov.uk/the-council-and-democracy/access-to-information/data-protection-and-privacy/brent-privacy-policy'
@@ -189,7 +195,7 @@ sub open311_config {
 
 =head2 open311_munge_update_params
 
-Updates which are sent over Open311 have 'service_request_id_ext' set 
+Updates which are sent over Open311 have 'service_request_id_ext' set
 to the id of the update's report
 
 =cut
@@ -264,8 +270,8 @@ Same as Symology above, but different attribute name.
 
 =head2 open311_extra_data_exclude
 
-Doesn't send UnitID for Drains and gullies category as an extra 
-field in open311 data. It has been transferred to the details 
+Doesn't send UnitID for Drains and gullies category as an extra
+field in open311 data. It has been transferred to the details
 field by open311_extra_data_include
 
 =cut
@@ -279,7 +285,7 @@ sub open311_extra_data_exclude {
 
 =head2 open311_post_send
 
-Restore the original detail field if it was changed by open311_extra_data_include 
+Restore the original detail field if it was changed by open311_extra_data_include
 to put the UnitID in the detail field for sending
 
 =cut
