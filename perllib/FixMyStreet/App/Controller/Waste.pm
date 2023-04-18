@@ -1501,7 +1501,7 @@ sub process_garden_modification : Private {
             $c->set_param('pro_rata', $pro_rata);
             $c->set_param('admin_fee', $cost_now_admin);
         }
-
+        $c->cobrand->call_hook(waste_garden_mod_params => $data);
         $payment_method = $c->stash->{garden_form_data}->{payment_method};
         $payment = $cost_pa;
         $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;

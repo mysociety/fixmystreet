@@ -925,6 +925,21 @@ sub waste_garden_sub_params {
     }
 }
 
+sub waste_garden_mod_params {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    $data->{category} = 'Amend Garden Subscription';
+
+    $c->set_param('Additional_Collection_Container_Type', 1);
+    $c->set_param('Additional_Collection_Container_Quantity', $data->{new_bins} > 0 ? $data->{new_bins} : '');
+
+    if ($data->{new_bins} > 0) {
+        $c->set_param('Container_Type', 1);
+        $c->set_param('Container_Quantity', $data->{new_bins});
+    }
+}
+
 =item * Sacks cost the same as bins
 
 =cut
@@ -968,5 +983,11 @@ sub apply_garden_waste_discount {
 }
 
 sub garden_waste_new_bin_admin_fee { 0 }
+
+sub waste_get_pro_rata_cost {
+    my $self = shift;
+
+    return $self->feature('payment_gateway')->{ggw_cost};
+}
 
 1;

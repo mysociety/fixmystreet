@@ -46,6 +46,18 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
 );
 
+create_contact({ category => 'Amend Garden Subscription', email => 'garden@example.com'},
+    { code => 'Additional_Collection_Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Additional_Collection_Container_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Type', required => 0, automated => 'hidden_field' },
+    { code => 'Container_Quantity', required => 0, automated => 'hidden_field' },
+    { code => 'System Notes', required => 0, automated => 'hidden_field' },
+    { code => 'Paid_Collection_Container_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Payment_Value', required => 1, automated => 'hidden_field' },
+    { code => 'payment', required => 1, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
+);
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
@@ -87,6 +99,12 @@ sub garden_waste_no_bins {
 sub garden_waste_one_bin {
     my $refuse_bin = garden_waste_no_bins();
     my $garden_bin = _garden_waste_service_units(1, 'bin');
+    return [ $refuse_bin->[0], $garden_bin->[0] ];
+}
+
+sub garden_waste_two_bins {
+    my $refuse_bin = garden_waste_no_bins();
+    my $garden_bin = _garden_waste_service_units(2, 'bin');
     return [ $refuse_bin->[0], $garden_bin->[0] ];
 }
 
@@ -459,6 +477,52 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 1/;
         like $body, qr/Total:.*?50.00/;
+    };
+
+    for my $test (
+        {
+            'bins_wanted' => 3,
+            'container_type' => 1,
+            'container_quantity' => 1,
+        },
+        {
+            'bins_wanted' => 4,
+            'container_type' => 1,
+            'container_quantity' => 2,
+        },
+        {
+            'bins_wanted' => 1,
+            'container_type' => '',
+            'container_quantity' => '',
+        },
+    ) {
+        subtest 'check modifying Green Garden Waste as staff' => sub {
+            $mech->log_in_ok($staff_user->email);
+            set_fixed_time('2021-01-09T17:00:00Z'); # Before renewal is due so we can modify
+            $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Modify your garden waste subscription');
+            $mech->get_ok('/waste/12345/garden_modify');
+            $mech->submit_form_ok({ with_fields => { task => 'modify' }}, 'Choose modify');
+            $mech->submit_form_ok({ with_fields => {
+                bins_wanted => $test->{bins_wanted},
+                name => $user->name,
+                email => $user->email
+                } }, 'Request '. $test->{bins_wanted} . ' bins when currently have 2');
+            $mech->submit_form_ok({ with_fields => { tandc => 1 }}, 'Submit request');
+            my $report = FixMyStreet::DB->resultset('Problem')->find({category => 'Amend Garden Subscription'});
+            is($report->get_extra_field_value('Container_Type'), $test->{container_type}, $test->{container_type} ? "Container Type is set to request delivery" : "Container Type is not set");
+            is($report->get_extra_field_value('Container_Quantity'), $test->{container_quantity}, "Container Quantity is " . ($test->{container_quantity} ? $test->{container_quantity} : 'not set'));
+            $report->delete;
+        };
+    };
+
+    subtest 'check modifying Green Garden Waste not available for user' => sub {
+            $mech->log_in_ok($user->email);
+            set_fixed_time('2021-01-09T17:00:00Z'); # Before renewal is due so we can modify
+            $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Modify your garden waste subscription');
     };
 
     for my $test(
