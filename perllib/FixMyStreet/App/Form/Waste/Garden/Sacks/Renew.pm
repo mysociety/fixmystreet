@@ -14,11 +14,18 @@ sub with_bins_wanted { 0 }
 
 has_page sacks_choice => (
     title_ggw => 'Subscribe to the %s',
-    fields => ['container_choice', 'continue'],
+    fields => ['container_choice', 'apply_discount', 'continue'],
     next => sub {
         return 'sacks_details' if $_[0]->{container_choice} eq 'sack';
         return 'intro';
-    }
+    },
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff})) {
+            return ['apply_discount']
+        }
+    },
 );
 
 has_field container_choice => (

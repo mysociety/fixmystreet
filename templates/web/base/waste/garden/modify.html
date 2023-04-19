@@ -16,19 +16,18 @@
     [% INCLUDE waste/garden/_bin_quantities.html form_page='modify' %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total js-bin-costs"
+  [% IF form.saved_data.apply_discount %]
+    data-per_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_bin_cost) %]"
+    data-per_new_bin_first_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_first_cost) %]"
+    data-per_new_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_cost) %]"
+    data-pro_rata_bin_cost="[% c.cobrand.apply_garden_waste_discount(garden_form_data.pro_rata_bin_cost) %]"
+  [% ELSE %]
     data-per_bin_cost="[% per_bin_cost %]"
     data-per_new_bin_first_cost="[% per_new_bin_first_cost %]"
     data-per_new_bin_cost="[% per_new_bin_cost %]"
     data-pro_rata_bin_cost="[% garden_form_data.pro_rata_bin_cost %]"
-    [% IF is_staff && waste_features.ggw_discount_as_percent %]
-        data-discount_percent="[% waste_features.ggw_discount_as_percent %]"
-    [% END %]
-  >
-  [% IF is_staff && waste_features.ggw_discount_as_percent %]
-    <span hidden class="cost-pa__total-costs">
-      <span id="apply_discount_wrapper" hidden>Discount applied: <span id="apply_discount_amount">[% tprintf( '%.0f', waste_features.ggw_discount_as_percent ) %]%</span></span>
-    </span>
   [% END %]
+  >
     <span class="cost-pa__total-costs">
     Total per year, from [% display_end_date.strftime('%e %B %Y') %]: £<span id="cost_per_year">[% tprintf('%.2f', cost_pa) %]</span>
     </span>
@@ -41,8 +40,6 @@
         Total to pay now (<span id="new_bin_count">[% new_bin_count %]</span> new <span id="new_bin_text">[% nget( 'bin', 'bins', new_bin_count) %]</span>): £<span id="pro_rata_cost">[% tprintf('%.2f', pro_rata) %]</span>
     </span>
   </div>
-
-  [% PROCESS 'waste/garden/_discount_allowed_field.html' %]
 
     [% IF staff_payments_allowed %]
     [% PROCESS form override_fields=['name', 'email', 'phone'] %]

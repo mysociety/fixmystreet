@@ -664,13 +664,17 @@ FixMyStreet::override_config {
                 set_fixed_time('2021-03-09T17:00:00Z');
                 $mech->log_in_ok($staff_user->email);
                 $mech->get_ok('/waste/12345/garden_renew');
-                $mech->submit_form_ok({ with_fields => { container_choice => 'bin' } });
+                $mech->submit_form_ok({ with_fields => {
+                    container_choice => 'bin',
+                    apply_discount => 1,
+                     } });
+                $mech->content_contains('data-per_bin_cost="'. $test->{cost_pence} . '"', 'Correct per_bin_cost discount in template for waste.js calculations');
+                $mech->content_contains('Total per year: £<span id="cost_pa">' . $test->{cost_pence} / 100, 'Correct discount in template before js calculations take over');
                 $mech->submit_form_ok({ with_fields => {
                     current_bins => 1,
                     bins_wanted => 1,
                     name => 'Test McTest',
                     email => 'test@example.net',
-                    apply_discount => 1,
                     } }), ;
                 $mech->content_contains($test->{cost}, $test->{description});
                 $mech->submit_form_ok({ with_fields => {

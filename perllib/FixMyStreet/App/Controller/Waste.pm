@@ -1349,7 +1349,11 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         $c->detach;
     }
 
-    $c->stash->{first_page} = 'intro';
+    if ($c->stash->{waste_features}->{ggw_discount_as_percent} && $c->stash->{is_staff}) {
+        $c->stash->{first_page} = 'discount';
+    } else {
+        $c->stash->{first_page} = 'intro';
+    }
     my $service_id = $c->cobrand->garden_service_id;
     my $max_bins = $c->stash->{quantity_max}->{$service_id};
     $c->stash->{garden_form_data} = {
@@ -1502,7 +1506,6 @@ sub process_garden_modification : Private {
             $c->set_param('pro_rata', $pro_rata);
             $c->set_param('admin_fee', $cost_now_admin);
         }
-        $c->cobrand->call_hook(waste_garden_mod_params => $data);
         $payment_method = $c->stash->{garden_form_data}->{payment_method};
         $payment = $cost_pa;
         $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
@@ -1511,6 +1514,7 @@ sub process_garden_modification : Private {
     $c->set_param('payment', $payment);
 
     $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{Amend} ]);
+    $c->cobrand->call_hook(waste_garden_mod_params => $data);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {

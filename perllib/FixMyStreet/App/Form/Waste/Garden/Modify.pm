@@ -48,7 +48,7 @@ has_page alter => (
             my $cost_pro_rata = $c->cobrand->waste_get_pro_rata_cost($new_bins, $data->{end_date});
             $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
         }
-        if ($data->{apply_discount}) {
+        if ($form->saved_data->{apply_discount}) {
             ($c->stash->{cost_pa}, $c->stash->{cost_now_admin}, $c->stash->{pro_rata}) =
             $c->cobrand->apply_garden_waste_discount(
                 $c->stash->{cost_pa},
