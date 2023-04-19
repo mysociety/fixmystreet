@@ -111,7 +111,7 @@ sub process_user : Private {
     }
     $params{username} ||= '';
 
-    my $anon_button = $c->cobrand->allow_anonymous_reports eq 'button' && $c->get_param('report_anonymously');
+    my $anon_button = $c->cobrand->allow_anonymous_updates eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
         my $anon_details = $c->cobrand->anonymous_account;
         my $user = $c->model('DB::User')->find_or_new({ email => $anon_details->{email} });
@@ -299,7 +299,7 @@ sub process_update : Private {
     $c->stash->{contributing_as_anonymous_user} = $c->user_exists && $c->user->contributing_as('anonymous_user', $c, $problem->bodies_str_ids);
 
     # This is also done in process_user, but is needed here for anonymous() just below
-    my $anon_button = $c->cobrand->allow_anonymous_reports($problem->category) eq 'button' && $c->get_param('report_anonymously');
+    my $anon_button = $c->cobrand->allow_anonymous_updates($problem->category) eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
         $c->stash->{contributing_as_anonymous_user} = 1;
         $c->stash->{contributing_as_body} = undef;
@@ -435,7 +435,7 @@ sub check_for_errors : Private {
     #push @{ $c->stash->{errors} },
     #  _('There were problems with your update. Please see below.');
 
-    if ( $c->cobrand->allow_anonymous_reports ) {
+    if ( $c->cobrand->allow_anonymous_updates ) {
         my $anon_details = $c->cobrand->anonymous_account;
         my $update = $c->stash->{update};
         $update->user->email(undef) if $update->user->email eq $anon_details->{email};

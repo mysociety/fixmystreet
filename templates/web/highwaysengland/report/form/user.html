@@ -13,11 +13,13 @@
 <small>This will allow us to let you know when your report has been updated.</small>
 [% END %]
 
-<div class="[%~ ' hidden-js' UNLESS type == 'report' %]">
+[% IF type == 'report' %]
+<div>
     <small id="or">[% loc('or') %]</small>
     <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">Report anonymously</button>
     <small>No personal details will be provided, and you will not receive updates about this report.</small>
 </div>
+[% END %]
 
 </div>
 

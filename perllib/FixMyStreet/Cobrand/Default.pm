@@ -1183,6 +1183,17 @@ sub allow_anonymous_reports {
     return 0;
 }
 
+=item allow_anonymous_updates
+
+If true then an update submission with no user details will default to the user
+given via the anonymous_account function, and create it anonymously. If set to
+'button', then this will happen only when a report_anonymously button is
+pressed in the front end, rather than whenever a username is not provided.
+
+=cut
+
+sub allow_anonymous_updates { 0 }
+
 =item anonymous_account
 
 Details to use for anonymous reports. This should return a hashref with an email and
