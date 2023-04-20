@@ -14,6 +14,14 @@ OpenLayers.Layer.OSMaps = OpenLayers.Class(OpenLayers.Layer.OSM, {
         if (fixmystreet.os_key) {
             url += "?key=" + fixmystreet.os_key;
         }
+
+        var year = (new Date()).getFullYear();
+        var attribution = 'Contains National Highways and OS data &copy; Crown copyright and database rights ' + year;
+        if (fixmystreet.os_licence) {
+            attribution += " " + fixmystreet.os_licence;
+        }
+        this.attribution = attribution;
+
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
             maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),

@@ -33,7 +33,7 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         var in_gb = c ? this.in_gb(c) : true;
         var year = (new Date()).getFullYear();
         if (z >= 16 && in_gb) {
-            copyrights = 'Contains National Highways and Ordnance Survey data &copy; Crown copyright and database rights ' + year;
+            copyrights = 'Contains National Highways and OS data &copy; Crown copyright and database rights ' + year;
             if (fixmystreet.os_licence) {
                 copyrights += " " + fixmystreet.os_licence;
             }
