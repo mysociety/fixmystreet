@@ -33,6 +33,7 @@ my $contact = $mech->create_contact_ok(
     body_id => $hackney->id,
     category => 'Potholes & stuff',
     email => 'pothole@example.org',
+    send_method => 'Email',
 );
 $contact->set_extra_fields( ( {
     code => 'urgent',
@@ -45,6 +46,11 @@ $contact->set_extra_fields( ( {
 } ) );
 $contact->update;
 
+$mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Graffiti',
+    email => 'Environment-Graffiti',
+);
 $contact = $mech->create_contact_ok(
     body_id => $hackney->id,
     category => 'Flytipping',
@@ -72,14 +78,9 @@ $contact->update;
 my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
 my $phone_user = $mech->create_user_ok('+447700900002');
 my $hackney_user = $mech->create_user_ok('hackney_user@example.org', name => 'Hackney User', from_body => $hackney);
-$hackney_user->user_body_permissions->create({
-    body => $hackney,
-    permission_type => 'moderate',
-});
-$hackney_user->user_body_permissions->create({
-    body => $hackney,
-    permission_type => 'category_edit',
-});
+$hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'moderate' });
+$hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'category_edit' });
+$hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'report_edit' });
 
 my $contact2 = $mech->create_contact_ok(
     body_id => $hackney->id,
@@ -363,6 +364,36 @@ FixMyStreet::override_config {
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), 'OTHER';
         };
+        $contact2->update({ send_method => 'Email' }); # Switch back for next test
+    };
+
+    subtest "resending of reports by changing category" => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $hackney->id, '', {
+            areas => ',2508,',
+            #latitude => 51.552287,
+            #longitude => -0.063326,
+            cobrand => 'hackney',
+            category => 'Roads',
+            whensent => \'current_timestamp',
+        });
+        my $whensent = $problem->whensent;
+        $mech->log_in_ok( $hackney_user->email );
+        $mech->get_ok('/admin/report_edit/' . $problem->id);
+        foreach (
+            { category => 'Potholes & stuff', resent => 1 }, # Email to email
+            { category => 'Flytipping', resent => 1 }, # Email to non-email
+            { category => 'Graffiti', resent => 0, }, # Non-email to non-email
+            { category => 'Roads', resent => 1 }, # Non-email to email
+        ) {
+            $mech->submit_form_ok({ with_fields => { category => $_->{category} } }, "Switch to $_->{category}");
+            $problem->discard_changes;
+            if ($_->{resent}) {
+                is $problem->whensent, undef, "Marked for resending";
+                $problem->update({ whensent => $whensent, send_method_used => 'Open311' }); # reset as sent
+            } else {
+                isnt $problem->whensent, undef, "Not marked for resending";
+            }
+        }
     };
 
     subtest "Environment extra fields put in description" => sub {
@@ -462,7 +493,6 @@ subtest "can edit special destination email addresses" => sub {
         ALLOWED_COBRANDS => ['hackney'],
         COBRAND_FEATURES => { anonymous_account => { hackney => 'anonymous' } },
     }, sub {
-        $contact2->update({ send_method => 'Email' });
         $mech->log_in_ok( $hackney_user->email );
         $mech->get_ok("/admin/body/" . $hackney->id . "/" . $contact2->category);
         $mech->submit_form_ok( { with_fields => { email => 'park:parks@example.com;estate:estates@example;other:new@example.org' } },
@@ -501,9 +531,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         },
     });
 
-    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-        from_body => $hackney, password => 'password');
-    $mech->log_in_ok( $staffuser->email );
+    $mech->log_in_ok( $hackney_user->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'hackney',

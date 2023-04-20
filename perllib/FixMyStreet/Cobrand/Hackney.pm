@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Hackney - code specific to the Hackney cobrand
+
+=head1 SYNOPSIS
+
+Hackney is a London borough, using two Alloy intergrations plus email.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Hackney;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -12,13 +24,27 @@ use JSON::MaybeXS;
 use URI::Escape;
 use mySociety::EmailUtil qw(is_valid_email is_valid_email_list);
 
+=head2 Defaults
+
+=over 4
+
+=cut
+
 sub council_area_id { return 2508; }
 sub council_area { return 'Hackney'; }
 sub council_name { return 'Hackney Council'; }
 sub council_url { return 'hackney'; }
 sub send_questionnaires { 0 }
 
+=item * Hackney include the time of updates in alert emails
+
+=cut
+
 sub include_time_in_update_alerts { 1 }
+
+=item * 'Hackney' is used as default town in geocoder, and there is one override
+
+=cut
 
 sub disambiguate_location {
     my $self    = shift;
@@ -40,15 +66,27 @@ sub disambiguate_location {
     };
 }
 
+=item * Hackney use the OSM geocoder
+
+=cut
+
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
+
+=item * Ask the geocoder for full address details
+
+=cut
 
 sub geocoder_munge_query_params {
     my ($self, $params) = @_;
 
     $params->{addressdetails} = 1;
 }
+
+=item * Geocoder results are somewhat munged to display more cleanly
+
+=cut
 
 sub geocoder_munge_results {
     my ($self, $result) = @_;
@@ -64,72 +102,9 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
-sub address_for_uprn {
-    my ($self, $uprn) = @_;
+=item * When sending via Open311, make sure closest address is included
 
-    my $api = $self->feature('address_api');
-    my $url = $api->{url};
-    my $key = $api->{key};
-
-    $url .= '?uprn=' . uri_escape_utf8($uprn);
-    my $ua = LWP::UserAgent->new;
-    $ua->default_header(Authorization => $key);
-    my $res = $ua->get($url);
-    my $data = decode_json($res->decoded_content);
-    my $address = $data->{data}->{address}->[0];
-    return "" unless $address;
-
-    my $string = join(", ",
-        grep { $_ && $_ ne 'Hackney' }
-        map { s/((^\w)|(\s\w))/\U$1/g; $_ }
-        map { lc $address->{"line$_"} }
-        (1..3)
-    );
-    $string .= ", $address->{postcode}";
-    return $string;
-}
-
-sub addresses_for_postcode {
-    my ($self, $postcode) = @_;
-
-    my $api = $self->feature('address_api');
-    my $url = $api->{url};
-    my $key = $api->{key};
-    my $pageAttr = $api->{pageAttr};
-
-    $url .= '?format=detailed&postcode=' . uri_escape_utf8($postcode);
-    my $ua = LWP::UserAgent->new;
-    $ua->default_header(Authorization => $key);
-
-    my $pages = 1;
-    my @addresses;
-    my $outside;
-    for (my $page = 1; $page <= $pages; $page++) {
-        my $res = $ua->get($url . '&page=' . $page);
-        my $data = decode_json($res->decoded_content);
-        $pages = $data->{data}->{$pageAttr} || 0;
-        foreach my $address (@{$data->{data}->{address}}) {
-            unless ($address->{locality} eq 'HACKNEY') {
-                $outside = 1;
-                next;
-            }
-            my $string = join(", ",
-                grep { $_ && $_ ne 'Hackney' }
-                map { s/((^\w)|(\s\w))/\U$1/g; $_ }
-                map { lc $address->{"line$_"} }
-                (1..3)
-            );
-            push @addresses, {
-                value => $address->{UPRN},
-                latitude => $address->{latitude},
-                longitude => $address->{longitude},
-                label => $string,
-            };
-        }
-    }
-    return { error => 'Sorry, that postcode appears to lie outside Hackney' } if !@addresses && $outside;
-    return { addresses => \@addresses };
-}
+=cut
 
 around open311_extra_data_include => sub {
     my ($orig, $self) = (shift, shift);
@@ -155,16 +130,47 @@ around open311_extra_data_include => sub {
     return $open311_only;
 };
 
+=item * Hackney use OSM maps
+
+=cut
+
 sub map_type { 'OSM' }
+
+=item * Default map zoom level of 6
+
+=cut
 
 sub default_map_zoom { 6 }
 
+=item * Users with a hackney.gov.uk email can always be found in the admin.
+
+=cut
+
 sub admin_user_domain { 'hackney.gov.uk' }
+
+=item * Social auth (OIDC for staff login) is enabled if the config is present
+
+=cut
 
 sub social_auth_enabled {
     my $self = shift;
 
     return $self->feature('oidc_login') ? 1 : 0;
+}
+
+=item * A category change to or from an Email category is auto-resent
+
+=cut
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { $_->send_method || '' } grep { $_->category eq $old } @$contacts;
+    ($new) = map { $_->send_method || '' } grep { $_->category eq $new } @$contacts;
+    return 1 if $new eq 'Email' || $old eq 'Email';
+    return 0;
 }
 
 sub user_from_oidc {
@@ -175,6 +181,10 @@ sub user_from_oidc {
 
     return ($name, $email);
 }
+
+=item * If a category is marked as protected in the admin, prevent any changes at all
+
+=cut
 
 sub open311_skip_existing_contact {
     my ($self, $contact) = @_;
@@ -215,6 +225,10 @@ sub problem_is_within_area_type {
     my $features = $self->_fetch_features($cfg, $x, $y) || [];
     return scalar @$features ? 1 : 0;
 }
+
+=item * Certain categories have multiple emails for sending to depending on location within park/estate
+
+=cut
 
 sub get_body_sender {
     my ( $self, $body, $problem ) = @_;
@@ -311,6 +325,10 @@ sub validate_contact_email {
     return 1 if is_valid_email_list(join(",", @emails));
 }
 
+=item * Report detail can be a maximum of 256 characters in length.
+
+=cut
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
@@ -320,6 +338,10 @@ sub report_validation {
 
     return $errors;
 }
+
+=item * Nearest address/postcode and extra details are included in their CSV export
+
+=cut
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
@@ -349,6 +371,7 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=back
 
 =head2 update_email_shortlisted_user
 
