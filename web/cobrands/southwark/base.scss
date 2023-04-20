@@ -698,3 +698,8 @@ border-right-width: $btn-border-width;
   position: absolute!important;
   width: 1px;
 }
+
+// Southwark cookie control is in the bottom right corner
+.olControlAttribution {
+  right: 80px !important;
+}

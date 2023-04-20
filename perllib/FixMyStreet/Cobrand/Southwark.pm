@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Southwark - code specific to the Southwark cobrand
+
+=head1 SYNOPSIS
+
+Southwark is a London borough, with a Confirm integration.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Southwark;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -7,6 +19,12 @@ use warnings;
 use List::Util qw(any);
 use Moo;
 
+=head2 Defaults
+
+=over 4
+
+=cut
+
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 
@@ -15,11 +33,47 @@ sub council_area { 'Southwark' }
 sub council_name { 'Southwark Council' }
 sub council_url { 'southwark' }
 
+=item * Southwark use the OS Maps API at all zoom levels.
+
+=cut
+
+sub map_type { 'OS::API' }
+
+=item * Don't show reports before the go-live date, 22nd March 2023
+
+=cut
+
 sub cut_off_date { '2023-03-22' }
+
+=item * Users with a southwark.gov.uk email can always be found in the admin.
+
+=cut
 
 sub admin_user_domain { 'southwark.gov.uk' }
 
+=item * We don't send questionnaires.
+
+=cut
+
 sub send_questionnaires { 0 }
+
+=item * Allow anonymous reporting
+
+=cut
+
+sub allow_anonymous_reports { 'button' }
+
+=item * Has a privacy policy on their own site
+
+=cut
+
+sub privacy_policy_url { 'https://www.southwark.gov.uk/council-and-democracy/freedom-of-information-and-data-protection/corporate-data-privacy-notice' }
+
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
 
 sub disambiguate_location {
     my $self    = shift;
@@ -34,10 +88,9 @@ sub disambiguate_location {
     };
 }
 
+=item * Southwark only allow staff to reopen reports.
 
-=item reopening_disallowed
-
-Southwark only allow staff to reopen reports.
+=back
 
 =cut
 
@@ -51,8 +104,7 @@ sub reopening_disallowed {
     return 1;
 }
 
-
-=item lookup_site_code
+=head2 lookup_site_code
 
 Reports sent to Confirm have a "site code" which is usually the USRN of the
 street they're on. For reports made within estates Southwark don't want the
@@ -76,7 +128,7 @@ sub lookup_site_code {
 }
 
 
-=item lookup_site_code_config
+=head2 lookup_site_code_config
 
 When looking up the USRN of a street where a report was made, numbered roads within
 Southwark must be ignored as Southwark's Confirm system is setup to reject
@@ -114,7 +166,7 @@ sub report_new_is_in_estate {
 }
 
 
-=item estate_feature_for_point
+=head2 estate_feature_for_point
 
 Takes a coordinate (as latitude & longitude) and queries the Southwark Estates
 asset layer on our tilma WFS server to determine whether the coordinate lies
@@ -140,7 +192,7 @@ sub estate_feature_for_point {
 }
 
 
-=item category_groups_to_skip
+=head2 category_groups_to_skip
 
 Southwark do not want certain TfL categories to appear, dependent on
 whether an 'estates' or 'street' area has been selected
@@ -162,7 +214,7 @@ sub category_groups_to_skip {
 }
 
 
-=item munge_categories
+=head2 munge_categories
 
 Southwark have two distinct sets of categories that are shown to the user
 depending on whether the report they're making is inside or outside an estate.
@@ -194,7 +246,7 @@ sub munge_categories {
 }
 
 
-=item _filter_categories_by_group
+=head2 _filter_categories_by_group
 
 Returns an array of contacts that have some TfL categories removed, according
 to the list specified in C<category_groups_to_skip>.
@@ -220,11 +272,5 @@ sub _filter_categories_by_group {
 
     return values %contacts_hash;
 }
-
-sub allow_anonymous_reports { 'button' }
-
-sub privacy_policy_url { 'https://www.southwark.gov.uk/council-and-democracy/freedom-of-information-and-data-protection/corporate-data-privacy-notice' }
-
-sub contact_extra_fields { [ 'display_name' ] }
 
 1;
