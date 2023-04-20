@@ -620,14 +620,15 @@ h1.govuk-heading-xl {
   text-align: left;
   margin: 0 -1rem;
   padding: 1.5rem 1rem;
-  // background-color: $front_main_colour;
-  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $right center no-repeat;
   z-index: 1;
+}
+
+.waste.waste--uprn {
+  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $left;
+  background-size: 100%;
+  border: 1px solid #ebebed;
+  background-position: 0;
   background-repeat: no-repeat;
-  background-size: 50%;
-  background-position: left top;
-  background-blend-mode: soft-light;
-  background-blend-mode: normal!important;
 }
 
 .waste__collections .govuk-summary-list,
