@@ -110,6 +110,12 @@ create_contact({ category => 'Assisted collection add', email => 'assisted' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
 
+create_contact({ category => 'Staff general enquiry', email => 'general@brent.gov.uk' },
+    { code => 'Notes', description => 'Please put your question in here for a general enquiry', required => 1, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+);
+
 for my $test (
     {
         desc => 'Problem has stayed open when user reported fixed with update',
@@ -649,6 +655,27 @@ FixMyStreet::override_config {
         is $report->detail, "Behind the garden gate\n\n2 Example Street, Brent, NW2 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
+    };
+
+    subtest 'test staff-only general enquiry form' => sub {
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Staff general enquiry');
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Staff general enquiry');
+        $mech->get_ok('/waste/12345/enquiry?category=Staff+general+enquiry&service_id=265');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Domestic rubbish often missed at this address' } });
+        $mech->submit_form_ok({ with_fields => { name => "Staff User", email => 'staff@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry has been submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Domestic rubbish often missed at this address\n\n2 Example Street, Brent, NW2 1AA";
+        is $report->user->email, 'staff@example.org';
+        is $report->name, 'Staff User';
+        is $report->get_extra_field_value('service_id'), '265';
+        $report->delete;
+        $report->update;
     };
 };
 
