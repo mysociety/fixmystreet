@@ -19,7 +19,7 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
     width: 157px;
     height: 0;
 
-    @include svg-background-image("images/site-logo");
+    @include svg-background-image("/cobrands/bromley/images/site-logo");
     background-size: 157px $logo-height-desktop;
     background-position: center;
     background-repeat: no-repeat;
@@ -147,7 +147,7 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
 
   .bromley-bubble {
     position: absolute;
-    @include svg-background-image("images/curve-top");
+    @include svg-background-image("/cobrands/bromley/images/curve-top");
     background-position: bottom 0 right 0;
     background-size: contain;
     background-repeat: no-repeat;

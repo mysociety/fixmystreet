@@ -16,7 +16,7 @@
 }
 
 #site-logo {
-    background: transparent url('images/hackney-logo-white.png') 0 50% no-repeat;
+    background: transparent url('/cobrands/hackney/images/hackney-logo-white.png') 0 50% no-repeat;
     background-size: 200px 36px;
     width: 200px;
     &:focus {
@@ -64,12 +64,12 @@
                 padding-left: 50px;
                 overflow: hidden;
                 @include flex(0 0 auto);
-                background: $black url('hackney-search-icon.png') no-repeat 50% 50%;
+                background: $black url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
                 background-size: 25px 25px;
                 color: $black;
                 &:hover,
                 &:focus {
-                    background: $dark-green url('hackney-search-icon.png') no-repeat 50% 50%;
+                    background: $dark-green url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
                     background-size: 25px 25px;
                     color: $dark_green;
                 }
@@ -92,7 +92,7 @@
 }
 
 .hackney-footer__logo {
-  background: transparent url('images/hackney-logo-white.png') 0 50% no-repeat;
+  background: transparent url('/cobrands/hackney/images/hackney-logo-white.png') 0 50% no-repeat;
   background-size: 200px 36px;
   width: 200px;
   height: 54px;

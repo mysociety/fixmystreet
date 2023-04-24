@@ -25,6 +25,8 @@ FixMyBarangay.po
 /web/photo
 # And theme upload
 /web/theme
+# And copied static files with content hash in the name
+/web/static
 
 # Installation
 /local

@@ -70,6 +70,7 @@
         - Option to read asset layers from configuration.
         - Add GitHub Action to generate POD documentation.
         - Use digest rather than last modified time for static versioning. #4280
+        - Add way to use digest in static filename rather than query parameter.
     - Security
         - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
     - Open311 improvements:
