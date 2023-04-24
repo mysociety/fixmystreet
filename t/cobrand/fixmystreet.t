@@ -218,32 +218,132 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    COBRAND_FEATURES => { borough_email_addresses => { fixmystreet => {
-        'graffiti@northamptonshire' => [
-            { areas => [2397], email => 'graffiti@northampton' },
-        ],
-    } } },
+    COBRAND_FEATURES => {
+        borough_email_addresses => {
+            fixmystreet => {
+                'graffiti@northamptonshire' =>
+                    [ { areas => [2397], email => 'graffiti@northampton' }, ],
+                'cleaning@somerset' => [
+                    { areas => [2428], email => 'IdvEnquiries@mendip.dev' },
+                ],
+                'other@nyorks' => [
+                    { areas => [2406], email => 'environment@richmondshire.dev' },
+                ],
+                'default@cumbria' => [
+                    { areas => [2274], email => 'street.scene@allerdale.dev' },
+                ],
+            }
+        }
+        },
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
     subtest 'Ex-district reports are sent to correct emails' => sub {
-        my $body = $mech->create_body_ok( 2397, 'Northampton' );
-        my $contact = $mech->create_contact_ok(
-            body_id => $body->id,
-            category => 'Graffiti',
-            email => 'graffiti@northamptonshire',
-        );
+        subtest 'Northampton' => sub {
+            my $body    = $mech->create_body_ok( 2397, 'Northampton' );
+            my $contact = $mech->create_contact_ok(
+                body_id  => $body->id,
+                category => 'Graffiti',
+                email    => 'graffiti@northamptonshire',
+            );
 
-        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
-            latitude => 52.236252,
-            longitude => -0.892053,
-            cobrand => 'fixmystreet',
-            category => 'Graffiti',
-        });
-        FixMyStreet::Script::Reports::send();
-        $mech->email_count_is(1);
-        my @email = $mech->get_email;
-        is $email[0]->header('To'), 'Northampton <graffiti@northampton>';
+            my ($report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Title',
+                {   latitude  => 52.236252,
+                    longitude => -0.892053,
+                    cobrand   => 'fixmystreet',
+                    category  => 'Graffiti',
+                }
+            );
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my @email = $mech->get_email;
+            is $email[0]->header('To'), 'Northampton <graffiti@northampton>';
+            $mech->clear_emails_ok;
+        };
+
+        subtest 'Mendip (Somerset)' => sub {
+            my $body
+                = $mech->create_body_ok( 2428, 'Mendip District Council' );
+            my $contact = $mech->create_contact_ok(
+                body_id  => $body->id,
+                category => 'Graffiti',
+                email    => 'cleaning@somerset',
+            );
+
+            my ($report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Title',
+                {   latitude  => 51.26345,
+                    longitude => -2.28191,
+                    cobrand   => 'fixmystreet',
+                    category  => 'Graffiti',
+                }
+            );
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my @email = $mech->get_email;
+            is $email[0]->header('To'),
+                '"Mendip District Council" <IdvEnquiries@mendip.dev>';
+            $mech->clear_emails_ok;
+        };
+
+        subtest 'Richmondshire (N Yorks)' => sub {
+            my $body = $mech->create_body_ok( 2406,
+                'Richmondshire District Council' );
+            my $contact = $mech->create_contact_ok(
+                body_id  => $body->id,
+                category => 'Graffiti',
+                email    => 'other@nyorks',
+            );
+
+            my ($report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Title',
+                {   latitude  => 54.45012,
+                    longitude => -1.65621,
+                    cobrand   => 'fixmystreet',
+                    category  => 'Graffiti',
+                }
+            );
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my @email = $mech->get_email;
+            is $email[0]->header('To'),
+                '"Richmondshire District Council" <environment@richmondshire.dev>';
+            $mech->clear_emails_ok;
+        };
+
+        subtest 'Allerdale (Cumbria)' => sub {
+            my $body = $mech->create_body_ok( 2274,
+                'Allerdale Borough Council' );
+            my $contact = $mech->create_contact_ok(
+                body_id  => $body->id,
+                category => 'Graffiti',
+                email    => 'default@cumbria',
+            );
+
+            my ($report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Title',
+                {   latitude  => 54.60102,
+                    longitude => -3.13648,
+                    cobrand   => 'fixmystreet',
+                    category  => 'Graffiti',
+                }
+            );
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my @email = $mech->get_email;
+            is $email[0]->header('To'),
+                '"Allerdale Borough Council" <street.scene@allerdale.dev>';
+            $mech->clear_emails_ok;
+        };
     };
 };
 

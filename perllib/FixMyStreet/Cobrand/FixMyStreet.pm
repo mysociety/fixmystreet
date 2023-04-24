@@ -469,7 +469,7 @@ around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
     my $to = $params->{To}->[0]->[0];
-    if ($to !~ /northamptonshire$/) {
+    if ($to !~ /(cumbria|northamptonshire|nyorks|somerset)$/) {
         return $self->$orig($row, $h, $params);
     }
 
