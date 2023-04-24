@@ -71,11 +71,11 @@ sub admin_user_domain { 'brent.gov.uk' }
 
 sub allow_anonymous_reports { 'button' }
 
-=item * Has a default map zoom of 6
+=item * Has a default map zoom of 5
 
 =cut
 
-sub default_map_zoom { 6 }
+sub default_map_zoom { 5 }
 
 =item * Doesn't show reports before go live date 2023-03-06
 
