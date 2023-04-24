@@ -1,6 +1,6 @@
 @font-face {
     font-family: "proxima-nova";
-    src: url("fonts/proximanova-semibold-webfont.woff2") format("woff2"), url("fonts/proximanova-semibold-webfont.woff") format("woff");
+    src: url("/cobrands/sutton/fonts/proximanova-semibold-webfont.woff2") format("woff2"), url("/cobrands/sutton/fonts/proximanova-semibold-webfont.woff") format("woff");
     font-display: auto;
     font-style: normal;
     font-weight:700
@@ -8,7 +8,7 @@
 
 @font-face {
     font-family: "proxima-nova";
-    src: url("fonts/proximanova-bold-webfont.woff2") format("woff2"), url("fonts/proximanova-bold-webfont.woff") format("woff");
+    src: url("/cobrands/sutton/fonts/proximanova-bold-webfont.woff2") format("woff2"), url("/cobrands/sutton/fonts/proximanova-bold-webfont.woff") format("woff");
     font-display: auto;
     font-style: normal;
     font-weight:900
@@ -16,7 +16,7 @@
 
 @font-face {
     font-family: "proxima-nova";
-    src: url("fonts/proximanova-regular-webfont.woff2") format("woff2"), url("fonts/proximanova-regular-webfont.woff") format("woff");
+    src: url("/cobrands/sutton/fonts/proximanova-regular-webfont.woff2") format("woff2"), url("/cobrands/sutton/fonts/proximanova-regular-webfont.woff") format("woff");
     font-display: auto;
     font-style: normal;
     font-weight:400
@@ -24,7 +24,7 @@
 
 @font-face {
     font-family: "proxima-nova";
-    src: url("fonts/proximanova-light-webfont.woff2") format("woff2"), url("fonts/proximanova-light-webfont.woff") format("woff");
+    src: url("/cobrands/sutton/fonts/proximanova-light-webfont.woff2") format("woff2"), url("/cobrands/sutton/fonts/proximanova-light-webfont.woff") format("woff");
     font-display: auto;
     font-style: normal;
     font-weight:300
@@ -122,7 +122,7 @@ a,
     height: $mappage-header-height;
     // Using line-height to vertically align the logo
     line-height: $mappage-header-height;
-    background-image: url('images/sutton-logo.png');
+    background-image: url('/cobrands/sutton/images/sutton-logo.png');
     background-size: contain;
 
     .mappage & {

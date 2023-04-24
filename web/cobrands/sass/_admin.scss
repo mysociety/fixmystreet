@@ -84,7 +84,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 .admin-offsite-link {
     display: inline;
     padding-#{$right}: 12px;
-    background-image: url(../../i/external-link.png);
+    background-image: url(/i/external-link.png);
     background-position: $right top;
     background-repeat: no-repeat;
 }

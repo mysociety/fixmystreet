@@ -1,21 +1,21 @@
 @font-face {
     font-family: 'Johnston100-Light';
-    src: url("fonts/Johnston100-Light.woff2") format("woff2"),url("fonts/Johnston100-Light.woff") format("woff")
+    src: url("/cobrands/tfl/fonts/Johnston100-Light.woff2") format("woff2"),url("/cobrands/tfl/fonts/Johnston100-Light.woff") format("woff")
 }
 
 @font-face {
     font-family: 'Johnston100-Medium';
-    src: url("fonts/Johnston100-Medium.woff2") format("woff2"),url("fonts/Johnston100-Medium.woff") format("woff")
+    src: url("/cobrands/tfl/fonts/Johnston100-Medium.woff2") format("woff2"),url("/cobrands/tfl/fonts/Johnston100-Medium.woff") format("woff")
 }
 
 @font-face {
     font-family: 'Johnston100-Regular';
-    src: url("fonts/Johnston100-Regular.woff2") format("woff2"),url("fonts/Johnston100-Regular.woff") format("woff")
+    src: url("/cobrands/tfl/fonts/Johnston100-Regular.woff2") format("woff2"),url("/cobrands/tfl/fonts/Johnston100-Regular.woff") format("woff")
 }
 
 @font-face {
     font-family: 'Johnston100-Bold';
-    src: url("fonts/Johnston100-Bold.woff2") format("woff2"),url("fonts/Johnston100-Bold.woff") format("woff")
+    src: url("/cobrands/tfl/fonts/Johnston100-Bold.woff2") format("woff2"),url("/cobrands/tfl/fonts/Johnston100-Bold.woff") format("woff")
 }
 
 @import "../sass/h5bp";

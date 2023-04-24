@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Digest::MD5;
+use File::Basename qw(fileparse);
 use FixMyStreet;
 use FixMyStreet::Template;
 use FixMyStreet::Template::SafeString;
@@ -156,7 +157,15 @@ sub version {
         $url = $file = $file_min if $version_hash{$file_min}{mtime} >= $version_hash{$file}{mtime};
     }
     my $admin = $self->template->context->stash->{admin} ? FixMyStreet->config('ADMIN_BASE_URL') : '';
-    return "$admin$url?$version_hash{$file}{digest}";
+
+    # Check for compiled hash-in-filename first
+    my $digest = $version_hash{$file}{digest};
+    my ($name, $path, $suffix) = fileparse($url, qr/\.css/, qr/\.js/);
+    my $compiled = "/static$path$name.$digest$suffix";
+    if (-e FixMyStreet->path_to('web', $compiled)) {
+        return "$admin$compiled";
+    }
+    return "$admin$url?$digest";
 }
 
 sub _version_get_details {

@@ -43,7 +43,7 @@ a:not([class]):focus {
 }
 
 #site-logo {
-    @include svg-background-image("images/site-logo-mobile");
+    @include svg-background-image("/cobrands/oxfordshire/images/site-logo-mobile");
     background-color: $nav_background_colour;
     background-size: 175px 38px;
     background-repeat: no-repeat;

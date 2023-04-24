@@ -102,9 +102,9 @@ body.frontpage {
     .table-cell {
         background-position: 50% 112px;
         background-repeat: no-repeat;
-        background-image: url(mapbg-1024.jpg);
+        background-image: url(/cobrands/zurich/mapbg-1024.jpg);
         @media all and (min-width: 1025px) {
-            background-image: url(mapbg-1600.jpg);
+            background-image: url(/cobrands/zurich/mapbg-1600.jpg);
         }
         .content {
             margin: 2em auto; // Spacing around front content on top of static map
