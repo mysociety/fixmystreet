@@ -1812,6 +1812,10 @@ input.final-submit {
   overflow: hidden;
   position: relative;
 
+  // Don't want people 'selecting' the map tiles etc and it looking a bit odd
+  user-select: none;
+  -webkit-user-select: none;
+
   #map {
     width: 100%;
     height: 100%;
@@ -2134,6 +2138,7 @@ html.js #map .noscript {
   bottom: 0;
   margin: 0;
   margin-bottom: 6em;
+  margin-bottom: calc(env(safe-area-inset-bottom) + 6em);
 
   @include border-radius(0.5em);
 
@@ -2240,6 +2245,7 @@ html.js #map .noscript {
 
 .olControlAttribution {
   bottom: 3.25em !important;
+  bottom: calc(env(safe-area-inset-bottom) + 3.25em) !important;
   #{$right}: 0.25em !important;
   #{$left}: 0.25em !important;
   color: #222222;
@@ -2339,7 +2345,15 @@ div.assigned-to {
     height: auto; // override `.mobile #map_box` height:10em
     margin: 0;
     z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
+
+    .sub-map-links {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
   }
+}
+
+#mapForm.mobile-filters-active .sub-map-links {
+  padding-bottom: 0;
 }
 
 .only-map,
