@@ -46,7 +46,7 @@ means in test mode; Perl tests set '1', Cypress sets 'cypress'.
 
 =cut
 
-my $TEST_MODE = undef;
+my $TEST_MODE = '';
 
 sub test_mode {
     my $class = shift;
