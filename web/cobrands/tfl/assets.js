@@ -202,7 +202,10 @@ var tlrn_stylemap = new OpenLayers.StyleMap({
 });
 
 
-/* Reports in these categories can only be made on a red route */
+/*
+    Reports in these categories can only be made on a red route.
+    NOTE: This must be kept in sync with the list in the TfL cobrand module.
+*/
 var tlrn_categories = [
     "All out - three or more street lights in a row",
     "Blocked drain",
@@ -218,7 +221,7 @@ var tlrn_categories = [
     "Graffiti / Flyposting on street light (offensive)",
     "Graffiti / Flyposting – Political or Anti-Vaccination",
     "Grass Cutting and Hedges",
-    "Hoardings blocking carriageway or footway",
+    "Hoarding complaint",
     "Light on during daylight hours",
     "Lights out in Pedestrian Subway",
     "Low hanging branches",
@@ -231,7 +234,7 @@ var tlrn_categories = [
     "Pothole",
     "Pothole (minor)",
     "Roadworks",
-    "Scaffolding blocking carriageway or footway",
+    "Scaffold complaint",
     "Single Light out (street light)",
     "Standing water",
     "Street Light - Equipment damaged, pole leaning",
