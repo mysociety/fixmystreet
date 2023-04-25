@@ -610,6 +610,11 @@ $.extend(fixmystreet.set_up, {
             $(".js-hide-if-public-category").hide();
             $('#form_non_public').prop('checked', false).prop('disabled', false);
         }
+        if (data.category_photo_required) {
+            $(".js-hide-if-category-photo-required").addClass('hidden-js');
+        } else {
+            $(".js-hide-if-category-photo-required").removeClass('hidden-js');
+        }
         if (data.allow_anonymous) {
             $('.js-show-if-anonymous').removeClass('hidden-js');
             $('.js-reporting-page--include-if-anonymous').removeClass('js-reporting-page--skip');
