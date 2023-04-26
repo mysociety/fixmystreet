@@ -20,7 +20,7 @@ var roadworks_defaults = {
     all_categories: true,
     actions: {
         found: function(layer, feature) {
-            if (!fixmystreet.roadworks.filter || fixmystreet.roadworks.filter(feature)) {
+            if (fixmystreet.roadworks.filter(feature)) {
                 fixmystreet.roadworks.display_message(feature);
                 return true;
             } else {
@@ -83,6 +83,13 @@ fixmystreet.roadworks.display_message = function(feature) {
         $div.html($msg);
         fixmystreet.pageController.addNextPage('roadworks', $div);
     }
+};
+
+fixmystreet.roadworks.filter = function(feature) {
+  var category = fixmystreet.reporting.selectedCategory().category,
+        data = document.getElementById('roadworks-categories').dataset.roadworksCategories || [],
+        categories = JSON.parse(data);
+    return !categories.length || OpenLayers.Util.indexOf(categories, category) != -1;
 };
 
 fixmystreet.assets.add(roadworks_defaults);

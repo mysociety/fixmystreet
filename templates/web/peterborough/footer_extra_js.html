@@ -1,11 +1,4 @@
 [% PROCESS 'footer_extra_js_base.html' highways=1 validation=1 roadworks=1 %]
-[%
-IF bodyclass.match('mappage');
-    scripts.push(
-        version('/cobrands/peterborough/js.js')
-    );
-END
-%]
 [% IF page_refresh;
     scripts.push(
         version('/vendor/htmx.min.js'),

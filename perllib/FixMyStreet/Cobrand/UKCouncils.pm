@@ -24,6 +24,8 @@ sub suggest_duplicates {
 
 sub sms_authentication { shift->feature('sms_authentication') }
 
+sub roadworks_categories { encode_json(shift->feature('roadworks_categories') || []) }
+
 sub path_to_web_templates {
     my $self = shift;
     return [
