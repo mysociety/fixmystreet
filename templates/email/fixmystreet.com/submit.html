@@ -45,7 +45,7 @@ of a local problem that they believe might require your attention.</p>
   <p style="[% p_style %] margin-top: 0.5em;">Replies to this message will go directly to [% report.name | html %], the user who reported the problem.</p>
   [% end_padded_box | safe %]
 </th>
-[% WRAPPER '_email_sidebar.html' object = report %]
+[% WRAPPER '_email_sidebar.html' object = report html_id='report' %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     <p style="[% secondary_p_style %]"><strong>Category:</strong> [% report.category | html %]</p>
     [% report.detail | html_para_email(secondary_p_style) %]
