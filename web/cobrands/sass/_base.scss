@@ -2166,6 +2166,11 @@ html.js #map .noscript {
     }
 }
 
+// Hide the "Start new report here" button when map filters are open
+#mapForm.mobile-filters-active .map-mobile-report-button {
+  display: none;
+}
+
 .map-crosshairs {
     display: none;
     position: absolute;
