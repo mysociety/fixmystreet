@@ -376,7 +376,7 @@ sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
     return unless $now->hour < 22;
-    if ($state eq 'Outstanding') {
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
         $row->{next} = $row->{last};
         $row->{next}{state} = 'In progress';
         delete $row->{last};
