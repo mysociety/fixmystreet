@@ -623,7 +623,17 @@ subtest 'phone number field only appears for staff' => sub {
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
     $mech->content_contains("Phone number (optional)");
     $mech->log_out_ok;
-}
+};
+
+subtest 'Check old confirm reference' => sub {
+    my $ref = '40123456';
+    $report->set_extra_metadata( confirm_reference => $ref );
+    $report->update;
+
+    $mech->get_ok('/');
+    $mech->submit_form_ok( { with_fields => { pc => $ref } }, 'Confirm ref');
+    is $mech->uri->path, "/report/" . $report->id, "redirected to report page when using Confirm ref";
+};
 
 };
 

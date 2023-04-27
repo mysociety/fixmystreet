@@ -973,4 +973,13 @@ sub enter_postcode_text {
     return 'Enter a Buckinghamshire postcode, street name and area, or report reference number';
 }
 
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+    if (my ($id) = $ref =~ /^\s*(40\d{6})\s*$/) {
+        my $filter = "%T17:confirm_reference,I8:$id,%";
+        return { 'extra' => { -like => $filter } };
+    }
+    return 0;
+}
+
 1;
