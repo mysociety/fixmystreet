@@ -211,20 +211,17 @@ sub _fetch_features_url {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    # Westminster don't want TfL or email categories on their cobrand.
-    # Categories covering the council area have a mixture of Open311 and Email
+    # Westminster don't want email categories on their cobrand.
+    # Categories covering the body have a mixture of Open311 and Email
     # send methods. We've set up the Email categories with a devolved
     # send_method, so can identify Open311 categories as those which have a
-    # blank send_method.
-    # XXX This still shows "These will be sent to TfL or Westminster City Council"
-    # on /report/new before a category is selected...
+    # blank send_method; the TfL categories also all have a blank send method.
     return $rs->search( {
-            'body.name' => 'Westminster City Council',
             -or => [
                 'me.send_method' => undef, # Open311 categories
                 'me.send_method' => '', # Open311 categories that have been edited in the admin
             ]
-        }, { join => 'body' });
+        });
 }
 
 sub updates_restriction {
