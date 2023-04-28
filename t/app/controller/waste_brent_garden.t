@@ -58,6 +58,11 @@ create_contact({ category => 'Amend Garden Subscription', email => 'garden@examp
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
 );
 
+create_contact({ category => 'Cancel Garden Subscription', email => 'garden@example.com'},
+    { code => 'End_Date', required => 1, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
+);
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
@@ -443,6 +448,32 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 1/;
         like $body, qr/Total:.*?50.00/;
+    };
+
+    subtest 'cancel garden service' => sub {
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        set_fixed_time('2021-03-09T17:00:00Z');
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->state, 'confirmed', 'report confirmed';
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+
+        like $body, qr/You have cancelled your garden waste collection service/;
+        unlike $body, qr/Number of bin subscriptions/;
+        unlike $body, qr/Bins to be delivered/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);

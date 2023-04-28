@@ -1378,7 +1378,8 @@ sub process_garden_cancellation : Private {
     $data->{payment_method} = $payment_method;
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    $c->set_param('Subscription_End_Date', $now->ymd);
+    my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
+    $c->set_param($end_date_field, $now->ymd);
 
     my $service = $c->cobrand->garden_current_subscription;
     if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {

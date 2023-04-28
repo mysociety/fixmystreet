@@ -713,6 +713,25 @@ sub waste_munge_request_form_fields {
     );
 }
 
+
+=head2 alternative_backend_field_names
+
+Some field names to send for integrations are defined by earlier
+integrations, so this can be used to fetch the different
+field name for what is essentially the same field
+
+=cut
+
+sub alternative_backend_field_names {
+    my ($self, $field) = @_;
+
+    my %alternative_name = (
+        'Subscription_End_Date' => 'End_Date',
+    );
+
+    return $alternative_name{$field};
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data, $form) = @_;
 
