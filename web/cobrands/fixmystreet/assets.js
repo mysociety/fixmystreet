@@ -989,6 +989,8 @@ max_resolution - either a number, or a hash mapping cobrand to number. This
     provides the maximum resolution at which an asset layer will be displayed
     (and when first shown, the map may zoom in to this level). The hash is for
     the case where a cobrand shows a different map with different resolutions.
+    Run `fixmystreet.map.getResolution()` in the browser's js console to see the
+    current resolution.
 stylemap - defaults to the default OpenLayers.StyleMap of yellow dots that turn
     green when hovered, and have a 'selected pin' if selected
     You can use fixmystreet.assets.stylemap_invisible for a transparent layer.
