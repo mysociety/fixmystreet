@@ -17,6 +17,7 @@
         - Add label to questionnaire textarea. #3944
         - Offline report drafting. #4290
         - Set width=device-width in viewport meta tag. #4384
+        - Fix photo field label not visually appearing as a label.
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
