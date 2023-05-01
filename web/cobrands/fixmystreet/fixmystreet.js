@@ -911,7 +911,7 @@ $.extend(fixmystreet.set_up, {
     // proper aria-label to improve accessibility.
     function replace_label(id, sibling_class, sibling_child, str) {
         $(id).siblings(sibling_class).children(sibling_child).attr('aria-label', str);
-        $(id).addClass('hidden-js').after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).addClass('hidden-js').after(function(){ return $('<span class="label">' + this.innerHTML + '</span>'); });
     }
     replace_label('#photo-upload-label','.dropzone.dz-clickable', '.dz-default.dz-message', translation_strings.upload_aria_label);
   },
