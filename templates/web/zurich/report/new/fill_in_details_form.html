@@ -13,6 +13,8 @@
                 <p class='form-error'>[% field_errors.bodies %]</p>
             [% END %]
 
+            [% PROCESS "report/new/category_wrapper.html" %]
+
             [% PROCESS 'report/form/photo_upload.html' %]
             [% PROCESS 'report/new/after_photo.html' %]
 
@@ -21,8 +23,6 @@
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
             <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" required>[% report.detail | html %]</textarea>
-
-            [% PROCESS "report/new/category_wrapper.html" %]
 
                 <label for="form_username_register">[% loc('Your email') %]</label>
                 [% IF field_errors.username_register %]
