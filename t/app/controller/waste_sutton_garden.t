@@ -600,6 +600,7 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/auth', 'have to be logged in to modify subscription';
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 3 } });
         $mech->content_contains('3 bins');
         $mech->content_contains('60.00');
@@ -607,6 +608,7 @@ FixMyStreet::override_config {
     };
     subtest 'check modify sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('2 bins');
         $mech->content_contains('40.00');
@@ -643,6 +645,7 @@ FixMyStreet::override_config {
 
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
         $mech->content_contains('20.00');
         $mech->content_lacks('Continue to payment');
@@ -817,20 +820,14 @@ FixMyStreet::override_config {
         $mech->content_lacks('Renew your garden waste subscription', 'renew link still on expired subs');
     };
 
-    subtest 'cancel credit card sub, no public users' => sub {
+    subtest 'cancel credit card sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_cancel');
-        is $mech->uri->path, '/waste/12345', 'redirected';
-    };
-
-    subtest 'cancel credit card sub' => sub {
-        $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $staff_user->id },
+            { user_id => $user->id },
             { order_by => { -desc => 'id' } },
         )->first;
 
@@ -993,6 +990,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Modify your garden waste subscription');
         $mech->content_lacks('Order more garden sacks');
         $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->content_lacks('<span id="pro_rata_cost">41.00');
         $mech->content_contains('current_bins');
         $mech->content_contains('bins_wanted');
