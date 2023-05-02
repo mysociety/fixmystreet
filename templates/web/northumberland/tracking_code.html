@@ -1,0 +1,46 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
+<script>
+    var config = {
+        apiKey: '448535b139888ffd0a1e5fb4b61f6bde653a2124',
+        product: 'PRO_MULTISITE',
+        initialState: 'top',
+        theme: 'light',
+        settingsStyle: 'button',
+        toggleType: 'checkbox',
+        text: {
+            notifyTitle: 'Tell us whether you accept cookies',
+            notifyDescription: 'We use cookies to collect information about how you use fix.northumberland.gov.uk. We use this information to make the website work as well as possible and improve our services.',
+            accept: 'Accept all cookies',
+            reject: 'Decline all but essential cookies',
+            settings: 'Set preferences',
+            acceptSettings: 'Accept all cookies',
+            rejectSettings: 'Decline all but essential cookies',
+            title: 'Cookies on fix.northumberland.gov.uk',
+            intro: 'Cookies are files saved on your phone, tablet or computer when you visit a website. We use cookies to store information about how you use the fix.northumberland.gov.uk website, such as the pages you visit.',
+        },
+        optionalCookies: [
+            {
+                name: 'analytics',
+                label: 'Cookies that measure website use',
+                description: 'We use Google Analytics to measure how you use the website so we can improve it based on user needs. We do not allow Google to use or share the data about how you use this site.',
+                cookies: ['_ga', '_gid', '_gat', '__utma', '__utmt', '__utmb', '__utmc', '__utmz', '__utmv'],
+                onAccept: function(){
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'G-FSE5G4JX5L');
+                },
+                onRevoke: function (){
+                    //Disable Google Analytics
+                    window['ga-disable-G-FSE5G4JX5L'] = true;
+                    //End Google Analytics
+                }
+            }
+         ]
+    };
+    CookieControl.load( config );
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FSE5G4JX5L"></script>
+[% END %]
