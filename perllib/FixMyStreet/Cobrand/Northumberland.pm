@@ -67,4 +67,18 @@ sub open311_title_fetched_report {
     return sprintf("%s: %s", $group, $category);
 }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem($p);
+    return 'green' if $p->state eq 'confirmed';
+    return 'yellow' if $p->state eq 'investigating';
+    return 'blue' if $p->state eq 'action scheduled';
+    return 'red' if $p->is_fixed;
+    return 'orange'; # all the other `open_states` like "in progress"
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/northumberland/images/';
+}
+
 1;
