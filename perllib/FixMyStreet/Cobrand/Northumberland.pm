@@ -31,6 +31,8 @@ sub default_map_zoom { 4 }
 
 sub abuse_reports_only { 1 }
 
+sub cut_off_date { '2023-05-03' }
+
 sub reopening_disallowed {
     my ($self, $problem) = @_;
 
