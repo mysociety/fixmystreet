@@ -678,8 +678,31 @@ FixMyStreet::override_config {
     };
 };
 
+my $REFUSE_SERVICE = {
+    Id => 1001,
+    ServiceId => 531,
+    ServiceName => 'Refuse collection',
+    ServiceTasks => { ServiceTask => {
+        Id => 401,
+        ScheduleDescription => 'every Wednesday',
+        ServiceTaskSchedules => { ServiceTaskSchedule => {
+            StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+            EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+            NextInstance => {
+                CurrentScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
+                OriginalScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
+            },
+            LastInstance => {
+                OriginalScheduledDate => { DateTime => '2021-03-08T00:00:00Z' },
+                CurrentScheduledDate => { DateTime => '2021-03-08T00:00:00Z' },
+                Ref => { Value => { anyType => [ 123, 456 ] } },
+            },
+        } },
+    } },
+};
+
 sub garden_waste_no_bins {
-    return [ {
+    return [ $REFUSE_SERVICE, {
         Id => 1004,
         ServiceId => 542,
         ServiceName => 'Food waste collection',
@@ -929,7 +952,7 @@ FixMyStreet::override_config {
         # to test whether garden waste sub still shown
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', sub {
-            return [ {
+            return [ $REFUSE_SERVICE, {
                 Id => 1002,
                 ServiceId => 537,
                 ServiceName => 'Paper recycling collection',
@@ -956,30 +979,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present even if all requested');
 
         set_fixed_time('2021-03-09T17:00:00Z');
-        $echo->mock('GetServiceUnitsForObject', sub {
-            return [ {
-                Id => 1001,
-                ServiceId => 101,
-                ServiceName => 'Refuse collection',
-                ServiceTasks => { ServiceTask => {
-                    Id => 401,
-                    ScheduleDescription => 'every Wednesday',
-                    ServiceTaskSchedules => { ServiceTaskSchedule => {
-                        StartDate => { DateTime => '2020-01-01T00:00:00Z' },
-                        EndDate => { DateTime => '2050-01-01T00:00:00Z' },
-                        NextInstance => {
-                            CurrentScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
-                            OriginalScheduledDate => { DateTime => '2021-03-10T00:00:00Z' },
-                        },
-                        LastInstance => {
-                            OriginalScheduledDate => { DateTime => '2021-03-08T00:00:00Z' },
-                            CurrentScheduledDate => { DateTime => '2021-03-08T00:00:00Z' },
-                            Ref => { Value => { anyType => [ 123, 456 ] } },
-                        },
-                    } },
-                } },
-            } ];
-        } );
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Subscribe to Green Garden Waste', 'Subscribe link present if never had a sub');
     };
