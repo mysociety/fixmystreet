@@ -212,6 +212,7 @@ for my $test (
 subtest "Open311 attribute changes" => sub {
     my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
         areas => "2488", category => 'Gully grid missing', cobrand => 'brent',
+        geocode => { resourceSets => [ { resources => [ { name => 'Constitution Hill' } ] } ] },
     });
     $problem->update_extra_field({ name => 'UnitID', value => '234' });
     $problem->update;
@@ -231,7 +232,8 @@ subtest "Open311 attribute changes" => sub {
         my $c = CGI::Simple->new($req->content);
         is $c->param('attribute[UnitID]'), undef, 'UnitID removed from attributes';
         like $c->param('description'), qr/ukey: 234/, 'UnitID on gully sent across in detail';
-        is $c->param('attribute[title]'), $problem->title, 'Report title passed as attribute for Open311';
+        my $title = $problem->title . '; Nearest calculated address = Constitution Hill';
+        is $c->param('attribute[title]'), $title, 'Report title and location passed as attribute for Open311';
     };
 
     $problem->delete;

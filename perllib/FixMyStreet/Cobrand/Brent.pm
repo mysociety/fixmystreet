@@ -258,7 +258,13 @@ Same as Symology above, but different attribute name.
         }
     }
 
-    push @$open311_only, { name => 'title', value => $row->title };
+    # The title field gets pushed to location fields in Echo/Symology, so include closest address
+    my $title = $row->title;
+    if ($h->{closest_address} && (my $addr = $h->{closest_address}{name})) {
+        $addr =~ s/, England, United Kingdom$//;
+        $title .= "; Nearest calculated address = $addr";
+    }
+    push @$open311_only, { name => 'title', value => $title };
     push @$open311_only, { name => 'description', value => $row->detail };
 
     return $open311_only;
