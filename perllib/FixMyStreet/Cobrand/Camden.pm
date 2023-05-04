@@ -139,11 +139,16 @@ sub dashboard_export_problems_add_columns {
         user_email => 'User Email',
     );
 
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
         return {
-            user_name => $report->user->name || '',
+            user_name => $report->name || '',
             user_email => $report->user->email || '',
         };
     });

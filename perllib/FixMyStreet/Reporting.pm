@@ -285,7 +285,9 @@ sub generate_csv {
             ? '(anonymous)' : $obj->name;
 
         if ($asked_for{acknowledged}) {
-            for my $comment ($obj->comments->search(undef, { order_by => ['confirmed', 'id'] })) {
+            my @updates = $obj->comments->all;
+            @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
+            for my $comment (@updates) {
                 my $problem_state = $comment->problem_state or next;
                 next unless $comment->state eq 'confirmed';
                 next if $problem_state eq 'confirmed';

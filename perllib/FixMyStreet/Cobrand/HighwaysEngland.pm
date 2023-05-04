@@ -313,7 +313,10 @@ sub dashboard_export_problems_add_columns {
     $csv->modify_csv_header( Ward => 'Council' );
 
     $csv->objects_attrs({
-        '+columns' => ['comments.text', 'comments.extra', 'user.name'],
+        '+columns' => [
+            'comments.text', 'comments.extra',
+            {'comments.user.name' => 'user.name'},
+        ],
         join => { comments => 'user' },
     });
 
@@ -338,7 +341,9 @@ sub dashboard_export_problems_add_columns {
         };
 
         my $i = 1;
-        for my $update ($report->comments->search(undef, { order_by => ['confirmed', 'id'] })) {
+        my @updates = $report->comments->all;
+        @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
+        for my $update (@updates) {
             next unless $update->state eq 'confirmed';
             last if $i > 5;
             $fields->{"update_text_$i"} = $update->text;
