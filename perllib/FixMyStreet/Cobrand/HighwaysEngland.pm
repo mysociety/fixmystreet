@@ -316,11 +316,15 @@ sub dashboard_export_problems_add_columns {
         '+columns' => [
             'comments.text', 'comments.extra',
             {'comments.user.name' => 'user.name'},
+            {'user.email' => 'user_2.email'},
+            {'user.phone' => 'user_2.phone'},
         ],
-        join => { comments => 'user' },
+        join => ['user', { comments => 'user' }],
     });
 
     $csv->add_csv_columns(
+        user_email => 'User Email',
+        user_phone => 'User Phone',
         area_name => 'Area name',
         where_hear => 'How you found us',
     );
@@ -336,6 +340,9 @@ sub dashboard_export_problems_add_columns {
         my $report = shift;
 
         my $fields = {
+            user_name_display => $report->name,
+            user_email => $report->user->email || '',
+            user_phone => $report->user->phone || '',
             area_name => $report->get_extra_field_value('area_name'),
             where_hear => $report->get_extra_metadata('where_hear'),
         };
