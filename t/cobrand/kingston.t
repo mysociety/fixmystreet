@@ -30,6 +30,7 @@ my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', f
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'kingston',
+    MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         bottomline => { kingston => { } },
     }
@@ -844,6 +845,7 @@ FixMyStreet::override_config {
         is $p->get_extra_field_value('Subscription_Details_Containers'), 26, 'renewal has correct container type';
         is $p->get_extra_field_value('service_id'), 2247, 'renewal has correct service id';
         is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+        is $p->areas, ',2482,8141,';
         is $p->state, 'confirmed';
 
         my $renewal_too_recent = FixMyStreet::DB->resultset('Problem')->search({
@@ -1066,11 +1068,11 @@ sub setup_dd_test_report {
     my $extras = shift;
     my ($report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
         category => 'Garden Subscription',
-        latitude => 51.402096,
-        longitude => 0.015784,
+        latitude => 51.402092,
+        longitude => 0.015783,
         cobrand => 'kingston',
         cobrand_data => 'waste',
-        areas => '2482,8141',
+        areas => ',2482,',
         user => $user,
     });
 

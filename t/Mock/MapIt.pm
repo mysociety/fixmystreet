@@ -48,6 +48,7 @@ my @PLACES = (
     [ 'LE15 0GJ', 52.670447, -0.727877, 2600, 'Rutland County Council', 'CTY'],
     [ 'BR1 3UH', 51.4021, 0.01578, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
+    [ 'BR1 3UH', 51.402092, 0.015783, 2482, 'Bromley Council', 'LBO', 8141, 'Bromley Town', 'LBW' ],
     [ 'BR1 3EF', 51.4039, 0.018697, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 1AA', 51.401546, 0.015415, 2482, 'Bromley Council', 'LBO' ],
     [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],

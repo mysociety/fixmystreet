@@ -639,6 +639,7 @@ subtest 'check pro-rata calculation' => sub {
 subtest 'check direct debit reconcilliation' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
+        MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             payment_gateway => {
                 bromley => {
@@ -1385,6 +1386,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->cobrand_data, 'waste';
     is $p->state, 'confirmed';
     is $p->title, 'Garden Subscription - Renew';
+    is $p->areas, ',2482,8141,';
 
     # Assume that this has now had to go through as New, rather than Renewal
     # Should not be any extra warning output later on
@@ -1497,11 +1499,11 @@ sub setup_dd_test_report {
     my $extras = shift;
     my ($report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
         category => 'Garden Subscription',
-        latitude => 51.402096,
-        longitude => 0.015784,
+        latitude => 51.402092,
+        longitude => 0.015783,
         cobrand => 'bromley',
         cobrand_data => 'waste',
-        areas => '2482,8141',
+        areas => ',2482,',
         user => $user,
     });
 

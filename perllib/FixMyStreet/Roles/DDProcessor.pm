@@ -285,6 +285,11 @@ sub _duplicate_waste_report {
         property_id => $report->get_extra_field_value('property_id'),
     };
 
+
+    # Refetch containing areas as it's possible they've changed since this
+    # subscription was initially created.
+    my $areas = FixMyStreet::MapIt::call('point', "4326/" . $report->longitude . "," . $report->latitude);
+
     my $renew = FixMyStreet::DB->resultset('Problem')->new({
         category => 'Garden Subscription',
         user => $report->user,
@@ -297,7 +302,7 @@ sub _duplicate_waste_report {
         postcode => $report->postcode,
         used_map => $report->used_map,
         name => $report->user->name || $report->name,
-        areas => $report->areas,
+        areas => ',' . join( ',', sort keys %$areas ) . ',',
         anonymous => $report->anonymous,
         state => 'unconfirmed',
         non_public => 1,
