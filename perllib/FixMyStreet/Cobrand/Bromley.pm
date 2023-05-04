@@ -417,6 +417,14 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+=head2 waste_on_the_day_criteria
+
+If it's before 5pm on the day of collection, treat an Outstanding task as if
+it's the next collection and in progress, and do not allow missed collection
+reporting if the task is not completed.
+
+=cut
+
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 

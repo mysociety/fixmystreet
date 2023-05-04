@@ -17,6 +17,14 @@ sub dashboard_extra_bodies {
     return $kingston;
 }
 
+=head2 waste_on_the_day_criteria
+
+If it's before 6pm on the day of collection, treat an Outstanding/Allocated
+task as if it's the next collection and in progress, do not allow missed
+collection reporting, and do not show the collected time.
+
+=cut
+
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 

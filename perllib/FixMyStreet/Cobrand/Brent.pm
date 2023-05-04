@@ -378,6 +378,14 @@ sub waste_event_state_map {
     };
 }
 
+=head2 waste_on_the_day_criteria
+
+If it's before 10pm on the day of collection, treat an Outstanding/Allocated
+task as if it's the next collection and in progress, and do not allow missed
+collection reporting.
+
+=cut
+
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
@@ -387,9 +395,9 @@ sub waste_on_the_day_criteria {
         $row->{next}{state} = 'In progress';
         delete $row->{last};
     }
-    if (!$completed) {
-        $row->{report_allowed} = 0;
-    }
+    #if (!$completed) {
+    $row->{report_allowed} = 0;
+    #}
 }
 
 sub bin_services_for_address {

@@ -18,6 +18,14 @@ sub dashboard_extra_bodies {
     return $sutton;
 }
 
+=head2 waste_on_the_day_criteria
+
+Treat an Outstanding/Allocated task as if it's the next collection and in
+progress, and do not allow missed collection reporting if the task is not
+completed.
+
+=cut
+
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
