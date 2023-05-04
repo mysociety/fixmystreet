@@ -148,6 +148,7 @@ sub _parse_schedules {
         $d = undef if $d && $d->strftime('%F') lt $start_date; # Shouldn't happen
         if ($d && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($next, $d);
+            $min_next->{schedule} = $schedule;
             $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
         }
 
@@ -159,6 +160,7 @@ sub _parse_schedules {
         # be in the future. If so, we should treat it like it is a next instance.
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($last, $d);
+            $min_next->{schedule} = $schedule;
             $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
             $max_last = _schedule_object($last, $d);

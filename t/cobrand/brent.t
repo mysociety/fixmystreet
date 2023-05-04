@@ -460,6 +460,9 @@ FixMyStreet::override_config {
         echo => { brent => { sample_data => 1 } },
         waste => { brent => 1 },
         anonymous_account => { brent => 'anonymous' },
+        waste_calendar_links => { brent => {
+            'friday-2' => 'https://example.org/media/16420712/fridayweek2'
+        } },
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
             ggw_cost => 6000,
@@ -476,7 +479,11 @@ FixMyStreet::override_config {
             ServiceTasks => { ServiceTask => {
                 Id => 401,
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
-                    ScheduleDescription => 'every Wednesday',
+                    ScheduleDescription => 'every other Wednesday',
+                    Allocation => {
+                        RoundName => 'Friday',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
@@ -568,6 +575,11 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/12345');
         restore_time();
+    };
+
+    subtest 'showing PDF calendar' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('https://example.org/media/16420712/fridayweek2');
     };
 
     subtest 'test requesting a container' => sub {

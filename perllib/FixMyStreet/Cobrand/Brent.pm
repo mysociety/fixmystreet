@@ -461,6 +461,17 @@ sub bin_services_for_address {
         $schedules{$_->{Id}} = $schedules;
         push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
+
+        # Check calendar allocation
+        if ($_->{ServiceId} == 262 && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
+            my $allocation = $schedules->{next}{schedule}{Allocation};
+            my $day = lc $allocation->{RoundName};
+            my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
+            my $id = sprintf("%s-%s", $day, $week);
+            my $links = $self->{c}->cobrand->feature('waste_calendar_links');
+            $self->{c}->stash->{calendar_link} = $links->{$id};
+        }
+
     }
     push @to_fetch, GetTasks => \@task_refs if @task_refs;
 
