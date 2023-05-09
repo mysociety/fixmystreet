@@ -162,7 +162,7 @@ sub _recent {
     $query->{photo} = { '!=', undef } if $photos;
 
     my $attrs = {
-        order_by => { -desc => \'coalesce(confirmed, created)' },
+        order_by => { -desc => 'id' },
         rows => $num,
     };
 
