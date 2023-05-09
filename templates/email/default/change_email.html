@@ -12,7 +12,7 @@ INCLUDE '_email_top.html';
 <th style="[% td_style %][% only_column_style %]">
   <h1 style="[% h1_style %]">Change your [% site_name %] email&nbsp;address</h1>
   <p style="[% p_style %]">Please click on the link below to confirm you wish to update your
-email address on [% site_name %].</p>
+email address on [% site_name %]. You must be logged in to your [% site_name %] account on this device and click on the link within 24 hours.</p>
   <p style="margin: 20px auto; text-align: center">
     <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Change my email address</a>
   </p>
