@@ -1,4 +1,7 @@
 use FixMyStreet::TestMech;
+use DateTime;
+use Web::Scraper;
+
 my $mech = FixMyStreet::TestMech->new;
 
 use t::Mock::Nominatim;
@@ -98,6 +101,27 @@ subtest "prefilters /around if filter_category given in URL" => sub {
     # NB can't use visible_form_values because fields are hidden
     $mech->content_contains("MyUniqueTestCategory");
     $mech->content_contains("MyUniqueTestGroup");
+};
+
+subtest "recent reports are correctly shown on front page" => sub {
+    FixMyStreet::DB->resultset('Problem')->delete_all;
+
+    my ($r1, $r2, $r3)= $mech->create_problems_for_body(3, 2651, 'Recent problem');
+
+    # Make the oldest problem have the newest confirmed timestamp so it appears top of recent list
+    $r1->update( { confirmed => $r1->confirmed + DateTime::Duration->new( minutes => 5 ) } );
+
+    $mech->get_ok('/');
+
+    my $result = scraper {
+        process '#front-recently ul li h3', 'title[]', 'TEXT';
+    }->scrape( $mech->response );
+
+    is_deeply $result->{title}, [
+        'Recent problem Test 3 for 2651',
+        'Recent problem Test 1 for 2651',
+        'Recent problem Test 2 for 2651'
+    ], "correct ordering of recent problems";
 };
 
 END {

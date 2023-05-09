@@ -17,6 +17,7 @@
         - Add label to questionnaire textarea. #3944
         - Offline report drafting. #4290
         - Set width=device-width in viewport meta tag. #4384
+        - Improve performance of front page ‘recent problems’ query. #4424
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704

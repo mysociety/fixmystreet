@@ -162,7 +162,10 @@ sub _recent {
     $query->{photo} = { '!=', undef } if $photos;
 
     my $attrs = {
-        order_by => { -desc => \'coalesce(confirmed, created)' },
+        # We order by most recently _created_, not confirmed, as the latter
+        # is too slow on installations with millions of reports.
+        # The correct ordering is applied by the `sort` lines below.
+        order_by => { -desc => 'id' },
         rows => $num,
     };
 
@@ -171,24 +174,35 @@ sub _recent {
         $attrs->{bind} = [ $lat, $lon, $dist ];
         $attrs->{join} = 'nearby';
         $probs = [ mySociety::Locale::in_gb_locale {
-            $rs->search( $query, $attrs )->all;
+            sort { _cmp_reports($b, $a) } $rs->search( $query, $attrs )->all;
         } ];
     } else {
-        $probs = Memcached::get($key);
+        $probs = Memcached::get($key) unless FixMyStreet->test_mode;
         if ($probs) {
             # Need to refetch to check if hidden since cached
-            $probs = [ $rs->search({
+            $probs = [ sort { _cmp_reports($b, $a) } $rs->search({
                 id => [ map { $_->id } @$probs ],
                 %$query,
             }, $attrs)->all ];
         } else {
-            $probs = [ $rs->search( $query, $attrs )->all ];
+            $probs = [ sort { _cmp_reports($b, $a) } $rs->search( $query, $attrs )->all ];
             Memcached::set($key, $probs, _cache_timeout());
         }
     }
 
     return $probs;
 }
+
+sub _cmp_reports {
+    my ($a, $b) = @_;
+
+    # reports may not be confirmed
+    my $a_confirmed = $a->confirmed ? $a->confirmed->epoch : 0;
+    my $b_confirmed = $b->confirmed ? $b->confirmed->epoch : 0;
+
+    return $a_confirmed <=> $b_confirmed;
+}
+
 
 # Problems around a location
 
