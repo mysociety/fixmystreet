@@ -172,6 +172,7 @@ my @keys_to_ignore = (
     'sent_to', # SendReport::Email adds this arrayref when sent
     'closed_updates', # Marked to close a report to updates
     'closure_alert_sent_at', # Set by alert sending if update closes a report
+    'confirm_reference', # Added for Bucks switch from Confirm to Alloy
     # Can be set/changed by an Open311 update
     'external_status_code', 'customer_reference',
     # Can be set by inspectors
@@ -199,7 +200,7 @@ sub compare_extra {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
-    return join '; ', grep { $_ } @s;
+    return FixMyStreet::Template::SafeString->new(join '; ', grep { $_ } @s);
 }
 
 sub extra_diff {
