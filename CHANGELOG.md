@@ -1,6 +1,6 @@
 ## Releases
 
-* Unreleased
+* v5.0 (10th May 2023)
     - Front end improvements:
         - Use crosshairs for mobile reporting.
         - Enable keyboard navigation of map. #3321
