@@ -320,6 +320,9 @@ subtest 'Problem moderation' => sub {
         is $mod->get_extra_metadata('moon'), 'waxing full';
         is $mod->get_extra_metadata('weather'), undef;
 
+        my $comp = $mod->compare_extra($report);
+        isa_ok($comp, 'FixMyStreet::Template::SafeString');
+        is $comp, "moon = wa<del style='background-color:#fcc'>x</del><ins style='background-color:#cfc'>n</ins>ing full; <ins style='background-color:#cfc'>weather = snow</ins>";
         my $diff = $mod->extra_diff($report, 'moon');
         is $diff, "wa<del style='background-color:#fcc'>x</del><ins style='background-color:#cfc'>n</ins>ing full", 'Correct diff';
     };
