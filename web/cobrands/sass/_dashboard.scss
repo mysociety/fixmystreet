@@ -227,6 +227,7 @@
     // Force field elements onto a single line.
     @media (min-width: 48em) {
         @include flex-container();
+        flex-wrap: wrap;
     }
 
     // No border-top when visually preceded by .dashboard-header
@@ -245,12 +246,13 @@
 
         @media (min-width: 48em) {
             float: $left;
-            max-width: 25%;
         }
     }
 
     .no-label {
         margin-top: 1.25em + 1.5em + 0.5em; // label line-height + margin-top + margin-bottom
+        text-align: right;
+        flex-grow: 1;
     }
 
     select {
@@ -282,6 +284,10 @@
         border-color: #ccc;
         color: #999;
         box-shadow: none;
+    }
+
+    .form-control {
+        height: 2.2em;
     }
 
     .btn {
