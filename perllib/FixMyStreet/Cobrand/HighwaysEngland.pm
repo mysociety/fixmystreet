@@ -399,6 +399,13 @@ sub _cleaning_categories { [
     'Street cleaning',
     'Street cleansing',
     'Sweeping & Cleansing Hazard',
+
+    # Northumberland's litter categories
+    'Damaged Litter Bin (Litter)',
+    'Full Litter Bin (Litter)',
+    'Littering (Litter)',
+    'Other (Litter)',
+
     #Bench/cycle rack/litter bin/planter,
     #Bus Station Cleaning - Floor,
     #Bus Station Cleaning - General,
