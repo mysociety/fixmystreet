@@ -250,10 +250,14 @@ FixMyStreet::override_config {
         is $c->param('service_code'), 'StreetLightingLAMP', 'Report resent';
     };
 
-    subtest 'extra CSV column present' => sub {
+    subtest 'extra CSV columns present' => sub {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        $mech->content_contains(',"User Email"');
+        $mech->content_contains(',' . $report->user->email);
     };
 
 

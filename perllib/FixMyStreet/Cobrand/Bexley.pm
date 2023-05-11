@@ -341,4 +341,28 @@ sub report_form_extras {
 
 sub report_sent_confirmation_email { 'id' }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        user_email => 'User Email',
+    );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
+
+    return if $csv->dbi; # Already covered
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            user_email => $report->user->email || '',
+        };
+    });
+}
+
+
 1;
