@@ -548,8 +548,18 @@ FixMyStreet::override_config {
 
         $report->delete;
     };
+};
 
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'geo-located /around is zoomed in further' => sub {
+        $mech->get_ok('/around?longitude=-2.364050&latitude=51.386269');
+        $mech->content_contains("data-zoom=2");
+        $mech->get_ok('/around?longitude=-2.364050&latitude=51.386269&geolocate=1');
+        $mech->content_contains("data-zoom=4");
+    }
 };
 
 done_testing();

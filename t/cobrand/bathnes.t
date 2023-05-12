@@ -257,6 +257,20 @@ subtest 'report a problem link post-report is not location-specific' => sub {
     }
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'bathnes' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+subtest 'geo-located /around is zoomed in further' => sub {
+        $mech->get_ok('/around?longitude=-2.364050&latitude=51.386269');
+        $mech->content_contains("data-zoom=3");
+        $mech->get_ok('/around?longitude=-2.364050&latitude=51.386269&geolocate=1');
+        $mech->content_contains("data-zoom=5");
+}
+
+};
+
 subtest 'check cobrand correctly reset on each request' => sub {
     FixMyStreet::override_config {
         'ALLOWED_COBRANDS' => [ 'bathnes', 'fixmystreet' ],

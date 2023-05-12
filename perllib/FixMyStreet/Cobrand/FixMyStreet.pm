@@ -262,6 +262,17 @@ sub extra_contact_validation {
     return %errors;
 }
 
+sub default_map_zoom {
+    my $self = shift;
+
+    # If we're displaying the map at the user's GPS location we
+    # want to start a bit more zoomed in than if they'd entered
+    # a postcode/address.
+    return unless $self->{c}; # no c for batch job calling static_map
+    return $self->{c}->get_param("geolocate") ? 4 : undef;
+}
+
+
 =head2 council_dashboard_hook
 
 This is for council-specific dashboard pages, which can only be seen by

@@ -99,7 +99,15 @@ sub pin_colour {
 
 sub send_questionnaires { 0 }
 
-sub default_map_zoom { 3 }
+sub default_map_zoom {
+    my $self = shift;
+
+    # If we're displaying the map at the user's GPS location we
+    # want to start a bit more zoomed in than if they'd entered
+    # a postcode/address.
+    return 3 unless $self->{c}; # no c for batch job calling static_map
+    return $self->{c}->get_param("geolocate") ? 5 : 3;
+}
 
 sub available_permissions {
     my $self = shift;
