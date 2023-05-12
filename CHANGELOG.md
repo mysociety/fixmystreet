@@ -1,86 +1,90 @@
 ## Releases
 
+* Unreleased
+    - Front end improvements:
+        - Include requirements for redeeming the link in the email change confirmation mail. #4422
+
 * v5.0 (10th May 2023)
     - Front end improvements:
-        - Use crosshairs for mobile reporting.
+        - Use crosshairs for mobile reporting. #4176
         - Enable keyboard navigation of map. #3321
-        - Highlight pin on sidebar focus as well as hover.
+        - Highlight pin on sidebar focus as well as hover. #3709
         - Map page pagination links now styled as links rather than buttons. #3727
-        - Include username in inactive email.
-        - Update document title on client-side new report page transition.
-        - Disable staff phone and name fields to avoid accidental overwriting.
-        - Hide 'Assigned to' text if a report is not assigned to anyone
-        - Hide 'Assign to' dropdown if no available assignees
-        - Allow 'Asset ID' (part of optional extra data displayed for a report) to be customisable for all cobrands
-        - Add initial update template on report sending, not creation.
-        - Add option to set an emergency message on reporting pages.
+        - Include username in inactive email. #3734
+        - Update document title on client-side new report page transition. #3834
+        - Disable staff phone and name fields to avoid accidental overwriting. #3805
+        - Hide 'Assigned to' text if a report is not assigned to anyone #3646
+        - Hide 'Assign to' dropdown if no available assignees #3646
+        - Allow 'Asset ID' (part of optional extra data displayed for a report) to be customisable for all cobrands #3920
+        - Add initial update template on report sending, not creation. #3949 #439
+        - Add option to set an emergency message on reporting pages. #4015
         - Add label to questionnaire textarea. #3944
         - Offline report drafting. #4290
         - Set width=device-width in viewport meta tag. #4384
         - Improve performance of front page ‘recent problems’ query. #4424
-        - Include requirements for redeeming the link in the email change confirmation mail.
     - Bugfixes:
         - Add ID attributes to change password form inputs.
         - Fix link deactivation for privacy policy link on privacy policy page. #3704
-        - Fix dashboard rows for categories with &s.
-        - Make calls from Geocoder files to https rather than http
+        - Fix dashboard rows for categories with &s. #3802
+        - Make calls from Geocoder files to https rather than http #3811
         - Inspector dropdown list only shows name once even if permissions repeated #3870
         - Inspector dropdown list doesn't show anonymised users, removing blank options #3873
         - Fix report unassignment so it works for users who did not create the report #3903
-        - [Open311] External code removal is not a change.
-        - Trim whitespace on extra status codes for response templates
+        - [Open311] External code removal is not a change. #3988
+        - Trim whitespace on extra status codes for response templates #3997
         - The permission default_to_body now also affects updates. #3317
         - Decouple the permission to manage shortlist from default_to_body. #3317
-        - Fix issue with sanitizing missing attributes.
+        - Fix issue with sanitizing missing attributes. #4086
         - Include email_text from templates in export-import-data script. #4084
-        - Stop map moving when navigating through images with arrow keys.
-        - Remember category group through OpenID login.
-        - For CSV export, fetch children of all generations.
-        - Reset subcategory selection on clicking browser 'back' button during new report journey
-        - Fix JS error going back from page to report page to map page
-        - Fix existing groups being removed when a contact is edited with the category_groups flag unset.
+        - Stop map moving when navigating through images with arrow keys. #3856
+        - Remember category group through OpenID login. #4231
+        - For CSV export, fetch children of all generations. #4059
+        - Reset subcategory selection on clicking browser 'back' button during new report journey #4260 #4284
+        - Fix JS error going back from page to report page to map page #4175
+        - Fix existing groups being removed when a contact is edited with the category_groups flag unset. #4307
+        - Stop map panning breaking after press on pin #4132
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
         - Make map pan/zoom controls keyboard-accessible. #3751
-        - Add missing label to alert distance input.
-        - Give generated map tiles blank alt attribute.
-        - Add fieldset to alert list and improve sort order.
-        - Remove unnecessary and add some missing fieldsets.
-        - Improve fancybox accessibility (text and focus).
-        - Add visually-hidden nearest address in report list.
-        - Add a focus state for button-variant mixin.
-        - Improved focus state for link images in the local alert page.
+        - Add missing label to alert distance input. #4248
+        - Give generated map tiles blank alt attribute. #4248
+        - Add fieldset to alert list and improve sort order. #4248
+        - Remove unnecessary and add some missing fieldsets. #4283
+        - Improve fancybox accessibility (text and focus). #4248
+        - Add visually-hidden nearest address in report list. #4283
+        - Add a focus state for button-variant mixin. #4312
+        - Improved focus state for link images in the local alert page. #4312
     - Admin improvements:
-        - Admin 'add user' form now always creates staff users
-        - Make sure staff permissions removed when anonymized.
-        - Add role filter to dashboard interface.
+        - Admin 'add user' form now always creates staff users #3749
+        - Make sure staff permissions removed when anonymized. #4051
+        - Add role filter to dashboard interface. #4082
         - Alerts are paginated on user edit page. #4158
-        - Restrict flagging users and reports to superusers.
-        - Display photos in report moderation updates, rather than just the image hashes.
+        - Restrict flagging users and reports to superusers. #4168
+        - Display photos in report moderation updates, rather than just the image hashes. #4266
         - Add 'admin_contact_validate_category' cobrand hook to validate category names when editing or creating contacts.
         - Restrict timeline to users with the report_edit permission.
     - Development improvements:
-        - Default make_css to `web/cobrands` rather than `web`.
-        - Ability to pass custom arguments (eg: SSL config) to server when running via Docker
-        - Allow bin/fetch start/end times to be fractional.
-        - Add an --exclude option to bin/fetch.
-        - Add an index on problem(external_id) to speed up bin/fetch --updates
-        - Upgrade Net::DNS and libwww to deal with IPv6 issues.
+        - Default make_css to `web/cobrands` rather than `web`. #3712
+        - Ability to pass custom arguments (eg: SSL config) to server when running via Docker #3713
+        - Allow bin/fetch start/end times to be fractional. #3738
+        - Add an --exclude option to bin/fetch. #3804
+        - Add an index on problem(external_id) to speed up bin/fetch --updates #3808
+        - Upgrade Net::DNS and libwww to deal with IPv6 issues. #3809
         - Add send_state column to updates. #3865
         - Enable alternative response from templates to be emailed to issue reporter. #4001
-        - Option to read asset layers from configuration.
-        - Add GitHub Action to generate POD documentation.
+        - Option to read asset layers from configuration. #4119
+        - Add GitHub Action to generate POD documentation. #4252
         - Use digest rather than last modified time for static versioning. #4280
         - Add 'open311_title_fetched_report' cobrand hook for customising how titles are created for fetch reports.
-        - Add way to use digest in static filename rather than query parameter.
+        - Add way to use digest in static filename rather than query parameter. #4402
     - Security
-        - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE
+        - Permit control over database connection `sslmode` via $FMS_DB_SSLMODE #3927
     - Open311 improvements:
-        - Increase default timeout.
-        - Check for an identical latest update when adding a new one.
+        - Increase default timeout. #3738
+        - Check for an identical latest update when adding a new one. #4007
     - UK:
-        - Add CAPTCHA to contact form for non-UK IP addresses
+        - Add CAPTCHA to contact form for non-UK IP addresses #2303
 
 * v4.0 (3rd December 2021)
     - Front end improvements:
