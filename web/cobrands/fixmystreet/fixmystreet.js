@@ -174,6 +174,7 @@ fixmystreet.mobile_reporting = {
     $('html').addClass('map-fullscreen only-map map-reporting map-with-crosshairs1');
     $('html').removeClass('map-with-crosshairs3 map-with-crosshairs2');
     $('#map_box').removeClass('hidden-js');
+    $('#map_box').on('contextmenu', function(e) { e.preventDefault(); });
 
     if (fixmystreet.page === 'new') {
         // Might have come direct to report/new, need right buttons
