@@ -4,6 +4,10 @@ if (!fixmystreet.maps) {
     return;
 }
 
+function test_layer_typename(f, body, type) {
+    return f && f.body == body && f.http_options && f.http_options.params && f.http_options.params.TYPENAME == type;
+}
+
 // ArcGIS wants to receive the bounding box as a 'geometry' parameter, not 'bbox'
 var arcgis_format = new OpenLayers.Format.QueryStringFilter();
 OpenLayers.Protocol.ArcgisHTTP = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
@@ -213,12 +217,22 @@ var brent_parkRoadIsFound = {
 fixmystreet.assets.brent.found_filter = function(layer) {
     if (fixmystreet.reporting.selectedCategory().category === 'Grass verges / shrub beds - littering' ||
     fixmystreet.reporting.selectedCategory().category === 'Grass verge / shrub beds - maintenance issue') {
+        var other_layer_name;
         if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
             brent_parkRoadIsFound.park = true;
+            other_layer_name = 'Highways';
         }
         if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
             brent_parkRoadIsFound.road = true;
+            other_layer_name = 'Parks_and_Open_Spaces';
         }
+        /* Find the other layer involved and mark that as found as well - this
+         * is in case it had already been called as not_found and set up the
+         * map page for repositioning the pin, we need that gone */
+        var other_layer = fixmystreet.assets.layers.filter(function(elem) {
+            return test_layer_typename(elem.fixmystreet, 'Brent Council', other_layer_name);
+        })[0];
+        fixmystreet.message_controller.road_found(other_layer);
     }
     fixmystreet.message_controller.road_found(layer);
 };
@@ -428,10 +442,7 @@ fixmystreet.assets.buckinghamshire.streetlight_asset_not_found = function() {
 function bucks_inspection_layer_loadend() {
     var type = 'junctions';
     var layer = fixmystreet.assets.layers.filter(function(elem) {
-        return elem.fixmystreet.body == "Buckinghamshire Council" &&
-        elem.fixmystreet.http_options &&
-        elem.fixmystreet.http_options.params &&
-        elem.fixmystreet.http_options.params.TYPENAME == type;
+        return test_layer_typename(elem.fixmystreet, "Buckinghamshire Council", type);
     });
     layer[0].checkSelected();
 }
@@ -1055,10 +1066,7 @@ function occ_format_date(date_field) {
 function occ_inspection_layer_loadend() {
     var type = this.fixmystreet.http_options.params.TYPENAME.replace('_inspections', 's');
     var layer = fixmystreet.assets.layers.filter(function(elem) {
-        return elem.fixmystreet.body == "Oxfordshire County Council" &&
-        elem.fixmystreet.http_options &&
-        elem.fixmystreet.http_options.params &&
-        elem.fixmystreet.http_options.params.TYPENAME == type;
+        return test_layer_typename(elem.fixmystreet, "Oxfordshire County Council", type);
     });
     layer[0].checkSelected();
 }

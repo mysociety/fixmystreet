@@ -35,10 +35,11 @@ describe('Brent asset layers', function() {
         cy.get('#mob_ok').click();
         cy.wait('@report-ajax');
         cy.pickCategory('Grass verges / shrub beds - littering');
-        cy.nextPageReporting();
         cy.wait('@highways');
         cy.wait('@parks');
+        cy.nextPageReporting();
         cy.contains('Please select a park or highway from the map').should('be.visible');
+        cy.get('span').contains('Photo').should('not.be.visible');
     });
 
     it('does not add park/highway stopper on park for "Grass verges / shrub beds - littering"', function() {
@@ -48,7 +49,9 @@ describe('Brent asset layers', function() {
         cy.pickCategory('Grass verges / shrub beds - littering');
         cy.wait('@highways');
         cy.wait('@parks');
+        cy.nextPageReporting();
         cy.contains('Please select a park or highway from the map').should('not.be.visible');
+        cy.get('span').contains('Photo').should('be.visible');
     });
 
     it('does not add park/highway stopper on highway for "Grass verges / shrub beds - littering"', function() {
@@ -58,6 +61,8 @@ describe('Brent asset layers', function() {
         cy.pickCategory('Grass verges / shrub beds - littering');
         cy.wait('@highways');
         cy.wait('@parks');
+        cy.nextPageReporting();
         cy.contains('Please select a park or highway from the map').should('not.be.visible');
+        cy.get('span').contains('Photo').should('be.visible');
     });
 });
