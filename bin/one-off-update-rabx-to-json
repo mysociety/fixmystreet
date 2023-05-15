@@ -123,6 +123,7 @@ sub from_json {
 sub to_json {
     my $data = shift;
     my $ser = $JSON->encode($data);
+    $ser =~ s/\\u0000//g;
     return $ser;
 }
 
