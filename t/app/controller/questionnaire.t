@@ -471,8 +471,6 @@ FixMyStreet::override_config {
     $mech->content_lacks( 'ever reported' );
 
     $mech->submit_form_ok({ with_fields => { been_fixed => 'Unknown', another => 'No' } });
-    $mech->content_contains('Can you spare 5 minutes for a survey about FixMyStreet?');
-    $mech->content_contains('ever_reported=&amp;been_fixed=Unknown&amp;category=Street+lighting&amp;num_reports_by_user=1&amp;imd_decile=6&amp;cobrand=fixmystreet');
 
     $token = FixMyStreet::DB->resultset("Token")->find( { scope => 'questionnaire', token => $token } );
     ok $token, 'found token for questionnaire';

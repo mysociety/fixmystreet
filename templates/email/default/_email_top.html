@@ -49,6 +49,18 @@
   </style>
 </head>
 <body style="[% body_style %]">
+[% IF cobrand == 'fixmystreet' AND email_summary.match("New (reports|updates)") %]
+  <table [% wrapper_table | safe %] style="[% wrapper_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% header_style %]" class="hint">
+        We’d love to hear what you’ve achieved with FixMyStreet.
+        <br><a href="https://survey.alchemer.com/s3/7284721/How-have-you-used-FixMyStreet">Please fill in our short survey</a>.
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+[% END %]
 [% IF staging AND NOT for_rss %]
   <table [% wrapper_table | safe %] style="[% td_style %]">
     <tr>
