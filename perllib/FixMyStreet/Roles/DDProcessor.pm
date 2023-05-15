@@ -20,6 +20,7 @@ has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->cance
 package FixMyStreet::Roles::DDProcessor;
 
 use Moo::Role;
+use Utils;
 use strict;
 use warnings;
 
@@ -288,7 +289,8 @@ sub _duplicate_waste_report {
 
     # Refetch containing areas as it's possible they've changed since this
     # subscription was initially created.
-    my $areas = FixMyStreet::MapIt::call('point', "4326/" . $report->longitude . "," . $report->latitude);
+    my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $report->latitude, $report->longitude;
+    my $areas = FixMyStreet::MapIt::call('point', "4326/" . $lon . "," . $lat);
 
     my $renew = FixMyStreet::DB->resultset('Problem')->new({
         category => 'Garden Subscription',
