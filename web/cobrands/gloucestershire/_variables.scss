@@ -115,7 +115,7 @@ $col_big_numbers: $primary_b;
 // Some elements of their current website don't have focus state or it's too subtle;
 @mixin focus-state {
   &:focus {
-    background-color: $yellow !important; // Overrides any other nested styling, like the navbar
-    color: $primary_b !important; // Overrides button-variant mixin
+    background-color: $gloucestershire_primary_dark !important; // Overrides any other nested styling, like the navbar
+    color: $primary_text !important; // Overrides button-variant mixin
   }
 }
