@@ -47,6 +47,7 @@
         - Fix JS error going back from page to report page to map page #4175
         - Fix existing groups being removed when a contact is edited with the category_groups flag unset. #4307
         - Stop map panning breaking after press on pin #4132
+        - With extended statuses, send 'closed' rather than 'open' status in Open311 service request when report is closed.
     - Accessibility improvements:
         - The "skip map" link on /around now has new wording. #3794
         - Improve visual contrast of pagination links. #3794
