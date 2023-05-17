@@ -323,7 +323,7 @@ FixMyStreet::override_config {
         whensent => \'current_timestamp',
     });
     $p->title('Garden Subscription - New');
-    $p->update_extra_field({ name => 'property_id', value => 12345});
+    $p->update_extra_field({ name => 'property_id', value => '12345' });
     $p->update;
 
     my $sent_params = {};
@@ -339,7 +339,7 @@ FixMyStreet::override_config {
     ] });
     $echo->mock('GetPointAddress', sub {
         return {
-            Id => 12345,
+            Id => '12345',
             SharedRef => { Value => { anyType => '1000000002' } },
             PointType => 'PointAddress',
             PointAddressType => { Name => 'House' },
@@ -845,7 +845,7 @@ FixMyStreet::override_config {
     my $report = FixMyStreet::DB->resultset("Problem")->search({
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => 12345 } ] }) },
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => '12345' } ] }) },
     },
     {
         order_by => { -desc => 'id' }
