@@ -210,11 +210,7 @@ FixMyStreet::override_config {
     subtest 'Check report visibility' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
         $report->update({ geocode => {
-            resourceSets => [ {
-                resources => [ {
-                    name => '12 A Street, XX1 1SZ',
-                } ]
-            } ]
+            display_name => '12 A Street, XX1 1SZ',
         } });
         my $res = $mech->get('/report/' . $report->id);
         is $res->code, 403;

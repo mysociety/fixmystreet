@@ -4,6 +4,7 @@ use Test::MockModule;
 use CGI::Simple;
 use Test::LongString;
 use Open311::PostServiceRequestUpdates;
+use t::Mock::Nominatim;
 
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
 $mock->mock('_fetch_features', sub {
@@ -124,7 +125,7 @@ subtest "bartec report with no geocode handled correctly" => sub {
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
         my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Bins', email => 'Bartec-Bins');
-        ($problem) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough', areas => ',2566,' });
+        ($problem) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Bins', latitude => 52.5607, longitude => 0.2405, cobrand => 'peterborough', areas => ',2566,' });
 
         FixMyStreet::Script::Reports::send();
 
@@ -172,15 +173,12 @@ subtest "extra bartec params are sent to open311" => sub {
             longitude => 0.2405,
             cobrand => 'peterborough',
             geocode => {
-                resourceSets => [ {
-                    resources => [ {
-                        name => '12 A Street, XX1 1SZ',
-                        address => {
-                            addressLine => '12 A Street',
-                            postalCode => 'XX1 1XZ'
-                        }
-                    } ]
-                } ]
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
             },
             extra => {
                 contributed_by => $staffuser->id,
@@ -199,7 +197,7 @@ subtest "extra bartec params are sent to open311" => sub {
 
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[postcode]'), 'XX1 1XZ', 'postcode param sent';
+        is $cgi->param('attribute[postcode]'), 'XX1 1SZ', 'postcode param sent';
         is $cgi->param('attribute[house_no]'), '12', 'house_no param sent';
         is $cgi->param('attribute[street]'), 'A Street', 'street param sent';
         is $cgi->param('attribute[contributed_by]'), $staffuser->email, 'staff email address sent';
@@ -266,15 +264,12 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
             longitude => 0.2505,
             cobrand => 'peterborough',
             geocode => {
-                resourceSets => [ {
-                    resources => [ {
-                        name => '12 A Street, XX1 1SZ',
-                        address => {
-                            addressLine => '12 A Street',
-                            postalCode => 'XX1 1XZ'
-                        }
-                    } ]
-                } ]
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
             },
             extra => {
                 _fields => [
@@ -347,15 +342,12 @@ subtest "flytipping on non PCC land is emailed" => sub {
             longitude => 0.2405,
             cobrand => 'peterborough',
             geocode => {
-                resourceSets => [ {
-                    resources => [ {
-                        name => '12 A Street, XX1 1SZ',
-                        address => {
-                            addressLine => '12 A Street',
-                            postalCode => 'XX1 1XZ'
-                        }
-                    } ]
-                } ]
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
             },
             extra => {
                 _fields => [

@@ -149,13 +149,7 @@ test_overrides hackney =>
         },
         row_data => {
             geocode => {
-                resourceSets => [ {
-                    resources => [ {
-                        address => {
-                            formattedAddress => '1 Test Street, Testville, TE57 1AB'
-                        }
-                    } ],
-                } ],
+                display_name => '1 Test Street, Testville, TE57 1AB'
             }
         },
     },

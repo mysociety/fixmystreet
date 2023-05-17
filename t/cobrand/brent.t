@@ -212,7 +212,7 @@ for my $test (
 subtest "Open311 attribute changes" => sub {
     my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
         areas => "2488", category => 'Gully grid missing', cobrand => 'brent',
-        geocode => { resourceSets => [ { resources => [ { name => 'Constitution Hill' } ] } ] },
+        geocode => { display_name => 'Constitution Hill' },
     });
     $problem->update_extra_field({ name => 'UnitID', value => '234' });
     $problem->update;

@@ -77,22 +77,10 @@ sub string {
 
 sub reverse_geocode {
     my ($latitude, $longitude, $zoom) = @_;
-    my $url =
-    "${nominatimbase}reverse?format=xml&zoom=$zoom&lat=$latitude&lon=$longitude";
-    my $key = "OSM:reverse_geocode:$url";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        my $j = LWP::Simple::get($url);
-        if ($j) {
-            Memcached::set($key, $j, 3600);
-            my $ref = XMLin($j);
-            return $ref;
-        } else {
-            print STDERR "No reply from $url\n";
-        }
-        return undef;
-    }
-    return XMLin($result);
+    return if FixMyStreet->test_mode;
+    my $url = "${nominatimbase}reverse?format=jsonv2&zoom=$zoom&lat=$latitude&lon=$longitude";
+    my $j = FixMyStreet::Geocode::cache('osm', $url);
+    return $j ? $j : undef;
 }
 
 sub _osmxml_to_hash {

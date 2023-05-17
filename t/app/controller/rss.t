@@ -41,8 +41,12 @@ $mech->content_contains( "&amp;Test’i&lt;n&gt;g &#39;☃&quot;, 10th October" 
 $mech->content_lacks( 'Nearest road to the pin' );
 is $mech->response->header('Access-Control-Allow-Origin'), '*';
 
-$report->geocode( 
-{
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+
+$report->update({ geocode => {
           'traceId' => 'ae7c4880b70b423ebc8ab4d80961b3e9|LTSM001158|02.00.71.1600|LTSMSNVM002010, LTSMSNVM001477',
           'statusDescription' => 'OK',
           'brandLogoUri' => 'http://dev.virtualearth.net/Branding/logo_powered_by.png',
@@ -102,17 +106,50 @@ $report->geocode(
           'statusCode' => 200,
           'authenticationResultCode' => 'ValidCredentials'
         }
-);
-$report->update();
+});
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'fixmystreet' ],
-    MAPIT_URL => 'http://mapit.uk/',
-}, sub {
     $mech->get_ok("/rss/pc/EH11BB/2");
+    $mech->content_contains( "&amp;Test’i&lt;n&gt;g &#39;☃&quot;, 10th October" );
+    $mech->content_contains( '18 North Bridge, Edinburgh' );
+
+    $report->update({ geocode => {
+        "place_id" => 41722522,
+        "licence" => "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+        "osm_type" => "node",
+        "osm_id" => 3289958150,
+        "lat" => "55.9530691",
+        "lon" => "-3.1887826",
+        "place_rank" => 30,
+        "category" => "place",
+        "type" => "house",
+        "importance" => 10,
+        "addresstype" => "place",
+        "name" => undef,
+        "display_name" => "1A, North Bridge, Canongate, Old Town, City of Edinburgh, Scotland, EH1 3YY, United Kingdom",
+        "address" => {
+            "house_number" => "1A",
+            "road" => "North Bridge",
+            "suburb" => "Canongate",
+            "city" => "City of Edinburgh",
+            "ISO3166-2-lvl6" => "GB-EDH",
+            "state" => "Scotland",
+            "ISO3166-2-lvl4" => "GB-SCT",
+            "postcode" => "EH1 3YY",
+            "country" => "United Kingdom",
+            "country_code" => "gb"
+        },
+        "boundingbox" => [
+            "55.9530191",
+            "55.9531191",
+            "-3.1888326",
+            "-3.1887326"
+        ]
+    }});
+    $mech->get_ok("/rss/pc/EH11BB/2");
+    $mech->content_contains( "&amp;Test’i&lt;n&gt;g &#39;☃&quot;, 10th October" );
+    $mech->content_contains( '1A, North Bridge, Canongate, City of Edinburgh' );
+
 };
-$mech->content_contains( "&amp;Test’i&lt;n&gt;g &#39;☃&quot;, 10th October" );
-$mech->content_contains( '18 North Bridge, Edinburgh' );
 
 $report->delete();
 

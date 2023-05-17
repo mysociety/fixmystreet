@@ -16,8 +16,25 @@ sub dispatch_request {
     my $self = shift;
 
     sub (GET + /reverse + ?*) {
-        my ($self) = @_;
-        return [ 200, [ 'Content-Type' => 'text/xml' ], [ '<result></result>' ] ];
+        my ($self, $query) = @_;
+
+        my $data;
+        if ($query->{lat} eq '52.5607') {
+            $data = {};
+        } else {
+            $data = {
+                lat => 51,
+                lon => -1,
+                display_name => 'Constitution Hill, London, SW1A',
+                address => {
+                    road => 'Constitution Hill',
+                    town => 'London',
+                    country => 'United Kingdom',
+                }
+            };
+        }
+        my $json = $self->json->encode($data);
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
 
     sub (GET + /search + ?q=) {

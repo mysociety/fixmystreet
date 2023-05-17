@@ -34,16 +34,11 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 });
 my $report = $reports[0];
 $report->geocode({
-    resourceSets => [ {
-        resources => [ {
-            name => 'Constitution Hill',
-            address => {
-                addressLine => 'Constitution Hill',
-                locality => 'London',
-                'formattedAddress' => 'Constitution Hill, London',
-            }
-        } ],
-    } ],
+    display_name => 'Constitution Hill, London',
+    address => {
+        road => 'Constitution Hill',
+        city => 'London',
+    },
 });
 $report->update;
 

@@ -387,10 +387,19 @@ sub location_closest_address : Path('/ajax/closest') {
     }
 
     my $closest = $c->cobrand->find_closest({ latitude => $lat, longitude => $lon });
-    my $data = {
-        road => $closest->{address}{addressLine},
-        full_address => $closest->{name},
-    };
+
+    my $data;
+    if ($closest->{display_name}) {
+        $data = {
+            road => $closest->{address}{road},
+            full_address => $closest->{display_name},
+        };
+    } else {
+        $data = {
+            road => $closest->{address}{addressLine},
+            full_address => $closest->{name},
+        };
+    }
 
     $c->res->body(encode_json($data));
 }

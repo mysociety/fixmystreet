@@ -84,16 +84,11 @@ FixMyStreet::override_config {
 
     subtest 'testing special Open311 behaviour', sub {
         my $data = {
-            resourceSets => [ {
-                resources => [ {
-                    name => 'Constitution Hill',
-                    address => {
-                        addressLine => 'Constitution Hill',
-                        locality => 'London',
-                        'formattedAddress' => 'Constitution Hill, London',
-                    }
-                } ],
-            } ],
+            display_name => 'Constitution Hill, London',
+            address => {
+                road => 'Constitution Hill',
+                city => 'London',
+            }
         };
         $report->geocode($data);
         $report->update;

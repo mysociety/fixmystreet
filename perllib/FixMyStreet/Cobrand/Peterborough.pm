@@ -90,13 +90,26 @@ around open311_extra_data_include => sub {
         }
     }
     if ( $row->geocode && $row->contact->email =~ /Bartec/ ) {
-        my $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address};
-        my ($number, $street) = $address->{addressLine} =~ /\s*(\d*)\s*(.*)/;
-        push @$open311_only, (
-            { name => 'postcode', value => $address->{postalCode} },
-            { name => 'house_no', value => $number },
-            { name => 'street', value => $street }
-        );
+        my ($number, $street, $postcode);
+
+        if ($row->geocode->{resourceSets}) { # Bing results
+            my $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address};
+            ($number, $street) = $address->{addressLine} =~ /\s*(\d*)\s*(.*)/;
+            $postcode = $address->{postalCode};
+        } elsif ($row->geocode->{display_name}) { # OSM results
+            my $address = $row->geocode->{address};
+            $number = $address->{house_number} || '';
+            $street = $address->{road} || '';
+            $postcode = $address->{postcode} || '';
+        }
+
+        if ($number || $street || $postcode) {
+            push @$open311_only, (
+                { name => 'postcode', value => $postcode },
+                { name => 'house_no', value => $number },
+                { name => 'street', value => $street }
+            );
+        }
     }
     if ( $row->contact->email =~ /Bartec/ && $row->get_extra_metadata('contributed_by') ) {
         push @$open311_only, (
@@ -375,8 +388,11 @@ sub dashboard_export_problems_add_columns {
         my $report = shift;
 
         my $address = '';
-        $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name}
-            if $report->geocode;
+        if ($report->geocode && $report->geocode->{resourceSets}) {
+            $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name};
+        } elsif ($report->geocode && $report->geocode->{display_name}) {
+            $address = $report->geocode->{display_name};
+        }
 
         my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
         my $ext_code = $report->get_extra_metadata('external_status_code');

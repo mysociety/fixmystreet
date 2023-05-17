@@ -114,9 +114,15 @@ around open311_extra_data_include => sub {
     my $open311_only = $self->$orig($row, $h);
 
     if ($row->geocode) {
-        my $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address};
+        my $address;
+        if ($row->geocode->{resourceSets}) { # Bing results
+            $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address}->{formattedAddress};
+        } else {
+            $address = $row->geocode->{display_name}; # OSM results
+        }
+
         push @$open311_only, (
-            { name => 'closest_address', value => $address->{formattedAddress} }
+            { name => 'closest_address', value => $address }
         );
     }
 

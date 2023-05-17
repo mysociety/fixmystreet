@@ -1,5 +1,4 @@
-use t::Mock::Bing;
-
+use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::DB;
 
@@ -8,6 +7,21 @@ my $mech = FixMyStreet::TestMech->new;
 use_ok 'FixMyStreet::Cobrand';
 
 my $c = FixMyStreet::Cobrand::UK->new();
+
+my $osm = Test::MockModule->new('FixMyStreet::Geocode::OSM');
+$osm->mock('reverse_geocode', sub {
+    {
+        lat => 51,
+        lon => -1,
+        display_name => 'Constitution Hill, London, SW1A',
+        address => {
+            road => 'Constitution Hill',
+            town => 'London',
+            country => 'United Kingdom',
+        }
+    }
+});
+
 
 my $user =
   FixMyStreet::DB->resultset('User')
@@ -58,7 +72,7 @@ FixMyStreet::override_config {
 }, sub {
     my $near = $c->find_closest($report);
     ok $report->geocode, 'geocode entry added to report';
-    ok $report->geocode->{resourceSets}, 'geocode entry looks like right sort of thing';
+    ok $report->geocode->{display_name}, 'geocode entry looks like right sort of thing';
 
     like $near, qr/Constitution Hill/i, 'nearest street looks right';
     like $near, qr/Nearest postcode .*: E14 2DN/i, 'nearest postcode looks right';

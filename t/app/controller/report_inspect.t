@@ -582,14 +582,10 @@ FixMyStreet::override_config {
         $mech->content_lacks('Nearest calculated address', 'No address displayed');
 
         my $data = {
-            resourceSets => [ {
-                resources => [ {
-                    address => {
-                        addressLine => 'Constitution Hill',
-                        locality => 'London',
-                    }
-                } ],
-            } ],
+            address => {
+                road => 'Constitution Hill',
+                town => 'London',
+            }
         };
         $report->geocode($data);
         $report->update;
@@ -597,15 +593,11 @@ FixMyStreet::override_config {
         $mech->content_lacks('Nearest calculated address', 'No address displayed');
 
         $data = {
-            resourceSets => [ {
-                resources => [ {
-                    name => 'Constitution Hill, London, SW1A',
-                    address => {
-                        addressLine => 'Constitution Hill',
-                        locality => 'London',
-                    }
-                } ],
-            } ],
+            display_name => 'Constitution Hill, London, SW1A',
+            address => {
+                road => 'Constitution Hill',
+                town => 'London',
+            }
         };
         $report->geocode($data);
         $report->update;

@@ -766,8 +766,14 @@ sub nearest_address {
     return '' unless $self->geocode;
     return '' if $self->cobrand_data && $self->cobrand_data eq 'waste';
 
-    my $address = $self->geocode->{resourceSets}[0]{resources}[0];
-    return $address->{name};
+    if ($self->geocode->{resourceSets}) { # Bing geocoder
+        my $address = $self->geocode->{resourceSets}[0]{resources}[0];
+        return $address->{name};
+    } elsif ($self->geocode->{display_name}) { # OSM geocoder
+        return $self->geocode->{display_name};
+    }
+
+    return '';
 }
 
 # Does not return bodies whose send methods have failed
