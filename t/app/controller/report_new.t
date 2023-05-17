@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::HounslowNoName;
 use base 'FixMyStreet::Cobrand::UK';
 

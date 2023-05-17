@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::Default';
 sub path_to_email_templates { [ FixMyStreet->path_to( 't', 'app', 'helpers', 'emails') ] }

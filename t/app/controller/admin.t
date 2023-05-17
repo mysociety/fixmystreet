@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::OxfordshireUTA;
 use parent 'FixMyStreet::Cobrand::Oxfordshire';
 sub area_types { [ 'UTA' ] }

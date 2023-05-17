@@ -10,8 +10,8 @@ use Test::LongString;
 use Test::MockModule;
 use Path::Tiny;
 use t::Mock::MapItZurich;
-use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
 FixMyStreet::App->log->disable('info');

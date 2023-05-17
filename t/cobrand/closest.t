@@ -1,7 +1,7 @@
 use t::Mock::Bing;
 
-use FixMyStreet::DB;
 use FixMyStreet::TestMech;
+use FixMyStreet::DB;
 
 my $mech = FixMyStreet::TestMech->new;
 

@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::NoUpdates;
 
 use parent 'FixMyStreet::Cobrand::FixMyStreet';

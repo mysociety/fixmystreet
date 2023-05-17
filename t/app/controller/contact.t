@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::AbuseOnly;
 
 use base 'FixMyStreet::Cobrand::Default';

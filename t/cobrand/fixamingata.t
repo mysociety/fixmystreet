@@ -1,8 +1,8 @@
 use mySociety::Locale;
 
+use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
-use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 use t::Mock::Nominatim;

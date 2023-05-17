@@ -1,7 +1,7 @@
 use Test::MockModule;
 
-use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::TestMech;
+use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
 

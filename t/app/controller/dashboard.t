@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 use Test::MockTime ':all';
 
 package FixMyStreet::Cobrand::No2FA;

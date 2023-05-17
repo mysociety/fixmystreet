@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::AnonAllowedByCategory;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 sub council_url { 'anonbycategory' }

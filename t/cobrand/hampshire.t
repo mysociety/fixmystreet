@@ -1,5 +1,5 @@
-use FixMyStreet::Cobrand::Hampshire;
 use FixMyStreet::TestMech;
+use FixMyStreet::Cobrand::Hampshire;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmystreet' ],

@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::AnonAllowed;
 use parent 'FixMyStreet::Cobrand::FixMyStreet';
 sub allow_anonymous_reports { 1 }

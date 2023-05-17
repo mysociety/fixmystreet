@@ -1,9 +1,11 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::Default';
 sub path_to_web_templates { [ FixMyStreet->path_to( 't', 'app', 'controller', 'templates') ] }
 
 package main;
-
 use utf8;
 use FixMyStreet::TestMech;
 

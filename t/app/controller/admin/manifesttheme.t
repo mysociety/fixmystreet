@@ -1,6 +1,6 @@
 use Path::Tiny;
-use FixMyStreet::DB;
 use FixMyStreet::TestMech;
+use FixMyStreet::DB;
 
 my $mech = FixMyStreet::TestMech->new;
 

@@ -1,3 +1,6 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
 package FixMyStreet::Cobrand::Birmingham;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 sub council_area_id { 2514 }
@@ -5,10 +8,9 @@ sub cut_off_date { DateTime->now->subtract(days => 30)->strftime('%Y-%m-%d') }
 
 package main;
 use utf8;
-use FixMyStreet::Script::UpdateAllReports;
-
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::UpdateAllReports;
 use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
