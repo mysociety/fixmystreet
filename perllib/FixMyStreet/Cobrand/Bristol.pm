@@ -158,25 +158,7 @@ sub post_report_sent {
     my ($self, $problem) = @_;
 
     if ($problem->category eq ROADWORKS_CATEGORY) {
-        my @include_path = @{ $self->path_to_web_templates };
-        push @include_path, FixMyStreet->path_to( 'templates', 'web', 'default' );
-        my $tt = FixMyStreet::Template->new({
-            INCLUDE_PATH => \@include_path,
-            disable_autoescape => 1,
-        });
-        my $text;
-        $tt->process('report/new/roadworks_text.html', {}, \$text);
-
-        $problem->update({
-            state => 'closed'
-        });
-        $problem->add_to_comments({
-            text => $text,
-            user_id => $self->body->comment_user_id,
-            problem_state => 'closed',
-            cobrand => $problem->cobrand,
-            send_state => 'processed',
-        });
+        $self->_post_report_sent_close($problem, 'report/new/roadworks_text.html');
     }
 }
 

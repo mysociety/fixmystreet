@@ -1,5 +1,9 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -10,12 +14,23 @@ LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org'
 
 use constant CAMDEN_MAPIT_ID => 2505;
 
-my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Council', {}, {
+my $comment_user = $mech->create_user_ok('camden@example.net');
+my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Council', {
+    comment_user => $comment_user,
+}, {
     cobrand => 'camden'
 });
 
 $mech->create_contact_ok(body_id => $camden->id, category => 'Potholes', email => 'potholes@camden.fixmystreet.com');
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $camden );
+
+$mech->create_contact_ok(
+    body_id => $camden->id,
+    category => 'Abandoned yellow bike',
+    email => 'yellowbikes@example.org',
+    send_method => 'Email',
+    group => 'Hired e-bike or e-scooter',
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'camden', 'tfl' ],
@@ -31,7 +46,10 @@ FixMyStreet::override_config {
         ok $mech->host('camden.fixmystreet.com'), 'set host';
 
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.529432&longitude=-0.124514');
-        is_deeply $json->{by_category}, { 'Potholes' => { 'bodies' => [ 'Camden Council' ] } }, "Camden doesn't have River Piers category";
+        is_deeply $json->{by_category}, {
+            'Abandoned yellow bike' => { 'bodies' => [ 'Camden Council' ] },
+            'Potholes' => { 'bodies' => [ 'Camden Council' ] }
+        }, "Camden doesn't have River Piers category";
     };
 
     subtest "show my name publicly checkbox doesn't appear on Camden's cobrand" => sub {
@@ -110,6 +128,26 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('"Reported As","User Name","User Email"');
         $mech->content_like(qr/default,,"Test User",pkg-tcobrandcamdent-test\@example.com/);
+    };
+
+    subtest "bike reports automatically closed" => sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $camden->id, 'Title', {
+            cobrand => 'camden',
+            category => 'Abandoned yellow bike',
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[0], 'yellowbikes@example.org', 'sent_to extra metadata set';
+        is $p->state, 'closed', 'report closed having sent email';
+        is $p->comments->count, 1, 'comment added';
+        like $p->comments->first->text, qr/This has been forwarded to/, 'correct comment text';
+
+        $mech->email_count_is(1);
     };
 };
 

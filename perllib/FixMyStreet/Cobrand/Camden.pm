@@ -154,4 +154,22 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 post_report_sent
+
+Camden auto-closes its abandoned bike/scooter categories,
+with an update with explanatory text added.
+
+=cut
+
+sub post_report_sent {
+    my ($self, $problem) = @_;
+
+    my $contact = $problem->contact;
+    my %groups = map { $_ => 1 } @{ $contact->groups };
+
+    if ($groups{'Hired e-bike or e-scooter'}) {
+        $self->_post_report_sent_close($problem, 'report/new/close_bike.html');
+    }
+}
+
 1;

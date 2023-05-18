@@ -315,28 +315,8 @@ sub post_report_sent {
     my ($self, $problem) = @_;
 
     if ( $problem->get_extra_metadata('flytipping_email') ) {
-        my @include_path = @{ $self->path_to_web_templates };
-        push @include_path, FixMyStreet->path_to( 'templates', 'web', 'default' );
-        my $tt = FixMyStreet::Template->new({
-            INCLUDE_PATH => \@include_path,
-            disable_autoescape => 1,
-        });
-        my $text;
-        $tt->process('report/new/flytipping_text.html', {}, \$text);
-
         $problem->unset_extra_metadata('flytipping_email');
-        $problem->update({
-            state => 'closed'
-        });
-        FixMyStreet::DB->resultset('Comment')->create({
-            user_id => $self->body->comment_user_id,
-            problem => $problem,
-            state => 'confirmed',
-            cobrand => $problem->cobrand,
-            cobrand_data => '',
-            problem_state => 'closed',
-            text => $text,
-        });
+        $self->_post_report_sent_close($problem, 'report/new/flytipping_text.html');
     }
 }
 

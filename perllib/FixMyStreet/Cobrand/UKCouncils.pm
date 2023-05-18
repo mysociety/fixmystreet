@@ -12,6 +12,7 @@ use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
 use XML::Simple;
+use FixMyStreet::Template;
 
 sub is_council {
     1;
@@ -646,6 +647,36 @@ sub csv_staff_user_lookup {
 sub nearby_distances {
     my $self = shift;
     return $self->feature('nearby_distances') || $self->next::method();
+}
+
+=head2 _post_report_sent_close
+
+Helper function to mark a report as closed when it's sent, including an update.
+
+=cut
+
+sub _post_report_sent_close {
+    my ($self, $problem, $template) = @_;
+
+    my @include_path = @{ $self->path_to_web_templates };
+    push @include_path, FixMyStreet->path_to( 'templates', 'web', 'default' );
+    my $tt = FixMyStreet::Template->new({
+        INCLUDE_PATH => \@include_path,
+        disable_autoescape => 1,
+    });
+    my $text;
+    $tt->process($template, {}, \$text);
+
+    $problem->update({
+        state => 'closed'
+    });
+    $problem->add_to_comments({
+        text => $text,
+        user_id => $self->body->comment_user_id,
+        problem_state => 'closed',
+        cobrand => $problem->cobrand,
+        send_state => 'processed',
+    });
 }
 
 1;
