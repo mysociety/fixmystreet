@@ -5,6 +5,7 @@
         - Include requirements for redeeming the link in the email change confirmation mail. #4422
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
+        - Fix RSS feed subscription from alert page button.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
     - Changes:

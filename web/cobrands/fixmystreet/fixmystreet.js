@@ -1301,8 +1301,9 @@ $.extend(fixmystreet.set_up, {
     });
     $('body').on('click', '#alert_rss_button', function(e) {
         e.preventDefault();
-        var a = $('input[name=feed][type=radio]:checked').parent().prevAll('a');
-        var feed = a.attr('href');
+        var val = $('input[name=feed][type=radio]:checked').val();
+        var a = document.getElementById('rss-' + val);
+        var feed = a.href;
         window.location.href = feed;
     });
     $('body').on('click', '#alert_email_button', function(e) {
