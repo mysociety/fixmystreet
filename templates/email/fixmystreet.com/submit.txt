@@ -80,7 +80,7 @@ We do our best to ensure reports go to the right place at each council. If there
 
 How do we reply to this report?
 
-Replies to this email  will go directly into the report-maker's inbox. They will also be sent to anyone who has subscribed to the report. Your reply is not published on the FixMyStreet website (unless you use FixMyStreet Pro, which displays responses to help close the feedback loop).
+Replies to this email will go directly into the report-maker's inbox. Your reply is not published on the FixMyStreet website (unless you use FixMyStreet Pro, which can display responses to help close the feedback loop).
 
 Can you include more information in these reports?
 If you need to receive extra data that isn’t currently included in the report, please let us know what’s missing at <support@fixmystreet.com>.
