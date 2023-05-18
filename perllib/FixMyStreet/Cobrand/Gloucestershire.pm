@@ -57,6 +57,28 @@ sub send_questionnaires { 0 }
 
 =cut
 
+sub disambiguate_location {
+    my $self = shift;
+    my $string = shift;
+
+    my $town = 'Gloucestershire';
+
+    # As it's the requested example location, try to avoid a disambiguation page
+    $town .= ', GL20 5XA'
+        if $string =~ /^\s*gloucester\s+r(oa)?d,\s*tewkesbury\s*$/i;
+
+    return {
+        %{ $self->SUPER::disambiguate_location() },
+        town   => $town,
+        centre => '51.825508771929094,-2.1263689427866654',
+        span   => '0.53502964014244,1.07233523662321',
+        bounds => [
+            51.57753580138198, -2.687537158717889,
+            52.11256544152442, -1.6152019220946803,
+        ],
+    };
+}
+
 # TODO Sending currently fails
 sub lookup_site_code_config {
     {
