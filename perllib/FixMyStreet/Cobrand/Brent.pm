@@ -468,6 +468,7 @@ sub bin_services_for_address {
         if ($_->{ServiceId} == 262 && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
+            $day =~ s/\s+//g;
             my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
             my $id = sprintf("%s-%s", $day, $week);
             my $links = $self->{c}->cobrand->feature('waste_calendar_links');
