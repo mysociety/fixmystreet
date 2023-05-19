@@ -1,4 +1,4 @@
-package FixMyStreet::App::Controller::Admin::EmergencyMessage;
+package FixMyStreet::App::Controller::Admin::SiteMessage;
 use Moose;
 use namespace::autoclean;
 
@@ -8,9 +8,9 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     # Normal users can only edit message for the current body.
-    $c->detach('edit_emergency_message', [$c->user->from_body]) unless $c->user->is_superuser;
+    $c->detach('edit_site_message', [$c->user->from_body]) unless $c->user->is_superuser;
 
-    # Superusers can see a list of all bodies with emergency messages.
+    # Superusers can see a list of all bodies with site messages.
     my @bodies = $c->model('DB::Body')->active->search(undef, { order_by => [ 'name', 'id' ] });
     $c->stash->{bodies} = \@bodies;
 }
@@ -24,10 +24,10 @@ sub edit :Local :Args(1) {
     my $body = $c->model('DB::Body')->find($body_id)
         || $c->detach( '/page_error_404_not_found', [] );
 
-    $c->detach('edit_emergency_message', [$body]);
+    $c->detach('edit_site_message', [$body]);
 }
 
-sub edit_emergency_message :Private {
+sub edit_site_message :Private {
     my ( $self, $c, $body ) = @_;
 
     if ( $c->req->method eq 'POST' ) {
@@ -35,7 +35,7 @@ sub edit_emergency_message :Private {
 
         foreach my $type ("", "_waste", "_reporting") {
             foreach my $ooh ("", "_ooh") {
-                my $field = "emergency_message$type$ooh";
+                my $field = "site_message$type$ooh";
                 my $message = FixMyStreet::Template::sanitize($c->get_param($field), 1);
                 $message =~ s/^\s+|\s+$//g;
 
@@ -44,6 +44,7 @@ sub edit_emergency_message :Private {
                 } else {
                     $body->unset_extra_metadata($field);
                 }
+                $body->unset_extra_metadata("emergency_message$type$ooh"); # Move over as they change
             }
         }
 
@@ -59,15 +60,15 @@ sub edit_emergency_message :Private {
     }
 
     $c->forward('/auth/get_csrf_token');
-    foreach my $type ("", "_waste", "_reporting") {
-        foreach my $ooh ("", "_ooh") {
-            my $field = "emergency_message$type$ooh";
-            $c->stash->{$field} = $body->get_extra_metadata($field);
+    foreach my $type ("", "waste", "reporting") {
+        foreach my $ooh (0, 1) {
+            my $key = "site_message" . ($type ? "_$type" : "") . ($ooh ? "_ooh" : "");
+            $c->stash->{$key} = $body->site_message($type, $ooh);
         }
     }
 
     $c->stash->{body} = $body;
-    $c->stash->{template} = 'admin/emergencymessage/edit.html';
+    $c->stash->{template} = 'admin/sitemessage/edit.html';
 
     # Check cobrand for body
     my $cobrand = $body->get_cobrand_handler;

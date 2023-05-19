@@ -307,4 +307,21 @@ sub staff_with_permission {
     });
 }
 
+=head2 site_message
+
+Returns the relevant site message.
+
+=cut
+
+sub site_message {
+    my ($self, $type, $ooh) = @_;
+
+    my $suffix = '';
+    $suffix .= "_$type" if $type;
+    $suffix .= "_ooh" if $ooh;
+
+    my $msg = $self->get_extra_metadata("site_message$suffix") || $self->get_extra_metadata("emergency_message$suffix");
+    return $msg;
+}
+
 1;

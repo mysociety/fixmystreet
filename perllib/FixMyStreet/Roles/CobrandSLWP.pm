@@ -195,7 +195,7 @@ sub available_permissions {
         },
         _("Bodies") => {
             template_edit => _("Add/edit response templates"),
-            emergency_message_edit => _("Add/edit emergency message"),
+            emergency_message_edit => _("Add/edit site message"),
         },
     };
 }

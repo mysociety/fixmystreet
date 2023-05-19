@@ -282,14 +282,14 @@ sub about_hook {
     }
 }
 
-=item emergency_message
+=item site_message
 
-We want to show the reporting page emergency message from a UK cobrand if one
+We want to show the reporting page site message from a UK cobrand if one
 is relevant to the location we're currently at.
 
 =cut
 
-sub emergency_message {
+sub site_message {
     my $self = shift;
     my ($type) = @_;
 
@@ -307,7 +307,7 @@ sub emergency_message {
 
     foreach my $body (@bodies) {
         my $cobrand = $body->get_cobrand_handler || next;
-        my $msg = $cobrand->emergency_message($type);
+        my $msg = $cobrand->site_message($type);
         if ($msg) {
             $msg = "Message from " . $body->name . ": " . $msg;
             return FixMyStreet::Template::SafeString->new($msg);

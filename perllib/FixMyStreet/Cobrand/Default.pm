@@ -755,7 +755,7 @@ sub admin_pages {
         $pages->{reportextrafields_edit} = [ undef, undef ];
     }
     if ( $user->has_body_permission_to('emergency_message_edit') ) {
-        $pages->{emergencymessage} = [ _('Emergency message'), 12 ];
+        $pages->{sitemessage} = [ _('Site message'), 12 ];
     }
     if ( $user->has_body_permission_to('wasteworks_config') ) {
         $pages->{waste} = [ _('WasteWorks config'), 201];
@@ -820,7 +820,7 @@ sub available_permissions {
             category_edit => _("Add/edit problem categories"),
             template_edit => _("Add/edit response templates"),
             responsepriority_edit => _("Add/edit response priorities"),
-            emergency_message_edit => _("Add/edit emergency message"),
+            emergency_message_edit => _("Add/edit site message"),
         },
     };
 }
@@ -1416,22 +1416,19 @@ The URL of the privacy policy to use on the report and update submissions forms.
 
 sub privacy_policy_url { '/about/privacy' }
 
-=item emergency_message
+=item site_message
 
-Emergency message, if one has been set in the admin.
+Site message, if one has been set in the admin.
 
 =cut
 
-sub emergency_message {
+sub site_message {
     my $self = shift;
     my $type = shift;
     my $body = $self->body;
     return unless $body;
-    my $field = 'emergency_message';
-    $field .= "_$type" if $type;
-
-    my $msg = $body->get_extra_metadata($field);
-    my $ooh_msg = $body->get_extra_metadata($field . '_ooh');
+    my $msg = $body->site_message($type);
+    my $ooh_msg = $body->site_message($type, 1);
     if ($ooh_msg) {
         my $ooh = $self->ooh_times($body);
         $msg = $ooh_msg if $ooh->active;

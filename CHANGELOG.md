@@ -7,6 +7,8 @@
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.
+    - Admin improvements:
+        - Rename emergency message to site message.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456

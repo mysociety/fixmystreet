@@ -1,0 +1,68 @@
+[% INCLUDE 'admin/header.html' title=loc('Site message') %]
+
+<table>
+    <thead>
+        <tr>
+            <th>[% loc('Body') %]</th>
+            <th>[% loc('Site message') %]</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOR body IN bodies %]
+        [% site_message = body.site_message('') %]
+        [% site_message_ooh = body.site_message('', 1) %]
+        [% site_message_waste = body.site_message('waste') %]
+        [% site_message_waste_ooh = body.site_message('waste', 1) %]
+        [% site_message_reporting = body.site_message('reporting') %]
+        [% site_message_reporting_ooh = body.site_message('reporting', 1) %]
+        <tr>
+            <td>[% body.name %]</td>
+            <td>
+              [% IF site_message %]
+                <p>[% site_message.substr(0, 60) %]&hellip;</p>
+              [% END %]
+              [% IF site_message_ooh %]
+                <p>
+                    <strong>Out of hours:</strong>
+                    [% site_message.substr(0, 60) %]&hellip;
+                </p>
+              [% END %]
+              [% IF site_message_waste %]
+                <p>
+                    <strong>Waste message:</strong>
+                    [% site_message_waste.substr(0, 60) %]&hellip;
+                </p>
+                <p>
+                    <strong>Waste message (out of hours):</strong>
+                    [% site_message_waste_ooh.substr(0, 60) %]&hellip;
+                </p>
+              [% END %]
+              [% IF site_message_reporting %]
+                <p>
+                    <strong>Reporting message:</strong>
+                    [% site_message_reporting.substr(0, 60) %]&hellip;
+                </p>
+              [% END %]
+              [% IF site_message_reporting_ooh %]
+                <p>
+                    <strong>Reporting message (out of hours):</strong>
+                    [% site_message_reporting_ooh.substr(0, 60) %]&hellip;
+                </p>
+              [% END %]
+            </td>
+            <td>
+                <a href="[% c.uri_for('edit', body.id) %]">
+                    [% IF site_message OR site_message_waste OR site_message_reporting %]
+                        [% loc('Edit') %]
+                    [% ELSE %]
+                        [% loc('Create') %]
+                    [% END %]
+                </a>
+            </td>
+        </tr>
+        [% END %]
+    </tbody>
+</table>
+
+[% INCLUDE 'admin/footer.html' %]

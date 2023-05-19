@@ -969,13 +969,13 @@ particular date range:
 </div>
 
 
-<div class="admin-task" markdown="1" id="emergency-message">
+<div class="admin-task" markdown="1" id="site-message">
 
-### Displaying an emergency message
+### Displaying a site message
 
-<span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Add/edit emergency message’ must be ticked.</span>
+<span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Add/edit site message’ must be ticked.</span>
 
-This feature allows you to set emergency messages which will be displayed on
+This feature allows you to set site messages which will be displayed on
 the homepage or reporting pages; you can have different messages for in/out of hours.
 
 Certain HTML tags can be used for formatting purposes. These are limited to the same set as described
@@ -986,16 +986,16 @@ you want multiple paragraphs they should be separated with blank lines as in the
 To clear the message simply delete any contents in the box.
 
 <img alt="The HTML text entered in to the box will be rendered on the homepage."
-    src="/assets/img/pro-user-guide/emergency-message-editing.png" class="admin-screenshot" />
+    src="/assets/img/pro-user-guide/site-message-editing.png" class="admin-screenshot" />
 
-<img alt="An emergency message can be shown to users on the FixMyStreet homepage."
-    src="/assets/img/pro-user-guide/emergency-message-example.png" class="admin-screenshot" />
+<img alt="A site message can be shown to users on the FixMyStreet homepage."
+    src="/assets/img/pro-user-guide/site-message-example.png" class="admin-screenshot" />
 
 You can set the time periods that will count as out of hours on the same page. For example,
 if your out of hours were 6pm to 8am Monday to Friday, all day weekends and Bank Holidays,
 plus Christmas Eve, you would set it up as the following screenshot:
 
 <img alt="Saturday, Sunday, Bank Holidays, and a special Christmas Eve, 00:00-24:00; Monday to Friday 00:00-08:00 and 18:00-24:00."
-    src="/assets/img/pro-user-guide/emergency-message-time-periods.png" class="admin-screenshot">
+    src="/assets/img/pro-user-guide/site-message-time-periods.png" class="admin-screenshot">
 
 </div>
