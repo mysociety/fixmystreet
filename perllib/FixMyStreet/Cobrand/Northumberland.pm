@@ -87,4 +87,12 @@ sub privacy_policy_url {
     return 'https://www.northumberland.gov.uk/NorthumberlandCountyCouncil/media/About-the-Council/information%20governance/Privacy-notice-Fix-My-Street.pdf'
 }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        return { user_name_display => $report->name };
+    });
+}
+
 1;
