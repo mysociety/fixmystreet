@@ -11,6 +11,7 @@
 
 [% IF c.user_exists OR NOT c.cobrand.social_auth_enabled %]
     <button type="button" class="btn btn--block hidden-nojs js-reporting-page--next[% IF type != 'report' %] js-new-report-user-show[% END %]">[% loc('Continue') %]</button>
+    [% TRY %][% PROCESS 'report/form/after_user_continue.html' %][% CATCH file %][% END %]
 [% ELSE %]
   [% IF c.config.FACEBOOK_APP_ID %]
     <button name="social_sign_in" id="facebook_sign_in" value="facebook" class="btn btn--block btn--social btn--facebook">
