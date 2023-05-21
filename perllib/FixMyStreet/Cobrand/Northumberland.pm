@@ -83,4 +83,8 @@ sub path_to_pin_icons {
     return '/cobrands/northumberland/images/';
 }
 
+sub privacy_policy_url {
+    return 'https://www.northumberland.gov.uk/NorthumberlandCountyCouncil/media/About-the-Council/information%20governance/Privacy-notice-Fix-My-Street.pdf'
+}
+
 1;
