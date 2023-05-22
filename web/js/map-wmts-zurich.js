@@ -79,7 +79,7 @@ fixmystreet.maps.matrix_ids = [
  * to setup the way the map should operate.
  */
 fixmystreet.maps.config = function() {
-    fixmystreet.maps.controls = fixmystreet.maps.controls.slice(0, 3); // Cut out permalink and panzoom
+    fixmystreet.maps.controls = fixmystreet.maps.controls.slice(0, 4); // Cut out permalink and panzoom
     if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {
         fixmystreet.maps.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );
     }
