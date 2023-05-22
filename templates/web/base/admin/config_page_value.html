@@ -54,6 +54,8 @@
     Username: [% value.username %]
 [% CASE 'govuk_notify' %]
     Template ID: [% value.template_id %]
+[% CASE 'nearby_distances' %]
+    Inspectors: [% value.inspector %]m, Suggestions: [% value.suggestions %]m
 [% CASE 'oidc_login' %]
     Display name: [% value.display_name %]
 [% CASE 'throttle_username' %]

@@ -679,10 +679,14 @@ sub _nearby_json :Private {
     $c->stash->{page} = 'report';
 
     # distance in metres
-    my $dist = $c->get_param('distance') || '';
+    my $dist;
+    if (my $mode = $c->get_param('mode')) {
+        $dist = $c->cobrand->nearby_distances->{$mode};
+    }
+    $dist ||= $c->get_param('distance') || '';
     $dist = 1000 unless $dist =~ /^\d+$/;
     $dist = 1000 if $dist > 1000;
-    $params->{distance} = $dist / 1000 unless $params->{distance};
+    $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
 
     my $pin_size = $c->get_param('pin_size') || '';
     $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;

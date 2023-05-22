@@ -27,11 +27,11 @@
 
         if ( report_id ) {
             nearby_url = '/report/' + report_id + '/nearby.json';
-            url_params.distance = 1000; // Inspectors might want to see reports fairly far away (1000 metres)
+            url_params.mode = 'inspector'; // Inspectors might want to see reports fairly far away (default 1000 metres)
             url_params.pin_size = 'small'; // How it's always been
         } else {
             nearby_url = '/around/nearby';
-            url_params.distance = 250; // Only want to bother public with very nearby reports (250 metres)
+            url_params.mode = 'suggestions'; // Only want to bother public with very nearby reports (default 250 metres)
             url_params.pin_size = 'normal';
         }
 

@@ -643,4 +643,9 @@ sub csv_staff_user_lookup {
     };
 }
 
+sub nearby_distances {
+    my $self = shift;
+    return $self->feature('nearby_distances') || $self->next::method();
+}
+
 1;

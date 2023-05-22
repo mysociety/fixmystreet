@@ -1464,4 +1464,29 @@ sub post_report_report_problem_link {
     return;
 }
 
+
+=item nearby_distances
+
+Specifies the distance in metres to search for nearby reports for
+inspector de-duplication and report duplicate suggestions features.
+
+Defaults to 1000m for inspectors, 250m for duplicate suggestions.
+
+Should return a hashref of the form
+
+{
+    inspector => 1000,
+    suggestions => 250,
+}
+
+where each key corresponds to value for the C<mode> query param passed to
+/report/<id>/nearby.json or /around/nearby
+
+=cut
+
+sub nearby_distances { {
+    inspector => 1000,
+    suggestions => 250,
+} }
+
 1;

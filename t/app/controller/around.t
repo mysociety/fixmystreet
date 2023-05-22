@@ -260,7 +260,7 @@ subtest 'check assigned-only list items do not display shortlist buttons' => sub
 
 }; # End big override_config
 
-my $body = $mech->create_body_ok(2237, "Oxfordshire");
+my $body = $mech->create_body_ok(2237, "Oxfordshire", {}, { cobrand => 'oxfordshire' });
 
 subtest 'check category, status and extra filtering works on /around' => sub {
     my $categories = [ 'Pothole', 'Vegetation', 'Flytipping' ];
@@ -516,10 +516,52 @@ subtest 'check map zoom level customisation' => sub {
     };
 };
 
-subtest 'check nearby lookup' => sub {
+subtest 'check nearby lookup, default behaviour' => sub {
     my $p = FixMyStreet::DB->resultset("Problem")->search({ external_body => "Pothole-confirmed" })->first;
     $mech->get_ok('/around/nearby?latitude=51.754926&longitude=-1.256179&filter_category=Pothole');
     $mech->content_contains('[51.754926,-1.256179,"yellow",' . $p->id . ',"Around page Test 1 for ' . $body->id . '","small",false]');
+};
+
+subtest 'check nearby lookup, cobrand custom distances' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'oxfordshire',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            nearby_distances => { oxfordshire => {
+                inspector => 500,
+                suggestions => 100,
+            } },
+        }
+    }, sub {
+
+        $mech->delete_problems_for_body($body->id);
+        my ($p) = $mech->create_problems_for_body( 1, $body->id, 'Around page', {
+            postcode  => 'OX20 1SZ',
+            latitude  => 51.754926,
+            longitude => -1.256179,
+            category => "Pothole",
+        });
+        for my $test (
+            { lat => 51.7549, lon => -1.256, mode => undef, contains => 1}, # 12m away
+            { lat => 51.752, lon => -1.256, mode => undef, contains => 1}, # 325m away
+            { lat => 51.7485, lon => -1.256, mode => undef, contains => 1}, # 714m away
+            { lat => 51.74, lon => -1.256, mode => undef, contains => 0}, # 1660m away
+
+            { lat => 51.7549, lon => -1.256, mode => 'inspector', contains => 1}, # 12m away
+            { lat => 51.752, lon => -1.256, mode => 'inspector', contains => 1}, # 325m away
+            { lat => 51.7485, lon => -1.256, mode => 'inspector', contains => 0}, # 714m away
+            { lat => 51.74, lon => -1.256, mode => 'inspector', contains => 0}, # 1660m away
+
+            { lat => 51.7549, lon => -1.256, mode => 'suggestions', contains => 1}, # 12m away
+            { lat => 51.752, lon => -1.256, mode => 'suggestions', contains => 0}, # 325m away
+            { lat => 51.7485, lon => -1.256, mode => 'suggestions', contains => 0}, # 714m away
+            { lat => 51.74, lon => -1.256, mode => 'suggestions', contains => 0}, # 1660m away
+
+        ) {
+            $mech->get_ok('/around/nearby?latitude='.$test->{lat}.'&longitude='.$test->{lon}.'&filter_category=Pothole' . ( $test->{mode} ? '&mode='.$test->{mode} : ''));
+            $mech->contains_or_lacks($test->{contains}, '[51.754926,-1.256179,"yellow",' . $p->id . ',"Open: Around page Test 1 for ' . $body->id . '","small",false]');
+        }
+    };
 };
 
 my $he = Test::MockModule->new('HighwaysEngland');

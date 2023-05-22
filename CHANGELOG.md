@@ -9,6 +9,7 @@
         - Fix RSS feed subscription from alert page button.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
+        - Cobrands can provide custom distances for duplicate lookup. #4456
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 
