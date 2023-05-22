@@ -3,6 +3,7 @@
 * Unreleased
     - Front end improvements:
         - Include requirements for redeeming the link in the email change confirmation mail. #4422
+        - Use email field type for username if SMS authentication not enabled. #4455
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.

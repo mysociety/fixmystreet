@@ -24,15 +24,17 @@
 
 [% IF c.cobrand.sms_authentication %]
     [% SET username_label = loc('Your email or mobile') %]
+    [% SET username_type = 'text' %]
 [% ELSE %]
     [% SET username_label = loc('Your email') %]
+    [% SET username_type = 'email' %]
 [% END %]
 
     <label class="n" for="username">[% username_label %]</label>
   [% IF loc_username_error %]
     <div class="form-error">[% loc_username_error %]</div>
   [% END %]
-    <input type="text" class="form-control required" id="username" name="username" value="[% username | html %]" autocomplete="username"
+    <input type="[% username_type %]" class="form-control required" id="username" name="username" value="[% username | html %]" autocomplete="username"
     [%~ IF c.cobrand.moniker != 'borsetshire' %] autofocus[% END %]>
 
     <div id="form_sign_in">
