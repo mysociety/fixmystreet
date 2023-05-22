@@ -543,6 +543,10 @@ FixMyStreet::override_config {
                         CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
                         Ref => { Value => { anyType => [ 345, 678 ] } },
                     },
+                    TimeBand => {
+                        Start => '07:30:00.000',
+                        End => '08:30:00.000',
+                    },
                 } },
             } },
         }, {
@@ -581,6 +585,11 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/12345');
         restore_time();
+    };
+
+    subtest 'shows time band' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains("(07:30&ndash;08:30)");
     };
 
     subtest 'showing PDF calendar' => sub {

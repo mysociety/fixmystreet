@@ -15,6 +15,8 @@ use strict;
 use warnings;
 use Moo;
 use DateTime;
+use DateTime::Format::Strptime;
+use Try::Tiny;
 
 =head1 INTEGRATIONS
 
@@ -497,6 +499,8 @@ sub bin_services_for_address {
 
         my $request_max = $quantity_max{$service_id};
 
+        my $timeband = _timeband_for_schedule($schedules->{next});
+
         my $garden = 0;
         my $garden_bins;
         my $garden_cost = 0;
@@ -538,6 +542,7 @@ sub bin_services_for_address {
             last => $schedules->{last},
             next => $schedules->{next},
             end_date => $schedules->{end_date},
+            timeband => $timeband,
         };
         if ($row->{last}) {
             my $ref = join(',', @{$row->{last}{ref}});
@@ -559,6 +564,20 @@ sub bin_services_for_address {
     $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
 
     return \@out;
+}
+
+sub _timeband_for_schedule {
+    my $schedule = shift;
+
+    return unless $schedule->{schedule};
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%H:%M:%S.%3N' );
+    if (my $timeband = $schedule->{schedule}->{TimeBand}) {
+        return {
+            start => $parser->parse_datetime($timeband->{Start}),
+            end => $parser->parse_datetime($timeband->{End})
+        };
+    }
 }
 
 sub waste_container_actions {

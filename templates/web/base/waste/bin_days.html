@@ -76,7 +76,12 @@
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Frequency</dt>
-          <dd class="govuk-summary-list__value">[% unit.schedule %]</dd>
+          <dd class="govuk-summary-list__value">
+            [% unit.schedule %]
+            [% IF unit.timeband %]
+              ([% date.format(unit.timeband.start, '%H:%M') %]&ndash;[% date.format(unit.timeband.end, '%H:%M') %])
+            [% END %]
+          </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Next collection</dt>
