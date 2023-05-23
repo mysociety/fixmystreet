@@ -99,7 +99,7 @@ as staff; optionally, one or more of ‘Create reports/updates on a user’s beh
 
 If a resident makes a report or request by phone or in person, staff members with the appropriate permissions can add it to WasteWorks on their behalf.
 
-Staff should make a new report/request or subscription just as a member of the public would (see the resident’s experience).
+Staff should make a new report/request or subscription just as a member of the public would (see the <a href="https://www.societyworks.org/ww-manual/resident-experience/">resident’s experience section</a>).
 
 **The process for setting up, renewing or cancelling subscriptions for users will differ depending on the payment provider you are using.**
 
@@ -112,7 +112,7 @@ Staff should make a new report/request or subscription just as a member of the p
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; optionally, one or more of ‘Create reports/updates on a user’s behalf’, ‘Create reports/updates as anonymous user’ and ‘Create reports/updates as the council’ can be ticked.</span>
 
-Staff users are able to cancel subscriptions on behalf of residents in the same way the resident would do this – see The Resident’s experience.
+Staff users are able to cancel subscriptions on behalf of residents in the same way the resident would do this (see the <a href="https://www.societyworks.org/ww-manual/resident-experience/">resident’s experience section</a>)
 
 **The process for setting up, renewing or cancelling subscriptions for users will differ depending on the payment provider you are using.**
 
