@@ -1,8 +1,8 @@
 use FixMyStreet::TestMech;
 
-my $mech = FixMyStreet::TestMech->new;
+my $mech    = FixMyStreet::TestMech->new;
 my $cobrand = FixMyStreet::Cobrand::Gloucestershire->new;
-my $body = $mech->create_body_ok(
+my $body    = $mech->create_body_ok(
     2226,
     'Gloucestershire County Council',
     {   send_method  => 'Open311',
@@ -21,12 +21,31 @@ $mech->create_contact_ok(
 
 my $standard_user_1
     = $mech->create_user_ok( 'user1@email.com', name => 'User 1' );
+my $standard_user_2
+    = $mech->create_user_ok( 'user2@email.com', name => 'User 2' );
+my $staff_user = $mech->create_user_ok(
+    'staff@email.com',
+    name      => 'Staff User',
+    from_body => $body,
+);
+my $superuser = $mech->create_user_ok(
+    'super@email.com',
+    name         => 'Super User',
+    is_superuser => 1,
+);
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'gloucestershire' ],
+    ALLOWED_COBRANDS => [ 'fixmystreet', 'gloucestershire' ],
     MAPIT_URL        => 'http://mapit.uk/',
+    STAGING_FLAGS    => { skip_must_have_2fa => 1 },
     COBRAND_FEATURES => {
         anonymous_account => { gloucestershire => 'anonymous.fixmystreet' },
+        updates_allowed   => {
+            gloucestershire => 'reporter-not-open/staff-open',
+            fixmystreet     => {
+                Gloucestershire => 'reporter-not-open/staff-open',
+            }
+        },
     },
 }, sub {
     ok $mech->host('gloucestershire'), 'change host to gloucestershire';
@@ -82,9 +101,276 @@ FixMyStreet::override_config {
             }
         );
         is $alert, undef, "no alert created";
-
-        $mech->log_out_ok;
     };
+
+    for my $host ( 'fixmystreet', 'gloucestershire' ) {
+        ok $mech->host($host), "change host to $host";
+
+        subtest 'for an open report' => sub {
+            for my $state ( 'confirmed', 'in progress' ) {
+                my ($report) = $mech->create_problems_for_body(
+                    1,
+                    $body->id,
+                    'Open report',
+                    {   cobrand => 'gloucestershire',
+                        user    => $standard_user_1,
+                        state   => $state,
+                    },
+                );
+
+                note 'Logged-out user';
+                $mech->log_out_ok;
+                $mech->get( '/report/' . $report->id );
+                $mech->content_lacks(
+                    'div id="update_form"',
+                    'Update form not shown at all',
+                );
+                $mech->content_lacks(
+                    'form name="report_inspect_form" id="report_inspect_form"',
+                    'No admin sidebar',
+                );
+                if ( $host eq 'gloucestershire' ) {
+                    $mech->content_contains(
+                        'This report is closed to updates.',
+                        'Correct message shown',
+                    );
+                    $mech->content_lacks(
+                        'make a new report in the same location',
+                        'Lacks option to make a new report in same location',
+                    );
+                }
+
+                note 'Original reporter';
+                $mech->log_in_ok( $standard_user_1->email );
+                $mech->get( '/report/' . $report->id );
+                $mech->content_lacks(
+                    'div id="update_form"',
+                    'Update form not shown at all',
+                );
+                $mech->content_lacks(
+                    'form name="report_inspect_form" id="report_inspect_form"',
+                    'No admin sidebar',
+                );
+                if ( $host eq 'gloucestershire' ) {
+                    $mech->content_contains(
+                        'This report is closed to updates.',
+                        'Correct message shown',
+                    );
+                    $mech->content_lacks(
+                        'make a new report in the same location',
+                        'Lacks option to make a new report in same location',
+                    );
+                }
+
+                note 'Another standard user';
+                $mech->log_in_ok( $standard_user_2->email );
+                $mech->get( '/report/' . $report->id );
+                $mech->content_lacks(
+                    'div id="update_form"',
+                    'Update form not shown at all',
+                );
+                $mech->content_lacks(
+                    'form name="report_inspect_form" id="report_inspect_form"',
+                    'No admin sidebar',
+                );
+                if ( $host eq 'gloucestershire' ) {
+                    $mech->content_contains(
+                        'This report is closed to updates.',
+                        'Correct message shown',
+                    );
+                    $mech->content_lacks(
+                        'make a new report in the same location',
+                        'Lacks option to make a new report in same location',
+                    );
+                }
+
+                # Admin are shown a dropdown for states, rather than just a
+                # checkbox
+
+                note 'Staff';
+                $mech->log_in_ok( $staff_user->email );
+                $mech->get( '/report/' . $report->id );
+                $mech->content_contains(
+                    'name="update" class="form-control" id="form_update"',
+                    'Update textbox shown',
+                );
+                $mech->content_lacks(
+                    'input type="checkbox" name="fixed" id="form_fixed"',
+                    'State checkbox not shown',
+                );
+                $mech->content_contains(
+                    'select class="form-control" name="state"  id="state"',
+                    'State dropdown shown',
+                );
+                $mech->content_lacks(
+                    'form name="report_inspect_form" id="report_inspect_form"',
+                    'No admin sidebar',
+                );
+                if ( $host eq 'gloucestershire' ) {
+                    $mech->content_lacks(
+                        'This report is closed to updates.',
+                        '"Closed to updates" message not shown',
+                    );
+                }
+
+                note 'Superuser';
+                $mech->log_in_ok( $superuser->email );
+                $mech->get( '/report/' . $report->id );
+                $mech->content_contains(
+                    'name="update" class="form-control" id="form_update"',
+                    'Update textbox shown',
+                );
+                $mech->content_lacks(
+                    'input type="checkbox" name="fixed" id="form_fixed"',
+                    'State checkbox not shown',
+                );
+                $mech->content_contains(
+                    'select class="form-control" name="state"  id="state"',
+                    'State dropdown shown',
+                );
+                $mech->content_contains(
+                    'form name="report_inspect_form" id="report_inspect_form"',
+                    'Shown admin sidebar',
+                );
+                if ( $host eq 'gloucestershire' ) {
+                    $mech->content_lacks(
+                        'This report is closed to updates.',
+                        '"Closed to updates" message not shown',
+                    );
+                }
+            }
+        };
+
+        subtest 'for a closed report' => sub {
+            # 'closed' == any state that does not fall under open
+            my ($report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Closed report',
+                {   cobrand => 'gloucestershire',
+                    user    => $standard_user_1,
+                    state   => 'fixed - council',
+                },
+            );
+
+            note 'Logged-out user';
+            $mech->log_out_ok;
+            $mech->get( '/report/' . $report->id );
+            $mech->content_lacks(
+                'div id="update_form"',
+                'Update form not shown at all',
+            );
+            $mech->content_lacks(
+                'form name="report_inspect_form" id="report_inspect_form"',
+                'No admin sidebar',
+            );
+            if ( $host eq 'gloucestershire' ) {
+                $mech->content_contains(
+                    'This report is closed to updates.',
+                    'Correct message shown',
+                );
+                $mech->content_contains(
+                    'make a new report in the same location',
+                    'Option to make a new report in same location',
+                );
+            }
+
+            note 'Original reporter';
+            $mech->log_in_ok( $standard_user_1->email );
+            $mech->get( '/report/' . $report->id );
+            $mech->content_contains(
+                'name="update" class="form-control" id="form_update"',
+                'Update textbox shown',
+            );
+            $mech->content_contains(
+                'type="checkbox" name="reopen" id="form_reopen"',
+                'State checkbox shown',
+            );
+            $mech->content_lacks(
+                'select class="form-control" name="state"  id="state"',
+                'State dropdown not shown',
+            );
+            $mech->content_lacks(
+                'form name="report_inspect_form" id="report_inspect_form"',
+                'No admin sidebar',
+            );
+            if ( $host eq 'gloucestershire' ) {
+                $mech->content_lacks(
+                    'This report is closed to updates.',
+                    '"Closed to updates" message not shown',
+                );
+            }
+
+            note 'Another standard user';
+            $mech->log_in_ok( $standard_user_2->email );
+            $mech->get( '/report/' . $report->id );
+            $mech->content_lacks(
+                'div id="update_form"',
+                'Update form not shown at all',
+            );
+            $mech->content_lacks(
+                'form name="report_inspect_form" id="report_inspect_form"',
+                'No admin sidebar',
+            );
+            if ( $host eq 'gloucestershire' ) {
+                $mech->content_contains(
+                    'This report is closed to updates.',
+                    'Correct message shown',
+                );
+                $mech->content_contains(
+                    'make a new report in the same location',
+                    'Option to make a new report in same location',
+                );
+            }
+
+            # Admin are shown a dropdown for states, rather than just a
+            # checkbox
+
+            note 'Staff';
+            $mech->log_in_ok( $staff_user->email );
+            $mech->get( '/report/' . $report->id );
+            $mech->content_lacks(
+                'div id="update_form"',
+                'Update form not shown at all',
+            );
+            $mech->content_lacks(
+                'form name="report_inspect_form" id="report_inspect_form"',
+                'No admin sidebar',
+            );
+            if ( $host eq 'gloucestershire' ) {
+                $mech->content_contains(
+                    'This report is closed to updates.',
+                    'Correct message shown',
+                );
+                $mech->content_contains(
+                    'make a new report in the same location',
+                    'Option to make a new report in same location',
+                );
+            }
+
+            note 'Superuser';
+            $mech->log_in_ok( $superuser->email );
+            $mech->get( '/report/' . $report->id );
+            $mech->content_lacks(
+                'div id="update_form"',
+                'Update form not shown at all',
+            );
+            $mech->content_contains(
+                'form name="report_inspect_form" id="report_inspect_form"',
+                'Shown admin sidebar',
+            );
+            if ( $host eq 'gloucestershire' ) {
+                $mech->content_contains(
+                    'This report is closed to updates.',
+                    'Correct message shown',
+                );
+                $mech->content_contains(
+                    'make a new report in the same location',
+                    'Option to make a new report in same location',
+                );
+            }
+        };
+    }
 };
 
 done_testing();

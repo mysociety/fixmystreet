@@ -431,6 +431,12 @@ sub updates_disallowed {
     return $self->_updates_disallowed_check($type, $problem, $body_user);
 }
 
+=head2 body_disallows_state_change
+
+Determines whether state change is disallowed across the board.
+
+=cut
+
 sub body_disallows_state_change {
     my $self = shift;
     my ($problem) = @_;
