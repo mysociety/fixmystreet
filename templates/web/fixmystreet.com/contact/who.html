@@ -7,7 +7,7 @@
 [% IF problem %]
 <div class="checkbox-group">
     <input name="dest" id="dest_rules" type="radio" value="rules" class="required"[% IF dest AND dest == 'rules' %] checked[% END %]>
-    <label class="inline" for="dest_rules">This [% update ? 'update' : 'report' %] breaks the <a href="/about/house-rules">House Rules</a></label>
+    <label class="inline" for="dest_rules">This [% update ? 'update' : 'report' %] breaks the <a href="/about/house-rules">Conditions of Use</a></label>
 </div>
 <div class="checkbox-group">
     <input name="dest" id="dest_update" type="radio" value="update" class="required"[% IF dest AND dest == 'update' %] checked[% END %]>
