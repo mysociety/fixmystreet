@@ -20,8 +20,10 @@ END ~%]
         </p>
         <p>
           [% IF report.category == 'Request new container' %]
-            [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' %]
+            [% IF c.cobrand.moniker == 'kingston' %]
               Containers typically arrive within 20 working days, but this may vary due to demand.
+            [% ELSIF c.cobrand.moniker == 'sutton' %]
+              Containers typically arrive within 40 working days, but this may vary due to demand.
             [% ELSIF c.cobrand.moniker == 'bromley' %]
               Containers typically arrive within two weeks, but this may vary due to demand.
             [% END %]

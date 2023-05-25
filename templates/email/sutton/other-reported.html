@@ -18,6 +18,10 @@ INCLUDE '_email_top.html';
 
 [% INCLUDE '_council_reference.html' problem=report %]
 
+<p style="[% p_style %]">Due to the current high demand, please allow up to 40
+working days for this order to be processed. We thank you for your patience and
+understanding in advance.</p>
+
   [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
