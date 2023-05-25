@@ -1,0 +1,28 @@
+[% IF location_error %]
+    [% INCLUDE 'around/location_error.html' %]
+[% END %]
+
+[% IF possible_location_matches %]
+    <p>We found more than one match for that location. If you do not know the postcode please pick any option and you can use the map to locate the problem.</p>
+    <ul class="pc_alternatives">
+      [% FOREACH match IN possible_location_matches %]
+        <li>
+          [% IF match.icon %]
+            <img src="[% match.icon %]" alt="">
+          [% END %]
+             <a href="/around?lat=[% match.latitude | uri %]&amp;lon=[% match.longitude | uri ~%]
+             [%~ IF c.get_param('category') %]&amp;category=[% c.get_param('category') | uri %][% END ~%]
+             [%~ IF c.get_param('filter_category') %]&amp;filter_category=[% c.get_param('filter_category') | uri %][% END ~%]
+             [%~ IF c.get_param('filter_group') %]&amp;filter_group=[% c.get_param('filter_group') | uri %][% END %]">[% match.address | html %]</a>
+        </li>
+      [% END %]
+    </ul>
+    <p>We show up to 10 matches to help you get closer to the problem on long streets. Please try a different search if yours is not here.</p>
+[% END %]
+
+[% IF partial_token %]
+    <p style="margin-top: 0; color: #cc0000;">
+        <img align="right" src="[% partial_report.photos.first.url_temp %]" hspace="5">
+        [% loc("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box above&nbsp;:") %]
+    </p>
+[% END %]
