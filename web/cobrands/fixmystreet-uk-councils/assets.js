@@ -902,7 +902,7 @@ fixmystreet.assets.northamptonshire.asset_found = function(asset) {
 
 fixmystreet.assets.northamptonshire.asset_not_found = function() {
     $("#overlapping_features_msg").addClass('hidden');
-    if (this.fixmystreet.snap_threshold === 0) {
+    if (this.fixmystreet.snap_threshold === "0") {
         // Not a typo, asset selection is not mandatory
         fixmystreet.message_controller.asset_found.call(this);
     } else {

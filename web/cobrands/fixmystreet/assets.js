@@ -79,7 +79,7 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
             return;
         }
         var threshold = 50; // metres
-        if ( this.fixmystreet.snap_threshold || this.fixmystreet.snap_threshold === 0 ) {
+        if ( this.fixmystreet.snap_threshold || this.fixmystreet.snap_threshold === "0" ) {
           threshold = this.fixmystreet.snap_threshold;
         }
         var marker = fixmystreet.markers.features[0];
