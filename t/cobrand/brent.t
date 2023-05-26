@@ -116,6 +116,12 @@ create_contact({ category => 'Staff general enquiry', email => 'general@brent.go
     { code => 'service_id', required => 1, automated => 'hidden_field' },
 );
 
+create_contact({ category => 'Additional collection', email => 'general@brent.gov.uk' },
+    { code => 'Notes', description => 'Please add your notes here', required => 1, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+);
+
 for my $test (
     {
         desc => 'Problem has stayed open when user reported fixed with update',
@@ -674,6 +680,24 @@ FixMyStreet::override_config {
         $mech->content_contains('Enquiry has been submitted');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->detail, "Behind the garden gate\n\n2 Example Street, Brent, NW2 1AA";
+        is $report->user->email, 'anne@example.org';
+        is $report->name, 'Anne Assist';
+    };
+
+    subtest 'test staff-only additional collection form' => sub {
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Log an additional collection');
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Log an additional collection');
+        $mech->get_ok('/waste/12345/enquiry?category=Additional+collection&service_id=262');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Please do another collection for this address' } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Enquiry has been submitted');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->detail, "Please do another collection for this address\n\n2 Example Street, Brent, NW2 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
     };
