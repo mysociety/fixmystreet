@@ -76,22 +76,45 @@ fixmystreet.assets.add(defaults, {
     }
 });
 
+function _update_category(input, he_flag) {
+    var nh = input.val().match('NH');
+    if ((nh && he_flag) || (!nh && !he_flag)) {
+        input.parent().show();
+        return 0;
+    } else {
+        input.parent().hide();
+        return 1;
+    }
+}
+
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    var he_input = $('#form_category_fieldset input[value*="National Highways"]');
-    if (he_flag) {
-        he_input.prop('checked', true).trigger('change', [ 'no_event' ]);
-        $('.js-reporting-page--category').addClass('js-reporting-page--skip');
-    } else {
-        $('.js-reporting-page--category').removeClass('js-reporting-page--skip');
-        var old_category = $('#form_category_fieldset input:checked');
-        if (old_category.val() == 'National Highways') {
-            old_category[0].checked = false;
-        }
-        he_input.parent('div').hide();
-    }
     $('.js-reporting-page--next').prop('disabled', false);
+
+    // If we have come from NH site, the server has returned all the categories to show
+    if (window.location.href.indexOf('&he_referral=1') != -1) {
+        return;
+    }
+
+    $('#form_category_fieldset input').each(function() {
+        var subcategory_id = $(this).data("subcategory");
+        if (subcategory_id === undefined) {
+            _update_category($(this), he_flag);
+        } else {
+            var $subcategory = $("#subcategory_" + subcategory_id);
+            var hidden = 0;
+            var inputs = $subcategory.find('input');
+            inputs.each(function() {
+                hidden += _update_category($(this), he_flag);
+            });
+            if (hidden == inputs.length) {
+                $(this).parent().hide();
+            } else {
+                $(this).parent().show();
+            }
+        }
+    });
 }
 
 function he_selected() {
@@ -100,7 +123,7 @@ function he_selected() {
     regenerate_category(true);
     $(fixmystreet).trigger('report_new:highways_change');
     if (window.location.href.indexOf('&he_referral=1') != -1) {
-        $('#problem_form .js-reporting-page--next').click();
+        $('.js-reporting-page--next:visible').click();
         var message = "<div class='box-warning' id='national-highways-referral'>Please select the local council's most appropriate option for the litter or flytipping issue you would like to report.</div>";
         $('#js-top-message').append(message);
         $('.js-reporting-page--next').on('click', function() {

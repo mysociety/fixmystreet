@@ -1,0 +1,15 @@
+{
+    "councils_text_private":"These details will be sent to the council, but will never be shown online without your permission. (<a href=\"/privacy\">See our privacy policy</a>.)",
+    "by_category":{
+        "Flytipping":{"bodies":["Borsetshire"]},
+        "Street cleaning":{"bodies":["Borsetshire"]}
+    },
+    "bodies":["Borsetshire"],
+    "display_names":{"Borsetshire":"Borsetshire County Council"},
+    "unresponsive":"",
+    "extra_name_info":"",
+    "titles_list":null,
+    "councils_text":"<p> These will be sent to <strong>Borsetshire County Council</strong> and also published online for others to see, in accordance with our <a href=\"/privacy\">privacy policy</a>. </p>",
+    "subcategories":"",
+    "category":"<fieldset id=\"form_category_fieldset\"> <legend id=\"form_category_legend\">Category</legend><div> <input required id=\"category_189\" type=\"radio\" name=\"category\" value='Flytipping'> <label class=\"inline\" for=\"category_189\">Flytipping</label> </div><div> <input required id=\"category_199\" type=\"radio\" name=\"category\" value='Street cleaning'> <label class=\"inline\" for=\"category_199\">Street cleaning</label> </div> </fieldset>"
+}

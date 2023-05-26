@@ -415,12 +415,11 @@ sub munge_report_new_contacts {
         my $southwark = FixMyStreet::Cobrand::Southwark->new({ c => $self->{c} });
         $southwark->munge_categories($contacts);
     }
-}
 
-sub munge_mixed_category_groups {
-    my ($self, $list) = @_;
-    my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
-    $nh->national_highways_cleaning_groups($list);
+    if ( $bodies{'National Highways'} ) {
+        my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
+        $nh->national_highways_cleaning_groups($contacts);
+    }
 }
 
 sub open311_extra_data {

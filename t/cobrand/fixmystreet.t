@@ -465,8 +465,9 @@ FixMyStreet::override_config {
     my $he = $mech->create_body_ok(2227, 'National Highways');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
-    $mech->create_contact_ok(body_id => $he->id, category => 'Litter (NH)', email => 'litter@he', group => 'National Highways');
-    $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he', group => 'National Highways');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Slip Roads (NH)', email => 'litter@he', group => 'Litter');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Main Carriageway (NH)', email => 'litter@he', group => 'Litter');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he');
 
     subtest 'fixmystreet changes litter options for National Highways' => sub {
 
@@ -493,6 +494,8 @@ FixMyStreet::override_config {
         mock_road("M1", 0);
         $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
         $mech->content_contains('Litter');
+        $mech->content_contains('Slip Roads');
+        $mech->content_contains('Main Carriageway');
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees');
         $mech->content_contains('Flytipping');
@@ -501,6 +504,8 @@ FixMyStreet::override_config {
         mock_road("A5103", 1);
         $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
         $mech->content_contains('Litter');
+        $mech->content_contains('Slip Roads');
+        $mech->content_contains('Main Carriageway');
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees');
         $mech->content_contains('Flytipping');
@@ -509,17 +514,19 @@ FixMyStreet::override_config {
         mock_road("A34", 0);
         $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
         $mech->content_lacks('Litter');
+        $mech->content_lacks('Slip Roads');
+        $mech->content_lacks('Main Carriageway');
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees');
         $mech->content_contains('Flytipping');
 
         # A-road where NH not responsible for litter, referred to FMS from National Highways
-        # ajax call filters NH category to contain only litter related council subcategories
+        # ajax call filters NH category to contain only litter related council categories
         mock_road("A34", 0);
         my $j = $mech->get_ok_json("/report/new/ajax?w=1&longitude=-0.912160&latitude=51.015143&he_referral=1");
-        my $tree = HTML::TreeBuilder->new_from_content($j->{subcategories});
+        my $tree = HTML::TreeBuilder->new_from_content($j->{category});
         my @elements = $tree->find('input');
-        is @elements, 1, 'Only one subcategory in National Highways category';
+        is @elements, 1, 'Only one category in National Highways category';
         is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping';
     };
 

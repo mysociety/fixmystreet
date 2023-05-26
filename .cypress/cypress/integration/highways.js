@@ -16,7 +16,10 @@ describe('National Highways tests', function() {
         cy.get('#js-councils_text').should('contain', 'National Highways');
         cy.get('#single_body_only').should('have.value', 'National Highways');
         cy.nextPageReporting();
-        cy.get('#subcategory_NationalHighways').should('be.visible');
+        cy.pickCategory('Litter');
+        cy.nextPageReporting();
+        cy.get('#subcategory_Litter').should('be.visible');
+        cy.go('back');
         cy.go('back');
 
         cy.get('#js-not-highways').click();
@@ -24,13 +27,13 @@ describe('National Highways tests', function() {
         cy.get('#single_body_only').should('have.value', '');
         cy.nextPageReporting();
         cy.get('#form_category_fieldset').should('be.visible');
-        cy.get('#form_category_fieldset input[value="National Highways"]').should('not.be.visible');
+        cy.get('#form_category_fieldset input[value="Litter"]').should('not.be.visible');
         cy.go('back');
 
         cy.get('#js-highways').click({ force: true });
         cy.get('#js-councils_text').should('contain', 'National Highways');
         cy.get('#single_body_only').should('have.value', 'National Highways');
         cy.nextPageReporting();
-        cy.pickSubcategory('National Highways', 'Sign issue');
+        cy.pickCategory('Potholes');
     });
 });

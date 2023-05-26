@@ -33,6 +33,31 @@ describe('National Highways cobrand tests', function() {
     });
 });
 
+describe('National Highways cobrand mobile tests', function() {
+    it('does not allow reporting on DBFO roads on mobile either', function() {
+        cy.server();
+        cy.route('POST', '**/mapserver/highways', 'fixture:highways.xml').as('highways-tilma');
+        cy.route('**/report/new/ajax*').as('report-ajax');
+
+        cy.viewport(320, 568);
+        cy.visit('http://highwaysengland.localhost:3001/');
+        cy.contains('Go');
+        cy.get('[name=pc]').type(Cypress.env('postcode'));
+        cy.get('[name=pc]').parents('form').submit();
+        cy.url().should('include', '/around');
+
+        cy.get('.olMapViewport')
+            .trigger('mousedown', { which: 1, clientX: 160, clientY: 284 })
+            .trigger('mousemove', { which: 1, clientX: 240, clientY: 284 })
+            .trigger('mouseup', { which: 1, clientX: 240, clientY: 284 });
+
+        cy.get('.map-mobile-report-button').click();
+        cy.wait('@highways-tilma');
+        cy.wait('@report-ajax');
+        cy.contains('report on roads directly maintained').should('be.visible');
+    });
+});
+
 describe('National Highways litter picking test', function() {
     beforeEach(function() {
         cy.server();
@@ -60,38 +85,13 @@ describe('National Highways litter picking test', function() {
     beforeEach(function() {
         cy.server();
         cy.route('**/mapserver/highways*', 'fixture:highways_a_road.xml').as('highways-tilma');
-        cy.route('**/report/new/ajax*', 'fixture:highways-ajax.json').as('report-ajax');
+        cy.route('**/report/new/ajax*', 'fixture:highways-ajax-he-referral.json').as('report-ajax');
     });
     it('filters to litter options on FMS', function() {
         cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-2.6030503&latitude=51.4966133&he_referral=1');
         cy.wait('@report-ajax');
         cy.wait('@highways-tilma');
         cy.contains('most appropriate option for the litter or flytipping');
-        cy.contains('National Highways: Subcategory');
-        });
-});
-
- describe('National Highways cobrand mobile tests', function() {
-    it('does not allow reporting on DBFO roads on mobile either', function() {
-        cy.server();
-        cy.route('POST', '**/mapserver/highways', 'fixture:highways.xml').as('highways-tilma');
-        cy.route('**/report/new/ajax*').as('report-ajax');
-
-        cy.viewport(320, 568);
-        cy.visit('http://highwaysengland.localhost:3001/');
-        cy.contains('Go');
-        cy.get('[name=pc]').type(Cypress.env('postcode'));
-        cy.get('[name=pc]').parents('form').submit();
-        cy.url().should('include', '/around');
-
-        cy.get('.olMapViewport')
-            .trigger('mousedown', { which: 1, clientX: 160, clientY: 284 })
-            .trigger('mousemove', { which: 1, clientX: 240, clientY: 284 })
-            .trigger('mouseup', { which: 1, clientX: 240, clientY: 284 });
-
-        cy.get('.map-mobile-report-button').click();
-        cy.wait('@highways-tilma');
-        cy.wait('@report-ajax');
-        cy.contains('report on roads directly maintained').should('be.visible');
+        cy.contains('Street cleaning');
     });
 });

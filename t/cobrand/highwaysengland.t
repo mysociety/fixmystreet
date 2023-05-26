@@ -43,7 +43,7 @@ ok $r->{error}, "searching for lowecase road only generates error";
 my $mech = FixMyStreet::TestMech->new;
 my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways' }, { cobrand => 'highwaysengland' });
 
-$mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole', group => 'National Highways');
+$mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole (NH)');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland', 'fixmystreet' ],
@@ -69,7 +69,7 @@ FixMyStreet::override_config {
                 with_fields => {
                     title         => "Test Report for HE",
                     detail        => 'Test report details.',
-                    category      => 'Pothole',
+                    category      => 'Pothole (NH)',
                     where_hear    => 'Facebook',
                 }
             },
@@ -102,7 +102,7 @@ FixMyStreet::override_config {
                 with_fields => {
                     title => $title,
                     detail => $detail,
-                    category => 'Pothole',
+                    category => 'Pothole (NH)',
                 }
             },
             "submit details"

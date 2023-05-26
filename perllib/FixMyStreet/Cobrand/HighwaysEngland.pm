@@ -203,30 +203,19 @@ sub munge_report_new_bodies {
     %$bodies = map { $_->id => $_ } grep { $_->name eq 'National Highways' } values %$bodies;
 }
 
-# Want to remove the group our categories are all in
+# Strip all (NH) from end of category names
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
-    foreach (@$contacts) {
-        $_->unset_extra_metadata("group");
-    }
-}
-
-sub munge_mixed_category_groups {
-    my ($self, $list) = @_;
-
-    for my $cat_item (@$list) {
-        my $clean_name = $cat_item->category_display;
-        $clean_name =~ s/ \(NH\)//;
-        $cat_item->set_extra_metadata('display_name', $clean_name);
+    foreach my $c (@$contacts) {
+        my $clean_name = $c->category_display;
+        if ($clean_name =~ s/ \(NH\)//) {
+            $c->set_extra_metadata(display_name => $clean_name);
+        }
     }
 }
 
 sub national_highways_cleaning_groups {
-    my ($self, $category_groups) = @_;
-
-    # We only care if there is a National Highways group
-    my ($nh_group) = grep { ($_->{name} || '') eq $self->council_name } @$category_groups;
-    return unless $nh_group;
+    my ($self, $contacts) = @_;
 
     my $c = $self->{c};
     my $not_he_litter = $c->stash->{report_new_is_on_he_road_not_litter};
@@ -237,41 +226,27 @@ sub national_highways_cleaning_groups {
         $not_he_litter = $self->_report_new_is_on_he_road_not_litter($x, $y);
     }
 
-    for my $cat_item (@{$nh_group->{categories}}) {
-        my $clean_name = $cat_item->category_display;
-        $clean_name =~ s/ \(NH\)//;
-        $cat_item->set_extra_metadata('display_name', $clean_name);
-    }
+    $self->munge_report_new_contacts($contacts);
 
     # Don't change anything else unless we're on a HE non-litter road
     return unless $not_he_litter;
 
-    # NH do not want flytipping or litter reports on these roads, take them out
-    if (defined $c->stash->{he_referral}) {
-        @{$nh_group->{categories}} = ();
-    } else {
-        @{$nh_group->{categories}} = grep { $_->category_display !~ /Flytipping|Litter/ } @{$nh_group->{categories}};
-    }
-    # Put any council street cleaning categories we can find into the NH group,
-    # so they'll still appear if "on the HE road" is picked
+    # If we've come from flytipping/litter on NH site, we only want to show
+    # council street cleaning categories; otherwise we want to show those
+    # plus non-street cleaning NH categories
     my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
-    for my $cat (@$category_groups) {
-        if ($cat->{name}) {
-            next if $cat->{name} eq $self->council_name;
-            foreach my $c (@{$cat->{categories}}) {
-                if ($cleaning_cats{$cat->{name}}) {
-                    my $full_title = "$cat->{name}: " . $c->category_display;
-                    $c->set_extra_metadata(display_name => $full_title);
-                    push @{$nh_group->{categories}}, $c;
-                } elsif ($cleaning_cats{$c->category_display}) {
-                    push @{$nh_group->{categories}}, $c;
-                }
-            }
-        } elsif ($cleaning_cats{$cat->category_display}) {
-            push @{$nh_group->{categories}}, $cat;
-        }
+    if (defined $c->stash->{he_referral}) {
+        @$contacts = grep {
+            my @groups = @{$_->groups};
+            $_->body->name ne 'National Highways'
+            && ( $cleaning_cats{$_->category_display} || grep { $cleaning_cats{$_} } @groups )
+        } @$contacts;
+    } else {
+        @$contacts = grep {
+            $_->body->name ne 'National Highways'
+            || ( $_->category_display !~ /Flytipping/ && $_->groups->[0] ne 'Litter' )
+        } @$contacts;
     }
-    @{$nh_group->{categories}} = sort {$a->category_display cmp $b->category_display } @{$nh_group->{categories}};
 }
 
 sub report_new_is_on_he_road {
