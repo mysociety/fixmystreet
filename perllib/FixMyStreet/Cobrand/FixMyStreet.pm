@@ -201,6 +201,11 @@ sub munge_report_new_bodies {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
     }
+
+    if ( $bodies{'Bristol City Council'} ) {
+        my $bristol = FixMyStreet::Cobrand::Bristol->new({ c => $self->{c} });
+        $bristol->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 sub munge_report_new_contacts {

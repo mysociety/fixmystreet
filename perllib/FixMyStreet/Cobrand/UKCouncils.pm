@@ -171,15 +171,43 @@ sub area_check {
 
     my $councils = $params->{all_areas};
 
-    # The majority of cobrands only cover a single area, but e.g. Northamptonshire
-    # covers multiple so we need to handle that situation.
-    my $council_area_ids = $self->council_area_id;
-    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
-    foreach (@$council_area_ids) {
-        return 1 if defined $councils->{$_};
-    }
+    return 1 if $self->responsible_for_areas($councils);
 
     return ( 0, $self->area_check_error_message($params, $context) );
+}
+
+=head2 responsible_for_areas
+
+Tests to see if the cobrand is responsible for a location. This is done through
+checking if it has the area set in council_area_id and also checking if the
+coverage is limited only to an overlapping asset by testing the hook
+report_is_on_cobrand_asset
+
+=cut
+
+sub responsible_for_areas {
+    my ($self, $councils) = @_;
+
+    if ($self->can('check_report_is_on_cobrand_asset')) {
+        # This will need changing for two tier councils
+        if (scalar(%$councils) == 1 && (values %$councils)[0]->{id} eq $self->council_area_id->[0]) {
+            return 1;
+        } elsif ($self->check_report_is_on_cobrand_asset) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        # The majority of cobrands only cover a single area, but e.g. Northamptonshire
+        # covers multiple so we need to handle that situation.
+        my $council_area_ids = $self->council_area_id;
+        $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+        foreach (@$council_area_ids) {
+            return 1 if defined $councils->{$_};
+        }
+
+        return 0;
+    }
 }
 
 sub area_check_error_message {
@@ -380,6 +408,11 @@ sub munge_report_new_bodies {
     if ( $bodies{'Thamesmead'} ) {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
+    }
+
+    if ( $bodies{'Bristol City Council'} ) {
+        my $bristol = FixMyStreet::Cobrand::Bristol->new({ c => $self->{c} });
+        $bristol->munge_overlapping_asset_bodies($bodies);
     }
 }
 
