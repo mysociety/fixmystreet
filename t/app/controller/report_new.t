@@ -6,6 +6,15 @@ use base 'FixMyStreet::Cobrand::UK';
 
 sub council_area_id { 2483 };
 
+package FixMyStreet::Cobrand::Overrides;
+use base 'FixMyStreet::Cobrand::UK';
+
+sub new_report_title_field_label { "custom cobrand label" }
+
+sub new_report_title_field_hint { "custom cobrand hint" }
+
+sub new_report_title_field_placeholder { "custom cobrand placeholder" }
+
 package main;
 
 use Test::Deep;
@@ -1384,6 +1393,85 @@ subtest "extra google analytics code displayed on email confirmation problem cre
 
         $mech->delete_user($user);
     };
+};
+
+subtest "check title field overrides for categories" => sub {
+    my $body = $mech->create_body_ok(2238, "A", {}, { cobrand => "overrides" });
+    my $contact = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'test',
+        email => 'test@example.org',
+    );
+    my $lat = "52.855684";
+    my $long = "-2.723877";
+
+    my $json_response;
+
+    # Cobrand level overrides apply when the category has a single body with that cobrand..
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'overrides',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $json_response = $mech->get_ok_json( '/report/new/ajax?w=1&latitude=' . $lat . '&longitude=' . $long );
+    };
+    ok $json_response->{by_category}->{test}->{title_label} eq "custom cobrand label", "cobrand label override not applied";
+    ok $json_response->{by_category}->{test}->{title_hint} eq "custom cobrand hint", "cobrand hint override not applied";
+    ok $json_response->{by_category}->{test}->{detail_hint} eq "custom cobrand placeholder", "cobrand placeholder override not applied";
+
+    # Contact level overrides supersede cobrand level ones.
+
+    $contact->set_extra_metadata('title_hint', 'custom category hint');
+    $contact->set_extra_metadata('detail_hint', 'custom category placeholder');
+    $contact->update;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'overrides',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $json_response = $mech->get_ok_json( '/report/new/ajax?w=1&latitude=' . $lat . '&longitude=' . $long );
+    };
+    ok $json_response->{by_category}->{test}->{title_label} eq "custom cobrand label", "cobrand label override not applied";
+    ok $json_response->{by_category}->{test}->{title_hint} eq "custom category hint", "contact hint override not applied";
+    ok $json_response->{by_category}->{test}->{detail_hint} eq "custom category placeholder", "contact placeholder override not applied";
+
+    # Cobrand level overrides apply when the category has multiple bodies sharing a cobrand.
+
+    $contact->unset_extra_metadata('title_hint');
+    $contact->unset_extra_metadata('detail_hint');
+    $contact->update;
+
+    my $second_body = $mech->create_body_ok(2238, "B", {}, { cobrand => "overrides" });
+    my $second_contact = $mech->create_contact_ok(
+        body_id => $second_body->id,
+        category => 'test',
+        email => 'test@example.org',
+    );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'overrides',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $json_response = $mech->get_ok_json( '/report/new/ajax?w=1&latitude=' . $lat . '&longitude=' . $long );
+    };
+    ok $json_response->{by_category}->{test}->{title_label} eq "custom cobrand label", "cobrand label override not applied";
+    ok $json_response->{by_category}->{test}->{title_hint} eq "custom cobrand hint", "cobrand hint override not applied";
+    ok $json_response->{by_category}->{test}->{detail_hint} eq "custom cobrand placeholder", "cobrand placeholder override not applied";
+
+    # Cobrand level overrides don't apply if the category has multiple bodies and they don't share a cobrand.
+
+    $second_body->unset_extra_metadata('cobrand');
+    $second_body->update;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'overrides',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $json_response = $mech->get_ok_json( '/report/new/ajax?w=1&latitude=' . $lat . '&longitude=' . $long );
+    };
+    isnt defined $json_response->{by_category}->{test}->{title_label}, "cobrand label override unepexctedly applied";
+    isnt defined $json_response->{by_category}->{test}->{title_hint}, "cobrand hint override unepexctedly applied";
+    isnt defined $json_response->{by_category}->{test}->{detail_hint}, "cobrand placeholder override unepexctedly applied";
 };
 
 done_testing();

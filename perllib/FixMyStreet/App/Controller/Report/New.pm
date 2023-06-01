@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use Encode;
-use List::Util qw(uniq any);
+use List::Util qw(uniq all any);
 use HTML::Entities;
 use Path::Class;
 use Utils;
@@ -348,9 +348,21 @@ sub by_category_ajax_data : Private {
         $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
     }
 
-    my $hints = $lookups->{hints}{$category};
-    $body->{title_hint} = $hints->{title} if $hints->{title};
-    $body->{detail_hint} = $hints->{detail} if $hints->{detail};
+    # only use cobrand title overrides if all bodies share a cobrand.
+    my @cobrands = map { $c->stash->{cobrand_by_body}->{$_->{name}} } @$bodies;
+    my $all_have_same_cobrand = all { defined($_) && $cobrands[0] eq $_ } @cobrands;
+    my $cobrand_overrides = $c->stash->{title_field_overrides_by_cobrand}->{$cobrands[0]} if @cobrands && $all_have_same_cobrand;
+
+    my $category_overrides = $lookups->{hints}{$category};
+
+    # prefer category specific overrides if present.
+    my $label_override = $cobrand_overrides->{label};
+    my $hint_override = defined($category_overrides->{title}) ? $category_overrides->{title} : $cobrand_overrides->{hint};
+    my $placeholder_override = defined($category_overrides->{detail}) ? $category_overrides->{detail} : $cobrand_overrides->{placeholder};
+
+    $body->{title_label} = $label_override if $label_override;
+    $body->{title_hint} = $hint_override if $hint_override;
+    $body->{detail_hint} = $placeholder_override if $placeholder_override;
 
     return $body;
 }
@@ -773,6 +785,8 @@ sub setup_categories_and_bodies : Private {
       (); # whether all of a category's fields are simple notices and not inputs
     my %non_public_categories =
       ();    # categories for which the reports are not public
+    my %cobrand_by_body = ();
+    my %title_field_overrides_by_cobrand = ();
     $c->stash->{unresponsive} = {};
 
     my @refused_bodies = grep { ($_->send_method || "") eq 'Refused' } values %bodies;
@@ -846,6 +860,25 @@ sub setup_categories_and_bodies : Private {
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
 
+    foreach my $body (values %bodies_to_list) {
+        my $cobrand_for_body = $body->get_cobrand_handler;
+        next unless $cobrand_for_body;
+
+        $cobrand_by_body{$body->name} = $cobrand_for_body->moniker if $cobrand_for_body->moniker;
+
+        next unless !exists($title_field_overrides_by_cobrand{$cobrand_for_body->moniker});
+
+        my $label = $cobrand_for_body->new_report_title_field_label;
+        my $hint = $cobrand_for_body->new_report_title_field_hint;
+        my $placeholder = $cobrand_for_body->new_report_title_field_placeholder;
+
+        my %overrides;
+        $overrides{label} = $label if $label;
+        $overrides{hint} = $hint if $hint;
+        $overrides{placeholder} = $placeholder if $placeholder;
+        $title_field_overrides_by_cobrand{$cobrand_for_body->moniker} = \%overrides;
+    }
+
     $c->cobrand->call_hook(munge_report_new_category_list => \@category_options, \@contacts, \%category_extras);
 
     # put results onto stash for display
@@ -859,6 +892,8 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_extras_notices}  = \%category_extras_notices;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{extra_name_info} = $all_areas->{+COUNCIL_ID_BROMLEY} ? 1 : 0;
+    $c->stash->{title_field_overrides_by_cobrand} = \%title_field_overrides_by_cobrand;
+    $c->stash->{cobrand_by_body} = \%cobrand_by_body;
 
     # escape these so we can then split on , cleanly in the template.
     my @list_of_names = map { $_->name } values %bodies_to_list;
