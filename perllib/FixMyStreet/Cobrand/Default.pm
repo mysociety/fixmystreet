@@ -1486,4 +1486,39 @@ sub nearby_distances { {
     suggestions => 250,
 } }
 
+=item new_report_title_field_label
+
+Returns override text for the label of the title field on a new report.
+Applied when it's known before submission that the report will go to a body with this cobrand.
+
+=cut
+
+sub new_report_title_field_label {
+    return;
+}
+
+=item new_report_title_field_hint
+
+Returns override text for the hint for the title field on a new report.
+Applied when it's known before submission that the report will go to a body with this cobrand.
+Superseded by a contact specific override if set.
+
+=cut
+
+sub new_report_title_field_hint {
+    return;
+}
+
+=item new_report_detail_field_hint
+
+Return override text for the hint text for the detail field on a new report.
+Applied when it's known before submission that the report will go to a body with this cobrand.
+Superseded by a contact specific override if set.
+
+=cut
+
+sub new_report_detail_field_hint {
+    return;
+}
+
 1;

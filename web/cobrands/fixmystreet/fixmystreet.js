@@ -623,6 +623,7 @@ $.extend(fixmystreet.set_up, {
             $('.js-reporting-page--include-if-anonymous').addClass('js-reporting-page--skip');
         }
 
+        text_update('#title-label', data.title_label);
         text_update('#title-hint', data.title_hint);
         text_update('#detail-hint', data.detail_hint);
 

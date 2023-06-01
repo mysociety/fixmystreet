@@ -351,9 +351,17 @@ sub by_category_ajax_data : Private {
         $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
     }
 
-    my $hints = $lookups->{hints}{$category};
-    $body->{title_hint} = $hints->{title} if $hints->{title};
-    $body->{detail_hint} = $hints->{detail} if $hints->{detail};
+    my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{name}} if @$bodies == 1;
+    my $category_overrides = $lookups->{hints}{$category};
+
+    my $title_label_override = $cobrand_overrides->{title_label};
+    # prefer category specific overrides if present.
+    my $title_hint_override = $category_overrides->{title} || $cobrand_overrides->{title_hint};
+    my $detail_hint_override = $category_overrides->{detail} || $cobrand_overrides->{detail_hint};
+
+    $body->{title_label} = $title_label_override if $title_label_override;
+    $body->{title_hint} = $title_hint_override if $title_hint_override;
+    $body->{detail_hint} = $detail_hint_override if $detail_hint_override;
 
     return $body;
 }
@@ -778,6 +786,7 @@ sub setup_categories_and_bodies : Private {
       ();    # categories for which the reports are not public
     my %category_photo_required =
       (); # whether a category requires a photo to be uploaded.
+    my %cobrand_field_overrides_by_body = ();
     $c->stash->{unresponsive} = {};
 
     my @refused_bodies = grep { ($_->send_method || "") eq 'Refused' } values %bodies;
@@ -853,6 +862,21 @@ sub setup_categories_and_bodies : Private {
         push @category_options, $seen{_('Other')} if $seen{_('Other')};
     }
 
+    foreach my $body (values %bodies_to_list) {
+        my $cobrand_for_body = $body->get_cobrand_handler;
+        next unless $cobrand_for_body;
+
+        my $title_label = $cobrand_for_body->new_report_title_field_label;
+        my $title_hint = $cobrand_for_body->new_report_title_field_hint;
+        my $detail_hint = $cobrand_for_body->new_report_detail_field_hint;
+
+        my %overrides;
+        $overrides{title_label} = $title_label if $title_label;
+        $overrides{title_hint} = $title_hint if $title_hint;
+        $overrides{detail_hint} = $detail_hint if $detail_hint;
+        $cobrand_field_overrides_by_body{$body->name} = \%overrides;
+    }
+
     $c->cobrand->call_hook(munge_report_new_category_list => \@category_options, \@contacts, \%category_extras);
 
     # put results onto stash for display
@@ -867,6 +891,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{category_photo_required}  = \%category_photo_required;
     $c->stash->{extra_name_info} = $all_areas->{+COUNCIL_ID_BROMLEY} ? 1 : 0;
+    $c->stash->{cobrand_field_overrides_by_body} = \%cobrand_field_overrides_by_body;
 
     # escape these so we can then split on , cleanly in the template.
     my @list_of_names = map { $_->name } values %bodies_to_list;
