@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use utf8;
 
 use Moo;
 with 'FixMyStreet::Roles::ConfirmValidation';
@@ -74,6 +75,18 @@ sub disambiguate_location {
         bounds => [ 51.2730478766607, -2.70792015294201, 51.4394857977022, -2.27856110953593 ],
         string => $string,
     };
+}
+
+sub new_report_title_field_label {
+    "Summarise the problem and location"
+}
+
+sub new_report_title_field_hint {
+    "e.g. ‘pothole on Example St, near post box’"
+}
+
+sub new_report_detail_field_hint {
+    "e.g. ‘This pothole has been here for two months and…’"
 }
 
 sub pin_colour {

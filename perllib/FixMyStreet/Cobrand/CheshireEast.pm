@@ -68,6 +68,18 @@ sub filter_report_description { "" }
 
 sub get_geocoder { 'OSM' }
 
+=item * Uses custom text for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_label {
+    "Location of the problem"
+}
+
+sub new_report_title_field_hint {
+    "Exact location, including any landmarks"
+}
+
 =item * /around map shows only open reports by default.
 
 =cut

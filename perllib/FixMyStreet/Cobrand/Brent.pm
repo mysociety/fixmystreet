@@ -1025,6 +1025,18 @@ sub garden_waste_cost_pa {
     return $cost;
 }
 
+=item * Uses custom text for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_label {
+    "Location of the problem"
+}
+
+sub new_report_title_field_hint {
+    "Exact location, including any landmarks"
+}
+
 =item * Staff can apply a fixed discount to the garden subscription cost via a checkbox.
 
 =back

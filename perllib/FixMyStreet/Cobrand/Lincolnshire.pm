@@ -81,6 +81,14 @@ sub admin_user_domain { 'lincolnshire.gov.uk' }
 
 sub default_map_zoom { 5 }
 
+=item * Uses custom text for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_label {
+    "Location of the problem"
+}
+
 =item * The front page text is tweaked to explain existing report numbers
 can be looked up.
 

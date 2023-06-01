@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
+use utf8;
 use DateTime;
 
 sub council_name { 'National Highways' }
@@ -133,6 +134,18 @@ sub fetch_area_children {
         values %$areas
     };
     return $areas;
+}
+
+sub new_report_title_field_label {
+    "Summarise the problem and location"
+}
+
+sub new_report_title_field_hint {
+    "eg ‘Obscured road sign by the northbound M1 junction 23 exit’"
+}
+
+sub new_report_detail_field_hint {
+    "eg ‘This road sign has been obscured for two months and…’"
 }
 
 sub report_new_munge_after_insert {

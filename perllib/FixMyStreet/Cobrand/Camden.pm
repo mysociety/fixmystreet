@@ -39,6 +39,14 @@ sub disambiguate_location {
     };
 }
 
+sub new_report_title_field_label {
+    "Location of the problem"
+}
+
+sub new_report_title_field_hint {
+    "e.g. outside no.18, or near postbox"
+}
+
 sub send_questionnaires {
     return 0;
 }

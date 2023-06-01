@@ -15,6 +15,7 @@ use base 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use utf8;
 
 use URI;
 
@@ -57,6 +58,18 @@ sub allow_anonymous_reports { 'button' }
 
 sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
+}
+
+=item * Uses custom text for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_hint {
+    "e.g. ‘Rubbish dumped on Example St, next to post box’"
+}
+
+sub new_report_detail_field_hint {
+    "e.g. ‘Six large bags of rubbish, including shoes and clothes…’"
 }
 
 =item * /around map shows only open reports by default.

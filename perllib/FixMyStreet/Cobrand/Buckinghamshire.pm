@@ -48,6 +48,18 @@ sub geocoder_munge_results {
     }
 }
 
+sub new_report_title_field_label {
+    "Summarise the problem"
+}
+
+sub new_report_title_field_hint {
+    "Exact location, including any landmarks"
+}
+
+sub new_report_detail_field_hint {
+    "Dimensions, landmarks, direction of travel etc."
+}
+
 sub on_map_default_status { ('open', 'fixed') }
 
 sub around_nearby_filter {

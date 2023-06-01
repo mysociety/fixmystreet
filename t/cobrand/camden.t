@@ -46,10 +46,7 @@ FixMyStreet::override_config {
         ok $mech->host('camden.fixmystreet.com'), 'set host';
 
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.529432&longitude=-0.124514');
-        is_deeply $json->{by_category}, {
-            'Abandoned yellow bike' => { 'bodies' => [ 'Camden Council' ] },
-            'Potholes' => { 'bodies' => [ 'Camden Council' ] }
-        }, "Camden doesn't have River Piers category";
+        is_deeply [sort keys %{$json->{by_category}}], ['Abandoned yellow bike', 'Potholes'], "Camden doesn't have River Piers category";
     };
 
     subtest "show my name publicly checkbox doesn't appear on Camden's cobrand" => sub {
