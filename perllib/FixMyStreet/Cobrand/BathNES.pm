@@ -76,6 +76,18 @@ sub disambiguate_location {
     };
 }
 
+sub new_report_title_field_label {
+    "Summarise the problem and location"
+}
+
+sub new_report_title_field_hint {
+    "e.g. ‘pothole on Example St, near post box’"
+}
+
+sub new_report_title_field_placeholder {
+    "e.g. ‘This pothole has been here for two months and…’"
+}
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey' if $p->state eq 'not responsible';
