@@ -469,6 +469,9 @@ FixMyStreet::override_config {
         waste_calendar_links => { brent => {
             'friday-2' => 'https://example.org/media/16420712/fridayweek2'
         } },
+        ggw_calendar_links => { brent => {
+            'monday-2' => 'https://example.org/media/16420712/mondayweek2'
+        } },
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
             ggw_cost => 6000,
@@ -565,6 +568,10 @@ FixMyStreet::override_config {
                 } ] },
                 ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                     ScheduleDescription => 'every other Monday',
+                    Allocation => {
+                        RoundName => 'Monday ',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
                     StartDate => { DateTime => '2020-03-30T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
@@ -595,6 +602,11 @@ FixMyStreet::override_config {
     subtest 'showing PDF calendar' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('https://example.org/media/16420712/fridayweek2');
+    };
+
+    subtest 'showing green garden waste PDF calendar' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('https://example.org/media/16420712/mondayweek2');
     };
 
     subtest 'test requesting a container' => sub {

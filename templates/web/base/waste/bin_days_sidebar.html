@@ -7,8 +7,13 @@
             <li><a href="https://kingston-self.achieveservice.com/service/In_my_Area_Results?displaymode=collections&amp;altVal=&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
         [% ELSIF c.cobrand.moniker == 'sutton' %]
             <li><a href="https://sutton-self.achieveservice.com/service/In_My_Area_Results?altval=LBS&amp;displaymode=collections&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
-        [% ELSIF c.cobrand.moniker == 'brent' AND calendar_link %]
-            <li><a href="[% calendar_link %]">Download PDF waste calendar</a></li>
+        [% ELSIF c.cobrand.moniker == 'brent' AND (calendar_link OR ggw_calendar_link) %]
+            [%- IF calendar_link -%]
+              <li><a href="[% calendar_link %]">Download PDF waste calendar</a></li>
+            [%- END -%]
+            [%- IF ggw_calendar_link -%]
+              <li><a href="[% ggw_calendar_link %]">Download PDF garden waste calendar</a></li>
+            [%- END -%]
         [% END %]
          </ul>
        </div>

@@ -467,14 +467,20 @@ sub bin_services_for_address {
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
 
         # Check calendar allocation
-        if ($_->{ServiceId} == 262 && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317) && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
             my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
             my $id = sprintf("%s-%s", $day, $week);
-            my $links = $self->{c}->cobrand->feature('waste_calendar_links');
-            $self->{c}->stash->{calendar_link} = $links->{$id};
+            my $links;
+            if ($_->{ServiceId} == 262) {
+                $links = $self->{c}->cobrand->feature('waste_calendar_links');
+                $self->{c}->stash->{calendar_link} = $links->{$id};
+            } elsif ($_->{ServiceId} == 317) {
+                $links = $self->{c}->cobrand->feature('ggw_calendar_links');
+                $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
+            }
         }
 
     }
