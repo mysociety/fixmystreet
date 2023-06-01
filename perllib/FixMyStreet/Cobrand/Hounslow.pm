@@ -47,6 +47,10 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
+sub new_report_title_field_label {
+    "Summarise the problem and location";
+}
+
 sub on_map_default_status { 'open' }
 
 sub pin_colour {
