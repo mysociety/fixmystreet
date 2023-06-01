@@ -41,6 +41,18 @@ sub admin_user_domain { 'centralbedfordshire.gov.uk' }
 # Don't show any reports made before the go-live date at all.
 sub cut_off_date { '2020-12-02' }
 
+=item * Uses custom text for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_label {
+    "Location of the problem"
+}
+
+sub new_report_title_field_hint {
+    "Exact location, including any landmarks"
+}
+
 =item * We send an acknowledgement email when a report is sent; email includes the C<external_id> (Symology reference).
 
 =cut
