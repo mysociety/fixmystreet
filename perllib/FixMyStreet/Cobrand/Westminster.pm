@@ -59,6 +59,18 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
+=item * Uses custom text for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_hint {
+    "e.g. ‘Rubbish dumped on Example St, next to post box’"
+}
+
+sub new_report_title_field_placeholder {
+    "e.g. ‘Six large bags of rubbish, including shoes and clothes…’"
+}
+
 =item * /around map shows only open reports by default.
 
 =cut
