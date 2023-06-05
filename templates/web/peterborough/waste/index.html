@@ -1,31 +1,10 @@
 [% PROCESS 'waste/header.html' %]
 
   [% PROCESS 'govuk/fields.html' %]
-  [% PROCESS back %]
   [% PROCESS errors %]
   [% PROCESS title %]
 
-  [% IF form.current_page.name == 'about_you' %]
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <p>
-          The council or Aragon Direct Services may contact you to obtain more
-          information if needed or to provide an update on your report using
-          your contact information below.
-        </p>
-      </div>
-    </div>
-  [% END %]
-
-  [% IF property %]
-    [% INCLUDE 'waste/_address_display.html' %]
-  [% END %]
-
-  [% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
-
-  <form class="waste" method="post"
-    [% IF form.current_page.name == 'location' %]enctype="multipart/form-data"[% END %]>
-    [% UNLESS property %]
+  <form class="waste" method="post">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <p>
@@ -35,7 +14,6 @@
         </p>
       </div>
     </div>
-    [% END %]
     [% PROCESS form %]
 </form>
 

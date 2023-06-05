@@ -1,0 +1,18 @@
+[% SET title = form.title ~%]
+[% PROCESS 'waste/header.html' %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+  [% IF property %]
+    [% INCLUDE 'waste/_address_display.html' %]
+  [% END %]
+
+  [% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
+
+<form class="waste waste--[% form.current_page.name OR form.name %]" method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]

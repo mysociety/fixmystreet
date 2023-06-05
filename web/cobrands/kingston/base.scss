@@ -135,6 +135,7 @@ a,
             input#pc {
                 @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
                 font-size: 1.25em;
+                background: #fff;
             }
 
             input#sub {
@@ -435,24 +436,8 @@ body.twothirdswidthpage .content .sticky-sidebar {
         border-top: 4px solid $green;
     }
 
-    form.waste {
-        div.govuk-form-group {
-            display: inline-block;
-
-            &:first-child {
-                vertical-align: bottom;
-            }
-        }
-
-        .govuk-button {
-            height: 40px;
-            line-height: 1rem;
-            margin-bottom: 0;
-        }
-    } 
-    .govuk-button {
-        @include kingston-button-primary;
-        border-radius: 5px;
+    #front-main + div{
+        display: none;
     }
 }
 
@@ -465,9 +450,4 @@ input[type="text"], input[type="email"], textarea {
 .govuk-radios__input:focus + .govuk-radios__label:before {
     border-width: 3px;
     box-shadow: 0 0 0 3px mix($green, $white, 65%) !important;
-}
-
-form.waste {
-    display: flex;
-    flex-direction: column;
 }

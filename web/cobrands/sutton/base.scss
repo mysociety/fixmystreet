@@ -434,32 +434,8 @@ body.twothirdswidthpage .content .sticky-sidebar {
         label {
             margin-bottom: 0.5em;
         }
-
-        input#postcode {
-            @include sutton-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-
-            &:hover {
-                background-color: $white;
-            }
-        }
-
-        input#go {
-            margin-left: 5px;
-            @include sutton-button($background-color: $green, $color: $white);
-        }
     }
 
-    form.waste--uprn {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-end;
-
-        .govuk-button {
-            height: 40px;
-            line-height: 1rem;
-            margin-bottom: 0;
-        }
-    } 
     .govuk-button {
         @include sutton-button;
         // Corrects the default behaviour top:2px;

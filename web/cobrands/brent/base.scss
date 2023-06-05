@@ -621,86 +621,11 @@ body.twothirdswidthpage {
   }
 }
 
-h1.govuk-heading-xl {
-  text-align: left;
-  margin: 0 -1rem;
-  padding: 1.5rem 1rem;
-  // background-color: $front_main_colour;
-  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray-transparent.svg") $right center no-repeat;
-  z-index: 1;
-  background-repeat: no-repeat;
-  background-size: 50%;
-  background-position: left top;
-  background-blend-mode: soft-light;
-  background-blend-mode: normal!important;
-}
-
 .waste__collections .govuk-summary-list,
 .waste__summary .govuk-summary-list,
 .waste__collections .govuk-summary-list__row,
 .waste__summary .govuk-summary-list__row{
 background-color: transparent;
-}
-
-form.waste {
-    background-color: $section-background-color;
-    color: $primary_b;
-    margin: 0 -1rem;
-    padding: 1rem 1rem 2rem 1rem;
-
-    div {
-      border-width: 0px;
-      align-items: center;
-      background-color: transparent;
-    }
-
-    $border-width:2px;
-    $max-height: 45px;
-
-    input#sub {
-      background: $link-color !important;
-      margin-top: -1px;
-      margin-bottom: -1px;
-      border: $border-width solid $primary_b;
-      max-height: $max-height;
-      height: $max-height;
-
-      &:hover {
-        background: $link-hover-color !important;
-        color: $white !important;
-        border-color: $link-hover-color;
-      }
-
-      &:focus {
-        background: $link-focus-color !important;
-        color: $primary_b !important;
-        text-decoration-thickness: $link-text-decoration-thickness;
-        border: 2px solid $link-focus-color;
-        border-bottom: 4px solid $primary_b;
-        outline: none;
-        border-left: 0px;
-        $text-underline-offset: 5px;
-        box-shadow: none;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-
-    input#postcode {
-      margin: 2px 0;
-      max-height: $max-height;
-      height: $max-height;
-      border: $border-width solid $primary_b !important;
-      background: $white !important;
-      &:focus {
-        outline:  2px solid $link-focus-color;
-      }
-    }
-
-    #form-go-row {
-      margin-top: 1rem;
-    }
 }
 
 /* New report conditional questions */

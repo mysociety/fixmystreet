@@ -1,0 +1,25 @@
+[% pre_container_extra = BLOCK %]
+  [% UNLESS property %]
+    <div id="front-main">
+        <div id="front-main-container">
+            <h1>Check your bin days <br> or report a missed collection</h1>
+        </div>
+    </div>
+  [% END %]
+[% END %]
+[% SET title = form.title ~%]
+[% PROCESS 'waste/header.html' %]
+
+  [% PROCESS 'govuk/fields.html' %]
+
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+  [% IF property %]
+    [% INCLUDE 'waste/_address_display.html' %]
+  [% END %]
+<form class="waste" method="post">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]

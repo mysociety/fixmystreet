@@ -30,7 +30,7 @@ has feature => (
 
 has index_template => (
     is => 'ro',
-    default => 'waste/index.html'
+    default => 'waste/form.html'
 );
 
 sub auto : Private {
@@ -83,6 +83,7 @@ sub index : Path : Args(0) {
     $form->process( params => $c->req->body_params );
     if ($form->validated) {
         my $addresses = $form->value->{postcode};
+        $c->stash->{template} = 'waste/form.html';
         $form = address_list_form($addresses);
     }
     $c->stash->{form} = $form;

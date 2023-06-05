@@ -2660,6 +2660,10 @@ label .muted {
         }
       }
     }
+
+    ul {
+      margin-top: 2em;
+    }
   }
   a {
     text-decoration: $primary_link_decoration;

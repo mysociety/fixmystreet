@@ -1,0 +1,42 @@
+[% PROCESS 'waste/header.html' %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS back %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+
+  [% IF form.current_page.name == 'about_you' %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p>
+          The council or Aragon Direct Services may contact you to obtain more
+          information if needed or to provide an update on your report using
+          your contact information below.
+        </p>
+      </div>
+    </div>
+  [% END %]
+
+  [% IF property %]
+    [% INCLUDE 'waste/_address_display.html' %]
+  [% END %]
+
+  [% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
+
+  <form class="waste" method="post"
+    [% IF form.current_page.name == 'location' %]enctype="multipart/form-data"[% END %]>
+    [% UNLESS property %]
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p>
+          We need to know your address to help us provide you with accurate
+          information about your household’s waste collections.
+          You can also report problems such as missed collections or broken bins at your address.
+        </p>
+      </div>
+    </div>
+    [% END %]
+    [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]
