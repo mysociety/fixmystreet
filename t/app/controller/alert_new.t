@@ -683,7 +683,8 @@ for my $test (
         like $body, qr/Staff User/, 'Update comes from correct user';
         like $body, qr/$expected_text/s, 'Expected text present';
 
-        like $body, qr{http://www.example.org/report/$report_id}, "Correct report URL in email";
+        my @urls = $mech->get_link_from_email($email, 1);
+        is $urls[0], "http://www.example.org/report/" . $report_id, "Correct report URL in email";
 
         $mech->delete_user($user1);
         $mech->delete_user($user2);
