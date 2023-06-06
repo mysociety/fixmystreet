@@ -46,6 +46,9 @@
                 [%~ END ~%]
             </strong>
             [% problem.category %]
+            [% IF c.cobrand.moniker == 'buckinghamshire' AND problem.contact %]
+                ([% problem.contact.email %])
+            [% END %]
         </p>
 
         <p>
