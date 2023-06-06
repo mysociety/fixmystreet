@@ -10,14 +10,14 @@
                     [% IF group_select == 0 AND problem.category == group.name %]
                         [% selected = 1; group_select = 1 %]
                     [% END %]
-                    <option value="[% cat_op.id %]"[% ' selected' IF selected OR problem.category == cat_op.category %]>[% cat_op.category_display %] ([% cat_op.email %])</option>
+                    <option value="[% cat_op.id %]"[% ' selected' IF selected OR problem.contact.id == cat_op.id %]>[% cat_op.category_display %] ([% cat_op.email %])</option>
                     [% selected = 0 %]
                 [%~ END ~%]
                 [% IF group.name %]</optgroup>[% END %]
             [%~ END =%]
         [% ELSE %]
               [% FOREACH cat IN category_options %]
-                <option value="[% cat.id %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display %]</option>
+                <option value="[% cat.id %]"[% ' selected' IF problem.contact.id == cat.id %]>[% cat.category_display %]</option>
               [% END %]
       [% END %]
   [% END %]
