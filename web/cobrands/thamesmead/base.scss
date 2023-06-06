@@ -124,10 +124,6 @@ html.js-nav-open #nav-link {
     }
 }
 
-a#geolocate_link {
-    @include peabody-button-secondary();
-}
-
 h1, .h1, h2, .h2 {
     font-family: $heading-font;
     font-weight: normal;

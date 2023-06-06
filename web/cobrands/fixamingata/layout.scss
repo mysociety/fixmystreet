@@ -165,20 +165,9 @@ body.twothirdswidthpage {
     margin: 1em 0 2em;
 }
 
-#postcodeForm  {
-    display: flex;
-    flex-direction: column;
-}
-
 #front-main #postcodeForm .form-hint {
     font-size: .9em;
     margin-top: .5em;
-}
-
-#front-main #geolocate_link {
-    border-color: rgb(34, 34, 34);
-    color: rgb(34, 34, 34);
-    font-size: .9em;
 }
 
 .nav-menu a:hover {

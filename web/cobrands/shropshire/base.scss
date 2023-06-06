@@ -196,10 +196,6 @@ a:focus,
     }
 }
 
-a#geolocate_link {
-    @include shropshire-button-secondary();
-}
-
 h1 {
     color: $shropshire-mid-grey;
     font-size: 2em;

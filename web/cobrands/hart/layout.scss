@@ -71,15 +71,6 @@ body.twothirdswidthpage .content {
         background-color: $primary_b;
     }
 
-    a,
-    a:hover {
-        color: $geolocation-link; // Geolocate link
-        margin-left: 2em;
-        &:hover {
-            color: $primary_b;
-        }
-    }
-
     #postcode-intro {
         margin-right: 1em;
         margin-left: 1em;

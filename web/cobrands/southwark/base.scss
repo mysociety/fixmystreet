@@ -418,12 +418,6 @@ dl dt {
   }
 }
 
-a#geolocate_link {
-  // Out from #postcode form element so it also uses this style on the
-  // local alaert page.
-  margin-top: 1em;
-}
-
 .form-box, .box-warning {
   background-color: $white-2;
 }

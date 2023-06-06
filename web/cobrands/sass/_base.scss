@@ -30,6 +30,7 @@ $container-max-width: 60em !default;
 
 $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
+$geolocation-link-background-color: transparent !default;
 
 @import "_mixins";
 @import "_report_list";
@@ -2687,9 +2688,20 @@ label .muted {
 a#geolocate_link {
   border: 1px solid $geolocation-link-border;
   color: $geolocation-link;
+  background-color: $geolocation-link-background-color;
   @include button-size($button-margin-top: 15px);
   @include flex-container-inline();
   @include flex-align(center);
+
+  &:hover {
+    border-color: $geolocation-link-background-color;
+    background-color: $geolocation-link;
+    @if $geolocation-link-background-color == transparent {
+      color: #fff;
+    } @else {
+        color: $geolocation-link-background-color;
+    }
+  }
 }
 
 .no-js #geolocate_link {

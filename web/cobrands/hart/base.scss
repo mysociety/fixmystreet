@@ -167,14 +167,6 @@
 
 a#geolocate_link {
     border-radius: 0;
-    &:focus {
-        color: $primary_b;
-    }
-
-    &:hover {
-        color: $primary_b;
-        background: $base_bg;
-    }
 }
 
 @if $form-box-inverse {
