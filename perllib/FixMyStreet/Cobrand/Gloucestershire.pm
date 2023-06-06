@@ -45,6 +45,14 @@ sub council_url { 'gloucestershire' }
 
 sub admin_user_domain { 'gloucestershire.gov.uk' }
 
+=item * Gloucestershire use their own privacy policy
+
+=cut
+
+sub privacy_policy_url {
+    'https://www.gloucestershire.gov.uk/council-and-democracy/data-protection/privacy-notices/gloucestershire-county-council-general-privacy-statement/gloucestershire-county-council-general-privacy-statement/'
+}
+
 =item * We do not send questionnaires.
 
 =cut
