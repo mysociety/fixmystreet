@@ -1,0 +1,22 @@
+[%
+
+email_summary = "Cliciwch ar y ddolen isod i newid eich cyfeiriad e-bost " _ site_name _ " ";
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Newidiwch eich cyfeiriad e-bost [% site_name %] .</h1>
+  <p style="[% p_style %]">Cliciwch ar y ddolen isod i gadarnhau eich bod am ddiweddaru'ch
+cyfeiriad e-bost [% site_name %]. Rhaid eich bod chi wedi mewngofnodi i'ch cyfrif [% site_name %] ar y ddyfais hon ac yn clicio ar y ddolen o fewn 24 awr.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Newidiwch fy nghyfeiriad e-bost</a>
+  </p>
+  <p style="[% p_style %]">Os nad ydych am newid eich cyfeiriad e-bost mwyach, anwybyddwch yr e-bost hwn.</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

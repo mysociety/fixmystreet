@@ -1,0 +1,19 @@
+[%
+
+email_summary = "Adroddiadau newydd " _ area_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Adroddiadau newydd[% area_name %]</h1>
+  [%~ INCLUDE '_email_report_list.html' %]
+
+  <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Dad-danysgrifio o hysbysiadau am adroddiadau newydd yn yr ardal yma</a></p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

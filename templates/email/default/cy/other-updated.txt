@@ -1,0 +1,18 @@
+Subject: Mae eich diweddariad wedi'i gofnodi
+
+Helo [% update.name %],
+
+Mae eich diweddariad wedi'i gofnodi ar [% site_name %]:
+
+[% cobrand.base_url_for_report(problem) %][% update.url %]
+
+[% TRY %][% INCLUDE '_council_reference.txt' %][% CATCH file %][% END %]
+
+Eich diweddariad yw:
+
+[% update.text %]
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

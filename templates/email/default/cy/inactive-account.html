@@ -1,0 +1,26 @@
+[%
+
+email_summary = "Eich cyfrif anweithredol ar " _ site_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Eich cyfrif anweithredol</h1>
+  <p style="[% p_style %]">
+Mae eich cyfrif [% user.username %] ar [% site_name %] wedi bod yn anweithredol am [% email_from %]
+[% nget('month', 'months', email_from) %], ac rydym yn cael gwared
+ar gyfrifon sydd wedi bod yn anweithredol am [% anonymize_from %]
+[% nget('month', 'months', anonymize_from) %] yn awtomatig. Pe baech yn dymuno cadw eich
+cyfrif, mewngofnodwch i'r wefan a bydd hynny'n ei gadw'n weithredol:
+</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Cyrchwch [% site_name %]</a>
+  </p>
+  <p style="[% p_style %]">Diolch am ddefnyddio'r wefan.</p>
+
+[% INCLUDE '_email_bottom.html' %]

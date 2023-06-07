@@ -1,0 +1,31 @@
+Subject: Cadarnhewch eich adroddiad ar [% site_name %]
+
+Helo [% report.name %],
+
+Cliciwch ar y ddolen isod i gadarnhau eich bod am i'ch adroddiad arddangos
+ar [% site_name %], er nad ydyw wedi ei anfon at yr awdurdod lleol:
+
+[% token_url %]
+
+Os nad yw'ch rhaglen e-bost yn caniatáu i chi glicio ar y ddolen hon, copïwch a gludwch hi
+i'ch porwr gwe i'w cyrchu hi.
+
+Roedd gan eich problem y teitl:
+
+[% report.title %]
+
+A'r manylion:
+
+[% report.detail %]
+
+Os nad ydych am i'ch adroddiad gael ei arddangos ar y wefan mwyach, peidiwch â chymryd
+camau pellach os gwelwch yn dda.
+
+Diolch am gefnogi [% site_name %].
+
+
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

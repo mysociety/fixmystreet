@@ -1,0 +1,39 @@
+[%
+
+email_summary = "Diolch am gofnodi eich adroddiad";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Mae eich adroddiad wedi'i gofnodi</h1>
+  <p style="[% p_style %]">Mae eich adroddiad i [% report.body %] wedi'i gofnodi ar [% site_name %].</p>
+
+[% IF report.non_public %]
+<p style="[% p_style %]">Mae wedi'i farcio'n breifat ac ni fydd yn weladwy
+i'r cyhoedd; gallwch ei weld gan ddefnyddio'r ddolen isod, neu os byddwch yn mewngofnodi
+defnyddiwch y cyfeiriad e-bost sy'n gysylltiedig â'r adroddiad</p>
+[% END %]
+
+[% IF cobrand.is_council && !cobrand.owns_problem( report ) %]
+<p style="[% p_style %]">Nodwch os gwelwch yn dda nad yw [% cobrand.council_name %] yn gyfrifol am y fath yma
+o adroddiad, felly yn hytrach bydd yn cael ei anfon at [% report.body %].</p>
+[% ELSE %]
+[% TRY %][% INCLUDE '_council_reference.html' problem=report %][% CATCH file %][% END %]
+[% END %]
+
+  <p style="margin: 20px auto; text-align: center">
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(report) %][% report.view_url %]">Gweld fy adroddiad</a>
+  </p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

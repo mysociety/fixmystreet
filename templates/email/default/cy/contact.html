@@ -1,0 +1,54 @@
+[%
+
+subject_html = subject | html;
+name = form_name | html;
+email_summary = "“" _ subject_html _ "” – Neges gan " _ name _ " on " _ host;
+email_footer = "Sent via " _ host _ ", IP " _ ip;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% contact_meta_style %]">
+  <table [% table_reset | safe %]>
+    <tr>
+      <th style="[% contact_th_style %]">O</th>
+      <td style="[% contact_td_style %]">
+        [% name %] &lt;<a href="mailto:[% em | html %]">[% em | html %]</a>&gt;
+        [%~ IF user_admin_url %]
+        <small style="[% contact_admin_links_style %]">
+          <a href="[% user_admin_url | html %]">Golygu defnyddiwr</a> –
+        [%~ IF user_latest_report_admin_url %]
+          <a href="[% user_latest_report_admin_url | html %]">Golygu'r adroddiad diweddaraf</a> –
+        [%~ END %]
+          <a href="[% user_reports_admin_url | html %]">Dangos yr holl adroddiadau</a>
+        </small>
+        [%~ END %]
+      </td>
+    </tr>
+  </table>
+</th>
+</tr>
+
+<tr>
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">[% subject | html %]</h1>
+  [% message | html_para_email(p_style) %]
+  [%~ IF complaint %]
+  <p style="[% secondary_p_style %]">
+    [% complaint | html %]
+    - <a href="[% problem_url %]">Adroddiad</a>
+    - <a href="[% admin_url %]">Gweinyddwr</a>
+  </p>
+  [%~ END %]
+  [%~ IF user_agent %]
+  <p style="[% secondary_p_style %]">
+    Asiant Defnyddiwr: [% user_agent | html %]
+  </p>
+  [%~ END %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

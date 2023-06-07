@@ -1,0 +1,13 @@
+Subject: Manylion eich cyfrif [% site_name %]
+
+Cliciwch ar y ddolen isod i gadarnhau eich cyfeiriad e-bost os gwelwch yn dda.
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+Ar ôl i chi wneud hyn, byddwch yn gallu gweld a rheoli eich holl adroddiadau a
+diweddariadau [% site_name %].
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

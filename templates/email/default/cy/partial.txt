@@ -1,0 +1,16 @@
+Subject: Cadarnhewch eich adroddiad ar [% site_name %]
+
+Helo [% report.name || report.email %],
+
+Er mwyn cadarnhau'r adroddiad rydych chi wedi lanlwytho i [% site_name %]
+trwy [% report.service %], ac i sicrhau neu ychwanegu unrhyw fanylion, os gwelwch yn dda cyrchwch
+y URL canlynol:
+
+[% token_url %]
+
+Diolch!
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

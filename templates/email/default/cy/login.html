@@ -1,0 +1,22 @@
+[%
+
+email_summary = "Cliciwch y ddolen isod i gadarnhau eich cyfeiriad e-bost a mewngofnodi i " _ site_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Diolch am ddefnyddio [% site_name %]</h1>
+  <p style="[% p_style %]">Cliciwch y ddolen isod i gadarnhau eich cyfeiriad e-bost a mewngofnodi i [% site_name %].</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Ie, dyma fy nghyfeiriad</a>
+  </p>
+  <p style="[% p_style %]">Ar ôl i chi wneud hyn, byddwch yn gallu gweld a rheoli eich holl adroddiadau a
+diweddariadau o'ch dewislen ar [% site_name %].</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

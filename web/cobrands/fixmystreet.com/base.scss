@@ -58,6 +58,27 @@ svg|g.site-logo__svg {
   }
 }
 
+// Similar to #report-cta for now
+#lang-switcher {
+  display: block;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  #{$right}: 8.5em;
+
+  font-size: 0.9em;
+  line-height: 1em;
+  color: $nav_colour;
+  padding: 0.4em;
+  border-radius: 0.3em;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    background-color: $nav_hover_background_colour;
+  }
+}
+
 body.frontpage {
   $fms-logo-width: 160px;
   $fms-logo-height: 35px;

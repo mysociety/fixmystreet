@@ -1,0 +1,91 @@
+[%
+
+PROCESS '_email_settings.html';
+
+email_summary = "Mae problem newydd yn eich ardal chi wedi cael ei hadrodd gan ddefnyddiwr " _ site_name _ ".";
+email_footer = PROCESS '_submit_footer.html';
+email_columns = 2;
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Problem newydd yn eich ardal</h1>
+  <p style="[% p_style %]">[% missing %][% multiple %]Mae defnyddwyr [% site_name%] wedi cyflwyno'r adroddiad canlynol
+am broblem leol credant y gallai fod angen eich sylw.
+.</p>
+
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% url %]">Dangos yr adroddiad llawn</a>
+  </p>
+  <h2 style="[% h2_style %] margin: 30px 0 10px 0">Wedi adrodd gan:</h2>
+  <table [% table_reset | safe %]>
+    <tr>
+      <th style="[% contact_th_style %]">Enw</th>
+      <td style="[% contact_td_style %]">[% report.name | html %]</td>
+    </tr>
+    <tr>
+      <th style="[% contact_th_style %]">Ebost</th>
+      <td style="[% contact_td_style %]">
+        [%~ IF report.user.email ~%]
+          <a href="mailto:[% report.user.email | html %]">[% report.user.email | html %]</a>
+        [%~ ELSE ~%]
+          <strong>Ni ddarparwyd cyfeiriad e-bost, dim ond rhif ffôn</strong>
+        [%~ END ~%]
+      </td>
+    </tr>
+    [%~ IF report.user.phone %]
+      <tr>
+        <th style="[% contact_th_style %]">Ffôn</th>
+        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
+      </tr>
+    [%~ END %]
+  </table>
+  <p style="[% p_style %] margin-top: 0.5em;">Bydd ymatebion i'r neges yma yn mynd yn uniongyrchol at [% report.name | html %], sef y defnyddiwr adroddodd y broblem.</p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report html_id='report' %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]"><strong>Categori:</strong> [% report.category | html %]</p>
+    [% report.detail | html_para_email(secondary_p_style) %]
+  [% IF report.get_extra_fields %]
+    <p style="[% secondary_p_style %]">
+      [%~ FOR field IN report.get_extra_fields %][% IF field.value %]
+        [% field.description OR field.code %]: [% field.value %]
+        [% IF NOT loop.last %]<br>[% END %]
+      [%~ END %][% END %]
+    </p>
+  [% END %]
+    <p style="[% secondary_p_style %]">
+      <strong>Lleoliad:</strong>
+      <br>Dwyreinio/Gogleiddio
+      [%~ " (IE)" IF coordsyst == "I" ~%]
+      : [% easting %]/[% northing %]
+      (<a href="[% osm_url %]" title="Gweld y lleoliad yma ar OpenStreetMap">
+        [%~ report.latitude %], [% report.longitude ~%]
+      </a>)
+      [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
+    </p>
+  [% IF report.get_extra_field_value('road_name') %]
+    <p style="[% secondary_p_style %]">
+      <strong>Ffordd:</strong>
+        [% report.get_extra_field_value('road_name') %]
+    </p>
+  [% END %]
+  [% IF report.get_extra_field_value('sect_label') %]
+    <p style="[% secondary_p_style %]">
+      <strong>Adran:</strong>
+        [% report.get_extra_field_value('sect_label') %]
+    </p>
+  [% END %]
+  [% IF report.get_extra_field_value('area_name') %]
+    <p style="[% secondary_p_style %]">
+      <strong>Ardal:</strong>
+        [% report.get_extra_field_value('area_name') %]
+    </p>
+  [% END %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

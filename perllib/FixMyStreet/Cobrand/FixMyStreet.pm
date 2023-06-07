@@ -29,7 +29,9 @@ sub path_to_web_templates {
 sub path_to_email_templates {
     my ( $self, $lang_code ) = @_;
     return [
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com', $lang_code ),
         FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
+        FixMyStreet->path_to( 'templates', 'email', 'default', $lang_code ),
     ];
 }
 

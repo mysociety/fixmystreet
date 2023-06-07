@@ -1,0 +1,17 @@
+Subject: Wedi tanysgrifio i hysbysiadau [% site_name %]
+
+Rydych chi wedi tanysgrifio i hysbysiadau [% site_name %] ar gyfer [% problem.title %].
+
+[% problem_url %]
+
+Mae hysbysiadau e-bost yn wasanaeth rhad ac am ddim gan [% site_name %].
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif e-bost nad sydd yn cael ei fonitro - felly os gwelwch yn dda
+peidiwch danfon ymateb at y cyfeiriad yma.
+
+[% signature %]
+
+Dad-danysgrifio ?
+
+Os nad ydych bellach yn dymuno derbyn e-bost pan fydd yr adroddiad yn cael ei ddiweddaru
+yna dilynwch y ddolen hon os gwelwch yn dda: [% unsubscribe_url %]

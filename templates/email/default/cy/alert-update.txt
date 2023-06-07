@@ -1,0 +1,34 @@
+Subject: Diweddariadau newydd [% site_name %] ar adroddiad: '[% report.title %]'
+
+Gofynnoch i ni anfon e-bost atoch pan fydd yna ddiweddariad i'r adroddiad
+[% site_name %] : [% report.title %].
+
+Ceir y diweddariadau canlynol i'r adroddiad:
+
+[% INCLUDE '_email_comment_list.txt' %]
+
+[% state_message %]
+
+[% TRY %][% INCLUDE '_alert_update_after_updates.txt' %][% CATCH file %][% END %]
+
+Pe baech am weld neu ymateb i'r diweddariadau hyn, ewch i'r URL canlynol:
+
+    [% problem_url %]
+
+[% TRY %][% INCLUDE '_council_reference_alert_update.txt' problem=report %][% CATCH file %][% END %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif e-bost nad sydd yn cael ei fonitro - felly os gwelwch yn dda
+peidiwch danfon ymateb at y cyfeiriad yma.
+
+[% signature %]
+
+
+[% IF unsubscribe_url %]
+Unsubscribe?
+
+Ar hyn o bryd rydym ni'n eich ebostio pan fydd unrhyw un yn diweddaru'r
+adroddiad [% site_name %] : [% report.title %].
+
+Os nad ydych bellach yn dymuno derbyn e-bost pan fydd yr adroddiad yma'n derbyn diweddariad
+os gwelwch yn dda cliciwch y ddolen: [% unsubscribe_url %]
+[% END %]

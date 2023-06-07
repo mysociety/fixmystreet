@@ -1,0 +1,101 @@
+Subject: Adroddiad Problem: [% report.title %]
+
+Annwyl [% bodies_name %],
+
+[% missing %][% multiple %]Mae defnyddiwr
+[% site_name %] wedi cyflwyno'r adroddiad canlynol
+am broblem leol maent yn credu gallai fod angen eich sylw.
+
+[% fuzzy %], neu i ddarparu diweddariad am y broblem,
+cyrchwch y ddolen ganlynol os gwelwch yn dda:
+
+    [% url %]
+
+[% has_photo %]----------
+
+Enw: [% report.name %]
+
+Ebost: [% report.user.email OR 'None provided' %]
+
+Ffôn: [% report.user.phone OR 'None provided' %]
+
+Categori: [% report.category %]
+
+Pwnc: [% report.title %]
+
+Manylion: [% report.detail %]
+
+[% FOR field IN report.get_extra_fields %][% IF field.value ~%]
+[% field.description OR field.code %]: [% field.value %]
+
+[% END %][% END ~%]
+
+Dwyreinio/Gogleiddio
+
+Lledred: [% report.latitude %]
+
+Hydred: [% report.longitude %]
+
+[% IF report.get_extra_field_value('road_name') ~%]
+Ffordd: [% report.get_extra_field_value('road_name') %]
+[% END %]
+[% IF report.get_extra_field_value('sect_label') ~%]
+Adran: [% report.get_extra_field_value('sect_label') %]
+[% END %]
+[% IF report.get_extra_field_value('area_name') ~%]
+Ardal: [% report.get_extra_field_value('area_name') %]
+[% END %]
+
+Gweld y lleoliad ar OpenStreetMap of this location: [% osm_url %]
+
+[% closest_address %]----------
+
+Bydd ymatebion i'r e-bost hwn yn mynd at y defnyddiwr a gyflwynodd y broblem.
+
+[% signature %]
+
+[% IF cobrand.moniker == 'fixmystreet' %]
+----------
+
+Ni fydd angen i chi ysgrifennu'r un adroddiad FixMyStreet arall
+
+Newyddion da: nawr, gallwn anfon yr adroddiadau hyn o FixMyStreet
+yn uniongyrchol at eich gwasanaeth cwsmeriaid. Darganfyddwch sut:
+
+
+    https://www.fixmystreet.com/pro
+
+O ble ddaeth yr adroddiad yma?
+
+Gwefan annibynnol yw FixMyStreet, a adeiladwyd gan yr elusen mySociety (<https://www.mysociety.org/>) er mwyn gwneud hi'n haws i ddinasyddion adrodd am broblemau yn eu cymuned.
+
+Pam mae'r adroddiad wedi dod i'r cyfeiriad e-bost yma?
+
+
+Rydym yn gwneud ein gorau i sicrhau bod adroddiadau'n cael eu danfon at y man iawn ym mhob cyngor. Os oes cyfeiriad cyswllt gwell ar gyfer adroddiadau ynghylch materion [% category_footer%], rhowch wybod i ni ar <support@fixmystreet.com>. Gallwn hefyd ychwanegu neu ddileu categorïau os dymunwch.
+
+Sut ydym ni'n ymateb i'r adroddiad hwn?
+
+
+Bydd ymatebion i'r neges yma yn mynd yn uniongyrchol at y defnyddiwr a adroddodd y broblem. Ni chyhoeddir eich ateb ar wefan FixMyStreet (oni bai eich bod yn defnyddio FixMyStreet Pro, a all arddangos ymatebion er mwyn osgoi ailadrodd).
+
+
+Gallwch chi gynnwys mwy o wybodaeth yn yr adroddiadau yma?
+
+Pe bai angen i chi dderbyn data ychwanegol nad yw wedi'i gynnwys yn yr adroddiad ar hyn o bryd, rhowch wybod i ni beth sydd ar goll:<support@fixmystreet.com>
+
+Oes rhaid i ni dderbyn adroddiadau gan FixMyStreet?
+
+Lansiwyd FixMyStreet am y tro cyntaf yn 2007 er mwyn ymateb i'r nifer o gynghorau nad oedd yn cynnig gwasanaeth adrodd ar-lein hawdd i'w ddefnyddio. Mae llawer o drigolion yn parhau i ffafrio FixMyStreet oherwydd ei symlrwydd, ac oherwydd ei fod yn dileu'r angen iddynt wybod pa gyngor sy'n gyfrifol am ba broblem.
+
+Mae FixMyStreet yn gweithredu fel llwyfan adrodd cenedlaethol, gan ddod â'r holl awdurdodau lleol a sefydliadau'r llywodraeth ynghyd ar un system, gan frysbennu
+ adroddiadau rhwng pob math o gynghorau, asiantaethau priffyrdd a chymdeithasau tai. Bellach, nid oes angen i awdurdodau lleol dderbyn adroddiadau e-bost gan FixMyStreet gan y gellir eu hintegreiddio i systemau busnes presennol y cyngor - ac mae yna foddau gwahanol o gyflawni hyn.
+
+ Sut gall FixMyStreet gysylltu'n uniongyrchol â systemau'r cyngor?
+
+ Gallwch wneud hyn eich hun (yn rhad ac am ddim) gan ddefnyddio ein API Open311.
+ Gallwn adeiladu a chynnal yr integreiddio ar eich rhan (am ffi flynyddol)
+ Gallwch chi fod yn ddefnyddiwr FixMyStreet Pro. Mae FixMyStreet Pro yn fersiwn fwy datblygedig o FixMyStreet, sy'n ceisio dileu'r costau sylweddol y mae cynghorau'n eu talu oherwydd adroddiadau dyblyg, methiannau a chysylltu  diangen (gennym yr ystadegau i brofi hyn!).
+
+Fel sefydliad elusennol, ein nod yw helpu gwella gwasanaethau awdurdodau lleol i ddinasyddion. I ddarganfod mwy am gyd-gysylltu FixMyStreet â'ch systemau eich hun, cysylltwch <a href="mailto:support@fixmystreet.com">os gwelwch yn dda
+[% END %]

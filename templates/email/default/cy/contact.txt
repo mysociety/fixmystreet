@@ -1,0 +1,19 @@
+Subject: [% site_name %] neges: [% subject %]
+
+[% message %]
+
+[% IF complaint %]
+[ [% complaint %] - [% problem_url %] - [% admin_url %] ]
+[% END %]
+
+[%~ IF user_admin_url %]
+[ Edit user: [% user_admin_url %] ]
+[%~ IF user_latest_report_admin_url %]
+[ Edit latest report: [% user_latest_report_admin_url %] ]
+[%~ END %]
+[ Show all reports: [% user_reports_admin_url %] ]
+[%~ END %]
+
+-- 
+Anfonwyd trwy ffurflen gyswllt ar [% host %].
+Cyfeiriad IP [% ip %], asiant defnyddiwr [% user_agent %]

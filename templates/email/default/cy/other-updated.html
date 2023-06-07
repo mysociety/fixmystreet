@@ -1,0 +1,27 @@
+[%
+
+email_summary = "Diolch am gofnodi eich diweddariad";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Mae eich diweddariad wedi'i gofnodi</h1>
+  <p style="[% p_style %]">Mae eich diweddariad wedi'i gofnodi ar [% site_name %].</p>
+  [% TRY %][% INCLUDE '_council_reference.html' %][% CATCH file %][% END %]
+  <p style="margin: 20px auto; text-align: center">
+  <a style="[% button_style %]" href="[% cobrand.base_url_for_report(problem) %][% update.url %]">Gweld fy niweddariad</a>
+  </p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html'
+    object = update
+    report = problem %]
+    <p style="[% secondary_p_style %]">[% update.text | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

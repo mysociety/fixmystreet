@@ -1,0 +1,18 @@
+Subject: Eich cyfrif anweithredol ar [% site_name %]
+
+Helo [% user.name %],
+
+Mae eich cyfrif [% user.username %] ar [% site_name %] wedi bod yn anweithredol am [% email_from %]
+[% nget('month', 'months', email_from) %], ac rydym yn cael gwared
+ar gyfrifon sydd wedi bod yn segur ar ôl [% anonymize_from %]
+[% nget('month', 'months', anonymize_from) %] yn awtomatig. Pe baech yn dymuno cadw eich
+cyfrif, mewngofnodwch i'r wefan a bydd hynny'n ei gadw'n weithredol::
+
+[% url %]
+
+Diolch am ddefnyddio'r safle.
+
+[% INCLUDE 'signature.txt' %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

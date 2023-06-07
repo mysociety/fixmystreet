@@ -1,0 +1,29 @@
+Subject: Diweddariadau cyngor [% site_name %] newydd ar yr adroddiad: '[% report.title %]'
+
+[% FOR row IN data -%]
+    [% email_sanitize_text(row, 'item_private_email_text') %]
+[% END %]
+
+[% state_message %]
+
+Ewch i'r URL canlynol i weld eich adroddiad:
+
+    [% problem_url %]
+
+[% TRY %][% INCLUDE '_council_reference_alert_update.txt' problem=report %][% CATCH file %][% END %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.
+
+[% signature %]
+
+
+[% IF unsubscribe_url %]
+Dad-danysgrifio?
+
+Ar hyn o bryd rydym yn anfon e-bost atoch pryd bynnag y bydd rhywun yn gadael diweddariad ar yr
+adroddiad [% site_name %] : [% report.title %].
+
+Os nad ydych yn dymuno derbyn e-byst pellach pan fydd adroddiad hwn yn cael ei ddiweddaru,
+dilynwch y ddolen hon os gwelwch yn dda: [% unsubscribe_url %]
+[% END %]

@@ -1,0 +1,47 @@
+Subject: Adroddiad Problem: [% report.title %]
+
+Annwyl [% bodies_name %],
+
+[% missing %][% multiple %]Mae defnyddiwr
+[% site_name %] wedi cyflwyno'r adroddiad canlynol
+am broblem leol y maent yn credu y gallai fod angen eich sylw.
+
+[% fuzzy %], neu i gynnig y wybodaeth ddiweddaraf am y broblem,
+ewch i'r ddolen ganlynol:
+
+    [% url %]
+
+[% has_photo %]----------
+
+Enw: [% report.name %]
+
+Ebost: [% report.user.email OR "None provided" %]
+
+Ffôn: [% report.user.phone OR "None provided" %]
+
+Categori: [% report.category %]
+
+Pwnc: [% report.title %]
+
+Manylion: [% report.detail %]
+
+[% FOR field IN report.get_extra_fields %][% IF field.value ~%]
+[% field.description OR field.code %]: [% field.value %]
+
+[% END %][% END ~%]
+
+Lledred: [% report.latitude %]
+
+Hydred: [% report.longitude %]
+
+Gweld y lleoliad hwn ar OpenStreetMap: [% osm_url %]
+
+[% closest_address %]----------
+
+Bydd ymatebion i'r e-bost hwn yn mynd at y defnyddiwr a gyflwynodd y broblem.
+
+[% signature %]
+
+Os oes cyfeiriad e-bost mwy priodol ar gyfer negeseuon am
+[% category_footer%], rhowch wybod i ni. Bydd hyn yn helpu i wella'r
+gwasanaeth i bobl leol. Rydym hefyd yn croesawu unrhyw sylwadau eraill.

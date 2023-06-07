@@ -1,0 +1,22 @@
+Subject: Adroddiadau newydd [% site_name %] i [% area_name %] o fewn [% ward_name %]
+
+Mae'r adroddiadau [% site name %] newydd canlynol wedi'u hanfon at [% area_name %]
+o fewn [% ward_name %]:
+
+[% INCLUDE '_email_report_list.txt' %]
+
+[% signature %]
+
+
+Dad-danysgrifio?
+
+Gofynnoch i ni anfon e-bost atoch pan fydd rhywun yn gwneud adroddiad [% site_name %] newydd
+i [% area_name %] o fewn [% ward_name %]. Mae hwn yn adroddiad rhad ac am ddim gan [% site_name %].
+
+Os nad ydych bellach yn dymuno derbyn e-bost pan fydd yna adroddiadau newydd
+i [% area_name %] o fewn [% ward_name %], dilynwch y ddolen hon:
+
+[% unsubscribe_url %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif e-bost nad sydd yn cael ei fonitro - felly os gwelwch yn dda
+peidiwch ateb y cyfeiriad yma.

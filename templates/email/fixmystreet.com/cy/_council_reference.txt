@@ -1,0 +1,9 @@
+[% IF sent_confirm_id_ref ~%]
+Rhif cyfeirnod yr adroddiad yw [% sent_confirm_id_ref %]. Dyfynnwch y rhif yma os oes angen i chi
+gysylltu â'r Cyngor ynglŷn â'r adroddiad hwn os gwelwch yn dda.
+[%~ END %]
+
+[% IF cobrand_handler.moniker == 'buckinghamshire' AND problem.body != 'Buckinghamshire Council' %]
+Am unrhyw ymholiadau pellach am yr adroddiad hwn, cysylltwch â  [% problem.body %]
+[%~ IF problem.contact.email %] yn [% problem.contact.email %][% END %].
+[%~ END %]

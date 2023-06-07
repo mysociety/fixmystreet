@@ -1,0 +1,36 @@
+Subject: Confirm your report on [% site_name %]
+
+Hello [% report.name %],
+
+Os gwelwch yn dda cliciwch ar y ddolen isod er mwyn cadarnhau'r adroddiad rydych chi wedi lanlwytho i
+[% report.body %].[% UNLESS report.non_public %] Nodwch y bydd eich adroddiad hefyd
+yn arddangos ar y wefan [site_name %] .[% END %]
+
+[% token_url %]
+
+Os nad yw'ch rhaglen e-bost yn caniatáu i chi glicio ar y ddolen hon, copïwch a gludwch hi
+i'ch porwr gwe i'w cyrchu hi.
+
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Nodwch nad yw [% c.cobrand.council_name %] yn gyfrifol am y math yma
+o broblem, felly bydd yn cael ei anfon at [% report.body %].
+[% END %]
+[% TRY %][% INCLUDE '_problem-confirm_extra.txt' %][% CATCH file %][% END %]
+Roedd gan eich problem y teitl:
+
+[% report.title %]
+
+A'r manylion:
+
+[% report.detail %]
+
+Os nad ydych am anfon yr adroddiad hwn mwyach, nid oes angen i chi gymryd unrhyw gamau pellach.
+
+Diolch am gyflwyno adroddiad drwy [% site_name %].
+
+
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

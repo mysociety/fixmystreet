@@ -1,0 +1,21 @@
+Subject: Cadarnhau eich diweddariad [% site_name %]
+
+Helo [% update.name %],
+
+Os gwelwch yn dda cliciwch ar y ddolen isod er mwyn cadarnhau eich diweddariad i [% site_name %]:
+
+[% token_url %]
+
+Os nad yw'ch rhaglen e-bost yn caniatáu i chi glicio ar y ddolen hon, copïwch a gludwch hi
+i'ch porwr gwe i'w cyrchu.
+
+Dyma eich diweddariad:
+
+[% update.text %]
+
+[% INCLUDE 'update-confirm-donotsend.txt' %]
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

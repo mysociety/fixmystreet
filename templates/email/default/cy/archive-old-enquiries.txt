@@ -1,0 +1,27 @@
+Subject: Eich adroddiadau ar [% site_name %]
+
+Helo [% user.name %],
+
+Mae FixMyStreet yn cael ei ddiweddaru yn [% cobrand.council_area %] i wella sut mae problemau'n cael eu hadrodd.
+
+Fel rhan o'r broses hon rydym yn cau pob adroddiad a wnaed cyn y diweddariad.
+
+Rydym wedi sylwi bod gennych [% report_count %] hen [% nget('report', 'reports', report_count) %] ar y system, a restrir isod.
+
+Mae eich holl adroddiadau wedi'u derbyn a'u hadolygu gan [% cobrand.council_name %], felly os nad ydynt yn broblem bellach, nid oes angen i chi wneud unrhyw beth.
+
+Os oes yna fater nad ydych yn credu sydd wedi'i ddatrys gallwch roi gwybod amdano eto yma: [% cobrand.base_url %]
+
+[% FOR report IN reports %]
+
+[% report.title %]
+
+Adroddwyd [% report.time_ago %] yn ôl.
+
+Gweld adroddiad: [% cobrand.base_url_for_report( report ) %]/report/[% report.id %]
+
+----
+
+[% END %]
+
+Tîm FixMyStreet a [% cobrand.council_name %]

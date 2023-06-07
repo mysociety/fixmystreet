@@ -1,0 +1,36 @@
+[%
+
+email_summary = "Rydych chi angen cadarnhau eich adroddiad " _ site_name _ " cyn y gall cael ei anfon at ${ report.body }.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Cadarnhewch eich adroddiad</h1>
+  <p style="[% p_style %]">Os gwelwch yn dda cliciwch ar y ddolen isod i gadarnhau eich bod am anfon eich adroddiad at [% report.body %].
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Noder nad ydy [% c.cobrand.council_name %] yn gyfrifol am y fath yma
+o broblem, felly yn hytrach bydd yn cael ei anfon at [% report.body %].
+[% END %]
+
+[% TRY %][% INCLUDE '_problem-confirm_extra.html' %][% CATCH file %][% END %]
+  </p>
+  [% UNLESS report.non_public %]<p style="[% p_style %]">Bydd eich adroddiad hefyd yn arddangos ar wefan [% site_name %] .</p>[% END %]
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Ie, anfonwch fy adroddiad</a>
+  </p>
+  <p style="[% p_style %]">Os nad ydych am anfon yr adroddiad hwn mwyach, peidiwch â chymryd unrhyw gamau pellach.</p>
+  [% TRY %][% INCLUDE '_problem-confirm_footer.html' %][% CATCH file %][% END %]
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

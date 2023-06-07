@@ -1,0 +1,16 @@
+Subject: Cadarnhewch eich [% site_name %] hysbysiad
+
+Cliciwch ar y ddolen isod i gadarnhau eich [% site_name %] hysbysiad.
+
+   [% token_url %]
+
+Os na allwch chi glicio ar y ddolen, copïwch a'i gludo i far cyfeiriad eich porwr.
+
+Mae hyn yn cadarnhau yr hoffech dderbyn e-bost pan fydd rhywun yn creu
+[% site_name %] adroddiad yn eich ardal dewisol.
+
+Mae rhybuddion e-bost yn wasanaeth rhad ac am ddim gan [% site_name %].
+
+Anfonwyd yr e-bost yma'n awtomatig, o gyfrif e-bost nad sydd yn cael ei fonitro - felly
+peidiwch ag ateb yr e-bost yma os gwelwch yn dda.
+

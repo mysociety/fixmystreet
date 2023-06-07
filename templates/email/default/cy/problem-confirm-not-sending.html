@@ -1,0 +1,30 @@
+[%
+
+email_summary = "Rydych chi angen cadarnhau eich adroddiad i " _ site_name _ " cyn y gellir ei gyhoeddi.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Cadarnhewch eich adroddiad</h1>
+  <p style="[% p_style %]">Os gwelwch yn dda cliciwch ar y ddolen isod er mwyn cadarnhau adroddiad rydych chi wedi lanlwytho i
+[% site_name %], er nad gafodd ei anfon at y
+cyngor.</p>
+  <p style="[% p_style %]">Bydd eich adroddiad hefyd yn ymddangos ar wefan [% site_name %] .</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Ie, cyhoeddwch fy adroddiad</a>
+  </p>
+  <p style="[% p_style %]">Os nad ydych am anfon yr adroddiad hwn mwyach, nid oes angen cymryd unrhyw gamau pellach.</p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

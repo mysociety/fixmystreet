@@ -1,0 +1,21 @@
+[%
+
+email_summary = "Cadarnhewch eich adroddiad ar " _ site_name;
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Cadarnhewch eich adroddiad</h1>
+  <p style="[% p_style %]">Helo [% report.name || report.email %],</p>
+  <p style="[% p_style %]">Cliciwch y ddolen isod er mwyn cadarnhau'r adroddiad rydych chi wedi lanlwytho i  [% site_name %] trwy [% report.service %], ac i sicrhau neu ychwanegu unrhyw fanylion:</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Check &amp; confirm report</a>
+  </p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

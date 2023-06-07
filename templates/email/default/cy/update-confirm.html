@@ -1,0 +1,29 @@
+[%
+
+email_summary = "Cadarnhewch eich diweddariad " _ site_name;
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Cadarnhewch eich diweddariad</h1>
+  <p style="[% p_style %]">Cliciwch ar y ddolen isod er mwyn cadarnhau eich diweddariad ar [% site_name %].</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Ie, cadarnhau fy niweddariad</a>
+  </p>
+  <p style="[% p_style %]">[% INCLUDE 'update-confirm-donotsend.txt' %]</p>
+  <p style="[% p_style %]">Os nad ydych am gadarnhau'r diweddariad, nid oes angen cymryd unrhyw gamau pellach.</p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html'
+    object = update
+    report = problem %]
+    <p style="[% secondary_p_style %]">[% update.text | html %]</p>
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

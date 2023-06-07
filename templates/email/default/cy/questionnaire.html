@@ -1,0 +1,37 @@
+[%
+
+title = report.title | html;
+email_summary = "Oes gennych chi ddwy funud? Rhowh wybod beth ddigwyddodd i'ch adroddiad " _ site_name _ " am ${ title }.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Ydy eich problem chi wedi'i trwsio?</h1>
+  <p style="[% p_style %]">[% created %] yn ôl, adroddoch chi broblem gan ddefnyddio [% site_name %].</p>
+  <p style="[% p_style %]">Helpwch ni gadw [% site_name %] yn gyfredol trwy ein diweddaru a yw'r broblem wedi ei drwsio eto:</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% fixed_button_style %]" href="[% url %]?been_fixed=Yes">Wedi trwsio</a>
+    <a style="[% notfixed_button_style %]" href="[% url %]?been_fixed=No">Heb ei drwsio</a>
+  </p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% dontknow_button_style %]" href="[% url %]?been_fixed=Unknown">Ddim yn sicr</a>
+  </p>
+  <p style="[% p_style %]">Diolch! Mae eich adborth wir yn werthfawr.</p>
+
+  [% TRY %][% INCLUDE '_questionnaire-report-id.html' %][% CATCH file %][% END %]
+
+  [% end_padded_box | safe %]
+</th>
+
+[% WRAPPER '_email_sidebar.html' object = report, url = url %]
+    <h2 style="[% h2_style %]">[% title %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

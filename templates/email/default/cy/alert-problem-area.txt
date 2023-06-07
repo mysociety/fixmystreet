@@ -1,0 +1,22 @@
+Subject: Adroddiadau newydd [% area_name %] [% site_name %]
+
+Mae'r adroddiadau newydd [% area_name %] canlynol wedi'u hychwanegu yn
+[% site_name %]:
+
+[% INCLUDE '_email_report_list.txt' %]
+
+[% signature %]
+
+
+Dad-danysgrifio?
+
+Gofynnoch i ni anfon e-bost atoch pan fydd rhywun yn gwneud adroddiad [% site_name %] newydd
+yn [% area_name %]. Mae hwn yn adroddiad rhad ac am ddim gan [% site_name %].
+
+Os nad ydych bellach yn dymuno derbyn e-bost pryd bynnag y ceir adroddiadau newydd yn
+[% area_name %], dilynwch y ddolen hon:
+
+[% unsubscribe_url %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif e-bost nad sydd yn cael ei fonitro - felly os gwelwch yn dda
+peidiwch ateb i'r cyfeiriad yma.

@@ -1,0 +1,77 @@
+[% IF cobrand.moniker == 'fixmystreet' %]
+
+<table [% table_reset | safe %] style="table-layout: fixed;">
+  <tr>
+    <td style="[% td_style %][% header_style %] padding: [% column_padding %]px;">
+      <h2 style="[% h2_style %] margin: 0px;">Cwestiynau Cyffredin</h2>
+    </td>
+  </tr>
+  <tr>
+    <td style="[% td_style %][% primary_column_style %] padding: [% column_padding %]px;">
+      <h3 style="[% submit_footer_h2_style %]">
+        O ble ddaeth yr adroddiad hwn?
+      </h3>
+      <p>
+        Gwefan annibynnol yw FixMyStreet, a adeiladwyd gan yr elusen <a href="https://www.mysociety.org/">mySociety</a> i'w gwneud hi'n haws i ddinasyddion adrodd problemau eu cymuned.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="[% td_style %][% primary_column_style %] padding:0 [% column_padding %]px [% column_padding %]px">
+      <h3 style="[% submit_footer_h2_style %]">
+        Pam mae'r adroddiad wedi dod i'r cyfeiriad e-bost hwn?
+      </h3>
+      <p>
+        Rydym yn gwneud ein gorau i sicrhau bod adroddiadau'n mynd i'r lle iawn ym mhob cyngor. Os oes cyfeiriad cyswllt gwell ar gyfer adroddiadau am broblemau [% report.category | html %], <a href="mailto:support@fixmystreet.com">rhowch wybod os gwelwch yn dda</a>. Gallwn hefyd ychwanegu neu ddileu categorïau yn ôl yr angen.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="[% td_style %][% primary_column_style %] padding:0 [% column_padding %]px [% column_padding %]px">
+      <h3 style="[% submit_footer_h2_style %]">
+        Sut ydym ni'n ymateb i'r adroddiad hwn?
+      </h3>
+      <p>
+        Bydd ymatebion i'r e-bost hwn yn mynd yn syth i mewnflwch y sawl creodd yr adroddiad. Ni chyhoeddir eich ateb ar wefan FixMyStreet (oni bai eich bod yn defnyddio FixMyStreet Pro, a all arddangos ymatebion er mwyn lleihau adborth sy'n ailadrodd).
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="[% td_style %][% primary_column_style %] padding:0 [% column_padding %]px [% column_padding %]px">
+      <h3 style="[% submit_footer_h2_style %]">
+        Gallwch chi gynnwys mwy o wybodaeth yn yr adroddiadau yma?
+      </h3>
+      <p>
+        Os oes angen i chi dderbyn data ychwanegol nad yw wedi'i gynnwys yn yr adroddiad ar hyn o bryd, rhowch wybod beth sydd ar goll <a href="mailto:support@fixmystreet.com">os gwelwch yn dda</a>.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="[% td_style %][% primary_column_style %] padding:0 [% column_padding %]px [% column_padding %]px">
+      <h3 style="[% submit_footer_h2_style %]">
+        Oes rhaid i ni dderbyn adroddiadau FixMyStreet?
+      </h3>
+      <p>
+       Lansiwyd FixMyStreet am y tro cyntaf yn 2007 er mwyn ymateb i'r nifer o gynghorau nad oedd yn cynnig gwasanaeth adrodd ar-lein hawdd i'w ddefnyddio. Mae llawer o drigolion yn parhau i ffafrio FixMyStreet oherwydd ei symlrwydd, ac oherwydd ei fod yn dileu'r angen iddynt wybod pa gyngor sy'n gyfrifol am ba broblem.
+      </p>
+      <p>
+        Mae FixMyStreet yn gweithredu fel llwyfan adrodd cenedlaethol, gan ddod â'r holl awdurdodau lleol a sefydliadau'r llywodraeth ynghyd ar un system, gan frysbennu
+ adroddiadau rhwng pob math o gynghorau, asiantaethau priffyrdd a chymdeithasau tai. Bellach, nid oes angen i awdurdodau lleol dderbyn adroddiadau e-bost gan FixMyStreet gan y gellir eu hintegreiddio i systemau busnes presennol y cyngor - ac mae yna foddau gwahanol o gyflawni hyn.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="[% td_style %][% primary_column_style %] padding:0 [% column_padding %]px [% column_padding %]px">
+      <h3 style="[% submit_footer_h2_style %]">
+        Sut gall FixMyStreet gysylltu'n uniongyrchol â systemau'r cyngor?
+      </h3>
+      <ol>
+        <li>Gallwch wneud hyn eich hun (yn rhad ac am ddim) gan ddefnyddio ein API Open311</li>
+        <li>Gallwn adeiladu a chynnal yr integreiddio ar eich rhan (am ffi flynyddol)</li>
+        <li>Gallwch chi fod yn ddefnyddiwr FixMyStreet Pro. Mae FixMyStreet Pro yn fersiwn fwy datblygedig o FixMyStreet, sy'n ceisio dileu'r costau sylweddol y mae cynghorau'n eu talu oherwydd adroddiadau dyblyg, methiannau a chysylltu  diangen (gennym yr ystadegau i brofi hyn!). </li>
+      </ol>
+      <p>Fel sefydliad elusennol, ein nod yw helpu gwella gwasanaethau awdurdodau lleol i ddinasyddion. I ddarganfod mwy am gyd-gysylltu FixMyStreet â'ch systemau eich hun, cysylltwch <a href="mailto:support@fixmystreet.com">os gwelwch yn dda</a>.</p>
+    </td>
+  </tr>
+</table>
+[% END %]

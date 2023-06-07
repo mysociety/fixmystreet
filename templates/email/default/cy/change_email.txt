@@ -1,0 +1,11 @@
+Subject: Diweddaru eich cyfeiriad ebost ar gyfer [% site_name %]
+
+Cliciwch ar y ddolen isod i gadarnhau eich bod am ddiweddaru'ch
+cyfeiriad e-bost ar [% site_name %].
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

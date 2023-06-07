@@ -1,0 +1,26 @@
+Subject: Holiadur am eich adroddiad [% site_name %] : '[% report.title %]'
+
+Helo [% report.name %],
+
+[% created %] yn ôl, hysbysoch ni am broblem gan ddefnyddio [% site_name %].
+
+Mae manylion yr adroddiad hwnnw ar ddiwedd yr e-bost hwn.
+
+I gadw [% site_name %] yn gyfredol ac yn berthnasol, byddem yn gwerthfawrogi
+pe baech yn dilyn y ddolen isod a llenwi ein holiadur byr
+i ddiweddaru statws eich problem:
+
+    [% url %]
+
+[% signature %]
+
+Roedd eich adroddiad fel a ganlyn:
+
+[% report.title %]
+
+[% report.detail %]
+
+[% TRY %][% INCLUDE '_questionnaire-report-id.txt' %][% CATCH file %][% END %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.

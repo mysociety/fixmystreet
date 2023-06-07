@@ -1,0 +1,25 @@
+Subject: [% site_name %] Anfonwyd Adroddiad: [% title %]
+
+Helo,
+
+Diolch am ddefnyddio [% site_name %] i gyflwyno eich adroddiad
+"[% title %]".
+
+Dyma gadarnhau ei fod bellach wedi'i anfon at [% bodies_name %],
+a ddylai ymateb yn uniongyrchol i chi.
+
+Mae eich adroddiad hefyd ar [% url %], ble bydd eraill yn gallu darllen, a chynnig sylwadau
+a chyngor.
+
+Gallwch chi hefyd ychwanegu diweddariadau i'r dudalen honno, ond noder
+ni fyddant yn cael eu danfon at eich cyngor.
+
+Os hoffech ddiweddaru eich cyngor, arhoswch am eu hymateb fel eich bod yn
+gallu ymateb iddynt yn uniongyrchol os gwelwch yn dda.
+
+Pob lwc yn datrys eich problem.
+
+[% signature %]
+
+Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif nad sydd yn cael ei fonitro - felly
+peidiwch anfon e-bost at y cyfeiriad yma os gwelwch yn dda.
