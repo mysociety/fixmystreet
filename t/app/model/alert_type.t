@@ -293,6 +293,11 @@ foreach my $test (
         no_address  => 1,
         nearest     => '',
     },
+    {
+        desc        => 'null entry',
+        null        => 1,
+        nearest     => '',
+    },
 ) {
     subtest "correct Nearest Road text with $test->{desc}" => sub {
         $mech->clear_emails_ok;
@@ -305,7 +310,9 @@ foreach my $test (
         )->delete;
 
         my $g = $report->geocode;
-        if ( $test->{no_address} ) {
+        if ( $test->{null} ) {
+            $g = undef;
+        } elsif ( $test->{no_address} ) {
             $g->{resourceSets}[0]{resources}[0]{address} = undef;
         } else {
             $g->{resourceSets}[0]{resources}[0]{address}->{addressLine} = $test->{addressLine};

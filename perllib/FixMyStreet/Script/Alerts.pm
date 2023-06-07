@@ -457,7 +457,7 @@ sub _get_address_from_geocode {
     my $geocode = shift;
 
     return '' unless defined $geocode;
-    my $data = JSON->new->decode($geocode);
+    my $data = JSON->new->allow_nonref->decode($geocode);
 
     my $str = '';
 
