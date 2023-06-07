@@ -12,6 +12,12 @@ use constant COUNCIL_ID_ISLEOFWIGHT => 2636;
 
 sub on_map_default_status { return 'open'; }
 
+sub map_type {
+    my $self = shift;
+    return 'OSM::Cymru' if $self->{c} && $self->{c}->req->uri->host =~ /^cy\./;
+    return $self->next::method();
+}
+
 # Show TfL pins as grey
 sub pin_colour {
     my ( $self, $p, $context ) = @_;

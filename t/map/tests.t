@@ -13,6 +13,7 @@ my $requires = {
     'OS::FMS' => 'map-fms-os.js',
     'OS::API' => 'map-os.js',
     'OSM' => 'OpenStreetMap.js',
+    'OSM::Cymru' => 'OSMCymru.js',
     'OSM::CycleMap' => 'OpenStreetMap.js',
     'OSM::StreetView' => 'map-streetview.js',
     'OSM::TonerLite' => 'map-toner-lite.js',
