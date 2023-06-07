@@ -1,4 +1,4 @@
-FROM jgoerzen/debian-base-standard:stretch
+FROM jgoerzen/debian-base-standard:bullseye
 MAINTAINER sysadmin@mysociety.org
 
 ARG DEBIAN_FRONTEND=noninteractive
