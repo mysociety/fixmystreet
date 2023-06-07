@@ -6,9 +6,8 @@ title: Install script
 # FixMyStreet Install Script
 
 <p class="lead">
-  If you have a new installation of Debian wheezy or Ubuntu precise,
-  you can use an install script to set up a basic installation of
-  FixMyStreet on your server.
+  If you have a new installation of Debian or Ubuntu, you can use an install
+  script to set up a basic installation of FixMyStreet on your server.
 </p>
 
 Note that this is just one of [many ways to install FixMyStreet]({{ "/install/" | relative_url }}).
