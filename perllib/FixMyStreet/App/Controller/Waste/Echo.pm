@@ -70,18 +70,26 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
         $request->{fixmystreet_id} = $fms_id;
     }
 
-    my $suppress_alerts = $event->{EventTypeId} == 1159 ? 1 : 0;
-    my $updates = Open311::GetServiceRequestUpdates->new(
-        system_user => $body->comment_user,
-        current_body => $body,
-        suppress_alerts => $suppress_alerts,
-    );
-
-    my $p = $updates->find_problem($request);
-    if ($p) {
-        $c->forward('check_existing_update', [ $p, $request, $updates ]);
-        my $comment = $updates->process_update($request, $p);
+    my @bodies = ($body);
+    if ($c->cobrand->moniker eq 'kingston') {
+        push @bodies, $c->cobrand->dashboard_extra_bodies;
     }
+
+    foreach my $b (@bodies) {
+        my $suppress_alerts = $event->{EventTypeId} == 1159 ? 1 : 0;
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            system_user => $b->comment_user,
+            current_body => $b,
+            suppress_alerts => $suppress_alerts,
+        );
+        my $p = $updates->find_problem($request);
+        if ($p) {
+            $c->forward('check_existing_update', [ $p, $request, $updates ]);
+            my $comment = $updates->process_update($request, $p);
+            last;
+        }
+    }
+
     # Still want to say it is okay, even if we did nothing with it
     $c->forward('soap_ok');
 }

@@ -20,6 +20,11 @@ my $body = $mech->create_body_ok( 2498, 'Sutton Council', {
 }, {
     cobrand => 'sutton'
 });
+my $kingston = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
+    comment_user => $user,
+}, {
+    cobrand => 'kingston',
+});
 
 $mech->create_contact_ok(
     body => $body,
@@ -170,7 +175,7 @@ subtest 'updating of waste reports' => sub {
             return SOAP::Result->new(result => {
                 EventStateId => $event_state_id,
                 EventTypeId => '1638',
-                LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2100-10-12T14:00:00Z' },
+                LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2010-10-12T14:00:00Z' },
                 ResolutionCodeId => $resolution_code,
             });
         } elsif ($method eq 'GetEventType') {
@@ -187,6 +192,15 @@ subtest 'updating of waste reports' => sub {
         }
     });
 
+    my @reports = $mech->create_problems_for_body(2, $body->id, 'Garden Subscription', {
+        confirmed => \'current_timestamp',
+        user => $normal_user,
+        category => 'Garden Subscription',
+        cobrand_data => 'waste',
+    });
+    $reports[1]->update({ external_id => 'something-else' }); # To test loop
+    my $report = $reports[0];
+
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'sutton',
         COBRAND_FEATURES => {
@@ -195,15 +209,6 @@ subtest 'updating of waste reports' => sub {
         },
     }, sub {
         $mech->clear_emails_ok;
-
-        my @reports = $mech->create_problems_for_body(2, $body->id, 'Garden Subscription', {
-            confirmed => \'current_timestamp',
-            user => $normal_user,
-            category => 'Garden Subscription',
-            cobrand_data => 'waste',
-        });
-        $reports[1]->update({ external_id => 'something-else' }); # To test loop
-        my $report = $reports[0];
 
         $normal_user->create_alert($report->id, { cobrand => 'sutton' });
 
@@ -246,6 +251,47 @@ subtest 'updating of waste reports' => sub {
         FixMyStreet::Script::Alerts::send_updates();
         $mech->email_count_is(0);
     };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['kingston', 'sutton'],
+        COBRAND_FEATURES => {
+            echo => { kingston => {
+                url => 'https://www.example.org/',
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { kingston => 1, sutton => 1 }
+        },
+    }, sub {
+        my $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-15004-</Guid>
+        <EventTypeId>1638</EventTypeId>
+        <EventStateId>15002</EventStateId>
+        <ResolutionCodeId></ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+        my $mech2 = $mech->clone;
+        $mech2->host('kingston.example.org');
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 3, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'investigating', 'A state change';
+    };
 };
+
+
 
 done_testing();
