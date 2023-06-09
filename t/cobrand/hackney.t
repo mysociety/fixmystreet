@@ -518,8 +518,8 @@ subtest 'Dashboard CSV extra columns' => sub {
         geocode => {
             resourceSets => [ {
                 resources => [ {
-                    name => '12 A Street, XX1 1SZ',
                     address => {
+                        formattedAddress => '12 A Street, XX1 1SZ',
                         addressLine => '12 A Street',
                         postalCode => 'XX1 1SZ'
                     }

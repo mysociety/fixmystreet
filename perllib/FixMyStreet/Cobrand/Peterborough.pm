@@ -130,24 +130,12 @@ around open311_extra_data_include => sub {
         }
     }
     if ( $row->geocode && $row->contact->email =~ /Bartec/ ) {
-        my ($number, $street, $postcode);
-
-        if ($row->geocode->{resourceSets}) { # Bing results
-            my $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address};
-            ($number, $street) = $address->{addressLine} =~ /\s*(\d*)\s*(.*)/;
-            $postcode = $address->{postalCode};
-        } elsif ($row->geocode->{display_name}) { # OSM results
-            my $address = $row->geocode->{address};
-            $number = $address->{house_number} || '';
-            $street = $address->{road} || '';
-            $postcode = $address->{postcode} || '';
-        }
-
-        if ($number || $street || $postcode) {
+        my $parts = $row->nearest_address_parts;
+        if ($parts->{number} || $parts->{street} || $parts->{postcode}) {
             push @$open311_only, (
-                { name => 'postcode', value => $postcode },
-                { name => 'house_no', value => $number },
-                { name => 'street', value => $street }
+                { name => 'postcode', value => $parts->{postcode} },
+                { name => 'house_no', value => $parts->{number} },
+                { name => 'street', value => $parts->{street} }
             );
         }
     }
@@ -407,13 +395,7 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my $address = '';
-        if ($report->geocode && $report->geocode->{resourceSets}) {
-            $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name};
-        } elsif ($report->geocode && $report->geocode->{display_name}) {
-            $address = $report->geocode->{display_name};
-        }
-
+        my $address = $report->nearest_address(1);
         my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
         my $ext_code = $report->get_extra_metadata('external_status_code');
         my $state = FixMyStreet::DB->resultset("State")->display($report->state);

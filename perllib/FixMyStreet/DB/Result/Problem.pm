@@ -256,6 +256,7 @@ __PACKAGE__->might_have(
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
+use FixMyStreet::Geocode::Address;
 use FixMyStreet::Map::FMS;
 use FixMyStreet::Template;
 use FixMyStreet::Template::SafeString;
@@ -761,19 +762,14 @@ sub meta_line {
 }
 
 sub nearest_address {
+    my ($self, $include_waste) = @_;
+    return '' if !$include_waste && $self->cobrand_data && $self->cobrand_data eq 'waste';
+    return FixMyStreet::Geocode::Address->new($self->geocode)->summary;
+}
+
+sub nearest_address_parts {
     my $self = shift;
-
-    return '' unless $self->geocode;
-    return '' if $self->cobrand_data && $self->cobrand_data eq 'waste';
-
-    if ($self->geocode->{resourceSets}) { # Bing geocoder
-        my $address = $self->geocode->{resourceSets}[0]{resources}[0];
-        return $address->{name};
-    } elsif ($self->geocode->{display_name}) { # OSM geocoder
-        return $self->geocode->{display_name};
-    }
-
-    return '';
+    return FixMyStreet::Geocode::Address->new($self->geocode)->parts;
 }
 
 # Does not return bodies whose send methods have failed

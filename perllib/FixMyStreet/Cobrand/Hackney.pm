@@ -119,13 +119,7 @@ around open311_extra_data_include => sub {
         $contact->email($code) if $code;
     }
 
-    if ($row->geocode) {
-        my $address;
-        if ($row->geocode->{resourceSets}) { # Bing results
-            $address = $row->geocode->{resourceSets}->[0]->{resources}->[0]->{address}->{formattedAddress};
-        } else {
-            $address = $row->geocode->{display_name}; # OSM results
-        }
+    if (my $address = $row->nearest_address) {
         push @$open311_only, (
             { name => 'closest_address', value => $address }
         );
@@ -364,8 +358,8 @@ sub dashboard_export_problems_add_columns {
         my $postcode = '';
 
         if ( $report->geocode ) {
-            $address = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{name};
-            $postcode = $report->geocode->{resourceSets}->[0]->{resources}->[0]->{address}->{postalCode};
+            $address = $report->nearest_address;
+            $postcode = $report->nearest_address_parts->{postcode};
         }
 
         return {
