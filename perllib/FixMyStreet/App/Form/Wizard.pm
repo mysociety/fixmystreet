@@ -17,13 +17,13 @@ has current_page => ( is => 'ro', lazy => 1,
     predicate => 'has_current_page',
 );
 
-has c => ( is => 'ro' );
+has c => ( is => 'ro', weak_ref => 1 );
 
 has saved_data_encoded => ( is => 'ro', isa => 'Maybe[Str]' );
 has saved_data => ( is => 'rw', lazy => 1, isa => 'HashRef', default => sub {
     $_[0]->field('saved_data')->inflate_json($_[0]->saved_data_encoded) || {};
 });
-has previous_form => ( is => 'ro', isa => 'Maybe[HTML::FormHandler]' );
+has previous_form => ( is => 'ro', isa => 'Maybe[HTML::FormHandler]', weak_ref => 1 );
 has csrf_token => ( is => 'ro', isa => 'Str' );
 
 has_field saved_data => ( type => 'JSON' );

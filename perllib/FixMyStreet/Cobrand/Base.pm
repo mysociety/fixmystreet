@@ -2,6 +2,7 @@ package FixMyStreet::Cobrand::Base;
 
 use strict;
 use warnings;
+use Scalar::Util qw(weaken);
 
 =head2 new
 
@@ -18,6 +19,7 @@ method in L<FixMyStreet::Cobrand> instead.
 sub new {
     my $class = shift;
     my $self = shift || {};
+    weaken($self->{c});
     return bless $self, $class;
 }
 
