@@ -79,6 +79,10 @@ sub garden_waste_no_bins {
             TaskTypeId => 1688,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
+                Allocation => {
+                    RoundName => 'Monday ',
+                    RoundGroupName => 'Delta 04 Week 2',
+                },
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -134,6 +138,10 @@ sub _garden_waste_service_units {
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
+                Allocation => {
+                    RoundName => 'Monday ',
+                    RoundGroupName => 'Delta 04 Week 2',
+                },
                 StartDate => { DateTime => '2020-03-30T00:00:00Z' },
                 EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {
