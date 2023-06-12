@@ -12,10 +12,11 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $osm = Test::MockModule->new('FixMyStreet::Geocode');
+my $gc = Test::MockModule->new('FixMyStreet::Geocode');
 
-$osm->mock('cache', sub {
-    [
+$gc->mock('cache', sub {
+    my $type = shift;
+    return [
         {
           'osm_type' => 'way',
           'type' => 'tertiary',
@@ -53,6 +54,24 @@ $osm->mock('cache', sub {
           'osm_id' => 507095202
         }
     ]
+        if $type eq 'osm';
+
+    return {
+        results => [
+            { LPI => {
+                  "UPRN" => "202204308",
+                  "ADDRESS" => "STUDIO 1, 29, BUCKINGHAM ROAD, LONDON, BRENT, NW10 4RP",
+                  "USRN" => "20202572",
+                  "SAO_TEXT" => "STUDIO 1",
+                  "PAO_START_NUMBER" => "29",
+                  "STREET_DESCRIPTION" => "BUCKINGHAM ROAD",
+                  "TOWN_NAME" => "LONDON",
+                  "ADMINISTRATIVE_AREA" => "BRENT",
+                  "POSTCODE_LOCATOR" => "NW10 4RP",
+            } }
+        ],
+    }
+        if $type eq 'osplaces';
 });
 # Mock fetching bank holidays
 my $uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
@@ -482,6 +501,22 @@ FixMyStreet::override_config {
         }, "Search for Engineers Way");
 
         $mech->content_contains('Engineers Way, HA9 0FJ', 'Strips out extra Brent text');
+    }
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'brent',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        geocoder_reverse => { brent => 'OSPlaces' },
+        os_places_api_key => { brent => 'key' },
+    },
+}, sub {
+    subtest 'test reverse geocoding' => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Title', {});
+        my $cobrand = FixMyStreet::Cobrand::Brent->new;
+        my $closest = $cobrand->find_closest($problem);
+        is $closest->summary, 'Studio 1, 29, Buckingham Road, London, Brent, NW10 4RP';
     }
 };
 
