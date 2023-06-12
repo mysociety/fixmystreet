@@ -122,7 +122,7 @@ sub _create_vars {
 
     $h{osm_url} = Utils::OpenStreetMap::short_url($h{latitude}, $h{longitude});
     if ( $row->used_map ) {
-        $h{closest_address} = $self->cobrand->find_closest($row);
+        $h{closest_address} = $self->cobrand_handler->find_closest($row);
         $h{osm_url} .= '?m';
     }
 

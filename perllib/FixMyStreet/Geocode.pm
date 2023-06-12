@@ -59,6 +59,22 @@ sub string {
     return $service->string($s, $c);
 }
 
+sub reverse {
+    my ($cobrand, $lat, $lon) = @_;
+
+    my $service = $cobrand->get_reverse_geocoder;
+    $service = $service->{type} if ref $service;
+
+    $service = __PACKAGE__ . '::' . $service;
+    my %avail = map { $_ => 1 } __PACKAGE__->geocoders;
+
+    if (!$avail{$service} || ($service->can('setup') && !$service->setup)) {
+        $service = __PACKAGE__ . '::OSM';
+    }
+
+    return $service->reverse_geocode($cobrand, $lat, $lon);
+}
+
 # escape STRING CONTEXT
 # Escapes string for putting in URL geocoding call
 sub escape {

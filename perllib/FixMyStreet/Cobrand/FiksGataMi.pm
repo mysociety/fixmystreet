@@ -63,7 +63,7 @@ sub geocoded_string_check {
 sub find_closest {
     my ( $self, $problem ) = @_;
     $problem = $problem->{problem} if ref $problem eq 'HASH';
-    return FixMyStreet::Geocode::OSM::closest_road_text( $self, $problem->latitude, $problem->longitude );
+    return FixMyStreet::Geocode::OSM->closest_road_text( $self, $problem->latitude, $problem->longitude );
 }
 
 # Used by send-reports, calling find_closest, calling OSM geocoding

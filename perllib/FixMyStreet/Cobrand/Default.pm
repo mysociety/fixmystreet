@@ -5,8 +5,8 @@ use strict;
 use warnings;
 use FixMyStreet;
 use FixMyStreet::DB;
+use FixMyStreet::Geocode;
 use FixMyStreet::Geocode::Address;
-use FixMyStreet::Geocode::OSM;
 use FixMyStreet::OutOfHours;
 use DateTime;
 use JSON::MaybeXS;
@@ -594,8 +594,7 @@ sub find_closest {
     my $j = $problem ? $problem->geocode : undef;
 
     if (!$j) {
-        $j = FixMyStreet::Geocode::OSM::reverse_geocode( $lat, $lon,
-            18 ); # zoom level 18 for building results
+        $j = FixMyStreet::Geocode::reverse($self, $lat, $lon);
         if ($problem) {
             # cache the geocoder results for use in alerts
             $problem->geocode( $j );
@@ -1291,6 +1290,17 @@ Return the default geocoder from config.
 
 sub get_geocoder {
     FixMyStreet->config('GEOCODER');
+}
+
+=item get_reverse_geocoder
+
+Return the default reverse geocoder from config.
+
+=cut
+
+sub get_reverse_geocoder {
+    my $self = shift;
+    return $self->feature('geocoder_reverse') || 'OSM';
 }
 
 sub sms_authentication { FixMyStreet->config('SMS_AUTHENTICATION') }

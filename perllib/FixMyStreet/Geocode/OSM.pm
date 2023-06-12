@@ -76,7 +76,8 @@ sub string {
 }
 
 sub reverse_geocode {
-    my ($latitude, $longitude, $zoom) = @_;
+    my ($cls, $cobrand, $latitude, $longitude, $zoom) = @_;
+    $zoom ||= 18; # zoom level 18 for building results
     return if FixMyStreet->test_mode;
     my $url = "${nominatimbase}reverse?format=jsonv2&zoom=$zoom&lat=$latitude&lon=$longitude";
     my $j = FixMyStreet::Geocode::cache('osm', $url);
@@ -116,8 +117,8 @@ sub get_object_tags {
 # A better alternative might be
 # http://www.geonames.org/maps/osm-reverse-geocoder.html#findNearbyStreetsOSM
 sub get_nearest_road_tags {
-    my ( $cobrand, $latitude, $longitude ) = @_;
-    my $inforef = reverse_geocode($latitude, $longitude, 16);
+    my ( $cls, $cobrand, $latitude, $longitude ) = @_;
+    my $inforef = $cls->reverse_geocode($cobrand, $latitude, $longitude, 16);
     if (exists $inforef->{result}->{osm_type}
         && 'way' eq $inforef->{result}->{osm_type}) {
         my $osmtags = get_object_tags('way',
@@ -131,9 +132,9 @@ sub get_nearest_road_tags {
 }
 
 sub closest_road_text {
-    my ( $cobrand, $latitude, $longitude ) = @_;
+    my ( $cls, $cobrand, $latitude, $longitude ) = @_;
     my $str = '';
-    my $osmtags = get_nearest_road_tags( $cobrand, $latitude, $longitude );
+    my $osmtags = $cls->get_nearest_road_tags( $cobrand, $latitude, $longitude );
     if ($osmtags) {
         my ($name, $ref) = ('','');
         $name =  $osmtags->{name} if exists $osmtags->{name};

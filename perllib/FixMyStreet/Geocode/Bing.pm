@@ -99,8 +99,10 @@ sub string {
     return { error => $error };
 }
 
-sub reverse {
-    my ( $latitude, $longitude, $bing_culture ) = @_;
+sub reverse_geocode {
+    my ( $cls, $cobrand, $latitude, $longitude ) = @_;
+
+    my $bing_culture = $cobrand->disambiguate_location()->{bing_culture};
 
     # Get nearest road-type thing from Bing
     my $key = FixMyStreet->config('BING_MAPS_API_KEY', '');
