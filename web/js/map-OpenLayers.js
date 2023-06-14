@@ -187,11 +187,12 @@ $.extend(fixmystreet.utils, {
             lonlat = new OpenLayers.LonLat(lonlat.lon, lonlat.lat);
         }
 
+        var draggable = !$("html").hasClass("mobile");
         if (fixmystreet.page == 'new') {
-            /* Already have a pin */
+            fixmystreet.markers.features[0].attributes.draggable = draggable;
             fixmystreet.markers.features[0].move(lonlat);
         } else {
-            var markers = fixmystreet.maps.markers_list( [ [ lonlat.lat, lonlat.lon, fixmystreet.pin_new_report_colour ] ], false );
+            var markers = fixmystreet.maps.markers_list( [ [ lonlat.lat, lonlat.lon, fixmystreet.pin_new_report_colour, undefined, undefined, undefined, draggable ] ], false );
             fixmystreet.bbox_strategy.layer.protocol.abort(fixmystreet.bbox_strategy.response);
             fixmystreet.bbox_strategy.deactivate();
             fixmystreet.markers.removeAllFeatures();
@@ -233,7 +234,7 @@ $.extend(fixmystreet.utils, {
             }
             var id = pin[3] === undefined ? pin[3] : +pin[3];
             var marker_size = (id === window.selected_problem_id) ? selected_size : size;
-            var draggable = (id === window.selected_problem_id) ? true : (pin[6] === false ? false : true);
+            var draggable = (id && id === window.selected_problem_id) ? true : (pin[6] === false ? false : true);
             var marker = new OpenLayers.Feature.Vector(loc, {
                 colour: pin[2],
                 size: pin[5] || marker_size,
