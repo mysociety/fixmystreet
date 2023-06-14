@@ -1445,6 +1445,7 @@ fixmystreet.message_controller = (function() {
         if ($('html').hasClass('mobile')) {
             var msg = $(id).html();
             var mobile_class = id.replace('#', '');
+            $("body").addClass("map-with-crosshairs2");
             $div = $('<div class="js-mobile-not-an-asset mob_' + mobile_class + '"></div>').html(msg);
             $div.appendTo('#map_box');
         } else {

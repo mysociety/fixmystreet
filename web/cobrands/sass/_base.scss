@@ -2240,12 +2240,17 @@ html.js #map .noscript {
 .map-page .js-mobile-not-an-asset,
 .only-map .category_meta_message {
   position: absolute;
-  bottom: 3em;
+  top: 2.25em;
   #{$left}: 0.25em;
-  #{$right}: 0.25em;
+  #{$right}: 3.25em;
   padding: 0.25em;
   color: #fff;
   background-color: black;
+  background-color: rgba(0,0,0,0.7);
+
+  p:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .olControlAttribution {
