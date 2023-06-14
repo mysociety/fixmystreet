@@ -228,9 +228,10 @@ sub _extra_new_update_data {
     $row->{confirmed} = $dt;
 
     # Hack in the image for the non-object updates
+    my $photo = $row->{item_photo};
     $row->{get_first_image_fp} = sub {
         return FixMyStreet::App::Model::PhotoSet->new({
-            db_data => $row->{item_photo},
+            db_data => $photo,
         })->get_image_data( num => 0, size => 'fp' );
     };
 }
@@ -248,9 +249,10 @@ sub _extra_new_area_data {
     $row->{confirmed} = $dt;
 
     # Hack in the image for the non-object reports
+    my $photo = $row->{photo};
     $row->{get_first_image_fp} = sub {
         return FixMyStreet::App::Model::PhotoSet->new({
-            db_data => $row->{photo},
+            db_data => $photo,
         })->get_image_data( num => 0, size => 'fp' );
     };
 }
@@ -283,9 +285,10 @@ sub send_local {
             my $nearest_st = _get_address_from_geocode( $row->{geocode} );
             $row->{nearest} = $nearest_st;
         }
+        my $photo = $row->{photo};
         $row->{get_first_image_fp} = sub {
             return FixMyStreet::App::Model::PhotoSet->new({
-                db_data => $row->{photo},
+                db_data => $photo,
             })->get_image_data( num => 0, size => 'fp' );
         };
         push @reports, $row;

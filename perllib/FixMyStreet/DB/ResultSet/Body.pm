@@ -167,7 +167,7 @@ sub all_sorted {
         next unless defined $body->{area_count};
         $body->{get_column} = sub {
             my $key = shift;
-            return $body->{$key};
+            return $b->{$key};
         };
     }
 
