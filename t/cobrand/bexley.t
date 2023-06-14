@@ -51,6 +51,8 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Graffiti', email => 
 my $da = $mech->create_contact_ok(body_id => $body->id, category => 'Dead animal', email => "ANIM");
 $mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and litter', email => "STREET");
 $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG", group => 'Danger things');
+$mech->create_contact_ok(body_id => $body->id, category => 'Carriageway', email => "CARRIAGEWAY", group => 'Flytipping');
+$mech->create_contact_ok(body_id => $body->id, category => 'Obstructions on pavements and roads', email => "OBSTR");
 
 $da->set_extra_fields({
     code => 'message',
@@ -110,13 +112,18 @@ FixMyStreet::override_config {
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
         { category => 'Abandoned and untaxed vehicles', code => 'ConfirmABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'No' } },
-        { category => 'Dead animal', email => ['p1', 'outofhours', 'ooh2'], code => 'ANIM' },
+        { category => 'Dead animal', email => ['p1'], code => 'ANIM',
+            extra => { 'name' => 'reportType', description => 'Type of animal', 'value' => 'Fox' } },
+        { category => 'Dead animal', email => ['p1', 'outofhours', 'ooh2'], code => 'ANIM',
+            extra => { 'name' => 'reportType', description => 'Type of animal', 'value' => 'Horse / Large Animal' } },
         { category => 'Something dangerous', email => ['p1', 'outofhours', 'ooh2'], code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Something dangerous', code => 'DANG',
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
         { category => 'Street cleaning and litter', email => ['p1', 'outofhours', 'ooh2'], code => 'STREET',
-            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Oil spillage' } },
+            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Oil Spillage' } },
+        { category => 'Street cleaning and litter', email => ['p1'], code => 'STREET',
+            extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Litter' } },
         { category => 'Gulley covers', email => ['p1', 'outofhours', 'ooh2'], code => 'GULL',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Cover missing' } },
         { category => 'Gulley covers', code => 'GULL',
@@ -133,6 +140,17 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Flytipping', code => 'UniformFLY', email => ['eh'] },
         { category => 'Graffiti', code => 'GRAF', email => ['p1'], extra => { 'name' => 'offensive', description => 'Is the graffiti racist or offensive?', 'value' => 'Yes' } },
+        { category => 'Carriageway', code => 'CARRIAGEWAY', email => ['p1'] },
+        { category => 'Carriageway', code => 'CARRIAGEWAY', email => ['p1', 'outofhours', 'ooh2'],
+            extra => { 'name' => 'blocking', description => 'Flytipping blocking carriageway?', 'value' => 'Yes' } },
+        { category => 'Obstructions on pavements and roads', code => 'OBSTR', email => ['p1'],
+            extra => { 'name' => 'reportType', description => 'Type of obstruction?', 'value' => 'Tables and Chairs' } },
+        { category => 'Obstructions on pavements and roads', code => 'OBSTR', email => ['p1', 'outofhours', 'ooh2'],
+            extra => [
+                { 'name' => 'reportType', description => 'Type of obstruction?', 'value' => 'Skips' },
+                { 'name' => 'issueDescription', description => 'What is the issue?', 'value' => 'Skip is not illuminated' }
+            ],
+        },
         { category => 'Flooding in the road', code => 'ConfirmFLOD', email => ['flooding'] },
     ) {
         ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
