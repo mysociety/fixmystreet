@@ -49,30 +49,20 @@ sub reload_allowed_maps {
 
 =head2 map_class
 
-Sets the appropriate class given a query parameter string.
-Returns the old map class, if any.
+Sets the appropriate class given a cobrand to look up the map type on.
 
 =cut
 
 our $map_class;
 our $map_cobrand;
 sub set_map_class {
-    my $arg = shift;
-    my $str;
-    if (ref $arg) {
-        # A cobrand object
-        $map_cobrand = $arg;
-        $str = $arg->map_type;
-    } else {
-        $map_cobrand = undef;
-        $str = $arg;
-    }
+    my $cobrand = shift;
+    $map_cobrand = $cobrand;
+    my $str = $cobrand->map_type;
     $str = __PACKAGE__.'::'.$str if $str;
     my %avail = map { $_ => 1 } @ALL_MAP_CLASSES;
     $str = $ALL_MAP_CLASSES[0] unless $str && $avail{$str};
-    my $old_map_class = $map_class;
     $map_class = $str;
-    return $old_map_class;
 }
 
 sub display_map {

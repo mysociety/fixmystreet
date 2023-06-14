@@ -256,6 +256,7 @@ __PACKAGE__->might_have(
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
+use FixMyStreet::Map;
 use FixMyStreet::Map::FMS;
 use FixMyStreet::Template;
 use FixMyStreet::Template::SafeString;
@@ -1186,12 +1187,27 @@ sub static_map {
 
     return unless $IM;
 
-    my $orig_map_class = FixMyStreet::Map::set_map_class('OSM')
-        unless $FixMyStreet::Map::map_class->isa("FixMyStreet::Map::OSM");
-
     my $cobrand = $FixMyStreet::Map::map_cobrand || $self->get_cobrand_logged;
+    open(my $out, '-|',
+        FixMyStreet->path_to('bin/generate-report-map'),
+        '--id', $self->id,
+        '--cobrand', $cobrand->moniker,
+        $params{zoom} ? ('--zoom', $params{zoom}) : (),
+        $params{full_size} ? ('--full') : (),
+    );
+    my $blob = join('', <$out>);
+    return {
+        data => $blob,
+        content_type => 'image/jpeg',
+    };
+}
+
+sub static_map_blob {
+    my ($self, %params) = @_;
+
+    FixMyStreet::Map::set_map_class($params{cobrand});
     my $map = $FixMyStreet::Map::map_class->new({
-        cobrand => $cobrand,
+        cobrand => $params{cobrand},
         distance => 1, # prevents the call to Gaze which isn't necessary
         $params{zoom} ? ( zoom => $params{zoom} ) : (),
     });
@@ -1202,7 +1218,7 @@ sub static_map {
         ? [ {
             latitude  => $self->latitude,
             longitude => $self->longitude,
-            colour    => $cobrand->pin_colour($self, 'report'),
+            colour    => $params{cobrand}->pin_colour($self, 'report'),
             type      => 'big',
           } ]
         : [],
@@ -1234,7 +1250,6 @@ sub static_map {
     }
 
     unless ($image) {
-        FixMyStreet::Map::set_map_class($orig_map_class) if $orig_map_class;
         return;
     }
 
@@ -1257,12 +1272,7 @@ sub static_map {
     my @blobs = $image->ImageToBlob(magick => 'jpeg');
     undef $image;
 
-    FixMyStreet::Map::set_map_class($orig_map_class) if $orig_map_class;
-
-    return {
-        data => $blobs[0],
-        content_type => 'image/jpeg',
-    };
+    return $blobs[0];
 }
 
 has shortlisted_user => (

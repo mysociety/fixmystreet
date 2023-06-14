@@ -1,13 +1,10 @@
+use FixMyStreet::Test;
 use FixMyStreet::DB;
 use FixMyStreet::Map;
-use FixMyStreet::TestMech;
 use DateTime;
 
 use Catalyst::Test 'FixMyStreet::App';
 
-my $mech = FixMyStreet::TestMech->new;
-
-FixMyStreet::Map::set_map_class();
 my $c = ctx_request('http://fixmystreet.com/test?bbox=-7.6,49.7,-7.5,49.8');
 
 my $user =

@@ -1,16 +1,12 @@
 use FixMyStreet::Test;
 
-# FIXME Should this be here? A better way? uri_for varies by map.
 use Catalyst::Test 'FixMyStreet::App';
-FixMyStreet::Map::set_map_class();
 
 # structure of these tests borrowed from '/t/aggregate/unit_core_uri_for.t'
 
 use strict;
 use warnings;
 use URI;
-
-use_ok('FixMyStreet::App');
 
 my $fms_c = ctx_request('http://www.fixmystreet.com/');
 

@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+
+# generate-report-map
+# Make a little map image for a report
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['id=s', 'which report to generate the map for'],
+    ['cobrand=s', 'which cobrand to generate the map for'],
+    ['zoom=i', 'zoom level if required'],
+    ['full', 'if full size map wanted'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+$usage->die unless $opts->id && $opts->cobrand;
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
+my $p = FixMyStreet::DB->resultset("Problem")->find($opts->id);
+my $data = $p->static_map_blob(
+    zoom => $opts->zoom,
+    full_size => $opts->full,
+    cobrand => $cobrand,
+);
+
+print $data;

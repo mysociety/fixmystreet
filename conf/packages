@@ -11,6 +11,7 @@ libsoap-lite-perl
 memcached
 perl
 perlmagick
+imagemagick
 libmath-bigint-gmp-perl
 gettext
 postgresql-server-dev-all
