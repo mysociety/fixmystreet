@@ -148,7 +148,7 @@ sub garden_cc_check_payment_status {
         my %params = %{$c->req->params};
         delete $params{SHASIGN};
         my $check = $self->garden_waste_generate_sig( \%params, $passphrase );
-        if ( $check != $sha ) {
+        if ( $check ne $sha ) {
             $c->stash->{error} = "Failed security check";
             return undef;
         }
