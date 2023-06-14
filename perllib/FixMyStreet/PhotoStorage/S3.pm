@@ -116,7 +116,4 @@ sub retrieve_photo {
 
 }
 
-sub validate_key { $_[1] }
-
-
 1;

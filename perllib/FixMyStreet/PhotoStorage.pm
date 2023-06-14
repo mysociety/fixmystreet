@@ -25,6 +25,28 @@ sub detect_type {
     return '';
 }
 
+=head2 validate_key
+
+A long-running FMS instance might have reports whose photo IDs in the DB
+don't include the file extension. This function takes a value from the DB and
+returns a 'tidied' version that can be used when calling photo_exists
+or retrieve_photo.
+
+If the passed key doesn't seem like it'll result in a valid filename (i.e.
+it's not a 40-char SHA1 hash) returns undef.
+
+=cut
+
+sub validate_key {
+    my ($self, $key) = @_;
+
+    my ($fileid, $type) = split /\./, $key;
+    $type ||= 'jpeg';
+    if ($fileid && length($fileid) == 40) {
+        return "$fileid.$type";
+    }
+}
+
 =head2 get_fileid
 
 Calculates an identifier for a binary blob of photo data.
