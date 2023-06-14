@@ -2133,12 +2133,12 @@ html.js #map .noscript {
   display: none;
 
   position: absolute;
-  #{$left}: 25%;
-  #{$right}: 25%;
+  #{$left}: 2em;
+  #{$right}: 2em;
   bottom: 0;
   margin: 0;
-  margin-bottom: 6em;
-  margin-bottom: calc(env(safe-area-inset-bottom) + 6em);
+  margin-bottom: 5em;
+  margin-bottom: calc(env(safe-area-inset-bottom) + 5em);
 
   @include border-radius(0.5em);
 
