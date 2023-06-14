@@ -6,7 +6,13 @@
         <meta property="og:image:width" content="[% data.width %]">
         <meta property="og:image:height" content="[% data.height %]">
         [% ELSE %]
-        <meta property="og:image" content="[% c.cobrand.base_url %]/cobrands/fixmystreet/images/fms-og_image.jpg">
+        [% IF file_exists("web/cobrands/" _ c.cobrand.moniker _ "/images/fms-og_image.jpg");
+            SET og_moniker = c.cobrand.moniker;
+          ELSE;
+            SET og_moniker = 'fixmystreet';
+          END;
+        %]
+        <meta property="og:image" content="[% c.cobrand.base_url %]/cobrands/[% og_moniker %]/images/fms-og_image.jpg">
         <meta property="og:image:type" content="image/jpeg">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
