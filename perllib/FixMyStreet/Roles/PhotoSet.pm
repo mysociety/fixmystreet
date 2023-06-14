@@ -31,9 +31,9 @@ sub get_first_image_fp {
     return $self->get_photoset->get_image_data( num => 0, size => 'fp' );
 }
 
-sub get_first_image_og {
+sub get_first_image_type {
     my ($self) = @_;
-    return $self->get_photoset->get_image_data( num => 0, size => 'og' );
+    return $self->get_photoset->get_image_type(0);
 }
 
 sub photos {

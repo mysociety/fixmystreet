@@ -175,6 +175,13 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
     },
 );
 
+sub get_image_type {
+    my ($self, $index) = @_;
+    my $filename = $self->get_id($index);
+    my ($fileid, $type) = split /\./, $filename;
+    return "image/$type";
+}
+
 sub get_raw_image {
     my ($self, $index) = @_;
     my $filename = $self->get_id($index);
