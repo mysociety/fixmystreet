@@ -1,10 +1,8 @@
 [% IF disallowed.match('reporter') AND (NOT disallowed.match('open') OR problem.is_open) %]
     <p>
-        Only the original reporter may leave updates.
+        [% loc('Only the original reporter may leave updates.') %]
         [% IF NOT c.user_exists %]
-            If you made the original report please
-            <a href="/auth?r=report/[% problem.id %]">log in</a>
-            to leave an update.
+            [% tprintf(loc('If you made the original report please <a href="%s">log in</a> to leave an update.'), "/auth?r=report/" _ problem.id) %]
         [% END %]
     </p>
 [% ELSE %]

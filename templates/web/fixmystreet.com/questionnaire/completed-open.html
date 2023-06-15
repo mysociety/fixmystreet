@@ -1,19 +1,15 @@
 [% IF ! c.cobrand.is_council %]
-    <h2>We’re sorry to hear that your problem hasn’t been fixed.</h2>
+    <h2>[% loc('We’re sorry to hear that your problem hasn’t been fixed.') %]</h2>
 
     <p>
-    FixMyStreet helps you send a report to your council, but we’re not responsible for fixing things.
-    If you’d like to chase your issue, please search your inbox for the latest reply, or auto-reply
-    from your council, and respond to that.
+    [% loc('FixMyStreet helps you send a report to your council, but we’re not responsible for fixing things. If you’d like to chase your issue, please search your inbox for the latest reply, or auto-reply from your council, and respond to that.') %]
     </p>
 
     <p>
-    Meanwhile, if you’re getting nowhere, you might consider writing to your local councillor or other
-    representative to see if they can help.
+    [% loc('Meanwhile, if you’re getting nowhere, you might consider writing to your local councillor or other representative to see if they can help.') %]
     </p>
 
     <p>
-    You can do this on <a href="https://www.writetothem.com/?utm_source=fixmystreet.com&amp;utm_campaign=workflow_links&amp;utm_medium=link&amp;utm_content=completed+unfixed">WriteToThem</a>, another
-    useful mySociety website.
+    [% tprintf(loc('You can do this on <a href="%s">WriteToThem</a>, another useful mySociety website.'), "https://www.writetothem.com/?utm_source=fixmystreet.com&amp;utm_campaign=workflow_links&amp;utm_medium=link&amp;utm_content=completed+unfixed") %]
     </p>
 [% END %]

@@ -3,14 +3,14 @@
 [% column_no = problem.get_extra_field_value('column_no') ~%]
 
 <div class="council_info_box">
-    <p><strong>Council ref:</strong> [% reference OR problem.id %]</p>
+    <p><strong>[% loc('Council ref:') %]</strong> [% reference OR problem.id %]</p>
     [% asset_id = problem.public_asset_id; IF asset_id %]
-        <p><strong>Asset ID:</strong> [% asset_id %]</p>
+        <p><strong>[% loc('Asset ID:') %]</strong> [% asset_id %]</p>
     [% END %]
     [% IF column_no %]
-    <p><strong>Column number:</strong> [% column_no %]</p>
+    <p><strong>[% loc('Column number:') %]</strong> [% column_no %]</p>
     [% END %]
     [% IF unit_type %]
-    <p><strong>Unit type:</strong> [% unit_type %]</p>
+    <p><strong>[% loc('Unit type:') %]</strong> [% unit_type %]</p>
     [% END %]
 </div>

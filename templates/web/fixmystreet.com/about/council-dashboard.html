@@ -6,27 +6,28 @@
 
     <form method="post">
 
-        <h1>Council stats</h1>
+        <h1>[% loc('Council stats') %]</h1>
 
         <p>
-            For council staff only. Access detailed statistics
-            on reports and performance in your area.
+            [% loc('For council staff only. Access detailed statistics on reports and performance in your area.') %]
         </p>
 
         <div class="form-group">
-            <label for="demo-name">Name</label>
-            <span class="required">required</span>
+            <label for="demo-name">[% loc('Name') %]</label>
+            <span class="required">[% loc('required') %]</span>
             <input class="form-control" type="text" name="name" id="demo-name" required value="[% form_name | html %]">
         </div>
         <div class="form-group">
-            <label for="demo-email">Contact email</label>
-            <span class="required">required</span>
+            <label for="demo-email">[% loc('Contact email') %]</label>
+            <span class="required">[% loc('required') %]</span>
             <input class="form-control" type="email" name="username" id="demo-email" required value="[% email | html %]">
             <p class="form-note">
                 [% IF error == 'bad_email' %]<strong>[% END ~%]
-                Ending in .gov.uk, or other official council domain
-                [% IF error == 'bad_email' %]– please <a href="/contact?name=[% form_name | uri %]&amp;em=[% email | uri %]">contact us</a>
-                if we did not recognise your email</strong>[% END ~%]
+                [% loc('Ending in .gov.uk, or other official council domain') %]
+                [% IF error == 'bad_email' %]–
+                [%  SET form_name_uri = form_name | uri;
+                    SET email_uri = email | uri;
+                tprintf(loc('please <a href="%s">contact us</a> if we did not recognise your email'), "/contact?name=" _ form_name _ "&amp;em=" _ email) %]</strong>[% END ~%]
             </p>
         </div>
         <div class="form-group submit-group">
@@ -36,7 +37,7 @@
             <input type="hidden" name="message" value="Filled in the council dashboard form">
             <input type="hidden" name="recipient" value="business">
             <input type="hidden" name="dest" value="from_council">
-            <input type="submit" value="Request access" class="btn">
+            <input type="submit" value="[% loc('Request access') %]" class="btn">
         </div>
 
     </form>

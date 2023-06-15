@@ -6,7 +6,7 @@
             <div class="col-sm-5">
                 <h2 class="mysoc-footer__site-name">FixMyStreet</h2>
                 <div class="mysoc-footer__site-description">
-                    <p>Mapping and reporting street problems to the councils responsible for fixing them &ndash; anywhere in the UK.</p>
+                    <p>[% loc('Mapping and reporting street problems to the councils responsible for fixing them &ndash; anywhere in the UK.') %]</p>
                 </div>
                 [% IF bodyclass.match('offlinepage') %]
                     <pre>[% date.format(date.now) %] [% git_version %]</pre>
@@ -14,10 +14,10 @@
 
                 <div class="fms-app-badges">
                     <a class="js-lazyload fms-app-badge fms-app-badge--ios" href="https://itunes.apple.com/gb/app/fixmystreet/id297456545">
-                        FixMyStreet app on the App Store
+                        [% loc('FixMyStreet app on the App Store') %]
                     </a>
                     <a class="js-lazyload fms-app-badge fms-app-badge--android" href="https://play.google.com/store/apps/details?id=org.mysociety.FixMyStreet">
-                        FixMyStreet Android app on Google Play
+                        [% loc('FixMyStreet Android app on Google Play') %]
                     </a>
                 </div>
             </div>
@@ -50,8 +50,8 @@
 
             <div class="col-sm-3">
                 <div class="mysoc-footer__donate">
-                    <p>Your donations keep this site and others like it running</p>
-                    <a href="https://www.mysociety.org/donate?utm_source=fixmystreet.com&amp;utm_content=footer+donate+now&amp;utm_medium=link&amp;utm_campaign=mysoc_footer" class="mysoc-footer__donate__button">Donate now</a>
+                    <p>[% loc('Your donations keep this site and others like it running') %]</p>
+                    <a href="https://www.mysociety.org/donate?utm_source=fixmystreet.com&amp;utm_content=footer+donate+now&amp;utm_medium=link&amp;utm_campaign=mysoc_footer" class="mysoc-footer__donate__button">[% loc('Donate now') %]</a>
                 </div>
             </div>
 
@@ -62,12 +62,12 @@
             <div class="col-sm-6">
                 <div class="mysoc-footer__orgs">
                     <p class="mysoc-footer__org">
-                        Built by
+                        [% loc('Built by') %]
                         <a href="https://www.mysociety.org?utm_source=fixmystreet.com&amp;utm_content=footer+logo&amp;utm_medium=link&amp;utm_campaign=mysoc_footer" class="js-lazyload mysoc-footer__org__logo mysoc-footer__org__logo--mysociety">mySociety</a>
                     </p>
                     <p class="mysoc-footer__org">
-                        Powered by
-                        <a href="https://fixmystreet.org" class="js-lazyload mysoc-footer__org__logo mysoc-footer__org__logo--fms-platform">FixMyStreet Platform</a>
+                        [% loc('Powered by') %]
+                        <a href="https://fixmystreet.org" class="js-lazyload mysoc-footer__org__logo mysoc-footer__org__logo--fms-platform">[% loc('FixMyStreet Platform') %]</a>
                     </p>
                 </div>
             </div>
@@ -75,10 +75,11 @@
             <div class="col-sm-4">
                 <div class="mysoc-footer__legal">
                     <p>
-                        <a href="https://www.societyworks.org?utm_source=fixmystreet.com&amp;utm_content=footer+full+legal+details&amp;utm_medium=link&amp;utm_campaign=mysoc_footer">SocietyWorks</a>
-                        is a limited company (05798215). It is a trading subsidiary of
-                        <a href="https://www.mysociety.org?utm_source=fixmystreet.com&amp;utm_content=footer+full+legal+details&amp;utm_medium=link&amp;utm_campaign=mysoc_footer">mySociety</a>,
-                        a registered charity in England and Wales (1076346).
+                        [% tprintf(loc('<a href="%s">SocietyWorks</a> is a limited company (05798215). It is a trading subsidiary of <a href="%s">mySociety</a>, a registered charity in England and Wales (1076346).'),
+                            "https://www.societyworks.org?utm_source=fixmystreet.com&amp;utm_content=footer+full+legal+details&amp;utm_medium=link&amp;utm_campaign=mysoc_footer",
+                            "https://www.mysociety.org?utm_source=fixmystreet.com&amp;utm_content=footer+full+legal+details&amp;utm_medium=link&amp;utm_campaign=mysoc_footer"
+                        ) %]
+
                     </p>
                 </div>
             </div>

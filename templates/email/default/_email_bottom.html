@@ -11,7 +11,7 @@
         [%~ IF email_footer.defined %]
           [% email_footer | safe %]
         [%~ ELSE %]
-          This email was sent automatically, from an unmonitored email account. Please do not reply to it.
+          [% loc('This email was sent automatically, from an unmonitored email account. Please do not reply to it.') %]
         [%~ END %]
       </th>
       <th class="spacer-cell"></th>
