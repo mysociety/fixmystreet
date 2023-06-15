@@ -109,6 +109,10 @@ dl dt {
     color: white;
     margin-top: 1em;
   }
+
+  .form-hint {
+    color: transparentize(white, 0.15);
+  }
 }
 
 label {

@@ -63,6 +63,10 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
       line-height: 1.25em;
       max-width: 640px;
     }
+
+    .form-hint {
+      color: transparentize($primary_b, 0.15);
+    }
   }
 
   .nav-menu {
