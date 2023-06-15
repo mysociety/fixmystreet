@@ -1711,6 +1711,35 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
         is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
+
+        subtest 'Refund email includes PAYE.net code' => sub {
+            $report->external_id('Bartec-SR00100001');
+            $report->update;
+
+            set_fixed_time('2022-08-25T05:44:59Z');
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains("If you cancel this booking you will receive a refund");
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+            $mech->content_contains(
+                'Your booking has been cancelled',
+                'Cancellation confirmation page shown',
+            );
+            my $email = $mech->get_email;
+            my $text = $email->as_string;
+            like $text, qr/PAYE.net code: 123456/,
+                'Correct PAYE.net code';
+            unlike $text, qr/Capita SCP Response:/;
+            unlike $text, qr/CAN:/, 'Correct CAN';
+            unlike $text, qr/Auth Code:/, 'Correct auth code';
+            like $text, qr/Original Service Request Number: SR00100001/,
+                'Correct SR number';
+
+            $mech->clear_emails_ok;
+            FixMyStreet::DB->resultset('Problem')->find(
+                { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
+            )->delete;
+        };
+
         $mech->log_out_ok;
         $report->delete;
     };

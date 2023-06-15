@@ -1182,6 +1182,10 @@ sub process_bulky_cancellation : Private {
                     [ $c->cobrand->contact_email, $c->cobrand->council_name ]
                 ],
 
+                payment_method =>
+                    $collection_report->get_extra_field_value('payment_method'),
+                payment_code =>
+                    $collection_report->get_extra_field_value('PaymentCode'),
                 auth_code =>
                     $collection_report->get_extra_metadata('authCode'),
                 continuous_audit_number =>
