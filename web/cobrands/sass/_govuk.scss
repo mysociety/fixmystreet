@@ -1,0 +1,11 @@
+.govuk-select {
+      // This will make the arrow for the multi-select component and GOVUK look the same.
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: inline-image("../fixmystreet/images/chevron-black-down.svg");
+      background-repeat: no-repeat;
+      background-size: 11px;
+      background-position: right 0.5em center;
+      background-color: #fff;
+}

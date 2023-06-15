@@ -58,6 +58,7 @@ $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
 
 @import "_mixins";
+@import "_govuk";
 @import "_report_list";
 
 body {

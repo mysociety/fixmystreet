@@ -1,5 +1,4 @@
 .report-list-filters-wrapper, #bulk-assign-form {
-  color: #666;
   border-top: 1px solid #e5e5e5;
   border-bottom: 1px solid #e5e5e5;
 
@@ -54,7 +53,6 @@
   }
 
   .multi-select-container {
-    margin: 0 0.2em;
     color: #000;
   }
 
@@ -64,9 +62,9 @@
   }
 
   .multi-select-button {
-    max-width: 10em;
-    padding: flip(0 1.5em 0 0.6em, 0 0.6em 0 1.5em);
-    line-height: 1.8em;
+    box-sizing: border-box;
+    max-width: 100%;
+    padding: flip(0.4em 1.5em 0.4em 0.6em, 0.4em 0.6em 0.4em 1.5em);
     vertical-align: top;
   }
 
@@ -91,10 +89,51 @@
     content: none;
   }
 
+  &.sort-select {
+    width: fit-content;
+  }
+
 }
 
 input.bulk-assign {
     float: right;
     margin: 2em;
     transform: scale(2);
+}
+
+.multi-select-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+@media (min-width: 48em) {
+  .report-list-filters {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+
+    .multi-select-group {
+      flex-basis: 50%;
+    }
+
+    .multi-select-button {
+      width: 100%;
+    }
+
+    &.sort-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      float: left;
+    }
+  }
+
+  #show_old_reports_wrapper {
+    padding-top: 24px;
+    padding-left: 0;
+    .govuk-label.govuk-checkboxes__label {
+      font-size: 0.85em;
+    }
+  }
 }

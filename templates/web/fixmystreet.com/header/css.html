@@ -1,6 +1,8 @@
 [% SET base_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]
 [% SET layout_css = version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]
 [% SET ol_css = version('/vendor/OpenLayers/theme/default/style.css') %]
+[% SET govuk_css = version('/vendor/govuk-frontend/forms.css') %]
+
 
 [% TRY %][% critical = INSERT "header/critical.auto.min.css" %][% CATCH file %][% END %]
 
@@ -17,6 +19,7 @@
 <noscript><link rel="stylesheet" href="[% base_css %]"></noscript>
 <link rel="prefetch" href="[% ol_css %]" as="style">
 <link id="preload_base_css" rel="preload" href="[% base_css %]" as="style">
+<link rel="stylesheet" href="[% govuk_css %]" as="style">
 <script nonce="[% csp_nonce %]">
 /* If browser *does* support preload, use stylesheets when loaded */
 document.getElementById('preload_base_css').onload = function(){this.onload=null;this.rel='stylesheet'};
@@ -28,6 +31,7 @@ document.getElementById('preload_base_css').onload = function(){this.onload=null
 [% ELSE %]
 <link rel="stylesheet" href="[% ol_css %]">
 <link rel="stylesheet" href="[% base_css %]">
+<link rel="stylesheet" href="[% govuk_css %]">
 [% END %]
 <link rel="stylesheet" href="[% layout_css %]" media="screen and (min-width:48em)">
 <!--[if (lt IE 9) & (!IEMobile)]>
