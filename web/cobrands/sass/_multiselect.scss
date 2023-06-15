@@ -11,7 +11,7 @@
     float: #{$left}; // shrink to width of child elements
     min-width: 100%; // always at least as wide as its .multi-select-button sibling
     background: #fff;
-    margin: 1em 0;
+    margin: 1.5em 0;
     border: 1px solid #aaa;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     display: none;
@@ -35,12 +35,23 @@
     }
 }
 
-.multi-select-menuitem--titled:before {
-    display: block;
-    font-weight: bold;
-    content: attr(data-group-title);
-    margin: 0 0 0.25em -20px;
-    cursor: default;
+.multi-select-menuitem--titled {
+    &:before {
+        display: block;
+        font-weight: bold;
+        content: attr(data-group-title);
+        margin: 0 0 0.25em -20px;
+        cursor: default;
+    }
+
+    &.govuk-checkboxes__item {
+        margin-top: 1.85em;
+        &:before {
+            position: absolute;
+            left: 1em;
+            top: -1.5em;
+        }
+    }
 }
 
 .multi-select-menuitem--titledsr:before {
@@ -107,45 +118,24 @@
 }
 
 .multi-select-button {
+    @extend .govuk-select;
     display: inline-block;
-    font-size: 0.875em;
-    padding: flip(0.2em 1.5em 0.2em 0.6em, 0.2em 0.6em 0.2em 1.5em);
-    max-width: 20em;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    vertical-align: -0.5em;
-    background-color: #fff;
-    border: 1px solid $form-control-border-color;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     cursor: default;
     position: relative;
-
-    &:after {
-        content: "";
-        display: block;
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 0.4em 0.4em 0 0.4em;
-        border-color: #999 transparent transparent transparent;
-
-        position: absolute;
-        #{$right}: 0.5em;
-        top: 50%;
-        margin: -0.2em 0 0 0;
-    }
+    white-space: nowrap;
+    line-height: 1.5rem;
 }
 
 .multi-select-container--open {
     .multi-select-menu {
         display: block;
+        padding: 0 1em;
     }
 
-    .multi-select-button:after {
-        border-width: 0 0.4em 0.4em 0.4em;
-        border-color: transparent transparent #999 transparent;
+    .multi-select-button {
+        background-image: inline-image("../fixmystreet/images/chevron-black-up.svg");
     }
 }
 
@@ -157,4 +147,165 @@
             white-space: normal;
         }
     }
+}
+
+// Rules when using GOVUK styling
+// Using variables for the spacing to make more evident the relationship the dependencies between elements.
+.govuk-multi-select {
+    .govuk-fieldset__legend {
+      padding: 0.5rem 0 0 0.5rem;
+    }
+}
+
+$govuk-small-input-size: 44px;
+$govuk-small-input-visible-size: 24px;
+
+.govuk-multi-select__label {
+// Rule outside the .govuk-multi-select so it also target the "All option"
+    input[type="checkbox"], input[type="radio"] {
+        width: $govuk-small-input-size;
+        height: $govuk-small-input-size;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+}
+
+.govuk-multi-select__label {
+    display: inline-block;
+    padding: 10px 0px 10px $govuk-small-input-size;
+    cursor: pointer;
+    touch-action: manipulation;
+    font-size: 1.1875rem;
+    line-height: 1.3157894737;
+    position: relative;
+
+    .govuk-small & {
+        font-size: 1rem;
+        line-height: $govuk-small-input-visible-size;
+    }
+
+    &:before {
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        top: ($govuk-small-input-size - $govuk-small-input-visible-size) / 2;
+        left: ($govuk-small-input-size - $govuk-small-input-visible-size) / 2;
+        width: $govuk-small-input-visible-size;
+        height: $govuk-small-input-visible-size;
+        border: 2px solid $govuk-input-border-color;
+    }
+
+    &:hover {
+        &:before {
+        box-shadow: 0 0 0 10px $govuk-input-hover-box-shadow;
+        }
+    }
+
+    &:focus-within {
+        &:before {
+        outline: 3px solid $govuk-input-border-color;
+        box-shadow: 0 0 0 7px $govuk-input-focus-box-shadow;
+        outline-offset: -1px;
+        }
+    }
+
+    &:focus-within:hover {
+        &:before {
+        box-shadow: 0 0 0 5px $govuk-input-focus-box-shadow, 0 0 0 10px $govuk-input-hover-box-shadow;
+        }
+    }
+
+    @supports( #{"selector(:has(*))"} ) {
+        &:has(> input[type="checkbox"]:checked),
+        &:has(> input[type="radio"]:checked) {
+            &::after {
+            opacity: 1;
+            }
+        }
+    
+        &:has(> input[type="checkbox"]){
+            &:after {
+            // Check icon
+            content: "";
+            box-sizing: border-box;
+            position: absolute;
+            top: $govuk-small-input-visible-size / 2;
+            left: $govuk-small-input-visible-size / 2;
+            clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+            border: solid 10px $govuk-input-border-color;
+            opacity: 0;
+            }
+        }
+    
+        &:has(> input[type="radio"]){
+            &:after {
+            // Circle icon
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 14px;
+            height: 14px;
+            clip-path: circle(50%);
+            opacity: 0;
+            background-color: $govuk-input-border-color;
+            }
+        }
+    }
+
+    // When has() selector is not available
+    &.govuk-multi-select__label--checked {
+        &::after {
+        opacity: 1;
+        }
+    }
+
+    // When has() selector is not available
+    &.govuk-multi-select__label--checkbox {
+        &:after {
+        // Check icon
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        top: $govuk-small-input-visible-size / 2;
+        left: $govuk-small-input-visible-size / 2;
+        clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+        border: solid 10px $govuk-input-border-color;
+        opacity: 0;
+        }
+    }
+
+    // When has() selector is not available
+    &.govuk-multi-select__label--radio {
+        &:after {
+        // Circle icon
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 14px;
+        height: 14px;
+        clip-path: circle(50%);
+        opacity: 0;
+        background-color: $govuk-input-border-color;
+        }
+    }
+}
+
+.govuk-multi-select--radio, .multi-select-presets {
+    .govuk-multi-select__label {
+        &:before {
+        border-radius: 50%;
+        }
+    }
+}
+
+.govuk-multi-select {
+    display: flex;
+    flex-direction: column;
 }

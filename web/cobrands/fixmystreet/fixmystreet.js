@@ -132,6 +132,13 @@ function isR2L() {
             settings.noneText = $select.data('none');
         }
 
+        if ($select.attr("id") == 'filter_categories' || $select.attr("id") == 'statuses') {
+            settings.menuItemsHTML = '<div class="govuk-multi-select govuk-multi-select--checkboxes">';
+            settings.menuItemHTML = '<label class="govuk-multi-select__label">';
+            settings.menuFieldsetHTML = '<fieldset class="multi-select-fieldset govuk-fieldset">';
+            settings.menuFieldsetLegendHTML = '<fieldset class="multi-select-fieldset govuk-fieldset__legend govuk-fieldset__legend--s">';
+        }
+
         if ( $select.data('all') ) {
             settings.allText = $select.data('all');
             settings.noneText = settings.noneText || settings.allText;
@@ -1094,17 +1101,46 @@ $.extend(fixmystreet.set_up, {
   report_list_filters: function() {
     // Hide the pin filter submit button. Not needed because we'll use JS
     // to refresh the map when the filter inputs are changed.
-    $(".report-list-filters [type=submit]").hide();
+    $(".report-list-filters-wrapper [type=submit]").hide();
 
     // There are also other uses of this besides report list filters activated here
     $('.js-multiple').make_multi();
 
     function update_label(id, str) {
-        $(id).prev('label').addClass('hidden-js').after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).prevAll('label').addClass('hidden-js').attr('for', id.slice(1)).after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
         $(id).next('.multi-select-container').children('.multi-select-button').attr('aria-label', str);
     }
     update_label('#statuses', translation_strings.select_status_aria_label);
     update_label('#filter_categories', translation_strings.select_category_aria_label);
+  },
+
+  has_selector_checker: function() {
+    var supportsHas = CSS.supports('selector(:has(*))');
+
+    if (!supportsHas) {
+        $('.govuk-multi-select__label').each(function() {
+            var label = $(this);
+            var input = label.find('input[type="checkbox"], input[type="radio"]');
+      
+            if (input.attr('type') === 'checkbox') {
+              label.addClass('govuk-multi-select__label--checkbox');
+            } else if (input.attr('type') === 'radio') {
+              label.addClass('govuk-multi-select__label--radio');
+            }
+      
+            if (input.prop('checked')) {
+              label.addClass('govuk-multi-select__label--checked');
+            }
+      
+            input.on('change', function() {
+              if (this.checked) {
+                label.addClass('govuk-multi-select__label--checked');
+              } else {
+                label.removeClass('govuk-multi-select__label--checked');
+              }
+            });
+          });
+    }
   },
 
   label_accessibility_update: function() {
