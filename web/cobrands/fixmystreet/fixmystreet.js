@@ -132,6 +132,13 @@ function isR2L() {
             settings.noneText = $select.data('none');
         }
 
+        if ($select.attr("id") == 'filter_categories' || $select.attr("id") == 'statuses') {
+            settings.menuItemsHTML = '<div class="govuk-multi-select govuk-multi-select--checkboxes">';
+            settings.menuItemHTML = '<label class="govuk-multi-select__label">';
+            settings.menuFieldsetHTML = '<fieldset class="multi-select-fieldset govuk-fieldset">';
+            settings.menuFieldsetLegendHTML = '<fieldset class="multi-select-fieldset govuk-fieldset__legend govuk-fieldset__legend--s">';
+        }
+
         if ( $select.data('all') ) {
             settings.allText = $select.data('all');
             settings.noneText = settings.noneText || settings.allText;
