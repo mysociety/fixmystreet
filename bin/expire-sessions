@@ -23,7 +23,7 @@ GetOptions(
     'init' => \my $init,
 );
 
-my $rs = FixMyStreet::DB->resultset("Session");
+my $rs = FixMyStreet::DB->resultset("Session")->search(undef, { cursor_page_size => 1000 });
 my $now = time();
 
 # Delete expired sessions (including from in User object)
