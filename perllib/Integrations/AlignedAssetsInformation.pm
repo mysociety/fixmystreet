@@ -3,9 +3,12 @@ package Integrations::AlignedAssetsInformation;
 # Copyright (C) 2000-2006 Paul Kulchenko, Byrne Reese
 # -- generated at [Thu Jun 15 09:43:54 2023]
 # -- generated from https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx?WSDL
+
+my $endpoint = 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx';
+
 my %methods = (
 'GetAllFields' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/GetAllFields',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
@@ -13,7 +16,7 @@ my %methods = (
     ], # end parameters
   }, # end GetAllFields
 'GetReturnFields' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/GetReturnFields',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
@@ -21,7 +24,7 @@ my %methods = (
     ], # end parameters
   }, # end GetReturnFields
 'GetSearchFields' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/GetSearchFields',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
@@ -29,14 +32,14 @@ my %methods = (
     ], # end parameters
   }, # end GetSearchFields
 'GetAdapters' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/GetAdapters',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
     ], # end parameters
   }, # end GetAdapters
 'SearchFieldsSupported' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/SearchFieldsSupported',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
@@ -44,7 +47,7 @@ my %methods = (
     ], # end parameters
   }, # end SearchFieldsSupported
 'GetResultFields' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/GetResultFields',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
@@ -52,14 +55,14 @@ my %methods = (
     ], # end parameters
   }, # end GetResultFields
 'GetVersions' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/GetVersions',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
     ], # end parameters
   }, # end GetVersions
 'ResultFieldsSupported' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/ResultFieldsSupported',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [
@@ -67,7 +70,7 @@ my %methods = (
     ], # end parameters
   }, # end ResultFieldsSupported
 'CheckApiKey' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchserviceinformation.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation/CheckApiKey',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchServiceInformation',
     parameters => [

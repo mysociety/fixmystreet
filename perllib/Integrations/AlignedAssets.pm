@@ -3,9 +3,12 @@ package Integrations::AlignedAssets;
 # Copyright (C) 2000-2006 Paul Kulchenko, Byrne Reese
 # -- generated at [Thu Jun 15 09:34:14 2023]
 # -- generated from https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx?WSDL
+
+my $endpoint = 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx'
+
 my %methods = (
 'Search' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/Search',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -14,7 +17,7 @@ my %methods = (
     ], # end parameters
   }, # end Search
 'SpatialRadialSearchByEastingNorthing' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/SpatialRadialSearchByEastingNorthing',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -27,7 +30,7 @@ my %methods = (
     ], # end parameters
   }, # end SpatialRadialSearchByEastingNorthing
 'SpatialBoundarySearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/SpatialBoundarySearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -37,7 +40,7 @@ my %methods = (
     ], # end parameters
   }, # end SpatialBoundarySearch
 'AdvancedCustomSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/AdvancedCustomSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -47,7 +50,7 @@ my %methods = (
     ], # end parameters
   }, # end AdvancedCustomSearch
 'PredictiveSearchForStreet' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/PredictiveSearchForStreet',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -60,7 +63,7 @@ my %methods = (
     ], # end parameters
   }, # end PredictiveSearchForStreet
 'SinglelineSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/SinglelineSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -72,7 +75,7 @@ my %methods = (
     ], # end parameters
   }, # end SinglelineSearch
 'PoliceXdmSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/PoliceXdmSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -86,7 +89,7 @@ my %methods = (
     ], # end parameters
   }, # end PoliceXdmSearch
 'MultiAdapterSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/MultiAdapterSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -96,7 +99,7 @@ my %methods = (
     ], # end parameters
   }, # end MultiAdapterSearch
 'SimpleSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/SimpleSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -106,7 +109,7 @@ my %methods = (
     ], # end parameters
   }, # end SimpleSearch
 'AdvancedSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/AdvancedSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -116,7 +119,7 @@ my %methods = (
     ], # end parameters
   }, # end AdvancedSearch
 'SpatialBoundarySimpleSearch' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/SpatialBoundarySimpleSearch',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
@@ -128,7 +131,7 @@ my %methods = (
     ], # end parameters
   }, # end SpatialBoundarySimpleSearch
 'SpatialRadialSearchbyLatLong' => {
-    endpoint => 'https://webhost.aligned-assets.co.uk/cbeds/webservices/v2/searchservice.asmx',
+    endpoint => $endpoint,
     soapaction => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService/SpatialRadialSearchbyLatLong',
     namespace => 'http://www.aligned-assets.co.uk/SinglePoint/Search/WebServices/V2/SearchService',
     parameters => [
