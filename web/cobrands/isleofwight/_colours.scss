@@ -4,14 +4,19 @@ $menu-image: 'menu-black';
 
 $mappage-header-height: 124px;
 
-$blue: #00478c;
+// Based on
+// https://www.iow.gov.uk/
+// https://islandroads.com/
+
+$blue: #00478c; // It's the front page background
+$blue-700: #057eb6; // Primary colour on  
 $cyan: #00aeef; // + 60 25
 $orange: #fcaf17;
 $green: #75c044;
 
 //Any 20% tint of the above
 
-$primary: $cyan;
+$primary: $blue-700;
 $primary_b: #222;
 $primary_text: #fff;
 $primary_link_color: $primary_text;

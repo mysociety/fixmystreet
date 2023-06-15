@@ -24,3 +24,13 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
     padding: 2em 2em;
     background-color: mix(#fff, $primary, 70%);
 }
+
+#front-main {
+    background: $blue;
+    padding-top: 3em;
+    padding-bottom: 3em;
+}
+
+a#geolocate_link {
+    border-color: white;
+}
