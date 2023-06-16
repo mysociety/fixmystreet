@@ -232,6 +232,13 @@ sub find_available_bulky_slots {
     return \@available_slots;
 }
 
+sub _bulky_date_to_dt {
+    my $date = shift;
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
 # Checks if there is a slot available for a given date
 sub check_bulky_slot_available {
     my ( $self, $date, $bartec ) = @_;
@@ -242,20 +249,15 @@ sub check_bulky_slot_available {
     }
 
     my $suffix_date_parser = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
-    my $workpack_date_pattern = '%FT%T';
-    my $workpack_dt
-        = DateTime::Format::Strptime->new( pattern => $workpack_date_pattern )
-        ->parse_datetime($date);
+    my $workpack_dt = _bulky_date_to_dt($date);
     next unless $workpack_dt;
 
-    my $date_from
-        = $workpack_dt->clone->set( hour => 0, minute => 0, second => 0 )
-        ->strftime($workpack_date_pattern);
+    my $date_from = $workpack_dt->clone->strftime('%FT%T');
     my $date_to = $workpack_dt->clone->set(
         hour   => 23,
         minute => 59,
         second => 59,
-    )->strftime($workpack_date_pattern);
+    )->strftime('%FT%T');
     my $workpacks_for_day = $bartec->WorkPacks_Get(
         date_from => $date_from,
         date_to   => $date_to,
@@ -382,10 +384,7 @@ sub within_bulky_refund_window {
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
     my $collection_date_str = $open_collection->get_extra_field_value('DATE');
-    my $collection_dt       = DateTime::Format::Strptime->new(
-        pattern   => '%FT%T',
-        time_zone => FixMyStreet->local_time_zone,
-    )->parse_datetime($collection_date_str);
+    my $collection_dt       = _bulky_date_to_dt($collection_date_str);
 
     return $self->_check_within_bulky_refund_window( $now_dt,
         $collection_dt );
@@ -398,7 +397,7 @@ sub _check_within_bulky_refund_window {
     my $cutoff_dt       = $collection_dt->clone->set(
         hour   => $collection_time->{hours},
         minute => $collection_time->{minutes},
-    )->subtract( hours => 24 );
+    )->subtract( days => 1 );
 
     return $now_dt <= $cutoff_dt;
 }
@@ -412,27 +411,20 @@ sub within_bulky_cancel_window {
 
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
-    my $collection_date_str = $collection->get_extra_field_value('DATE');
-    my $collection_dt       = DateTime::Format::Strptime->new(
-        pattern   => '%FT%T',
-        time_zone => FixMyStreet->local_time_zone,
-    )->parse_datetime($collection_date_str);
-
+    my $collection_date = $collection->get_extra_field_value('DATE');
     return _check_within_bulky_cancel_window( $now_dt,
-        $collection_dt );
+        $collection_date );
 }
 
 sub _check_within_bulky_cancel_window {
-    my ( $now_dt, $collection_dt ) = @_;
-    my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_dt);
+    my ( $now_dt, $collection_date ) = @_;
+    my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_date);
     return $now_dt < $cutoff_dt;
 }
 
 sub _bulky_cancellation_cutoff_date {
     my $collection_date = shift;
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-    my $dt
-        = $parser->parse_datetime($collection_date)->truncate( to => 'day' );
+    my $dt = _bulky_date_to_dt($collection_date);
 
     my $cutoff_time = bulky_cancellation_cutoff_time();
     $dt->subtract( days => 1 )->set(
@@ -609,8 +601,7 @@ sub bulky_available_feature_types {
 
 sub bulky_nice_collection_date {
     my ($self, $date) = @_;
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-    my $dt = $parser->parse_datetime($date)->truncate( to => 'day' );
+    my $dt = _bulky_date_to_dt($date);
     return $dt->strftime('%d %B');
 }
 
@@ -659,7 +650,6 @@ sub bulky_reminders {
         category => 'Bulky collection',
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
     while (my $report = $collections->next) {
@@ -672,7 +662,7 @@ sub bulky_reminders {
         # Shouldn't happen, but better to be safe.
         next unless $date;
 
-        my $dt = $parser->parse_datetime($date)->truncate( to => 'day' );
+        my $dt = _bulky_date_to_dt($date);
 
         # If booking has been cancelled (or somehow the collection date has
         # already passed) then mark this report as done so we don't see it

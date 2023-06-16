@@ -396,40 +396,35 @@ sub _jobs_arrayref {
 
 subtest '_check_within_bulky_cancel_window' => sub {
     my $now_dt;
-    my $collection_dt;
+    my $collection_date;
 
     subtest 'Now one day earlier than collection date' => sub {
         $now_dt = DateTime->new(
             year      => 2023,
             month     => 4,
             day       => 1,
-            time_zone => 'Europe/London',
+            time_zone => FixMyStreet->local_time_zone,
         );
-        $collection_dt = DateTime->new(
-            year      => 2023,
-            month     => 4,
-            day       => 2,
-            time_zone => 'Europe/London',
-        );
+        $collection_date = '2023-04-02T00:00:00';
 
         subtest 'Now time earlier than 15:00' => sub {
             $now_dt->set( hour => 14, minute => 59, second => 59 );
             ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                    $now_dt, $collection_dt
+                    $now_dt, $collection_date
                 )
             );
         };
         subtest 'Now time equals 15:00' => sub {
             $now_dt->set( hour => 15, minute => 0 );
             ok!( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                    $now_dt, $collection_dt
+                    $now_dt, $collection_date
                 )
             );
         };
         subtest 'Now time later than 15:00' => sub {
             $now_dt->set( hour => 15, minute => 1 );
             ok!( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                    $now_dt, $collection_dt
+                    $now_dt, $collection_date
                 )
             );
         };
@@ -442,15 +437,10 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_dt = DateTime->new(
-            year      => 2023,
-            month     => 4,
-            day       => 1,
-            time_zone => 'Europe/London',
-        );
+        $collection_date = '2023-04-01T00:00:00';
 
         ok !( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                $now_dt, $collection_dt
+                $now_dt, $collection_date
             )
         );
     };
@@ -462,15 +452,10 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_dt = DateTime->new(
-            year      => 2023,
-            month     => 3,
-            day       => 31,
-            time_zone => 'Europe/London',
-        );
+        $collection_date = '2023-03-31T00:00:00';
 
         ok !( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                $now_dt, $collection_dt
+                $now_dt, $collection_date
             )
         );
     };
@@ -483,15 +468,10 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_dt = DateTime->new(
-            year      => 2023,
-            month     => 4,
-            day       => 1,
-            time_zone => 'Europe/London',
-        );
+        $collection_date = '2023-04-01T00:00:00';
 
         ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                $now_dt, $collection_dt
+                $now_dt, $collection_date
             )
         );
     };
@@ -503,15 +483,10 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_dt = DateTime->new(
-            year      => 2023,
-            month     => 3,
-            day       => 31,
-            time_zone => 'Europe/London',
-        );
+        $collection_date = '2023-03-31T00:00:00';
 
         ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
-                $now_dt, $collection_dt
+                $now_dt, $collection_date
             )
         );
     };
