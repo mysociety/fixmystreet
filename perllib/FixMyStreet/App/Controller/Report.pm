@@ -83,7 +83,7 @@ sub display :PathPart('') :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
     if ($c->stash->{problem}->cobrand_data eq 'waste' && $c->stash->{problem}->category eq 'Bulky collection' ) {
-        $c->detach('/waste/bulky_view');
+        $c->detach('/waste/bulky/view');
     }
 
     $c->forward('/auth/get_csrf_token');

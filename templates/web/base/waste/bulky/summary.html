@@ -202,14 +202,14 @@
   [% IF problem %]
     [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
       <p>
-        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky_cancel', [ property.id ] ) %]">Cancel this booking</a>
+        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id ] ) %]">Cancel this booking</a>
       </p>
     [% END %]
     <p>
       <a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a>
     </p>
   [% ELSE %]
-    <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky', [ property.id ]) %]">
+    <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
       [% PROCESS form %]
     </form>
   [% END %]

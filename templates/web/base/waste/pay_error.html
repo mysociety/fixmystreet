@@ -12,7 +12,7 @@
 </div>
 
 [% IF report && (report.get_extra_field_value('payment') > 0 OR report.get_extra_field_value('pro_rata') > 0) %]
-    <form method="POST" action="[% c.uri_for('pay_retry') %]">
+    <form method="POST" action="[% c.uri_for_action('waste/pay_retry') %]">
         <input type="hidden" name="id" value="[% report.id %]">
         <input type="hidden" name="token" value="[% report.get_extra_metadata('redirect_id') %]">
         <div class="govuk-form-group">
