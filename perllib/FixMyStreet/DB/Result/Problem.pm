@@ -1066,6 +1066,20 @@ sub mark_as_sent {
 
 sub resend {
     my $self = shift;
+
+    # Store old sent time and external ID, if present
+    if ($self->whensent) {
+        my $previous = $self->get_extra_metadata('whensent_previous', []);
+        my $sent_to = $self->get_extra_metadata('sent_to');
+        push @$previous, {
+            whensent => $self->whensent->iso8601,
+            $self->external_id ? (external_id => $self->external_id) : (),
+            $self->send_method_used ? (send_method_used => $self->send_method_used) : (),
+            $sent_to ? (sent_to => $sent_to) : (),
+        };
+        $self->set_extra_metadata(whensent_previous => $previous);
+    }
+
     $self->whensent(undef);
     $self->send_method_used(undef);
     $self->send_fail_body_ids([]);

@@ -167,6 +167,7 @@ sub compare_photo {
 # the comparison with the problem's extra will be wrong.
 my @keys_to_ignore = (
     'sent_to', # SendReport::Email adds this arrayref when sent
+    'whensent_previous', # Previous whensent data is stored here
     'closed_updates', # Marked to close a report to updates
     'closure_alert_sent_at', # Set by alert sending if update closes a report
     'confirm_reference', # Added for Bucks switch from Confirm to Alloy

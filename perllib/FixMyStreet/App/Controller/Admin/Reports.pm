@@ -246,6 +246,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         }
 
         for my $key ( keys %$extra ) {
+            next if $key eq 'whensent_previous';
             push @fields, { name => $key, val => $extra->{$key} };
         }
 
