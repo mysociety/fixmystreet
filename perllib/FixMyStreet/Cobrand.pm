@@ -13,6 +13,7 @@ use Package::Stash;
 use Module::Pluggable
   sub_name    => '_cobrands',
   search_path => ['FixMyStreet::Cobrand'],
+  max_depth   => 3,
   require     => 1;
 
 my @ALL_COBRAND_CLASSES = __PACKAGE__->_cobrands;

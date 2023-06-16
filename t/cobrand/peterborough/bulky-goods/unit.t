@@ -9,7 +9,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Peterborough;
 
 subtest '_bulky_collection_window' => sub {
-    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough::Bulky');
     $mock_pbro->mock(
         'bulky_cancellation_cutoff_time', sub {
             { hours => 15, minutes => 15 }
