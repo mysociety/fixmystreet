@@ -33,7 +33,7 @@ sub get_first_image_fp {
 
 sub get_first_image_type {
     my ($self) = @_;
-    return $self->get_photoset->get_image_type(0);
+    return $self->get_photoset->get_mime_type(0);
 }
 
 sub photos {

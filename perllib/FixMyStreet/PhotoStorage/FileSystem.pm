@@ -42,9 +42,9 @@ write to disk.
 =cut
 
 sub get_file {
-    my ($self, $fileid, $type) = @_;
+    my ($self, $filename) = @_;
     my $cache_dir = $self->upload_dir;
-    return path( $cache_dir, "$fileid.$type" );
+    return path( $cache_dir, $filename );
 }
 
 
@@ -60,7 +60,7 @@ sub store_photo {
 
     my $type = $self->detect_type($photo_blob) || 'jpeg';
     my $fileid = $self->get_fileid($photo_blob);
-    my $file = $self->get_file($fileid, $type);
+    my $file = $self->get_file("$fileid.$type");
     $file->spew_raw($photo_blob);
 
     return $file->basename;
@@ -78,11 +78,10 @@ the photo exists in storage.
 sub retrieve_photo {
     my ($self, $filename) = @_;
 
-    my ($fileid, $type) = split /\./, $filename;
-    my $file = $self->get_file($fileid, $type);
+    my $file = $self->get_file($filename);
     if ($file->exists) {
         my $photo = $file->slurp_raw;
-        return ($photo, $type, $file);
+        return ($photo, $file);
     }
 }
 

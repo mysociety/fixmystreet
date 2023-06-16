@@ -110,8 +110,7 @@ sub retrieve_photo {
 
     my $object = $self->get_object($key);
     if ($object->exists) {
-        my ($fileid, $type) = split /\./, $key;
-        return ($object->get, $type);
+        return ($object->get);
     }
 
 }

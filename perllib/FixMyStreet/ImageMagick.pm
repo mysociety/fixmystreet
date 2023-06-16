@@ -23,26 +23,6 @@ has image => (
     },
 );
 
-has width => (
-    is => 'rwp',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        return unless $self->image;
-        return $self->image->Get('width');
-    }
-);
-
-has height => (
-    is => 'rwp',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        return unless $self->image;
-        return $self->image->Get('height');
-    }
-);
-
 sub strip {
     my $self = shift;
     return $self unless $self->image;
@@ -55,7 +35,6 @@ sub rotate {
     return $self unless $self->image;
     my $err = $self->image->Rotate($direction);
     return 0 if $err;
-    $self->_set_width_and_height();
     return $self;
 }
 
@@ -81,7 +60,6 @@ sub shrink {
     return $self unless $self->image;
     my $err = $self->image->Scale(geometry => "$size>");
     die "resize failed: $err" if "$err";
-    $self->_set_width_and_height();
     return $self->strip;
 }
 
@@ -95,7 +73,6 @@ sub crop {
     die "resize failed: $err" if "$err";
     $err = $self->image->Extent( geometry => $size, gravity => 'Center' );
     die "resize failed: $err" if "$err";
-    $self->_set_width_and_height();
     return $self->strip;
 }
 
@@ -103,17 +80,8 @@ sub as_blob {
     my $self = shift;
     return $self->blob unless $self->image;
     my @blobs = $self->image->ImageToBlob();
-    $self->_set_width_and_height();
     $self->_set_image(undef);
     return $blobs[0];
-}
-
-sub _set_width_and_height {
-    my $self = shift;
-    return unless $self->image;
-    my ($width, $height) = $self->image->Get('width', 'height');
-    $self->_set_width($width);
-    $self->_set_height($height);
 }
 
 1;

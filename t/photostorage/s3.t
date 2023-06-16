@@ -70,11 +70,10 @@ FixMyStreet::override_config {
             return $photo_blob;
         });
 
-        my ($photo, $type) = $s3->retrieve_photo($key);
+        my $photo = $s3->retrieve_photo($key);
         ok $exists_called, "Object::exists called";
         ok $get_called, "Object::get called";
         is $photo, $photo_blob, 'Correct file content returned';
-        is $type, 'jpeg', 'Correct file type returned';
     };
 
     subtest "init passes if bucket exists" => sub {

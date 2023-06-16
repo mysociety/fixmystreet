@@ -179,13 +179,19 @@ sub get_image_type {
     my ($self, $index) = @_;
     my $filename = $self->get_id($index);
     my ($fileid, $type) = split /\./, $filename;
-    return "image/$type";
+    return $type;
+}
+
+sub get_mime_type {
+    my ($self, $index) = @_;
+    return "image/" . $self->get_image_type($index);
 }
 
 sub get_raw_image {
     my ($self, $index) = @_;
     my $filename = $self->get_id($index);
-    my ($photo, $type, $object) = $self->storage->retrieve_photo($filename);
+    my $type = $self->get_image_type($index);
+    my ($photo, $object) = $self->storage->retrieve_photo($filename);
     if ($photo) {
         return {
             $object ? (object => $object) : (),
@@ -228,8 +234,6 @@ sub get_image_data {
 
     return {
         data => $photo->as_blob,
-        width => $photo->width,
-        height => $photo->height,
         content_type => $image->{content_type},
     };
 }
@@ -251,9 +255,8 @@ sub delete_cached {
 
     # New files with index number
     my @images = $self->all_ids;
-    foreach (map [ $_, $images[$_] ], 0 .. $#images) {
-        my ($i, $file) = @$_;
-        my ($fileid, $type) = split /\./, $file;
+    foreach my $i (0.. $#images) {
+        my $type = $self->get_image_type($i);
         foreach my $size (@photo_types) {
             unlink FixMyStreet->path_to(@dirs, "$id.$i$size.$type");
         }
