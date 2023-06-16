@@ -20,9 +20,18 @@ Return a PhotoSet object for all photos attached to this field
 sub get_photoset {
     my ($self) = @_;
     require FixMyStreet::App::Model::PhotoSet;
+
+    my $cacheable;
+    if (ref $self eq 'FixMyStreet::DB::Result::Comment') {
+        $cacheable = !$self->problem->non_public;
+    } elsif (ref $self eq 'FixMyStreet::DB::Result::Problem') {
+        $cacheable = !$self->non_public;
+    }
+
     return FixMyStreet::App::Model::PhotoSet->new({
         db_data => $self->photo,
         object => $self,
+        cacheable => $cacheable,
     });
 }
 

@@ -39,7 +39,12 @@ sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff))$
     $size = $size eq 'temp' ? 'default' : 'full';
     my $photo = $photoset->get_image_data(size => $size, default => $c->cobrand->default_photo_resize);
 
-    $c->stash->{non_public} = 0;
+    if (!FixMyStreet->config('LOGIN_REQUIRED')) {
+        path(FixMyStreet->path_to('web', 'photo'))->mkpath;
+        my $out = FixMyStreet->path_to('web', $c->req->path);
+        path($out)->spew_raw($photo->{data});
+    }
+
     $c->forward( 'output', [ $photo ] );
 }
 
@@ -71,9 +76,7 @@ sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp|og))?\.(?:jp
     $c->detach( 'no_photo' ) unless $c->cobrand->allow_photo_display($item, $photo_number); # Should only be for reports, not updates
 
     my $problem = $is_update ? $item->problem : $item;
-    $c->stash->{non_public} = $problem->non_public;
-
-    if ($c->stash->{non_public}) {
+    if ($problem->non_public) {
         my $body_ids = $problem->bodies_str_ids;
         # Check permission
         $c->detach('no_photo') unless $c->user_exists;
@@ -93,14 +96,6 @@ sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp|og))?\.(?:jp
 
 sub output : Private {
     my ( $self, $c, $photo ) = @_;
-
-    # Save to file
-    if (!FixMyStreet->config('LOGIN_REQUIRED') && !$c->stash->{non_public}) {
-        path(FixMyStreet->path_to('web', 'photo', 'c'))->mkpath;
-        my $out = FixMyStreet->path_to('web', $c->req->path);
-        my $symlink_exists = $photo->{symlink} ? symlink($photo->{symlink}, $out) : undef;
-        path($out)->spew_raw($photo->{data}) unless $symlink_exists;
-    }
 
     $c->res->content_type( $photo->{content_type} );
     $c->res->body( $photo->{data} );
