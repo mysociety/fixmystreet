@@ -11,12 +11,13 @@
 
 <div class="unresponsive-council__body">
   <p><strong class="unresponsive-council-name">[% body.name %]</strong> is one
-  of only <strong>2%</strong> of councils that don’t accept reports from
-  FixMyStreet. We’re sad about it too, but here are some things you can do now:</p>
+  of only a small number of councils that don’t accept reports from
+  FixMyStreet, so you will need to make your report directly to them on their
+  website.</p>
 
   [% IF body.external_url %]
   <a href="[% body.external_url %]" class="unresponsive-council-cta unresponsive-council-cta--primary">
-    <strong>Report your issue directly</strong> to <span class="unresponsive-council-name">[% body.name %]</span> on their website
+    <strong>Go to <span class="unresponsive-council-name">[% body.name %]</span>'s website</strong>
   </a>
   [% ELSE %]
   <a href="https://www.google.co.uk/search?q=report+[% body.name | uri %]" class="unresponsive-council-cta unresponsive-council-cta--primary">
@@ -24,15 +25,32 @@
   </a>
   [% END %]
 
-  <h2>If you’d prefer to use FixMyStreet next time:</h2>
+  <h2>Why does my council not accept reports from FixMyStreet?</h2>
+  <p>There may be several reasons for councils refusing to accept reports from third parties like FixMyStreet.
+  We built FixMyStreet to make it easier for citizens to report problems without needing to have any knowledge of council boundaries or responsibilities.
+  </p>
+
+  <h3>If you would prefer to use FixMyStreet next time here are a few things you can do now:</h3>
 
   <a href="https://www.writetothem.com/?utm_source=fixmystreet.com&amp;utm_campaign=workflow_links&amp;utm_medium=link&amp;utm_content=unresponsive_council+cta" class="unresponsive-council-cta">
-    <strong>Write to your MP or local councillors</strong> to let them know this isn’t okay
+    <strong>Write to your MP or local councillors</strong> to let them know why you would prefer to use FixMyStreet
   </a>
 
   <a href="https://twitter.com/intent/tweet?via=fixmystreet" class="unresponsive-council-cta">
     <strong>Tweet</strong> to let <span class="unresponsive-council-name">[% body.name %]</span></strong> know you’d rather use FixMyStreet
   </a>
+
+  <h3>Good to know:</h3>
+
+    <ul>
+    <li>FixMyStreet is an independent website built by the charity mySociety.</li>
+    <li>We do our best to ensure reports go to the right place at each council.
+        If there’s a better contact address for reports [% IF category %]about [% category %][% END %] we are happy to update this.</li>
+    <li>There are also lots of ways we can connect FixMyStreet to councils’ own systems if they don’t want to receive emails from us.
+        We will work with them to find the best solution.</li>
+    <li>We would love for councils to contact us to talk about how we can allow you to make reports via FixMyStreet again -
+        here's where they can reach us: <a href="https://www.fixmystreet.com/contact">https://www.fixmystreet.com/contact</a></li>
+    </ul>
 </div>
 
 [% INCLUDE footer.html %]
