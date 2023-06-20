@@ -208,6 +208,10 @@ sub waste_task_resolutions {
             $resolution = $template->text if $template;
         }
 
+        if (($resolution_id || 0) == 237 && $state eq 'Completed') { # Echo returning bad data
+            $resolution = '';
+        }
+
         my $row = $task_ref_to_row->{$ref};
         $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
         $row->{last}{completed} = $completed;
