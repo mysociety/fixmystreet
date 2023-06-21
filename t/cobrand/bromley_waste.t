@@ -31,7 +31,15 @@ my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
 $staffuser->add_to_roles($role);
 
-$mech->create_contact_ok(
+my $pothole = $mech->create_contact_ok(
+    body => $body,
+    category => 'Pothole',
+    email => 'pothole',
+    send_method => 'Open311',
+    endpoint => 'pothole-endpoint',
+);
+
+my $missed = $mech->create_contact_ok(
     body => $body,
     category => 'Report missed collection',
     email => 'missed',
@@ -243,6 +251,7 @@ FixMyStreet::override_config {
             title => 'Wrong bin (refuse)',
             text => 'We could not collect your refuse waste as it was not correctly presented.',
             resolution_code => 187,
+            'contacts[' . $missed->id . ']' => 1,
             task_type => 3216,
             task_state => 'Completed',
         } });
@@ -265,6 +274,26 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a non-recyclable refuse collection');
         restore_time();
+    };
+
+    subtest 'test not using different backend template' => sub {
+        my $templates = FixMyStreet::DB->resultset("ResponseTemplate")->search({ title => [ 'Wrong bin (generic)', 'Wrong bin (refuse)' ] });
+        my @templates = $templates->all;
+        @templates = map { $_->id } @templates;
+        FixMyStreet::DB->resultset("ContactResponseTemplate")->search({ response_template_id => \@templates })->delete;
+        $templates->delete;
+        $mech->log_in_ok('superuser@example.com');
+        $mech->get_ok('/admin/templates/' . $body->id . '/new');
+        $mech->submit_form_ok({ with_fields => {
+            title => 'Not repaired',
+            text => 'We have decided not to repair this at this time, but will monitor.',
+            resolution_code => 187,
+            'contacts[' . $pothole->id . ']' => 1,
+        } });
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('May, at 10:00am');
+        $mech->content_lacks('We have decided not to repair');
     };
 
     subtest 'test reporting with an existing closed event' => sub {

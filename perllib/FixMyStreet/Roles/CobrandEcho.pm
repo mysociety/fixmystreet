@@ -193,6 +193,7 @@ sub waste_task_resolutions {
         if ($resolution_id) {
             my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
                 'me.body_id' => $self->body->id,
+                'contact.category' => [ 'Report missed collection', undef ],
                 'me.external_status_code' => [
                     "$resolution_id,$task_type_id,$state",
                     "$resolution_id,$task_type_id,",
@@ -204,6 +205,7 @@ sub waste_task_resolutions {
                 # Order by descending length so more specific
                 # external_status_codes match over less specific
                 order_by => \'length(me.external_status_code) desc',
+                join => { 'contact_response_templates' => 'contact' },
             })->first;
             $resolution = $template->text if $template;
         }
