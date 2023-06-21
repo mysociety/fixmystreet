@@ -3,7 +3,7 @@
 <h1 class="govuk-heading-xl">Enter paye.net code</h1>
 
 <form name="post" method="post" action="[% c.uri_for('csc_payment') %]">
-<input type="text" name="payenet_code" id="payenet_code"  value="[% payenet_code %]"[% IF report.category == 'Bulky collection' %] required[% END %]/>
+<input type="text" name="payenet_code" id="payenet_code"  value="[% payenet_code %]" required>
 <input type="hidden" name="report_id" id="report_id"  value="[% report.id %]" />
 <input type="hidden" name="token" id="token"  value="[% csrf_token %]" />
 
