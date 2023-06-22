@@ -84,9 +84,8 @@ msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr "%s o gysylltiadau'r cyngor &ndash; %s wedi'u cadarnhau, %s heb gadarnhad"
 
 #: templates/web/fixmystreet.com/reports/summary.html:199
-#, fuzzy
 msgid "%s currently does not accept reports from FixMyStreet."
-msgstr "Tynnwyd yr adroddiad oddi ar FixMyStreet."
+msgstr "Nid yw %s yn derbyn adroddiadau gan FixMyStreet ar hyn o bryd."
 
 #. ("%s is the site name")
 #: templates/web/base/alert/_index_text.html:3
@@ -218,7 +217,7 @@ msgstr "-- Dewiswch dempled --"
 
 #: templates/web/fixmystreet.com/footer_extra.html:78
 msgid "<a href=\"%s\">SocietyWorks</a> is a limited company (05798215). It is a trading subsidiary of <a href=\"%s\">mySociety</a>, a registered charity in England and Wales (1076346)."
-msgstr ""
+msgstr "Mae <a href=\"%s\">SocietyWorks</a> yn gwmni cyfyngedig (05798215). Mae’n is-gwmni masnachu <a href=\"%s\">mySociety</a> , elusen gofrestredig yng Nghymru a Lloegr (1076346)."
 
 #: templates/web/base/admin/bodies/form.html:50
 #: templates/web/base/admin/bodies/form.html:51
@@ -254,11 +253,11 @@ msgstr "<strong>%s</strong> o broblemau cyfredol"
 
 #: templates/web/fixmystreet.com/around/location_error.html:13
 msgid "<strong>Don’t forget the space</strong> in your postcode."
-msgstr ""
+msgstr "<strong>Peidiwch ag anghofio'r gofod</strong> yn eich côd post."
 
 #: templates/web/fixmystreet.com/around/location_error.html:14
 msgid "<strong>Don’t mix postcodes and street names.</strong>"
-msgstr ""
+msgstr "<strong>Peidiwch â chymysgu codau post ac enwau strydoedd.</strong>"
 
 #: templates/web/base/report/form/user_loggedout_by_email_heading.html:11
 msgid "<strong>No</strong> Let me confirm my report by email"
@@ -278,7 +277,7 @@ msgstr "<strong>Nac oes</strong> Gadewch imi gadarnhau fy niweddariad drwy e-bos
 
 #: templates/web/fixmystreet.com/around/location_error.html:20
 msgid "<strong>One at a time!</strong> Multiple street names in a single search can confuse us."
-msgstr ""
+msgstr "<strong>Un ar y tro!</strong> Gall nifer lluosog o enwau strydoedd mewn un chwiliad ein drysu."
 
 #: templates/web/base/report/form/user_loggedout_password.html:4
 msgid "<strong>Yes</strong> I have a password"
@@ -404,9 +403,8 @@ msgstr "Ychwanegu/golygu templedi ymateb"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:824
 #: perllib/FixMyStreet/Roles/CobrandSLWP.pm:198
-#, fuzzy
 msgid "Add/edit site message"
-msgstr "Ychwanegu/golygu neges argyfwng"
+msgstr "Ychwanegu/golygu neges safle"
 
 #: templates/web/base/my/my.html:158
 msgid "Added %s"
@@ -495,9 +493,8 @@ msgid "All reports between %s and %s"
 msgstr "Pob adroddiad rhwng %s a %s"
 
 #: templates/web/fixmystreet.com/reports/summary.html:86
-#, fuzzy
 msgid "All states"
-msgstr "Hen gyflwr"
+msgstr "Pob cyflwr"
 
 #: templates/web/base/reports/index.html:25
 msgid "All time"
@@ -565,9 +562,8 @@ msgstr "Ydych chi'n siŵr eich bod am ganslo'r uwchlwytho hwn?"
 
 #: templates/web/base/offline/drafts.html:21
 #: templates/web/base/offline/fallback.html:27
-#, fuzzy
 msgid "Are you sure you wish to delete this draft report?"
-msgstr "Ydych chi'n siŵr eich bod am ganslo'r uwchlwytho hwn?"
+msgstr "A ydych yn siŵr eich bod am ddileu'r adroddiad drafft hwn?"
 
 #. ("JS")
 #: templates/web/base/admin/manifesttheme/form.html:62
@@ -597,9 +593,8 @@ msgid "As this is a staging site and %s is false, reports made on this site will
 msgstr "Gan fod hwn yn safle llwyfannu ac mae %s yn ffug, bydd adroddiadau a wneir ar y wefan hon yn cael eu hanfon at y cyswllt ar gyfer problemau, nid y cyswllt a roddwyd ar gyfer categori'r adroddiad."
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:8
-#, fuzzy
 msgid "Asset ID:"
-msgstr "Cyfeirnod yr adroddiad:"
+msgstr "Cyfeirnod yr ased:"
 
 #: templates/web/base/reports/_bulk-assign.html:12
 msgid "Assign"
@@ -714,7 +709,7 @@ msgstr "Gwahardd defnyddiwr"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:4
 msgid "Be polite"
-msgstr ""
+msgstr "Byddwch yn gwrtais"
 
 #: templates/web/base/admin/extra-metadata-item.html:35
 msgid "Behaviour"
@@ -748,7 +743,7 @@ msgstr "Corff:"
 
 #: templates/web/fixmystreet.com/footer_extra.html:65
 msgid "Built by"
-msgstr ""
+msgstr "Adeiladwyd gan"
 
 #: templates/web/base/admin/waste/bulky_items.html:1
 #: templates/web/base/admin/waste/edit.html:7
@@ -854,11 +849,11 @@ msgstr "Newid dilysu dwy gam"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:3
 msgid "Check <a href=\"/about/house-rules\" target=\"_blank\">what’s acceptable</a>"
-msgstr ""
+msgstr "Sicrhewch <a href=\"/about/house-rules\" target=\"_blank\">beth sy'n dderbyniol</a>"
 
 #: templates/web/fixmystreet.com/around/location_error.html:12
 msgid "Check you <strong>haven’t swapped numbers and letters</strong>. <code>O</code>, <code>0</code>, <code>I</code> and <code>1</code> aren’t the same."
-msgstr ""
+msgstr "Gwiriwch <strong>nad ydych wedi cyfnewid rhifau a llythrennau</strong> . Nid yw <code>O</code> , <code>0</code> , <code>I</code> ac <code>1</code> yr un peth."
 
 #: templates/web/base/admin/bodies/_category_field.html:3
 msgid ""
@@ -967,9 +962,8 @@ msgid "Collapse map"
 msgstr "Dymchwel y map"
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:11
-#, fuzzy
 msgid "Column number:"
-msgstr "Rhif ffôn"
+msgstr "Rhif colofn:"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:82
 msgid "Config must be a JSON object literal, not array."
@@ -1020,9 +1014,8 @@ msgstr "Cadarnhawyd:"
 
 #: templates/web/fixmystreet.com/footer_extra.html:42
 #: templates/web/fixmystreet.com/reports/summary.html:220
-#, fuzzy
 msgid "Contact"
-msgstr "Cysylltu â %"
+msgstr "Cysylltwch"
 
 #. ("%s is the site name")
 #: templates/web/base/about/_sidebar.html:6
@@ -1037,9 +1030,8 @@ msgid "Contact Us"
 msgstr "Cysylltu â ni"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:21
-#, fuzzy
 msgid "Contact email"
-msgstr "Cysylltu â %"
+msgstr "Ebost cyswllt"
 
 #: templates/web/base/contact/index.html:18
 msgid "Contact the team"
@@ -1085,9 +1077,8 @@ msgid "Council contacts for %s"
 msgstr "Cysylltiadau'r cyngor ar gyfer %s"
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:6
-#, fuzzy
 msgid "Council ref:"
-msgstr "Cyngor:"
+msgstr "Cyfeirnod y cyngor:"
 
 #: templates/web/base/report/_council_sent_info.html:16
 #: templates/web/base/report/_council_sent_info.html:20
@@ -1095,9 +1086,8 @@ msgid "Council ref:&nbsp;%s"
 msgstr "Cyfeirnod y cyngor:&nbsp;%s"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:9
-#, fuzzy
 msgid "Council stats"
-msgstr "Cyngor"
+msgstr "Ystadegau’r cyngor"
 
 #: templates/web/base/dashboard/index.html:65
 msgid "Council:"
@@ -1311,7 +1301,7 @@ msgstr "Datganolwyd"
 
 #: templates/web/fixmystreet.com/reports/summary.html:234
 msgid "Did you know that if you used the approved open standard Open311 you could send reports directly into your own backend services &ndash; and get much more control over what additional information you request?"
-msgstr ""
+msgstr "Oeddech chi'n gwybod pe baech yn defnyddio'r safon agored gymeradwy Open311 y gallech anfon adroddiadau'n uniongyrchol i'ch gwasanaethau tu-cefn eich hun &ndash; a chael llawer mwy o reolaeth dros ba wybodaeth ychwanegol y gofynnwch amdani?"
 
 #: templates/web/base/admin/bodies/edit-league.html:8
 msgid "Diligency prize league table"
@@ -1371,7 +1361,7 @@ msgstr "Oes gennych chi gyfrinair %s?"
 
 #: templates/web/fixmystreet.com/contact/unsuitable-text.html:2
 msgid "Does this report break our <a href=\"/about/house-rules\">Conditions of Use</a>? Use this form to let us know."
-msgstr ""
+msgstr "A yw'r adroddiad hwn yn torri ein <a href=\"/about/house-rules\">Amodau Defnyddio</a> ? Defnyddiwch y ffurflen hon i roi gwybod i ni."
 
 #: templates/web/base/questionnaire/index.html:45
 msgid "Don&rsquo;t know"
@@ -1382,9 +1372,8 @@ msgid "Don't like forms?"
 msgstr "Ddim yn hoff o ffurflenni?"
 
 #: templates/web/fixmystreet.com/footer_extra.html:54
-#, fuzzy
 msgid "Donate now"
-msgstr "Ystod dyddiadau"
+msgstr "Cyfrannwch nawr"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:91
@@ -1393,15 +1382,15 @@ msgstr "Gwnaethpwyd"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:9
 msgid "Don’t identify or accuse other&nbsp;people"
-msgstr ""
+msgstr "Peidiwch ag enwi neu gyhuddo pobl eraill"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:10
 msgid "Don’t include private contact details in the&nbsp;description"
-msgstr ""
+msgstr "Peidiwch â chynnwys manylion cyswllt preifat yn y disgrifiad"
 
 #: templates/web/fixmystreet.com/reports/cobrand_stats.html:4
 msgid "Don’t miss our stats dashboard, only available to council staff. Access detailed reports and statistics — for free."
-msgstr ""
+msgstr "Peidiwch anghofio ein dangosfwrdd ystadegau, sydd ond ar gael i staff y cyngor. Cyrchwch adroddiadau ac ystadegau manwl - yn rhad ac am ddim."
 
 #: templates/web/base/report/_item.html:38
 msgid "Down one"
@@ -1412,9 +1401,8 @@ msgid "Draft report saved on %s"
 msgstr "Adroddiad drafft wedi'i arbed ar %s"
 
 #: templates/web/base/offline/drafts.html:4
-#, fuzzy
 msgid "Draft reports"
-msgstr "Golygu adroddiadau"
+msgstr "Adroddiadau drafft"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:77
@@ -1670,7 +1658,7 @@ msgstr "Amser gorffen"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:26
 msgid "Ending in .gov.uk, or other official council domain"
-msgstr ""
+msgstr "Yn gorffen gyda .gov.uk, neu barth swyddogol cyngor arall"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:21
 msgid "Endpoint"
@@ -1713,7 +1701,7 @@ msgstr "Gwall"
 
 #: templates/web/fixmystreet.com/next_steps.html:36
 msgid "Even a small donation of £5 today will help mySociety run sites like FixMyStreet."
-msgstr ""
+msgstr "Bydd hyd yn oed rhodd fach o £5 heddiw yn helpu mySociety reoli gwefannau fel FixMyStreet."
 
 #: templates/web/base/admin/triage/_list-filters.html:13
 #: templates/web/base/admin/triage/_list-filters.html:3
@@ -1751,11 +1739,11 @@ msgstr "Esboniwch beth sydd o'i le"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:10
 msgid "Explore detailed stats on the FixMyStreet councils dashboard — for free."
-msgstr ""
+msgstr "Archwiliwch ystadegau manwl ar ddangosfwrdd FixMyStreet i gynghorau - am ddim."
 
 #: templates/web/fixmystreet.com/reports/summary.html:134
 msgid "Export CSV preview (100 rows)"
-msgstr ""
+msgstr "Allforio rhagolwg CSV (100 rhes)"
 
 #: templates/web/base/dashboard/index.html:135
 msgid "Export as CSV"
@@ -1860,37 +1848,35 @@ msgstr "Trwsiwch hyn trwy ddewis <strong>ardal a gwmpasir</strong> yn y ffurflen
 
 #: templates/web/fixmystreet.com/footer_extra.html:20
 msgid "FixMyStreet Android app on Google Play"
-msgstr ""
+msgstr "Ap Android FixMyStreet ar Google Play"
 
 #: templates/web/fixmystreet.com/about/house-rules-cy.html:1
 msgid "FixMyStreet Conditions of Use"
-msgstr ""
+msgstr "Amodau Defnyddio FixMyStreet"
 
 #: templates/web/fixmystreet.com/footer_extra.html:40
-#, fuzzy
 msgid "FixMyStreet Goodies"
-msgstr "%s cyf:&nbsp;%s"
+msgstr "Da FixMyStreet"
 
 #: templates/web/fixmystreet.com/footer_extra.html:70
 msgid "FixMyStreet Platform"
-msgstr ""
+msgstr "Platfform FixMyStreet"
 
 #: templates/web/fixmystreet.com/footer_extra.html:17
 msgid "FixMyStreet app on the App Store"
-msgstr ""
+msgstr "Ap FixMyStreet ar yr App Store"
 
 #: templates/web/fixmystreet.com/questionnaire/completed-open.html:5
 msgid "FixMyStreet helps you send a report to your council, but we’re not responsible for fixing things. If you’d like to chase your issue, please search your inbox for the latest reply, or auto-reply from your council, and respond to that."
-msgstr ""
+msgstr "Mae FixMyStreet yn eich helpu i anfon adroddiad at eich cyngor, ond nid ydym yn gyfrifol am drwsio pethau. Pe baech am gwrso eich mater, chwiliwch eich mewnflwch am yr ateb diweddaraf - neu ateb awtomatig - gan eich cyngor, ac ymatebwch i hynny."
 
 #: templates/web/fixmystreet.com/contact/address.html:3
 msgid "FixMyStreet is a service provided by mySociety, which is a registered charity, charity number 1076346."
-msgstr ""
+msgstr "Mae FixMyStreet yn wasanaeth a ddarperir gan mySociety, sy'n elusen gofrestredig, rhif elusen 1076346."
 
 #: templates/web/base/report/_council_sent_info.html:30
-#, fuzzy
 msgid "FixMyStreet ref:&nbsp;%s"
-msgstr "%s cyf:&nbsp;%s"
+msgstr "Cyfeirnod FixMyStreet:&nbsp;%s"
 
 #: perllib/FixMyStreet/App/Controller/Admin/States.pm:35
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:179
@@ -1950,7 +1936,7 @@ msgstr "Er mwyn y canlyniadau gorau, dylid cynnwys llun manwl a llun o'r cyd-des
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:12
 msgid "For council staff only. Access detailed statistics on reports and performance in your area."
-msgstr ""
+msgstr "Ar gyfer staff y cyngor yn unig. Cyrchwch ystadegau manwl ar adroddiadau a pherfformiad yn eich ardal."
 
 #: templates/web/base/admin/bodies/form.html:73
 msgid "For more information, see <a href='https://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
@@ -1976,11 +1962,11 @@ msgstr "Dymuniad wedi ei ddanfon ymlaen at gorff allanol"
 
 #: templates/web/fixmystreet.com/next_steps.html:42
 msgid "Free FixMyStreet goodies for you!"
-msgstr ""
+msgstr "Danteithion FixMyStreet i chi am ddim!"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:9
 msgid "Free statistics for councils"
-msgstr ""
+msgstr "Ystadegau yn rhad ac am ddim i gynghorau"
 
 #: templates/web/base/about/_sidebar.html:4
 #: templates/web/base/about/faq-en-gb.html:1
@@ -1996,7 +1982,7 @@ msgstr "Oddi wrth"
 
 #: templates/web/fixmystreet.com/contact/blurb.html:13
 msgid "From a UK Local Council and interested in finding out about FixMyStreet Pro?"
-msgstr ""
+msgstr "O Awdurdod Lleol yn y Deyrnas Unedig ac â diddordeb gwybod mwy am FixMyStreet Pro?"
 
 #: templates/web/base/admin/bodies/contact-form.html:139
 msgid "Frontend staff access only to users assigned to this category"
@@ -2061,7 +2047,7 @@ msgstr "Cyrchu"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:3
 msgid "Go Pro"
-msgstr ""
+msgstr "Trïwch Pro"
 
 #: templates/web/base/admin/reports/_edit_main.html:78
 msgid "Going to send questionnaire?"
@@ -2078,7 +2064,7 @@ msgstr "Graff o'r problemau sydd wedi'u rhannu fesul statws dros amser"
 
 #: templates/web/fixmystreet.com/next_steps.html:23
 msgid "Great work. Now spread the word!"
-msgstr ""
+msgstr "Gwaith gwych. Nawr efengylwch!"
 
 #: templates/web/base/dashboard/index.html:123
 msgid "Group by %s"
@@ -2117,9 +2103,8 @@ msgid "Help <strong>%s</strong> resolve your problem quicker, by providing some 
 msgstr "Helpwch <strong>%s</strong> i ddatrys eich problem yn gyflymach, trwy nodi mwy o fanylion. Ni fydd y wybodaeth ychwanegol hon yn cael ei chyhoeddi arlein."
 
 #: templates/web/fixmystreet.com/next_steps.html:35
-#, fuzzy
 msgid "Help support FixMyStreet"
-msgstr "Problemau newydd ar FixMyStreet"
+msgstr "Helpwch gefnogi FixMyStreet"
 
 #: templates/web/base/around/on_map_list_items.html:8
 msgid "Here are some other nearby reports:"
@@ -2127,7 +2112,7 @@ msgstr "Dyma rai adroddiadau eraill cyfagos:"
 
 #: templates/web/base/offline/drafts.html:6
 msgid "Here is a list of draft reports you made offline. Click Continue to finish making a report online, or Delete to remove a draft report."
-msgstr ""
+msgstr "Dyma restr o adroddiadau drafft a wnaethoch all-lein. Cliciwch Parhau i orffen adroddiad ar-lein, neu Dileu i ddileu adroddiad drafft."
 
 #: templates/web/zurich/footer.html:11
 msgid "Hi %s"
@@ -2196,12 +2181,11 @@ msgstr "Hanes"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:5
 msgid "How much could <em>you</em> save?"
-msgstr ""
+msgstr "Faint allech <em>chi</em> ei arbed?"
 
 #: templates/web/fixmystreet.com/reports/summary.html:143
-#, fuzzy
 msgid "How responsive is %s?"
-msgstr "Y 5 cyngor fwyaf ymatebol"
+msgstr "Pa mor ymatebol yw %s?"
 
 #: templates/web/base/index-steps.html:1
 msgid "How to report a problem"
@@ -2214,11 +2198,11 @@ msgstr "Sut i anfon adroddiadau llwyddiannus"
 
 #: templates/web/fixmystreet.com/contact/who.html:39
 msgid "I am from a council and I have a question for the FixMyStreet team"
-msgstr ""
+msgstr "Rydw i o gyngor ac mae gen i gwestiwn i'r tîm FixMyStreet"
 
 #: templates/web/fixmystreet.com/contact/who.html:34
 msgid "I have feedback about the site"
-msgstr ""
+msgstr "Mae gen i adborth am y safle"
 
 #: templates/web/base/tokens/confirm_problem.html:50
 #: templates/web/base/tokens/confirm_problem.html:55
@@ -2232,16 +2216,15 @@ msgstr "Rydw i newydd ddiweddaru problem ar @fixmystreet"
 
 #: templates/web/fixmystreet.com/contact/who.html:29
 msgid "I need help using the site"
-msgstr ""
+msgstr "Rydw i angen cymorth i ddefnyddio'r safle"
 
 #: templates/web/fixmystreet.com/contact/who.html:24
 msgid "I want to make a new report about a street problem"
-msgstr ""
+msgstr "Rydw i am greu adroddiad newydd am broblem ar y stryd"
 
 #: templates/web/fixmystreet.com/contact/who.html:44
-#, fuzzy
 msgid "I want to report a street problem"
-msgstr "Sut i adrodd problem"
+msgstr "Rydw i am adrodd problem ar y stryd"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:86
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
@@ -2269,7 +2252,7 @@ msgstr ""
 
 #: templates/web/fixmystreet.com/reports/summary.html:237
 msgid "If that&rsquo;s new to you, <a href=\"https://www.mysociety.org/2013/01/10/open311-introduced/\">take a look at our simple Open311 primer</a> to see what you need to do to get up and running in a few days."
-msgstr ""
+msgstr "Pe bai hynny'n newydd i chi, <a href=\"https://www.mysociety.org/2013/01/10/open311-introduced/\">cymerwch olwg ar ein preimwr Open311 syml</a> i weld beth sydd angen i chi ei wneud i fod yn barod i fynd mewn ychydig ddyddiau."
 
 #: templates/web/base/auth/token.html:19
 msgid "If there's a user associated with the address you entered, we've sent a confirmation email."
@@ -2304,12 +2287,8 @@ msgid "If you are contacting us about a specific report or update please include
 msgstr "Os ydych yn cysylltu â ni am adroddiad neu ddiweddariad penodol, mae angen cynnwys dolen i'r adroddiad yn y neges."
 
 #: templates/web/fixmystreet.com/contact/unsuitable-text.html:6
-#, fuzzy
 msgid "If you are trying to make a new report, please <a href=\"/\">go to the front page</a> and follow the instructions."
-msgstr ""
-"Peidiwch <strong>â</strong> rhoi gwybod am broblemau drwy'r ffurflen hon; mae negeseuon yn mynd at\n"
-"y tîm y tu ôl i'r wefan hon, nid cyngor. I roi gwybod am broblem,\n"
-"os gwelwch yn dda <a href=\"/\">ewch i'r dudalen flaen</a> a dilynwch y cyfarwyddiadau."
+msgstr "Pe baech yn ceisio creu adroddiad newydd, <a href=\"/\">ewch i'r dudalen flaen</a> a dilynwch y cyfarwyddiadau."
 
 #: templates/web/base/auth/generate_token.html:80
 msgid "If you generate a new token the existing token will no longer work."
@@ -2321,7 +2300,7 @@ msgstr "Os cewch chi ragor o wybodaeth am statws eich problem, dychwelwch i'r we
 
 #: templates/web/fixmystreet.com/contact/blurb.html:1
 msgid "If you have questions about FixMyStreet"
-msgstr ""
+msgstr "Os oes gennych unrhyw gwestiynau am FixMyStreet"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:28
 msgid "If you let us know your email address, we’ll notify you when this problem is updated or fixed."
@@ -2329,7 +2308,7 @@ msgstr "Os ydych chi'n nodi eich cyfeiriad e-bost, fe wnawn ni eich hysbysu pan 
 
 #: templates/web/fixmystreet.com/report/_updates_disallowed_message.html:5
 msgid "If you made the original report please <a href=\"%s\">log in</a> to leave an update."
-msgstr ""
+msgstr "Os gwnaethoch chi'r adroddiad gwreiddiol <a href=\"%s\">, mewngofnodwch</a> i ddiweddaru os gwelwch yn dda."
 
 #: templates/web/base/admin/responsepriorities/edit.html:28
 msgid "If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories."
@@ -2353,23 +2332,23 @@ msgstr "Os ydych chi am ddefnyddio'r templed hwn i raglenwi'r maes diweddaru wrt
 
 #: templates/web/fixmystreet.com/contact/address.html:5
 msgid "If you wish to contact us by post, our address is <address>mySociety, 483 Green Lanes, London, N13 4BS, UK.</address>"
-msgstr ""
+msgstr "Os dymunwch gysylltu â ni drwy'r post, ein cyfeiriad yw<address> mySociety, 483 Green Lanes, Llundain, N13 4BS, DU.</address>"
 
 #: templates/web/base/questionnaire/index.html:79
 msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council)."
 msgstr ""
-"Os hoffech adael diweddariad cyhoeddus ar y broblem, rhowch ef yma\n"
+"Os hoffech gynnig diweddariad cyhoeddus am y broblem, rhowch ef yma\n"
 "(sylwch na fydd yn cael ei anfon at y cyngor)."
 
 #: templates/web/fixmystreet.com/reports/summary.html:231
 msgid "If you would like to change either the categories or the contact emails above then <a href=\"/contact\">get in touch</a>."
-msgstr ""
+msgstr "Os hoffech chi newid naill ai'r categorïau neu'r e-byst cyswllt uchod yna <a href=\"/contact\">cysylltwch â ni</a> ."
 
 #: templates/web/fixmystreet.com/reports/summary.html:203
 msgid "If you&rsquo;d like to discuss this then <a href=\"/contact\">get in touch</a>."
-msgstr ""
+msgstr "Os hoffech drafod hyn yna <a href=\"/contact\">cysylltwch â ni</a> ."
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:112
 #: templates/web/base/admin/bodies/open311-form-fields.html:113
@@ -2379,7 +2358,7 @@ msgid ""
 "              Check that your cobrand supports this feature before switching it on."
 msgstr ""
 "Os ydych chi wedi galluogi anfon diweddariad Open311 uchod, dim ond statws AGORED neu AR GAU y mae Open311 yn ei dderbyn yn \n"
-"              ei ddiweddariadau. Galluogwch <strong>stausau Open311 estynedig</strong> os ydych am ganiatáu i gyflyrau ychwanegol gael eu pasio.\n"
+"              ei ddiweddariadau. Galluogwch <strong>statusau Open311 estynedig</strong> os ydych am ganiatáu i gyflyrau ychwanegol gael eu pasio.\n"
 "              Gwiriwch fod eich cyd-frand yn cefnogi'r nodwedd hon cyn ei halluogi."
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:100
@@ -2404,7 +2383,7 @@ msgstr ""
 
 #: templates/web/fixmystreet.com/around/location_error.html:21
 msgid "If you’re <strong>not sure on the spelling</strong>, try another nearby street you <em>are</em> sure about, then trace your way back on our map."
-msgstr ""
+msgstr "Os <strong>nad ydych chi'n siŵr ar y sillafiad</strong>, rhowch gynnig ar stryd gyfagos arall rydych chi'n <em> siŵr</em> amdani, yna olrhain eich ffordd ar ein map."
 
 #: templates/web/base/admin/bodies/contact-form.html:182
 msgid "If you’ve made changes, leave a note explaining what, for other admins to see."
@@ -2423,9 +2402,8 @@ msgid "Import users"
 msgstr "Mewnforio defnyddwyr"
 
 #: templates/web/fixmystreet.com/report/new/unresponsive_body.html:5
-#, fuzzy
 msgid "Important message"
-msgstr "Adrodd neges"
+msgstr "Neges bwysig"
 
 #: templates/web/base/admin/flagged.html:39
 msgid "In abuse table?"
@@ -2474,7 +2452,7 @@ msgstr "Cyfarwyddo contractwyr i drwsio problemau"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:4
 msgid "Integrate FixMyStreet Pro with your council system for smooth, end-to-end report fulfilment."
-msgstr ""
+msgstr "Integreiddiwch FixMyStreet Pro gyda'ch system cyngor er mwyn cyflawni adroddiadau llyfn o'r dechrau i'r diwedd."
 
 #: templates/web/base/admin/extra-metadata-item.html:50
 msgid "Internal data set by Open311"
@@ -2555,7 +2533,7 @@ msgstr "Lledred/Hydred:"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:6
 msgid "Learn more about Pro"
-msgstr ""
+msgstr "Dysgwch fwy am Pro"
 
 #: templates/web/base/admin/triage/_list-filters.html:37
 #: templates/web/base/reports/_list-filters-sort.html:10
@@ -2603,7 +2581,7 @@ msgstr "Lleoli'r broblem ar fap o'r ardal"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:12
 msgid "Log in now"
-msgstr ""
+msgstr "Mewngofnodwch nawr"
 
 #: templates/web/base/auth/general.html:28
 #: templates/web/base/report/form/user.html:19
@@ -2665,7 +2643,7 @@ msgstr "Gorchymyn trwy law"
 
 #: templates/web/fixmystreet.com/footer_extra.html:9
 msgid "Mapping and reporting street problems to the councils responsible for fixing them &ndash; anywhere in the UK."
-msgstr ""
+msgstr "Mapio ac adrodd am broblemau stryd i'r cynghorau sy'n gyfrifol am eu trwsio - unrhyw le yn y Deyrnas Unedig."
 
 #: templates/web/base/admin/reports/_edit_main.html:64
 #: templates/web/base/admin/reports/_edit_waste.html:26
@@ -2682,7 +2660,7 @@ msgstr "Rhowch fanylion am y broblem"
 
 #: templates/web/fixmystreet.com/questionnaire/completed-open.html:9
 msgid "Meanwhile, if you’re getting nowhere, you might consider writing to your local councillor or other representative to see if they can help."
-msgstr ""
+msgstr "Yn y cyfamser, os nad ydych yn cyrraedd yma, efallai y byddwch yn ystyried ysgrifennu at eich cynghorydd lleol neu gynrychiolydd arall i weld a allant helpu."
 
 #: templates/web/base/admin/sitemessage/edit.html:27
 #: templates/web/base/contact/enquiry/index.html:42
@@ -2755,7 +2733,7 @@ msgstr "Gyda'r mwyaf o sylwadau"
 
 #: templates/web/fixmystreet.com/reports/summary.html:158
 msgid "Most popular categories in %s"
-msgstr ""
+msgstr "Categorïau mwyaf poblogaidd yn %s"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:747
 #: perllib/FixMyStreet/App/Controller/Report.pm:786
@@ -2769,9 +2747,8 @@ msgid "Must not contain spaces."
 msgstr "Ni all gynnwys bylchau."
 
 #: templates/web/fixmystreet.com/contact/who.html:49
-#, fuzzy
 msgid "My street problem hasn’t been fixed"
-msgstr "Ni thrwsiwyd y broblem hon"
+msgstr "Ni chafodd y broblem stryd yma ei thrwsio"
 
 #: templates/web/base/admin/bodies/form.html:24
 #: templates/web/base/admin/bodies/index.html:25
@@ -2828,9 +2805,8 @@ msgid "Nearest postcode to the pin placed on the map (automatically generated): 
 msgstr "Cod post agosaf at y pin a roddir ar y map (wedi'i gynhyrchu'n awtomatig): %s (%sm i ffwrdd)"
 
 #: perllib/FixMyStreet/Geocode/Address.pm:23
-#, fuzzy
 msgid "Nearest road to the pin placed on the map (automatically generated by %s): %s"
-msgstr "Y ffordd ag enw sydd gosaf at y pin a nodwyd ar y map (wedi'i gynhyrchu'n awtomatig gan ddefnyddio Bing Maps): %s"
+msgstr "Y ffordd agosaf at y pin a nodwyd ar y map (wedi'i gynhyrchu'n awtomatig gan %s): %s"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:635
 msgid "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"
@@ -2846,9 +2822,8 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:645
 #: perllib/FixMyStreet/Script/Alerts.pm:482
-#, fuzzy
 msgid "Nearest road to the pin placed on the map (automatically generated by OpenStreetMap): %s"
-msgstr "Y ffordd ag enw sydd gosaf at y pin a roddwyd ar y map (wedi'i gynhyrchu'n awtomatig gan ddefnyddio OpenStreetMap): %s%s"
+msgstr "Y ffordd agosaf at y pin a roddwyd ar y map (wedi'i gynhyrchu'n awtomatig gan ddefnyddio OpenStreetMap): %s"
 
 #: templates/web/base/auth/token.html:18
 msgid "Nearly done!"
@@ -2881,9 +2856,8 @@ msgid "New field"
 msgstr "Maes newydd"
 
 #: templates/web/fixmystreet.com/reports/cobrand_stats.html:3
-#, fuzzy
 msgid "New for council staff"
-msgstr "Dim cyngor wedi'i ddewis"
+msgstr "Newydd ar gyfer staff cyngor"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:102
 #: templates/web/zurich/admin/reports/edit.html:129
@@ -3197,7 +3171,7 @@ msgstr "Dim ond staff fydd yn gallu ychwanegu adroddiadau yn y categori hwn."
 
 #: templates/web/fixmystreet.com/report/_updates_disallowed_message.html:3
 msgid "Only the original reporter may leave updates."
-msgstr ""
+msgstr "Dim ond yr adroddwr gwreiddiol gall diweddaru."
 
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:178
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:157
@@ -3330,7 +3304,7 @@ msgstr "Cyfrinair wedi dod i ben"
 
 #: templates/web/fixmystreet.com/next_steps.html:46
 msgid "Perfect for civic groups, clubs, and schools."
-msgstr ""
+msgstr "Yn berffaith ar gyfer grwpiau dinesig, clybiau ac ysgolion."
 
 #: templates/web/base/admin/roles/index.html:6
 msgid "Permissions"
@@ -3647,7 +3621,7 @@ msgstr "Nodwch a hoffech dderbyn holiadur arall os gwelwch yn dda"
 
 #: templates/web/fixmystreet.com/contact/blurb.html:15
 msgid "Please look at our <a href=\"/pro/\">dedicated site</a>."
-msgstr ""
+msgstr "Edrychwch ar ein <a href=\"/pro/\">safle arbenigol os gwelwch yn dda</a>."
 
 #. ("JS")
 #: perllib/FixMyStreet/DB/Result/Problem.pm:449
@@ -3770,9 +3744,8 @@ msgid "Posted by <strong>%s</strong> at %s"
 msgstr "Postiwyd gan <strong>%s</strong> am %s"
 
 #: templates/web/fixmystreet.com/footer_extra.html:69
-#, fuzzy
 msgid "Powered by"
-msgstr "Adroddwyd gan:"
+msgstr "Wedi'i bweru gan"
 
 #: templates/web/base/front/footer-marketing.html:6
 msgid "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3910,9 +3883,8 @@ msgid "Problems recently reported fixed on FixMyStreet"
 msgstr "Problemau wedi'u trwsio a adroddwyd i FixMyStreet yn ddiweddar"
 
 #: templates/web/fixmystreet.com/reports/summary.html:69
-#, fuzzy
 msgid "Problems reported in area:"
-msgstr "Problemau yn yr ardal"
+msgstr "Problemau a adroddwyd yn yr ardal:"
 
 #: templates/web/base/alert/_list.html:34
 msgid "Problems within %.1fkm of %s"
@@ -4116,9 +4088,8 @@ msgid "Redact"
 msgstr "Tynnu yn ôl"
 
 #: templates/web/fixmystreet.com/admin/stats/refused.html:1
-#, fuzzy
 msgid "Refused bodies"
-msgstr "%s cyrff"
+msgstr "Cyrff a wrthodwyd"
 
 #: templates/web/base/report/inspect/information.html:67
 msgid "Reject report"
@@ -4328,7 +4299,7 @@ msgstr "Adroddiadau"
 
 #: templates/web/fixmystreet.com/reports/summary.html:207
 msgid "Reports are currently not being sent to %s."
-msgstr ""
+msgstr "Nid yw adroddiadau yn cael eu hanfon at %s ar hyn o bryd."
 
 #: perllib/FixMyStreet/Cobrand/Bromley.pm:27
 #: perllib/FixMyStreet/Cobrand/Hackney.pm:341
@@ -4373,7 +4344,7 @@ msgstr "Adroddiadau wedi'u danfon at %s, o fewn ward %s"
 
 #: templates/web/fixmystreet.com/reports/summary.html:211
 msgid "Reports to %s are currently sent directly into backend services."
-msgstr ""
+msgstr "Ar hyn o bryd mae adroddiadau at %s yn cael eu hanfon yn uniongyrchol i'r gwasanaethau tu-cefn."
 
 #: templates/web/base/admin/index.html:55
 msgid "Reports waiting to be sent"
@@ -4395,7 +4366,7 @@ msgstr "Ailosod<br>yr adroddiad yma"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:40
 msgid "Request access"
-msgstr ""
+msgstr "Gofyn am fynediad"
 
 #: templates/web/base/admin/extra-metadata-item.html:94
 msgid "Required"
@@ -4550,7 +4521,7 @@ msgstr "Yn arbed adroddiadau oddi-ar-lein"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:6
 msgid "Say how long the issue’s been&nbsp;present"
-msgstr ""
+msgstr "Dwedwch am ba hyd mae'r mater wedi bod yn bresennol"
 
 #: templates/web/base/admin/index.html:17
 #: templates/web/base/admin/reports/index.html:1
@@ -4578,12 +4549,11 @@ msgstr "Chwilio:"
 
 #: templates/web/fixmystreet.com/around/location_error.html:10
 msgid "Searching by postcode?"
-msgstr ""
+msgstr "Chwilio yn ôl côd post?"
 
 #: templates/web/fixmystreet.com/around/location_error.html:18
-#, fuzzy
 msgid "Searching by street name?"
-msgstr "Nodwch enw stryd yn Zürich"
+msgstr "Chwilio yn ôl enw stryd?"
 
 #: templates/web/base/admin/reports/index.html:27
 #: templates/web/base/around/lookup_by_ref.html:18
@@ -4666,7 +4636,7 @@ msgstr "Wedi methu anfon sawl gwaith:"
 
 #: templates/web/fixmystreet.com/contact/blurb.html:18
 msgid "Send a message to FixMyStreet’s technical support team"
-msgstr ""
+msgstr "Anfon neges at dîm cefnogaeth technegol FixMyStreet"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:121
 msgid "Send extended Open311 statuses with service request updates"
@@ -4716,7 +4686,7 @@ msgstr "Rhannu"
 
 #: templates/web/fixmystreet.com/next_steps.html:24
 msgid "Share your report on Twitter and Facebook, and let your friends join the conversation."
-msgstr ""
+msgstr "Rhowch gyfle i'ch ffrindiau ymuno â'r sgwrs trwy rannu eich adroddiad ar Twitter a Facebook."
 
 #: templates/web/base/admin/manifesttheme/index.html:8
 msgid "Short Name"
@@ -4820,9 +4790,8 @@ msgstr "Allgofnodi"
 #: templates/web/base/admin/sitemessage/edit.html:1
 #: templates/web/base/admin/sitemessage/index.html:1
 #: templates/web/base/admin/sitemessage/index.html:7
-#, fuzzy
 msgid "Site message"
-msgstr "Creu neges"
+msgstr "Neges safle"
 
 #: templates/web/base/header.html:30 templates/web/zurich/header.html:27
 msgid "Skip to main content"
@@ -4914,7 +4883,7 @@ msgstr "Didoli fesul"
 
 #: templates/web/fixmystreet.com/next_steps.html:26
 msgid "Spread the word about FixMyStreet!"
-msgstr ""
+msgstr "Rhannwch enw da FixMyStreet!"
 
 #: templates/web/base/admin/bodies/contact-form.html:71
 msgid "Staff only"
@@ -5605,9 +5574,8 @@ msgid "This cobrand is already assigned to another body: "
 msgstr "Mae'r cyd-frand yma eisoes wedi'i neilltuo i gorff arall: "
 
 #: templates/web/fixmystreet.com/reports/_body_gone.html:2
-#, fuzzy
 msgid "This council no longer exists."
-msgstr "(ddim yn bodoli bellach)"
+msgstr "Nid yw'r cyngor hwn yn bodoli bellach."
 
 #: perllib/FixMyStreet/Queue/Item/Report.pm:220
 msgid "This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system."
@@ -5684,12 +5652,11 @@ msgstr "Yr adroddiad hwn"
 #: templates/web/fixmystreet.com/contact/who.html:11
 #: templates/web/fixmystreet.com/contact/who.html:14
 msgid "This report breaks the <a href=\"/about/house-rules\">Conditions of Use</a>"
-msgstr ""
+msgstr "Mae'r adroddiad hwn yn torri'r <a href=\"/about/house-rules\">Amodau Defnyddio</a>"
 
 #: templates/web/fixmystreet.com/contact/who.html:20
-#, fuzzy
 msgid "This report has not been fixed"
-msgstr "Ni thrwsiwyd y broblem hon"
+msgstr "Nid yw'r adroddiad hwn wedi'i drwsio"
 
 #: templates/web/base/report/duplicate-no-updates.html:5
 msgid "This report is a duplicate. Please leave updates on the original report:"
@@ -5720,14 +5687,13 @@ msgid "This report is now closed to updates."
 msgstr "Mae'r adroddiad hwn bellach ar gau i ddiweddariadau."
 
 #: templates/web/base/admin/sitemessage/edit.html:16
-#, fuzzy
 msgid "This site message will be shown on the homepage."
-msgstr "Bydd y neges argyfwng yn cael ei arddangos ar yr hafan."
+msgstr "Bydd y neges safle hon yn cael ei harddangos ar yr hafan."
 
 #: templates/web/fixmystreet.com/contact/who.html:11
 #: templates/web/fixmystreet.com/contact/who.html:12
 msgid "This update breaks the <a href=\"/about/house-rules\">Conditions of Use</a>"
-msgstr ""
+msgstr "Mae'r diweddariad hwn yn groes i'r <a href=\"/about/house-rules\">Amodau Defnyddio</a>"
 
 #: perllib/FixMyStreet/Queue/Item/Report.pm:111
 msgid "This web page also contains a photo of the problem, provided by the user."
@@ -5819,7 +5785,7 @@ msgstr "Y 5 ward uchaf"
 
 #: templates/web/fixmystreet.com/contact/who.html:1
 msgid "Topic:"
-msgstr ""
+msgstr "Pwnc:"
 
 #: templates/web/base/admin/stats/fix_rate.html:4
 #: templates/web/base/admin/stats/questionnaire.html:24
@@ -5889,7 +5855,7 @@ msgstr "Dadwneud y diwethaf"
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:14
 msgid "Unit type:"
-msgstr ""
+msgstr "Math o uned:"
 
 #: templates/web/base/report/banner.html:13
 #: templates/web/fixmystreet.com/report/banner.html:23
@@ -6046,9 +6012,8 @@ msgid "Use Open311 update-sending extension"
 msgstr "Defnyddiwch estyniad anfon diweddariad Open311"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:5
-#, fuzzy
 msgid "Use exact locations"
-msgstr "Defnyddio fy lleoliad"
+msgstr "Defnyddiwch yr union leoliadau"
 
 #: templates/web/base/around/_postcode_form_geolocation.html:2
 msgid "Use my current location"
@@ -6222,7 +6187,7 @@ msgstr "Ffurfwedd WasteWorks"
 
 #: templates/web/fixmystreet.com/reports/summary.html:215
 msgid "We currently send all reports to the email addresses below."
-msgstr ""
+msgstr "Ar hyn o bryd rydym yn anfon pob adroddiad at y cyfeiriadau e-bost isod."
 
 #: templates/web/base/alert/choose.html:7
 #: templates/web/base/around/_error_multiple.html:6
@@ -6274,9 +6239,8 @@ msgid "We’ll get back to you as soon as we can."
 msgstr "Ymatebwn cyn gynted â phosib."
 
 #: templates/web/fixmystreet.com/questionnaire/completed-open.html:2
-#, fuzzy
 msgid "We’re sorry to hear that your problem hasn’t been fixed."
-msgstr "Dywedwch a gafodd y broblem ei thrwsio"
+msgstr "Mae'n ddrwg gennym glywed nad yw'ch problem wedi'i datrys."
 
 #: templates/web/base/report/new/duplicate_suggestions.html:14
 msgid "We’ve already reported these nearby problems to the council. Is one of them yours?"
@@ -6284,7 +6248,7 @@ msgstr "Rydym eisoes wedi rhoi gwybod i’r cyngor am y problemau cyfagos hyn. Y
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:11
 msgid "What do people report most? How’s your response rate? And how do you compare to other UK councils?"
-msgstr ""
+msgstr "Beth mae pobl yn ei adrodd fwyaf? Sut mae eich cyfradd ymateb? A sut ydych chi'n cymharu â chynghorau eraill y DU?"
 
 #: templates/web/base/admin/bodies/category.html:28
 #: templates/web/zurich/admin/bodies/body.html:18
@@ -6296,9 +6260,8 @@ msgid "When sent"
 msgstr "Anfonwyd"
 
 #: templates/web/fixmystreet.com/reports/summary.html:196
-#, fuzzy
 msgid "Where we send %s reports"
-msgstr "Ailanfon adrodd"
+msgstr "Lle rydym yn anfon adroddiadau %s"
 
 #: templates/web/base/alert/_list.html:11
 msgid "Which problems do you want alerts about?"
@@ -6357,9 +6320,8 @@ msgid "You are complaining that this problem report was unnecessarily moderated:
 msgstr "Rydych yn cwyno bod yr adroddiad problem hwn wedi'i gymedroli'n ddiangen:"
 
 #: templates/web/base/offline/fallback.html:7
-#, fuzzy
 msgid "You are currently offline. You can still make draft reports below, to finish and submit when you have signal again."
-msgstr "Rydych chi all-lein ar hyn o bryd. Gallwch barhau i wneud adroddiad drafft isod, i'w orffen a'i gyflwyno pan fydd gennych signal eto."
+msgstr "Rydych chi all-lein ar hyn o bryd. Gallwch barhau i greu adroddiadau drafft isod, i'w gorffen a'u cyflwyno pan fydd gennych signal eto."
 
 #: templates/web/base/admin/bodies/contact-form.html:52
 msgid "You are not sure of the origin or validity of the contact."
@@ -6407,7 +6369,7 @@ msgstr "Gallwch gysylltu â'n tîm cymorth technegol drwy <a href='mailto:%s'>%s
 
 #: templates/web/fixmystreet.com/questionnaire/completed-open.html:13
 msgid "You can do this on <a href=\"%s\">WriteToThem</a>, another useful mySociety website."
-msgstr ""
+msgstr "Gallwch wneud hyn ar <a href=\"%s\">WriteToThem</a>, gwefan mySociety defnyddiol arall."
 
 #: templates/web/base/admin/flagged.html:5
 msgid ""
@@ -6436,7 +6398,7 @@ msgstr "Gallwch symud o gwmpas gyda'ch bysellfwrdd"
 
 #: templates/web/fixmystreet.com/contact/who.html:54
 msgid "You can only contact the team behind FixMyStreet using our contact form"
-msgstr ""
+msgstr "Dim ond trwy ein ffurflen gyswllt y gallwch chi gysylltu â thîm FixMyStreet"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:255
 msgid "You cannot rename a category to an existing category"
@@ -6513,7 +6475,7 @@ msgstr "Nid ydych wedi rhoi unrhyw adroddiadau ar y rhestr fer eto."
 
 #: templates/web/fixmystreet.com/next_steps.html:27
 msgid "You know how to get things fixed - now make sure your friends do too."
-msgstr ""
+msgstr "Rydych chi'n gwybod sut i gael pethau wedi eu trwsio - nawr sicrhewch fod eich ffrindiau'n gwybod hefyd."
 
 #: templates/web/base/admin/index.html:10
 msgid "You need to <a href=\"%s\">add some bodies</a> (such as councils or departments) before any reports can be sent."
@@ -6548,7 +6510,7 @@ msgstr "Mae angen dilysu dwbl er mwyn sefydlu eich cyfrif."
 
 #: templates/web/fixmystreet.com/footer_extra.html:53
 msgid "Your donations keep this site and others like it running"
-msgstr ""
+msgstr "Mae eich rhoddion chi yn caniatáu parhad y safle hwn a rhai tebyg iddo"
 
 #: templates/web/base/alert/_updates.html:27
 #: templates/web/base/auth/create.html:50
@@ -6816,22 +6778,20 @@ msgstr "ardaloedd eraill:"
 #: templates/web/fixmystreet.com/about/council-dashboard.html:28
 #: templates/web/fixmystreet.com/about/council-dashboard.html:30
 msgid "please <a href=\"%s\">contact us</a> if we did not recognise your email"
-msgstr ""
+msgstr "os gwelwch yn dda <a href=\"%s\">cysylltwch â ni</a> os na wnaethom adnabod eich e-bost"
 
 #: templates/web/base/maps/_map_instructions.html:5
 msgid "plus"
 msgstr "plws"
 
 #: templates/web/base/report/_council_sent_info.html:27
-#, fuzzy
 msgid "ref:&nbsp;%s"
-msgstr "%s cyf:&nbsp;%s"
+msgstr "cyf:&nbsp;%s"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:17
 #: templates/web/fixmystreet.com/about/council-dashboard.html:22
-#, fuzzy
 msgid "required"
-msgstr "Gofynnol"
+msgstr "gofynnol"
 
 #: templates/web/base/maps/_map_instructions.html:8
 msgid "right"
