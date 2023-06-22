@@ -21,7 +21,7 @@ OpenLayers.Layer.OSM.Cymru = OpenLayers.Class(OpenLayers.Layer.OSM, {
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
             maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
-            numZoomLevels: 20,
+            numZoomLevels: 19,
             buffer: 0
         }, options);
         var newArguments = [name, url, options];

@@ -139,19 +139,24 @@ sub recent_new {
 
 sub recent {
     my ( $rs ) = @_;
-    return _recent( $rs, 5 );
+    return _recent($rs, { num => 5 });
 }
 
 sub recent_photos {
-    my ( $rs, $num, $lat, $lon, $dist ) = @_;
-    return _recent( $rs, $num, $lat, $lon, $dist, 1);
+    my ( $rs, $params ) = @_;
+    return _recent($rs, { %$params, photos => 1 });
 }
 
 sub _recent {
-    my ( $rs, $num, $lat, $lon, $dist, $photos ) = @_;
+    my ( $rs, $params ) = @_;
 
-    my $key = $photos ? 'recent_photos' : 'recent';
-    $key .= ":$site_key:$num";
+    my $key = $params->{photos} ? 'recent_photos' : 'recent';
+    $key .= ":$params->{extra_key}" if $params->{extra_key};
+    $key .= ":$site_key:$params->{num}";
+
+    if ($params->{bodies}) {
+        $rs = $rs->to_body($params->{bodies});
+    }
 
     # submitted might be returned for e.g. Zurich, but would mean in moderation, so no photo
     my @states = grep { $_ ne 'submitted' } FixMyStreet::DB::Result::Problem->visible_states();
@@ -159,19 +164,19 @@ sub _recent {
         non_public => 0,
         state      => \@states,
     };
-    $query->{photo} = { '!=', undef } if $photos;
+    $query->{photo} = { '!=', undef } if $params->{photos};
 
     my $attrs = {
         # We order by most recently _created_, not confirmed, as the latter
         # is too slow on installations with millions of reports.
         # The correct ordering is applied by the `sort` lines below.
         order_by => { -desc => 'id' },
-        rows => $num,
+        rows => $params->{num},
     };
 
     my $probs;
-    if (defined $lat) { # No caching
-        $attrs->{bind} = [ $lat, $lon, $dist ];
+    if (defined $params->{point}->[0]) { # No caching
+        $attrs->{bind} = $params->{point};
         $attrs->{join} = 'nearby';
         $probs = [ mySociety::Locale::in_gb_locale {
             sort { _cmp_reports($b, $a) } $rs->search( $query, $attrs )->all;

@@ -371,9 +371,11 @@ EASTING and NORTHING.
 =cut
 
 sub recent_photos {
-    my $self = shift;
-    my $area = shift;
-    return $self->problems->recent_photos(@_);
+    my ($self, $area, $num, $lat, $lon, $dist) = @_;
+    return $self->problems->recent_photos({
+        num => $num,
+        point => [$lat, $lon, $dist],
+    });
 }
 
 =item recent

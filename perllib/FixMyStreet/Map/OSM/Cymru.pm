@@ -5,6 +5,8 @@ extends 'FixMyStreet::Map::OSM';
 
 has '+map_type' => ( default => 'OpenLayers.Layer.OSM.Cymru' );
 
+has '+zoom_levels' => ( default => 6 );
+
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wfs.js',
     '/js/map-OpenLayers.js',

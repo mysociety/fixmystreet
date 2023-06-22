@@ -12,10 +12,46 @@ use constant COUNCIL_ID_ISLEOFWIGHT => 2636;
 
 sub on_map_default_status { return 'open'; }
 
+sub on_welsh_site {
+    my $self = shift;
+    return $self->{c} && $self->{c}->req->uri->host =~ /^cy\./;
+}
+
 sub map_type {
     my $self = shift;
-    return 'OSM::Cymru' if $self->{c} && $self->{c}->req->uri->host =~ /^cy\./;
+    return 'OSM::Cymru' if $self->on_welsh_site;
     return $self->next::method();
+}
+
+sub example_places {
+    my $self = shift;
+    return [ 'SY23 4AD', 'Abertawe' ] if $self->on_welsh_site;
+    return $self->next::method();
+}
+
+sub disambiguate_location {
+    my $self = shift;
+    my $ret = $self->next::method();
+    if ($self->on_welsh_site) {
+        $ret->{bing_culture} = 'cy';
+        $ret->{bing_country} = 'Y Deyrnas Unedig';
+    }
+    return $ret;
+}
+
+sub recent_photos {
+    my ($self, $area, $num, $lat, $lon, $dist) = @_;
+    return $self->problems->recent_photos({
+        num => $num,
+        point => [$lat, $lon, $dist],
+        $self->on_welsh_site ? (
+            extra_key => 'cy',
+            bodies => [
+                2549, 2554, 2557, 2558, 2559, 2560, 2570, 2585, 2592, 2595, 2599,
+                2602, 2603, 2604, 2605, 2616, 2624, 2637, 2638, 2639, 2640, 2641,
+            ],
+        ) : (),
+    });
 }
 
 # Show TfL pins as grey
