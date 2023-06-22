@@ -23,6 +23,7 @@ my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params,
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id }, { cobrand => 'oxfordshire' });
 my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire', $params, { cobrand => 'buckinghamshire' });
 my $bromley_other = $mech->create_contact_ok(body_id => $bromley->id, category => 'Other', email => "OTHER", send_method => 'Open311', endpoint => '/devolved-endpoint/');
+my $bucks_other = $mech->create_contact_ok(body_id => $bucks->id, category => 'Other', email => "OTHER");
 my $oxon_other = $mech->create_contact_ok(body_id => $oxon->id, category => 'Other', email => "OTHER");
 
 subtest 'Check Open311 params' => sub {

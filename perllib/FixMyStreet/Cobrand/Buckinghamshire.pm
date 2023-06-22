@@ -203,6 +203,13 @@ sub email_list {
     return @to;
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 sub open311_config_updates {
     my ($self, $params) = @_;
     $params->{mark_reopen} = 1;
