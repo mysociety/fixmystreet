@@ -9,9 +9,11 @@ Your report to [% report.body %] has been logged on [% site_name %].
 
 [% INCLUDE '_council_reference.txt' problem=report %]
 
+[% IF report.category == 'Request new container' %]
 Due to the current high demand, please allow up to 40 working days for this
 order to be processed. We thank you for your patience and understanding in
 advance.
+[% END %]
 
 Your report has the title:
 
