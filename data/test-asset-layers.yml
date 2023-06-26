@@ -69,7 +69,7 @@ brent:
     stylemap: 'fixmystreet.assets.stylemap_invisible'
     nearest_radius: '0.1'
     non_interactive: 1
-    asset_category: [ 'Pavement damage', 'Grass verges / shrub beds - littering' ]
+    asset_category: [ 'Fly-tipping', 'Pavement damage', 'Grass verges / shrub beds - littering' ]
     no_asset_msg_id: '#js-brent-road-services'
     road: 1
     actions:

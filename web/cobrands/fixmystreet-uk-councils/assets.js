@@ -238,8 +238,9 @@ fixmystreet.assets.brent.found_filter = function(layer) {
 };
 
 fixmystreet.assets.brent.not_found_filter = function(layer) {
-    if (fixmystreet.reporting.selectedCategory().category === 'Grass verges / shrub beds - littering'||
-    fixmystreet.reporting.selectedCategory().category === 'Grass verge / shrub beds - maintenance issue') {
+    var selected = fixmystreet.reporting.selectedCategory();
+    if (selected.category === 'Grass verges / shrub beds - littering' ||
+    selected.category === 'Grass verge / shrub beds - maintenance issue') {
         layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
         if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
             brent_parkRoadIsFound.park = false;
@@ -257,11 +258,24 @@ fixmystreet.assets.brent.not_found_filter = function(layer) {
         // if we have changed category while it was in place
         layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
         fixmystreet.message_controller.road_found(layer);
-
         layer.fixmystreet.no_asset_msg_id = fixmystreet.assets.brent.no_asset_message_defaults[layer.fixmystreet.http_options.params.TYPENAME];
-        fixmystreet.message_controller.road_not_found(layer);
+
+        if (brent_on_red_route()) {
+            fixmystreet.message_controller.road_found(layer);
+        } else {
+            fixmystreet.message_controller.road_not_found(layer);
+        }
     }
 };
+
+function brent_on_red_route() {
+    var red_routes = fixmystreet.map.getLayersByName("Red Routes");
+    if (!red_routes.length) {
+        return false;
+    }
+    red_routes = red_routes[0];
+    return !!red_routes.selected_feature;
+}
 
 /* Bristol */
 
