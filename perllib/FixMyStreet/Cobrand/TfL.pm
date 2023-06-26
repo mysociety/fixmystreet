@@ -572,7 +572,7 @@ sub _cleaning_categories { [
     'Faulty Christmas Lights',
 ] }
 
-sub _cleaning_groups { [ 'Street cleaning', 'Street Cleansing', 'Fly-tipping' ] }
+sub _cleaning_groups { [ 'Street cleaning', 'Street Cleansing', 'Fly-tipping', 'Street cleaning issues' ] }
 
 sub _tfl_council_categories { [
     'General Litter / Rubbish Collection',
