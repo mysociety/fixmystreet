@@ -58,7 +58,7 @@ sub council_url { return 'brent'; }
 =cut
 
 sub path_to_pin_icons {
-    return '/cobrands/brent/images/';
+    return '/cobrands/oxfordshire/images/';
 }
 
 =item * Users with a brent.gov.uk email can always be found in the admin.
@@ -137,7 +137,29 @@ sub geocoder_munge_results {
 
 =back
 
+=head2 pin_colour
+
+=over 4
+
+=item * grey: closed
+
+=item * green: fixed
+
+=item * yellow: confirmed
+
+=item * orange: all other open states, like "in progress"
+
+=back
+
 =cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->is_closed;
+    return 'green' if $p->is_fixed;
+    return 'yellow' if $p->state eq 'confirmed';
+    return 'orange'; # all the other `open_states` like "in progress"
+}
 
 =head2 categories_restriction
 

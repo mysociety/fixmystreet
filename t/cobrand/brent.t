@@ -271,6 +271,26 @@ FixMyStreet::override_config {
         is $json->{by_category}->{"River Piers - Cleaning"}, undef, "Brent doesn't have River Piers with hyphen and extra text category";
         is $json->{by_category}->{"River Piers Damage doors and glass"}, undef, "Brent doesn't have River Piers with extra text category";
     };
+
+    subtest "has the correct pin colours" => sub {
+        my $cobrand = $brent->get_cobrand_handler;
+
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Title', {
+            areas => '2488', category => 'Graffiti', cobrand => 'brent', user => $user1
+        });
+
+        $problem->state('confirmed');
+        is $cobrand->pin_colour($problem, 'around'), 'yellow', 'confirmed problem has correct pin colour';
+
+        $problem->state('closed');
+        is $cobrand->pin_colour($problem, 'around'), 'grey', 'closed problem has correct pin colour';
+
+        $problem->state('fixed');
+        is $cobrand->pin_colour($problem, 'around'), 'green', 'fixed problem has correct pin colour';
+
+        $problem->state('in_progress');
+        is $cobrand->pin_colour($problem, 'around'), 'orange', 'in_progress problem has correct pin colour';
+    };
 };
 
 package SOAP::Result;
