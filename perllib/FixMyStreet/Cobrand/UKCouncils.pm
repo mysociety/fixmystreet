@@ -647,6 +647,23 @@ sub csv_staff_user_lookup {
     };
 }
 
+sub csv_staff_roles {
+    my ($self, $user_lookup) = @_;
+
+    my $userroles = FixMyStreet::DB->resultset("UserRole")->search({
+        user_id => [ keys %$user_lookup ],
+    }, {
+        prefetch => 'role'
+    });
+    my %userroles;
+    while (my $userrole = $userroles->next) {
+        my $user_id = $userrole->user_id;
+        my $role = $userrole->role->name;
+        push @{$userroles{$user_id}}, $role;
+    }
+    return \%userroles;
+}
+
 sub nearby_distances {
     my $self = shift;
     return $self->feature('nearby_distances') || $self->next::method();

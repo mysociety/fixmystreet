@@ -974,18 +974,7 @@ sub dashboard_export_problems_add_columns {
     );
 
     my $user_lookup = $self->csv_staff_users;
-
-    my $userroles = FixMyStreet::DB->resultset("UserRole")->search({
-        user_id => [ keys %$user_lookup ],
-    }, {
-        prefetch => 'role'
-    });
-    my %userroles;
-    while (my $userrole = $userroles->next) {
-        my $user_id = $userrole->user_id;
-        my $role = $userrole->role->name;
-        push @{$userroles{$user_id}}, $role;
-    }
+    my $userroles = $self->csv_staff_roles($user_lookup);
 
     $csv->csv_extra_data(sub {
         my $report = shift;
@@ -995,7 +984,7 @@ sub dashboard_export_problems_add_columns {
         my $staff_role = '';
         if ($by) {
             $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
-            $staff_role = join(',', @{$userroles{$by} || []});
+            $staff_role = join(',', @{$userroles->{$by} || []});
         }
         return {
             staff_user => $staff_user,

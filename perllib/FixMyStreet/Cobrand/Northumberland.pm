@@ -89,9 +89,30 @@ sub privacy_policy_url {
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_user => 'Staff User',
+        staff_role => 'Staff Role',
+    );
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
     $csv->csv_extra_data(sub {
         my $report = shift;
-        return { user_name_display => $report->name };
+
+        my $by = $report->get_extra_metadata('contributed_by');
+        my $staff_user = '';
+        my $staff_role = '';
+        if ($by) {
+            $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            user_name_display => $report->name,
+            staff_user => $staff_user,
+            staff_role => $staff_role,
+        };
     });
 }
 
