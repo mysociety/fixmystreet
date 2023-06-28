@@ -21,6 +21,14 @@ sub test_overrides; # defined below
 
 use constant TEST_USER_EMAIL => 'fred@example.com';
 
+my $db = FixMyStreet::DB->schema;
+my $user = $db->resultset('User')->find_or_create( {
+    name => 'Fred Bloggs',
+    email => TEST_USER_EMAIL,
+    password => 'dummy',
+    title => 'MR',
+});
+
 my %standard_open311_parameters = (
     'send_notpinpointed' => 0,
     'extended_description' => 1,
@@ -223,6 +231,9 @@ test_overrides fixmystreet =>
         row_data  => {
             used_map => 0,
             postcode => 'WV7 3EX',
+            extra => {
+                contributed_by => $user->id,
+            },
         },
     },
     superhashof({
@@ -234,6 +245,7 @@ test_overrides fixmystreet =>
             { name => 'report_url',  value => undef     },
             { name => 'title',       value => 'Problem' },
             { name => 'site_code',   value => 'Road ID' },
+            { name => 'contributed_by', value => 1 },
             { name => 'description', value => qq/NOTE:
 Map was not used; location may not be accurate.
 Search string used: WV7 3EX
@@ -252,7 +264,6 @@ sub test_overrides {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney', 'shropshire'],
         }, sub {
-            my $db = FixMyStreet::DB->schema;
             #$db->txn_begin;
 
             my $params = { name => $input->{body_name} };
@@ -275,13 +286,6 @@ sub test_overrides {
                 body_id => $body->id,
             );
             $contact->update({ send_method => 'Open311', endpoint => 'http://example.com/open311' });
-
-            my $user = $db->resultset('User')->find_or_create( {
-                    name => 'Fred Bloggs',
-                    email => TEST_USER_EMAIL,
-                    password => 'dummy',
-                    title => 'MR',
-            });
 
             my $row = $db->resultset('Problem')->create( {
                 title => 'Problem',

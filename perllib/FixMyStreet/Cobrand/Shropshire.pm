@@ -155,6 +155,12 @@ around open311_extra_data_include => sub {
 
     my $open311_only = $self->$orig($row, $h);
 
+    my $contributed_by = $row->get_extra_metadata('contributed_by');
+    my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
+    if ($contributing_user) {
+        push @$open311_only, { name => 'contributed_by', value => 1 };
+    }
+
     if (!$row->used_map) {
         for (@$open311_only) {
             if ($_->{name} eq 'description') {
