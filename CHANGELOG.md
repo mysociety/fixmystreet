@@ -8,6 +8,7 @@
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.
+        - Fix link to edit category with apostrophe in category name.
     - Admin improvements:
         - Rename emergency message to site message.
     - Development improvements:

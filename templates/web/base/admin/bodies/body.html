@@ -81,7 +81,7 @@
 
     [% BLOCK category_row %]
       <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/edit', [ body_id ], cat.category ) %]">[% cat.category_display | html %]</a>
+        <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/edit', [ body_id ], cat.category_safe ) %]">[% cat.category_display %]</a>
             <br>[% cat.email.replace('([;,])', '$1 ') %]</td>
         <td>
             [% cat.state %]

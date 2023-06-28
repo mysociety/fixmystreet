@@ -111,6 +111,17 @@ sub category_display {
     $self->get_extra_metadata('display_name') || $self->translate_column('category');
 }
 
+=item category_safe
+
+This returns a safe category name, that can be passed to URI generation or similar.
+
+=cut
+
+sub category_safe {
+    my $self = shift;
+    return FixMyStreet::Template::SafeString->new($self->category);
+}
+
 # Returns an arrayref of groups this Contact is in; if it is
 # not in any group, returns an arrayref of the empty string.
 sub groups {

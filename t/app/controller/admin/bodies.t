@@ -11,6 +11,7 @@ sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymou
 
 package main;
 
+use utf8;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -69,6 +70,14 @@ subtest 'check contact creation' => sub {
         note     => 'test/note',
         non_public => 'on',
     } } );
+
+    $mech->submit_form_ok( { with_fields => {
+        category => 'test \' ’ category',
+        email    => 'test@example.com',
+        note     => 'note',
+    } } );
+    $mech->content_contains("/test%20'%20%E2%80%99%20category");
+
     $mech->get_ok('/admin/body/' . $body->id . '/test/category');
     $mech->content_contains('test/category');
 };
