@@ -794,6 +794,16 @@ sub available_permissions {
     };
 }
 
+=item admin_templates_state_and_external_status_code
+
+Whether the cobrand allows response templates with both state and external
+status code. Normally this is not allowed, but if a cobrand is updating report
+state by email (and so the state is being used for the new state, not the
+existing one), then we would want to allow it.
+
+=cut
+
+sub admin_templates_state_and_external_status_code { 0 }
 
 =item area_types
 

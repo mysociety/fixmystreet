@@ -21,6 +21,7 @@ $deleted_parish->update({ deleted => 1 });
 my $other_body = $mech->create_body_ok(1234, 'Aylesbury Vale District Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'triage' });
+$counciluser->user_body_permissions->create({ body => $body, permission_type => 'template_edit' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
 
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "FLY");
@@ -653,6 +654,66 @@ subtest 'Check old confirm reference' => sub {
     $mech->get_ok('/');
     $mech->submit_form_ok( { with_fields => { pc => $ref } }, 'Confirm ref');
     is $mech->uri->path, "/report/" . $report->id, "redirected to report page when using Confirm ref";
+};
+
+subtest 'Check template setting' => sub {
+    $mech->log_in_ok($counciluser->email);
+    subtest 'Can set a template with state + external status code' => sub {
+        $mech->get_ok( "/admin/templates/" . $body->id . "/new" );
+        my $fields = {
+            title => "Email 9001 reply",
+            text => "Thank you for your report.",
+            auto_response => 'on',
+            state => 'not responsible',
+            external_status_code => 9001,
+        };
+        $mech->submit_form_ok( { with_fields => $fields } );
+        is $mech->uri->path, '/admin/templates/' . $body->id, 'redirected';
+        is $body->response_templates->count, 1, "Duplicate response template was added";
+    };
+    subtest 'Cannot set one with same state + external status code' => sub {
+        $mech->get_ok( "/admin/templates/" . $body->id . "/new" );
+        my $fields = {
+            title => "Email 9001 other reply",
+            text => "Thank you for your report.",
+            auto_response => 'on',
+            state => 'not responsible',
+            external_status_code => 9001,
+        };
+        $mech->submit_form_ok( { with_fields => $fields } );
+        is $mech->uri->path, '/admin/templates/' . $body->id . '/new', 'not redirected';
+        $mech->content_contains( 'Please correct the errors below' );
+        $mech->content_contains( 'There is already an auto-response template for this category/state.' );
+        is $body->response_templates->count, 1, "Duplicate response template wasn't added";
+    };
+    subtest 'Cannot set one with different state + same external status code' => sub {
+        $mech->get_ok( "/admin/templates/" . $body->id . "/new" );
+        my $fields = {
+            title => "Email 9001 fixed reply",
+            text => "Thank you for your report.",
+            auto_response => 'on',
+            state => 'fixed - council',
+            external_status_code => 9001,
+        };
+        $mech->submit_form_ok( { with_fields => $fields } );
+        is $mech->uri->path, '/admin/templates/' . $body->id . '/new', 'not redirected';
+        $mech->content_contains( 'Please correct the errors below' );
+        $mech->content_contains( 'There is already an auto-response template for this category/state.' );
+        is $body->response_templates->count, 1, "Duplicate response template wasn't added";
+    };
+    subtest 'Can set one with same state + different external status code' => sub {
+        $mech->get_ok( "/admin/templates/" . $body->id . "/new" );
+        my $fields = {
+            title => "Email 9002 reply",
+            text => "Thank you for your report.",
+            auto_response => 'on',
+            state => 'not responsible',
+            external_status_code => 9002,
+        };
+        $mech->submit_form_ok( { with_fields => $fields } );
+        is $mech->uri->path, '/admin/templates/' . $body->id, 'redirected';
+        is $body->response_templates->count, 2, "Duplicate response template was added";
+    };
 };
 
 };

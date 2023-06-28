@@ -110,8 +110,7 @@ sub edit : Path : Args(2) {
             $ext_code ||= $c->get_param('external_status_code');
             $template->external_status_code($ext_code);
 
-            # Bucks can set both state and external state for the special 'email-in' templates
-            if ( $template->state && $template->external_status_code && $c->cobrand->moniker ne 'buckinghamshire' ) {
+            if ( $template->state && $template->external_status_code && !$c->cobrand->admin_templates_state_and_external_status_code ) {
                 $c->stash->{errors} ||= {};
                 $c->stash->{errors}->{state} = _("State and external status code cannot be used simultaneously.");
                 $c->stash->{errors}->{external_status_code} = _("State and external status code cannot be used simultaneously.");
@@ -126,13 +125,21 @@ sub edit : Path : Args(2) {
                 if (!scalar @check_contact_ids) {
                     @check_contact_ids = (undef);
                 }
+
+                my $state_param = { $template->state ? ('me.state' => $template->state) : () };
+                my $code_param = { $template->external_status_code ? ('me.external_status_code' => $template->external_status_code) : () };
+                my $params;
+                if ($c->cobrand->admin_templates_state_and_external_status_code) {
+                    # Both can be set, if external code set need to check that alone
+                    $params = $template->external_status_code ? $code_param : $state_param;
+                } else {
+                    $params = { -or => { %$state_param, %$code_param } };
+                }
+
                 my $query = {
                     'auto_response' => 1,
                     'contact.id' => [ @check_contact_ids ],
-                    -or => {
-                        $template->state ? ('me.state' => $template->state) : (),
-                        $template->external_status_code ? ('me.external_status_code' => $template->external_status_code) : (),
-                    },
+                    %$params,
                 };
                 if ($template->in_storage) {
                     $query->{'me.id'} = { '!=', $template->id };

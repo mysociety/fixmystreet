@@ -1,3 +1,17 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Buckinghamshire - code specific to the Buckinghamshire cobrand
+
+=head1 SYNOPSIS
+
+We integrate with Buckinghamshire's Alloy back end for highways reporting and
+Alloy+Evo for red claims, also send emails for some categories, and send
+reports to Buckinghamshire parishes based on category/speed limit.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Buckinghamshire;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -87,6 +101,15 @@ sub admin_pages {
     $pages->{triage} = [ undef, undef ];
     return $pages;
 }
+
+=item admin_templates_state_and_external_status_code
+
+We can set response templates with both state and external status code,
+for updating reports by email.
+
+=cut
+
+sub admin_templates_state_and_external_status_code { 1 }
 
 sub available_permissions {
     my $self = shift;
