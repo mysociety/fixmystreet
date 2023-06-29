@@ -63,7 +63,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
   #front-main  {
     // background-color: $front_main_colour;
     color: $primary_b;
-    text-align: left;
     padding-top: 40px;
     padding-bottom: 75px;
     background-blend-mode: soft-light;
@@ -77,9 +76,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
       margin: 0 auto;
       margin-top: 1em;
       padding: 0.5em 0em 2em 0em;
-      div {
-        margin: 0;
-      }
 
       .form-hint {
         color: $primary_b;

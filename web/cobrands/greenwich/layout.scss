@@ -17,7 +17,6 @@
     background-color: $greenwich_light_grey;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
     padding-top: 0.5em;
-    text-align: left;
 
     #front-main-container {
         background-color: transparent;
@@ -25,10 +24,6 @@
         .intro-wrap {
             max-width: 720px;
         }
-    }
-
-    #postcodeForm div {
-        margin: 0;
     }
 
     h1 {

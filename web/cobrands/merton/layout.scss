@@ -19,17 +19,12 @@
 }
 
 #front-main {
-    text-align: left;
     padding: 3em 1em;
     background: #ffffff;
 
     #postcodeForm {
         overflow: visible;
     }
-}
-
-@media screen and (min-width: 48em) {
-    #front-main #postcodeForm div { margin-left: 0;}
 }
 
 #front_stats big {

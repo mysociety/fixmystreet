@@ -108,7 +108,6 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
   padding-top: 5em;
   padding-bottom: 5em;
   position: relative;
-  text-align: left;
 
   h1 {
     color: #fff;
@@ -137,10 +136,6 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
 
       .form-hint {
         color: transparentize($color: $bromley_black, $amount: 0.3);
-      }
-      
-      div {
-        margin-left: 0;
       }
     }
   }
