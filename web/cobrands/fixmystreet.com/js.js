@@ -19,10 +19,4 @@
     jQuery.validator.addMethod('validNameU', valid_name_factory(1), translation_strings.name.required);
     // validate UK phone numbers
     jQuery.validator.addMethod('validUkPhone', validUkPhone, translation_strings.phone.ukFormat);
-
-    jQuery('.big-green-banner').on('click', function(){
-        if (typeof ga !== 'undefined') {
-            ga('send', 'event', 'big-green-banner', 'click');
-        }
-    });
 })();

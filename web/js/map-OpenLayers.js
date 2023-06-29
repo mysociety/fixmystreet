@@ -941,9 +941,6 @@ $.extend(fixmystreet.utils, {
                 fixmystreet.select_feature.deactivate();
                 $label.html(translation_strings.show_pins);
             }
-            if (typeof ga !== 'undefined') {
-                ga('send', 'event', 'toggle-pins-on-map', 'click');
-            }
         });
     }
 
@@ -1392,10 +1389,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (!$("html").hasClass("mobile")) {
             var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
             fixmystreet.display.begin_report(lonlat);
-
-            if ( typeof ga !== 'undefined' && fixmystreet.cobrand == 'fixmystreet' ) {
-                ga('send', 'pageview', { 'page': '/map_click' } );
-            }
         }
     }
 });

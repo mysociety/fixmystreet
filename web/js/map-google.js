@@ -220,9 +220,6 @@ fixmystreet.maps = {};
                 }
                 $('.map-pins-toggle').html(translation_strings.show_pins);
             }
-            if (typeof ga !== 'undefined') {
-                ga('send', 'event', 'toggle-pins-on-map', 'click');
-            }
         });
     }
 
