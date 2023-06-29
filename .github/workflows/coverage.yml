@@ -62,7 +62,14 @@ jobs:
         PERL5LIB: 'perllib:local-coverage/lib/perl5'
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-    - uses: codecov/codecov-action@v3
+    - name: Upload coverage to Codecov
       if: success()
+      continue-on-error: true
+      uses: Wandalen/wretry.action@master
       with:
-        files: ./coverage.json
+        action: codecov/codecov-action@v3
+        with: |
+          files: ./coverage.json
+          fail_ci_if_error: true
+        attempt_limit: 5
+        attempt_delay: 10000
