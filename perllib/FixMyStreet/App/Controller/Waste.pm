@@ -1048,7 +1048,7 @@ sub bulky : Chained('bulky_setup') : Args(0) {
             ],
             template => 'waste/bulky/items.html',
             title => 'Add items for collection',
-            next => 'location',
+            next => $c->stash->{is_staff} ? 'location' : 'summary',
             update_field_list => sub {
                 my $form = shift;
                 my $fields = {};

@@ -1059,16 +1059,6 @@ FixMyStreet::override_config {
             );
         };
 
-        subtest 'Location details page' => sub {
-            $mech->content_contains('Location details');
-            $mech->content_contains('Please provide the exact location where the items will be left');
-            $mech->content_contains('Help us by attaching a photo of where the items will be left for collection');
-            $mech->submit_form_ok({ with_fields => {
-                location => 'behind the hedge in the front garden',
-                location_photo => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
-            } });
-        };
-
         sub test_summary {
             my $date_day = shift;
             $mech->content_contains('Request a bulky waste collection');
@@ -1084,8 +1074,6 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('2 remaining slots available');
-            $mech->content_contains('behind the hedge in the front garden');
-            $mech->content_contains('<img class="img-preview is--medium" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
             $mech->content_lacks('No image of the location has been attached.');
             $mech->content_contains('£23.50');
             $mech->content_contains("<dd>$date_day August</dd>");
@@ -1151,7 +1139,6 @@ FixMyStreet::override_config {
         subtest 'New date selected, submit pages again' => sub {
             $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
             $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs', 'item_3' => 'Wardrobes' } });
-            $mech->submit_form_ok({ with_fields => { location => 'behind the hedge in the front garden' } });
         };
 
         subtest 'Summary submission' => \&test_summary_submission;
@@ -1192,7 +1179,7 @@ FixMyStreet::override_config {
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 100090215480;
             is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
-            is $report->get_extra_field_value('CREW NOTES'), 'behind the hedge in the front garden';
+            is $report->get_extra_field_value('CREW NOTES'), '';
             is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
             is $report->get_extra_field_value('ITEM_01'), 'Amplifiers';
             is $report->get_extra_field_value('ITEM_02'), 'High chairs';
@@ -1201,7 +1188,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('ITEM_05'), '';
             is $report->get_extra_field_value('property_id'), 'PE1 3NA:100090215480';
             is $report->photo,
-                '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+                '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
 
         # Collection date: 2022-08-26T00:00:00
@@ -1227,7 +1214,6 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('2 remaining slots available');
-            $mech->content_contains('behind the hedge in the front garden');
             $mech->content_contains('£23.50');
             $mech->content_contains('26 August');
             $mech->content_lacks('Request a bulky waste collection');
@@ -1679,7 +1665,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
-        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1759,7 +1744,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_contains('£0.00');
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
-        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         $mech->content_contains('Your booking is not complete yet');
@@ -1774,7 +1758,6 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('payment_method'), '';
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
-        is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
         is $report->get_extra_field_value('CHARGEABLE'), 'FREE';
 
         subtest 'cancel free collection' => sub {
@@ -1823,7 +1806,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_contains('£23.50');
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
-        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 

@@ -162,6 +162,7 @@
         </tbody>
       </table>
 
+    [% IF is_staff %]
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Location details</h3>
         [% PROCESS change_answers_button goto='location' %]
@@ -178,6 +179,8 @@
       [% ELSE %]
         <p class="due" style="padding:1em">No image of the location has been attached.</p>
       [% END %]
+    [% END %]
+
     </div>
 
     <div class="govuk-grid-column-one-third">
