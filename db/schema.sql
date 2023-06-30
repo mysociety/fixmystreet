@@ -86,8 +86,7 @@ create table roles (
     body_id         integer not null references body(id) ON DELETE CASCADE,
     name            text,
     permissions     text ARRAY,
-    extra           text,
-    extra_json      jsonb,
+    extra           jsonb,
     unique(body_id, name)
 );
 
