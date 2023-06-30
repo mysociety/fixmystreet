@@ -10,7 +10,8 @@ sub address {
 }
 
 sub summary {
-    return $_[0]->address->{formattedAddress};
+    my $address = $_[0]->address;
+    return $address->{formattedAddress};
 }
 
 sub parts {

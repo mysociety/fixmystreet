@@ -53,30 +53,33 @@ sub dispatch_request {
         if ($query->{q} =~ /onlylow/) {
             @$results = map { $_->{confidence} = 'Low'; $_ } @$results;
         }
-        my $data = {
-            statusCode => 200,
-            resourceSets => [ { resources => $results } ],
-        };
-        my $json = $self->json->encode($data);
-        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+        return $self->output_response($results);
     },
 
     sub (GET + /REST/v1/Locations/* + ?*) {
         my ($self, $location, $query) = @_;
-        my $data = {
-            resourceSets => [ {
-                resources => [ {
-                    name => 'Constitution Hill, London, SW1A',
-                    address => {
-                        addressLine => 'Constitution Hill',
-                        locality => 'London',
-                    }
-                } ],
-            } ],
-        };
-        my $json = $self->json->encode($data);
-        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+        if ($location eq '00,00') {
+            return $self->output_response([]);
+        }
+        my $data = [ {
+            name => 'Constitution Hill, London, SW1A',
+            address => {
+                addressLine => 'Constitution Hill',
+                locality => 'London',
+            }
+        } ];
+        return $self->output_response($data);
     },
+}
+
+sub output_response {
+    my ($self, $data) = @_;
+    $data = {
+        statusCode => 200,
+        resourceSets => [ { resources => $data } ],
+    };
+    my $json = $self->json->encode($data);
+    return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
 }
 
 LWP::Protocol::PSGI->register(t::Mock::Bing->to_psgi_app, host => 'dev.virtualearth.net');
