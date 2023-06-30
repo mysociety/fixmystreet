@@ -472,7 +472,7 @@ subtest 'Can triage parish reports' => sub {
     $mech->content_contains('Grass cutting (grass@example.org)');
     $mech->content_contains('Grass cutting (grassparish@example.org)');
     $mech->submit_form_ok({ with_fields => { category => $grass_bucks->id } });
-    $report->update({ whensent => \'current_timestamp' });
+    $report->update({ whensent => \'current_timestamp', send_state => 'sent' });
 };
 
 subtest '.com reports get the logged email too' => sub {

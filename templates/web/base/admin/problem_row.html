@@ -1,5 +1,5 @@
 [%- FOR problem IN problems %]
-    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
+    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' OR problem.send_state == 'acknowledged' %]>
         <td class="record-id">[%- IF problem.is_visible -%]
         [%- uri = c.uri_for_email( '/report', problem.id ) %]
         <a href="[% uri %]" class="admin-offsite-link">[% problem.id %]</a>
@@ -34,15 +34,15 @@
                 </span>
             [%- END -%]
         </td>
-        <td>[% prettify_state(problem.state, 1) %]<br><small>
-            [% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
-            <br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %]
+        <td>[% prettify_state(problem.state, 1) %]<small>
+            [% IF problem.whensent %]<br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %][% END %]
             [%- send_fail_bodies = problem.send_fail_bodies -%]
             [%- IF send_fail_bodies.size %]<br>[% loc('Failed bodies:') %]&nbsp;[% send_fail_bodies.join(', ') %][% END -%]
+            <br>[% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
             [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
             [%- IF problem.is_fixed %]<br>[% prettify_state('fixed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_closed %]<br>[% prettify_state('closed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
-            [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
+            [%- IF problem.is_open AND problem.lastupdate != problem.whensent %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
         </small></td>
         <td>
             [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]

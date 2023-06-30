@@ -56,7 +56,7 @@ FixMyStreet::override_config {
 
         my $report = $user->problems->first;
         ok $report, "Found the report";
-        is $report->bodies_str, undef, "Report not going anywhere";
+        is $report->send_state, 'skipped', "Report not going anywhere";
 
         like $mech->get_text_body_from_email, qr/despite not being sent/i, "correct email sent";
 
@@ -118,5 +118,5 @@ sub make_report {
 
     my $report = $user->problems->first;
     ok $report, "Found the report";
-    is $report->bodies_str, undef, "Report not going anywhere";
+    is $report->send_state, 'skipped', "Report not going anywhere";
 }

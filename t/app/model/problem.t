@@ -494,9 +494,9 @@ foreach my $test ( {
 
         $problem_rs->search(
             {
-                whensent => undef
+                send_state => 'unprocessed'
             }
-        )->update( { whensent => \'current_timestamp' } );
+        )->update( { send_state => 'sent' } );
 
         $problem->discard_changes;
         $problem->update( {
@@ -505,6 +505,7 @@ foreach my $test ( {
             state => 'confirmed',
             confirmed => \'current_timestamp',
             whensent => $test->{ unset_whendef } ? undef : \'current_timestamp',
+            send_state => $test->{unset_whendef} ? 'unprocessed' : 'sent',
             category => $test->{ category } || 'potholes',
             name => $test->{ name },
             cobrand => $test->{ cobrand } || 'fixmystreet',
@@ -574,9 +575,9 @@ subtest 'check can set multiple emails as a single contact' => sub {
 
     $problem_rs->search(
         {
-            whensent => undef
+            send_state => 'unprocessed'
         }
-    )->update( { whensent => \'current_timestamp' } );
+    )->update( { send_state => 'sent' } );
 
     $problem->discard_changes;
     $problem->update( {
@@ -584,6 +585,7 @@ subtest 'check can set multiple emails as a single contact' => sub {
         state => 'confirmed',
         confirmed => \'current_timestamp',
         whensent => undef,
+        send_state => 'unprocessed',
         category => 'trees',
         name => 'Test User',
         cobrand => 'fixmystreet',
@@ -611,9 +613,9 @@ subtest 'check can turn on report sent email alerts' => sub {
 
     $problem_rs->search(
         {
-            whensent => undef
+            send_state => 'unprocessed'
         }
-    )->update( { whensent => \'current_timestamp' } );
+    )->update( { send_state => 'sent' } );
 
     $problem->discard_changes;
     $problem->update( {
@@ -621,6 +623,7 @@ subtest 'check can turn on report sent email alerts' => sub {
         state => 'confirmed',
         confirmed => \'current_timestamp',
         whensent => undef,
+        send_state => 'unprocessed',
         category => 'potholes',
         name => 'Test User',
         cobrand => 'fixmystreet',
@@ -659,9 +662,9 @@ subtest 'check iOS app store test reports not sent' => sub {
 
     $problem_rs->search(
         {
-            whensent => undef
+            send_state => 'unprocessed'
         }
-    )->update( { whensent => \'current_timestamp' } );
+    )->update( { send_state => 'sent' } );
 
     $problem->discard_changes;
     $problem->update( {
@@ -670,6 +673,7 @@ subtest 'check iOS app store test reports not sent' => sub {
         state => 'confirmed',
         confirmed => \'current_timestamp',
         whensent => undef,
+        send_state => 'unprocessed',
         category => 'potholes',
         send_fail_count => 0,
     } );
@@ -688,9 +692,9 @@ subtest 'check reports from abuser not sent' => sub {
 
     $problem_rs->search(
         {
-            whensent => undef
+            send_state => 'unprocessed'
         }
-    )->update( { whensent => \'current_timestamp' } );
+    )->update( { send_state => 'sent' } );
 
     $problem->discard_changes;
     $problem->update( {
@@ -699,6 +703,7 @@ subtest 'check reports from abuser not sent' => sub {
         state => 'confirmed',
         confirmed => \'current_timestamp',
         whensent => undef,
+        send_state => 'unprocessed',
         category => 'potholes',
         send_fail_count => 0,
     } );
@@ -714,6 +719,7 @@ subtest 'check reports from abuser not sent' => sub {
         state => 'confirmed',
         confirmed => \'current_timestamp',
         whensent => undef,
+        send_state => 'unprocessed',
     } );
 
     my $abuse = FixMyStreet::DB->resultset('Abuse')->create( { email => $problem->user->email } );

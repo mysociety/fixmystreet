@@ -123,7 +123,7 @@ FixMyStreet::override_config {
     subtest "Reports from FMS cobrand use correct branding in email" => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->first;
         ok $report, "Found the report";
-        $report->whensent(undef);
+        $report->send_state('unprocessed');
         $report->cobrand("fixmystreet");
         $report->update;
 

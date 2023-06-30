@@ -182,6 +182,7 @@ sub create_problems {
             created => $created_time,
             lastupdate => $updated_time,
             whensent => $created_time,
+            send_state => 'processed',
             state => $state,
             postcode => '',
             used_map => 1,

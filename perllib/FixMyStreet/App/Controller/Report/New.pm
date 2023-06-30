@@ -1293,15 +1293,10 @@ sub contacts_to_bodies : Private {
         @contacts = @contacts_filtered if scalar @contacts_filtered;
     }
 
-    my $unresponsive = $c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL};
-    if ($unresponsive) {
-        @contacts = grep { !$unresponsive->{$_->body_id} } @contacts;
-    } elsif (@contacts) {
-        if ( $c->cobrand->call_hook('singleton_bodies_str') ) {
-            # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
-            # relies on string comparison against bodies_str.
-            @contacts = ($contacts[0]);
-        }
+    if (@contacts && $c->cobrand->call_hook('singleton_bodies_str')) {
+        # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
+        # relies on string comparison against bodies_str.
+        @contacts = ($contacts[0]);
     }
 
     $c->cobrand->call_hook(munge_contacts_to_bodies => \@contacts, $report);
@@ -1471,7 +1466,7 @@ sub send_problem_confirm_email : Private {
     } );
 
     my $template = 'problem-confirm.txt';
-    $template = 'problem-confirm-not-sending.txt' unless $report->bodies_str;
+    $template = 'problem-confirm-not-sending.txt' if ($report->send_state || '') eq 'skipped';
 
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
     $c->cobrand->call_hook(problem_confirm_email_extras => $report);
@@ -1633,6 +1628,12 @@ sub save_user_and_report : Private {
 
     # Set unknown to DB unknown
     $report->bodies_str( undef ) if $report->bodies_str eq '-1';
+
+    # If unresponsive, don't want to try and send it
+    my $unresponsive = $c->stash->{unresponsive}{$report->category} || $c->stash->{unresponsive}{ALL};
+    if ($unresponsive) {
+        $report->send_state('skipped');
+    }
 
     # if there is a Message Manager message ID, pass it back to the client view
     if (($c->get_param('external_source_id') || "") =~ /^\d+$/) {

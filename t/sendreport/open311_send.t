@@ -104,9 +104,8 @@ subtest 'test report with multiple photos only sends one', sub {
     ], 'One photo in media_url';
 };
 
-$photo_report->whensent(undef);
+$photo_report->resend;
 $photo_report->cobrand('tester');
-$photo_report->send_method_used('');
 $photo_report->update();
 
 subtest 'test sending multiple photos', sub {
