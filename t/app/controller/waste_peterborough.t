@@ -998,9 +998,9 @@ FixMyStreet::override_config {
             $mech->content_contains('Book bulky goods collection');
             $mech->content_contains('Before you start your booking');
             # XXX make this dynamic according to config in DB
-            $mech->content_contains('You can request up to <strong>5 items per collection');
+            $mech->content_contains('You can request up to <strong>five items per collection');
             # XXX and this one too
-            $mech->content_contains('You can cancel your booking anytime up until 15:00 the day before the collection is scheduled');
+            $mech->content_contains('You can amend the items in your booking up until 3pm the day before the collection is scheduled');
             $mech->submit_form_ok;
         };
 

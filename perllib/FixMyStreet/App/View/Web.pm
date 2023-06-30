@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Digest::MD5;
+use Lingua::EN::Inflect qw(NUMWORDS);
 use File::Basename qw(fileparse);
 use FixMyStreet;
 use FixMyStreet::Template;
@@ -27,6 +28,7 @@ __PACKAGE__->config(
     FILTERS => {
         add_links => \&add_links,
         escape_js => \&escape_js,
+        numwords => \&numwords,
         staff_html_markup => [ \&staff_html_markup_factory, 1 ],
     },
     COMPILE_EXT => '.ttc',
@@ -196,6 +198,8 @@ sub prettify_state {
 
     return FixMyStreet::DB->resultset("State")->display($text, $single_fixed);
 }
+
+sub numwords { NUMWORDS($_[0]) }
 
 1;
 

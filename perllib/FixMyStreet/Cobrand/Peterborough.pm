@@ -1876,9 +1876,9 @@ sub bulky_nice_collection_date {
 
 sub bulky_nice_cancellation_cutoff_time {
     my $time = bulky_cancellation_cutoff_time();
-    return
-          sprintf( "%02d", $time->{hours} ) . ':'
-        . sprintf( "%02d", $time->{minutes} // 0 );
+    $time = DateTime->now->set(hour => $time->{hours}, minute => $time->{minutes})->strftime('%I:%M%P');
+    $time =~ s/^0|:00//g;
+    return $time;
 }
 
 sub bulky_nice_cancellation_cutoff_date {
@@ -1889,9 +1889,9 @@ sub bulky_nice_cancellation_cutoff_date {
 
 sub bulky_nice_collection_time {
     my $time = bulky_collection_time();
-    return
-          sprintf( "%02d", $time->{hours} ) . ':'
-        . sprintf( "%02d", $time->{minutes} // 0 );
+    $time = DateTime->now->set(hour => $time->{hours}, minute => $time->{minutes})->strftime('%I:%M%P');
+    $time =~ s/^0|:00//g;
+    return $time;
 }
 
 sub bulky_nice_item_list {

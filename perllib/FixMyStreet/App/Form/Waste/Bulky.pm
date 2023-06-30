@@ -237,7 +237,7 @@ has_field tandc => (
     required => 1,
     label => 'Terms and conditions',
     option_label => FixMyStreet::Template::SafeString->new(
-        'I agree to the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">terms and conditions</a>',
+        'I have read the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">bulky waste collection</a> page on the council’s website',
     ),
 );
 
