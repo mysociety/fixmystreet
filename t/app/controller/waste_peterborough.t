@@ -783,7 +783,16 @@ FixMyStreet::override_config {
         UPLOAD_DIR => tempdir( CLEANUP => 1 ),
     },
 }, sub {
-    my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+    my ($b, $jobs_fsd_get, $fs_get) = shared_bartec_mocks();
+
+    subtest 'No bulky if no black bin collection' => sub {
+        $b->mock('Features_Schedules_Get', sub { [] });
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
+        $mech->submit_form_ok({ with_fields => { address => 'PE1 3NA:100090215480' } });
+        $mech->content_lacks('Bulky');
+        $b->mock('Features_Schedules_Get', sub { $fs_get });
+    };
 
     subtest 'Bulky Waste on bin days page' => sub {
         my $bin_days_url = 'http://localhost/waste/PE1%203NA:100090215480';
@@ -2159,13 +2168,14 @@ sub shared_bartec_mocks {
         { JobID => 789, PreviousDate => '2021-08-06T10:10:10Z', JobName => 'Empty Brown Bin' },
         { JobID => 890, NextDate => '2022-08-06T10:10:10Z', JobName => 'Empty Clinical Waste' },
     ];
-    $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
-    $b->mock('Features_Schedules_Get', sub { [
+    my $fs_get = [
         { JobName => 'Empty Bin 240L Black', Feature => { Status => { Name => "IN SERVICE" }, FeatureType => { ID => 6533 } }, Frequency => 'Every two weeks' },
         { JobName => 'Empty Bin Recycling 240l', Feature => { Status => { Name => "IN SERVICE" }, FeatureType => { ID => 6534 } } },
         { JobName => 'Empty Clinical Waste', Feature => { Status => { Name => "IN SERVICE" }, FeatureType => { ID => 6815 } } },
         { JobName => 'Empty Brown Bin', Feature => { Status => { Name => "PLANNED" }, FeatureType => { ID => 6579 } } },
-    ] });
+    ];
+    $b->mock('Jobs_FeatureScheduleDates_Get', sub { $jobs_fsd_get });
+    $b->mock('Features_Schedules_Get', sub { $fs_get });
     $b->mock('ServiceRequests_Get', sub { [
         # No open requests at present
     ] });
@@ -2193,7 +2203,7 @@ sub shared_bartec_mocks {
         # No feature types at present
     ] });
 
-    return $b, $jobs_fsd_get;
+    return $b, $jobs_fsd_get, $fs_get;
 }
 
 sub _future_workpacks {

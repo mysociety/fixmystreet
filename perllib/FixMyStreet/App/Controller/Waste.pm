@@ -987,6 +987,7 @@ sub bulky_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
     if (  !$c->cobrand->call_hook('bulky_enabled')
+        || !$c->cobrand->call_hook(bulky_allowed_property => $c->stash->{property})
         || $c->stash->{property}{pending_bulky_collection} )
     {
         $c->detach('property_redirect');

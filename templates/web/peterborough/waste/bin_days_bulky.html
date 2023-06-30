@@ -127,6 +127,8 @@ hx-trigger="every [% page_refresh %]s"
   </div>
 [% END %]
 [% END %]
+
+[% IF property.commercial_property || property.show_bulky_waste %]
   <div class="govuk-grid-row waste-service-wrapper">
     <div class="govuk-grid-column-one-quarter text-centered">
       <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
@@ -217,8 +219,9 @@ hx-trigger="every [% page_refresh %]s"
       [% END %]
         <hr>
     </div>
-
   </div>
+[% END %]
+
 [% IF NOT service_data.size %]
     [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
     <p>This property has no collections.</p>

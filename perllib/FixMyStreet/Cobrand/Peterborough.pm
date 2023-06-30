@@ -749,6 +749,10 @@ sub bin_services_for_address {
 
         my %requests_open = map { $_ => 1 } @request_service_ids_open;
 
+        if ($container_id == 6533) {
+            $property->{show_bulky_waste} = 1;
+        }
+
         my $last_obj = { date => $last, ordinal => ordinal($last->day) } if $last;
         my $next_obj = { date => $next, ordinal => ordinal($next->day) } if $next;
         my $row = {
@@ -1819,6 +1823,11 @@ sub bulky_total_cost {
         $data->{"extra_payment_method"} = "credit_card";
     }
     return $c->stash->{payment};
+}
+
+sub bulky_allowed_property {
+    my ($self, $property) = @_;
+    return 1 if $property->{show_bulky_waste} && !$property->{commercial_property};
 }
 
 sub bulky_enabled {
