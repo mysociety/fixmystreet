@@ -70,7 +70,10 @@ sub make_categories {
             body => $body,
             category => $cat->{category}
         });
-        $child_cat->email($cat->{email});
+
+        # If no 'email' specified in JSON, assume it is an existing category.
+        # Will fail if $child_cat is new and so has no email value.
+        $child_cat->email($cat->{email}) if $cat->{email};
         $child_cat->send_method($cat->{devolved}) if $cat->{devolved};
         $child_cat->state('confirmed');
         $child_cat->editor($0);
@@ -78,7 +81,9 @@ sub make_categories {
         $child_cat->note($child_cat->in_storage ? 'Updated by import_categories' : 'Created by import_categories');
         say colored("WARNING", 'red') . " " . $child_cat->category . " already exists" if $child_cat->in_storage and $child_cat->category ne 'Other (TfL)';
         $child_cat->extra(undef) if $child_cat->in_storage;
-        $child_cat->set_extra_metadata(open311_protect => 1) if $cat->{open311_protect};
+        $child_cat->set_extra_metadata(open311_protect => 1) if $cat->{open311_protect} // $config->{open311_protect};
+        $child_cat->set_extra_metadata( display_name => $cat->{display_name} )
+            if $cat->{display_name};
 
         if ($group) {
             my $groups = $child_cat->groups;
