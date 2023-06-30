@@ -520,9 +520,9 @@ FixMyStreet::override_config {
     subtest 'Report broken wheels' => sub {
         FixMyStreet::DB->resultset('Problem')->search(
             {
-                whensent => undef
+                send_state => 'unprocessed'
             }
-        )->update( { whensent => \'current_timestamp' } );
+        )->update( { send_state => 'sent' } );
 
 
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
@@ -538,7 +538,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        ok $report->whensent, 'Report marked as sent';
+        is $report->send_state, 'sent', 'Report marked as sent';
         is $report->title, 'Damaged 240L Black bin';
         is $report->detail, "The bin’s wheels are damaged\n\n1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: Some extra detail.";
 

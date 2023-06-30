@@ -71,11 +71,8 @@ sub index : Path : Args(0) {
     }
 
     my @unsent = $c->cobrand->problems->search( {
+        send_state => ['unprocessed', 'acknowledged'],
         'me.state' => [ FixMyStreet::DB::Result::Problem::open_states() ],
-        -or => {
-            whensent => undef,
-            send_fail_body_ids => { '!=', '{}' },
-        },
         bodies_str => { '!=', undef },
         # Ignore very recent ones that probably just haven't been sent yet
         confirmed => { '<', \"current_timestamp - '5 minutes'::interval" },

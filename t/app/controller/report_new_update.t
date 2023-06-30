@@ -54,7 +54,8 @@ subtest "test report creation with initial auto-update" => sub {
 
 subtest "test resending does not leave another initial auto-update" => sub {
     $report->discard_changes;
-    $report->update({ whensent => undef });
+    $report->resend;
+    $report->update;
     FixMyStreet::Script::Reports::send(0, 0, 1);
     my $comments = FixMyStreet::DB->resultset('Comment');
     is $comments->count, 1;

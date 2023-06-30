@@ -58,6 +58,7 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     user => $user,
     send_method_used => 'Open311',
     whensent => 'now()',
+    send_state => 'sent',
     external_id => '456',
     extra => {
         contributed_by => $staffuser->id,
@@ -182,6 +183,7 @@ for my $test (
     subtest $test->{desc}, sub {
         $report->$_($test->{updates}->{$_}) for keys %{$test->{updates}};
         $report->$_(undef) for qw/ whensent send_method_used external_id /;
+        $report->send_state('unprocessed');
         $report->set_extra_fields({ name => 'feature_id', value => $test->{feature_id} })
             if $test->{feature_id};
         $report->update;
@@ -206,7 +208,7 @@ for my $test (
 
 subtest 'ensure private_comments are added to open311 description' => sub {
     $report->set_extra_metadata(private_comments => 'Secret notes go here');
-    $report->whensent(undef);
+    $report->send_state('unprocessed');
     $report->update;
 
     FixMyStreet::override_config {
@@ -218,7 +220,7 @@ subtest 'ensure private_comments are added to open311 description' => sub {
     };
 
     $report->discard_changes;
-    ok $report->whensent, 'Report marked as sent';
+    is $report->send_state, 'sent', 'Report marked as sent';
     unlike $report->detail, qr/Private comments/, 'private comments not saved to report detail';
 
     my $req = Open311->test_req_used;

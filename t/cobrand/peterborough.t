@@ -68,7 +68,7 @@ subtest 'open311 request handling', sub {
         FixMyStreet::Script::Reports::send();
 
         $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
+        is $p->send_state, 'sent', 'Report marked as sent';
         is $p->send_method_used, 'Open311', 'Report sent via Open311';
         is $p->external_id, 248, 'Report has correct external ID';
         is $p->get_extra_field_value('emergency'), 'no';
@@ -96,7 +96,7 @@ subtest "extra update params are sent to open311" => sub {
         );
 
         my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
-            external_id => 1, category => 'Trees', whensent => DateTime->now,
+            external_id => 1, category => 'Trees', send_state => 'sent',
             send_method_used => "Open311", cobrand => 'peterborough' });
 
         my $c = FixMyStreet::DB->resultset('Comment')->create({
@@ -130,7 +130,7 @@ subtest "bartec report with no geocode handled correctly" => sub {
         FixMyStreet::Script::Reports::send();
 
         $problem->discard_changes;
-        ok $problem->whensent, 'Report marked as sent';
+        is $problem->send_state, 'sent', 'Report marked as sent';
 
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -193,7 +193,7 @@ subtest "extra bartec params are sent to open311" => sub {
         FixMyStreet::Script::Reports::send();
 
         $report->discard_changes;
-        ok $report->whensent, 'Report marked as sent';
+        is $report->send_state, 'sent', 'Report marked as sent';
 
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -244,7 +244,7 @@ for my $test (
             my $sender = $cobrand->get_body_sender($peterborough, $p);
             is $sender->{method}, $test->{method}, "correct body sender set";
 
-            $p->update({ whensent => \"current_timestamp" });
+            $p->update({ send_state => 'sent' });
         };
     };
 }
@@ -280,7 +280,7 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
 
         FixMyStreet::Script::Reports::send();
         $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
+        is $p->send_state, 'sent', 'Report marked as sent';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata is set';
         is $p->state, 'confirmed', 'report state unchanged';
         is $p->comments->count, 0, 'no comment added';
@@ -359,7 +359,7 @@ subtest "flytipping on non PCC land is emailed" => sub {
         FixMyStreet::Script::Reports::send();
 
         $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
+        is $p->send_state, 'sent', 'Report marked as sent';
         is $p->get_extra_metadata('flytipping_email'), undef, 'flytipping_email extra metadata unset';
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
         is $p->state, 'closed', 'report closed having sent email';
@@ -413,10 +413,10 @@ subtest 'Resending between backends' => sub {
             $mech->submit_form_ok({ with_fields => { category => $_->{category} } }, "Switch to $_->{category}");
             $problem->discard_changes;
             if ($_->{resent}) {
-                is $problem->whensent, undef, "Marked for resending";
-                $problem->update({ whensent => $whensent, send_method_used => $_->{method} || 'Open311' }); # reset as sent
+                is $problem->send_state, 'unprocessed', "Marked for resending";
+                $problem->update({ whensent => $whensent, send_method_used => $_->{method} || 'Open311', send_state => 'sent' }); # reset as sent
             } else {
-                isnt $problem->whensent, undef, "Not marked for resending";
+                is $problem->send_state, 'sent', "Not marked for resending";
             }
         }
     };

@@ -659,7 +659,7 @@ sub admin_report_edit {
         #   Note that 2 types of email may be sent
         #    1) _admin_send_email()  sends an email to the *user*, if their email is confirmed
         #
-        #    2) setting $problem->whensent(undef) may make it eligible for generating an email
+        #    2) calling $problem->resend may make it eligible for generating an email
         #   to the body (internal or external).  See DBRS::Problem->send_reports for Zurich-
         #   specific categories which are eligible for this.
 
@@ -687,7 +687,7 @@ sub admin_report_edit {
             $problem->category( $new_cat );
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
-            $problem->whensent( undef );
+            $problem->resend;
             $problem->set_extra_metadata(changed_category => 1);
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
@@ -713,7 +713,7 @@ sub admin_report_edit {
             $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
-            $problem->whensent( undef );
+            $problem->resend;
             $redirect = 1;
         } else {
             if ($state) {
@@ -753,7 +753,7 @@ sub admin_report_edit {
                     $problem->external_body( $external );
                 }
                 if ($problem->external_body && $c->get_param('publish_response')) {
-                    $problem->whensent( undef );
+                    $problem->resend;
                     $self->set_problem_state($c, $problem, $state);
                     my $template = ($state eq 'wish') ? 'problem-wish.txt' : 'problem-external.txt';
                     _admin_send_email( $c, $template, $problem );
@@ -938,7 +938,7 @@ sub admin_report_edit {
                 } else {
                     $problem->set_extra_metadata( subdiv_overdue => $self->overdue( $problem ) );
                     $problem->bodies_str( $body->parent->id );
-                    $problem->whensent( undef );
+                    $problem->resend;
                     $self->set_problem_state($c, $problem, 'feedback pending');
                 }
                 $problem->update;
