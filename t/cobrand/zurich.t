@@ -44,6 +44,7 @@ sub reset_report_state {
     $report->unset_extra_metadata('closed_overdue');
     $report->unset_extra_metadata('closure_status');
     $report->whensent(undef);
+    $report->send_state('unprocessed');
     $report->state('submitted');
     $report->created($created) if $created;
     $report->category('Other');

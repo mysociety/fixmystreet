@@ -281,6 +281,7 @@ FixMyStreet::override_config {
         user_id => $user->id,
         category => 'Garden Subscription',
         whensent => \'current_timestamp',
+        send_state => 'sent',
     });
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'property_id', value => '12345'});

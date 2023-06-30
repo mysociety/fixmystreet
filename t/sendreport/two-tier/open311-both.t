@@ -78,6 +78,7 @@ subtest '1st attempt - both fail' => sub {
 
     is $report->whensent,         undef, 'whensent not recorded';
     is $report->send_method_used, undef, 'send_method_used not recorded';
+    is $report->send_state, 'unprocessed';
 
     ok $report->send_fail_timestamp, 'send_fail_timestamp recorded';
     is $report->send_fail_count, 1, 'send_fail_count recorded';
@@ -109,6 +110,7 @@ subtest '2nd attempt - both fail again' => sub {
 
     is $report->whensent,         undef, 'whensent not recorded';
     is $report->send_method_used, undef, 'send_method_used not recorded';
+    is $report->send_state, 'unprocessed';
 
     is $report->send_fail_count, 2, 'send_fail_count updated';
     is $report->send_fail_reason, 'Open311 fail|Open311 fail',
@@ -145,6 +147,7 @@ subtest '3rd attempt - one succeeds, other fails' => sub {
 
     ok $report->whensent, 'whensent recorded';
     is $report->send_method_used, 'Open311', 'send_method_used recorded';
+    is $report->send_state, 'unprocessed';
 
     is $report->send_fail_count, 3, 'send_fail_count incremented';
     is $report->send_fail_reason, 'Open311 fail',
@@ -179,6 +182,7 @@ subtest '4th attempt - both set to fail again' => sub {
     is $hits, 1, 'Sender hit once';
 
     is $report->send_method_used, 'Open311', 'send_method_used unchanged';
+    is $report->send_state, 'unprocessed';
 
     is $report->send_fail_count, 4, 'send_fail_count incremented';
     is $report->send_fail_reason, 'Open311 fail',
@@ -210,6 +214,7 @@ subtest '5th attempt - both set to succeed' => sub {
 
     is $report->send_method_used, 'Open311,Open311',
         'send_method_used has 2 x Open311';
+    is $report->send_state, 'sent';
 
     is $report->send_fail_count, 4, 'send_fail_count unchanged';
     is $report->send_fail_reason, 'Open311 fail',
@@ -256,6 +261,7 @@ subtest 'Test resend' => sub {
 
     is $report->send_method_used, 'Open311,Open311',
         'send_method_used has 2 x Open311';
+    is $report->send_state, 'sent';
 
     is $report->send_fail_count, 4, 'send_fail_count unchanged';
     is $report->send_fail_reason, 'Open311 fail',
@@ -304,6 +310,7 @@ subtest 'Test staging send' => sub {
 
     test_send(0);
     $report_for_staging->discard_changes;
+    is $report->send_state, 'sent';
 
     is $hits_email,   1,     'Email sender hit once';
     is $hits_open311, undef, 'Open311 sender not hit';

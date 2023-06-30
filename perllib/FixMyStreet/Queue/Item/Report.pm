@@ -1,6 +1,7 @@
 package FixMyStreet::Queue::Item::Report;
 
 use Moo;
+use CronFns;
 use DateTime::Format::Pg;
 
 use Utils::OpenStreetMap;
@@ -48,11 +49,21 @@ has nomail => ( is => 'ro' );
 
 sub process {
     my $self = shift;
+    my $row = $self->report;
 
     FixMyStreet::DB->schema->cobrand($self->cobrand);
 
+    my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+    my $states = FixMyStreet::DB::Result::Problem::open_states();
+    $states = { map { $_ => 1 } ( 'submitted', 'confirmed', 'in progress', 'feedback pending', 'external', 'wish' ) } if $site eq 'zurich';
+
+    if (!$states->{$row->state} || !$row->bodies_str) {
+        $row->update({ send_state => 'processed' });
+        $self->log("marking as processed due to non matching state/bodies_str");
+        return;
+    }
+
     if ($self->verbose) {
-        my $row = $self->report;
         $self->log("state=" . $row->state . ", bodies_str=" . $row->bodies_str . ($row->cobrand? ", cobrand=" . $row->cobrand : ""));
     }
 
@@ -65,7 +76,7 @@ sub process {
         return;
     }
 
-    $self->cobrand->set_lang_and_domain($self->report->lang, 1);
+    $self->cobrand->set_lang_and_domain($row->lang, 1);
     FixMyStreet::Map::set_map_class($self->cobrand_handler);
 
     return unless $self->_check_abuse;
@@ -296,6 +307,8 @@ sub _post_send {
     }
     if (@errors) {
         $self->report->update_send_failed( join( '|', @errors ) );
+    } else {
+        $self->report->send_state('sent');
     }
 
     my $send_confirmation_email = $self->cobrand_handler->report_sent_confirmation_email($self->report);

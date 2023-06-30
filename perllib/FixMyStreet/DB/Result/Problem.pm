@@ -1085,6 +1085,7 @@ sub resend {
     $self->whensent(undef);
     $self->send_method_used(undef);
     $self->send_fail_body_ids([]);
+    $self->send_state('unprocessed');
 }
 
 sub as_hashref {

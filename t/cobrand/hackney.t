@@ -332,7 +332,8 @@ FixMyStreet::override_config {
             is $email->header('To'), '"Hackney Council" <parks@example>';
             $mech->clear_emails_ok;
             $p->discard_changes;
-            $p->update({ whensent => undef });
+            $p->resend;
+            $p->update;
         };
 
         subtest 'in an estate' => sub {
@@ -351,7 +352,8 @@ FixMyStreet::override_config {
             is $email->header('To'), '"Hackney Council" <estates@example>';
             $mech->clear_emails_ok;
             $p->discard_changes;
-            $p->update({ whensent => undef });
+            $p->resend;
+            $p->update;
         };
 
         subtest 'elsewhere' => sub {
@@ -375,6 +377,7 @@ FixMyStreet::override_config {
             cobrand => 'hackney',
             category => 'Roads',
             whensent => \'current_timestamp',
+            send_state => 'sent',
         });
         my $whensent = $problem->whensent;
         $mech->log_in_ok( $hackney_user->email );
@@ -388,10 +391,10 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { category => $_->{category} } }, "Switch to $_->{category}");
             $problem->discard_changes;
             if ($_->{resent}) {
-                is $problem->whensent, undef, "Marked for resending";
-                $problem->update({ whensent => $whensent, send_method_used => 'Open311' }); # reset as sent
+                is $problem->send_state, 'unprocessed', "Marked for resending";
+                $problem->update({ whensent => $whensent, send_method_used => 'Open311', send_state => 'sent' }); # reset as sent
             } else {
-                isnt $problem->whensent, undef, "Not marked for resending";
+                is $problem->send_state, 'sent', "Not marked for resending";
             }
         }
     };
