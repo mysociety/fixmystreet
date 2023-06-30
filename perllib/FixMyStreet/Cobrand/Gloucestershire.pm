@@ -65,6 +65,12 @@ sub privacy_policy_url {
 
 sub send_questionnaires { 0 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 =pod
 
 =back
