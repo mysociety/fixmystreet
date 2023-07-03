@@ -181,11 +181,11 @@ sub open311_pre_send {
     my ($self, $row, $open311) = @_;
     if ($row->category eq 'Claim') {
         if ($row->get_extra_metadata('fault_fixed') eq 'Yes') {
-            # We want to send to Confirm, but with slightly altered information
+            # We want to send via Open311, but with slightly altered information
             $row->update_extra_field({ name => 'title', value => $row->get_extra_metadata('direction') }); # XXX See doc note
             $row->update_extra_field({ name => 'description', value => $row->get_extra_metadata('describe_cause') });
         } else {
-            # We do not want to send to Confirm, only email
+            # We do not want to send via Open311, only email
             return 'SKIP';
         }
     }
@@ -518,7 +518,7 @@ sub is_two_tier { 1 }
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
 
-    # Bucks don't want to receive updates into Confirm that were made by anyone
+    # Bucks don't want to receive updates that were made by anyone
     # except the original problem reporter.
     return $update->user_id != $update->problem->user_id;
 }
