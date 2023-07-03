@@ -159,7 +159,10 @@ Mileage of the tyre(s) at the time of the incident: 20
 EOF
         is $report->detail, $expected_detail;
         is $report->latitude, 51.81386;
+        is $report->comments->count, 0, 'No updates added to report';
         FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        is $report->comments->count, 1, 'updates added to report post send';
         my @email = $mech->get_email;
         is $email[0]->header('To'), 'TfB <claims@example.net>, TfB <claims2@example.net>';
         is $email[0]->header('Subject'), "New claim - vehicle - Test McTest - $fault_id - Rain Road, Aylesbury";

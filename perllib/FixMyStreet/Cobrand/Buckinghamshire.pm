@@ -194,6 +194,8 @@ sub open311_pre_send {
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
+    $self->_add_claim_auto_response($row, $h) if $row->category eq 'Claim';
+
     # Check Open311 was successful (or a non-Open311 Claim)
     my $non_open311_claim = $row->category eq 'Claim' && $row->get_extra_metadata('fault_fixed') ne 'Yes';
     return unless $row->external_id || $non_open311_claim;
@@ -215,6 +217,56 @@ sub open311_post_send {
     $sender->send($row, $h);
     if ($sender->success) {
         $row->set_extra_metadata(extra_email_sent => 1);
+    }
+}
+
+sub _add_claim_auto_response {
+    my ($self, $row, $h) = @_;
+
+    my $user = $self->body->comment_user;
+    return unless $user && $row->category eq 'Claim';
+
+    # Attach auto-response template if present
+    my $template = $row->response_templates->search({ 'me.state' => $row->state })->first;
+    my $description = $template->text if $template;
+    if ( $description ) {
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_body => $self->body,
+            blank_updates_permitted => 1,
+        );
+
+        my $request = {
+            service_request_id => $row->id,
+            update_id => 'auto-internal',
+            # Add a second so it is definitely later than problem confirmed timestamp,
+            # which uses current_timestamp (and thus microseconds) whilst this update
+            # is rounded down to the nearest second
+            comment_time => DateTime->now->add( seconds => 1 ),
+            status => 'open',
+            description => $description,
+        };
+        my $update = $updates->process_update($request, $row);
+        my $row_id = $row->id;
+        if ($update) {
+            $h->{update} = {
+                item_text => $update->text,
+                item_extra => $update->get_column('extra'),
+            };
+
+            # Stop any alerts being sent out about this update as included here.
+            my @alerts = FixMyStreet::DB->resultset('Alert')->search({
+                alert_type => 'new_updates',
+                parameter => $row->id,
+                confirmed => 1,
+            });
+            for my $alert (@alerts) {
+                my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create({
+                    alert_id  => $alert->id,
+                    parameter => $update->id,
+                });
+            }
+        }
     }
 }
 
@@ -642,51 +694,6 @@ around 'munge_sendreport_params' => sub {
         my $external_id = $row->external_id || $row->get_extra_metadata('report_id') || '(no ID)';
         my $subject = "New claim - $type - $name - $external_id - $location";
         $params->{Subject} = $subject;
-
-        my $user = $self->body->comment_user;
-        if ( $user ) {
-            # Attach auto-response template if present
-            my $template = $row->response_templates->search({ 'me.state' => $row->state })->first;
-            my $description = $template->text if $template;
-            if ( $description ) {
-                my $updates = Open311::GetServiceRequestUpdates->new(
-                    system_user => $user,
-                    current_body => $self->body,
-                    blank_updates_permitted => 1,
-                );
-
-                my $request = {
-                    service_request_id => $row->id,
-                    update_id => 'auto-internal',
-                    # Add a second so it is definitely later than problem confirmed timestamp,
-                    # which uses current_timestamp (and thus microseconds) whilst this update
-                    # is rounded down to the nearest second
-                    comment_time => DateTime->now->add( seconds => 1 ),
-                    status => 'open',
-                    description => $description,
-                };
-                my $update = $updates->process_update($request, $row);
-                if ($update) {
-                    $h->{update} = {
-                        item_text => $update->text,
-                        item_extra => $update->get_column('extra'),
-                    };
-
-                    # Stop any alerts being sent out about this update as included here.
-                    my @alerts = FixMyStreet::DB->resultset('Alert')->search({
-                        alert_type => 'new_updates',
-                        parameter => $row->id,
-                        confirmed => 1,
-                    });
-                    for my $alert (@alerts) {
-                        my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create({
-                            alert_id  => $alert->id,
-                            parameter => $update->id,
-                        });
-                    }
-                }
-            }
-        }
 
         # Attach photos and documents
         my @photos = grep { $_ } (
