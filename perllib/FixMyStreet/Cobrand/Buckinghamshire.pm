@@ -208,7 +208,6 @@ sub open311_post_send {
         'Blocked drain' => [ email_list($emails->{flood}, "Flood Management") ],
         'Ditch issue' => [ email_list($emails->{flood}, "Flood Management") ],
         'Flooded subway' => [ email_list($emails->{flood}, "Flood Management") ],
-        'Claim' => [ email_list($emails->{claim}, 'TfB') ],
     };
     my $dest = $addresses->{$row->category};
     return unless $dest;
@@ -685,69 +684,6 @@ around 'munge_sendreport_params' => sub {
 
     # Do not want the user's email to be the Reply-To
     delete $params->{'Reply-To'};
-
-    if ($row->category eq 'Claim') {
-        # Update subject
-        my $type = $row->get_extra_metadata('what');
-        my $name = $row->name;
-        my $location = $self->claim_location($row);
-        my $external_id = $row->external_id || $row->get_extra_metadata('report_id') || '(no ID)';
-        my $subject = "New claim - $type - $name - $external_id - $location";
-        $params->{Subject} = $subject;
-
-        # Attach photos and documents
-        my @photos = grep { $_ } (
-            $row->photo,
-            $row->get_extra_metadata('vehicle_photos'),
-            $row->get_extra_metadata('property_photos'),
-        );
-        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-            db_data => join(',', @photos),
-        });
-
-        my $num = $photoset->num_images;
-        my $id = $row->id;
-        my @attachments;
-        foreach (0..$num-1) {
-            my $image = $photoset->get_raw_image($_);
-            push @attachments, {
-                body => $image->{data},
-                attributes => {
-                    filename => "$id.$_." . $image->{extension},
-                    content_type => $image->{content_type},
-                    encoding => 'base64', # quoted-printable ends up with newlines corrupting binary data
-                    name => "$id.$_." . $image->{extension},
-                },
-            };
-        }
-
-        my @files = grep { $_ } (
-            $row->get_extra_metadata('v5'),
-            $row->get_extra_metadata('vehicle_receipts'),
-            $row->get_extra_metadata('tyre_receipts'),
-            $row->get_extra_metadata('property_insurance'),
-            $row->get_extra_metadata('property_invoices'),
-        );
-        foreach (@files) {
-            my $filename = $_->{filenames}[0];
-            my $id = $_->{files};
-            my $dir = FixMyStreet->config('PHOTO_STORAGE_OPTIONS')->{UPLOAD_DIR};
-            $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to());
-            my $data = path($dir, $id)->slurp_raw;
-            push @attachments, {
-                body => $data,
-                attributes => {
-                    filename => $filename,
-                    #content_type => $image->{content_type},
-                    encoding => 'base64', # quoted-printable ends up with newlines corrupting binary data
-                    name => $filename,
-                },
-            };
-        }
-
-        $params->{_attachments_} = \@attachments;
-        return;
-    }
 
     # The district areas don't exist in MapIt past generation 36, so look up
     # what district this report would have been in and temporarily override
