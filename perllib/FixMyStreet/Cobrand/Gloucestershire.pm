@@ -77,6 +77,28 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 =cut
 
+=head2 open311_extra_data_include
+
+Prepend subcategory to report description (as it is not otherwise captured by
+Confirm).
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ( $orig, $self, $row, $h ) = @_;
+    my $open311_only = $self->$orig( $row, $h );
+
+    my $description = $row->category . "\n\n" . $row->detail;
+
+    push @$open311_only, {
+        name  => 'description',
+        value => $description,
+    };
+
+    return $open311_only;
+};
+
+
 sub disambiguate_location {
     my $self = shift;
     my $string = shift;
@@ -99,7 +121,7 @@ sub disambiguate_location {
     };
 }
 
-# TODO Sending currently fails
+# TODO What else to add here?
 sub lookup_site_code_config {
     {
         buffer => 200, # metres
