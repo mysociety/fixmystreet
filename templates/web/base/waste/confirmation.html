@@ -20,12 +20,8 @@ END ~%]
         </p>
         <p>
           [% IF report.category == 'Request new container' %]
-            [% IF c.cobrand.moniker == 'kingston' %]
-              Containers typically arrive within 20 working days, but this may vary due to demand.
-            [% ELSIF c.cobrand.moniker == 'sutton' %]
-              Containers typically arrive within 40 working days, but this may vary due to demand.
-            [% ELSIF c.cobrand.moniker == 'bromley' %]
-              Containers typically arrive within two weeks, but this may vary due to demand.
+            [% IF c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'bromley' %]
+              Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
             [% END %]
           [% END %]
           [% INCLUDE 'waste/_report_ids.html' %]

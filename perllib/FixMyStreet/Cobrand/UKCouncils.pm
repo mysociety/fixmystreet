@@ -1,9 +1,7 @@
 package FixMyStreet::Cobrand::UKCouncils;
 use parent 'FixMyStreet::Cobrand::UK';
 
-use strict;
-use warnings;
-
+use Moo;
 use Carp;
 use List::Util qw(min max);
 use URI::Escape;
@@ -421,6 +419,17 @@ sub munge_report_new_contacts {
         $nh->national_highways_cleaning_groups($contacts);
     }
 }
+
+=item wasteworks_config
+
+Returns any database-stored WasteWorks configuration.
+
+=cut
+
+has wasteworks_config => (
+    is => 'lazy',
+    default => sub { $_[0]->body->get_extra_metadata( 'wasteworks_config', {} ) },
+);
 
 sub open311_extra_data {
     my $self = shift;

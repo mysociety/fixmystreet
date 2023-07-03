@@ -9,7 +9,10 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
+my $body = $mech->create_body_ok(2482, 'Bromley Council', {}, {
+    cobrand => 'bromley',
+    wasteworks_config => { request_timeframe => "two weeks" }
+});
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 $user->update({ phone => "07123 456789" });
 my $nameless_user = $mech->create_user_ok('nameless@example.net', name => '');
@@ -248,6 +251,7 @@ FixMyStreet::override_config {
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Containers typically arrive within two weeks,');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;

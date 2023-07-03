@@ -19,8 +19,9 @@ INCLUDE '_email_top.html';
 [% INCLUDE '_council_reference.html' problem=report %]
 
 [% IF report.category == 'Request new container' %]
-<p style="[% p_style %]">Due to the current high demand, please allow up to 40
-working days for this order to be processed. We thank you for your patience and
+<p style="[% p_style %]">Due to the current high demand, please allow up to
+[% cobrand.wasteworks_config.request_timeframe %]
+for this order to be processed. We thank you for your patience and
 understanding in advance.</p>
 [% END %]
 

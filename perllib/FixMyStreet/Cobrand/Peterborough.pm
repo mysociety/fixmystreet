@@ -453,11 +453,6 @@ Functions specific to the waste product & Bartec integration.
 
 =cut
 
-has wasteworks_config => (
-    is => 'lazy',
-    default => sub { $_[0]->body->get_extra_metadata( 'wasteworks_config', {} ) },
-);
-
 sub _premises_for_postcode {
     my $self = shift;
     my $pc = shift;

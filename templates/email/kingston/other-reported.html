@@ -21,8 +21,8 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">We will arrange another collection as soon as possible
   in the next 2 working days (not including Saturday and Sunday).</p>
 [% ELSIF report.category == 'Request new container' %]
-  <p style="[% p_style %]">We aim to deliver this container to you within 20
-  working days. If you have requested a replacement bin please leave your
+  <p style="[% p_style %]">We aim to deliver this container to you within [% cobrand.wasteworks_config.request_timeframe %].
+  If you have requested a replacement bin please leave your
   broken one available for collection at the front of your property.</p>
 [% END %]
 

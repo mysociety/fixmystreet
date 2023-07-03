@@ -24,7 +24,10 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
 };
-my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, { cobrand => 'sutton' });
+my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
+    cobrand => 'sutton',
+    wasteworks_config => { request_timeframe => '20 working days' }
+});
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, { cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $kingston->id);
@@ -107,11 +110,15 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
+        $mech->content_contains('Containers typically arrive within 20 working days');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Green paper and cardboard bin';
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_text_body_from_email;
+        like $email, qr/please allow up to 20 working days/;
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
