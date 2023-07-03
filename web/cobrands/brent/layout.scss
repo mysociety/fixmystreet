@@ -61,26 +61,10 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
   }
 
   #front-main  {
-    // background-color: $front_main_colour;
-    color: $primary_b;
     padding-top: 40px;
     padding-bottom: 75px;
     background-blend-mode: soft-light;
-    background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $left -150px center no-repeat;
     border-top: none;
-
-    #postcodeForm {
-      color: $primary_b;
-      margin-top: 0;
-      background-color: transparent;
-      margin: 0 auto;
-      margin-top: 1em;
-      padding: 0.5em 0em 2em 0em;
-
-      .form-hint {
-        color: $primary_b;
-      }
-    }
 
     h1 + p {
       max-width: 640px;

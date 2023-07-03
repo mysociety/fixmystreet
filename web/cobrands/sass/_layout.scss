@@ -17,6 +17,21 @@ $container-max-width: 60em !default;
 $primary_link_color: null !default;
 $primary_link_hover_color: null !default;
 
+// None of the form variables control the mobile styling. For that refer to _base.scss
+// $front-main-color-desktop controls the colours of all elements inside #front-main and .postcode-form-box element.
+$front-main-color-desktop: $primary_text !default;
+// $front-main-background-desktop controls the background of the #front-main element. This is a full width element.
+$front-main-background-desktop: transparent !default;
+// $front-main-container-desktop changes the background of h1, h2, but without using the full width.
+$front-main-container-background-desktop: transparent !default;
+// $postcodeform-background-desktop controls the background of the postcode-form-box. It excludes the h1 and h2 elements.
+$postcodeform-background-desktop: transparent !default;
+$form-hint-color-desktop: transparentize($front-main-color-desktop, 0.2) !default;
+$front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+
+//This variable controls the color of .content for the front-page
+$content-background-desktop: #fff !default;
+
 .internal-link-fixed-header {
     display: block;
     position: relative;
@@ -164,6 +179,15 @@ h1 {
   padding: 1em;
   background: #fff;
   color: #222;
+}
+
+.frontpage {
+  .content {
+    background: $content-background-desktop;
+    @if ($content-background-desktop == $base_bg) {
+      padding: 1em 0;
+    }
+  }
 }
 
 // map page - has fixed header and different styling
@@ -831,33 +855,49 @@ textarea.form-error {
 
 // big yellow bit full screen width
 #front-main {
-  color: $primary_text;
-  background: $primary;
+  color: $front-main-color-desktop;
+  background: $front-main-background-desktop;
   margin: 0;
   padding: 1em;
   #front-main-container {
     max-width: $container-max-width;
     margin: 0 auto;
+    background: $front-main-container-background-desktop;
+    @if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
+      padding: 1em;
+    } @else {
+      padding: 0;
+    }
+  }
+  .form-hint {
+    margin-top: -0.25em;
   }
   h2 {
     font-style:normal;
     margin:0;
-    color: inherit;
+    color: $front-main-h2-color-desktop;
   }
-  #postcodeForm {
-    color: inherit;
-    background:none;
-    overflow:hidden;
-    padding-bottom: 0;
-    label {
-      margin:0.5em 0;
-    }
-    .form-hint {
-        margin-top: -0.25em;
-    }
-    div {
-      width:20em;
-    }
+}
+
+.postcode-form-box {
+  color: $front-main-color-desktop;
+  background: $postcodeform-background-desktop;
+  @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
+    padding: 1em;
+    margin: 0 -1em;
+  } @else {
+    padding: 0;
+    margin: 1em auto 0;
+  }
+  overflow:hidden;
+  label {
+    margin:0.5em 0;
+  }
+  .form-hint {
+      color: $form-hint-color-desktop;
+  }
+  div {
+    width:20em;
   }
 }
 

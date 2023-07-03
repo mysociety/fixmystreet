@@ -226,9 +226,6 @@ dl dt {
 }
 
 #front-main {
-  margin: 0 0;
-  padding: 1em 1em;
-  background: $front_main_colour inline-image("../brent/images/logo-pattern-bolder_gray.svg") $right center no-repeat;
   z-index: 1;
   border-top: 58px solid $accent-color;
   background-repeat: no-repeat;
@@ -240,75 +237,51 @@ dl dt {
   h2 {
     font-style: normal;
   }
+}
 
-  #postcodeForm {
-    background-color: transparent;
-    color: $primary_b;
-    margin: 1em 0em;
-    padding-right: 0;
-    padding-left: 0;
+.postcode-form-box {
 
-    div {
-      border-width: 0px;
-      align-items: center;
-      background-color: transparent;
+  div {
+    $border-width:1px;
+    $max-height: 45px;
 
-      $border-width:2px;
-      $max-height: 45px;
-  
-      input#sub {
-        background: $link-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
-        margin-top: -1px;
-        margin-bottom: -1px;
-        border: $border-width solid $primary_b;
-        border-left: none;
-        max-height: $max-height;
-        padding: 0;
-        padding-top: ($max-height - ($border-width) * 2 );
-        height: 0;
-        overflow: hidden;
-  
-        &:hover {
-          background: $link-hover-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
-          border-color: $link-hover-color;
-        }
-  
-        &:focus {
-          background:$link-focus-color inline-image("../fixmystreet/images/search-black.svg") center no-repeat;
-          text-decoration-thickness: $link-text-decoration-thickness;
-          border: 2px solid $primary_b;
-          outline: none;
-          border-left: 0px;
-          $text-underline-offset: 5px;
-          box-shadow: none;
-          &:hover {
-            text-decoration: underline;
-          }
-        }
+    input#sub {
+      background: $link-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
+      border: $border-width solid $primary_b;
+      border-left: none;
+      max-height: $max-height;
+      padding: 0;
+      padding-top: $max-height;
+      height: 0;
+      overflow: hidden;
+
+      &:hover {
+        background: $link-hover-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
+        border-color: $link-hover-color;
       }
-  
-      input#pc {
-        margin: 2px 0;
-        max-height: $max-height;
-        height: $max-height;
-        border: $border-width solid $primary_b !important;
-        background: $white !important;
-        &:focus {
-          outline:  2px solid $link-focus-color;
+
+      &:focus {
+        background:$link-focus-color inline-image("../fixmystreet/images/search-black.svg") center no-repeat;
+        text-decoration-thickness: $link-text-decoration-thickness;
+        border: 2px solid $primary_b;
+        outline: none;
+        border-left: 0px;
+        $text-underline-offset: 5px;
+        box-shadow: none;
+        &:hover {
+          text-decoration: underline;
         }
       }
     }
+
+    input#pc {
+      border: $border-width solid $primary_b !important;
+      background: $white !important;
+      &:focus {
+        outline:  2px solid $link-focus-color;
+      }
+    }
   }
-}
-
-a#geolocate_link {
-  // Out from #postcode form element so it also uses this style on the
-  // local alaert page.
-  margin-top: 1em;
-}
-
-.form-box, .box-warning {
-  background-color: $section-background-color;
 }
 
 // uses important because btn also uses it

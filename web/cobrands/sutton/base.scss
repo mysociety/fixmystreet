@@ -159,39 +159,31 @@ a,
 }
 
 #front-main {
-    #postcodeForm {
-        background: transparent;
-        font-family: $body-font;
-
-        div {
-            border: none;
-            background: transparent;
-
-            $border-radius: 50px;
-            input#pc {
-                @include sutton-form-input($margin: 0 0 0 0, $padding: 5px 0.5em);
-                font-size: 1.25em;
-
-                &:hover {
-                    background-color: $white;
-                }
-            }
-
-            input#sub {
-                margin-left: 0.5em;
-                font-size: 1.25em;
-                @include sutton-button($background-color: $green, $color: $white);
-            }
-        }
-
-        .form-hint {
-            color: $grey;
-        }
-    }
-
     h2 {
         font-style: inherit;
-        color: $black-l2;
+    }
+}
+
+.postcode-form-box {
+    font-family: $body-font;
+
+    div {
+        border: none;
+        $border-radius: 50px;
+        input#pc {
+            @include sutton-form-input($margin: 0 0 0 0, $padding: 5px 0.5em);
+            font-size: 1.25em;
+
+            &:hover {
+                background-color: $white;
+            }
+        }
+
+        input#sub {
+            margin-left: 0.5em;
+            font-size: 1.25em;
+            @include sutton-button($background-color: $green, $color: $white);
+        }
     }
 }
 

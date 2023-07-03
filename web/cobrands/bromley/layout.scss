@@ -104,16 +104,15 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
 }
 
 #front-main {
-  background: $bromley_green;
   padding-top: 5em;
   padding-bottom: 5em;
   position: relative;
 
   h1 {
-    color: #fff;
     font-weight: 500;
     max-width: 350px;
     line-height: 130%;
+    color: $primary_text;
   }
 
   #front-main-container {
@@ -123,20 +122,10 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
     form#postcodeForm {
       margin: 0 0;
       text-align: left;
-      color: $bromley_black;
-      background: white;
       border-radius: 8px;
       border: 2px solid $bromley_green;
       max-width: 550px;
       padding: 1.5em 2em;
-
-      label {
-        margin-bottom: 1em;
-      }
-
-      .form-hint {
-        color: transparentize($color: $bromley_black, $amount: 0.3);
-      }
     }
   }
 
@@ -158,7 +147,6 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
 
 .container .content {
   .frontpage & {
-    background: $bromley_green_l2;
     border: 2px solid #b3d3b3;
     // border: 2px solid $bromley_green;
     border-radius: 8px;

@@ -35,7 +35,6 @@ h1, h2, h3 {
       height: 100px;
       width: 249px;
       background-size: 249px 81px;
-      margin-left: 1em;
     }
   }
 }
@@ -51,10 +50,13 @@ h1, h2, h3 {
   }
 }
 
-#front-main #postcodeForm div input#sub {
-  background-color: $lincs-pop;
-  font-family: 'Roboto', 'Arial', sans-serif;
-  font-weight: bold;
+.postcode-form-box div {
+  border-color: $lincs-border;
+  input#sub {
+    background-color: $lincs-link;
+    font-family: 'Roboto', 'Arial', sans-serif;
+    font-weight: bold;
+  }
 }
 
 #front-howto #front_stats {
@@ -114,20 +116,17 @@ body.mappage .big-green-banner {
     font-family: 'Roboto', 'Arial', sans-serif;
     font-weight: normal;
   }
+}
 
-  #postcodeForm div {
-    border-color: $lincs-border;
-    input#sub {
-      background-color: $lincs-link;
-    }
+
+#front-main {
+  #front-main-container {
+    border-bottom: solid 5px $lincs-pop;
+    margin: 0 1em;
+    padding: 0 0 2em;
   }
 }
 
-
-#front-main-container {
-  border-bottom: solid 5px $lincs-pop;
-  padding: 2em 0 3em;
-}
 
 // Certain categories have linear assets so hide the spot marker in the guidance
 #category_meta_message_Missingsafetyfence, #category_meta_message_Roadsidesafetybarrier {

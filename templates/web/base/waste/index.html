@@ -8,11 +8,11 @@
     <div id="front-main">
       <div id="front-main-container">
         <h1>[% loc('Bins, rubbish and recycling') %]</h1>
-        <form method="post" id="postcodeForm">
+        <form class="postcode-form-box" method="post" id="postcodeForm">
           <label for="pc">[% loc('Postcode') %]</label>
           <div>
               <input type="text" name="postcode" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint">
-              [% INCLUDE 'around/_postcode_submit_button.html' attr='id="sub"' %]
+              [% INCLUDE 'around/_postcode_submit_button.html' %]
           </div>
           <ul>
             <li>Find your bin collection days</li>

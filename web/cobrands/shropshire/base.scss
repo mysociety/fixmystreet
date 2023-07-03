@@ -172,27 +172,24 @@ a:focus,
 }
 
 #front-main {
-    #postcodeForm {
-        background: transparent;
-
-        div {
-            border: none;
-            background: transparent;
-
-            input#pc {
-                @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-                font-size: 1.25em;
-            }
-
-            input#sub {
-                @include shropshire-button-primary();
-                font-size: 1.25em;
-            }
-        }
-    }
-
     h2 {
         font-style: inherit;
+    }
+}
+
+.postcode-form-box {
+    div {
+        border: none;
+
+        input#pc {
+            @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+            font-size: 1.25em;
+        }
+
+        input#sub {
+            @include shropshire-button-primary();
+            font-size: 1.25em;
+        }
     }
 }
 

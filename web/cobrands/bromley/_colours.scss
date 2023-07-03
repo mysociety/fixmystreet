@@ -13,7 +13,7 @@ $bromley_yellow: #fdcb4c;
 $bromley_red_l1: #e8bac4;
 
 $primary: $bromley_blue;
-$primary_b: #ffffff;
+$primary_b: $bromley_black;
 $primary_text: #ffffff;
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
@@ -44,3 +44,16 @@ $container-max-width: 1200px;
 $search-help-header-font-size-desktop: 1.25em;
 
 $site-message-border: 3px solid #235e1c;
+
+$front-main-color: #fff;
+$front-main-background: $bromley_green;
+$postcodeform-background: $bromley_green;
+
+
+$front-main-color-desktop: $bromley_black;
+$front-main-background-desktop: $bromley_green;
+$front-main-container-background-desktop: transparent;
+$postcodeform-background-desktop: #fff;
+$content-background-desktop: $bromley_green_l2;
+
+$geolocation-link: $primary;

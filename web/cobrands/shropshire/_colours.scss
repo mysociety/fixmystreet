@@ -45,6 +45,9 @@ $mappage-header-height: 64px;
 
 $dropzone-button-text: $shropshire-white;
 
+$front-main-container-background-desktop: $shropshire-white;
+$postcodeform-background: transparent;
+
 @mixin shropshire-form-input($margin: 0.5em 0, $padding: 5px) {
     margin: $margin;
     padding: $padding;

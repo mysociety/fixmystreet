@@ -9,6 +9,7 @@ $mappage-header-height: 7em;
 
 .content {
     color: #3c3c3c;
+    padding: 1em;
 }
 
 // Different header and logo
@@ -139,27 +140,20 @@ body.frontpage {
     }
 }
 
-#front-main {
-  background-color: inherit;
-  color: inherit;
-  margin: 0 0 2em 0;
-  #postcodeForm div {
+.postcode-form-box div {
     border-color: $dark_blue;
     input#pc {
       max-width: none;
     }
   }
-}
 
-#front-main #postcodeForm {
-    .form-hint {
-        color: inherit;
-    }
+.tablewrapper {
+    padding: 1em;
 }
 
 #zurich-main-nav {
-  margin: -1em -1em 1em -1em; // -1em spreads back out over content's 1em padding
-  padding: 0;
+  margin: -1em 0 1em 0; // -1em spreads back out over content's 1em padding
+
   background-color: #6A6869;
 
   ul {

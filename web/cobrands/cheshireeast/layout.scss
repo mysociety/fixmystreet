@@ -13,20 +13,14 @@ footer {
     background-color: $white;
 }
 
-body.frontpage .content {
-    margin: 0 -1em;
-}
-
-#front-main {
-    background-color: transparent;
-    padding: 0;
-}
-#front-main-container {
-    background-color: $white;
-    padding: 1em;
-}
 #front-main #postcodeForm div {
     width: 30em;
+}
+#front-main {
+    padding: 0;
+}
+body.frontpage .content {
+    margin: 0 -1em;
 }
 
 .ce-footer {

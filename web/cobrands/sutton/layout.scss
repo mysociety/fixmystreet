@@ -59,17 +59,7 @@ body {
 }
 
 #front-main {
-    margin: 0 auto;
     margin-top: 60px;
-    padding: 0 1em;
-    max-width: $container-max-width;
-    background: transparent;
-
-    #front-main-container {
-        max-width: none;
-        background: $white;
-        padding: 4%;
-    }
 
     #postcodeForm {
         overflow: visible;
@@ -95,7 +85,7 @@ body {
 }
 
 .content {
-    padding: 4%;
+    padding-top: 4%;
 }
 
 h1 {

@@ -50,16 +50,11 @@
 }
 
 #front-main {
-    margin: 0 auto;
     margin-top: 60px;
     padding: 0 1em;
-    max-width: $container-max-width;
-    background: transparent;
 
     #front-main-container {
-        max-width: none;
-        background: $white;
-        padding: 4%;
+        padding: 3em;
         border-top: 4px solid $green;
     }
 
@@ -69,7 +64,7 @@
 }
 
 .content {
-    padding: 4%;
+    padding: 3em;
 }
 
 input.form-error,

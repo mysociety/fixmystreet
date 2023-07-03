@@ -28,6 +28,16 @@ $header-top-border: $header-top-border-width solid $primary !default;
 
 $container-max-width: 60em !default;
 
+// None of the form variables control the desktop styling. For that refer to _layout.scss
+// $front-main-color controls the colours of all elements inside #front-main and .postcode-form-box element.
+$front-main-color: $primary_text !default;
+// $front-main-background controls the background of the #front-main element. This is a full width element.
+$front-main-background: none !default;
+// $postcodeform-background controls the background of the postcode-form-box. It excludes the h1 and h2 elements.
+$postcodeform-background: $primary !default;
+$front-main-h2-color: transparentize($front-main-color, 0.1) !default;
+$form-hint-color: transparentize($front-main-color, 0.2) !default;
+
 $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
@@ -2401,7 +2411,7 @@ label .muted {
 
 .form-hint {
   display: block;
-  color: #666;
+  color: $form-hint-color;
   margin-bottom: 0.5em;
 
   // Reduce space between labels and their form-hints
@@ -2617,58 +2627,32 @@ label .muted {
 
 /* Front page */
 #front-main {
-  margin: 1em;
+  margin: 1em 0;
+  background: $front-main-background;
+  color: $front-main-color;
+  @if not (($front-main-background == transparent) or ($front-main-background == none)) {
+    padding: 1em;
+    margin-top: 0;
+  }
+  @if not (($front-main-background == transparent) or ($front-main-background == none)) {
+      #front-main-container {
+      margin:0 -1em;
+    }
+  }
+  #front-main-container {
+    padding:0 1em;
+  }
   h2 {
     font-style: italic;
     font-family: $meta-font;
     font-size: 1.1875em;
-    color: #4d4d4d;
+    color: $front-main-h2-color;
+  }
+  .form-hint {
+    margin-bottom: 0.5em;
   }
   p {
     margin: 0.5em 0 0;
-  }
-  #postcodeForm {
-    margin: 0 -1em;
-    padding: 1em;
-    color: $primary_text;
-    background: $primary;
-    font-family: $meta-font;
-    label {
-      margin: 0;
-    }
-    .form-hint {
-      margin-bottom: 0.5em;
-    }
-    div {
-      @include flex-container;
-      @include flex-wrap(wrap);
-      width: 100%;
-      background: #fff;
-      border: 1px solid $primary_b;
-      input#pc {
-        @include flex(86 0 auto);
-        width: 50%;
-        border: none;
-        background: none;
-        line-height: 1.5em;
-      }
-      input#sub {
-        border: none;
-        padding: 0.5em;
-        @include flex(14 0 auto);
-        background: #000;
-        color: #fff;
-        @include border-radius(0);
-        &:hover,
-        &:focus {
-          background: #333;
-        }
-      }
-    }
-
-    ul {
-      margin-top: 2em;
-    }
   }
   a {
     text-decoration: $primary_link_decoration;
@@ -2678,6 +2662,51 @@ label .muted {
   }
 }
 
+.postcode-form-box {
+  color: $front-main-color;
+  background: $postcodeform-background;
+  @if not (($postcodeform-background == transparent) or ($postcodeform-background == none)) {
+    padding: 1em;
+    margin: 0 -1em;
+  } @else {
+    padding: 0;
+    margin: 1em 0
+  }
+  font-family: $meta-font;
+  label {
+    margin-top: 0;
+  }
+  div {
+    @include flex-container;
+    @include flex-wrap(wrap);
+    width: 100%;
+    background: #fff;
+    border: 1px solid $primary_b;
+    input#pc {
+      @include flex(86 0 auto);
+      width: 50%;
+      border: none;
+      background: none;
+      line-height: 1.5em;
+    }
+    input#sub {
+      border: none;
+      padding: 0.5em;
+      @include flex(14 0 auto);
+      background: #000;
+      color: #fff;
+      @include border-radius(0);
+      &:hover,
+      &:focus {
+        background: #333;
+      }
+    }
+  }
+
+  ul {
+    margin-top: 2em;
+  }
+}
 
 
 

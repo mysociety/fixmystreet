@@ -139,31 +139,13 @@
 }
 
 #front-main {
-    color: $primary_text;
-    background-color: $primary_b;
     margin: 2em 0 0 0;
-
-    #postcode-intro {
-        padding: 1em 1em;
-        h2 {
-            font-family: $heading-font;
-            color: $primary_text;
-        }
-    }
-
-    #postcodeForm {
-        background-color: $primary_b;
-        margin: 0;
-
-        .form-hint {
-            color: $primary_text;
-        }
-    }
 }
 
 #front-main-container {
     padding-bottom: 1em;
 }
+
 
 a#geolocate_link {
     border-radius: 0;

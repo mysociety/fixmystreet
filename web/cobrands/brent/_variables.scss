@@ -122,3 +122,11 @@ $btn-secondary-border-color-hover: $gray-2;
 // Footer
 $footer-background-colour: $gray-1;
 $footer-colour: $primary_text;
+
+$front-main-color: $primary_b;
+$postcodeform-background:transparent;
+$front-main-background: transparent inline-image("../brent/images/logo-pattern-bolder_gray.svg") right center no-repeat;
+$front-main-color-desktop:$primary_b;
+$front-main-container-background-desktop: transparent;
+$front-main-background-desktop: transparent inline-image("../brent/images/logo-pattern-bolder_gray.svg") left -150px center no-repeat;
+$content-background-desktop: $base_bg;

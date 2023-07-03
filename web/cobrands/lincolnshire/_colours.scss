@@ -47,7 +47,6 @@ $col_fixed_label: $lincs-highlight;
 
 $menu-image: 'menu-black';
 
-$front_main_background: white;
 // $header-top-border: false;
 
 $search-help-alignment: left;
@@ -55,3 +54,6 @@ $search-help-header-color: $lincs-pop;
 $search-help-header-background: transparent;
 $search-help-header-font-size-desktop: 1.25em;
 $search-help-margin-desktop: -2em -2em 0 -2em;
+
+$form-hint-color: transparentize(#000, 0.3);
+$form-hint-color-desktop: transparentize(#000, 0.3);

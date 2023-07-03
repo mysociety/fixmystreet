@@ -448,72 +448,65 @@ dl dt {
     }
   }
 
-  h1+p {
-    color: $gray-2;
-  }
-
   h2 {
     font-style: normal;
-    color: $primary_b;
     @extend .body-large;
   }
+}
 
-  #postcodeForm {
-    background-color: $white-2;
-    color: $primary_b;
-    margin-top: 1em;
+.postcode-form-box {
+  margin-top: 1em;
 
-    div {
-      border-width: 0px;
-      align-items: center;
-      background-color: transparent;
+  div {
+    border-width: 0px;
+    align-items: center;
+    background-color: transparent;
+  }
+
+  $border-width:2px;
+  $max-height: 45px;
+
+  input#sub {
+    background: $primary_button_background_color !important;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    border: $border-width solid $primary_button_border_color;
+    max-height: $max-height;
+    height: $max-height;
+    
+
+    &:hover {
+      background: $primary_button_background_color_hover !important;
+      color: $primary_button_color_hover !important;
+      border-color: $primary_button_border_color_hover;
+      text-decoration: underline;
+      text-decoration-thickness: $btn-text-decoration-thickness-hover;
     }
 
-    $border-width:2px;
-    $max-height: 45px;
-
-    input#sub {
-      background: $primary_button_background_color !important;
-      margin-top: -1px;
-      margin-bottom: -1px;
-      border: $border-width solid $primary_button_border_color;
-      max-height: $max-height;
-      height: $max-height;
-      
-
+    &:focus {
+      background: $primary_button_background_color_focus !important;
+      color: $primary_button_color_focus !important;
+      text-decoration: underline;
+      text-decoration-thickness: $btn-text-decoration-thickness-focus;
+      $text-underline-offset: $text-underline-offset;
+      border: 2px solid $primary_button_border_color_focus;
+      border-left: 0px;
+      outline: none;
       &:hover {
-        background: $primary_button_background_color_hover !important;
-        color: $primary_button_color_hover !important;
-        border-color: $primary_button_border_color_hover;
-        text-decoration: underline;
-        text-decoration-thickness: $btn-text-decoration-thickness-hover;
-      }
-
-      &:focus {
-        background: $primary_button_background_color_focus !important;
-        color: $primary_button_color_focus !important;
-        text-decoration: underline;
-        text-decoration-thickness: $btn-text-decoration-thickness-focus;
-        $text-underline-offset: $text-underline-offset;
-        border: 2px solid $primary_button_border_color_focus;
-        border-left: 0px;
-        outline: none;
-        &:hover {
-          text-decoration: none;
-        }
+        text-decoration: none;
       }
     }
+  }
 
-    input#pc {
-      margin: 2px 0;
-      max-height: $max-height;
-      height: $max-height;
-      background: $secondary_button_background_color_hover !important;
-      border: $border-width solid $primary_b !important;
-      border-right-width: 0 !important;
-      &:focus {
-        outline:  2px solid $link-focus-background-colour;
-      }
+  input#pc {
+    margin: 2px 0;
+    max-height: $max-height;
+    height: $max-height;
+    background: $secondary_button_background_color_hover !important;
+    border: $border-width solid $primary_b !important;
+    border-right-width: 0 !important;
+    &:focus {
+      outline:  2px solid $link-focus-background-colour;
     }
   }
 }

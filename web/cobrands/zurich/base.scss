@@ -6,7 +6,12 @@
 
 /* Front page main box is in content now, so get rid of its margin from parent */
 #front-main {
-    margin: 0;
+    h1 {
+        color: $base_fg;
+      }
+    #front-main-container {
+        padding: 0;
+    }
 }
 
 /* Autocomplete dropdown on front page, don't want bullets */
@@ -70,21 +75,15 @@
     transform: translateY(-40%);
 }
 
-#front_stats,
-#front-main #postcodeForm {
+#front_stats {
     background-color: $mobile_header_blue;
-
-    .form-hint {
-        color: $primary_text;
-    }
 }
 
 //  fix here:
 //  a percentage width on input#pc breaks iPhone landscape/portrait switching
 //  and the other changes make this fix pretty
 
-#front-main #postcodeForm div {
-  background: inherit;
+.postcode-form-box div {
   border-color:transparent;
   input#pc {
     max-width: 15em;

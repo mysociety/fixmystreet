@@ -32,7 +32,6 @@ $primary_text: $northumber_white;
 
 $base_bg: $northumber_white;
 $base_fg: $northumber_black;
-$front_main_bg: $northumber_light_grey;
 $front_stats_bg: $northumber_mid_grey;
 $layout_front_stats_color: $primary_b;
 
@@ -98,6 +97,13 @@ $menu-image: "menu-black";
 // $close-menu-image: "close-#{$menu-image}";
 
 /* OTHER VARIABLES */
+
+$front-main-color-desktop: $primary_b;
+$front-main-background-desktop: $northumber_light_grey;
+$postcodeform-background-desktop: transparent;
+$front-main-color: $primary_b;
+$front-main-background: $northumber_light_grey;
+$postcodeform-background: transparent;
 
 $container-max-width: 80em;
 

@@ -13,10 +13,6 @@
     background-size: 162px 56px;
 }
 
-#postcodeForm .form-hint {
-    color: $white;
-}
-
 #map_box #map {
     background-color: white;
 }
@@ -112,18 +108,12 @@ h1, h2 {
     h2 {
         font-style: normal;
         font-weight: normal;
-        color: $primary_b;
     }
-    #postcodeForm {
-        background-color: #fff;
-        padding-bottom: 0;
-        div input#sub {
-            background-color: $link-color;
-        }
-    }
-    label,
-    .form-hint {
-        color: $primary_b;
+}
+
+.postcode-form-box {
+    div input#sub {
+        background-color: $link-color;
     }
 }
 

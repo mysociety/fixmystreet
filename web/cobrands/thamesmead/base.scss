@@ -98,29 +98,27 @@ html.js-nav-open #nav-link {
 }
 
 #front-main {
-    #postcodeForm {
-        background: transparent;
-
-        div {
-            border: none;
-            background: transparent;
-
-            input#pc {
-                @include peabody-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-                font-size: 1.25em;
-                background-color: $peabody-white;
-            }
-
-            input#sub {
-                @include peabody-button-primary();
-                font-size: 1.25em;
-            }
-        }
-    }
-
     h2 {
         font-style: inherit;
         font-family: $body-font;
+    }
+}
+
+.postcode-form-box {
+    div {
+        border: none;
+        background: transparent;
+
+        input#pc {
+            @include peabody-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+            font-size: 1.25em;
+            background-color: $peabody-white;
+        }
+
+        input#sub {
+            @include peabody-button-primary();
+            font-size: 1.25em;
+        }
     }
 }
 

@@ -81,8 +81,6 @@ body.mappage {
 
 // Tiled background stripe, not plain colour
 #front-main {
-    background: $primary url(/cobrands/fixmystreet.com/images/tile-y.jpg);
-
     @media ($high-dpi-screen) {
         background-image: url(/cobrands/fixmystreet.com/images/tile-y@2x.jpg);
         background-size: 500px;

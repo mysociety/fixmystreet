@@ -41,66 +41,49 @@ body.frontpage {
     right: 1em; // right-aligned, rather than left-aligned
 }
 
-#front-main {
-    background-color: $westminster_body_bkgd;
-    margin: 0;
-    padding: 1em;
+.postcode-form-box {
+    div {
+        position: relative;
+        border: none;
 
-    #postcodeForm {
-        margin: 0;
-        padding: 0;
-        background: transparent;
-        color: inherit;
+        input#pc {
+            box-sizing: border-box;
+            padding: 10px 22px;
+            border: 1px solid $form-border;
+            border-radius: 4.5px;
+            background: #fff;
 
-        div {
-            border: none;
-            background: transparent;
-            position: relative;
-            background: $westminster_body_bkgd;
-
-            input#pc {
-                box-sizing: border-box;
-                padding: 10px 22px;
-                border: 1px solid $form-border;
-                border-radius: 4.5px;
-                background: #fff;
-
-                &:focus {
-                    box-shadow: 0 0 0 3px $westminster-yellow;
-                    outline: 0;
-                }
-            }
-
-            input#sub {
-                width: 40px;
-                height: 46px;
-                padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
-                overflow: hidden;
-                @include flex(0 0 auto);
-                background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
-                background-size: 42px 32px;
-                position: absolute;
-                border-top-right-radius: 4.5px;
-                border-bottom-right-radius: 4.5px;
-                top: 0;
-                right: 0;
-
-                &:hover,
-                &:focus {
-                    background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
-                        50%;
-                    background-size: 42px 32px;
-                }
+            &:focus {
+                box-shadow: 0 0 0 3px $westminster-yellow;
+                outline: 0;
             }
         }
-        label {
-            font-size: 1.1em;
-            font-weight: 600;
+
+        input#sub {
+            width: 40px;
+            height: 46px;
+            padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
+            overflow: hidden;
+            @include flex(0 0 auto);
+            background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
+            background-size: 42px 32px;
+            position: absolute;
+            border-top-right-radius: 4.5px;
+            border-bottom-right-radius: 4.5px;
+            top: 0;
+            right: 0;
+
+            &:hover,
+            &:focus {
+                background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
+                    50%;
+                background-size: 42px 32px;
+            }
         }
     }
-
-    .form-hint {
-        color: inherit;
+    label {
+        font-size: 1.1em;
+        font-weight: 600;
     }
 }
 

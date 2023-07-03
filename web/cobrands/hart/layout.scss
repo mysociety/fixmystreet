@@ -57,28 +57,27 @@ body.twothirdswidthpage .content {
 }
 
 #front-main {
-    background: transparent;
-    padding: 0 1em;
-    margin: 3em auto 5em auto;
+    margin: 3em auto 4em auto;
     max-width: $container-max-width;
 
     #front-main-container {
         max-width: 40em;
         text-align: left;
-        padding: 1.5em 0 2em 0;
-        margin-left: 1em;
+        padding: 1.5em 0 1em 0;
+        margin-left: 0;
         @include hart-boxshadow(20px, 20px, 0 , 0, $primary);
-        background-color: $primary_b;
     }
 
     #postcode-intro {
         margin-right: 1em;
         margin-left: 1em;
     }
+}
 
-    #postcodeForm {
-        padding: 0 2em;
-    }
+.postcode-form-box {
+    max-width: 500px;
+    margin-left: 0em;
+    padding: 1em;
 }
 
 #front_stats big {

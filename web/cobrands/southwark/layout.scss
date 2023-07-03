@@ -29,24 +29,22 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   }
 
   #front-main {
-    background-color: white;
     padding-top: 40px;
-
-    #postcodeForm {
-      margin-top: 0;
-      background-color: $mainform_bg;
-      margin: 0 auto;
-      margin-top: 1em;
-      padding: 0.5em 1em 2em 1em;
-
-      .form-hint {
-        color: $gray-2;
-      }
-    }
 
     h2 {
       max-width: 650px;
     }
+  }
+}
+
+.postcode-form-box {
+  margin-top: 0;
+  margin: 0 auto;
+  margin-top: 1em;
+  padding: 0.5em 1em 2em 1em;
+
+  .form-hint {
+    color: $gray-2;
   }
 }
 

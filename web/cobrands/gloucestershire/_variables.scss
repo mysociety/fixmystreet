@@ -27,7 +27,6 @@ $primary_text: $gloucestershire_white;
 /* FRONTPAGE */
 $base_bg: $gloucestershire_grey;
 $base_fg: $gloucestershire_black;
-$front_main_bg: $gloucestershire_white;
 $front_stats_bg: $gloucestershire_white;
 $layout_front_stats_color: $primary_b;
 
@@ -119,3 +118,8 @@ $col_big_numbers: $primary_b;
     color: $primary_text !important; // Overrides button-variant mixin
   }
 }
+
+$front-main-color: #333;
+$postcodeform-background: $gloucestershire_white;
+$front-main-color-desktop: #333;
+$front-main-background-desktop: #fff;

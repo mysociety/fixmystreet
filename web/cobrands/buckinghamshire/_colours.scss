@@ -60,6 +60,10 @@ $search-help-background: #fff3f3;
 $search-help-header-font-size-desktop: 1.25em;
 
 $geolocation-link: $bucks_links;
+$front-main-color: $primary_b;
+$postcodeform-background: #fff;
+$front-main-color-desktop: $primary_b;
+
 
 @mixin bucks-button {
   background-color: $bucks_button_bg;

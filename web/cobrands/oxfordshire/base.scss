@@ -22,7 +22,7 @@ a:not([class]):focus {
 }
 
 .form-control,
-#front-main #postcodeForm div input#pc {
+.postcode-form-box div input#pc {
     @include border-radius(none);
     box-shadow: none;
 
@@ -67,35 +67,27 @@ a:not([class]):focus {
 }
 
 #front-main {
-    margin: 2em 0;
-    padding: 0 1em;
-
     h1 {
         font-weight: 700;
     }
+}
 
-    #postcodeForm {
-        margin: 0;
-        padding: 0;
-        color: inherit;
-        background: inherit;
+.postcode-form-box {
+    label {
+        font-family: $heading-font;
+        font-size: 20px;
+        font-weight: 500;
+    }
 
-        label {
-            font-family: $heading-font;
-            font-size: 20px;
-            font-weight: 500;
-        }
+    div {
+        border: none;
 
-        div {
-            border: none;
+        font-size: 1.25em;
+        margin-top: 0.5em;
+        max-width: 24em;
 
-            font-size: 1.25em;
-            margin-top: 0.5em;
-            max-width: 24em;
-
-            input#pc {
-                margin: 0 0.5em 0 0;
-            }
+        input#pc {
+            margin: 0 0.5em 0 0;
         }
     }
 }
@@ -172,7 +164,7 @@ dd, p {
 
 // No border and slightly different padding for *all* types of button.
 .btn,
-#front-main #postcodeForm div input#sub,
+.postcode-form-box div input#sub,
 .green-btn,
 .btn-primary,
 .occlss-button--primary {
@@ -193,7 +185,7 @@ dd, p {
 }
 
 // Override all the "primary" buttons across the site!
-#front-main #postcodeForm div input#sub,
+.postcode-form-box div input#sub,
 .green-btn,
 .btn-primary,
 .occlss-button--primary,

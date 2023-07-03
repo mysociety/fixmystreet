@@ -363,57 +363,55 @@ dl dt {
       }
     }
   }
+}
 
-  #postcodeForm {
-    background-color: $mainform_bg;
-    color: $primary_b;
-    margin-top: 1em;
+.postcode-form-box {
+  margin-top: 1em;
 
-    div {
-      border-width: 0px;
-      align-items: center;
-      background-color: transparent;
+  div {
+    border-width: 0px;
+    align-items: center;
+    background-color: transparent;
+  }
+
+  $border-width:1px;
+  $max-height: 45px;
+
+  input#sub {
+    background: $primary_button_background_color !important;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    border: $border-width solid $primary_button_border_color;
+    max-height: $max-height;
+    height: $max-height;
+    
+
+    &:hover {
+      background: $primary_button_background_color_hover !important;
+      color: $primary_button_color_hover !important;
+      border-color: $primary_button_border_color_hover;
     }
 
-    $border-width:1px;
-    $max-height: 45px;
-
-    input#sub {
-      background: $primary_button_background_color !important;
-      margin-top: -1px;
-      margin-bottom: -1px;
-      border: $border-width solid $primary_button_border_color;
-      max-height: $max-height;
-      height: $max-height;
-      
-
+    &:focus {
+      background: $primary_button_background_color_focus !important;
+      color: $primary_button_color_focus !important;
+      border: 2px solid $primary_button_border_color_focus;
+      border-left: 0px;
+      outline: none;
       &:hover {
-        background: $primary_button_background_color_hover !important;
-        color: $primary_button_color_hover !important;
-        border-color: $primary_button_border_color_hover;
-      }
-
-      &:focus {
-        background: $primary_button_background_color_focus !important;
-        color: $primary_button_color_focus !important;
-        border: 2px solid $primary_button_border_color_focus;
-        border-left: 0px;
-        outline: none;
-        &:hover {
-          text-decoration: none;
-        }
+        text-decoration: none;
       }
     }
+  }
 
-    input#pc {
-      margin: 2px 0;
-      max-height: $max-height;
-      height: $max-height;
-      border: $border-width solid $secondary_button_border_color !important;
-      background: $white !important;
-      &:focus {
-        outline:  2px solid $link-focus-background-colour;
-      }
+  input#pc {
+    margin: 2px 0;
+    max-height: $max-height;
+    height: $max-height;
+    border: $border-width solid $secondary_button_border_color !important;
+    background: $white !important;
+    &:focus {
+      outline:  2px solid $link-focus-background-colour;
     }
   }
 }

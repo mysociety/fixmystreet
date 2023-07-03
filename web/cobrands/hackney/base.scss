@@ -32,56 +32,42 @@
 }
 
 #front-main {
-    background-color: $white;
-    margin: 0;
-    padding: 1em;
+  margin: 2em 0;
+}
 
-    h1 {
-        color: $black;
-    }
+.postcode-form-box {
+  margin: 0;
+  padding: 0;
 
-    #postcodeForm {
-        margin: 0;
-        padding: 0;
-        background: transparent;
-        color: inherit;
+  div {
+      border: none;
+      position: relative;
+      box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
 
-        div {
-            border: none;
-            background: transparent;
-            position: relative;
-            background: #fff;
-            box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
+      input#pc {
+          box-sizing: border-box;
+          padding: 10px 22px;
+      }
 
-            input#pc {
-                box-sizing: border-box;
-                padding: 10px 22px;
-            }
-
-            input#sub {
-                width: 0;
-                padding-left: 50px;
-                overflow: hidden;
-                @include flex(0 0 auto);
-                background: $black url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
-                background-size: 25px 25px;
-                color: $black;
-                &:hover,
-                &:focus {
-                    background: $dark-green url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
-                    background-size: 25px 25px;
-                    color: $dark_green;
-                }
-                &:focus {
-                    outline: 4px solid $yellow;
-                }
-            }
-        }
-    }
-
-    .form-hint {
-        color: inherit;
-    }
+      input#sub {
+          width: 0;
+          padding-left: 50px;
+          overflow: hidden;
+          @include flex(0 0 auto);
+          background: $black url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
+          background-size: 25px 25px;
+          color: $black;
+          &:hover,
+          &:focus {
+              background: $dark-green url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
+              background-size: 25px 25px;
+              color: $dark_green;
+          }
+          &:focus {
+              outline: 4px solid $yellow;
+          }
+      }
+  }
 }
 
 .hackney-footer {

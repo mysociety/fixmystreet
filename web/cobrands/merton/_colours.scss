@@ -43,3 +43,11 @@ $menu-image: 'menu-black';
 $container-max-width: 60em;
 
 $dropzone-button-text: $merton-jade-j3;
+
+$front-main-color: #fff;
+$front-main-h2-color: $merton-headline;
+$front-main-background: $merton-jade-j3;
+$postcodeform-background: $merton-jade-j1;
+$front-main-background-desktop: #fff;
+$front-main-h2-color-desktop: transparentize($merton-headline, 0.2);
+$form-hint-color-desktop: transparentize($merton-headline, 0.2);

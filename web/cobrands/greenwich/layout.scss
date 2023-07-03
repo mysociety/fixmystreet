@@ -14,12 +14,10 @@
 }
 
 #front-main {
-    background-color: $greenwich_light_grey;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
     padding-top: 0.5em;
 
     #front-main-container {
-        background-color: transparent;
         padding: 1em 0;
         .intro-wrap {
             max-width: 720px;
@@ -64,9 +62,6 @@ body.authpage, body.twothirdswidthpage, body.alertpage {
                 display: none;
             }
         }
-    }
-    .content {
-        padding: 0;
     }
 }
 

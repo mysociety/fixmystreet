@@ -14,7 +14,7 @@
             <div>
                 <input type="hidden" name="pc" value="[% c.cobrand.problems.first.postcode | html %]">
                 <input type="text" name="_pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint">
-                [% INCLUDE 'around/_postcode_submit_button.html' attr='id="sub"' %]
+                [% INCLUDE 'around/_postcode_submit_button.html' %]
             </div>
 
             [% IF partial_token %]

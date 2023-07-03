@@ -43,7 +43,7 @@ textarea:focus,
 input[type=button],
 input[type=reset],
 input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
-#front-main #postcodeForm div input#sub,
+.postcode-form-box div input#sub,
 a#geolocate_link,
 :not(.segmented-control--radio) > .btn {
     color: #ffffff !important;
@@ -65,7 +65,7 @@ a#geolocate_link,
 input[type=button]:hover,
 input[type=reset]:hover,
 input[type=submit]:hover :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
-#front-main #postcodeForm div input#sub:hover,
+.postcode-form-box div input#sub:hover,
 a#geolocate_link:hover,
 .button:focus, 
 .green-btn:focus,
@@ -73,7 +73,7 @@ a#geolocate_link:hover,
 input[type=button]:focus,
 input[type=reset]:focus,
 input[type=submit]:focus :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
-#front-main #postcodeForm div input#sub:focus,
+.postcode-form-box div input#sub:focus,
 a#geolocate_link:focus {
     border-color: $merton-dark-green;
     background-color: $merton-dark-green;
@@ -104,10 +104,6 @@ textarea.form-control {
 a.skiplink:focus {
     color: black;
     background-color: #ffd302;
-}
-
-.container {
-    max-width: $container-max-width;
 }
 
 .merton-header {
@@ -168,24 +164,12 @@ p.form-error, div.form-error, input.form-error {
 }
 
 #front-main {
-    background-color: $merton-jade-j3;
     margin: 0;
     padding: 1em;
 
     h1 {
         font-weight: bold;
         color: $merton-headline;
-    }
-}
-
-#front-main {
-    #postcodeForm {
-        background: $merton-jade-j1;
-        color: #ffffff;
-
-        #pc-hint {
-            color: inherit;
-        }
     }
 }
 

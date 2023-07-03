@@ -68,12 +68,11 @@ body.twothirdswidthpage {
     }
 }
 
-.item-list--reports__item,
-#front-main #postcodeForm {
+.item-list--reports__item {
     background-color: $greenwich_light_grey;
 }
 
-#front-main #postcodeForm {
+.postcode-form-box {
     margin-top: 1em;
     div {
         input#sub {
