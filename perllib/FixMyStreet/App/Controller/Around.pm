@@ -370,6 +370,7 @@ sub nearby : Path {
         longitude => $c->get_param('longitude'),
         categories => [ $c->get_param('filter_category') || () ],
         states => $states,
+        bodies => $c->get_param('bodies'),
     };
     $c->cobrand->call_hook('around_nearby_filter', $params);
     $c->forward('/report/_nearby_json', [ $params ]);

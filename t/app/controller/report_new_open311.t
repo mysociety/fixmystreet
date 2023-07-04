@@ -21,7 +21,7 @@ my $contact1 = $mech->create_contact_ok(
     category => 'Street lighting',
     email => '100',
     extra => [ { description => 'Lamppost number', code => 'number', required => 'True' },
-               { description => 'Lamppost type', code => 'type', required => 'False', values =>
+               { description => 'Lamppost type', code => 'lamptype', required => 'False', values =>
                    { value => [ { name => ['Gas'], key => ['old'] }, { name => [ 'Yellow' ], key => [ 'modern' ] } ] }
                }
              ],
@@ -125,7 +125,7 @@ foreach my $test (
         },
         changes => {
             number => '',
-            type   => '',
+            lamptype   => '',
         },
         errors  => [
             'This information is required',
@@ -141,7 +141,7 @@ foreach my $test (
             username_register => 'testopen311@example.com',
             category => 'Street lighting',
             number => 27,
-            type => 'old',
+            lamptype => 'old',
         },
         extra => [
             {
@@ -150,7 +150,7 @@ foreach my $test (
                 description => 'Lamppost number',
             },
             {
-                name => 'type',
+                name => 'lamptype',
                 value => 'old',
                 description => 'Lamppost type',
             }
@@ -251,7 +251,7 @@ foreach my $test (
 
         if ( $test->{fields}->{category} eq 'Street lighting' ) {
             my $result = scraper {
-                process 'select#form_type option', 'option[]' => '@value';
+                process 'select#form_lamptype option', 'option[]' => '@value';
             }
             ->scrape( $mech->response );
 

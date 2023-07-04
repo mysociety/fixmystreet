@@ -675,49 +675,53 @@ sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
 sub _nearby_json :Private {
     my ($self, $c, $params) = @_;
 
-    # This is for the list template, this is a list on that page.
-    $c->stash->{page} = 'report';
+    if ($params->{fms_no_duplicate}) {
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body(encode_json({ 'pins' => ''}));
+    } else {
+        # This is for the list template, this is a list on that page.
+        $c->stash->{page} = 'report';
 
-    # distance in metres
-    my $dist;
-    if (my $mode = $c->get_param('mode')) {
-        $dist = $c->cobrand->nearby_distances->{$mode};
+        # distance in metres
+        my $dist;
+        if (my $mode = $c->get_param('mode')) {
+            $dist = $c->cobrand->nearby_distances->{$mode};
+        }
+        $dist ||= $c->get_param('distance') || '';
+        $dist = 1000 unless $dist =~ /^\d+$/;
+        $dist = 1000 if $dist > 1000;
+        $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
+
+        my $pin_size = $c->get_param('pin_size') || '';
+        $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
+
+        $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
+        $params->{limit} = 5;
+
+        my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
+
+        # Want to treat these as if they were on map
+        $nearby = [ map { $_->problem } @$nearby ];
+        my @pins = map {
+            my $p = $_->pin_data('around');
+            [ $p->{latitude}, $p->{longitude}, $p->{colour},
+            $p->{id}, $p->{title}, $pin_size, JSON->false
+            ]
+        } @$nearby;
+
+        my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
+        @pins = (@pins, @extra_pins) if @extra_pins;
+
+        my $list_html = $c->render_fragment(
+            'report/nearby.html',
+            { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
+        );
+        my $json = { pins => \@pins };
+        $json->{reports_list} = $list_html if $list_html;
+        my $body = encode_json($json);
+        $c->res->content_type('application/json; charset=utf-8');
+        $c->res->body($body);
     }
-    $dist ||= $c->get_param('distance') || '';
-    $dist = 1000 unless $dist =~ /^\d+$/;
-    $dist = 1000 if $dist > 1000;
-    $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
-
-    my $pin_size = $c->get_param('pin_size') || '';
-    $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
-
-    $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
-    $params->{limit} = 5;
-
-    my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
-
-    # Want to treat these as if they were on map
-    $nearby = [ map { $_->problem } @$nearby ];
-    my @pins = map {
-        my $p = $_->pin_data('around');
-        [ $p->{latitude}, $p->{longitude}, $p->{colour},
-          $p->{id}, $p->{title}, $pin_size, JSON->false
-        ]
-    } @$nearby;
-
-    my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
-    @pins = (@pins, @extra_pins) if @extra_pins;
-
-    my $list_html = $c->render_fragment(
-        'report/nearby.html',
-        { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
-    );
-
-    my $json = { pins => \@pins };
-    $json->{reports_list} = $list_html if $list_html;
-    my $body = encode_json($json);
-    $c->res->content_type('application/json; charset=utf-8');
-    $c->res->body($body);
 }
 
 

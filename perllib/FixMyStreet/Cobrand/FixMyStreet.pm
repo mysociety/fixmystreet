@@ -23,6 +23,30 @@ sub map_type {
     return $self->next::method();
 }
 
+sub suggest_duplicates { 1 };
+
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+
+    if (!$params->{bodies}) {
+        $params->{fms_no_duplicate} = 1;
+        return;
+    }
+    my $bodies = decode_json($params->{bodies});
+    my $bodies_with_duplicate_feature = FixMyStreet->config('COBRAND_FEATURES')->{suggest_duplicates} || {};
+    my @cobrands;
+    for my $cobrand (keys %$bodies_with_duplicate_feature) {
+        push @cobrands, FixMyStreet::Cobrand->get_class_for_moniker($cobrand)->new;
+    }
+    for my $council (@cobrands) {
+        if ($council->body && grep( { $_ eq $council->body->name || $_ eq $council->body->cobrand_name } @$bodies)) {
+            return;
+        }
+    };
+
+    $params->{fms_no_duplicate} = 1;
+}
+
 sub example_places {
     my $self = shift;
     return [ 'SY23 4AD', 'Abertawe' ] if $self->on_welsh_site;

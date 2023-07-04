@@ -33,6 +33,7 @@
             nearby_url = '/around/nearby';
             url_params.mode = 'suggestions'; // Only want to bother public with very nearby reports (default 250 metres)
             url_params.pin_size = 'normal';
+            url_params.bodies = JSON.stringify(fixmystreet.bodies);
         }
 
         if ($('html').hasClass('mobile')) {
