@@ -26,7 +26,7 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
-      cy.get('[id=subcategory_Licensing]').select('Skips');
+      cy.get('input[value=Skips]').click();
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
       cy.contains('Already been reported?');
