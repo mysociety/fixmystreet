@@ -175,6 +175,8 @@ my @keys_to_ignore = (
     'external_status_code', 'customer_reference',
     # Can be set by inspectors
     'traffic_information', 'detailed_information', 'duplicates', 'duplicate_of', 'order',
+    # WasteWorks
+    'location_photo',
 );
 my %keys_to_ignore = map { $_ => 1 } @keys_to_ignore;
 
@@ -186,6 +188,7 @@ sub compare_extra {
 
     my $both = { %$old, %$new };
     my @all_keys = grep { !$keys_to_ignore{$_} } sort keys %$both;
+    @all_keys = grep { !/^item_photo_/ } @all_keys;
     my @s;
     foreach (@all_keys) {
         $old->{$_} = join(', ', @{$old->{$_}}) if ref $old->{$_} eq 'ARRAY';
@@ -198,7 +201,30 @@ sub compare_extra {
             push @s, string_diff("$_ = $old->{$_}", "");
         }
     }
-    return FixMyStreet::Template::SafeString->new(join '; ', grep { $_ } @s);
+
+    # Added for bulky waste collection amendments, good to show everywhere? XXX
+    $old = $self->get_extra_fields;
+    my %old = map { $_->{name} => 1 } @$old;
+    $new = $other->get_extra_fields;
+    foreach (@$old) {
+        my $o = $other->get_extra_field_value($_->{name});
+        if ($_->{value} && $o) {
+            my $diff = string_diff($_->{value}, $o, single => 1);
+            push @s, "$_->{name} = $diff" if $diff;
+        } elsif ($_->{value}) {
+            push @s, "$_->{name} = " . string_diff($_->{value}, "");
+        } elsif ($o) {
+            push @s, "$_->{name} = " . string_diff("", $o);
+        }
+    }
+    foreach (grep { !$old{$_->{name}} } @$new) {
+        my $o = $self->get_extra_field_value($_->{name});
+        if (!$o) {
+            push @s, "$_->{name} = " . string_diff("", $_->{value});
+        }
+    }
+
+    return FixMyStreet::Template::SafeString->new(join '<br>', grep { $_ } @s);
 }
 
 sub extra_diff {

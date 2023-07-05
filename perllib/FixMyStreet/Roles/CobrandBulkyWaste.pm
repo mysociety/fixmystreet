@@ -159,8 +159,6 @@ sub bulky_total_cost {
     return $c->stash->{payment};
 }
 
-# Should only be a single open collection for a given property, but in case
-# there isn't, return the most recent
 sub find_pending_bulky_collections {
     my ( $self, $uprn ) = @_;
 
@@ -226,6 +224,36 @@ sub bulky_can_view_collection {
 
     # otherwise only the person who booked the collection can view
     return $c->user->id == $p->user_id;
+}
+
+sub bulky_can_amend_collection {
+    my ( $self, $p ) = @_;
+    my $c = $self->{c};
+    return unless $c->user_exists;
+    my $staff = $c->user->is_superuser || $c->user->belongs_to_body( $self->body->id);
+    return 1 if $self->bulky_collection_can_be_amended($p) && $staff;
+}
+
+sub bulky_collection_can_be_amended {
+    my ( $self, $collection, $ignore_external_id ) = @_;
+    return
+           $collection
+        && $collection->is_open
+        && ( $collection->external_id || $ignore_external_id )
+        && $self->within_bulky_amend_window($collection);
+}
+
+sub within_bulky_amend_window {
+    my ( $self, $collection ) = @_;
+    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $collection_date = $self->collection_date($collection);
+    return $self->_check_within_bulky_amend_window($now_dt, $collection_date);
+}
+
+sub _check_within_bulky_amend_window {
+    my ( $self, $now_dt, $collection_date ) = @_;
+    my $cutoff_dt = $self->_bulky_amendment_cutoff_date($collection_date);
+    return $now_dt < $cutoff_dt;
 }
 
 sub bulky_can_view_cancellation {
@@ -343,7 +371,7 @@ sub bulky_reminders {
     FixMyStreet::Map::set_map_class($self->moniker);
     # Can't see an easy way to find these apart from loop through them all.
     # Is only daily.
-    my $collections = FixMyStreet::DB->resultset('Problem')->search({
+    my $collections = $self->problems->search({
         category => 'Bulky collection',
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
