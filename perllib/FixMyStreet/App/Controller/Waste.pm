@@ -211,11 +211,6 @@ sub pay_cancel : Local : Args(2) {
 
     my $p = $c->stash->{report};
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
-    $saved_data->{name} = $p->name;
-    $saved_data->{email} = $p->user->email;
-    $saved_data->{phone} = $p->user->phone;
-    $saved_data->{resident} = 'Yes';
-
     my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
     $saved_data = $saved_data_field->deflate_json($saved_data);
     $c->set_param(saved_data => $saved_data);

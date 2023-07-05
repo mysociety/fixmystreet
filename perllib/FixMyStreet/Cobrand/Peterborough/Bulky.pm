@@ -61,14 +61,24 @@ sub bulky_cancellation_cutoff_time {
 
 =item * Bulky collections start at 6:45 each (working) day
 
-=back
-
 =cut
 
 sub bulky_collection_time {
     {   hours   => 6,
         minutes => 45,
     }
+}
+
+=item * Bulky collections can be amended up to 2pm before the day of collection
+
+=back
+
+=cut
+
+sub bulky_amendment_cutoff_time {
+    my $time = $_[0]->wasteworks_config->{amendment_cutoff_time} || "14:00";
+    my ($hours, $minutes) = split /:/, $time;
+    return { hours => $hours, minutes => $minutes };
 }
 
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
@@ -80,12 +90,13 @@ sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 # Check which bulky collections are pending, open
 sub find_available_bulky_slots {
     my ( $self, $property, $last_earlier_date_str ) = @_;
+    my $c = $self->{c};
 
     my $key
         = 'peterborough:bartec:available_bulky_slots:'
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{uprn};
-    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+    return $c->session->{$key} if $c->session->{$key};
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
@@ -102,6 +113,7 @@ sub find_available_bulky_slots {
     );
 
     my @available_slots;
+    my %seen_dates;
 
     my $last_workpack_date;
     for my $workpack (@$workpacks) {
@@ -139,12 +151,13 @@ sub find_available_bulky_slots {
         next if $workpack->{WorkPackDate} eq ( $last_workpack_date // '' );
 
         # Only include if max jobs not already reached
-        push @available_slots => {
-            workpack_id => $workpack->{id},
-            date        => $workpack->{WorkPackDate},
-            }
-            if $self->check_bulky_slot_available( $workpack->{WorkPackDate},
-            bartec => $bartec );
+        if ($self->check_bulky_slot_available($workpack->{WorkPackDate}, bartec => $bartec)) {
+            push @available_slots, {
+                workpack_id => $workpack->{id},
+                date        => $workpack->{WorkPackDate},
+            };
+            $seen_dates{$workpack->{WorkPackDate}} = 1;
+        }
 
         $last_workpack_date = $workpack->{WorkPackDate};
 
@@ -156,7 +169,14 @@ sub find_available_bulky_slots {
             && @available_slots == max_bulky_collection_dates();
     }
 
-    $self->{c}->session->{$key} = \@available_slots;
+    if (my $amend = $c->stash->{amending_booking}) {
+        my $date = $amend->get_extra_field_value('DATE');
+        if (!$seen_dates{$date}) {
+            unshift @available_slots, { date => $date };
+        }
+    }
+
+    $c->session->{$key} = \@available_slots;
 
     return \@available_slots;
 }
@@ -267,6 +287,16 @@ sub _bulky_refund_cutoff_date {
     return $cutoff_dt;
 }
 
+sub _bulky_amendment_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_amendment_cutoff_time();
+    my $cutoff_dt = $collection_date->clone->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    )->subtract( days => 1 );
+    return $cutoff_dt;
+}
+
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
@@ -303,14 +333,31 @@ sub waste_reconstruct_bulky_data {
         $saved_data->{"item_photo_" . ($id+0)} = $p->get_extra_metadata("item_photo_" . ($id+0));
     }
 
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->user->phone;
+    $saved_data->{resident} = 'Yes';
+
     return $saved_data;
+}
+
+sub waste_munge_bulky_amend {
+    my ($self, $p, $data) = @_;
+    $p->update_extra_field({ name => 'DATE', value => $data->{chosen_date} });
+    $p->update_extra_field({ name => 'CREW NOTES', value => $data->{location} });
+
+    my $max = $self->{c}->cobrand->bulky_items_maximum;
+    for (1..$max) {
+        my $two = sprintf("%02d", $_);
+        $p->update_extra_field({ name => "ITEM_$two", value => $data->{"item_$_"} || '' });
+    }
 }
 
 sub waste_munge_bulky_cancellation_data {
     my ( $self, $data ) = @_;
 
     my $c = $self->{c};
-    my $collection_report = $c->stash->{cancelling_booking};
+    my $collection_report = $c->stash->{cancelling_booking} || $c->stash->{amending_booking};
     my $original_sr_number = $collection_report->external_id =~ s/Bartec-//r;
 
     $data->{title}    = 'Bulky goods cancellation';

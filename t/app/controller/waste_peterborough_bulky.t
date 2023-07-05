@@ -104,6 +104,7 @@ FixMyStreet::override_config {
         waste => { peterborough => 1 },
         waste_features => { peterborough => {
             bulky_enabled => 1,
+            bulky_amend_enabled => 'staff',
             bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
         } },
         payment_gateway => { peterborough => {
@@ -655,6 +656,191 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         };
+    };
+
+    # Note 12th August is still stubbed out as unavailable from above
+    subtest 'Amending' => sub {
+
+        my $base_path = '/waste/PE1%203NA:100090215480';
+
+        subtest 'Before request sent to Bartec' => sub {
+            $report->external_id(undef);
+            $report->update;
+            $mech->get_ok($base_path);
+            $mech->content_lacks('Amend booking');
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            is $mech->uri->path, $base_path, 'Amend link redirects to bin days';
+        };
+
+        subtest 'After request sent to Bartec' => sub {
+            $report->external_id('Bartec-SR00100001');
+            $report->update;
+            $mech->get_ok($base_path);
+            $mech->content_contains('Amend booking');
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            is $mech->uri->path, "$base_path/bulky/amend/" . $report->id;
+        };
+
+        subtest 'User logged out' => sub {
+            $mech->log_out_ok;
+            $mech->get_ok($base_path);
+            $mech->content_lacks('Amend booking');
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            is $mech->uri->path, $base_path;
+        };
+
+        subtest 'Other user logged in' => sub {
+            $mech->log_in_ok( $user2->email );
+            $mech->get_ok($base_path);
+            $mech->content_lacks('Amend booking');
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            is $mech->uri->path, $base_path, 'Amend link redirects to bin days';
+        };
+
+        subtest 'Staff user logged in' => sub {
+            $mech->log_in_ok( $staff->email );
+            $mech->get_ok($base_path);
+            $mech->content_contains('Amend booking');
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            is $mech->uri->path, "$base_path/bulky/amend/" . $report->id;
+        };
+
+        # Only staff so stay logged in as staff
+        $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+        $mech->content_contains("Before you amend your booking");
+        $mech->submit_form_ok;
+
+        subtest 'Do not change anything' => sub {
+            $mech->content_contains('Choose date for collection');
+            $mech->content_contains('Available dates');
+            $mech->content_contains('26 August'); # Existing date should always be there
+            $mech->content_contains('05 August');
+            $mech->content_contains('19 August');
+            $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+            $mech->content_contains('Add items for collection');
+            $mech->content_like(
+                qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
+            $mech->content_contains('data-extra="{&quot;message&quot;:&quot;Please place in a clear bag&quot;}"');
+
+            $mech->submit_form_ok({
+                with_fields => {
+                    'item_1' => 'Amplifiers',
+                    'item_2' => 'High chairs',
+                    'item_3' => 'Wardrobes'
+                },
+            });
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Amplifiers/s);
+            $mech->content_contains('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
+            $mech->content_contains('High chairs');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
+            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('2 remaining slots available');
+            $mech->content_contains('£23.50');
+            $mech->content_contains("<dd>26 August</dd>");
+            $mech->content_contains("15:00 on 25 August 2022");
+            $mech->content_lacks('Cancel this booking');
+            $mech->content_lacks('Show upcoming bin days');
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+            $mech->content_contains('You have not changed anything');
+        };
+
+        # Start again
+        $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+        $mech->content_contains("Before you amend your booking");
+        $mech->submit_form_ok;
+        $mech->content_contains('Choose date for collection');
+        $mech->content_contains('Available dates');
+        $mech->content_contains('26 August'); # Existing date should always be there
+        $mech->content_contains('05 August');
+        $mech->content_contains('19 August');
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->content_contains('Add items for collection');
+        $mech->content_like(
+            qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
+        $mech->content_contains('data-extra="{&quot;message&quot;:&quot;Please place in a clear bag&quot;}"');
+
+        $mech->submit_form_ok({
+            with_fields => {
+                'item_1' => 'Amplifiers',
+                'item_photo_1_fileid' => '', # Photo removed
+                'item_2' => 'Wardrobes',
+                'item_3' => '',
+            },
+        });
+
+        $mech->content_contains('Booking Summary');
+        $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+        $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Amplifiers/s);
+        $mech->content_lacks('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
+        $mech->content_lacks('High chairs');
+        $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
+        $mech->content_contains('2 items requested for collection');
+        $mech->content_contains('3 remaining slots available');
+        $mech->content_contains('£23.50');
+        $mech->content_contains("<dd>26 August</dd>");
+        $mech->content_contains("15:00 on 25 August 2022");
+        $mech->content_lacks('Cancel this booking');
+        $mech->content_lacks('Show upcoming bin days');
+
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_contains('Collection booked');
+
+        subtest 'Confirmation page' => sub {
+
+            $report->discard_changes;
+            is $report->state, 'confirmed', 'Original report still open';
+            like $report->detail, qr/Previously submitted as/, 'Original report detail field updated';
+            is $report->category, 'Bulky collection';
+            is $report->title, 'Bulky goods collection';
+            is $report->get_extra_field_value('uprn'), 100090215480;
+            is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
+            is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
+            is $report->get_extra_field_value('ITEM_01'), 'Amplifiers';
+            is $report->get_extra_field_value('ITEM_02'), 'Wardrobes';
+            is $report->get_extra_field_value('ITEM_03'), '';
+            is $report->get_extra_field_value('ITEM_04'), '';
+            is $report->get_extra_field_value('ITEM_05'), '';
+            is $report->get_extra_field_value('property_id'), 'PE1 3NA:100090215480';
+            is $report->photo, '';
+        };
+
+        subtest 'cancellation report' => sub {
+            my $cancellation_report
+                = FixMyStreet::DB->resultset('Problem')->find(
+                    { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
+                );
+            is $cancellation_report->category, 'Bulky cancel',
+                'Correct category';
+            is $cancellation_report->title,
+                'Bulky goods cancellation',
+                'Correct title';
+            is $cancellation_report->get_extra_field_value(
+                'COMMENTS'),
+                'Cancellation at user request',
+                'Correct extra comment field';
+            is $cancellation_report->state, 'confirmed',
+                'Report confirmed';
+            like $cancellation_report->detail,
+                qr/Original report ID: SR00100001 \(WasteWorks ${\$report->id}\)/,
+                'Original report ID in detail field';
+            $cancellation_report->delete;
+        };
+
+        subtest 'Viewing original report summary after cancellation' => sub {
+            my $path = "/report/" . $report->id;
+            $mech->log_in_ok($user->email);
+            $mech->get_ok($path);
+            $mech->content_lacks('Updates');
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->log_in_ok($super->email);
+            $mech->get_ok($path);
+            $mech->content_contains('Updates');
+            $mech->content_contains('Previously submitted as');
+        };
+
     };
 
     subtest 'Bulky goods email confirmation and reminders' => sub {
