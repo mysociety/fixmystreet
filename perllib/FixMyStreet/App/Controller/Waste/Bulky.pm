@@ -6,6 +6,7 @@ BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
+use FixMyStreet::App::Form::Waste::Bulky::Amend;
 use FixMyStreet::App::Form::Waste::Bulky::Cancel;
 
 has feature => (
@@ -21,9 +22,7 @@ has index_template => (
 sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    if (  !$c->stash->{property}{show_bulky_waste}
-        || $c->stash->{property}{pending_bulky_collection} )
-    {
+    if ( !$c->stash->{property}{show_bulky_waste} ) {
         $c->detach('/waste/property_redirect');
     }
 }
@@ -43,11 +42,8 @@ sub bulky_item_options_method {
     return \@options;
 };
 
-sub index : PathPart('') : Chained('setup') : Args(0) {
+sub item_list : Private {
     my ($self, $c) = @_;
-
-    $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
 
     my $max_items = $c->cobrand->bulky_items_maximum;
     my $field_list = [];
@@ -99,7 +95,45 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
         },
     ];
     $c->stash->{field_list} = $field_list;
+}
 
+sub index : PathPart('') : Chained('setup') : Args(0) {
+    my ($self, $c) = @_;
+
+    if ($c->stash->{property}{pending_bulky_collection}) {
+        $c->detach('/waste/property_redirect');
+    }
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
+    $c->forward('item_list');
+    $c->forward('form');
+
+    if ( $c->stash->{form}->current_page->name eq 'intro' ) {
+        $c->cobrand->call_hook(clear_cached_lookups_bulky_slots => $c->stash->{property}{uprn});
+    }
+}
+
+sub amend : Chained('setup') : Args(1) {
+    my ($self, $c, $id) = @_;
+
+    $c->stash->{first_page} = 'intro';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Amend';
+
+    my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
+    $c->detach('/waste/property_redirect')
+        if !$c->cobrand->call_hook('bulky_can_amend_collection', $collection);
+
+    $c->stash->{amending_booking} = $collection;
+
+    if ( $c->req->method eq 'GET') { # XXX
+        my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($collection);
+        my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
+        $saved_data = $saved_data_field->deflate_json($saved_data);
+        $c->set_param(saved_data => $saved_data);
+    }
+
+    $c->forward('item_list');
     $c->forward('form');
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
@@ -121,16 +155,26 @@ sub view : Private {
 
     $c->stash->{template} = 'waste/bulky/summary.html';
 
+    # And include moderation changes...
+    my $user_can_moderate = $c->user_exists && $c->user->can_moderate($p);
+    my @combined;
+    if ($user_can_moderate) {
+        my @history = $p->moderation_history;
+        my $last_history = $p;
+        foreach my $history (@history) {
+            push @combined, [ $history->created, {
+                id => 'm' . $history->id,
+                type => 'moderation',
+                last => $last_history,
+                entry => $history,
+            } ];
+            $last_history = $history;
+        }
+    }
+    @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;
+    $c->stash->{updates} = \@combined;
 
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
-    $saved_data->{name} = $p->name;
-    $saved_data->{email} = $p->user->email;
-    $saved_data->{phone} = $p->user->phone;
-    $saved_data->{resident} = 'Yes';
-
-    my $items_list = $c->cobrand->call_hook('bulky_items_master_list');
-    my $per_item = $c->cobrand->bulky_per_item_costs;
-
     $c->stash->{form} = {
         items_extra => $c->cobrand->call_hook('bulky_items_extra'),
         saved_data  => $saved_data,
@@ -190,20 +234,82 @@ sub process_bulky_data : Private {
     return 1;
 }
 
-sub process_bulky_cancellation : Private {
-    my ( $self, $c, $form ) = @_;
+sub process_bulky_amend : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    $c->stash->{override_confirmation_template} = 'waste/bulky/confirmation.html';
+
+    my $p = $c->stash->{amending_booking};
+    $p->create_related( moderation_original_data => {
+        title => $p->title,
+        detail => $p->detail,
+        photo => $p->photo,
+        anonymous => $p->anonymous,
+        category => $p->category,
+        extra => $p->extra,
+    });
+
+    $p->detail($p->detail . " | Previously submitted as " . $p->external_id);
+
+    # TODO Move some of below to cobrand
+    $p->update_extra_field({ name => 'DATE', value => $data->{chosen_date} });
+    $p->update_extra_field({ name => 'CREW NOTES', value => $data->{location} });
+    if ($data->{location_photo}) {
+        $p->set_extra_metadata(location_photo => $data->{location_photo})
+    } else {
+        $p->unset_extra_metadata('location_photo');
+    }
+
+    my $max = $c->cobrand->bulky_items_maximum;
+    for (1..$max) {
+        my $two = sprintf("%02d", $_);
+        $p->update_extra_field({ name => "ITEM_$two", value => $data->{"item_$_"} || '' });
+        if ($data->{"item_photo_$_"}) {
+            $p->set_extra_metadata("item_photo_$_" => $data->{"item_photo_$_"})
+        } else {
+            $p->unset_extra_metadata("item_photo_$_");
+        }
+    }
+
+    my @bulky_photo_data;
+    for (grep { /^(item|location)_photo(_\d+)?$/ } keys %$data) {
+        push @bulky_photo_data, $data->{$_} if $data->{$_};
+    }
+    $p->photo( join(',', @bulky_photo_data) );
+
+    $c->forward('add_cancellation_report');
+
+    $p->resend;
+    $p->external_id(undef);
+    $p->update;
+
+    # Need to reset stashed report to the amended one, not the new cancellation one
+    $c->stash->{report} = $p;
+
+    return 1;
+}
+
+sub add_cancellation_report : Private {
+    my ($self, $c) = @_;
 
     my $collection_report = $c->stash->{property}{pending_bulky_collection};
     my %data = (
         detail => $collection_report->detail,
         name   => $collection_report->name,
     );
-
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
-
     $c->forward( '/waste/add_report', [ \%data ] ) or return;
+    return 1;
+}
+
+sub process_bulky_cancellation : Private {
+    my ( $self, $c, $form ) = @_;
+
+    $c->forward('add_cancellation_report') or return;
 
     # Mark original report as closed
+    my $collection_report = $c->stash->{property}{pending_bulky_collection};
     $collection_report->state('closed');
     $collection_report->detail(
         $collection_report->detail . " | Cancelled at user request", );
