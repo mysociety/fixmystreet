@@ -552,8 +552,9 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
-    $premises{$uprn}{pending_bulky_collection}
-        = $self->find_pending_bulky_collection( $premises{$uprn} );
+    my @pending = $self->find_pending_bulky_collections($uprn)->all;
+    $self->{c}->stash->{pending_bulky_collections}
+        = @pending ? \@pending : undef;
 
     return $premises{$uprn};
 }

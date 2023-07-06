@@ -162,14 +162,6 @@ sub find_pending_bulky_collections {
     });
 }
 
-# Originally was only a single open collection for a given property,
-# so this returns the most recent
-sub find_pending_bulky_collection {
-    my ( $self, $property ) = @_;
-
-    return $self->find_pending_bulky_collections($property->{uprn})->first;
-}
-
 sub _bulky_collection_window {
     my ($self, $last_earlier_date_str) = @_;
     my $fmt = '%F';
