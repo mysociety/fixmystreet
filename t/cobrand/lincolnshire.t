@@ -18,6 +18,7 @@ my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshir
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;
 my $user_email = 'john.smith@example.com';
+my $user2 = $mech->create_user_ok('john.smith.2@example.com');
 
 my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
 my $update = Open311::GetServiceRequests->new(
@@ -79,6 +80,25 @@ FixMyStreet::override_config {
         is $p->name, $lincs_user->name, 'Name set on problem';
         is $p->user->name, $lincs_user->name, 'correct user associated with problem';
         is $p->user->email, $lincs_user->email, 'correct email associated with problem';
+
+        $p->delete;
+    };
+
+    subtest "is okay if account exists with no name" => sub {
+        my $requests_xml = xml_reports({ id => 456, name => 'John Smith', email => $user2->email });
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        $update->create_problems( $o, $body );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-456' },
+            { prefetch => 'user' },
+        )->first;
+
+        $user2->discard_changes;
+        ok $p, 'Found problem';
+        is $p->name, $user2->name, 'Name set on problem';
+        is $p->user->name, $user2->name, 'correct user associated with problem';
+        is $p->user->email, $user2->email, 'correct email associated with problem';
 
         $p->delete;
     };

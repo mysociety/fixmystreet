@@ -231,6 +231,7 @@ sub open311_get_user {
         },
         { key => 'users_email_verified_key' },
     );
+    $user->update({ name => $request->{contact_name} }) if !$user->name;
 
     return $user;
 }
