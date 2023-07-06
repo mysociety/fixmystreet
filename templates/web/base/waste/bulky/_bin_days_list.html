@@ -79,13 +79,11 @@
     <a class="btn btn-primary govuk-!-margin-bottom-2" href="/auth?r=waste/[% property.id %]">View existing bookings</a>
     <!-- END #07 -->
   [% END %]
-  [% UNLESS pending_bulky_collections %]
-    <!-- #06 Should NOT be displayed when: there is a signed user with a booking request -->
+  [% IF waste_features.bulky_multiple_bookings OR NOT pending_bulky_collections %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Book a collection" value="Book a collection">
     </form>
-    <!-- END #06 -->
   [% END %]
 </div>
 

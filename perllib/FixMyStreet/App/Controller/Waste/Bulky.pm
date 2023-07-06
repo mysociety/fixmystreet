@@ -100,8 +100,8 @@ sub item_list : Private {
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
 
-    # TODO Remove when allowing more than one booking
-    if ($c->stash->{pending_bulky_collections}) {
+    my $cfg = $c->cobrand->feature('waste_features');
+    if ($c->stash->{pending_bulky_collections} && !$cfg->{bulky_multiple_bookings}) {
         $c->detach('/waste/property_redirect');
     }
 

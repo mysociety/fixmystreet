@@ -105,6 +105,7 @@ FixMyStreet::override_config {
         waste_features => { peterborough => {
             bulky_enabled => 1,
             bulky_amend_enabled => 'staff',
+            bulky_multiple_bookings => 1,
             bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
         } },
         payment_gateway => { peterborough => {
@@ -885,7 +886,6 @@ FixMyStreet::override_config {
         };
 
         $report->discard_changes;
-        $report->update({ external_id => undef }); # For cancellation
     };
 
     subtest '?type=bulky redirect after bulky booking made' => sub {
@@ -896,11 +896,71 @@ FixMyStreet::override_config {
             { with_fields => { postcode => 'PE1 3NA' } } );
         $mech->submit_form_ok(
             { with_fields => { address => 'PE1 3NA:100090215480' } } );
-        is $mech->uri->path, '/waste/PE1%203NA:100090215480', 'Redirected to waste base page';
-        $mech->content_lacks('None booked');
+        is $mech->uri->path, '/waste/PE1%203NA:100090215480/bulky', 'Redirected to waste base page';
+    };
+
+    # Still logged in as staff
+    my $report2;
+    subtest 'Make a second booking' => sub {
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
+
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('05 August');
+        $mech->content_lacks('12 August'); # Still full from above
+        $mech->content_contains('19 August'); # Max of 2 dates fetched
+        # Test going later
+        $mech->form_number(0)->action($mech->form_number(0)->action . '?later_dates=1');
+        $mech->submit_form_ok({ with_fields => { show_later_dates => 1 } });
+        $mech->content_like(qr/name="chosen_date" value="2022-08-26T00:00:00"\s+disabled/, 'Already booked date disabled');
+        $mech->content_contains('02 September');
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-09-02T00:00:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Chest of drawers' } });
+        $mech->content_contains('Request a bulky waste collection');
+        $mech->content_lacks('Your bulky waste collection');
+        $mech->content_contains('Booking Summary');
+        $mech->content_contains('Please read carefully all the details');
+        $mech->content_contains('You will be redirected to the council’s card payments provider.');
+        $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Chest of drawers/s);
+        $mech->content_contains('1 item requested for collection');
+        $mech->content_contains('4 remaining slots available');
+        $mech->content_contains('£23.50');
+        $mech->content_contains("<dd>02 September</dd>");
+        $mech->content_contains("15:00 on 01 September 2022");
+        $mech->content_lacks('Cancel this booking');
+        $mech->content_lacks('Show upcoming bin days');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        # Staff method of payment here
+        $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
+        $mech->content_contains('Collection booked');
+
+        $report2 = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report2->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
+        is $report2->category, 'Bulky collection';
+        is $report2->title, 'Bulky goods collection';
+        is $report2->get_extra_field_value('uprn'), 100090215480;
+        is $report2->get_extra_field_value('DATE'), '2022-09-02T00:00:00';
+        is $report2->get_extra_field_value('CHARGEABLE'), 'CHARGED';
+        is $report2->get_extra_field_value('ITEM_01'), 'Chest of drawers';
+        is $report2->get_extra_field_value('property_id'), 'PE1 3NA:100090215480';
+    };
+
+    subtest 'Amending second booking to date of first' => sub {
+        $report2->update({ external_id => '123' });
+        set_fixed_time($good_date);
+        $mech->get_ok('/waste/PE1%203NA:100090215480/bulky/amend/' . $report2->id);
+        $mech->submit_form_ok;
+        $mech->form_number(0)->action($mech->form_number(0)->action . '?later_dates=1');
+        $mech->submit_form_ok({ with_fields => { show_later_dates => 1 } });
+        $mech->content_like(qr/name="chosen_date" value="2022-08-26T00:00:00"\s+disabled/, 'Already booked date disabled');
+        $mech->content_like(qr/name="chosen_date" value="2022-09-02T00:00:00"\s+checked\s+>/, 'Existing booked date not disabled');
+        $report2->update({ external_id => undef });
     };
 
     subtest 'Cancellation' => sub {
+        $report->update({ external_id => undef }); # For cancellation
         set_fixed_time($good_date);
         my $base_path = '/waste/PE1%203NA:100090215480';
 
@@ -972,7 +1032,7 @@ FixMyStreet::override_config {
 
         set_fixed_time($bad_date);
         $mech->get_ok($base_path);
-        $mech->content_lacks( 'Cancel booking',
+        $mech->content_lacks( 'bulky/cancel/' . $report->id . '">Cancel booking',
             'Cancel option unavailable if outside cancellation window' );
 
         set_fixed_time($no_refund_date);
