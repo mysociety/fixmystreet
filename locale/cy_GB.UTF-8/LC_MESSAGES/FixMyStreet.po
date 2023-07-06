@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2023-06-22 17:55+0100\n"
-"PO-Revision-Date: 2023-06-22 10:10+0100\n"
+"PO-Revision-Date: 2023-07-05 11:18+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>, 2019\n"
 "Language-Team: Welsh (https://www.transifex.com/mysociety/teams/12067/cy/)\n"
 "Language: cy\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
-"X-Generator: Poedit 3.3.1\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #: templates/web/base/admin/bodies/form.html:95
 msgid " -- Select a cobrand -- "
@@ -3753,11 +3753,11 @@ msgstr "Wedi'i bweru gan <a class=\"platform-logo\" href=\"https://fixmystreet.o
 
 #: templates/web/base/admin/bodies/contact-form.html:145
 msgid "Prefer this contact if multiple bodies have the same contact"
-msgstr "Mae'r cyswllt hwn yn well os oes gan sawl corff yr un cyswllt"
+msgstr "Rhoi blaenoriaeth i'r cyswllt hwn os oes gan sawl corff yr un cyswllt"
 
 #: templates/web/base/maps/_map_instructions.html:19
 msgid "Press space again to adjust the location"
-msgstr "Os gwelwch yn dda gwasgwch 'Bylchu' eto er mwyn newid y lleoliad"
+msgstr "Gwasgwch 'Bylchu' eto er mwyn newid y lleoliad"
 
 #: templates/web/base/admin/bodies/contact-form.html:67
 msgid "Prevent new reports from using this category, <em>and</em> also remove it from map filters."
@@ -3850,11 +3850,11 @@ msgstr "Anfonwyd y broblem %s at y cyngor"
 #: templates/web/base/admin/stats/state.html:12
 #: templates/web/zurich/admin/index.html:9
 msgid "Problem breakdown by state"
-msgstr "Trosolwg o gyflwr y problem"
+msgstr "Trosolwg problemau fesul cyflwr"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:300
 msgid "Problem marked as open."
-msgstr "Problem wedi'i farcio ar agor."
+msgstr "Problem wedi'i farcio’n agor."
 
 #: templates/web/base/admin/stats/questionnaire.html:21
 msgid "Problem state change based on survey results"
@@ -3884,26 +3884,26 @@ msgstr "Problemau wedi'u trwsio a adroddwyd i FixMyStreet yn ddiweddar"
 
 #: templates/web/fixmystreet.com/reports/summary.html:69
 msgid "Problems reported in area:"
-msgstr "Problemau a adroddwyd yn yr ardal:"
+msgstr "Problemau a adroddwyd yn ardal:"
 
 #: templates/web/base/alert/_list.html:34
 msgid "Problems within %.1fkm of %s"
-msgstr "Problemau o fewn %.1fkm o  %s"
+msgstr "Problemau o fewn %.1fkm o %s"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:960
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:141
 #: perllib/FixMyStreet/Cobrand/UK.pm:233 perllib/FixMyStreet/Cobrand/UK.pm:278
 #: perllib/FixMyStreet/Cobrand/UK.pm:290
 msgid "Problems within %s"
-msgstr "Problemau yn %s"
+msgstr "Problemau o fewn %s"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:247
 msgid "Problems within %s ward"
-msgstr "Problemau yn ward %s"
+msgstr "Problemau o fewn ward %s"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:284 perllib/FixMyStreet/Cobrand/UK.pm:296
 msgid "Problems within %s ward, %s"
-msgstr "Problemau o fewn ward %s,  %s"
+msgstr "Problemau o fewn ward %s, %s"
 
 #. ("First %s is the body name, second %s the site name")
 #: templates/web/base/admin/triage/index.html:0
@@ -3911,12 +3911,12 @@ msgstr "Problemau o fewn ward %s,  %s"
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:48
 msgid "Problems within %s, %s"
-msgstr "Problemau o fewn %s. %s"
+msgstr "Problemau o fewn %s, %s"
 
 #: templates/web/base/admin/reports/_edit_main.html:52
 #: templates/web/base/admin/reports/_edit_waste.html:14
 msgid "Property address:"
-msgstr "Cyfeiriad yr eiddo:"
+msgstr "Cyfeiriad:"
 
 #: templates/web/base/admin/extra-metadata-item.html:106
 msgid "Protect from Open311 changes"
@@ -4016,13 +4016,13 @@ msgstr "Ffrwd RSS %s, o fewn ward %s"
 
 #: templates/web/base/alert/_list.html:44
 msgid "RSS feed of nearby problems"
-msgstr "Ffrwd RSS o broblemau gerllaw"
+msgstr "Ffrwd RSS o broblemau cyfagos"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:961
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:140
 #: perllib/FixMyStreet/Cobrand/UK.pm:240
 msgid "RSS feed of problems within %s"
-msgstr "Ffrwd RSS  o broblemau yn %s"
+msgstr "Ffrwd RSS o broblemau o fewn %s"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:246
 msgid "RSS feed of problems within %s ward"
@@ -4060,11 +4060,11 @@ msgstr "Derbyn e-bost pan fydd diweddariadau i'r broblem hon."
 
 #: templates/web/base/my/my.html:84
 msgid "Receive local alert notifications by"
-msgstr "Derbyn hysbysiadau a diweddariadau lleol trwy"
+msgstr "Derbyn hysbysiadau am ddiweddariadau lleol trwy"
 
 #: templates/web/base/my/my.html:66
 msgid "Receive update notifications by"
-msgstr "Derbyn hysbysiadau a diweddariadau trwy"
+msgstr "Derbyn hysbysiadau am ddiweddariadau trwy"
 
 #. ("%s is the site name")
 #: templates/web/base/around/display_location.html:0
@@ -4093,7 +4093,7 @@ msgstr "Cyrff a wrthodwyd"
 
 #: templates/web/base/report/inspect/information.html:67
 msgid "Reject report"
-msgstr "Gwrthod yr adroddiad"
+msgstr "Gwrthod adroddiad"
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
@@ -4106,7 +4106,7 @@ msgstr "Dileu manylion y cyfrif"
 
 #: templates/web/base/admin/extra-metadata-item.html:23
 msgid "Remove field"
-msgstr "Dileu ardal"
+msgstr "Dileu maes"
 
 #: templates/web/base/report/_item.html:20
 #: templates/web/base/report/_item.html:23
@@ -4137,11 +4137,11 @@ msgstr "Dileu hawliau staff"
 
 #: templates/web/base/admin/sitemessage/_ooh.html:73
 msgid "Remove time period"
-msgstr "Dileu cyfnod o amser"
+msgstr "Dileu cyfnod amser"
 
 #: templates/web/base/auth/generate_token.html:75
 msgid "Replace token"
-msgstr "Amnewid y tocyn"
+msgstr "Amnewid tocyn"
 
 #: templates/web/zurich/admin/reports/edit.html:233
 msgid "Reply to user:"
@@ -4306,7 +4306,7 @@ msgstr "Nid yw adroddiadau yn cael eu hanfon at %s ar hyn o bryd."
 #: perllib/FixMyStreet/Cobrand/Oxfordshire.pm:24
 #: perllib/FixMyStreet/Roles/ConfirmValidation.pm:38
 msgid "Reports are limited to %s characters in length. Please shorten your report"
-msgstr "Mae adroddiadau yn cael eu cyfyngu hyd at hyd o %s.  Crynhowch eich adroddiad os gwelwch yn dda"
+msgstr "Mae adroddiadau yn cael eu cyfyngu i hyd o %s. Crynhowch eich adroddiad os gwelwch yn dda"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:15
@@ -4315,7 +4315,7 @@ msgstr "Mae adroddiadau yn cael eu cyfyngu i {0} cymeriad. Crynhowch eich adrodd
 
 #: templates/web/zurich/admin/index-sdm.html:7
 msgid "Reports awaiting approval"
-msgstr "Adroddiadau'n aros am gymeradwyaeth"
+msgstr "Adroddiadau sy'n aros am gymeradwyaeth"
 
 #: templates/web/base/alert/_list.html:64
 msgid "Reports by destination"
@@ -4323,7 +4323,7 @@ msgstr "Adroddiadau fesul cyrchfan"
 
 #: templates/web/base/alert/_list.html:18
 msgid "Reports near %s are sent to different councils, depending on the type of problem."
-msgstr "Mae adroddiadau ger %s yn cael eu hanfon at wahanol gynghorau, yn dibynnu ar y math o broblem."
+msgstr "Mae adroddiadau yn agos i %s yn cael eu hanfon at wahanol gynghorau, yn ddibynnol ar y math o broblem."
 
 #: templates/web/zurich/admin/index-sdm.html:10
 msgid "Reports published"
@@ -4344,11 +4344,11 @@ msgstr "Adroddiadau wedi'u danfon at %s, o fewn ward %s"
 
 #: templates/web/fixmystreet.com/reports/summary.html:211
 msgid "Reports to %s are currently sent directly into backend services."
-msgstr "Ar hyn o bryd mae adroddiadau at %s yn cael eu hanfon yn uniongyrchol i'r gwasanaethau tu-cefn."
+msgstr "Ar hyn o bryd mae adroddiadau at %s yn cael eu hanfon yn uniongyrchol at y gwasanaethau tu-cefn."
 
 #: templates/web/base/admin/index.html:55
 msgid "Reports waiting to be sent"
-msgstr "Adroddiadau yn aros i gael eu danfon"
+msgstr "Adroddiadau sy'n aros i gael eu danfon"
 
 #: templates/web/base/report/new/after_photo.html:3
 msgid "Reports with photos in them tend to get fixed more quickly"
@@ -4362,7 +4362,7 @@ msgstr "Ailosodwch pe bai angen, yna gwasgwch Parhau"
 
 #: templates/web/base/maps/_map_instructions.html:30
 msgid "Reposition<br>report here"
-msgstr "Ailosod<br>yr adroddiad yma"
+msgstr "Ailosod yr adroddiad <br> yma"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:40
 msgid "Request access"
@@ -4383,7 +4383,7 @@ msgstr "Ailosod"
 
 #: templates/web/base/admin/responsepriorities/index.html:1
 msgid "Response Priorities"
-msgstr "Blaenoriaeth Ymateb"
+msgstr "Blaenoriaethau Ymateb"
 
 #: templates/web/base/admin/responsepriorities/edit.html:1
 msgid "Response Priority for %s"
@@ -4391,7 +4391,7 @@ msgstr "Blaenoriaeth Ymateb ar gyfer %s"
 
 #: templates/web/base/admin/templates/edit.html:1
 msgid "Response Template for %s"
-msgstr "Blaenoriaeth Ymateb ar gyfer %s"
+msgstr "Templed Ymateb ar gyfer %s"
 
 #: templates/web/base/admin/templates/index.html:1
 msgid "Response Templates"
@@ -4407,11 +4407,11 @@ msgstr "Templedau Ymateb ar gyfer %s"
 
 #: templates/web/base/report/photo.html:46
 msgid "Restore photo"
-msgstr "Adfer y llun"
+msgstr "Adfer y ffoto"
 
 #: templates/web/base/report/update.html:40
 msgid "Revert to original"
-msgstr "Adfer i'r gwreiddiol"
+msgstr "Adfer y gwreiddiol"
 
 #: templates/web/base/report/_main.html:98
 msgid "Revert to original text"
@@ -4424,7 +4424,7 @@ msgstr "Dychwelyd i'r teitl gwreiddiol"
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:59
 msgid "Right place?"
-msgstr "Y lle cywir?"
+msgstr "Lle cywir?"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:66
@@ -4434,11 +4434,11 @@ msgstr "Map ffordd"
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:150
 msgid "Road operator for this named road (derived from road reference number and type): %s"
-msgstr "Gweithredwr ffordd ar gyfer y ffordd hon a enwir (yn deillio o gyfeirnod a math y ffordd): %s"
+msgstr "Rheolwr y ffordd hon (yn deillio o rif cyfeirnod a’r math o ffordd): %s"
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:147
 msgid "Road operator for this named road (from OpenStreetMap): %s"
-msgstr "Gweithredwr ffordd ar gyfer y ffordd hon a enwir (o OpenStreetMap): %s"
+msgstr "Rheolwr y ffordd gydnabyddedig hon (o OpenStreetMap): %s"
 
 #: templates/web/base/admin/roles/index.html:5
 msgid "Role"
@@ -4479,7 +4479,7 @@ msgstr "Cylchdroi i'r dde"
 
 #: templates/web/zurich/admin/reports/edit.html:98
 msgid "Rotating this photo will discard unsaved changes to the report."
-msgstr "Bydd cylchdroi'r llun hwn yn cael gwared ar newidiadau i'r adroddiad sydd heb eu harbed."
+msgstr "Bydd cylchdroi'r ffoto yma yn cael gwared ar newidiadau i'r adroddiad sydd heb eu harbed."
 
 #: templates/web/base/admin/triage/_inspect.html:84
 #: templates/web/base/report/_inspect.html:80
@@ -4500,7 +4500,7 @@ msgstr "Arbed a chau fel dyblygiad"
 #: templates/web/zurich/admin/bodies/contact-form.html:51
 #: templates/web/zurich/admin/templates/edit.html:32
 msgid "Save changes"
-msgstr "Cadw'r newidiadau"
+msgstr "Arbed newidiadau"
 
 #: templates/web/base/offline/fallback.html:57
 msgid "Save draft"
@@ -4508,7 +4508,7 @@ msgstr "Arbed drafft"
 
 #: templates/web/base/admin/reportextrafields/edit.html:64
 msgid "Save new fields"
-msgstr "Arbed gydag ardaloedd newydd"
+msgstr "Arbed meysydd newydd"
 
 #: templates/web/base/report/inspect/public_update.html:7
 msgid "Save with a public update"
@@ -4573,7 +4573,7 @@ msgstr "Diogelwch"
 #: templates/web/base/report/form/private_details.html:14
 #: templates/web/base/report/new/councils_text_private.html:8
 msgid "See our privacy policy"
-msgstr "Gwelwch ein polisi preifatrwydd"
+msgstr "Gweler ein polisi preifatrwydd"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:811
 msgid "See user detail for reports created as the council"
@@ -4618,7 +4618,7 @@ msgstr "Dewis nifer o wardiau?"
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:116
 msgid "Select report status"
-msgstr "Dewus statws adroddiad"
+msgstr "Dewis statws adroddiad"
 
 #: templates/web/base/admin/category-checkboxes.html:4
 msgid "Select:"
@@ -4632,7 +4632,7 @@ msgstr "Anfon"
 #: templates/web/base/admin/reports/_edit_main.html:68
 #: templates/web/base/admin/reports/_edit_waste.html:30
 msgid "Send Fail Count:"
-msgstr "Wedi methu anfon sawl gwaith:"
+msgstr "Y nifer o ffaeleddau anfon:"
 
 #: templates/web/fixmystreet.com/contact/blurb.html:18
 msgid "Send a message to FixMyStreet’s technical support team"
@@ -4640,11 +4640,11 @@ msgstr "Anfon neges at dîm cefnogaeth technegol FixMyStreet"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:121
 msgid "Send extended Open311 statuses with service request updates"
-msgstr "Anfon mwy nag un statws Open311 estynedig gyda diweddariadau cais am wasanaeth"
+msgstr "Anfon statysau Open311 estynedig gyda diweddariadau cais am wasanaeth"
 
 #: templates/web/base/admin/users/_form_details.html:17
 msgid "Send login email"
-msgstr "Danfon e-bost mewngofnodi"
+msgstr "Anfon e-bost mewngofnodi"
 
 #: templates/web/base/auth/_username_error.html:1
 #: templates/web/base/auth/_username_error.html:5
@@ -4713,7 +4713,7 @@ msgstr "Ar y rhestr fer"
 #: templates/web/base/report/_item.html:26
 #: templates/web/base/report/_main.html:144
 msgid "Shortlisted by %s"
-msgstr "Nodwyd ar y rhestr fer gan %s am %s"
+msgstr "Nodwyd ar y rhestr fer gan %s"
 
 #: templates/web/base/questionnaire/index.html:60
 msgid "Show all updates"
@@ -4734,7 +4734,7 @@ msgstr "Dangos rhai hŷn"
 #: templates/web/base/admin/triage/_list-filters.html:44
 #: templates/web/base/reports/_list-filters.html:45
 msgid "Show older reports"
-msgstr "Dangos droddiadau hŷn"
+msgstr "Dangos adroddiadau hŷn"
 
 #: templates/web/base/report/photo.html:15
 msgid "Show photo"
@@ -4765,7 +4765,7 @@ msgstr "Mewngofnodi"
 
 #: templates/web/base/auth/create.html:26
 msgid "Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated."
-msgstr "Mewngofnodwch trwy e-bost yn lle hynny, gan ddarparu cyfrinair newydd. Pan fyddwch yn clicio ar y ddolen yn eich e-bost, bydd eich cyfrinair yn cael ei ddiweddaru."
+msgstr "Yn hytrach, mewngofnodwch trwy e-bost, gan ddarparu cyfrinair newydd. Pan fyddwch yn clicio ar y ddolen yn eich e-bost, bydd eich cyfrinair yn cael ei ddiweddaru."
 
 #: templates/web/base/auth/create.html:24
 msgid "Sign in by email or text, providing a new password. When you click the link in your email or enter the SMS authentication code, your password will be updated."
@@ -4806,7 +4806,9 @@ msgstr "Gall rhai categorïau ofyn am wybodaeth bellach."
 msgid ""
 "Some endpoints require an <strong>API key</strong> to indicate that the reports are being\n"
 "          sent from your FixMyStreet installation."
-msgstr "Mae rhai diweddbwyntiau angen <strong>allwedd rhyngwyneb rhaglennu cymwysiadau</strong> i nodi bod yr adroddiadau'n cael eu hanfon o'ch gosodiad FixMyStreet."
+msgstr ""
+"Mae rhai diweddbwyntiau angen <strong>allwedd rhyngwyneb rhaglennu cymwysiadau</strong> i nodi bod yr adroddiadau'n cael\n"
+"          eu hanfon o'ch gosodiad FixMyStreet."
 
 #: templates/web/base/alert/index.html:22
 msgid "Some photos of recent reports"
@@ -4935,7 +4937,7 @@ msgstr "Cyflwr"
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:116
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:117
 msgid "State and external status code cannot be used simultaneously."
-msgstr "Ni ellir defnyddio cod statws y wladwriaeth ac allanol ar yr un pryd."
+msgstr "Ni ellir defnyddio côd statws y cyflwr a'r un allanol ar yr un pryd."
 
 #: perllib/FixMyStreet/Script/Alerts.pm:132
 #: templates/web/base/report/_update_state.html:7
@@ -4980,7 +4982,7 @@ msgstr "Yn parhau i fod ar agor, trwy holiadur"
 #: templates/web/zurich/admin/report_edit-sdm.html:27
 #: templates/web/zurich/admin/reports/edit.html:28
 msgid "Street View"
-msgstr "Golgyfa Stryd"
+msgstr "Golygfa Stryd"
 
 #: templates/web/base/report/new/subcategories.html:5
 msgid "Subcategory"
@@ -5091,12 +5093,12 @@ msgstr "Crynodeb"
 
 #: templates/web/base/admin/bodies/contact-form.html:77
 msgid "Summary hint text"
-msgstr "Testun awgrymu'r crynodeb"
+msgstr "Testun awgrymu crynodeb"
 
 #: templates/web/zurich/reports/index.html:0
 #: templates/web/zurich/reports/index.html:6
 msgid "Summary reports"
-msgstr "Adroddiadau"
+msgstr "Adroddiadau cryno"
 
 #: templates/web/base/admin/stats/index.html:15
 #: templates/web/base/dashboard/index.html:21
@@ -5119,7 +5121,7 @@ msgstr "Mae gan uwch-ddefnyddwyr ganiatâd i gyflawni'r <strong>holl gamau gweit
 #: templates/web/base/admin/stats/index.html:12
 #: templates/web/base/admin/stats/questionnaire.html:1
 msgid "Survey Results"
-msgstr "Canlyniadau arolwg"
+msgstr "Canlyniadau’r Arolwg"
 
 #: templates/web/base/report/form/private_details.html:2
 #: templates/web/base/report/form/user.html:9
@@ -5133,7 +5135,7 @@ msgstr "Templed &laquo;%s&raquo;"
 #: templates/web/base/admin/list_updates.html:45
 #: templates/web/base/admin/update_edit.html:17
 msgid "Template email response:"
-msgstr "Ymateb e-bost templed:"
+msgstr "Templed ymateb e-bost:"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:741
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:395
@@ -5152,19 +5154,19 @@ msgstr "Testun"
 
 #: templates/web/base/tokens/confirm_alert.html:11
 msgid "Text alert created"
-msgstr "Rhybudd testun wedi'i greu"
+msgstr "Hysbysiad testun wedi'i greu"
 
 #: templates/web/base/tokens/confirm_alert.html:18
 msgid "Text alert deleted"
-msgstr "Rhybudd testun wedi'i ddileu"
+msgstr "Hysbysiad testun wedi'i ddileu"
 
 #: templates/web/base/admin/extra-metadata-item.html:69
 msgid "Text field"
-msgstr "Maes testun"
+msgstr "Maes y testun"
 
 #: templates/web/base/admin/templates/edit.html:47
 msgid "Text for email alert:"
-msgstr "Testun ar gyfer rhybudd e-bost:"
+msgstr "Testun ar gyfer hysbysiad e-bost:"
 
 #: templates/web/base/admin/bodies/body.html:33
 msgid "Text only version"
@@ -5196,7 +5198,7 @@ msgstr "Diolch am ddiweddaru'r broblem!"
 
 #: templates/web/base/contact/submit.html:6
 msgid "Thank you for your enquiry"
-msgstr "Diolch am eich adborth"
+msgstr "Diolch am eich ymholiad"
 
 #: templates/web/base/questionnaire/completed.html:5
 msgid "Thank you for your feedback"
@@ -5204,7 +5206,7 @@ msgstr "Diolch am eich adborth"
 
 #: templates/web/base/around/_error_multiple.html:26
 msgid "Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box above&nbsp;:"
-msgstr "Diolch am uwchlwytho eich llun. Nawr mae'n rhaid i ni leoli eich problem, felly rhowch enw stryd cyfagos neu god post yn y blwch uchod&nbsp;:"
+msgstr "Diolch am uwchlwytho eich llun. Nawr mae'n rhaid i ni leoli eich problem, felly rhowch enw stryd cyfagos neu gôd post yn y blwch uchod&nbsp;:"
 
 #: templates/web/base/questionnaire/creator_fixed.html:10
 msgid "Thanks, glad to hear it's been fixed! Could we just ask if you have ever reported a problem to a council before?"
@@ -5217,15 +5219,15 @@ msgstr "Diolch, rydych chi wedi llwyddo i alluogi dilysu dau gam ar eich cyfrif.
 
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 msgid "That image doesn't appear to have uploaded correctly (%s), please try again."
-msgstr "Ni uwchlwythwyd y llun yn gywir (%s), ceisiwch eto."
+msgstr "Mae'n ymddangos na uwchlwythwyd y llun yn gywir (%s), ceisiwch eto."
 
 #: perllib/FixMyStreet/App/Controller/Council.pm:105
 msgid "That location does not appear to be covered by a council; perhaps it is offshore or outside the country. Please try again."
-msgstr "Nid yw'n ymddangos bod y lleoliad hwnnw wedi'i gwmpasu gan gyngor; efallai ei fod ar y môr neu y tu allan i'r wlad. Trio eto os gwelwch yn dda."
+msgstr "Nid yw'n ymddangos bod y lleoliad hwnnw wedi'i gwmpasu gan gyngor; efallai ei fod yn forol neu y tu allan i'r wlad. Trïwch eto os gwelwch yn dda."
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:192
 msgid "That location does not appear to be in the UK; please try again."
-msgstr "Mae'n ymddangos nad yw'r lleoliad hwnnw yn y DU; rhowch gynnig arall arni."
+msgstr "Mae'n ymddangos nad yw'r lleoliad hwnnw yn y Deyrnas Unedig; trïwch eto."
 
 #: perllib/FixMyStreet/App/Controller/Auth.pm:522
 msgid "That password has appeared in a known third-party data breach (<a href=\"https://haveibeenpwned.com/Passwords\" target=\"_blank\">more information</a>); please choose another"
@@ -5235,27 +5237,27 @@ msgstr "Mae'r cyfrinair hwnnw wedi ymddangos mewn achos hysbys o dorri data tryd
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:104
 #: perllib/FixMyStreet/Cobrand/UK.pm:89
 msgid "That postcode was not recognised, sorry."
-msgstr "Mae'n ddrwg gennym, ni allwn ddod o hyd i'r côd post hwnnw."
+msgstr "Mae'n ddrwg gennym, ni allwn ddod o hyd i'r côd post yna."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:291
 msgid "That problem has been marked as sent."
-msgstr "Marciwyd y broblem hon fel un sydd wedi ei datrys."
+msgstr "Marciwyd y broblem yna fel un sydd wedi ei datrys."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:283
 msgid "That problem will now be resent."
-msgstr "Ailanfonir y broblem nawr."
+msgstr "Bydd y broblem yna yn cael ei hail-anfon nawr."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:181
 msgid "That report has been removed from FixMyStreet."
-msgstr "Tynnwyd yr adroddiad oddi ar FixMyStreet."
+msgstr "Tynnwyd yr adroddiad yna oddi ar FixMyStreet."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:615
 msgid "That user has been logged out."
-msgstr "Mae'r defnyddiwr yna wedi allgofnodi."
+msgstr "Mae'r defnyddiwr yna wedi’i allgofnodi."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:622
 msgid "That user has been made anonymous on all reports and updates."
-msgstr "Mae'r defnyddiwr hwnnw wedi'i wneud yn ddienw ar bob adroddiad a diweddariad."
+msgstr "Mae'r defnyddiwr yna wedi'i wneud yn ddienw ar bob adroddiad a diweddariad."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:671
 msgid "That user’s personal details have been removed."
@@ -5293,7 +5295,7 @@ msgstr ""
 
 #: templates/web/base/admin/manifesttheme/form.html:5
 msgid "The <strong>name</strong> is a string that represents the name of the web application as it is usually displayed to the user (e.g., amongst a list of other applications, or as a label for an icon)."
-msgstr "Llinyn yw'r <strong>enw</strong> sy'n cynrychioli enw'r rhaglen we gan ei fod yn cael ei ddangos i'r defnyddiwr fel arfer (ee, ymhlith rhestr o gymwysiadau eraill, neu fel label ar gyfer eicon)."
+msgstr "Llinyn yw'r <strong>enw</strong> sy'n cynrychioli enw'r rhaglen gwe yn y modd mae’n ymddangos i'r defnyddiwr gan amlaf (e.e. ymhlith rhestr o gymwysiadau eraill, neu fel label ar gyfer eicon)."
 
 #: templates/web/base/admin/bodies/contact-form.html:152
 #: templates/web/base/admin/bodies/contact-form.html:153
@@ -5303,20 +5305,20 @@ msgid ""
 "The <strong>send method</strong> determines how problem reports will be sent to the body.\n"
 "           If you leave this blank, <strong>send method defaults to email</strong>."
 msgstr ""
-"Mae'r <strong>dull anfon</strong> yn pennu sut y bydd adroddiadau problem yn cael eu danfon at y corff.\n"
-"Pe baech yn gadael hwn yn wag, <strong>anfonwch ragosodiadau dull i e-bost</strong> ."
+"Mae'r <strong>dull anfon</strong> yn pennu sut y bydd adroddiadau yn cael eu danfon at y corff.\n"
+"           Pe baech yn gadael hwn yn wag, <strong>rhagosodiad y dull anfon bydd e-bost</strong>."
 
 #: templates/web/base/admin/manifesttheme/form.html:10
 msgid "The <strong>short name</strong> is a string that represents the name of the web application displayed to the user if there is not enough space to display name (e.g., as a label for an icon on the phone home screen)."
-msgstr "Mae'r <strong>enw byr</strong> yn llinyn sy'n cynrychioli enw'r cymhwysiad gwe sy'n cael ei arddangos i'r defnyddiwr os nad oes digon o le i arddangos enw (ee, fel label ar gyfer eicon ar sgrin gartref y ffôn)."
+msgstr "Mae'r <strong>enw byr</strong> yn llinyn sy'n cynrychioli enw'r cymhwysiad gwe sy'n cael ei arddangos i'r defnyddiwr os nad oes digon o le i arddangos enw (e.e. label ar gyfer eicon ar sgrin gartref y ffôn)."
 
 #: templates/web/base/admin/manifesttheme/form.html:15
 msgid "The <strong>theme colour</strong> defines the default theme colour for the application. This sometimes affects how the OS displays the site (e.g., on Android's task switcher, the theme colour surrounds the site). Colours should be specified with CSS syntax, e.g. <strong><code>#ff00ff</code></strong> or <strong><code>rgb(255, 0, 255)</code></strong> or a named colour like <strong><code>fuchsia</code></strong>."
-msgstr "Mae'r <strong>lliw thema</strong> yn diffinio lliw thema diofyn y rhaglen. Mae hyn weithiau'n effeithio ar sut mae'r OS yn arddangos y wefan (ee, ar switcher tasg Android, lliw'r thema o amgylch y wefan). Dylid nodi lliwiau gyda chystrawen CSS, ee <strong><code>#ff00ff</code></strong> neu <strong><code>rgb(255, 0, 255)</code></strong> neu liw a enwir fel <strong><code>fuchsia</code></strong> ."
+msgstr "Mae'r <strong>lliw thema</strong> yn diffinio lliw thema diofyn y rhaglen. Mae hyn weithiau'n effeithio ar sut mae'r OS yn arddangos y wefan (e.e, ar newidydd tasg Android, lliw'r thema o amgylch y wefan). Dylid nodi lliwiau gyda chystrawen CSS, ee <strong><code>#ff00ff</code></strong> neu <strong><code>rgb(255, 0, 255)</code></strong> neu liw a enwir megis <strong><code>fuchsia</code></strong>."
 
 #: templates/web/base/open311/index.html:84
 msgid "The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification."
-msgstr "Defnyddir y priodoledd Open311 v2 agency_responsible i restru'r gweinyddiaethau a dderbyniodd yr adroddiad problem, nad yw'n union y ffordd y mae'r priodoledd wedi'i ddiffinio yn y fanyleb Open311 v2."
+msgstr "Defnyddir y priodoledd Open311 v2 agency_responsible i restru'r gweinyddiaethau a dderbyniodd yr adroddiad, nid yn union y modd mae'r priodoledd wedi'i ddiffinio yn y fanyleb Open311 v2."
 
 #: templates/web/base/admin/bodies/form.html:17
 #: templates/web/base/admin/bodies/form.html:18
@@ -5343,7 +5345,7 @@ msgstr "Ni fydd y cyngor yn gallu helpu oni bai eich bod yn gadael cymaint o fan
 #: templates/web/base/admin/bodies/edit-league.html:3
 #: templates/web/base/admin/bodies/edit-league.html:4
 msgid "The diligency prize league table shows editors' activity (who's been editing the most records)."
-msgstr "Mae'r tabl cynghrair gwobrau diwydrwydd yn dangos gweithgaredd golygyddion (pwy sydd wedi bod yn golygu'r nifer fwyaf o gofnodion)."
+msgstr "Mae'r tabl gwobrau diwydrwydd yn dangos gweithgaredd golygyddion (pwy sydd wedi bod yn golygu'r nifer fwyaf o gofnodion)."
 
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:45
 #: perllib/FixMyStreet/App/Controller/Reports.pm:57
@@ -5377,7 +5379,7 @@ msgstr "Y problemau diweddaraf a adroddwyd gan ddefnyddwyr"
 
 #: db/alert_types.pl:15
 msgid "The latest problems reported fixed by users"
-msgstr "Y problemau diweddaraf a adroddwyd wedi'u datrys gan ddefnyddwyr"
+msgstr "Y diweddaraf am broblemau sydd wedi’u hadrodd fel wedi’u datrys "
 
 #: db/alert_types.pl:43
 msgid "The latest problems within {{NAME}}'s boundary reported by users"
@@ -5389,7 +5391,7 @@ msgstr "Efallai bod y ddolen wedi dod i ben, neu efallai na wnaethoch chi ei gop
 
 #: templates/web/base/admin/bodies/form.html:66
 msgid "The list of available areas is being provided by the MapIt service at %s."
-msgstr "Mae'r rhestr o'r ardaloedd sydd ar gael yn cael eu darparu gan y gwasanaeth MapIt yn %s."
+msgstr "Mae'r rhestr o'r ardaloedd sydd ar gael yn cael eu darparu gan y gwasanaeth MapIt ar %s."
 
 #: templates/web/base/auth/change_password.html:25
 #: templates/web/base/auth/change_password.html:29
@@ -5406,11 +5408,11 @@ msgstr "Ni chanfuwyd yr URL '%s' ar y gweinydd hwn"
 
 #: templates/web/base/admin/roles/form.html:5
 msgid "The role's <strong>name</strong> is used to refer to this group of permissions elsewhere in the admin."
-msgstr "Defnyddir <strong>enw'r</strong> rôl i gyfeirio at y grŵp hwn o ganiatadau mewn mannau eraill yn y gweinyddwr."
+msgstr "Defnyddir <strong>enw</strong> y rôl i gyfeirio at y grŵp hwn o ganiatadau mewn mannau eraill yn y gweinyddwr."
 
 #: templates/web/base/admin/users/import.html:68
 msgid "The uploaded CSV file must contain a header row, and records can have the following fields:"
-msgstr "Rhaid i'r ffeil CSV a uwchlwythwyd gynnwys rhes uwch, a gall cofnodion gynnwys y meysydd canlynol:"
+msgstr "Rhaid i'r ffeil CSV a uwchlwythwyd gynnwys rhes deitl, a gall cofnodion gynnwys y meysydd canlynol:"
 
 #: perllib/FixMyStreet/Queue/Item/Report.pm:120
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
@@ -5426,7 +5428,7 @@ msgid ""
 "The user's <strong>name</strong> is displayed publicly on reports that have not been marked <em>anonymous</em>.\n"
 "                Names are not necessarily unique."
 msgstr ""
-"Mae <strong>enw'r</strong> defnyddiwr yn cael ei arddangos yn gyhoeddus ar adroddiadau sydd heb eu dynodi'n <em>ddienw</em>.\n"
+"Mae <strong>enw</strong> y defnyddiwr yn cael ei arddangos yn gyhoeddus ar adroddiadau sydd heb eu dynodi'n <em>ddienw</em>.\n"
 "                Nid yw enwau o reidrwydd yn unigryw."
 
 #: templates/web/base/admin/manifesttheme/form.html:1
@@ -5450,11 +5452,11 @@ msgstr "Nid oes unrhyw adroddiadau i'w dangos."
 
 #: templates/web/base/report/new/duplicate_suggestions.html:12
 msgid "There are similar problems nearby that we’re already aware of, is one of them yours?"
-msgstr "Mae yna broblemau tebyg gerllaw yr ydym eisoes yn ymwybodol ohonynt, ai eich un chi yw un ohonynt?"
+msgstr "Mae yna broblemau tebyg gerllaw yr ydym eisoes yn ymwybodol ohonynt, ydy un chi yn un ohonynt?"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:98
 msgid "There is already a template with that title."
-msgstr "Ceir eisoes templed gyda'r un teitl."
+msgstr "Mae yna eisoes templed gyda'r un teitl."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:144
 msgid "There is already an auto-response template for this category/state."
@@ -5462,7 +5464,7 @@ msgstr "Mae yna dempled ymateb awtomatig ar gyfer y categori/cyflwr hwn eisoes."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Templates.pm:102
 msgid "There must be template text if there is alternative email text."
-msgstr "Rhaid cael testun templed os oes testun e-bost amgen."
+msgstr "Rhaid cael templed testun os oes testun e-bost amgen."
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:54
 msgid "There was a problem showing the All Reports page. Please try again later."
@@ -5489,11 +5491,11 @@ msgstr "Bu gwall gyda'r diweddariad. Rhowch gynnig arall arni."
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:174
 msgid "There were problems with your report. Please see below."
-msgstr "Bu gwallau gyda'r adroddiad. Gwelwch isod."
+msgstr "Bu problemau gyda'r adroddiad. Gwelwch isod."
 
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:436
 msgid "There were problems with your update. Please see below."
-msgstr "Bu gwallau gyda'r diweddariad. Gwelwch isod."
+msgstr "Bu problemau gyda'r diweddariad. Gwelwch isod."
 
 #: templates/web/base/admin/category-checkboxes.html:32
 msgid "These categories appear in more than one group:"
@@ -5543,7 +5545,7 @@ msgstr "Bydd y rhain yn cael eu hanfon at <strong>%s</strong> ond ni chânt eu c
 
 #: templates/web/base/open311/index.html:69
 msgid "This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future."
-msgstr "Mae'r gweithrediad rhyngwyneb rhaglennu cymwysiadau hwn yn waith ar y gweill ac nid yw wedi'i sefydlogi eto. Bydd yn newid heb rybuddion yn y dyfodol."
+msgstr "Mae gweithrediad y rhyngwyneb rhaglennu cymwysiadau hwn ar y gweill ac nid yw wedi'i sefydlogi eto. Bydd yn newid yn ddirybudd yn y dyfodol."
 
 #: templates/web/base/admin/bodies/body.html:49
 msgid ""
@@ -5557,7 +5559,7 @@ msgstr ""
 
 #: templates/web/base/admin/bodies/body.html:59
 msgid "This body has no contacts. This means that currently problems reported to this body <strong>will not be sent</strong>."
-msgstr "Nid oes gan y corff hwn unrhyw gysylltiadau. Ar hyn o bryd, ae hyn yn golygu <strong>na fydd</strong> problemau a adroddir i'r corff hwn yn cael eu danfon."
+msgstr "Nid oes gan y corff hwn unrhyw gysylltiadau. Ar hyn o bryd, mae hyn yn golygu <strong>na fydd</strong> problemau a adroddir i'r corff hwn yn cael eu danfon."
 
 #: templates/web/base/admin/bodies/form.html:60
 #: templates/web/base/admin/bodies/form.html:61
@@ -5587,15 +5589,15 @@ msgstr "Mae'r e-bost hwn wedi'i anfon at sawl cyngor yn sôn am leoliad y broble
 
 #: templates/email/default/_email_bottom.html:14
 msgid "This email was sent automatically, from an unmonitored email account. Please do not reply to it."
-msgstr "Anfonwyd yr e-bost hwn yn awtomatig, o gyfrif e-bost heb ei fonitro. Peidiwch ag ymateb os gwelwch yn dda."
+msgstr ""
 
 #: templates/email/default/_email_top.html:57
 msgid "This email was sent from a staging site."
-msgstr "Anfonwyd yr e-bost hwn o safle llwyfannu."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:165
 msgid "This field is required."
-msgstr "Mae'r wybodaeth hon yn ofynnol."
+msgstr "Mae'r maes hwn yn ofynnol."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1247
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1333
@@ -5660,21 +5662,21 @@ msgstr "Nid yw'r adroddiad hwn wedi'i drwsio"
 
 #: templates/web/base/report/duplicate-no-updates.html:5
 msgid "This report is a duplicate. Please leave updates on the original report:"
-msgstr "Copi yw'r adroddiad hwn. Os gwelwch yn dda, nodwch ddiweddariadau ar yr adroddiad gwreiddiol:"
+msgstr "Dyblygiad yw'r adroddiad hwn. Os gwelwch yn dda, nodwch ddiweddariadau ar yr adroddiad gwreiddiol:"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:143
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:144
 #: templates/web/zurich/report/_main.html:14
 msgid "This report is awaiting moderation."
-msgstr "Mae'r adroddiad hwn yn aros i gael ei safoni."
+msgstr "Mae'r adroddiad hwn yn aros i gael ei gymedroli."
 
 #: perllib/FixMyStreet/Script/Alerts.pm:149
 msgid "This report is currently marked as closed."
-msgstr "Mae'r adroddiad hwn wedi'i nodi ar gau."
+msgstr "Mae'r adroddiad hwn wedi'i nodi fel un sydd ar gau ar hyn o bryd."
 
 #: perllib/FixMyStreet/Script/Alerts.pm:147
 msgid "This report is currently marked as fixed."
-msgstr "Mae'r adroddiad hwn wedi'i nodi fel un sefydlog ar hyn o bryd."
+msgstr "Ar hyn o bryd, mae'r adroddiad hwn wedi'i nodi fel un sydd wedi’i drwsio."
 
 #: perllib/FixMyStreet/Script/Alerts.pm:151
 msgid "This report is currently marked as open."
@@ -5684,7 +5686,7 @@ msgstr "Mae'r adroddiad hwn wedi'i nodi fel un agored ar hyn o bryd."
 #: templates/web/base/report/display.html:55
 #: templates/web/fixmystreet.com/report/_updates_disallowed_message.html:9
 msgid "This report is now closed to updates."
-msgstr "Mae'r adroddiad hwn bellach ar gau i ddiweddariadau."
+msgstr "Nid oes modd diweddaru’r adroddiad hwn."
 
 #: templates/web/base/admin/sitemessage/edit.html:16
 msgid "This site message will be shown on the homepage."
@@ -5701,7 +5703,7 @@ msgstr "Mae'r dudalen we hon yn cynnwys llun o'r broblem, a ddarparwyd gan y def
 
 #: templates/web/base/auth/generate_token.html:16
 msgid "This will be the only time this token is visible, so please make a note of it now."
-msgstr "Dyma fydd yr unig dro y bydd y tocyn hwn yn weladwy, felly nodwch ef yn awr."
+msgstr "Dyma fydd yr unig amser y bydd y tocyn hwn yn weladwy, felly gwnewch nodyn ohono nawr."
 
 #: templates/web/zurich/admin/report_edit-sdm.html:112
 #: templates/web/zurich/admin/report_edit-sdm.html:66
@@ -5756,7 +5758,7 @@ msgstr "Er mwyn cyfyngu'r casgliad hwn o feysydd i un iaith, dewiswch hi fan hyn
 
 #: templates/web/base/report/update-form-wrapper.html:5
 msgid "To provide an update, please <a href=\"%s\">sign in</a>."
-msgstr "Er mwyn darparu diweddariad, os gwelwch yn dda <a href=\"%s\">mewngofnodwch</a>."
+msgstr "Er mwyn darparu diweddariad, <a href=\"%s\">mewngofnodwch</a>."
 
 #: perllib/FixMyStreet/Queue/Item/Report.pm:119
 msgid "To view a map of the precise location of this issue"
@@ -5781,7 +5783,7 @@ msgstr "Y 5 cyngor fwyaf ymatebol"
 
 #: templates/web/base/reports/index.html:98
 msgid "Top 5 wards"
-msgstr "Y 5 ward uchaf"
+msgstr "Y 5 ward gorau"
 
 #: templates/web/fixmystreet.com/contact/who.html:1
 msgid "Topic:"
@@ -5808,7 +5810,7 @@ msgstr "Cyfieithiadau"
 #: templates/web/base/auth/2fa/form.html:6
 #: templates/web/base/auth/smsform.html:17
 msgid "Try again"
-msgstr "Ceisio eto"
+msgstr "Ceisiwch eto"
 
 #: templates/web/base/contact/submit.html:14
 msgid "Try emailing us directly:"
@@ -5864,7 +5866,7 @@ msgstr "Anhysbys"
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:177
 msgid "Unknown alert type"
-msgstr "Hysbysiad anhysbys"
+msgstr "Math o rybudd anhysbys"
 
 #. ("JS")
 #: perllib/FixMyStreet/App/Controller/Photo.pm:131
@@ -5880,11 +5882,11 @@ msgstr "Gwall anhysbys"
 #: perllib/FixMyStreet/App/Controller/Report.pm:172
 #: perllib/FixMyStreet/App/Controller/Report.pm:175
 msgid "Unknown problem ID"
-msgstr "ID problem anhysbys"
+msgstr "Problem cyfeirnod anhysbys"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:106
 msgid "Unknown update ID"
-msgstr "ID diweddaru anhysbys"
+msgstr "Diweddariad cyfeirnod anhysbys"
 
 #: templates/web/base/reports/_list-filter-status.html:25
 msgid "Unshortlisted"
@@ -5924,11 +5926,11 @@ msgstr "Diweddaru'r corff"
 
 #: templates/web/base/admin/stats/state.html:21
 msgid "Update breakdown by state"
-msgstr "Diweddaru dadansoddiad fesul gwladwriaeth"
+msgstr "Diweddaru dadansoddiad fesul cyflwr"
 
 #: db/alert_types.pl:7
 msgid "Update by {{name}}"
-msgstr "Diweddaru erbyn {{name}}"
+msgstr "Diweddariad gan {{name}}"
 
 #: templates/web/base/admin/update_edit.html:49
 #: templates/web/zurich/admin/update_edit.html:25
@@ -5937,15 +5939,15 @@ msgstr "Diweddarwch statws problem wedi'i newid i %s"
 
 #: templates/web/base/admin/update_edit.html:51
 msgid "Update marked problem as fixed"
-msgstr "Diweddariad wedi'i marcio problem fel un sefydlog"
+msgstr "Diweddaru problem wedi’i dynodi fel un wedi trwsio"
 
 #: templates/web/base/admin/sitemessage/edit.html:90
 msgid "Update message"
-msgstr "Diweddaru'r neges"
+msgstr "Diweddaru neges"
 
 #: templates/web/base/admin/update_edit.html:53
 msgid "Update reopened problem"
-msgstr "Problem wedi'i hailagor diweddaru"
+msgstr "Diweddaru problem sydd wedi'i hailagor "
 
 #: templates/web/base/admin/bodies/body.html:124
 msgid "Update statuses"
@@ -6025,7 +6027,7 @@ msgstr "Defnyddio fy lleoliad"
 
 #: templates/web/base/admin/bodies/contact-form.html:91
 msgid "Use this for issues that you want to allow users to report, but for which there is no public interest in displaying the report, like requesting an extra rubbish bin at a specific address."
-msgstr "Defnyddiwch hwn ar gyfer materion yr ydych am ganiatáu i ddefnyddwyr roi gwybod amdanynt, ond nad oes unrhyw ddiddordeb cyhoeddus mewn arddangos yr adroddiad ar eu cyfer, fel gofyn am fin sbwriel ychwanegol mewn cyfeiriad penodol."
+msgstr "Defnyddiwch hwn ar gyfer materion yr ydych am ganiatáu i ddefnyddwyr roi gwybod amdanynt, ond nad oes unrhyw ddiddordeb cyhoeddus mewn arddangos yr adroddiad ar eu cyfer, fel gofyn am bin sbwriel ychwanegol mewn cyfeiriad penodol."
 
 #: templates/web/base/admin/bodies/contact-form.html:146
 msgid "Use this if there is a chance that multiple bodies covering the same area that have the same contacts and you want to just send reports to one, rather than multiple bodies"
@@ -6210,7 +6212,7 @@ msgstr "Rydym angen eich cyfeiriad e-bost, os gwelwch yn dda nodwch hwnnw isod."
 
 #: perllib/FixMyStreet/Queue/Item/Report.pm:152
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
-msgstr "Rydym yn sylweddoli y gallai'r broblem hon fod yn gyfrifoldeb i %s; fodd bynnag, nid oes gennym unrhyw fanylion cyswllt ar eu cyfer ar hyn o bryd. Os ydych yn gwybod am gyfeiriad cyswllt priodol, cysylltwch â ni."
+msgstr "Rydym yn sylweddoli y gallai'r broblem hon fod yn gyfrifoldeb %s; fodd bynnag, nid oes gennym unrhyw fanylion cyswllt ar eu cyfer ar hyn o bryd. Os ydych yn gwybod am gyfeiriad cyswllt priodol, cysylltwch â ni."
 
 #: templates/web/base/index-steps.html:11
 msgid "We send it to the council on your behalf"
@@ -6223,7 +6225,7 @@ msgstr "Rydyn ni'n dangos hyd at ddeg tebygol, rhowch gynnig ar chwiliad gwahano
 
 #: templates/web/zurich/report/new/notes.html:4
 msgid "We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"
-msgstr "Dim ond yn unol â’n <a href=\"%s\">polisi preifatrwydd y byddwn yn defnyddio’ch gwybodaeth bersonol.</a>"
+msgstr "Dim ond yn unol â’n <a href=\"%s\">polisi preifatrwydd</a> y byddwn yn defnyddio’ch gwybodaeth bersonol."
 
 #: templates/web/base/questionnaire/completed-open.html:2
 msgid "We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?"
@@ -6402,7 +6404,7 @@ msgstr "Dim ond trwy ein ffurflen gyswllt y gallwch chi gysylltu â thîm FixMyS
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:255
 msgid "You cannot rename a category to an existing category"
-msgstr "Ni allwch ailenwi categori i gategori sy'n bodoli eisoes"
+msgstr "Ni Ni allwch ailenwi categori fel categori sy'n bodoli eisoes"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:54
@@ -6433,7 +6435,7 @@ msgstr "Rydych chi eisoes wedi atodi lluniau i'r diweddariad hwn. Sylwch y gallw
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
 msgid "You have been signed out"
-msgstr "Rydych chi wedi cael eich allgofnodi"
+msgstr "Rydych chi wedi eich allgofnodi"
 
 #: templates/web/zurich/report/new/sidebar.html:7
 msgid "You have located the problem at the point marked with a green pin on the map. If this is not the correct location, simply click on the map again. "
@@ -6459,7 +6461,7 @@ msgstr "Rydych chi wedi llwyddo i ddileu eich rhif ffôn."
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
 msgid "You have successfully signed in; please check and confirm your details are accurate:"
-msgstr "Mewngofnodwyd yn llwyddiannus; gwiriwch a chadarnhewch fod eich manylion yn gywir:"
+msgstr "Mewngofnodi llwyddiannus; gwiriwch a chadarnhewch fod eich manylion yn gywir:"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:165
 msgid "You have successfully verified your phone number."
@@ -6487,7 +6489,7 @@ msgid ""
 "    the categories of problems they can handle (such as potholes or streetlights) and the\n"
 "    contacts (such as an email address) to which reports are sent."
 msgstr ""
-"Mae angen i chi ychwanegu cyrff (fel cynghorau neu adrannau) fel y gallwch chi ychwanegu wedyn\n"
+"Mae angen i chi ychwanegu cyrff (fel cynghorau neu adrannau) fel y gallwch chi wedyn ychwanegu\n"
 "    y categorïau o broblemau y gallant ymdrin â hwy (fel tyllau yn y ffordd neu oleuadau stryd) a'r\n"
 "    cysylltiadau (fel cyfeiriad e-bost) yr anfonir adroddiadau iddynt."
 
@@ -6559,7 +6561,7 @@ msgstr "Mae eich enw wedi ei guddio."
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:101
 msgid "Your offline reports"
-msgstr "Eich adroddiadau oddi-ar-lein"
+msgstr "Eich adroddiadau all-lein"
 
 #: templates/web/base/auth/create.html:65
 #: templates/web/base/auth/general.html:90
@@ -6640,11 +6642,11 @@ msgstr "Eich hunain"
 
 #: templates/web/base/admin/users/import.html:72
 msgid "a colon-separated list of permissions to grant that user, e.g. <code>contribute_as_body:moderate:user_edit</code>."
-msgstr "rhestr o ganiatadau wedi'u gwahanu gan colon i roi'r defnyddiwr hwnnw, ee <code>contribute_as_body:moderate:user_edit</code> ."
+msgstr "rhestr wedi'i gwahanu gan colon o ganiatadau i roi i'r defnyddiwr hwnnw, e.e. <code>contribute_as_body:moderate:user_edit</code> ."
 
 #: templates/web/base/admin/users/import.html:73
 msgid "a colon-separated list of roles to assign to that user."
-msgstr "rhestr o rolau wedi'u gwahanu gan colon i'w neilltuo i'r defnyddiwr hwnnw."
+msgstr "rhestr wedi'i gwahanu gan colon o rolau i'w neilltuo i'r defnyddiwr hwnnw."
 
 #: templates/web/base/report/inspect/information.html:10
 msgid "admin"
@@ -6694,7 +6696,7 @@ msgstr "e.e. ‘twll 10 modfedd ar Example St, ger y blwch post’"
 #: templates/web/base/admin/bodies/contact-form.html:84
 #: templates/web/base/report/new/form_report.html:79
 msgid "e.g. ‘This pothole has been here for two months and…’"
-msgstr "e.e. ‘Mae’r twll yn y ffordd yma wedi bod yma ers dau fis a…’"
+msgstr "e.e. ‘twll 10 modfedd ar Stryd Esiampl, ger y blwch post’"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:93
 msgid "edit user"
@@ -6730,7 +6732,7 @@ msgstr "minws"
 #: templates/web/base/admin/stats/questionnaire.html:15
 #: templates/web/base/admin/stats/questionnaire.html:16
 msgid "n/a"
-msgstr "ddim yn berthnasol"
+msgstr "amherthnasol"
 
 #: perllib/FixMyStreet/App/Form/Widget/Field/CheckboxGroup.pm:19
 #: templates/web/base/admin/category-checkboxes.html:6
@@ -6860,11 +6862,11 @@ msgstr "defnyddiwr o'r un cyngor â'r broblem - %d"
 
 #: templates/web/base/admin/update_edit.html:45
 msgid "user is problem owner"
-msgstr "mae'r defnyddiwr yn meddu ar broblem"
+msgstr "y defnyddiwr sy’n meddu ar y broblem"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:734
 msgid "user not in abuse list"
-msgstr "nid yw'r defnyddiwr yn y rhestr sarhau"
+msgstr "nid yw'r defnyddiwr yn y rhestr camddefnydd"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Users.pm:732
 msgid "user removed from abuse list"
@@ -6894,7 +6896,7 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d diwrnod"
 msgstr[1] "%d ddiwrnod"
-msgstr[2] "%d o ddiwrnodau"
+msgstr[2] "%d diwrnod"
 msgstr[3] "%d diwrnod"
 
 #: perllib/Utils.pm:251
@@ -6903,16 +6905,16 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d awr"
 msgstr[1] "%d awr"
-msgstr[2] "%d o oriau"
+msgstr[2] "%d awr"
 msgstr[3] "%d awr"
 
 #: perllib/Utils.pm:253
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
-msgstr[0] "%d funud"
+msgstr[0] "%d munud"
 msgstr[1] "%d funud"
-msgstr[2] "%d o funudau"
+msgstr[2] "%d munud"
 msgstr[3] "%d munud"
 
 #: perllib/Utils.pm:245
@@ -6939,7 +6941,7 @@ msgid "%d supporter"
 msgid_plural "%d supporters"
 msgstr[0] "%d cefnogwr"
 msgstr[1] "%d gefnogwr"
-msgstr[2] "%d o gefnogwyr"
+msgstr[2] "%d cefnogwr"
 msgstr[3] "%d cefnogwr"
 
 #: perllib/Utils.pm:247
@@ -6948,7 +6950,7 @@ msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] "%d wythnos"
 msgstr[1] "%d wythnos"
-msgstr[2] "%d o wythnosau"
+msgstr[2] "%d wythnos"
 msgstr[3] "%d wythnos"
 
 #: perllib/Utils.pm:243
@@ -6974,7 +6976,7 @@ msgstr[3] "%s diwrnod"
 msgid "%s problem marked as fixed"
 msgid_plural "%s problems marked as fixed"
 msgstr[0] "dynodir bod y broblem %s wedi ei drwsio"
-msgstr[1] "dynodir bod y %s broblem wedi eu trwsio"
+msgstr[1] "dynodir bod %s broblem wedi eu trwsio"
 msgstr[2] "dynodir bod y %s broblem wedi eu trwsio"
 msgstr[3] "dynodir bod y %s broblem wedi eu trwsio"
 
@@ -7000,10 +7002,10 @@ msgstr[3] "%s adroddiad"
 #, perl-format
 msgid "%s update on problems"
 msgid_plural "%s updates on problems"
-msgstr[0] "diweddariad %s am broblemau"
-msgstr[1] "diweddariad %s am broblemau"
-msgstr[2] "diweddariad %s am broblemau"
-msgstr[3] "diweddariad %s am broblemau"
+msgstr[0] "%s diweddariad am broblemau"
+msgstr[1] "%s ddiweddariad am broblemau"
+msgstr[2] "%s diweddariad am broblemau"
+msgstr[3] "%s diweddariad am broblemau"
 
 #: templates/web/base/front/stats.html:20
 #, perl-format
@@ -7056,7 +7058,7 @@ msgid "Please supply %s photo"
 msgid_plural "Please supply %s photos"
 msgstr[0] "Ychwanegwch lun os gwelwch yn dda"
 msgstr[1] "Ychwanegwch dau lun os gwelwch yn dda"
-msgstr[2] "Ychwanegwch %s llun os gwelwch yn dda"
+msgstr[2] "Ychwanegwch %s o luniau os gwelwch yn dda"
 msgstr[3] "Ychwanegwch %s llun os gwelwch yn dda"
 
 #: templates/web/base/report/_item_small.html:14
@@ -7073,7 +7075,7 @@ msgstr[3] "Wedi'i adrodd %d diwrnod yn ôl"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "<strong>Nid oes</strong> gennym fanylion eto am y cyngor arall sy'n gwasanaethu'r lleoliad hwn."
-msgstr[1] "<strong>Nid oes</strong> gennym fanylion eto am y cynghorau arall sy'n gwasanaethu'r lleoliad hwn."
+msgstr[1] "<strong>Nid oes</strong> gennym fanylion eto am y ddau gyngor arall sy'n gwasanaethu'r lleoliad hwn."
 msgstr[2] "<strong>Nid oes</strong> gennym fanylion eto am y cynghorau arall sy'n gwasanaethu'r lleoliad hwn."
 msgstr[3] "<strong>Nid oes</strong> gennym fanylion eto am y cynghorau arall sy'n gwasanaethu'r lleoliad hwn."
 
@@ -7082,7 +7084,7 @@ msgstr[3] "<strong>Nid oes</strong> gennym fanylion eto am y cynghorau arall sy'
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
 msgstr[0] "Nid oes gennym fanylion am y cyngor sy'n rheoli'r lleoliad hwn."
-msgstr[1] "Nid oes gennym fanylion am y cyngor sy'n rheoli'r lleoliad hwn."
+msgstr[1] "Nid oes gennym fanylion am y ddau gyngor sy'n rheoli'r lleoliad hwn."
 msgstr[2] "Nid oes gennym fanylion am y cyngor sy'n rheoli'r lleoliad hwn."
 msgstr[3] "Nid oes gennym fanylion am y cynghorau sy'n rheoli'r lleoliad hwn."
 
@@ -7091,7 +7093,7 @@ msgstr[3] "Nid oes gennym fanylion am y cynghorau sy'n rheoli'r lleoliad hwn."
 msgid "bin"
 msgid_plural "bins"
 msgstr[0] "bin"
-msgstr[1] "fin"
+msgstr[1] "bin"
 msgstr[2] "bin"
 msgstr[3] "bin"
 
@@ -7101,7 +7103,7 @@ msgid "last updated %d day ago"
 msgid_plural "last updated %d days ago"
 msgstr[0] "diweddarwyd diwethaf %d diwrnod yn ôl"
 msgstr[1] "diweddarwyd diwethaf %d ddiwrnod yn ôl"
-msgstr[2] "diweddarwyd diwethaf %d diwrnod yn ôl"
+msgstr[2] "diweddarwyd diwethaf %d o ddiwrnodau yn ôl"
 msgstr[3] "diweddarwyd diwethaf %d diwrnod yn ôl"
 
 #: templates/email/default/cy/inactive-account.html:18
