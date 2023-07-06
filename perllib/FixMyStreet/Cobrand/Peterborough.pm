@@ -854,7 +854,8 @@ sub relevant_jobs {
     my %schedules = map { $_->{JobName} => $_ } @$schedules;
     my @jobs = grep {
         my $name = $_->{JobName};
-        $schedules{$name}->{Feature}->{Status}->{Name} eq 'IN SERVICE'
+        my $schedule_name = $schedules{$name}->{Feature}->{Status}->{Name} || '';
+        $schedule_name eq 'IN SERVICE'
         && $schedules{$name}->{Feature}->{FeatureType}->{ID} != 6815;
     } @$jobs;
     return \@jobs;
