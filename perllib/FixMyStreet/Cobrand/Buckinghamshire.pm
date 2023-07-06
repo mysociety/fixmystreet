@@ -568,12 +568,8 @@ sub is_two_tier { 1 }
 
 sub should_skip_sending_update {
     my ($self, $update ) = @_;
-
-    # Bucks don't want to receive updates that were made by anyone
-    # except the original problem reporter.
-    return $update->user_id != $update->problem->user_id;
+    return 1;
 }
-
 
 =head2 disable_phone_number_entry
 
