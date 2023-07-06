@@ -99,7 +99,8 @@ sub item_list : Private {
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
 
-    if ($c->stash->{property}{pending_bulky_collection}) {
+    # TODO Remove when allowing more than one booking
+    if ($c->stash->{pending_bulky_collections}) {
         $c->detach('/waste/property_redirect');
     }
 

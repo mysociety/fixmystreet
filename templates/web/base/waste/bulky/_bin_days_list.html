@@ -1,5 +1,5 @@
-[% IF property.pending_bulky_collection AND NOT c.user_exists %]
-    [% TRY %][% PROCESS waste/_bulky_not_signed_user.html %][% CATCH file %][% END %]
+[% IF pending_bulky_collections AND NOT c.user_exists %]
+    [% PROCESS waste/_bulky_not_signed_user.html %]
 [% END %]
 
 <dl class="govuk-summary-list govuk-!-margin-bottom-0">
@@ -25,26 +25,40 @@
     </dd>
   </div>
 
-    [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
+  [% FOR booking IN pending_bulky_collections %]
+
+    [% IF c.cobrand.bulky_can_view_collection(booking) %]
         <!-- #01 Should only display when: There IS a booking AND is a signed user -->
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Next collection</dt>
-          <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(property.pending_bulky_collection) %]</dd>
+          <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Reference number</dt>
-          <dd class="govuk-summary-list__value">[% property.pending_bulky_collection.id %]</dd>
+          <dd class="govuk-summary-list__value">[% booking.id %]</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Items to be collected</dt>
           <dd class="govuk-summary-list__value">
-            <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(property.pending_bulky_collection).size %]</p>
+            <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
           </dd>
         </div>
         <!-- END #01 -->
+    [% END %]
+
+    <div class="waste-services-launch-panel">
+      [% IF c.cobrand.bulky_can_view_collection(booking) %]
+        <!-- #05 Should only display when: There IS a booking AND is a signed user -->
+        <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
+        [% IF c.cobrand.bulky_collection_can_be_cancelled(booking) %]
+          <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id, booking.id ]) %]">Cancel booking</a>
+        [% END %]
+        <!-- END #05 -->
+      [% END %]
+    </div>
   [% END %]
 
-  [% IF c.user_exists AND NOT property.pending_bulky_collection %]
+  [% IF NOT booking AND c.user_exists %]
     <!-- #04 Should only display when: There is NO booking AND is a signed user -->
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Next collection</dt>
@@ -57,20 +71,12 @@
 <hr>
 
 <div class="waste-services-launch-panel">
-  [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
-    <!-- #05 Should only display when: There IS a booking AND is a signed user -->
-    <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% property.pending_bulky_collection.id %]">Check collection details</a>
-    [% IF c.cobrand.bulky_collection_can_be_cancelled(property.pending_bulky_collection) %]
-      <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id, property.pending_bulky_collection.id ]) %]">Cancel booking</a>
-    [% END %]
-    <!-- END #05 -->
-  [% END %]
   [% UNLESS c.user_exists %]
     <!-- #07 Should be displayed when: user HASN'T signed in -->
-    <a class="btn btn-primary govuk-!-margin-bottom-2" href="/auth?r=report/[% property.pending_bulky_collection.id %]">Sign in</a>
+    <a class="btn btn-primary govuk-!-margin-bottom-2" href="/auth?r=waste/[% property.id %]">Sign in</a>
     <!-- END #07 -->
   [% END %]
-  [% UNLESS property.pending_bulky_collection %]
+  [% UNLESS pending_bulky_collections %]
     <!-- #06 Should NOT be displayed when: there is a signed user with a booking request -->
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
       <input type="hidden" name="token" value="[% csrf_token %]">
