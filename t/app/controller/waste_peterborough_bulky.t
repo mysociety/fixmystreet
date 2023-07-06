@@ -584,13 +584,13 @@ FixMyStreet::override_config {
 
             # Presence of external_id in report implies we have sent request
             # to Bartec
-            $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_lacks('Cancel this booking');
 
             $report->external_id('Bartec-SR00100001');
             $report->update;
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_contains('Cancel this booking');
 
             # Cannot cancel if cancellation window passed
@@ -598,7 +598,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/report/' . $report->id);
             $mech->content_lacks("You can cancel this booking till");
             $mech->content_lacks("15:00 on 25 August 2022");
-            $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_lacks('Cancel this booking');
 
             set_fixed_time($good_date);
@@ -631,7 +631,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('View cancellation report');
             $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_contains('Cancel this booking');
         };
 
@@ -646,7 +646,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('View cancellation report');
             $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->content_contains('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_contains('Cancel this booking');
         };
 
@@ -659,24 +659,25 @@ FixMyStreet::override_config {
 
     subtest 'Bulky goods email confirmation and reminders' => sub {
 
+        my $report_id = $report->id;
         subtest 'Email confirmation of booking' => sub {
             FixMyStreet::Script::Reports::send();
             my $email = $mech->get_email->as_string;
             like $email, qr/1 Pope Way/;
             like $email, qr/Collection date: 26 August/;
-            like $email, qr{rborough.example.org/waste/PE1%203NA%3A100090215480/bulky_cancel};
+            like $email, qr{rborough.example.org/waste/PE1%203NA%3A100090215480/bulky/cancel/$report_id};
             $mech->clear_emails_ok;
         };
 
         sub reminder_check {
-            my ($day, $time, $days) = @_;
+            my ($day, $time, $days, $report_id) = @_;
             set_fixed_time("2022-08-$day" . "T$time:00:00Z");
             $cobrand->bulky_reminders;
             if ($days) {
                 my $email = $mech->get_email->as_string;
                 like $email, qr/26 August/;
                 like $email, qr{peterborough.example.org/waste/PE1%203NA%3A100090};
-                like $email, qr{215480/bulky_cancel};
+                like $email, qr{215480/bulky/cancel/$report_id};
                 if ($days == 3) {
                     like $email, qr/This is a reminder that your collection is in 3 days./;
                 } else {
@@ -688,13 +689,13 @@ FixMyStreet::override_config {
             }
         }
         subtest 'Email reminders' => sub {
-            reminder_check(22, 10, 0);
-            reminder_check(23, 10, 3);
-            reminder_check(23, 11, 0);
-            reminder_check(24, 10, 0);
-            reminder_check(25, 10, 1);
-            reminder_check(25, 11, 0);
-            reminder_check(26, 10, 0);
+            reminder_check(22, 10, 0, $report->id);
+            reminder_check(23, 10, 3, $report->id);
+            reminder_check(23, 11, 0, $report->id);
+            reminder_check(24, 10, 0, $report->id);
+            reminder_check(25, 10, 1, $report->id);
+            reminder_check(25, 11, 0, $report->id);
+            reminder_check(26, 10, 0, $report->id);
         };
 
         $report->discard_changes;
@@ -727,7 +728,7 @@ FixMyStreet::override_config {
                 'Cancel booking',
                 'Cancel option unavailable',
             );
-            $mech->get_ok("$base_path/bulky_cancel");
+            $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
             is $mech->uri->path, $base_path,
                 'Cancel link redirects to bin days';
         };
@@ -740,8 +741,8 @@ FixMyStreet::override_config {
                 'Cancel booking',
                 'Cancel option available',
             );
-            $mech->get_ok("$base_path/bulky_cancel");
-            is $mech->uri->path, "$base_path/bulky_cancel",
+            $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
+            is $mech->uri->path, "$base_path/bulky/cancel/" . $report->id,
                 'Cancel link does not redirect';
         };
 
@@ -752,7 +753,7 @@ FixMyStreet::override_config {
                 'Cancel booking',
                 'Cancel option unavailable',
             );
-            $mech->get_ok("$base_path/bulky_cancel");
+            $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
             like $mech->uri->path, qr/auth/,
                 'Cancel link redirects to /auth';
         };
@@ -764,7 +765,7 @@ FixMyStreet::override_config {
                 'Cancel booking',
                 'Cancel option unavailable if booking does not belong to user',
             );
-            $mech->get_ok("$base_path/bulky_cancel");
+            $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
             is $mech->uri->path, $base_path,
                 'Cancel link redirects to bin days';
         };
@@ -776,8 +777,8 @@ FixMyStreet::override_config {
                 'Cancel booking',
                 'Cancel option available',
             );
-            $mech->get_ok("$base_path/bulky_cancel");
-            is $mech->uri->path, "$base_path/bulky_cancel",
+            $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
+            is $mech->uri->path, "$base_path/bulky/cancel/" . $report->id,
                 'Cancel link does not redirect';
         };
 
@@ -789,20 +790,20 @@ FixMyStreet::override_config {
             'Cancel option unavailable if outside cancellation window' );
 
         set_fixed_time($no_refund_date);
-        $mech->get_ok("$base_path/bulky_cancel");
+        $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
         $mech->content_lacks("If you cancel this booking you will receive a refund");
         $mech->content_contains("No Refund Will Be Issued");
 
         $report->update_extra_field({ name => 'CHARGEABLE', value => 'FREE'});
         $report->update;
-        $mech->get_ok("$base_path/bulky_cancel");
+        $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
         $mech->content_lacks("If you cancel this booking you will receive a refund");
         $mech->content_lacks("No Refund Will Be Issued");
         $report->update_extra_field({ name => 'CHARGEABLE', value => 'CHARGED'});
         $report->update;
 
         set_fixed_time($good_date);
-        $mech->get_ok("$base_path/bulky_cancel");
+        $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
         $mech->content_contains("If you cancel this booking you will receive a refund");
         $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
         $mech->content_contains(
@@ -839,7 +840,7 @@ FixMyStreet::override_config {
                 is $cancellation_report->state, 'confirmed',
                     'Report confirmed';
                 like $cancellation_report->detail,
-                    qr/Original report ID: ${\$report->id}/,
+                    qr/Original report ID: SR00100001 \(WasteWorks ${\$report->id}\)/,
                     'Original report ID in detail field';
 
                 # Cancellation of own booking
@@ -1060,7 +1061,7 @@ FixMyStreet::override_config {
             $report->update;
 
             set_fixed_time('2022-08-25T05:44:59Z');
-            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_contains("If you cancel this booking you will receive a refund");
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
             $mech->content_contains(
@@ -1127,7 +1128,7 @@ FixMyStreet::override_config {
             $report->external_id('Bartec-SR00100001');
             $report->update;
 
-            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky_cancel');
+            $mech->get_ok('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
 
             # No refund request sent
@@ -1141,7 +1142,7 @@ FixMyStreet::override_config {
                     { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
             );
             like $cancellation_report->detail,
-                qr/Original report ID: ${\$report->id}/,
+                qr/Original report ID: SR00100001 \(WasteWorks ${\$report->id}\)/,
                 'Original report ID in detail field';
         };
 

@@ -202,7 +202,7 @@
   [% IF problem %]
     [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
       <p>
-        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id ] ) %]">Cancel this booking</a>
+        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id, problem.id ] ) %]">Cancel this booking</a>
       </p>
     [% END %]
     <p>

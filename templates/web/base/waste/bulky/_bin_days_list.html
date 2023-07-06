@@ -61,7 +61,7 @@
     <!-- #05 Should only display when: There IS a booking AND is a signed user -->
     <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% property.pending_bulky_collection.id %]">Check collection details</a>
     [% IF c.cobrand.bulky_collection_can_be_cancelled(property.pending_bulky_collection) %]
-      <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id ]) %]">Cancel booking</a>
+      <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id, property.pending_bulky_collection.id ]) %]">Cancel booking</a>
     [% END %]
     <!-- END #05 -->
   [% END %]
