@@ -114,9 +114,9 @@
         <dd>£[% pounds(payment / 100) %]</dd>
       </dl>
       <div class="govuk-!-margin-bottom-4">
-        <p class="govuk-!-margin-bottom-0">[% items.size %] item[% 's' IF items.size > 1 %] requested for collection.</p>
+        <p class="govuk-!-margin-bottom-0">[% tprintf(nget('%d item requested for collection.', '%d items requested for collection.', items.size), items.size) %]</p>
         [% remaining = cobrand.bulky_items_maximum - items.size %]
-        <small >([% remaining %] remaining slot[% 's' IF remaining > 1 %] available)</small>
+        <small>([% tprintf(nget('%d remaining slot available', '%d remaining slots available', remaining), remaining) %])</small>
       </div>
 
       <table class="item-summary-table govuk-!-margin-bottom-9">

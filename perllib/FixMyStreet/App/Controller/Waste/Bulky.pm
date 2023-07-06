@@ -100,11 +100,6 @@ sub item_list : Private {
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
 
-    # TODO Remove when allowing more than one booking
-    if ($c->stash->{pending_bulky_collections}) {
-        $c->detach('/waste/property_redirect');
-    }
-
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
     $c->forward('item_list');
