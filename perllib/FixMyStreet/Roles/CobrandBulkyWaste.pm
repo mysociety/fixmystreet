@@ -285,10 +285,6 @@ sub bulky_collection_can_be_cancelled {
 sub within_bulky_cancel_window {
     my ( $self, $collection ) = @_;
 
-    my $c = $self->{c};
-    $collection //= $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $collection;
-
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $collection_date = $self->collection_date($collection);
     return $self->_check_within_bulky_cancel_window($now_dt, $collection_date);
@@ -308,11 +304,7 @@ sub bulky_can_refund {
 }
 
 sub within_bulky_refund_window {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    my $open_collection = $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $open_collection;
+    my ($self, $open_collection) = @_;
 
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $collection_dt = $self->collection_date($open_collection);

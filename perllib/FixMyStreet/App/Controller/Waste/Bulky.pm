@@ -181,18 +181,17 @@ sub view : Private {
     };
 }
 
-sub cancel : PathPart('bulky_cancel') : Chained('/waste/property') : Args(0) {
-    my ( $self, $c ) = @_;
+sub cancel : Chained('setup') : Args(1) {
+    my ( $self, $c, $id ) = @_;
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
+    my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
     $c->detach('/waste/property_redirect')
-        if !$c->cobrand->call_hook('bulky_enabled')
-            || !$c->cobrand->call_hook( 'bulky_can_view_collection',
-            $c->stash->{property}{pending_bulky_collection} )
-            || !$c->cobrand->call_hook( 'bulky_collection_can_be_cancelled',
-            $c->stash->{property}{pending_bulky_collection} );
+        if !$c->cobrand->call_hook('bulky_can_view_collection', $collection)
+            || !$c->cobrand->call_hook('bulky_collection_can_be_cancelled', $collection);
 
+    $c->stash->{cancelling_booking} = $collection;
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
     $c->stash->{entitled_to_refund} = $c->cobrand->call_hook('bulky_can_refund');
@@ -293,7 +292,7 @@ sub process_bulky_amend : Private {
 sub add_cancellation_report : Private {
     my ($self, $c) = @_;
 
-    my $collection_report = $c->stash->{property}{pending_bulky_collection};
+    my $collection_report = $c->stash->{cancelling_booking} || $c->stash->{amending_booking};
     my %data = (
         detail => $collection_report->detail,
         name   => $collection_report->name,
@@ -309,7 +308,7 @@ sub process_bulky_cancellation : Private {
     $c->forward('add_cancellation_report') or return;
 
     # Mark original report as closed
-    my $collection_report = $c->stash->{property}{pending_bulky_collection};
+    my $collection_report = $c->stash->{cancelling_booking};
     $collection_report->state('closed');
     $collection_report->detail(
         $collection_report->detail . " | Cancelled at user request", );

@@ -267,12 +267,12 @@ sub bulky_can_refund {
     # Skip refund eligibility check for bulky goods soft launch; just
     # assume if a collection can be cancelled, it can be refunded
     # (see https://3.basecamp.com/4020879/buckets/26662378/todos/5870058641)
-    return $self->within_bulky_cancel_window
+    return $self->within_bulky_cancel_window($c->stash->{cancelling_booking})
         if $self->bulky_enabled_staff_only;
 
-    return $c->stash->{property}{pending_bulky_collection}
+    return $c->stash->{cancelling_booking}
         ->get_extra_field_value('CHARGEABLE') ne 'FREE'
-        && $self->within_bulky_refund_window;
+        && $self->within_bulky_refund_window($c->stash->{cancelling_booking});
 }
 
 # A cancellation made less than 24 hours before the collection is scheduled to
@@ -356,7 +356,7 @@ sub waste_munge_bulky_cancellation_data {
     my ( $self, $data ) = @_;
 
     my $c = $self->{c};
-    my $collection_report = $c->stash->{property}{pending_bulky_collection};
+    my $collection_report = $c->stash->{cancelling_booking} || $c->stash->{amending_booking};
     my $original_sr_number = $collection_report->external_id =~ s/Bartec-//r;
 
     $data->{title}    = 'Bulky goods cancellation';
@@ -428,7 +428,7 @@ sub unset_free_bulky_used {
     my $c = $self->{c};
 
     return
-        unless $c->stash->{property}{pending_bulky_collection}
+        unless $c->stash->{cancelling_booking}
         ->get_extra_field_value('CHARGEABLE') eq 'FREE';
 
     my $bartec = $self->feature('bartec');
