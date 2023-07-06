@@ -140,6 +140,15 @@ has_field chosen_date => (
 sub _get_dates {
     my ( $c, $last_earlier_date ) = @_;
 
+    my %dates_booked;
+    foreach (@{$c->stash->{pending_bulky_collections} || []}) {
+        $dates_booked{$_->get_extra_field_value('DATE')} = 1;
+    }
+    if (my $amend = $c->stash->{amending_booking}) {
+        # Want to allow amendment without changing the date
+        delete $dates_booked{$amend->get_extra_field_value('DATE')};
+    }
+
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
@@ -147,6 +156,7 @@ sub _get_dates {
             ? {
             label => $dt->strftime('%d %B'),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
+            disabled => $dates_booked{$_->{date}},
             }
             : undef
         } @{
