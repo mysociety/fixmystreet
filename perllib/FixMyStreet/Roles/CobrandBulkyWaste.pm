@@ -150,18 +150,24 @@ sub bulky_total_cost {
 
 # Should only be a single open collection for a given property, but in case
 # there isn't, return the most recent
+sub find_pending_bulky_collections {
+    my ( $self, $uprn ) = @_;
+
+    return $self->problems->search({
+        category => 'Bulky collection',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
+        state => { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
+    }, {
+        order_by => { -desc => 'id' }
+    });
+}
+
+# Originally was only a single open collection for a given property,
+# so this returns the most recent
 sub find_pending_bulky_collection {
     my ( $self, $property ) = @_;
 
-    return FixMyStreet::DB->resultset('Problem')->to_body( $self->body )
-        ->find(
-        {   category => 'Bulky collection',
-            extra    => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $property->{uprn} } ] }) },
-            state =>
-                { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
-        },
-        { order_by => { -desc => 'id' } },
-        );
+    return $self->find_pending_bulky_collections($property->{uprn})->first;
 }
 
 sub _bulky_collection_window {
@@ -250,10 +256,6 @@ sub bulky_collection_can_be_cancelled {
 sub within_bulky_cancel_window {
     my ( $self, $collection ) = @_;
 
-    my $c = $self->{c};
-    $collection //= $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $collection;
-
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $collection_date = $self->collection_date($collection);
     return $self->_check_within_bulky_cancel_window($now_dt, $collection_date);
@@ -273,11 +275,7 @@ sub bulky_can_refund {
 }
 
 sub within_bulky_refund_window {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    my $open_collection = $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $open_collection;
+    my ($self, $open_collection) = @_;
 
     my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $collection_dt = $self->collection_date($open_collection);
