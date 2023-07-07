@@ -104,7 +104,9 @@ $(function() {
         $('.govuk-select[name^="item_"]').each(function(i, e) {
             var extra = $(this).find('option').filter(':selected').data('extra');
             var price = extra ? parseFloat(extra.price) : 0;
-            total += price;
+            if (!isNaN(price)) {
+                total += price;
+            }
         });
         $('#js-bulky-total').text((total / 100).toFixed(2));
     });
