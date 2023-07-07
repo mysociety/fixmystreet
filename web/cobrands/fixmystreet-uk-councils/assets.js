@@ -856,6 +856,112 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+fixmystreet.assets.lincolnshire.grass_found = function(layer) {
+    var data = layer.selected_feature.attributes;
+    var parish_regex = new RegExp(/Contact Parish/);
+    /* If it is handled by LCC and has cut dates provided,
+    add an extra notice to the reporting form showing the cut dates */
+    if (data.Cut_By === 'LCC' && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
+        var $div = $(".js-reporting-page.js-lincs-grass-notice");
+        if ($div.length) {
+            $div.removeClass('js-reporting-page--skip');
+        } else {
+            var msg = "<div class='box-warning js-lincs-grass-notice'>" +
+                        "<h1>Grass cutting schedule</h1>" +
+                        "<p>The grass in this area is scheduled to be cut between <strong>" +
+                        lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] +
+                        "</strong>. If that answers your query, there is no need to finish the report. " +
+                        "Otherwise, please continue.</p>" +
+                        "</div>";
+            $div = $(msg);
+            fixmystreet.pageController.addNextPage('lincs_grass', $div);
+        }
+        fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+    }
+    /* If handled by a district council (LCDC or SKDC) that says contact them,
+    send the report to that relevant district council in their Grass Cutting category.
+    If handled by LCC (or a district council) but with “Contact LCC” (or similar) as the cut date,
+    do nothing and allow reporting to proceed to LCC’s Grass Cutting category.*/
+    else if (data.Cut_By === 'DIS') {
+        var district_council = {
+            'LCDC': 'Lincoln City Council',
+            'SKDC': 'South Kesteven District Council'
+        };
+        var lcc_regex = new RegExp(/Contact LCC/);
+        if (district_council[data.Authority] && !lcc_regex.test(data.Cut_1)) {
+            fixmystreet.body_overrides.only_send(district_council[data.Authority]);
+        } else {
+            fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+        }
+    }
+    /* If handled by a parish (with a cut date of “Contact Parish Council” or “Contact Parish to Add”)
+    prevent reporting and display a message informing the user which parish council handles the area */
+    else if (data.Cut_By === 'PAR' && parish_regex.test(data.Cut_1)) {
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
+        layer.fixmystreet.no_asset_msg_id = '#js-lincs-parish-grass';
+        var text = $('#js-lincs-parish-grass').html();
+        new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
+        $('#js-lincs-parish-grass').html(new_text);
+    }
+    /* If handled by “CP Media Sponsorship”, display a message informing the user how to contact them? */
+    else if (data.Cut_By === 'CPM') {
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-media-grass');
+        layer.fixmystreet.no_asset_msg_id = '#js-lincs-media-grass';
+    }
+
+    function lincs_has_dates(cut_info) {
+        if (cut_info[0].match(/Contact /) && cut_info[0] === cut_info[1] && cut_info[1] === cut_info[2]) {
+            return [];
+        } else {
+            var dates = [];
+            for (var i=0; i < cut_info.length; i++) {
+                var date_returned = check_date(cut_info[i]);
+                if (date_returned) {
+                    dates.push(date_returned);
+                }
+            }
+            return dates;
+        }
+
+        function check_date(date) {
+            var months = {
+                January: '0',
+                February: '1',
+                March: '2',
+                April: '3',
+                May: '4',
+                June: '5',
+                July: '6',
+                August: '7',
+                September: '8',
+                October: '9',
+                November: '10',
+                December: '11',
+            };
+
+            var dates = date.split(" - ");
+            if (dates.length === 2) {
+                var now = new Date();
+                var end_date_components = dates[1].split(' ');
+                var end_date = new Date(now.getFullYear(), months[end_date_components[1]], end_date_components[0], '23', '59', '59');
+                if (end_date < now) {
+                    return 0;
+                } else {
+                    return date;
+                }
+            } else {
+                return 0;
+            }
+        }
+    }
+};
+
+fixmystreet.assets.lincolnshire.grass_not_found = function(layer) {
+    // road_found to remove any stopper messages
+    fixmystreet.message_controller.road_found(layer);
+    fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+};
+
 /* Merton */
 
 fixmystreet.assets.merton = {};
