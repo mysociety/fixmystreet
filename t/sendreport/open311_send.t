@@ -6,7 +6,7 @@ package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::FixMyStreet';
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
     $params->{multi_photos} = 1;
 }
 

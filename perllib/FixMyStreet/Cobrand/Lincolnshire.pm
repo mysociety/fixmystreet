@@ -197,10 +197,10 @@ uploading of private photos, so we set the flag for this.
 =cut
 
 around 'open311_config' => sub {
-    my ($orig, $self, $row, $h, $params) = @_;
+    my ($orig, $self, $row, $h, $params, $contact) = @_;
 
     $params->{upload_files} = 1;
-    $self->$orig($row, $h, $params);
+    $self->$orig($row, $h, $params, $contact);
 };
 
 # Find or create a user to associate with externally created Open311 reports.

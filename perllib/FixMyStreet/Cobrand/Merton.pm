@@ -60,7 +60,7 @@ sub allow_anonymous_reports { 'button' }
 sub anonymous_domain { 'anonymous-fms.merton.gov.uk' }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;

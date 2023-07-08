@@ -8,7 +8,7 @@ FixMyStreet::Roles::ConfirmOpen311 - role for adding various Open311 things spec
 =cut
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
 }
