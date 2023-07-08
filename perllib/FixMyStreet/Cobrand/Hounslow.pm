@@ -106,10 +106,10 @@ sub open311_post_send {
 }
 
 around 'open311_config' => sub {
-    my ($orig, $self, $row, $h, $params) = @_;
+    my ($orig, $self, $row, $h, $params, $contact) = @_;
 
     $params->{upload_files} = 1;
-    $self->$orig($row, $h, $params);
+    $self->$orig($row, $h, $params, $contact);
 };
 
 sub open311_munge_update_params {
