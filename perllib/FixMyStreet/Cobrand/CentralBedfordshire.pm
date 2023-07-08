@@ -87,6 +87,14 @@ sub disambiguate_location {
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+    if ($contact->email =~ /Jadu/) {
+        $params->{multi_photos} = 1;
+        $params->{upload_files} = 1;
+    }
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -122,6 +130,35 @@ sub lookup_site_code_config {
 
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
+
+    if ($contact->email =~ /Jadu/) {
+        return [
+            {
+                name => 'report_url',
+                value => $h->{url}
+            },
+            {
+                name => 'title',
+                value => $row->title
+            },
+            {
+                name => 'description',
+                value => $row->detail
+            },
+            {   # TODO: Populate from address.
+                name => 'usrn',
+                value => "25202550",
+            },
+            {   # TODO: Populate from address.
+                name => 'street',
+                value => "Monk's Walk",
+            },
+            {   # TODO: Populate from address.
+                name => 'town',
+                value => "Chicksands",
+            },
+        ];
+    }
 
     if (my $id = $row->get_extra_field_value('UnitID')) {
         $h->{cb_original_detail} = $row->detail;
@@ -166,6 +203,9 @@ sub open311_extra_data_exclude {
 
 sub open311_post_send {
     my ($self, $row, $h) = @_;
+
+    # No post send needed for Jadu backed categories.
+    return if $row->external_id && $row->external_id =~ /Jadu/;
 
     $row->detail($h->{cb_original_detail}) if $h->{cb_original_detail};
 
