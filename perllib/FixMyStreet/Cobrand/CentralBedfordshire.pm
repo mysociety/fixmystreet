@@ -87,6 +87,14 @@ sub disambiguate_location {
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+    if ($contact->email =~ /Jadu/) {
+        $params->{multi_photos} = 1;
+        $params->{upload_files} = 1;
+    }
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -123,6 +131,19 @@ sub lookup_site_code_config {
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
+    my $open311_only = [
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'report_url',
+          value => $h->{url} },
+    ];
+
+    if ($contact->email =~ /Jadu/) {
+        return $open311_only;
+    }
+
     if (my $id = $row->get_extra_field_value('UnitID')) {
         $h->{cb_original_detail} = $row->detail;
         $row->detail($row->detail . "\n\nUnit ID: $id");
@@ -136,15 +157,6 @@ sub open311_extra_data_include {
             $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
         }
     }
-
-    my $open311_only = [
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail },
-        { name => 'report_url',
-          value => $h->{url} },
-    ];
 
     if (my $cfg = $self->feature('area_code_mapping')) {;
         my @areas = split ',', $row->areas;
@@ -166,6 +178,9 @@ sub open311_extra_data_exclude {
 
 sub open311_post_send {
     my ($self, $row, $h) = @_;
+
+    # No post send needed for Jadu backed categories.
+    return if $row->external_id && $row->external_id =~ /Jadu/;
 
     $row->detail($h->{cb_original_detail}) if $h->{cb_original_detail};
 
