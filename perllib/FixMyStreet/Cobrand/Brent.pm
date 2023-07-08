@@ -235,7 +235,7 @@ Sends all photo urls in the Open311 data
 =cut
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
     $params->{multi_photos} = 1;
 }
 

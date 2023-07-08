@@ -140,7 +140,7 @@ sub oidc_user_extra {
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     my $id = $row->user->get_extra_metadata('westminster_account_id');
     # Westminster require 0 as the account ID if there's no MyWestminster ID.

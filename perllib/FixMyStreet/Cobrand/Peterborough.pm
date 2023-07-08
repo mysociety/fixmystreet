@@ -195,10 +195,10 @@ sub should_skip_sending_update {
 }
 
 around 'open311_config' => sub {
-    my ($orig, $self, $row, $h, $params) = @_;
+    my ($orig, $self, $row, $h, $params, $contact) = @_;
 
     $params->{upload_files} = 1;
-    $self->$orig($row, $h, $params);
+    $self->$orig($row, $h, $params, $contact);
 };
 
 sub get_body_sender {

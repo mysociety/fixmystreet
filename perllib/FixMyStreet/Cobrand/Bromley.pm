@@ -167,7 +167,7 @@ sub available_permissions {
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{always_send_latlong} = 0;
     $params->{send_notpinpointed} = 1;
