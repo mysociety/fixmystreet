@@ -1336,10 +1336,18 @@ sub set_report_extras : Private {
                     $c->stash->{field_errors}->{ 'x' . $field->{code} } = _('This information is required');
                 }
             }
+
+            my $value;
+            if (($field->{datatype} || '') eq 'multivaluelist') {
+                $value = [ $c->get_param_list($param_prefix . $field->{code}) ];
+            } else {
+                $value = $c->get_param($param_prefix . $field->{code}) // '';
+            }
+
             push @extra, {
                 name => $field->{code},
                 description => $field->{description},
-                value => $c->get_param($param_prefix . $field->{code}) // '',
+                value => $value,
             };
         }
     }

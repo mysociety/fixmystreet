@@ -426,6 +426,7 @@ $.extend(fixmystreet.set_up, {
         }, translation_strings.password_register.short);
         jQuery.validator.addMethod('notEmail', function(value, element) {
             return this.optional(element) || !/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@(?:\S{1,63})$/.test( value ); }, translation_strings.title );
+        jQuery.validator.addClassRules('at-least-one-group', { require_from_group: [1, ".at-least-one-group"] });
     }
 
     var submitted = false;
@@ -446,6 +447,16 @@ $.extend(fixmystreet.set_up, {
         errorElement: 'div',
         errorClass: 'form-error',
         errorPlacement: function( error, element ) {
+            if (element.hasClass('group-error-propagate')) {
+                var groupParent = element.parents('.group-error-propagate-end');
+                if (groupParent) {
+                    var target = groupParent.find('.group-error-place-after');
+                    if (target) {
+                        target.after(error);
+                        return;
+                    }
+                }
+            }
             var typ = element.attr('type');
             if (typ == 'radio' || typ == 'checkbox') {
                 element.parent().before( error );

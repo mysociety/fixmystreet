@@ -14,6 +14,7 @@
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
+        - Added support for 'multivaluelist' extra category questions using checkboxes.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456

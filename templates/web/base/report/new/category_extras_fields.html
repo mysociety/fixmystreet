@@ -8,13 +8,30 @@
 
   [% ELSIF meta.variable != 'false' || NOT hide_notices %]
 
-      <label for="[% cat_prefix %]form_[% meta_name %]">[% (meta.description OR meta.code) | safe %]</label>
+      [% IF  meta.datatype == 'multivaluelist' %]
+        <fieldset class="group-error-propagate-end">
+            <legend class="group-error-place-after">[% (meta.description OR meta.code) | safe %]</legend>
+      [% ELSE %]
+        <label for="[% cat_prefix %]form_[% meta_name %]">[% (meta.description OR meta.code) | safe %]</label>
+      [% END %]
+
       [% TRY %][% INCLUDE 'report/new/_category_extra_field_notice.html' %][% CATCH file %][% END %]
       [% IF field_errors.$x_meta_name %]
       <p class='form-error'>[% field_errors.$x_meta_name %]</p>
       [% END -%]
       [% IF meta.variable != 'false' %]
-        [% IF meta.item('values').size %]
+        [% IF meta.datatype == 'multivaluelist' %]
+          [% FOR option IN meta.values %]
+            <div class="label-containing-checkbox">
+              <label class="inline-text" for="[% cat_prefix %][% meta_name %][% option.key %]">[% option.name %]
+                <input class="at-least-one-group group-error-propagate" type="checkbox" id="[% cat_prefix %][% meta_name %][% option.key %]" name="[% cat_prefix %][% meta_name %]" value="[% option.key %]"
+                [% IF report_meta.$x_meta_name.value.grep(option.key).size %] checked [% END %]>
+              </label>
+            </div>
+          [% END %]
+          </fieldset>
+        [% ELSIF meta.item('values').size %]
+          [%# singlevaluelist %]
           <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
             <option value="">[% loc('-- Pick an option --') %]</option>
             [% FOR option IN meta.values %]
