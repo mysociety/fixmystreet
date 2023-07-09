@@ -587,7 +587,7 @@ sub update_extra_fields : Private {
             $meta->{description} = FixMyStreet::Template::sanitize($desc);
             $meta->{datatype} = $c->get_param("metadata[$i].datatype");
 
-            if ( $meta->{datatype} eq "singlevaluelist" ) {
+            if ( $meta->{datatype} eq "singlevaluelist" || $meta->{datatype} eq "multivaluelist" ) {
                 $meta->{values} = [];
                 my $re = qr{^metadata\[$i\]\.values\[\d+\]\.key};
                 my @vindices = grep { /$re/ } keys %{ $c->req->params };
