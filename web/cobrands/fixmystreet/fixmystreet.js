@@ -602,6 +602,8 @@ $.extend(fixmystreet.set_up, {
         }
         if (data.category_extra) {
             $category_meta.replaceWith( data.category_extra );
+            document.dispatchEvent(new Event('category_extra_loaded'));
+
             var $new_category_meta = $('#category_meta');
             $new_category_meta.closest('.js-reporting-page').toggleClass('js-reporting-page--skip', !!data.extra_hidden);
             // Preserve any existing values
