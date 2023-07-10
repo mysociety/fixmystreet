@@ -70,6 +70,7 @@ DEFAULT behaviour = 'question';
                     <option value="text" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'text' %]>[% loc('Textarea') %]</option>
                     <option value="singlevaluelist" data-show="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'singlevaluelist' %]>[% loc('Drop-down list') %]</option>
                     <option value="multivaluelist" data-show="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'multivaluelist' %]>[% loc('Checkboxes') %]</option>
+                    <option value="datetime" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'datetime' %]>[% loc('Datetime picker') %]</option>
                 </select>
             </div>
 
