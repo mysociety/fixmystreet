@@ -1483,9 +1483,7 @@ Applied when it's known before submission that the report will go to a body with
 
 =cut
 
-sub new_report_title_field_label {
-    return;
-}
+sub new_report_title_field_label {}
 
 =item new_report_title_field_hint
 
@@ -1495,9 +1493,7 @@ Superseded by a contact specific override if set.
 
 =cut
 
-sub new_report_title_field_hint {
-    return;
-}
+sub new_report_title_field_hint {}
 
 =item new_report_detail_field_hint
 
@@ -1507,8 +1503,6 @@ Superseded by a contact specific override if set.
 
 =cut
 
-sub new_report_detail_field_hint {
-    return;
-}
+sub new_report_detail_field_hint {}
 
 1;
