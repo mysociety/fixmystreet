@@ -247,8 +247,9 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             name => $body->name,
             cobrand_name => $body->cobrand_name,
         };
-        $lookups->{hints}{$category}->{title} ||= $_->get_extra_metadata('title_hint');
-        $lookups->{hints}{$category}->{detail} ||= $_->get_extra_metadata('detail_hint');
+        $lookups->{overrides}{$category}->{title_hint} ||= $_->get_extra_metadata('title_hint');
+        $lookups->{overrides}{$category}->{detail_label} ||= $_->get_extra_metadata('detail_label');
+        $lookups->{overrides}{$category}->{detail_hint} ||= $_->get_extra_metadata('detail_hint');
         # Copy of Default's lookup using cobrand's body check (to save DB lookups)
         $lookups->{anonymous_allowed}{$category} = $cobrand_body && $cobrand_body->id == $_->body_id && $_->get_extra_metadata('anonymous_allowed') ? 'button': '';
     }
@@ -352,31 +353,36 @@ sub by_category_ajax_data : Private {
     }
 
     my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{name}} if @$bodies == 1;
-    my $category_overrides = $lookups->{hints}{$category};
+    my $category_overrides = $lookups->{overrides}{$category};
 
     my $title_label_override = $cobrand_overrides->{title_label};
     # prefer category specific overrides if present.
-    my $title_hint_override = $category_overrides->{title} || $cobrand_overrides->{title_hint};
-    my $detail_hint_override = $category_overrides->{detail} || $cobrand_overrides->{detail_hint};
+    my $title_hint_override = $category_overrides->{title_hint} || $cobrand_overrides->{title_hint};
+    my $detail_label_override = $category_overrides->{detail_label} || $cobrand_overrides->{detail_label};
+    my $detail_hint_override = $category_overrides->{detail_hint} || $cobrand_overrides->{detail_hint};
 
     $body->{title_label} = $title_label_override if $title_label_override;
     $body->{title_hint} = $title_hint_override if $title_hint_override;
+    $body->{detail_label} = $detail_label_override if $detail_label_override;
     $body->{detail_hint} = $detail_hint_override if $detail_hint_override;
 
     return $body;
 }
 
-sub form_field_hints {
+sub form_field_overrides {
     my @contacts = @_;
     my $title_hint;
+    my $detail_label;
     my $detail_hint;
     foreach (@contacts) {
         $title_hint ||= $_->get_extra_metadata('title_hint');
+        $detail_label ||= $_->get_extra_metadata('detail_label');
         $detail_hint ||= $_->get_extra_metadata('detail_hint');
     }
     return {
-        title => $title_hint,
-        detail => $detail_hint,
+        title_hint => $title_hint,
+        detail_hint => $detail_hint,
+        detail_label => $detail_label,
     };
 }
 
@@ -868,11 +874,13 @@ sub setup_categories_and_bodies : Private {
 
         my $title_label = $cobrand_for_body->new_report_title_field_label;
         my $title_hint = $cobrand_for_body->new_report_title_field_hint;
+        my $detail_label = $cobrand_for_body->new_report_detail_field_label;
         my $detail_hint = $cobrand_for_body->new_report_detail_field_hint;
 
         my %overrides;
         $overrides{title_label} = $title_label if $title_label;
         $overrides{title_hint} = $title_hint if $title_hint;
+        $overrides{detail_label} = $detail_label if $detail_label;
         $overrides{detail_hint} = $detail_hint if $detail_hint;
         $cobrand_field_overrides_by_body{$body->name} = \%overrides;
     }
@@ -1843,9 +1851,10 @@ sub check_for_category : Private {
         }
     }
 
-    my $hints = form_field_hints(@contacts);
-    $c->stash->{contact_title_hint} = $hints->{title};
-    $c->stash->{contact_detail_hint} = $hints->{detail};
+    my $overrides = form_field_overrides(@contacts);
+    $c->stash->{contact_title_hint} = $overrides->{title_hint};
+    $c->stash->{contact_detail_label} = $overrides->{detail_label};
+    $c->stash->{contact_detail_hint} = $overrides->{detail_hint};
 
     if ($c->get_param('submit_category_part_only') || $c->stash->{disable_form_message}) {
         # If we've clicked the first-part category button (no-JS only probably),

@@ -13,6 +13,8 @@ sub new_report_title_field_label { "cobrand title label" }
 
 sub new_report_title_field_hint { "cobrand title hint" }
 
+sub new_report_detail_field_label { "cobrand detail label" }
+
 sub new_report_detail_field_hint { "cobrand detail hint" }
 
 package main;
@@ -1286,7 +1288,7 @@ subtest "categories from deleted bodies shouldn't be visible for new reports" =>
     };
 };
 
-subtest "check title field overrides for categories" => sub {
+subtest "check field overrides for categories" => sub {
     my $body = $mech->create_body_ok(2238, "A", {}, { cobrand => "overrides" });
     my $contact = $mech->create_contact_ok(
         body_id => $body->id,
@@ -1308,11 +1310,13 @@ subtest "check title field overrides for categories" => sub {
     };
     is $json_response->{by_category}->{test}->{title_label}, "cobrand title label", "cobrand title label applied";
     is $json_response->{by_category}->{test}->{title_hint}, "cobrand title hint", "cobrand title hint override applied";
+    is $json_response->{by_category}->{test}->{detail_label}, "cobrand detail label", "cobrand detail label override applied";
     is $json_response->{by_category}->{test}->{detail_hint}, "cobrand detail hint", "cobrand detail hint override applied";
 
     # Contact level overrides supersede cobrand level ones.
 
     $contact->set_extra_metadata('title_hint', 'contact title hint');
+    $contact->set_extra_metadata('detail_label', 'contact detail label');
     $contact->set_extra_metadata('detail_hint', 'contact detail hint');
     $contact->update;
 
@@ -1324,11 +1328,13 @@ subtest "check title field overrides for categories" => sub {
     };
     is $json_response->{by_category}->{test}->{title_label}, "cobrand title label", "cobrand title label override applied";
     is $json_response->{by_category}->{test}->{title_hint}, "contact title hint", "contact title hint override applied";
+    is $json_response->{by_category}->{test}->{detail_label}, "contact detail label", "contact detail label override applied";
     is $json_response->{by_category}->{test}->{detail_hint}, "contact detail hint", "contact detail hint override applied";
 
     # Cobrand level overrides don't apply if the category has multiple bodies.
 
     $contact->unset_extra_metadata('title_hint');
+    $contact->unset_extra_metadata('detail_label');
     $contact->unset_extra_metadata('detail_hint');
     $contact->update;
 
@@ -1347,6 +1353,7 @@ subtest "check title field overrides for categories" => sub {
     };
     is $json_response->{by_category}->{test}->{title_label}, undef, "cobrand title label override not applied";
     is $json_response->{by_category}->{test}->{title_hint}, undef, "title hint override not applied";
+    is $json_response->{by_category}->{test}->{detail_label}, undef, "detail label override not applied";
     is $json_response->{by_category}->{test}->{detail_hint}, undef, "detail hint override not applied";
 };
 

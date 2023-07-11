@@ -3,6 +3,8 @@ SET form_title = c.cobrand.new_report_title_field_label.defined ?
     c.cobrand.new_report_title_field_label : loc("Summarise the problem");
 SET form_title_placeholder = c.cobrand.new_report_title_field_hint.defined ?
     c.cobrand.new_report_title_field_hint : loc("e.g. ‘10 inch pothole on Example St, near post box’");
+SET form_detail_label = c.cobrand.new_report_detail_field_label.defined ?
+    c.cobrand.new_report_detail_field_label : loc("Explain what’s wrong");
 SET form_detail_placeholder = c.cobrand.new_report_detail_field_hint.defined ?
     c.cobrand.new_report_detail_field_hint : loc('e.g. ‘This pothole has been here for two months and…’');
 -%]

@@ -625,6 +625,7 @@ $.extend(fixmystreet.set_up, {
 
         text_update('#title-label', data.title_label);
         text_update('#title-hint', data.title_hint);
+        text_update('#detail-label', data.detail_label);
         text_update('#detail-hint', data.detail_hint);
 
         if (fixmystreet.message_controller && data.disable_form && data.disable_form.questions) {

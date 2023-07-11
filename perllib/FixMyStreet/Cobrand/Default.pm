@@ -1499,6 +1499,18 @@ sub new_report_title_field_hint {
     return;
 }
 
+=item new_report_detail_field_label
+
+Return override text for the label of the detail field on a new report.
+Applied when it's known before submission that the report will go to a body with this cobrand.
+Superseded by a contact specific override if set.
+
+=cut
+
+sub new_report_detail_field_label {
+    return;
+}
+
 =item new_report_detail_field_hint
 
 Return override text for the hint text for the detail field on a new report.

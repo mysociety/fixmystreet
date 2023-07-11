@@ -71,8 +71,7 @@
 
     [% TRY %][% PROCESS 'report/new/after_title.html' %][% CATCH file %][% END %]
 
-    [% DEFAULT form_detail_label = loc('Explain what’s wrong') %]
-    <label for="form_detail">[% form_detail_label %]</label>
+    <label id="detail-label" for="form_detail">[% contact_detail_label OR form_detail_label %]</label>
 
   [% IF contact_detail_hint %]
     <p class="form-hint" id="detail-hint">[% contact_detail_hint %]</p>
