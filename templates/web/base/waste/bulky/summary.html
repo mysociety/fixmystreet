@@ -8,7 +8,7 @@
 
 [% BLOCK change_answers_button %]
   [% UNLESS problem %]
-    <form method="post">
+    <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
       <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
       <input type="hidden" name="goto" value="[% goto %]">
       <input type="submit" class="fake-link" value="Change answers">
@@ -187,7 +187,7 @@
     <div class="govuk-grid-column-one-third">
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Your details</h3>
-        [% PROCESS change_answers_button goto='about_you' %]
+        [% IF NOT data.continue_id %][% PROCESS change_answers_button goto='about_you' %][% END %]
       </div>
       <dl>
         <dt>Name</dt>
