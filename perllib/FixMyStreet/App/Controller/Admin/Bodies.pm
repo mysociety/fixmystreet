@@ -305,7 +305,7 @@ sub update_contact : Private {
         }
     }
 
-    foreach (qw(title_hint detail_hint)) {
+    foreach (qw(title_hint detail_label detail_hint)) {
         my $value = $c->get_param($_) || '';
         $value = $self->trim($value);
         if ($value) {

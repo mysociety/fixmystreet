@@ -79,6 +79,11 @@
         Default is “[% form_title_placeholder %]”
     </p>
     <input type="text" class="form-control" id="title-hint" aria-describedby="title-hint-hint" name="title_hint" size="30" value="[% contact.get_extra_metadata('title_hint') %]">
+    <label for="detail-label">[% loc('Details label') %]</label>
+    <p class="form-hint" id="detail-label-hint">
+        Default is “[% form_detail_label %]”
+    </p>
+    <input type="text" class="form-control" id="detail-label" aria-describedby="detail-label-hint" name="detail_label" size="30" value="[% contact.get_extra_metadata('detail_label') %]">
     <label for="detail-hint">[% loc('Details hint text') %]</label>
     <p class="form-hint" id="detail-hint-hint">
         Default is “[% form_detail_placeholder %]”
