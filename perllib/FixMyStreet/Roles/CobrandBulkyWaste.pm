@@ -159,13 +159,25 @@ sub bulky_total_cost {
     return $c->stash->{payment};
 }
 
+sub find_unconfirmed_bulky_collections {
+    my ( $self, $uprn ) = @_;
+
+    return $self->problems->search({
+        category => 'Bulky collection',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
+        state => 'unconfirmed',
+    }, {
+        order_by => { -desc => 'id' }
+    });
+}
+
 sub find_pending_bulky_collections {
     my ( $self, $uprn ) = @_;
 
     return $self->problems->search({
         category => 'Bulky collection',
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
+        state => [ FixMyStreet::DB::Result::Problem->open_states ],
     }, {
         order_by => { -desc => 'id' }
     });

@@ -556,6 +556,9 @@ sub look_up_property {
     $self->{c}->stash->{pending_bulky_collections}
         = @pending ? \@pending : undef;
 
+    my @unconfirmed = $self->find_unconfirmed_bulky_collections($uprn)->all;
+    $self->{c}->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
+
     return $premises{$uprn};
 }
 
