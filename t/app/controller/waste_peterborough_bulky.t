@@ -106,6 +106,7 @@ FixMyStreet::override_config {
             bulky_enabled => 1,
             bulky_amend_enabled => 'staff',
             bulky_multiple_bookings => 1,
+            bulky_retry_bookings => 1,
             bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
         } },
         payment_gateway => { peterborough => {
@@ -1291,16 +1292,41 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_contains("Confirm Booking");
         $mech->content_lacks("Confirm Subscription");
-        $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+
+        subtest 'Retrying failed payments' => sub {
+            $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
+            my $id = $report->id;
+            $mech->content_contains("<strong>$id</strong> – can be used to retry the payment");
+            my $email = $mech->get_text_body_from_email;
+            like $email, qr/Provide the reference number $id so you/;
+
+            $mech->get_ok('/waste');
+            $mech->submit_form_ok({ with_fields => { continue_id => $id } });
+            $mech->submit_form_ok({ form_number => 2 }); # Second change answers, the items
+            $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs', 'item_3' => 'Wardrobes' } });
+            $mech->submit_form_ok({ with_fields => { location => 'to the side of the drive' } });
+            $mech->content_contains('Wardrobes');
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+            $mech->get_ok('/waste/PE1%203NA:100090215480');
+            $mech->follow_link_ok({ text_regex => qr/Retry booking/i, });
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        };
+
+        $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
+        $report->discard_changes;
+
         is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
         is $report->category, 'Bulky collection';
         is $report->title, 'Bulky goods collection';
         is $report->get_extra_field_value('payment_method'), 'csc';
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
-        is $report->get_extra_field_value('CREW NOTES'), 'in the middle of the drive';
+        is $report->get_extra_field_value('CREW NOTES'), 'to the side of the drive';
+        is $report->get_extra_field_value('ITEM_01'), 'Amplifiers';
+        is $report->get_extra_field_value('ITEM_03'), 'Wardrobes';
 
         subtest 'Refund email includes PAYE.net code' => sub {
             $report->external_id('Bartec-SR00100001');
@@ -1420,8 +1446,51 @@ FixMyStreet::override_config {
 
         $report->delete;
         $b->mock('Premises_Attributes_Get', sub { [] });
+
+        my $cfg = $body->get_extra_metadata('wasteworks_config');
+        $cfg->{free_mode} = 0;
+        $cfg->{per_item_costs} = 0;
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
     };
 
+};
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => { sample_data => 1 } },
+        waste => { peterborough => 1 },
+        waste_features => { peterborough => {
+            bulky_enabled => 1,
+            bulky_multiple_bookings => 1,
+            bulky_retry_bookings => 0,
+            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
+        } },
+    },
+}, sub {
+    my ($b, $jobs_fsd_get, $fs_get) = shared_bartec_mocks();
+    subtest 'Bulky collection, payment by staff, no retrying enabled' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1%203NA:100090215480/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
+        $mech->content_lacks("can be used to retry the payment");
+
+        my $email = $mech->get_text_body_from_email;
+        unlike $email, qr/Provide the reference number/;
+        $mech->get_ok('/waste');
+        $mech->content_lacks('continue_id');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('Retry booking');
+    };
 };
 
 FixMyStreet::override_config {

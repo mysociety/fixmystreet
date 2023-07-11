@@ -3,9 +3,13 @@ Subject: There was a problem with your payment: [% report.title %]
 Hello [% report.name %],
 
 [% IF report.category == 'Bulky collection' ~%]
-There was a problem taking payment for your [% report.title %]. No details have been saved for the booking.
+There was a problem taking payment for your [% report.title %].
 
-Please contact 01733 747474 to start again; if you feel you will have difficulty with the auto payment system please advise the call handler at the start of the call.
+Please contact 01733 747474; if you feel you will have difficulty with the auto payment system please advise the call handler at the start of the call.
+
+[% IF waste_features.bulky_retry_bookings %]
+Provide the reference number [% report.id %] so you do not have to provide details of your collection again.
+[% END %]
 [% ELSE ~%]
 There was a problem collecting payment for your [% report.title %]. Please
 contact the Customer Service Centre to try again.

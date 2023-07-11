@@ -217,7 +217,13 @@ sub process_bulky_data : Private {
 
     if ($c->stash->{payment}) {
         $c->set_param('payment', $c->stash->{payment});
-        $c->forward('/waste/add_report', [ $data, 1 ]) or return;
+        if ($data->{continue_id}) {
+            $c->stash->{report} = $c->cobrand->problems->find($data->{continue_id});
+            amend_extra_data($c, $c->stash->{report}, $data);
+            $c->stash->{report}->update;
+        } else {
+            $c->forward('/waste/add_report', [ $data, 1 ]) or return;
+        }
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->stash->{message} = 'Payment skipped on staging';
             $c->stash->{reference} = $c->stash->{report}->id;
@@ -253,6 +259,23 @@ sub process_bulky_amend : Private {
 
     $p->detail($p->detail . " | Previously submitted as " . $p->external_id);
 
+    amend_extra_data($c, $p, $data);
+
+    $c->forward('add_cancellation_report');
+
+    $p->resend;
+    $p->external_id(undef);
+    $p->update;
+
+    # Need to reset stashed report to the amended one, not the new cancellation one
+    $c->stash->{report} = $p;
+
+    return 1;
+}
+
+sub amend_extra_data {
+    my ($c, $p, $data) = @_;
+
     $c->cobrand->waste_munge_bulky_amend($p, $data);
 
     if ($data->{location_photo}) {
@@ -276,17 +299,6 @@ sub process_bulky_amend : Private {
         push @bulky_photo_data, $data->{$_} if $data->{$_};
     }
     $p->photo( join(',', @bulky_photo_data) );
-
-    $c->forward('add_cancellation_report');
-
-    $p->resend;
-    $p->external_id(undef);
-    $p->update;
-
-    # Need to reset stashed report to the amended one, not the new cancellation one
-    $c->stash->{report} = $p;
-
-    return 1;
 }
 
 sub add_cancellation_report : Private {

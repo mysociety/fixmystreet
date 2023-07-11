@@ -552,9 +552,16 @@ sub look_up_property {
 
     my %premises = map { $_->{uprn} => $_ } @$premises;
 
+    my $c = $self->{c};
     my @pending = $self->find_pending_bulky_collections($uprn)->all;
-    $self->{c}->stash->{pending_bulky_collections}
+    $c->stash->{pending_bulky_collections}
         = @pending ? \@pending : undef;
+
+    my $cfg = $self->feature('waste_features');
+    if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
+        my @unconfirmed = $self->find_unconfirmed_bulky_collections($uprn)->all;
+        $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
+    }
 
     return $premises{$uprn};
 }

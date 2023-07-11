@@ -3,19 +3,26 @@
 <h1 class="govuk-heading-xl">Payment Failed</h1>
 
 <div class="govuk-panel govuk-panel--confirmation">
-    <h1 class="govuk-panel__title">
-        [% title %]
-    </h1>
     <div class="govuk-panel__body">
-        <p>[% message %]
+        <p>
           [% IF sent_email %]
             A payment failed notification has been sent to the user at [% report.user.email %].
           [% END %]
         </p>
 
+      [% IF report.category == 'Bulky collection' %]
         <p>
-        No subscription will be created.
+            No booking has been created.
+          [% IF waste_features.bulky_retry_bookings %]
+            The following code – <strong>[% report.id %]</strong> – can be used to retry the payment.
+          [% END %]
         </p>
+      [% ELSE %]
+        <p>
+            No subscription will be created.
+        </p>
+      [% END %]
+
     </div>
 </div>
 

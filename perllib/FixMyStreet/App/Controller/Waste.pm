@@ -73,6 +73,27 @@ sub index : Path : Args(0) {
         $c->detach('redirect_to_id', [ $id ]);
     }
 
+    if (my $id = $c->get_param('continue_id')) {
+        $c->stash->{continue_id} = $id;
+        if (my $p = $c->cobrand->problems->search({ state => 'unconfirmed' })->find($id)) {
+            if ($c->stash->{is_staff} && $c->stash->{waste_features}{bulky_retry_bookings}) {
+                my $property_id = $p->get_extra_field_value('property_id');
+                my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
+                $saved_data->{continue_id} = $id;
+                my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
+                $saved_data = $saved_data_field->deflate_json($saved_data);
+                $c->set_param(saved_data => $saved_data);
+                $c->set_param('goto', 'summary');
+                $c->go('/waste/bulky/index', [ $property_id ], []);
+            }
+        }
+        $c->stash->{form} = {
+            errors => 1,
+            all_form_errors => [ 'That booking reference could not be found' ],
+        };
+        return;
+    }
+
     $c->cobrand->call_hook( clear_cached_lookups_postcode => $c->get_param('postcode') )
         if $c->get_param('postcode');
 
