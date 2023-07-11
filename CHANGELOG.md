@@ -11,11 +11,13 @@
         - Fix link to edit category with apostrophe in category name.
     - Admin improvements:
         - Rename emergency message to site message.
+        - Added a category control for overriding the text of the new report details field.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
         - Auto-spot a default favicon.ico.
         - Add `send_state` column to reports. #4048
+        - A cobrand level text override for the details field label on new reports can now be configured.
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 
