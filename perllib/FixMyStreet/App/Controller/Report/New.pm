@@ -335,6 +335,7 @@ sub by_category_ajax_data : Private {
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $body->{category_photo_required} = $c->stash->{category_photo_required}->{$category};
     }
+    $body->{phone_required} = $c->stash->{category_phone_required}->{$category} if $c->stash->{category_phone_required}->{$category};
 
     # councils_text.html must be rendered if it differs from the default output,
     # which currently means for unresponsive and non_public categories.
@@ -792,6 +793,8 @@ sub setup_categories_and_bodies : Private {
       ();    # categories for which the reports are not public
     my %category_photo_required =
       (); # whether a category requires a photo to be uploaded.
+    my %category_phone_required =
+      (); # whether a category requires a phone number to be provided.
     my %cobrand_field_overrides_by_body = ();
     $c->stash->{unresponsive} = {};
 
@@ -836,6 +839,7 @@ sub setup_categories_and_bodies : Private {
         }
 
         $category_photo_required{$contact->category} = $contact->get_extra_metadata('photo_required') ? 1 : 0;
+        $category_phone_required{$contact->category} = $contact->get_extra_metadata('phone_required') ? 1 : 0;
 
         $non_public_categories{ $contact->category } = 1 if $contact->non_public;
 
@@ -898,6 +902,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_extras_notices}  = \%category_extras_notices;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{category_photo_required}  = \%category_photo_required;
+    $c->stash->{category_phone_required}  = \%category_phone_required;
     $c->stash->{extra_name_info} = $all_areas->{+COUNCIL_ID_BROMLEY} ? 1 : 0;
     $c->stash->{cobrand_field_overrides_by_body} = \%cobrand_field_overrides_by_body;
 

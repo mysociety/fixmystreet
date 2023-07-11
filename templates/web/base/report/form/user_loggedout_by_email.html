@@ -9,7 +9,7 @@
 
   [% IF type != 'update' %]
     [% IF NOT c.cobrand.call_hook('disable_phone_number_entry') AND NOT c.cobrand.sms_authentication %]
-        <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+        <label for="form_phone">[% loc('Phone number') %]<span id="js-optional-phone"> [% loc('(optional)') %]</span></label>
         [% IF field_errors.phone %]
           <p class='form-error'>[% field_errors.phone %]</p>
         [% END %]
@@ -33,11 +33,9 @@
     [% END %]
     <p class="segmented-control segmented-control--radio">
         <input required type="radio" name="update_method" id="update_method_email"
-             data-show="#js-optional-phone" data-hide="#js-optional-email"
             value="email"[% ' checked' IF update_method == 'email' %]>
         <label class="btn" for="update_method_email">[% loc('Email') %]</label>
         <input type="radio" name="update_method" id="update_method_phone"
-             data-show="#js-optional-email" data-hide="#js-optional-phone"
             value="phone"[% ' checked' IF update_method == 'phone' %]>
         <label class="btn" for="update_method_phone">[% loc('Phone') %]</label>
     </p>
@@ -47,13 +45,13 @@
         <p class='form-error'>[% field_errors.username_register %]</p>
     [% END %]
 
-    <label for="form_email">[% loc('Your email') %]<span class="hidden-js" id="js-optional-email"> [% loc('(optional)') %]</span></label>
+    <label for="form_email">[% loc('Your email') %]<span class="hidden-js" id="js-optional-email-update-method-triggered"> [% loc('(optional)') %]</span></label>
     [% IF field_errors.email %]
         <p class='form-error'>[% field_errors.email %]</p>
     [% END %]
     <input type="email" name="email" id="form_email" value="[% email %]" class="form-control">
 
-    <label for="form_phone">[% loc('Phone number') %]<span class="hidden-js" id="js-optional-phone"> [% loc('(optional)') %]</span></label>
+    <label for="form_phone">[% loc('Phone number') %]<span class="hidden-js" id="js-optional-phone-update-method-triggered"> [% loc('(optional)') %]</span></label>
     [% IF field_errors.phone %]
         <p class='form-error'>[% field_errors.phone %]</p>
     [% END %]

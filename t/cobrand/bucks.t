@@ -642,7 +642,7 @@ subtest 'phone number field only appears for staff' => sub {
     $mech->content_lacks("Phone number (optional)");
     $mech->log_in_ok($counciluser->email);
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
-    $mech->content_contains("Phone number (optional)");
+    $mech->content_contains("Phone number");
     $mech->log_out_ok;
 };
 
