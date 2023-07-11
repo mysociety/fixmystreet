@@ -797,6 +797,7 @@ $.extend(fixmystreet.set_up, {
         if ($("html").hasClass("mobile")) {
             default_message = translation_strings.upload_default_message_mobile;
         }
+        var prevFile;
         var photodrop = new Dropzone($dropzone[0], {
             url: '/photo/upload',
             paramName: 'photo',
@@ -822,6 +823,9 @@ $.extend(fixmystreet.set_up, {
             },
             init: function() {
               this.on("addedfile", function(file) {
+                if (max_photos == 1 && prevFile) {
+                    this.removeFile(prevFile);
+                }
                 $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
               });
               this.on("queuecomplete", function() {
@@ -839,6 +843,9 @@ $.extend(fixmystreet.set_up, {
                     l = ids.push(id);
                 newstr = ids.join(',');
                 $upload_fileids.val(newstr);
+                if (max_photos == 1) {
+                    prevFile = file;
+                }
               });
               this.on("error", function(file, errorMessage, xhrResponse) {
               });
@@ -847,6 +854,9 @@ $.extend(fixmystreet.set_up, {
                 var ids = $upload_fileids.val().split(','),
                     newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
                 $upload_fileids.val(newstr);
+                if (max_photos == 1) {
+                    prevFile = null;
+                }
               });
               this.on("maxfilesexceeded", function(file) {
                 this.removeFile(file);
