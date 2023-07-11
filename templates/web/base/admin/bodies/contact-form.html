@@ -151,6 +151,11 @@
       <span class='form-hint'>[% loc('Use this if there is a chance that multiple bodies covering the same area that have the same contacts and you want to just send reports to one, rather than multiple bodies') %]</span>
     </p>
 
+    <p class="form-check">
+      <input type="checkbox" name="phone_required" value="1" id="phone_required" [% ' checked' IF contact.extra.phone_required %]>
+      <label for="phone_required">[% loc('Require a phone number to be provided') %]</label>
+    </p>
+
   [% IF body.can_be_devolved %]
     <div class="admin-hint">
       <p>

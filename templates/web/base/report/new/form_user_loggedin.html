@@ -54,7 +54,7 @@
     [% INCLUDE 'report/_show_name_label.html' %]
 
 [% IF NOT c.user.phone_verified AND NOT c.cobrand.call_hook('disable_phone_number_entry') %]
-    <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+    <label for="form_phone">[% loc('Phone number') %] <span id="js-optional-phone">[% loc('(optional)') %]</span></label>
     [% IF field_errors.phone %]
       <p class='form-error'>[% field_errors.phone %]</p>
     [% END %]
