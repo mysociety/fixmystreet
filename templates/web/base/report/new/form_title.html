@@ -1,5 +1,3 @@
-[% DEFAULT form_title = loc('Summarise the problem') %]
-[% DEFAULT form_title_placeholder = loc('e.g. ‘10 inch pothole on Example St, near post box’') %]
 <label id="title-label" for="form_title">[% form_title %]</label>
 <p class="form-hint" id="title-hint">[% contact_title_hint OR form_title_placeholder %]</p>
 [% IF field_errors.title %]
