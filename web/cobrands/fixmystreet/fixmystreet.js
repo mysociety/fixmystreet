@@ -887,7 +887,7 @@ $.extend(fixmystreet.set_up, {
             if (!f) {
                 return;
             }
-            var mockFile = { name: f, server_id: f, dataURL: '/photo/temp.' + f };
+            var mockFile = { name: f, server_id: f, dataURL: '/photo/temp.' + f, status: Dropzone.SUCCESS, accepted: true };
             photodrop.emit("addedfile", mockFile);
             photodrop.createThumbnailFromUrl(mockFile,
                 photodrop.options.thumbnailWidth, photodrop.options.thumbnailHeight,
@@ -895,7 +895,9 @@ $.extend(fixmystreet.set_up, {
                     photodrop.emit('thumbnail', mockFile, thumbnail);
                 });
             photodrop.emit("complete", mockFile);
-            photodrop.options.maxFiles -= 1;
+            photodrop.files.push(mockFile);
+            photodrop._updateMaxFilesReachedClass();
+            prevFile = mockFile;
         });
       });
     });
