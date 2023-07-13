@@ -89,8 +89,8 @@ sub enter_postcode_text { 'Enter a postcode, street name and area, or check an e
 
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
+    $params->{multi_photos} = 1;
     if ($contact->email =~ /Jadu/) {
-        $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
     }
 }
