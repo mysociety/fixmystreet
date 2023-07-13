@@ -406,6 +406,7 @@ sub disable_form_message : Private {
                     $category{$message} ||= {};
                     $category{$message}->{message} = $message;
                     $category{$message}->{code} = $_->{code};
+                    $category{$message}->{datatype} = $_->{datatype};
                     push @{$category{$message}->{answers}}, $opt->{key};
                 }
             }

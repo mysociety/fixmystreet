@@ -1539,6 +1539,12 @@ fixmystreet.message_controller = (function() {
         }
 
         if (stopper.answers) {
+            if (stopper.datatype == 'multivaluelist') {
+                console.log(stopper);
+                return stopper.answers.some(function (ans) {
+                    return $('#form_' + stopper.code + '_' + ans).is(':checked');
+                });
+            }
             var answer = $('#form_' + stopper.code).val();
             if (OpenLayers.Util.indexOf(stopper.answers, answer) > -1) {
                 return true;
