@@ -44,7 +44,7 @@ You can obtain a refund if you cancel by [% cobrand.bulky_nice_collection_time %
 
 [% END ~%]
 
-Please read the bulky waste collection page on the council’s website for information about this service:
+Please check the bulky waste collection page on the council’s website for information about this service:
 
     https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
 
