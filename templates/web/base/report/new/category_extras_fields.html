@@ -27,8 +27,7 @@
             <div class="label-containing-checkbox">
               <label style="font-weight:normal;" for="[% cat_prefix %][% meta_name %][% option.key %]">[% option.name %]
                 <input class="at-least-one-group group-error-propagate" type="checkbox" id="[% cat_prefix %][% meta_name %][% option.key %]" name="[% cat_prefix %][% meta_name %]" value="[% option.key %]"
-                [% FOREACH key IN report_meta.$x_meta_name.value %][% IF key == option.key %] checked [% LAST %][% END %][% END %]>
-                [%# Iterating through the whole list of values as unable to check if the array contains the key. %]
+                [% IF report_meta.$x_meta_name.value.grep(option.key).size %] checked [% END %]>
               </label>
             </div>
           [% END %]
