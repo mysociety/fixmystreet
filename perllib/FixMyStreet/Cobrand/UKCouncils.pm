@@ -171,15 +171,71 @@ sub area_check {
 
     my $councils = $params->{all_areas};
 
-    # The majority of cobrands only cover a single area, but e.g. Northamptonshire
-    # covers multiple so we need to handle that situation.
-    my $council_area_ids = $self->council_area_id;
-    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
-    foreach (@$council_area_ids) {
-        return 1 if defined $councils->{$_};
-    }
+    return 1 if $self->responsible_for_areas($councils);
 
     return ( 0, $self->area_check_error_message($params, $context) );
+}
+
+=head2 responsible_for_areas
+
+Tests to see if the cobrand is responsible for a location. This is done through
+checking if it has the area set in council_area_id and also checking if the
+coverage is limited only to an overlapping asset by testing the hook
+report_is_on_cobrand_asset
+
+=cut
+
+sub responsible_for_areas {
+    my ($self, $councils) = @_;
+
+    if ($self->can('check_report_is_on_cobrand_asset')) {
+        # This will need changing for two tier councils
+        if (scalar(%$councils) == 1 && (values %$councils)[0]->{id} eq $self->council_area_id->[0]) {
+            return 1;
+        } elsif ($self->check_report_is_on_cobrand_asset) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        # The majority of cobrands only cover a single area, but e.g. Northamptonshire
+        # covers multiple so we need to handle that situation.
+        my $council_area_ids = $self->council_area_id;
+        $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+        foreach (@$council_area_ids) {
+            return 1 if defined $councils->{$_};
+        }
+
+        return 0;
+    }
+}
+
+=head2 munge_overlapping_asset_bodies
+
+Some bodies have assets which overlap, or are in, another body's area. For
+those, we add the overlapped area into the council_area_id so the point in the
+other area can be selected. But we then need to filter which categories appear
+- if it's on the overlapping asset, the cobrand body, otherwise whichever body
+actually covers that area.
+
+=cut
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    return unless $self->can('check_report_is_on_cobrand_asset') && $self->body;
+
+    my %body_names = map { $_->name => 1 } grep { $_->name !~ /TfL|National Highways/} values %$bodies;
+    if (scalar(keys %body_names) == 1 && $body_names{$self->body->name}) {
+        # The cobrand body is the only body, other than possibly NH and/or TfL, so do nothing.
+        return;
+    };
+
+    # If we get here, assume we are outside the cobrand's boundaries so run the
+    # test to see if we are on the cobrand's asset and return the relevant bodies
+    if (!$self->check_report_is_on_cobrand_asset) {
+        %$bodies = map { $_->id => $_ } grep { $_->name ne $self->body->name } values %$bodies;
+    }
 }
 
 sub area_check_error_message {
@@ -381,6 +437,8 @@ sub munge_report_new_bodies {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
     }
+
+    $self->munge_overlapping_asset_bodies($bodies);
 }
 
 sub munge_report_new_contacts {
