@@ -81,7 +81,7 @@ use_ok 'FixMyStreet::Cobrand::Brent';
 
 my $super_user = $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $comment_user = $mech->create_user_ok('comment@example.org', email_verified => 1, name => 'Brent');
-my $brent = $mech->create_body_ok(2488, 'Brent', {
+my $brent = $mech->create_body_ok(2488, 'Brent Council', {
     api_key => 'abc',
     jurisdiction => 'brent',
     endpoint => 'http://endpoint.example.org',
@@ -92,6 +92,28 @@ my $brent = $mech->create_body_ok(2488, 'Brent', {
     cobrand => 'brent'
 });
 my $atak_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'ATAK', email => 'ATAK');
+
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2505, # Camden
+    body_id => $brent->id,
+});
+
+my $camden = $mech->create_body_ok(2505, 'Camden Borough Council', {},{cobrand => 'camden'});
+my $barnet = $mech->create_body_ok(2489, 'Barnet Borough Council');
+my $harrow = $mech->create_body_ok(2487, 'Harrow Borough Council');
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2488,
+    body_id => $barnet->id,
+});
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2488,
+    body_id => $camden->id,
+});
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2488,
+    body_id => $harrow->id,
+});
+
 my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
@@ -417,10 +439,14 @@ FixMyStreet::override_config {
     subtest "hides the TfL River Piers category" => sub {
 
         my $tfl = $mech->create_body_ok(2488, 'TfL');
+        FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+            area_id => 2505, # Camden
+            body_id => $tfl->id,
+        });
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers', email => 'tfl@example.org');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers - Cleaning', email => 'tfl@example.org');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers Damage doors and glass', email => 'tfl@example.org');
-
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'Sweeping', email => 'tfl@example.org');
         ok $mech->host('brent.fixmystreet.com'), 'set host';
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.55904&longitude=-0.28168');
         is $json->{by_category}->{"River Piers"}, undef, "Brent doesn't have River Piers category";
@@ -447,6 +473,148 @@ FixMyStreet::override_config {
         $problem->state('in_progress');
         is $cobrand->pin_colour($problem, 'around'), 'orange', 'in_progress problem has correct pin colour';
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent', 'tfl', 'camden', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    $mech->create_contact_ok(body_id => $camden->id, category => 'Dead animal', email => 'animal@camden.org');
+    $mech->create_contact_ok(body_id => $camden->id, category => 'Fly-tipping', email => 'flytipping@camden.org');
+    $mech->create_contact_ok(body_id => $barnet->id, category => 'Abandoned vehicles', email => 'vehicles@barnet.org');
+    $mech->create_contact_ok(body_id => $barnet->id, category => 'Parking', email => 'parking@barnet.org');
+
+        my $brent_mock = Test::MockModule->new('FixMyStreet::Cobrand::Brent');
+        my $camden_mock = Test::MockModule->new('FixMyStreet::Cobrand::Camden');
+            foreach my $host (qw/brent fixmystreet/) {
+                subtest "categories on $host cobrand in Brent on Camden cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features', sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Camden' } } ]});
+                    $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_contains("Fly-tipping"), 1, 'Camden category present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                }
+            };
+
+            foreach my $host (qw/brent fixmystreet/) {
+                subtest "categories on $host cobrand in Brent not on cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features', sub {[]});
+                    $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_contains("Gully grid missing"), 1, 'Brent Symology category present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_lacks("Fly-tipping"), 1, 'Camden category not present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                };
+            };
+
+            foreach my $host (qw/camden fixmystreet/) {
+                subtest "categories on $host in Camden not on cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $camden_mock->mock('_fetch_features', sub { [] });
+                    $mech->get_ok("/report/new/ajax?longitude=-0.124514&latitude=51.529432");
+                    is $mech->content_lacks("Potholes"), 1, 'Brent category not present';
+                    is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_contains("Fly-tipping"), 1, 'Camden category present';
+                    is $mech->content_contains("Dead animal"), 1, 'Camden non-street category present';
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                };
+            }
+
+            foreach my $host (qw/fixmystreet brent camden/) {
+                subtest "categories on $host cobrand in Camden on Brent cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features',
+                        sub { [ { 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } } ] });
+                    $camden_mock->mock('_fetch_features',
+                        sub { [ { 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } } ] });
+                    $mech->get_ok("/report/new/ajax?longitude=-0.124514&latitude=51.529432");
+                    is $mech->content_lacks("Potholes"), 1, 'Brent category not present';
+                    is $mech->content_contains("Gully grid missing"), 1, 'Brent Symology category present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_lacks("Fly-tipping"), 1, 'Camden street category not present';
+                    is $mech->content_contains("Dead animal"), 1, 'Camden non-street category present';
+                }
+            };
+
+            foreach my $host (qw/fixmystreet brent/) {
+                subtest "categories on $host cobrand in Brent on Barnet cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features', sub {[ { 'ms:BrentDiffs' => { 'ms:name' => 'Barnet' } } ]});
+                    $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_contains("Parking"), 1, 'Barnet street category present';
+                    is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_lacks("Fly-tipping"), 1, 'Camden category not present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                }
+            };
+
+            subtest "can not access Camden from Brent off asset layer" => sub {
+                $mech->host("brent.fixmystreet.com");
+                $brent_mock->mock('_fetch_features',
+                    sub { [] });
+                $mech->get_ok("/report/new?longitude=-0.124514&latitude=51.529432");
+                is $mech->content_contains('That location is not covered by Brent Council'), 1, 'Can not make report in Camden off asset';
+            };
+
+            subtest "can access Camden from Brent on asset layer" => sub {
+                $mech->host("brent.fixmystreet.com");
+                $brent_mock->mock('_fetch_features',
+                    sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } }] });
+                $mech->get_ok("/report/new?longitude=-0.124514&latitude=51.529432");
+                is $mech->content_lacks('That location is not covered by Brent Council'), 1, 'Can not make report in Camden off asset';
+            };
+
+            subtest "can access Brent from Camden on Camden asset layer" => sub {
+                $mech->host("camden.fixmystreet.com");
+                $camden_mock->mock('_fetch_features', sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Camden' } }] });
+                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
+                is $mech->content_lacks('That location is not covered by Camden Council'), 1, "Can make a report on Camden asset";
+            };
+
+            subtest "can not access Brent from Camden not on asset layer" => sub {
+                $mech->host("camden.fixmystreet.com");
+                $camden_mock->mock('_fetch_features', sub { [] });
+                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
+                is $mech->content_contains('That location is not covered by Camden Council'), 1, "Can make a report on Camden asset";
+            };
+
+            for my $test (
+                {
+                    council => 'Brent',
+                    location => '/report/new?longitude=-0.28168&latitude=51.55904',
+                    asset => [ ],
+                },
+                {
+                    council => 'Barnet',
+                    location => '/report/new?longitude=-0.207702&latitude=51.558568',
+                    asset => [ ],
+                },
+
+            ) {
+                subtest "can not access $test->{council} from Camden cobrand" => sub {
+                    $mech->host("camden.fixmystreet.com");
+                    $camden_mock->mock('_fetch_features', sub { $test->{asset} });
+                    $mech->get_ok($test->{location});
+                    is $mech->content_contains('That location is not covered by Camden Council'), 1, "Can not make report in $test->{council} from Camden";
+                };
+            };
+
+            $mech->host("brent.fixmystreet.com");
+            undef $brent_mock; undef $camden_mock;
 };
 
 package SOAP::Result;

@@ -111,6 +111,7 @@ my @PLACES = (
     [ 'CA12 5FJ', 54.60102, -3.13648, 2274, 'Allerdale Borough Council', 'DIS' ],
     [ 'NE61 1BE', 55.169081, -1.691012, 2248, 'Northumberland County Council', 'UTA' ],
     [ 'SG17 5TQ', 52.03553, -0.36067, 21070, 'Central Bedfordshire Council', 'UTA' ],
+    [ '?', 51.558568, -0.207702, 2489, 'Barnet Borough Council', 'DIS' ],
 );
 
 sub dispatch_request {

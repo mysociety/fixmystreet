@@ -24,6 +24,7 @@ use DateTime::Format::Strptime;
 use Try::Tiny;
 use LWP::Simple;
 use URI;
+use JSON::MaybeXS;
 
 =head1 INTEGRATIONS
 
@@ -45,7 +46,8 @@ with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::SCP';
 
-sub council_area_id { return 2488; }
+# Brent covers some of the areas around it so that it can handle near-boundary reports
+sub council_area_id { return [2488, 2505, 2489, 2487]; } # 2505 Camden, 2489 Barnet, 2487 Harrow
 sub council_area { return 'Brent'; }
 sub council_name { return 'Brent Council'; }
 sub council_url { return 'brent'; }
@@ -134,6 +136,8 @@ sub disambiguate_location { {
 
 =item * Filters down search results to be the street name and the postcode only
 
+=back
+
 =cut
 
 sub geocoder_munge_results {
@@ -142,7 +146,141 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Brent, London, Greater London, England//;
 }
 
-=back
+=head2 check_report_is_on_cobrand_asset
+
+If the location is covered by an area of differing responsibility (e.g. Brent
+in Camden, or Camden in Brent), return true (either 1 if an area name is
+provided, or the name of the area if not).
+
+=cut
+
+sub check_report_is_on_cobrand_asset {
+    my ($self, $council_area) = shift @_;
+
+    my $lat = $self->{c}->stash->{latitude};
+    my $lon = $self->{c}->stash->{longitude};
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+
+    my $cfg = {
+        url => "https://$host/mapserver/brent",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "BrentDiffs",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        outputformat => 'GML3',
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y, 1);
+
+    if ($$features[0]) {
+        if ($council_area) {
+            if ($$features[0]->{'ms:BrentDiffs'}->{'ms:name'} eq $council_area) {
+                return 1;
+            }
+        } else {
+            return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
+        }
+    }
+}
+
+=head2 munge_overlapping_asset_bodies
+
+Alters the list of available bodies for the location,
+depending on calculated responsibility. After this function,
+the bodies list will be the relevant bodies for the point,
+though categories may need to be altered later on.
+
+=cut
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    # in_area will be true if the point is within the administrative area of Brent
+    my $in_area = scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset;
+
+    if ($in_area) {
+        # In the area of Brent...
+        if (!$cobrand || $cobrand eq 'Brent') {
+            # ...Brent's responsibility - remove the other bodies covering the Brent area
+            %$bodies = map { $_->id => $_ } grep {
+                $_->name ne 'Camden Borough Council' &&
+                $_->name ne 'Barnet Borough Council' &&
+                $_->name ne 'Harrow Borough Council'
+                } values %$bodies;
+        } else {
+            # ...someone else's responsibility, take out the ones definitely not responsible
+            my %cobrands = (Harrow => 'Harrow Borough Council', Camden => 'Camden Borough Council', Barnet => 'Barnet Borough Council');
+            my $selected = $cobrands{$cobrand};
+            %$bodies = map { $_->id => $_ } grep {
+                $_->name eq $selected || $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+            } values %$bodies;
+        }
+    } else {
+        # Not in the area of Brent...
+        if (!$cobrand || $cobrand ne 'Brent') {
+            # ...not Brent's responsibility - remove Brent
+            %$bodies = map { $_->id => $_ } grep {
+                $_->name ne 'Brent Council'
+                } values %$bodies;
+        } else {
+            # ...Brent's responsibility - leave (both) bodies alone
+        }
+    }
+}
+
+=head2 munge_cobrand_asset_categories
+
+If we're in an overlapping area, we want to take the street categories
+of one body, and the non-street categories of the other.
+
+=cut
+
+sub munge_cobrand_asset_categories {
+    my ($self, $contacts) = @_;
+
+    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %non_street = (
+        'Barnet' => { map { $_ => 1 } @{ $self->_barnet_non_street } },
+        'Camden' => { map { $_ => 1 } @{ $self->_camden_non_street } },
+        'Harrow' => { map { $_ => 1 } @{ $self->_harrow_non_street } },
+    );
+
+    # in_area will be true if the point is within the administrative area of Brent
+    my $in_area = scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset || '';
+    return unless $cobrand;
+
+    my $brent_body = $self->body->id;
+    if (!$in_area && $cobrand eq 'Brent') {
+        # Outside the area of Brent, but Brent's responsibility
+        my $area;
+        if (grep {$_->{name} eq 'Camden Borough Council'} values %{$self->{c}->stash->{all_areas}}){
+            $area = 'Camden';
+        } elsif (grep {$_->{name} eq 'Harrow Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
+            $area = 'Harrow';
+        }  elsif (grep {$_->{name} eq 'Barnet Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
+            $area = 'Barnet';
+        };
+        my $other_body = $bodies{$area . " Borough Council"};
+
+        # Remove the non-street contacts of Brent
+        @$contacts = grep { !($_->email !~ /^Symology/ && $_->body_id == $brent_body) } @$contacts;
+        # Remove the street contacts of the other
+        @$contacts = grep { !(!$non_street{$area}{$_->category} && $_->body_id == $other_body->id) } @$contacts
+            if $other_body;
+    } elsif ($in_area && $cobrand ne 'Brent') {
+        # Inside the area of Brent, but not Brent's responsibility
+        my $other_body = $bodies{$cobrand . " Borough Council"};
+        # Remove the street contacts of Brent
+        @$contacts = grep { !($_->email =~ /^Symology/ && $_->body_id == $brent_body) } @$contacts;
+        # Remove the non-street contacts of the other
+        @$contacts = grep { !($non_street{$cobrand}{$_->category} && $_->body_id == $other_body->id) } @$contacts
+            if $other_body;
+    }
+}
 
 =head2 pin_colour
 
@@ -1347,7 +1485,6 @@ sub waste_get_pro_rata_cost {
     return $self->feature('payment_gateway')->{ggw_cost};
 }
 
-
 sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }
 sub bulky_cancel_by_update { 1 }
@@ -1438,6 +1575,37 @@ sub waste_reconstruct_bulky_data {
     $saved_data->{phone} = $p->user->phone;
 
     return $saved_data;
+}
+
+sub _barnet_non_street {
+    return [
+        'Abandoned vehicles',
+        'Graffiti',
+        'Dog fouling',
+        'Overhanging foliage',
+    ]
+};
+
+sub _camden_non_street {
+    return [
+        'Abandoned vehicles',
+        'Dead animal',
+        'Flyposting',
+        'Public toilets',
+        'Recycling & rubbish (Missed bin)',
+        'Dott e-bike / e-scooter',
+        'Human Forest e-bike',
+        'Lime e-bike / e-scooter',
+        'Tier e-bike / e-scooter',
+    ]
+}
+
+sub _harrow_non_street {
+    return [
+        'Abandoned vehicles',
+        'Car parking',
+        'Graffiti',
+    ]
 }
 
 1;

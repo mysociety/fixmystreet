@@ -206,6 +206,11 @@ sub munge_report_new_bodies {
         my $bristol = FixMyStreet::Cobrand::Bristol->new({ c => $self->{c} });
         $bristol->munge_overlapping_asset_bodies($bodies);
     }
+
+    if ( $bodies{'Brent Council'} ) {
+        my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
+        $brent->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 sub munge_report_new_contacts {
@@ -239,6 +244,11 @@ sub munge_report_new_contacts {
     if ( $bodies{'National Highways'} ) {
         my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
         $nh->national_highways_cleaning_groups($contacts);
+    }
+
+    if ( $bodies{'Brent Council'} ) {
+        my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
+        $brent->munge_cobrand_asset_categories($contacts);
     }
 }
 
