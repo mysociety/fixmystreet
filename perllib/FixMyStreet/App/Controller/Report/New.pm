@@ -1344,7 +1344,8 @@ sub set_report_extras : Private {
 
             my $value;
             if ($field->{datatype} eq 'multivaluelist') {
-                $value = $c->req->params->{$param_prefix . $field->{code}} // [];
+                my @params = $c->get_param_list($param_prefix . $field->{code}, 1);
+                $value = \@params;
             } else {
                 $value = $c->get_param($param_prefix . $field->{code}) // '';
             }
