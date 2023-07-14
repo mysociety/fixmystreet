@@ -20,7 +20,6 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
     initialize: function(name, options) {
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, arguments);
         // Update layer based upon new data from category change
-        $(fixmystreet).on('assets:selected', this.checkSelected.bind(this));
         $(fixmystreet).on('assets:unselected', this.checkSelected.bind(this));
         $(fixmystreet).on('report_new:category_change', this.update_layer_visibility.bind(this));
         $(fixmystreet).on('inspect_form:asset_change', this.update_layer_visibility.bind(this));
@@ -239,6 +238,7 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
 OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
     initialize: function(name, options) {
         OpenLayers.Layer.VectorBase.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('assets:selected', this.checkSelected.bind(this));
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
     },
     CLASS_NAME: 'OpenLayers.Layer.VectorAsset'
@@ -246,10 +246,11 @@ OpenLayers.Layer.VectorAsset = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
 
 // This is required so that the found/not found actions are fired on category
 // select and pin move rather than just on asset select/not select.
-OpenLayers.Layer.VectorAssetMove = OpenLayers.Class(OpenLayers.Layer.VectorAsset, {
+OpenLayers.Layer.VectorAssetMove = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
     initialize: function(name, options) {
-        OpenLayers.Layer.VectorAsset.prototype.initialize.apply(this, arguments);
+        OpenLayers.Layer.VectorBase.prototype.initialize.apply(this, arguments);
         $(fixmystreet).on('maps:update_pin', this.checkSelected.bind(this));
+        $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
         $(fixmystreet).on('report_new:category_change', this.checkSelected.bind(this));
     },
 
@@ -262,6 +263,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
 
     initialize: function(name, options) {
         OpenLayers.Layer.VectorBase.prototype.initialize.apply(this, arguments);
+        $(fixmystreet).on('assets:selected', this.checkSelected.bind(this));
         $(fixmystreet).on('maps:update_pin', this.checkFeature.bind(this));
         $(fixmystreet).on('report_new:category_change', this.changeCategory.bind(this));
     },
@@ -1073,6 +1075,9 @@ sets the attribute fields.
 VectorAssetMove
 ---------------
 This also calls asset_found/asset_not_found on category change/pin move.
+You will need to use this class if you need the functions to fire as soon as
+the layer is displayed (e.g. if asset selection is mandatory, to show the
+select an asset message).
 
 VectorNearest
 -------------
