@@ -81,7 +81,7 @@ sub _add_layer {
         default => _encode_json_with_js_classes($default_lookup),
         layers => [ map {
             my $default = $_->{template} || 'default';
-            my $json = _encode_json_with_js_classes($_);
+            my $json = _encode_json_with_js_classes($_->{layers} || $_);
             { default => $default, data => $json };
         } @layers ],
     };

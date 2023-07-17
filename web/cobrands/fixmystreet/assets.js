@@ -1123,6 +1123,17 @@ construct_asset_name - if present, called with the above ID, to return ID and
             return;
         }
 
+        if (options && options.length) {
+            // A list of layers
+            var layers_added = [];
+            $.each(options, function(i, l) {
+                var opts = $.extend(true, {}, default_options, l);
+                layers_added.push(fixmystreet.assets.add_layer(opts));
+            });
+            fixmystreet.assets.add_controls(layers_added, default_options);
+            return;
+        }
+
         options = $.extend(true, {}, default_options, options);
 
         var cls = construct_layer_class(options);
