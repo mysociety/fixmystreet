@@ -740,6 +740,19 @@ fixmystreet.assets.eastsussex.construct_selected_asset_message = function(asset)
     }
 };
 
+/* Gloucestershire */
+
+fixmystreet.assets.gloucestershire = {};
+
+fixmystreet.assets.gloucestershire.street_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        strokeColor: "navy",
+        strokeOpacity: 0.5,
+        strokeWidth: 5
+    })
+});
+
 /* Hounslow */
 
 fixmystreet.assets.hounslow = {};
