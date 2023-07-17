@@ -20,7 +20,6 @@ fixmystreet.assets.add(defaults, {
 
     non_interactive: true,
     road: true,
-    all_categories: true,
     usrn: [
         {
             field: 'road_name',

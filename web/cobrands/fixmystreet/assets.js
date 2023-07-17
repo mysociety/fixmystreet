@@ -171,23 +171,21 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
         if (!this.getVisibility()) {
           return;
         }
-        if (this.fixmystreet.select_action) {
-            if (fixmystreet.assets.selectedFeature()) {
-                this.asset_found();
-            } else {
-                this.asset_not_found();
-            }
+        if (fixmystreet.assets.selectedFeature()) {
+            this.asset_found();
+        } else {
+            this.asset_not_found();
         }
     },
 
     asset_found: function() {
-        if (this.fixmystreet.actions) {
+        if (this.fixmystreet.actions && this.fixmystreet.actions.asset_found) {
             this.fixmystreet.actions.asset_found.call(this, fixmystreet.assets.selectedFeature());
         }
     },
 
     asset_not_found: function() {
-        if (this.fixmystreet.actions) {
+        if (this.fixmystreet.actions && this.fixmystreet.actions.asset_not_found) {
             this.fixmystreet.actions.asset_not_found.call(this);
         }
     },
@@ -275,7 +273,7 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
         this.getNearest(lonlat);
         this.updateUSRNField();
         if (this.fixmystreet.road) {
-            var valid_category = this.fixmystreet.all_categories || ((this.fixmystreet.asset_category || this.fixmystreet.asset_group) && this.relevant());
+            var valid_category = this.fixmystreet.always_visible || ((this.fixmystreet.asset_category || this.fixmystreet.asset_group) && this.relevant());
             if (!valid_category || !this.selected_feature) {
                 this.road_not_found();
             } else {
@@ -1055,9 +1053,9 @@ asset_item_message - if present, used as the 'You can pick a...' message, with
 
 VectorAsset
 -----------
-select_action - boolean, if set then asset selection will call
-    actions.asset_found with the selected asset, and asset deselection will
-    call actions.asset_not_found
+actions.asset_found/actions.asset_not_found - if present, then asset selection
+will call the former with the asset, and asset deselection will call the
+latter.
 attributes - a hash of field to attribute. On asset selection, if attribute is
     a function, it is called with the feature; otherwise it is looked up in the
     feature's attributes. Then the input with the field name is set (and
@@ -1089,13 +1087,11 @@ usrn - if present, as either an object of attribute/field keys or an array of
     attribute with the attribute key (by default, or calls getUSRN with the
     nearest feature if present)
 road - boolean; if present:
-    If there is a nearest feature, and either all_categories is set or it is a
+    If there is a nearest feature, and either always_visible is set or it is a
     Relevant category/group, call actions.found with the nearest feature (if
     actions.found exists), otherwise call only_send with the body.
     If not, call actions.not_found (if present), otherwise call
     remove_only_send.
-all_categories - boolean to be set if the road found/not found functions should
-    fire on all categories
 
 Found / Not Found standard functions
 ====================================

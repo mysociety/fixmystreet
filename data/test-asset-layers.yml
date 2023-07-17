@@ -39,7 +39,6 @@ bathnes:
     stylemap: fixmystreet.assets.stylemap_invisible
     non_interactive: true
     always_visible: true
-    all_categories: true
     nearest_radius: 0.1
     road: true
     no_asset_msg_id: '#js-curo-group-restriction'
@@ -58,7 +57,6 @@ brent:
     nearest_radius: '0.1'
     always_visible: 1
     non_interactive: 1
-    all_categories: 1
     no_asset_msg_id: '#js-brent-tenant-services'
     road: 1
     actions:
@@ -105,7 +103,6 @@ bromley:
     always_visible: true
     non_interactive: true
     road: true
-    all_categories: true
     usrn:
       attribute: 'PROW_REFER'
       field: 'prow_reference'
@@ -181,7 +178,6 @@ northamptonshire:
     body: "Northamptonshire Highways"
     attributes:
       asset_resource_id: "asset_id"
-    select_action: true
     actions:
       asset_found: fixmystreet.assets.northamptonshire.asset_found
       asset_not_found: fixmystreet.assets.northamptonshire.asset_not_found
@@ -200,7 +196,6 @@ oxfordshire:
         unit_number: "title"
         unit_type: "unit_type"
         asset_resource_id: "itemId"
-      select_action: true
       feature_code: 'title'
       asset_id_field: 'itemId'
       construct_selected_asset_message: fixmystreet.assets.oxfordshire.light_construct_selected_asset_message
@@ -240,7 +235,6 @@ peterborough:
     - name: 'trees'
       template: 'tilma'
       class: OpenLayers.Layer.VectorAssetMove
-      select_action: true
       actions:
         asset_found: fixmystreet.message_controller.asset_found
         asset_not_found: fixmystreet.message_controller.asset_not_found
@@ -283,7 +277,6 @@ peterborough:
     asset_group: 'Street lighting'
     asset_category: 'Lighting enquiry'
     relevant: fixmystreet.assets.peterborough.lighting_relevant
-    select_action: true
     actions:
       asset_found: fixmystreet.assets.peterborough.lighting_asset_found
       asset_not_found: fixmystreet.assets.peterborough.lighting_asset_not_found
@@ -321,7 +314,6 @@ shropshire:
     no_asset_msgs_class: '.js-roads-shropshire'
     always_visible: true
     non_interactive: true
-    all_categories: true
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'

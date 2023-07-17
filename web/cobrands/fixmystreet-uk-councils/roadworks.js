@@ -18,7 +18,6 @@ var roadworks_defaults = {
     always_visible: true,
     nearest_radius: 100,
     road: true,
-    all_categories: true,
     actions: {
         found: function(layer, feature) {
             if (fixmystreet.roadworks.filter(feature)) {

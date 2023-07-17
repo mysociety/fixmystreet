@@ -27,7 +27,6 @@ if (fixmystreet.cobrand === 'tfl') {
 var asset_defaults = $.extend(true, {}, defaults, {
     class: OpenLayers.Layer.VectorAssetMove,
     body: 'TfL',
-    select_action: true,
     actions: {
         asset_found: function(asset) {
             fixmystreet.message_controller.asset_found.call(this, asset);
@@ -116,7 +115,6 @@ fixmystreet.assets.add(asset_defaults, {
     non_interactive: false,
     always_visible: false,
     road: false,
-    all_categories: false,
     asset_category: "Roadworks",
     stylemap: rw_stylemap,
     asset_id_field: 'work_ref',
@@ -150,7 +148,6 @@ fixmystreet.assets.add(asset_defaults, {
         }
         return relevant;
     },
-    select_action: true,
     actions: {
         asset_found: function(feature) {
             this.fixmystreet.actions.asset_not_found.call(this);
@@ -269,7 +266,6 @@ var red_routes_layer = fixmystreet.assets.add(defaults, {
     road: true,
     non_interactive: true,
     always_visible: true,
-    all_categories: true,
     nearest_radius: 0.1,
     stylemap: tlrn_stylemap,
     no_asset_msg_id: '#js-not-tfl-road',
@@ -308,7 +304,6 @@ fixmystreet.assets.add(defaults, {
     road: true,
     non_interactive: true,
     always_visible: true,
-    all_categories: true,
     nearest_radius: 0.1,
     stylemap: tlrn_stylemap,
     no_asset_msg_id: '#js-tlrn-dbfo-road',

@@ -76,7 +76,6 @@ fixmystreet.assets.add(defaults, {
             outFields: 'USRN'
         }
     },
-    all_categories: true,
     always_visible: true,
     non_interactive: true,
     stylemap: fixmystreet.assets.stylemap_invisible,
@@ -152,7 +151,6 @@ $.each(layer_data, function(i, o) {
             }
         },
         max_resolution: 0.5971642833948135,
-        select_action: true,
         attributes: {
             'UPRN': 'UPRN'
         },
@@ -294,7 +292,6 @@ $.each(layer_data, function(i, o) {
     }
 
     if (o.actions) {
-        params.select_action = true;
         params.actions = o.actions;
     }
 

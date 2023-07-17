@@ -50,7 +50,6 @@ fixmystreet.assets.add(defaults, {
             attribute: 'sect_label'
         }
     ],
-    all_categories: true,
 
     // motorways are wide and the lines to define them are narrow so we
     // need a bit more margin for error in finding the nearest to stop
@@ -95,7 +94,6 @@ fixmystreet.assets.add(defaults, {
     asset_type: 'road',
     no_asset_msg_id: '#js-not-litter-pick-road',
     no_asset_msgs_class: '.js-roads-he',
-    all_categories: true,
     actions: {
         found: function(layer, feature) {
             if ( $("#js-dbfo-road").is(":hidden") && ( !$('.js-mobile-not-an-asset').length || $('.js-mobile-not-an-asset').is(':hidden')) ) {
