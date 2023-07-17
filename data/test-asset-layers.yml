@@ -317,4 +317,81 @@ shropshire:
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
+westminster:
+  - - asset_type: 'spot'
+      max_resolution: 4.777314267158508
+      asset_id_field: 'central_asset_id'
+      srsName: "EPSG:4326"
+      body: "Westminster City Council"
+      format_class: OpenLayers.Format.GeoJSON
+      format_options: {ignoreExtraDims: true}
+      protocol_class: OpenLayers.Protocol.ArcgisHTTP
+      http_options:
+        params:
+          inSR: '4326'
+          f: 'geojson'
+    - name: 'uprn'
+      template: 'default'
+      class: OpenLayers.Layer.VectorAssetMove
+      asset_item: 'property'
+      http_options:
+        url: "https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.staging/25/query?"
+        params:
+          inSR: '4326'
+          f: 'geojson'
+          where: "PARENTUPRN='XXXX' AND PROPERTYTYPE NOT IN ('Pay Phone','Street Record')"
+          outFields: 'UPRN,Address,ParentChild'
+      max_resolution: 0.5971642833948135
+      attributes:
+        UPRN: 'UPRN'
+      actions:
+        asset_found: fixmystreet.assets.westminster.uprn_asset_found
+        asset_not_found: fixmystreet.assets.westminster.uprn_asset_not_found
+    - name: 'point'
+      template: 'default'
+      http_options:
+        params:
+          inSR: '4326'
+          f: 'geojson'
+          outFields: 'central_asset_id'
+      attributes:
+        central_asset_id: 'central_asset_id'
+    - name: 'subcat'
+      template: 'point'
+      class: OpenLayers.Layer.VectorAssetWestminsterSubcat
+  - http_options:
+      url: "https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.staging/40/query?"
+      params:
+        outFields: 'USRN'
+    always_visible: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    nearest_radius: 100
+    usrn:
+      attribute: 'USRN'
+      field: 'USRN'
+  - template: 'uprn'
+    asset_category: [ 'Damaged, dirty, or missing bin' ]
+    class: OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN
+    subcategories: [ '1', '4' ]
+    subcategory_id: '#form_bin_type'
+  - template: 'point'
+    asset_category: 'Busking and Street performance'
+    asset_item: 'street entertainment pitch'
+    http_options:
+      url: https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.staging/66/query?
+      params:
+        outFields: 'Site,Category,Terms_Conditions,UPRN'
+    attributes:
+      UPRN: 'UPRN'
+    actions:
+      asset_found: fixmystreet.assets.westminster.asset_found
+      asset_not_found: fixmystreet.assets.westminster.asset_not_found
+  - template: 'subcat'
+    asset_category: 'Signs and bollards'
+    subcategories: [ '2' ]
+    subcategory_id: '#form_featuretypecode'
+    asset_item: 'street nameplate'
+    http_options:
+      url: https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.staging/46/query?
 

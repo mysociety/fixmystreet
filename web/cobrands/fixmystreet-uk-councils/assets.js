@@ -1397,4 +1397,152 @@ fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
     return out;
 };
 
+/* Westminster */
+
+fixmystreet.assets.westminster = {};
+
+/* First let us set up some necessary subclasses */
+
+/* This layer is relevant depending upon the category *and* the choice of the 'type' Open311 extra attribute question */
+var SubcatMixin = OpenLayers.Class({
+    relevant: function() {
+        var relevant = OpenLayers.Layer.VectorAsset.prototype.relevant.apply(this, arguments),
+            subcategories = this.fixmystreet.subcategories,
+            subcategory = $(this.fixmystreet.subcategory_id).val(),
+            relevant_sub = OpenLayers.Util.indexOf(subcategories, subcategory) > -1;
+        return relevant && relevant_sub;
+    },
+    CLASS_NAME: 'SubcatMixin'
+});
+OpenLayers.Layer.VectorAssetWestminsterSubcat = OpenLayers.Class(OpenLayers.Layer.VectorAsset, SubcatMixin, {
+    CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterSubcat'
+});
+OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN = OpenLayers.Class(OpenLayers.Layer.VectorAssetMove, SubcatMixin, {
+    CLASS_NAME: 'OpenLayers.Layer.VectorAssetWestminsterSubcatUPRN'
+});
+
+function westminster_uprn_sort(a, b) {
+    a = a.attributes.ADDRESS;
+    b = b.attributes.ADDRESS;
+    var a_flat = a.match(/^(Flat|Unit)s? (\d+)/);
+    var b_flat = b.match(/^(Flat|Unit)s? (\d+)/);
+    if (a_flat && b_flat && a_flat[1] === b_flat[1]) {
+        return a_flat[2] - b_flat[2];
+    }
+    return a.localeCompare(b);
+}
+
+var westminster_old_uprn;
+
+function westminster_add_to_uprn_select($select, assets) {
+    assets.sort(westminster_uprn_sort);
+    $.each(assets, function(i, f) {
+        $select.append('<option value="' + f.attributes.UPRN + '">' + f.attributes.ADDRESS + '</option>');
+    });
+    if (westminster_old_uprn && $select.find('option[value=\"' + westminster_old_uprn + '\"]').length) {
+        $select.val(westminster_old_uprn);
+    }
+}
+
+function westminster_construct_uprn_select(assets, has_children) {
+    westminster_old_uprn = $('#uprn').val();
+    $('.category_meta_message').html('');
+    var $div = $("#uprn_select");
+    if (!$div.length) {
+        $div = $('<div data-page-name="uprn" class="js-reporting-page extra-category-questions" id="uprn_select"></div>');
+        $div.insertBefore('.js-reporting-page[data-page-name="photo"]');
+    }
+    $div.removeClass('js-reporting-page--skip');
+    if (assets.length > 1 || has_children) {
+        $div.empty();
+        $div.append('<label for="uprn">Please choose a property:</label>');
+        var $select = $('<select id="uprn" class="form-control" name="UPRN" required>');
+        $select.append('<option value="">---</option>');
+        westminster_add_to_uprn_select($select, assets);
+        $div.append($select);
+    } else {
+        $div.html('You have selected <b>' + assets[0].attributes.ADDRESS + '</b>');
+    }
+    $div.append("<button class='btn btn--block btn--final js-reporting-page--next'>Continue</button>");
+}
+
+fixmystreet.assets.westminster.uprn_asset_found = function(asset) {
+    if (fixmystreet.message_controller.asset_found.call(this)) {
+        return;
+    }
+    var lonlat = asset.geometry.getBounds().getCenterLonLat();
+    var overlap_threshold = 1; // Features considered overlapping if within 1m of each other
+    var overlapping_features = this.getFeaturesWithinDistance(
+        new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+        overlap_threshold
+    );
+
+    var parent_uprns = [];
+    $.each(overlapping_features, function(i, f) {
+        if (f.attributes.PARENTCHILD === 'Parent') {
+            parent_uprns.push("PARENTUPRN='" + f.attributes.UPRN + "'");
+        }
+    });
+    parent_uprns = parent_uprns.join(' OR ');
+
+    if (parent_uprns) {
+        var url = this.fixmystreet.http_options.url + OpenLayers.Util.getParameterString({
+            inSR: 4326,
+            f: 'geojson',
+            outFields: 'UPRN,Address',
+            where: parent_uprns
+        });
+        $.getJSON(url, function(data) {
+            var features = [];
+            $.each(data.features, function(i, f) {
+                features.push({ attributes: f.properties });
+            });
+            westminster_add_to_uprn_select($('#uprn'), features);
+        });
+    }
+    westminster_construct_uprn_select(overlapping_features, parent_uprns);
+};
+
+fixmystreet.assets.westminster.uprn_asset_not_found = function() {
+    $('.category_meta_message').html('You can pick a <b class="asset-spot">' + this.fixmystreet.asset_item + '</b> from the map &raquo;');
+    $("#uprn_select").addClass('js-reporting-page--skip');
+    fixmystreet.message_controller.asset_not_found.call(this);
+};
+
+fixmystreet.assets.westminster.asset_found = function(asset) {
+    // Remove any existing street entertainment messages using function below.
+    this.fixmystreet.actions.asset_not_found.call(this);
+
+    var attr = asset.attributes;
+    var site = attr.Site;
+    var category = attr.Category;
+    var terms = attr.Terms_Conditions;
+
+    var $msg = $('<div class="js-street-entertainment-message box-warning"></div>');
+    var $dl = $("<dl></dl>").appendTo($msg);
+
+    $dl.append("<dt>Site</dt>");
+    $dl.append($("<dd></dd>").text(site));
+
+    $dl.append("<dt>Category</dt>");
+    $dl.append($("<dd></dd>").text(category));
+
+    $dl.append("<dt>Terms & conditions</dt>");
+    $dl.append($("<dd></dd>").html(terms));
+
+    $msg.prependTo('#js-post-category-messages');
+};
+
+fixmystreet.assets.westminster.asset_not_found = function() {
+    $('.js-street-entertainment-message').remove();
+};
+
+if (fixmystreet.cobrand == 'westminster' || fixmystreet.cobrand == 'fixmystreet') {
+    $(function(){
+        $("#problem_form").on("change.category", "#form_type, #form_featuretypecode, #form_bin_type", function() {
+            $(fixmystreet).trigger('report_new:category_change');
+        });
+    });
+}
+
 })();
