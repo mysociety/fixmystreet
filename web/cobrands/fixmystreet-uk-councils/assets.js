@@ -658,15 +658,17 @@ var centralbeds_types = [
     "Fw",
 ];
 
-function cb_likely_trees_report() {
+function cb_should_not_require_road() {
     // Ensure the user can select anywhere on the map if they want to
-    // make a report in the "Trees" category. This means we don't show the
-    // "not found" message if no category/group has yet been selected
-    // or if only the group containing the "Trees" category has been
+    // make a report in the "Trees" or "Fly Tipping" categories.
+    // This means we don't show the "not found" message if no category/group has yet been selected
+    // or if one of the groups containing either the "Trees" or "Fly Tipping" categories has been
     // selected.
     var selected = fixmystreet.reporting.selectedCategory();
     return selected.category === "Trees" ||
             (selected.group === "Grass, Trees, Verges and Weeds" && !selected.category) ||
+            selected.category === "Fly Tipping" ||
+            (selected.group === "Flytipping, Bins and Graffiti" && !selected.category) ||
             (!selected.group && !selected.category);
 }
 
@@ -697,7 +699,7 @@ fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
         if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
             return true;
         }
-        if (cb_likely_trees_report()) {
+        if (cb_should_not_require_road()) {
             cb_show_non_stopper_message();
             return true;
         }
@@ -706,7 +708,7 @@ fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
 };
 fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
     cb_hide_non_stopper_message();
-    if (cb_likely_trees_report()) {
+    if (cb_should_not_require_road()) {
         fixmystreet.message_controller.road_found(layer);
     } else {
         fixmystreet.message_controller.road_not_found(layer);
