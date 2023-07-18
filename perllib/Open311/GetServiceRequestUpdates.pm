@@ -13,7 +13,6 @@ has end_date => ( is => 'ro', default => sub { undef } );
 has comments_created => ( is => 'rw', default => 0 );
 
 Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
-Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 
 sub parse_dates {
     my $self = shift;
@@ -22,8 +21,6 @@ sub parse_dates {
     my @args = ();
 
     my $dt = DateTime->now();
-    # Oxfordshire uses local time and not UTC for dates
-    FixMyStreet->set_time_zone($dt) if $body->areas->{$AREA_ID_OXFORDSHIRE};
 
     # default to asking for last 2 hours worth if not Bromley
     if ($self->start_date) {
