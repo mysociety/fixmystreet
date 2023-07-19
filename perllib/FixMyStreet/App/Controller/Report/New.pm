@@ -1343,7 +1343,7 @@ sub set_report_extras : Private {
             }
 
             my $value;
-            if ($field->{datatype} eq 'multivaluelist') {
+            if (($field->{datatype} || '') eq 'multivaluelist') {
                 $value = [ $c->get_param_list($param_prefix . $field->{code}) ];
             } else {
                 $value = $c->get_param($param_prefix . $field->{code}) // '';
