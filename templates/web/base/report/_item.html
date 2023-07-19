@@ -13,7 +13,7 @@ END;
 
 ~%]
 
-[% IF relevant_staff AND (c.user.has_permission_to('planned_reports', problem.bodies_str_ids) OR c.user.is_planned_report(problem)) ~%]
+[% IF relevant_staff AND (c.user.has_permission_to('planned_reports', problem.bodies_str_ids) OR c.user.is_planned_report(problem)) AND NOT bodyclass.match('frontpage') ~%]
     [% item_extra_class = "item-list__item--indented" ~%]
     [% item_action = BLOCK ~%]
       <input type="submit" value="1"
@@ -117,7 +117,7 @@ END;
 
 </a>
 [% IF item_action ~%]
-  [% IF page == 'report' ~%]
+  [% IF page == 'report' OR bodyclass.match('frontpage')  ~%]
     [%# We don't want to output shortlist on report page (in duplicate list) %]
   [% ELSIF page == 'around' ~%]
     [%# The around page list is already contained within the new report form %]
