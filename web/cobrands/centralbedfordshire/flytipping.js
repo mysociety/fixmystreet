@@ -1,4 +1,4 @@
-$(fixmystreet).on('report_new:category_change', function() {
+function setupWitnessRelatedFieldChanges() {
     var witnessed = $('#form_fly_tip_witnessed');
     if (!witnessed) {
         return;
@@ -52,4 +52,30 @@ $(fixmystreet).on('report_new:category_change', function() {
 
     checkAndToggle();
     witnessed.on('change', function() { checkAndToggle(); });
+}
+
+$(fixmystreet).on('report_new:category_change', function() {
+    var categorySelection = fixmystreet.reporting.selectedCategory();
+    var match = categorySelection.category === "Fly Tipping" &&
+        fixmystreet.bodies.includes("Central Bedfordshire Council");
+
+    var descriptionTips = $("#description-tips");
+    var photoTipsDont = $("#photo-tips-dont");
+
+    if (match) {
+        setupWitnessRelatedFieldChanges();
+        if (descriptionTips) {
+            descriptionTips.hide();
+        }
+        if (photoTipsDont) {
+            photoTipsDont.hide();
+        }
+    } else {
+        if (descriptionTips) {
+            descriptionTips.show();
+        }
+        if (photoTipsDont) {
+            photoTipsDont.show();
+        }
+    }
 });
