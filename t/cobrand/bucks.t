@@ -39,6 +39,7 @@ $contact->set_extra_fields({
     ],
 });
 $contact->update;
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned vehicles', email => 'Abavus-ABANDONED_17821_C');
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POT");
 $mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', email => "DRA");
 $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email => "car\@chiltern", send_method => 'Email');
@@ -601,6 +602,15 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
         my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
         like $json->{reports_list}, qr/Test Dirty signs report/;
     };
+};
+
+subtest 'sending of updates' => sub {
+    my ($report1) = $mech->create_problems_for_body(1, $body->id, 'Title update', { category => 'Abandoned vehicles' });
+    my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Title update', { category => 'Potholes' });
+    my $update1 = $mech->create_comment_for_problem($report1, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
+    my $update2 = $mech->create_comment_for_problem($report2, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
+    is $cobrand->should_skip_sending_update($update1), 0;
+    is $cobrand->should_skip_sending_update($update2), 1;
 };
 
 subtest 'body filter on dashboard' => sub {

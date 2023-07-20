@@ -576,8 +576,17 @@ sub add_extra_area_types {
 
 sub is_two_tier { 1 }
 
+=head2 should_skip_sending_update
+
+Only send updates to one particular backend
+
+=cut
+
 sub should_skip_sending_update {
-    my ($self, $update ) = @_;
+    my ($self, $update) = @_;
+
+    my $contact = $update->problem->contact || return 1;
+    return 0 if $contact->email =~ /^Abavus/;
     return 1;
 }
 
