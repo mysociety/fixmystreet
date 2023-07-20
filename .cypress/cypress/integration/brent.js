@@ -67,6 +67,18 @@ describe('Brent asset layers', function() {
     });
 });
 
+describe.only('Queen’s Park', function() {
+    it('does not permit reporting within the park', function() {
+        cy.server();
+        cy.route('/report/new/ajax*').as('report-ajax');
+        cy.route('**/mapserver/brent*queens_park*', 'fixture:brent-queens_park.xml').as('queens_park');
+        cy.visit('/report/new?longitude=-0.211045&latitude=51.534948');
+        cy.pickCategory('Dog fouling');
+        cy.wait('@queens_park');
+        cy.contains('maintained by the City of London').should('be.visible');
+    });
+});
+
 describe('Brent road behaviour', function() {
 
     beforeEach(function() {

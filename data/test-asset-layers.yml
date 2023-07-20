@@ -84,6 +84,14 @@ brent:
     actions:
      found: "fixmystreet.assets.brent.found_filter"
      not_found: "fixmystreet.assets.brent.not_found_filter"
+  - wfs_feature: 'queens_park'
+    asset_type: 'area'
+    always_visible: true
+    road: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    no_asset_message: '<p>Queens Park is maintained by the City of London, not Brent Council.<p>'
+    actions: fixmystreet.assets.brent.cemetery_actions
 bromley:
   - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bromley_wfs"
     asset_type: 'spot'

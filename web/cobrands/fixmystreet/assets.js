@@ -1401,21 +1401,30 @@ For responsibility messages, any .js-update-coordinates link will have
 its parameters replaced with the current latitude/longitude; any
 .js-roads-asset can be replaced with the current layer asset_item/type.
 
-.asset_found / .asset_not_found - used with VectorAsset actions;
-  found will hide messages matching the layer's no_asset_msgs_class, or
-  the message matching the layer's no_asset_msg_id, or #js-not-an-asset
-  if neither are present. It will enable the report form (unless a
-  stopper message or a responsibility message is being shown).
-  not found will disable the report form, hide messages as above, and,
-  if no stopper message, then show the layer's no_asset_msg_id or
+In all the below, the message matched/used is as follows:
+* If no_asset_message is provided (either a string, or a hash with ID keys plus
+  "default" if you have multiple messages for the one layer), one is
+  automatically constructed and used.
+* Otherwise, you provide no_asset_msg_id of an ID of a div present in the HTML
+  to use (they are in report/new/roads_message.html), or it defaults to
   #js-not-an-asset.
+* If you have multiple messages for the one layer (see e.g.
+  fixmystreet.assets.buckinghamshire.street_found), you can specify a
+  no_asset_msgs_class to make sure they all get hidden correctly.
+
+.asset_found / .asset_not_found - used with VectorAsset actions;
+  found will hide matching messages, and enable the report form (unless a
+  stopper message or a responsibility message is being shown).
+  not found will disable the report form, hide matching messages, and,
+  if no stopper message, then show the relevant message ID.
 
 .road_found / .road_not_found - used with VectorNearest actions;
   road_found(layer, feature, [criterion], [msg_id]): If an asset is
   selected, hide messages/enable form as above. If no criterion function
   is supplied, or it returns true, do the same. Otherwise, mark this
   body as do not send, and if it's the only body (or Bucks special case)
-  disable the form and show the message given as msg_id.
+  disable the form and show the message given as msg_id (or if not present,
+  default as above).
   road_not_found(layer, [criterion]): If an asset is selected, hide
   messages/enable form as above. Otherwise, if it's the only body or the
   criterion passes, disable form/show message as above.
@@ -1431,11 +1440,27 @@ fixmystreet.message_controller = (function() {
         ignored_bodies = [];
 
     // This shows an error message because e.g. an asset isn't selected or a road hasn't been clicked
-    function show_responsibility_error(id, asset_item, asset_type) {
+    function show_responsibility_error(id, layer) {
+        var layer_data = layer.fixmystreet;
+
         $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
+
+        if (layer_data.no_asset_message) {
+            var cls = 'js-roads-layer-' + layer.id;
+            id = id || '#' + cls;
+            var nohash = id.replace('#', '');
+            if (!$(id).length) {
+                var div = $('<div class="hidden js-responsibility-message ' + cls + '"></div>');
+                var message = layer_data.no_asset_message[id] || layer_data.no_asset_message["default"] || layer_data.no_asset_message;
+                div.attr('id', nohash).html(message).appendTo('#js-roads-responsibility');
+            }
+        } else {
+            id = id || '#js-not-an-asset';
+        }
+
         var asset_strings = $(id).find('.js-roads-asset');
-        if (asset_item) {
-            asset_strings.html('a <b class="asset-' + asset_type + '">' + asset_item + '</b>');
+        if (layer_data.asset_item) {
+            asset_strings.html('a <b class="asset-' + layer_data.asset_type + '">' + layer_data.asset_item + '</b>');
         } else {
             asset_strings.html(asset_strings.data('original'));
         }
@@ -1472,14 +1497,22 @@ fixmystreet.message_controller = (function() {
     }
 
     // This hides the asset/road not found message
-    function hide_responsibility_errors(id, layer_data) {
+    function hide_responsibility_errors(id, layer) {
+        var layer_data = layer.fixmystreet;
+
+        if (layer_data.no_asset_message) {
+            id = '.js-roads-layer-' + layer.id;
+        } else {
+            id = id || '#js-not-an-asset';
+        }
+
         // If the layer provides a class of messages, hide them all, otherwise hide the ID we're given
         if (layer_data.no_asset_msgs_class) {
             $(layer_data.no_asset_msgs_class).addClass("hidden");
         } else {
             $(id).addClass("hidden");
         }
-        var mobile_id = id.replace('#', '');
+        var mobile_id = id.replace(/[#.]/, '');
         var mobile_class = '.mob_' + mobile_id;
         $(mobile_class).remove();
         if (!$("#js-roads-responsibility .js-responsibility-message:not(.hidden)").length) {
@@ -1510,8 +1543,8 @@ fixmystreet.message_controller = (function() {
     // stopper message or dupes are shown) reenables the report form
     function responsibility_off(layer, type) {
         var layer_data = layer.fixmystreet;
-        var id = layer_data.no_asset_msg_id || '#js-not-an-asset';
-        hide_responsibility_errors(id, layer_data);
+        var id = layer_data.no_asset_msg_id;
+        hide_responsibility_errors(id, layer);
         if (!document.getElementById(stopperId)) {
             enable_report_form();
             if (type === 'road') {
@@ -1524,14 +1557,14 @@ fixmystreet.message_controller = (function() {
     // message is shown) shows a responsibility message
     function responsibility_on(layer, type, override_id) {
         var layer_data = layer.fixmystreet;
-        var id = override_id || layer_data.no_asset_msg_id || '#js-not-an-asset';
+        var id = override_id || layer_data.no_asset_msg_id;
         disable_report_form(type);
         if (type === 'road') {
             fixmystreet.pageController.addMapPage(layer);
         }
-        hide_responsibility_errors(id, layer_data);
+        hide_responsibility_errors(id, layer);
         if (!document.getElementById(stopperId)) {
-            show_responsibility_error(id, layer_data.asset_item, layer_data.asset_type);
+            show_responsibility_error(id, layer);
         }
     }
 

@@ -148,7 +148,7 @@ if ($opt->test_fixtures) {
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
         { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council', cobrand => 'shropshire' },
         { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council', cobrand => 'merton' },
-        { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping'], name => 'Brent Council', cobrand => 'brent' },
+        { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping', 'Dog fouling'], name => 'Brent Council', cobrand => 'brent' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         if ($_->{cobrand}) {

@@ -100,6 +100,7 @@ my @PLACES = (
     ['?', 51.563623, -0.274082, 2488, 'Brent Council', 'LBO'], # Park in Brent
     ['?', 51.563683, -0.276120, 2488, 'Brent Council', 'LBO'], # Road in Brent
     ['?', 51.551717, -0.260869, 2488, 'Brent Council', 'LBO'], # TfL road in Brent
+    ['?', 51.534948, -0.211045, 2488, 'Brent Council', 'LBO'], # Queen's Park in Brent
     [ 'SE1 2QH', 51.50351, -0.08051, 2491, 'Southwark Council', 'LBO' ],
     [ '?', 51.50352, -0.08052, 2491, 'Southwark Council', 'LBO' ],
     [ 'BA11 6BA', 51.26345, -2.28191, 2428, 'Mendip District Council', 'DIS' ],
