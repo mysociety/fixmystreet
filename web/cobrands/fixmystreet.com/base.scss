@@ -64,9 +64,9 @@ svg|g.site-logo__svg {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  #{$right}: 8.5em;
+  #{$right}: 9em;
 
-  font-size: 0.9em;
+  font-size: 0.8em;
   line-height: 1em;
   color: $nav_colour;
   padding: 0.4em;
@@ -80,52 +80,8 @@ svg|g.site-logo__svg {
 }
 
 body.frontpage {
-  $fms-logo-width: 160px;
-  $fms-logo-height: 35px;
-  $mysociety-badge-width: (190px * 0.4);
-  $mysociety-badge-height: (234px * 0.4);
-
-  #site-logo {
-      text-indent: 0;
-      background: none;
-      width: $fms-logo-width;
-      margin-left: 65px; // Not enought space to be the badge width
-      z-index: 1;
-      svg {
-        width:  $fms-logo-width;
-        height:  $fms-logo-height;
-      }
-  }
-
-  .site-logo__fallback {
-    width: $fms-logo-width;
-    height: 0;
-    padding-top: 60px;
-    overflow: hidden;
-    background-position: 0 50%;
-    background-repeat: no-repeat;
-    background-size: $fms-logo-width  $fms-logo-height;
-    @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
-}
-
   #mysociety-badge {
-      position: absolute;
-      top: -$header-top-border-width;
-      margin-left:-0.75em; // The badge has a dropshadow, this makes it look like is align with the .container
-      width: $mysociety-badge-width;
-      height: $mysociety-badge-height;
-      z-index: 2;
-      svg {
-        width: 100%;
-        height: auto;
-        &:nth-child(2) {
-          display: none; // Hides the desktop version
-        }
-      }
-  }
-
-  #front-main {
-    margin-top: 2em;
+    display: none;
   }
 }
 
