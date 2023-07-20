@@ -1462,7 +1462,11 @@ fixmystreet.message_controller = (function() {
             $div.appendTo('#map_box');
         } else {
             $("#js-roads-responsibility").removeClass("hidden");
-            $("#js-roads-responsibility")[0].scrollIntoView();
+            var top_sidebar = $('#map_sidebar').offset().top;
+            var top_message = $('#js-roads-responsibility').offset().top;
+            if (top_message < top_sidebar) {
+                $("#js-roads-responsibility")[0].scrollIntoView();
+            }
         }
         $(id).removeClass("hidden");
     }
