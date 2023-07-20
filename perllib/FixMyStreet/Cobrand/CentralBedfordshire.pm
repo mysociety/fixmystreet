@@ -53,11 +53,15 @@ sub new_report_title_field_hint {
     "Exact location, including any landmarks"
 }
 
-=item * We send an acknowledgement email when a report is sent; email includes the C<external_id> (Symology reference).
+=item * We send an acknowledgement email when a Symology report is sent; email includes the C<external_id> (Symology reference).
 
 =cut
 
-sub report_sent_confirmation_email { 'external_id' }
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    return '' if $report->contact->email =~ /Jadu/;
+    return 'external_id';
+}
 
 =item * We do not send questionnaires.
 
