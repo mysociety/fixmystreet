@@ -359,12 +359,22 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 should_skip_sending_update
+
+Do not send updates to the backend if they were made by a staff user, and
+either don't have any text (public or private), or lack a title (made by the
+inspector form).
+
+=cut
+
 sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $private_comments = $update->get_extra_metadata('private_comments');
 
-    return $update->user->from_body && !$update->text && !$private_comments;
+    my $has_text = $update->text || $private_comments;
+    my $has_title = $update->get_extra_metadata('title');
+    return $update->user->from_body && (!$has_text || !$has_title);
 }
 
 sub munge_report_new_category_list {
