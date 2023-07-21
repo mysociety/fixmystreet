@@ -111,14 +111,23 @@ fixmystreet.assets.banes.lighting_asset_details = function() {
            "description: " + a.unitdescription;
 };
 
-fixmystreet.assets.banes.road_not_found = function(layer) {
-    var cat = fixmystreet.reporting.selectedCategory().category;
-    var asset_item = layer.fixmystreet.cat_map[cat];
-    if (asset_item) {
-        layer.fixmystreet.asset_item = asset_item;
-        fixmystreet.message_controller.road_not_found(layer);
-    } else {
+var banes_on_road;
+
+fixmystreet.assets.banes.road_actions = {
+    found: function(layer) {
         fixmystreet.message_controller.road_found(layer);
+        banes_on_road = true;
+    },
+    not_found: function(layer) {
+        var cat = fixmystreet.reporting.selectedCategory().category;
+        var asset_item = layer.fixmystreet.cat_map[cat];
+        if (asset_item) {
+            layer.fixmystreet.asset_item = asset_item;
+            fixmystreet.message_controller.road_not_found(layer);
+        } else {
+            fixmystreet.message_controller.road_found(layer);
+        }
+        banes_on_road = false;
     }
 };
 
@@ -138,7 +147,7 @@ var curo_categories = [
 
 fixmystreet.assets.banes.curo_found = function(layer) {
     var category = fixmystreet.reporting.selectedCategory().category;
-    if (curo_categories.indexOf(category) === -1) {
+    if (curo_categories.indexOf(category) === -1 || banes_on_road) {
         fixmystreet.message_controller.road_found(layer);
         return;
     }
