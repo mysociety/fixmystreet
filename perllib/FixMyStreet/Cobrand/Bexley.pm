@@ -108,7 +108,6 @@ sub lookup_site_code_config {
         url => "https://tilma.mysociety.org/mapserver/bexley",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "Streets",
-        property => $property,
         accept_feature => sub { 1 }
     }
 }
@@ -123,6 +122,8 @@ sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
     my $open311_only;
+    my $feature;
+    my $extra = $row->get_extra_fields;
     if ($contact->email =~ /^Confirm/) {
         push @$open311_only,
             { name => 'report_url', description => 'Report URL',
@@ -133,7 +134,8 @@ sub open311_extra_data_include {
               value => $row->detail };
 
         if (!$row->get_extra_field_value('site_code')) {
-            if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
+            $feature = $self->lookup_site_code($row);
+            if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'site_code', value => $ref, description => 'Site code' });
             }
         }
@@ -142,7 +144,8 @@ sub open311_extra_data_include {
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('uprn')) {
-            if (my $ref = $self->lookup_site_code($row, 'UPRN')) {
+            $feature = $self->lookup_site_code($row);
+            if (my $ref = $feature->{properties}{UPRN}) {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
             }
         }
@@ -151,10 +154,24 @@ sub open311_extra_data_include {
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('NSGRef')) {
-            if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
+            $feature = $self->lookup_site_code($row);
+            if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
         }
+    }
+
+    if ($feature && $feature->{properties}{ADDRESS}) {
+        # Note subtle issue here - the first call to update_extra_field above
+        # updates the original extra (stored by SendReport/Open311 in
+        # original_extra and thus kept when it 'rolls back' after adding the
+        # open311-only entries), but it is changed at the end of that call, so
+        # a second call to update_extra_field will update extra but not the
+        # original_extra and thus will be lost and not available to
+        # open311_post_send. So we push directly on here.
+        my $address = $feature->{properties}{ADDRESS};
+        $address =~ s/([\w']+)/\u\L$1/g;
+        push @$extra, { name => 'NSGName', description => 'Street name', value => $address };
     }
 
     # Add private comments field

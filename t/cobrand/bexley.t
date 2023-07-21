@@ -20,7 +20,16 @@ my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
 $ukc->mock('lookup_site_code', sub {
     my ($self, $row, $buffer) = @_;
     is $row->latitude, 51.408484, 'Correct latitude';
-    return "Road ID";
+    return {
+        type => "Feature",
+        properties => {
+            "NSG_REF" => "Road ID",
+            "ADDRESS" => "POSTAL CLOSE",
+            "TOWN" => "BEXLEY",
+            "UPRN" => "UPRN",
+        },
+        "geometry" => {},
+    };
 });
 
 FixMyStreet::override_config {
@@ -170,7 +179,7 @@ FixMyStreet::override_config {
             if ($test->{code} =~ /Confirm/) {
                 is $c->param('attribute[site_code]'), 'Road ID';
             } elsif ($test->{code} =~ /Uniform/) {
-                is $c->param('attribute[uprn]'), 'Road ID';
+                is $c->param('attribute[uprn]'), 'UPRN';
             } else {
                 is $c->param('attribute[NSGRef]'), 'Road ID';
             }
@@ -182,13 +191,17 @@ FixMyStreet::override_config {
                 $t = join('@[^@]*', @$t);
                 is $email->header('From'), '"Test User" <do-not-reply@example.org>';
                 like $email->header('To'), qr/^[^@]*$t@[^@]*$/;
+                my $text = $mech->get_text_body_from_email($email);
                 if ($test->{code} =~ /Confirm/) {
-                    like $mech->get_text_body_from_email($email), qr/Site code: Road ID/;
+                    like $text, qr/Site code: Road ID/;
+                    like $text, qr/Street name: Postal Close/;
                 } elsif ($test->{code} =~ /Uniform/) {
-                    like $mech->get_text_body_from_email($email), qr/UPRN: Road ID/;
-                    like $mech->get_text_body_from_email($email), qr/Uniform ID: 248/;
+                    like $text, qr/UPRN: UPRN/;
+                    like $text, qr/Uniform ID: 248/;
+                    like $text, qr/Street name: Postal Close/;
                 } else {
-                    like $mech->get_text_body_from_email($email), qr/NSG Ref: Road ID/;
+                    like $text, qr/NSG Ref: Road ID/;
+                    like $text, qr/Street name: Postal Close/;
                 }
                 $mech->clear_emails_ok;
             } else {
