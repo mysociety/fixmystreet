@@ -1,6 +1,1 @@
 [% PROCESS 'footer_extra_js_base.html' highways=1 validation=1 roadworks=1 %]
-[% IF page_refresh;
-    scripts.push(
-        version('/vendor/htmx.min.js'),
-    );
-END %]
