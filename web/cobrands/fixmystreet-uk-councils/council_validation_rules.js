@@ -21,6 +21,12 @@ body_validation_rules = {
         }
     },
     'Buckinghamshire Council': confirm_validation_rules,
+    'Central Bedfordshire Council': {
+        phone: {
+            validUkPhone: true,
+            maxlength: 20
+        }
+    },
     'Cheshire East Council': confirm_validation_rules,
     'Hackney Council': {
         detail: {
