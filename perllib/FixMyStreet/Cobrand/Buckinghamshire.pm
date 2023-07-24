@@ -663,6 +663,11 @@ sub claim_location {
     my ($self, $row) = @_;
 
     my $road = $self->_lookup_site_name($row);
+
+    if (!$road) {
+        return "Unknown location";
+    }
+
     my $site_name = $road->{properties}->{site_name};
     $site_name =~ s/([\w']+)/\u\L$1/g;
     my $area_name = $road->{properties}->{area_name};
