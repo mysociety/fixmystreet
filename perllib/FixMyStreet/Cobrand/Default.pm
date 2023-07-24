@@ -1523,4 +1523,12 @@ sub new_report_detail_field_hint {
     return;
 }
 
+=item suppress_report_sent_email
+
+Returns true when a report sent email should not be sent for the given report.
+
+=cut
+
+sub suppress_report_sent_email { 0; }
+
 1;
