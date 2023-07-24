@@ -678,6 +678,26 @@ $.extend(fixmystreet.set_up, {
             }
         });
 
+        // unhide hidden elements
+        $.each(fixmystreet.hidden_elements, function(index, element) {
+            element.show();
+        });
+        fixmystreet.hidden_elements = [];
+
+        // apply hide element rules
+        $.each(fixmystreet.bodies, function(index, body) {
+            if ( typeof hide_element_rules !== 'undefined' && hide_element_rules[body] && hide_element_rules[body][category] ) {
+                var selectors = hide_element_rules[body][category];
+                $(selectors.join(',')).each(function () {
+                    if ($(this).css('display') === 'none') {
+                        return;
+                    }
+                    $(this).hide();
+                    fixmystreet.hidden_elements.push($(this));
+                });
+            }
+        });
+
         $(fixmystreet).trigger('report_new:category_change');
     };
     fixmystreet.reporting.topLevelPoke = function() {
