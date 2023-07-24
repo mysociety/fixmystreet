@@ -10,6 +10,11 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodycl
             version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
         );
     END;
+    IF hide_elements_for_categories;
+        scripts.push(
+            version('/cobrands/fixmystreet-uk-councils/council_category_hide_element_rules.js'),
+        );
+    END;
     IF cobrand_js;
         scripts.push(
             version('/cobrands/' _ c.cobrand.moniker _ '/assets.js'),
