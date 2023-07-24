@@ -105,6 +105,7 @@ my @PLACES = (
     [ 'BA11 6BA', 51.26345, -2.28191, 2428, 'Mendip District Council', 'DIS' ],
     [ 'DL10 6BN', 54.45012, -1.65621, 2406, 'Richmondshire District Council', 'DIS' ],
     [ 'CA12 5FJ', 54.60102, -3.13648, 2274, 'Allerdale Borough Council', 'DIS' ],
+    [ 'SG17 5TQ', 52.03553, -0.36067, 21070, 'Central Bedfordshire Council', 'UTA' ],
 );
 
 sub dispatch_request {
