@@ -1,4 +1,6 @@
-$(fixmystreet).on('report_new:category_change', function() {
+(function(){
+
+function setupWitnessedRelatedFields() {
     var witnessed = $('#form_fly_tip_witnessed');
     if (!witnessed) {
         return;
@@ -43,7 +45,8 @@ $(fixmystreet).on('report_new:category_change', function() {
         }
     }
 
-    function checkAndToggle() { if (witnessed.val() === 'Yes') {
+    function checkAndToggle() {
+        if (witnessed.val() === 'Yes') {
             showAndRequire();
         } else {
             hideAndUnrequire();
@@ -52,4 +55,20 @@ $(fixmystreet).on('report_new:category_change', function() {
 
     checkAndToggle();
     witnessed.on('change', function() { checkAndToggle(); });
+}
+
+$(fixmystreet).on('report_new:category_change', function() {
+    if (!fixmystreet.bodies.indexOf('Central Bedfordshire Council' === -1)) {
+        return;
+    }
+    if (fixmystreet.reporting.selectedCategory().category !== 'Fly Tipping') {
+        return;
+    }
+    setupWitnessedRelatedFields();
+    var flyTipDateAndTime = $('#form_fly_tip_date_and_time');
+    if (flyTipDateAndTime) {
+        flyTipDateAndTime.addClass('in-the-past');
+    }
 });
+
+})();

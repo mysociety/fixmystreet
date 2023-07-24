@@ -426,6 +426,8 @@ $.extend(fixmystreet.set_up, {
         }, translation_strings.password_register.short);
         jQuery.validator.addMethod('notEmail', function(value, element) {
             return this.optional(element) || !/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@(?:\S{1,63})$/.test( value ); }, translation_strings.title );
+        jQuery.validator.addMethod('in-the-past', function(value, element) {
+            return this.optional(element) || new Date(value) <= new Date(); }, translation_strings.in_the_past );
         jQuery.validator.addClassRules('at-least-one-group', { require_from_group: [1, ".at-least-one-group"] });
     }
 
