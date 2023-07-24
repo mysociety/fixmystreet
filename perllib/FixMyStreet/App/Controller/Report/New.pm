@@ -1894,7 +1894,8 @@ sub redirect_or_confirm_creation : Private {
         $c->forward( 'create_related_things', [ $report ] );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
-            && !$c->cobrand->report_sent_confirmation_email($report)) {
+            && !$c->cobrand->report_sent_confirmation_email($report)
+            && !$c->cobrand->suppress_report_sent_email($report)) {
                 $c->send_email( 'other-reported.txt', {
                     to => [ [ $report->user->email, $report->name ] ],
                 } );
@@ -1973,7 +1974,7 @@ sub create_related_things : Private {
 
     # And now the reporter alert
     return if $c->stash->{no_reporter_alert};
-    return if $c->cobrand->call_hook('suppress_reporter_alerts');
+    return if $c->cobrand->call_hook('suppress_reporter_alerts', $problem);
 
     my $alert = $c->model('DB::Alert')->find_or_create( {
         user         => $problem->user,

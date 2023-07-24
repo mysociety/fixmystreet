@@ -317,7 +317,8 @@ sub _post_send {
             whensent => \'statement_timestamp()',
             lastupdate => \'statement_timestamp()',
         } );
-        if ($send_confirmation_email && !$self->h->{anonymous_report}) {
+        if ($send_confirmation_email && !$self->h->{anonymous_report} &&
+            !$self->cobrand_handler->suppress_report_sent_email($self->report)) {
             $self->h->{sent_confirm_id_ref} = $self->report->$send_confirmation_email;
             $self->_send_report_sent_email;
         }

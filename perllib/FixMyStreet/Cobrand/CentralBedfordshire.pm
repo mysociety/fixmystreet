@@ -59,6 +59,30 @@ sub new_report_title_field_hint {
 
 sub report_sent_confirmation_email { 'external_id' }
 
+=item * We don't send report sent emails for Jadu backed contacts.
+
+=cut
+
+sub suppress_report_sent_email {
+    my ($self, $report) = @_;
+    foreach my $contact ($report->contacts) {
+        return 1 if $contact->email =~ /Jadu/;
+    }
+    return 0;
+}
+
+=item * We don't send report author alerts for Jadu backed contacts.
+
+=cut
+
+sub suppress_reporter_alerts {
+    my ($self, $report) = @_;
+    foreach my $contact ($report->contacts) {
+        return 1 if $contact->email =~ /Jadu/;
+    }
+    return 0;
+}
+
 =item * We do not send questionnaires.
 
 =cut
