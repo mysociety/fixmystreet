@@ -304,14 +304,22 @@ Same as Symology above, but different attribute name.
         }
     }
 
-    # The title field gets pushed to location fields in Echo/Symology, so include closest address
+=item * The title field gets pushed to location fields in Echo/Symology, so include closest address
+
+We use {closest_address}->summary as this is geocoder-agnostic.
+
+=cut
+
     my $title = $row->title;
-    if ($h->{closest_address}) {
-        if (my $addr = $h->{closest_address}{name} || $h->{closest_address}{display_name} || '') {
-            $addr =~ s/, England, United Kingdom$//;
-            $title .= "; Nearest calculated address = $addr";
-        }
+    if ( $h->{closest_address} ) {
+        my $addr = $h->{closest_address}->summary;
+
+        $addr =~ s/, England//;
+        $addr =~ s/, United Kingdom$//;
+
+        $title .= '; Nearest calculated address = ' . $addr;
     }
+
     push @$open311_only, { name => 'title', value => $title };
     push @$open311_only, { name => 'description', value => $row->detail };
 

@@ -241,33 +241,88 @@ for my $test (
 };
 
 subtest "Open311 attribute changes" => sub {
-    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
-        areas => "2488", category => 'Gully grid missing', cobrand => 'brent',
-        geocode => { display_name => 'Constitution Hill' },
-    });
-    $problem->update_extra_field({ name => 'UnitID', value => '234' });
-    $problem->update;
+    subtest 'OSM geocoder' => sub {
+        my ($problem) = $mech->create_problems_for_body(
+            1,
+            $brent->id,
+            'Gully',
+            {   areas    => "2488",
+                category => 'Gully grid missing',
+                cobrand  => 'brent',
+                geocode  => { display_name => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom' },
+            }
+        );
+        $problem->update_extra_field( { name => 'UnitID', value => '234' } );
+        $problem->update;
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'brent',
-        MAPIT_URL => 'http://mapit.uk/',
-        STAGING_FLAGS => { send_reports => 1 },
-        COBRAND_FEATURES => {
-            anonymous_account => {
-                brent => 'anonymous'
-            },
-        },
-    }, sub {
-        FixMyStreet::Script::Reports::send();
-        my $req = Open311->test_req_used;
-        my $c = CGI::Simple->new($req->content);
-        is $c->param('attribute[UnitID]'), undef, 'UnitID removed from attributes';
-        like $c->param('description'), qr/ukey: 234/, 'UnitID on gully sent across in detail';
-        my $title = $problem->title . '; Nearest calculated address = Constitution Hill';
-        is $c->param('attribute[title]'), $title, 'Report title and location passed as attribute for Open311';
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL        => 'http://mapit.uk/',
+            STAGING_FLAGS    => { send_reports => 1 },
+            COBRAND_FEATURES =>
+                { anonymous_account => { brent => 'anonymous' }, },
+        }, sub {
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c   = CGI::Simple->new( $req->content );
+            is $c->param('attribute[UnitID]'), undef,
+                'UnitID removed from attributes';
+            like $c->param('description'), qr/ukey: 234/,
+                'UnitID on gully sent across in detail';
+            my $title = $problem->title
+                . '; Nearest calculated address = Engineers Way, London Borough of Brent, London, Greater London, HA9 0FJ';
+            is $c->param('attribute[title]'), $title,
+                'Report title and location passed as attribute for Open311';
+        };
+
+        $problem->delete;
     };
 
-    $problem->delete;
+    subtest 'OSPlaces geocoder' => sub {
+        my ($problem) = $mech->create_problems_for_body(
+            1,
+            $brent->id,
+            'Gully',
+            {   areas    => "2488",
+                category => 'Gully grid missing',
+                cobrand  => 'brent',
+                geocode => {
+                    LPI => {
+                        "ADDRESS" =>
+                            "STUDIO 1, 29, BUCKINGHAM ROAD, LONDON, BRENT, NW10 4RP",
+                    },
+                },
+            }
+        );
+        $problem->update_extra_field( { name => 'UnitID', value => '234' } );
+        $problem->update;
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL        => 'http://mapit.uk/',
+            STAGING_FLAGS    => { send_reports => 1 },
+            COBRAND_FEATURES => {
+                anonymous_account => { brent => 'anonymous' },
+                geocoder_reverse  => { brent => 'OSPlaces' },
+                os_places_api_key => { brent => 'key' },
+            },
+        }, sub {
+            # send() will overwrite report's geocode with one for OSPlaces
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c   = CGI::Simple->new( $req->content );
+            is $c->param('attribute[UnitID]'), undef,
+                'UnitID removed from attributes';
+            like $c->param('description'), qr/ukey: 234/,
+                'UnitID on gully sent across in detail';
+            my $title = $problem->title
+                . '; Nearest calculated address = Studio 1, 29, Buckingham Road, London, Brent, NW10 4RP';
+            is $c->param('attribute[title]'), $title,
+                'Report title and location passed as attribute for Open311';
+        };
+
+        $problem->delete;
+    };
 };
 
 my $tilma = t::Mock::Tilma->new;
