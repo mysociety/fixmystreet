@@ -540,7 +540,7 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 0, @to_fetch);
+    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
 
     my @out;
     my %task_ref_to_row;

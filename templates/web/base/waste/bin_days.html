@@ -5,22 +5,31 @@
 <h1 class="govuk-heading-xl">Your bin days</h1>
 [% END %]
 
-[% INCLUDE 'waste/_address_display.html' %]
-<div class="waste__collections" [% IF data_loading AND page_refresh %]
-  hx-get="[% c.req.uri.path %]"
-  hx-swap="outerHTML"
-  hx-select=".waste__collections"
-  hx-trigger="every [% page_refresh %]s"
-[% END %]>
-  <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
-  [% IF data_loading %]
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full text-centered">
-        <img id="loading-indicator" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
-        <h2>Loading your bin days...</h2>
-      </div>
+[% IF data_loading %]
+    <div class="waste__loading_wrapper"
+      hx-get="[% c.req.uri.path %]"
+      hx-swap="outerHTML"
+      hx-select=".waste__loading_wrapper"
+      hx-trigger="every [% page_refresh %]s">
+
+        <div class="waste__collections">
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-full text-centered">
+                <img id="loading-indicator" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
+                <h2>Loading your bin days...</h2>
+              </div>
+            </div>
+        </div>
     </div>
-  [% ELSE %]
+    [% INCLUDE footer.html %]
+    [% RETURN %]
+[% END %]
+
+<div class="waste__loading_wrapper">
+
+[% INCLUDE 'waste/_address_display.html' %]
+<div class="waste__collections">
+  <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -133,7 +142,8 @@
       </div>
     </div>
   </div>
-[% END %]
 </div>
-[% INCLUDE footer.html %]
 
+</div>
+
+[% INCLUDE footer.html %]
