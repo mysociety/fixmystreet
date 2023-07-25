@@ -206,6 +206,28 @@ sub user_from_oidc {
 
 =cut
 
+=head2 dashboard_export_problems_add_columns
+
+Brent have an additional column for street name.
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        street_name => 'Street Name',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        return {
+            street_name =>
+                $report->nearest_address_parts->{street}
+        }
+    });
+}
+
 =head2 open311_config
 
 Sends all photo urls in the Open311 data
