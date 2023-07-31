@@ -8,6 +8,7 @@ use parent 'FixMyStreet::Cobrand::FixMyStreet';
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
 }
 
 package main;
@@ -29,6 +30,7 @@ my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'Potho
 $contact->set_extra_fields(
     { code => 'easting', datatype => 'number' },
     { code => 'northing', datatype => 'number' },
+    { code => 'multi', datatype => 'multivaluelist', values => [ { name => "A", key => "A" }, { name => "B", key => "B" }] },
     { code => 'fixmystreet_id', datatype => 'number' },
 );
 $contact->update;
@@ -135,6 +137,28 @@ subtest 'test sending multiple photos', sub {
         'http://www.example.org/photo/' . $photo_report->id .'.1.full.jpeg?22222222',
         'http://www.example.org/photo/' . $photo_report->id .'.2.full.jpeg?33333333'
     ], 'Multiple photos in media_url';
+};
+
+$photo_report->resend;
+$photo_report->set_extra_fields({ name => 'multi', value => ['A', 'B'] });
+$photo_report->update( { non_public => 1 });
+
+subtest 'test sending photos as file uploads along with a multivalue attribute', sub {
+    $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
+
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'tester' ],
+        MAPIT_URL => 'http://mapit.uk/',
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+    $photo_report->discard_changes;
+    ok $photo_report->whensent, 'Report marked as sent';
 };
 
 my ($bad_category_report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
