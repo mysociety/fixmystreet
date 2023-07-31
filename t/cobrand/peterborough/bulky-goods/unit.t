@@ -9,7 +9,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Peterborough;
 
 subtest '_bulky_collection_window' => sub {
-    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough::Bulky');
+    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
     $mock_pbro->mock(
         'bulky_cancellation_cutoff_time', sub {
             { hours => 15, minutes => 15 }
@@ -17,7 +17,7 @@ subtest '_bulky_collection_window' => sub {
     );
     set_fixed_time('2021-12-31T15:00:00Z');
     is_deeply(
-        FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
+        FixMyStreet::Cobrand::Peterborough->_bulky_collection_window(),
         {   date_from => '2022-01-01',
             date_to   => '2022-02-26',
         },
@@ -25,7 +25,7 @@ subtest '_bulky_collection_window' => sub {
     );
     set_fixed_time('2021-12-31T15:15:00Z');
     is_deeply(
-        FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
+        FixMyStreet::Cobrand::Peterborough->_bulky_collection_window(),
         {   date_from => '2022-01-02',
             date_to   => '2022-02-26',
         },
@@ -33,7 +33,7 @@ subtest '_bulky_collection_window' => sub {
     );
     set_fixed_time('2021-12-31T16:00:00Z');
     is_deeply(
-        FixMyStreet::Cobrand::Peterborough::_bulky_collection_window(),
+        FixMyStreet::Cobrand::Peterborough->_bulky_collection_window(),
         {   date_from => '2022-01-02',
             date_to   => '2022-02-26',
         },
@@ -405,25 +405,25 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => FixMyStreet->local_time_zone,
         );
-        $collection_date = '2023-04-02T00:00:00';
+        $collection_date = DateTime->new(year => 2023, month => 4, day => 2);
 
         subtest 'Now time earlier than 15:00' => sub {
             $now_dt->set( hour => 14, minute => 59, second => 59 );
-            ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+            ok( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                     $now_dt, $collection_date
                 )
             );
         };
         subtest 'Now time equals 15:00' => sub {
             $now_dt->set( hour => 15, minute => 0 );
-            ok!( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+            ok!( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                     $now_dt, $collection_date
                 )
             );
         };
         subtest 'Now time later than 15:00' => sub {
             $now_dt->set( hour => 15, minute => 1 );
-            ok!( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+            ok!( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                     $now_dt, $collection_date
                 )
             );
@@ -437,9 +437,9 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_date = '2023-04-01T00:00:00';
+        $collection_date = DateTime->new(year => 2023, month => 4, day => 1);
 
-        ok !( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+        ok !( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                 $now_dt, $collection_date
             )
         );
@@ -452,9 +452,9 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_date = '2023-03-31T00:00:00';
+        $collection_date = DateTime->new(year => 2023, month => 3, day => 31);
 
-        ok !( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+        ok !( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                 $now_dt, $collection_date
             )
         );
@@ -468,9 +468,9 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_date = '2023-04-01T00:00:00';
+        $collection_date = DateTime->new(year => 2023, month => 4, day => 1);
 
-        ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+        ok( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                 $now_dt, $collection_date
             )
         );
@@ -483,9 +483,9 @@ subtest '_check_within_bulky_cancel_window' => sub {
             day       => 1,
             time_zone => 'Europe/London',
         );
-        $collection_date = '2023-03-31T00:00:00';
+        $collection_date = DateTime->new(year => 2023, month => 3, day => 31);
 
-        ok( FixMyStreet::Cobrand::Peterborough::_check_within_bulky_cancel_window(
+        ok( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
                 $now_dt, $collection_date
             )
         );
