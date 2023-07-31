@@ -533,21 +533,25 @@ sub _request {
                 # HTTP::Request::Common needs to be constructed slightly
                 # differently if there are files to upload.
 
-                my @media_urls = ();
                 # HTTP::Request::Common treats an arrayref as a filespec,
-                # so we need to rejig the media_url parameter so it doesn't
-                # get confused...
+                # so we need to flatten these into repeated field names with different
+                # values so it doesn't get confused...
                 # https://stackoverflow.com/questions/50705344/perl-httprequestcommon-post-file-and-array
-                if ($self->multi_photos) {
-                    my $media_urls = $params->{media_url};
-                    @media_urls = map { ( media_url => $_ ) } @$media_urls;
-                    delete $params->{media_url};
+                my @flattened_params;
+                while (my ($key, $value) = each %$params) {
+                    if (ref $value eq 'ARRAY') {
+                        foreach my $element (@$value) {
+                            push @flattened_params, ( $key => $element );
+                        }
+                        delete $params->{$key};
+                    }
                 }
+
                 $params = {
                     Content_Type => 'form-data',
                     Content => [
                         %$params,
-                        @media_urls,
+                        @flattened_params,
                         %$uploads
                     ]
                 };
