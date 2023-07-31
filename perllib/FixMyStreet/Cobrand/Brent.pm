@@ -531,6 +531,7 @@ sub bin_services_for_address {
 
         my $garden = 0;
         my $garden_bins;
+        my $garden_sacks;
         my $garden_cost = 0;
         my $garden_due = $self->waste_sub_due($schedules->{end_date});
         my $garden_overdue = $expired{$_->{Id}};
@@ -540,7 +541,14 @@ sub bin_services_for_address {
             foreach (@$data) {
                 if ( $_->{DatatypeName} eq 'BRT - Paid Collection Container Quantity' ) {
                     $garden_bins = $_->{Value};
-                    $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                    # $_->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
+                    # until it gets to 9 when it corresponds to sacks
+                    if ($garden_bins == '9') {
+                        $garden_sacks = 1;
+                        $garden_cost = $self->garden_waste_sacks_cost_pa($garden_bins) / 100;
+                    } else {
+                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                    }
                 }
             }
             $request_max = $garden_bins;
@@ -556,6 +564,7 @@ sub bin_services_for_address {
             service_name => $service_name,
             garden_waste => $garden,
             garden_bins => $garden_bins,
+            garden_sacks => $garden_sacks,
             garden_cost => $garden_cost,
             garden_due => $garden_due,
             garden_overdue => $garden_overdue,

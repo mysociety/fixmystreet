@@ -105,6 +105,12 @@ sub garden_waste_no_bins {
     } ];
 }
 
+sub garden_waste_one_sack {
+    my $refuse_bin = garden_waste_no_bins();
+    my $garden_bin = _garden_waste_service_units(1, 'sack');
+    return [ $refuse_bin->[0], $garden_bin->[0] ];
+}
+
 sub garden_waste_one_bin {
     my $refuse_bin = garden_waste_no_bins();
     my $garden_bin = _garden_waste_service_units(1, 'bin');
@@ -119,6 +125,10 @@ sub garden_waste_two_bins {
 
 sub _garden_waste_service_units {
     my ($bin_count, $type) = @_;
+
+    if ($type eq 'sack') {
+        $bin_count = 9;
+    }
 
     my $bin_type_id = 1;
 
@@ -240,7 +250,21 @@ FixMyStreet::override_config {
             Description => '2 Example Street, Brent, ',
         };
     });
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_sack);
+    subtest 'check sack subscription template change for sacks' => sub {
+        set_fixed_time('2020-05-09T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('£50.00 per year (Sack subscription)');
+    };
+
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+
+    subtest 'check sack subscription template does not affect normal bin count' => sub {
+        set_fixed_time('2020-05-09T17:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('£50.00 per year (1 bin)');
+    };
 
     subtest 'check subscription link present' => sub {
         set_fixed_time('2021-03-09T17:00:00Z');
