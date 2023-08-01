@@ -18,6 +18,7 @@ sub look_for_report {
     my $unsent = FixMyStreet::DB->resultset('Problem')->search($params, {
         for => \'UPDATE SKIP LOCKED',
         rows => 1,
+        order_by => \'RANDOM()'
     } )->single or return;
 
     print_log('debug', "Trying to send report " . $unsent->id);
@@ -45,8 +46,11 @@ sub look_for_update {
     my $params = $updates->construct_query($opts->debug);
     my $comment = FixMyStreet::DB->resultset('Comment')
         ->to_body([ keys %$bodies ])
-        ->search($params, { for => \'UPDATE SKIP LOCKED', rows => 1 })
-        ->single or return;
+        ->search($params, {
+            for => \'UPDATE SKIP LOCKED',
+            rows => 1,
+            order_by => \'RANDOM()'
+        })->single or return;
 
     print_log('debug', "Trying to send update " . $comment->id);
 

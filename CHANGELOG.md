@@ -16,6 +16,7 @@
         - Cobrands can provide custom distances for duplicate lookup. #4456
         - Auto-spot a default favicon.ico.
         - Add `send_state` column to reports. #4048
+        - Return random unprocessed row to daemon.
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 
