@@ -170,6 +170,8 @@ sub open311_extra_data_include {
     ];
 
     if ($contact->email =~ /Jadu/) {
+        my $reported_by_staff = $row->get_extra_metadata('contributed_by', 0) ? 'Yes' : 'No';
+        push @$open311_only, { name => 'reported_by_staff', value => $reported_by_staff };
         return $open311_only;
     }
 
