@@ -1248,7 +1248,7 @@ input.final-submit {
 
   a {
     @include clearfix;
-    padding: flip(0 0 0 1em, 0 1em 0 0);
+    padding: 0 1em;
 
     @media print {
       padding: 0;
@@ -1267,10 +1267,6 @@ input.final-submit {
     display: block;
     padding: 0.25em 0;
   }
-}
-
-body.frontpage .item-list--reports__item a {
-  padding: 0 1em 0 1em;
 }
 
 .item-list__item__metadata {

@@ -195,14 +195,6 @@ body.alertindex form.full-width {
     font-size: 1em;
 }
 
-// We have slightly different content in our lists of issues to what
-// reports_list.scss expects, so we need to tweak the padding back to normal.
-// This stops the spacing being too large.
-.item-list__item--with-pin a {
-  padding: 0;
-  padding-left: 3em;
-}
-
 // Bromley's footer
 .site-footer {
   padding: 120px 0 0;
