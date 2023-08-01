@@ -54,9 +54,6 @@ of a local problem that they believe might require your attention.</p>
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
-[%- IF report.category == 'Claim' %]
-    <p style="[% secondary_p_style %]">Confirm reference: [% report.external_id | html %]</p>
-[% END -%]
     <p style="[% secondary_p_style %]">Report ID: [% report.id %]</p>
     <p style="[% secondary_p_style %]">[% report.category | html %]</p>
     [% report.detail | html_para_email(secondary_p_style) %]

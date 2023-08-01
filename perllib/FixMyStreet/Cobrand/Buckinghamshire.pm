@@ -5,7 +5,7 @@ FixMyStreet::Cobrand::Buckinghamshire - code specific to the Buckinghamshire cob
 =head1 SYNOPSIS
 
 We integrate with Buckinghamshire's Alloy back end for highways reporting and
-Alloy+Evo for red claims, also send emails for some categories, and send
+Evo for red claims, also send emails for some categories, and send
 reports to Buckinghamshire parishes based on category/speed limit.
 
 =head1 DESCRIPTION
@@ -176,19 +176,16 @@ around open311_extra_data_include => sub {
     return $open311_only;
 };
 
+=head2 open311_pre_send
+
+We do not actually want to send claim reports via Open311, though there is a
+backend category for them, only email and Evo by a separate process
+
+=cut
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
-    if ($row->category eq 'Claim') {
-        if ($row->get_extra_metadata('fault_fixed') eq 'Yes') {
-            # We want to send via Open311, but with slightly altered information
-            $row->update_extra_field({ name => 'title', value => $row->get_extra_metadata('direction') }); # XXX See doc note
-            $row->update_extra_field({ name => 'description', value => $row->get_extra_metadata('describe_cause') });
-        } else {
-            # We do not want to send via Open311, only email
-            return 'SKIP';
-        }
-    }
+    return 'SKIP' if $row->category eq 'Claim';
 }
 
 sub open311_post_send {
@@ -196,9 +193,8 @@ sub open311_post_send {
 
     $self->_add_claim_auto_response($row, $h) if $row->category eq 'Claim';
 
-    # Check Open311 was successful (or a non-Open311 Claim)
-    my $non_open311_claim = $row->category eq 'Claim' && $row->get_extra_metadata('fault_fixed') ne 'Yes';
-    return unless $row->external_id || $non_open311_claim;
+    # Check Open311 was successful;
+    return unless $row->external_id;
     return if $row->get_extra_metadata('extra_email_sent');
 
     # For certain categories, send an email also

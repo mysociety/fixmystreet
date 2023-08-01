@@ -162,9 +162,9 @@ EOF
         FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         is $report->comments->count, 1, 'updates added to report post send';
-        my @email = $mech->get_email;
-        like $email[0]->header('To'), qr/madeareport\@/;
-        is $email[0]->header('Subject'), "Your claim has been submitted, ref $report_id";
+        my $email = $mech->get_email;
+        like $email->header('To'), qr/madeareport\@/;
+        is $email->header('Subject'), "Your claim has been submitted, ref $report_id";
         my $req = Open311->test_req_used;
         is $req, undef, 'Nothing sent by Open311';
         is $report->user->alerts->count, 1, 'User has an alert for this report';
@@ -217,22 +217,13 @@ EOF
         FixMyStreet::Script::Reports::send();
         $report->discard_changes;
         is $report->comments->count, 1, 'updates added to report post send';
-        my @email = $mech->get_email;
-        my $text = $mech->get_text_body_from_email($email[0]);
-        is $email[0]->header('Subject'), "Your claim has been submitted, ref $report_id";
+        my $email = $mech->get_email;
+        my $text = $mech->get_text_body_from_email($email);
+        is $email->header('Subject'), "Your claim has been submitted, ref $report_id";
         like $text, qr/reference number is $report_id/;
         like $text, qr/is a lengthy process/;
         my $req = Open311->test_req_used;
-        foreach ($req->parts) {
-            my $h = $_->header('Content-Disposition');
-            if ($h =~ /name="service_code"/) {
-                is $_->content, 'CLAIM';
-            } elsif ($h =~ /name="attribute\[title\]/) {
-                is $_->content, 'east';
-            } elsif ($h =~ /name="attribute\[description\]/) {
-                is $_->content, 'a cause';
-            }
-        }
+        is $req, undef, 'Nothing sent by Open311';
     };
 
     subtest 'Report new property claim, report id known' => sub {
