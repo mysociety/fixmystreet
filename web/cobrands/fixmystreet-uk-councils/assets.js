@@ -754,7 +754,7 @@ fixmystreet.assets.gloucestershire.street_stylemap = new OpenLayers.StyleMap({
         fill: false,
         strokeColor: "navy",
         strokeOpacity: 0.5,
-        strokeWidth: 5
+        strokeWidth: 8
     })
 });
 
