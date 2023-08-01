@@ -35,7 +35,7 @@ Confirm reference: [% report.external_id %]
 Details: [% report.detail %]
 
 [% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description OR field.code %]: [% field.value %]
+[% field.description OR field.name %]: [% field.value %]
 
 [% END %][% END ~%]
 

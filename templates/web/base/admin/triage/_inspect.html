@@ -70,7 +70,7 @@
           [% FOR field IN extra_fields %]
           [% NEXT IF field.name == 'urgent' %]
           <p>
-              <label for="[% field.name %]">[% field.description %]</label>
+              <label for="[% field.name %]">[% field.description OR field.name %]</label>
               <input class="form-control" name="[% field.name %]" type="text" value="[% field.value %]" disabled>
           </p>
           [% END %]
