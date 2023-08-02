@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
+use UUID::Tiny ':std';
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
@@ -503,6 +504,85 @@ sub garden_waste_cost_pa {
 
     my $cost = $per_bin_cost * $bin_count;
     return $cost;
+}
+
+sub find_available_bulky_slots {
+    my ( $self, $property, $last_earlier_date_str ) = @_;
+
+    my $key
+        = $self->council_url . ":echo:available_bulky_slots:"
+        . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
+        . $property->{id};
+    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    my $service_id = 413; # XXX
+    my $event_type_id = 1636; # XXX
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
+    my $guid = $self->{c}->session->{$guid_key};
+    unless ($guid) {
+        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string;
+    }
+
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
+    my @available_slots;
+    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
+    foreach (@$slots) {
+        push @available_slots, {
+            date => construct_bin_date($_->{StartDate}),
+            reference => $_->{Reference},
+            expiry => construct_bin_date($_->{Expiry}),
+        };
+    }
+
+    $self->{c}->session->{$key} = \@available_slots;
+
+    return \@available_slots;
+}
+
+sub check_bulky_slot_available {
+    my ( $self, $date ) = @_;
+    return 1; # XXX need to check reserved slot expiry
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    $data->{title} = "Bulky goods collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
+    $data->{extra_Collection_Date} = $date;
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_reservation} = $ref;
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+
+    my @notes;
+    my @ids;
+    my @photos;
+
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @notes, $item; # XXX this should be per-item note field from user, not item description
+            push @ids, $items{$item};
+            push @photos, $data->{"item_photos_$_"} || '';
+        };
+    }
+    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
+    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
+
+    $data->{extra_Image} = join("::", @photos);
+    $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
 }
 
 1;

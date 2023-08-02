@@ -172,7 +172,7 @@ sub _get_dates {
         $dt
             ? {
             label => $dt->strftime('%d %B'),
-            value => $_->{date},
+            value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             }
             : undef
         } @{
