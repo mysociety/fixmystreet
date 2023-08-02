@@ -145,6 +145,8 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     requires 'Net::Subnet';
     # Bromley
     requires 'Data::ICal';
+    # Echo
+    requires 'UUID::Tiny';
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {
