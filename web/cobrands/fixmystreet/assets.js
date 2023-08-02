@@ -319,6 +319,15 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
             return;
         }
         this.checkFeature(null, fixmystreet.get_lonlat_from_dom());
+
+        // It's possible an asset has been selected before a category (e.g. if
+        // assets are showing for a whole category group. So on category change,
+        // make sure we check if any attribute fields need setting. We don't
+        // clear if not, because that might clear e.g. attributes set by a layer
+        // using `usrn`. Ignore layers that aren't visible.
+        if (this.getVisibility() && this.selected_feature) {
+            this.setAttributeFields(this.selected_feature);
+        }
     },
 
     one_time_select: function() {

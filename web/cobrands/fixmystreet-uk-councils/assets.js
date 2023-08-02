@@ -205,11 +205,11 @@ fixmystreet.assets.brent.construct_asset_name = function(id) {
 };
 
 fixmystreet.assets.brent.found = function(layer) {
-    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    fixmystreet.message_controller.road_found(layer);
 };
 
 fixmystreet.assets.brent.not_found = function(layer) {
-    fixmystreet.message_controller.road_found(layer);
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
 };
 
 fixmystreet.assets.brent.no_asset_message_defaults = {
