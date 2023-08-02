@@ -1122,6 +1122,7 @@ sub process_report : Private {
         'non_public',
       );
     $params{category} = $c->stash->{category};
+    $params{group} = $c->stash->{group};
 
 
     # If this report is being made by the wrapped PWA then the platform
@@ -1191,6 +1192,7 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
+    $report->set_extra_metadata(group => $params{group}) if $params{group};
     $c->cobrand->call_hook(report_new_munge_category => $report);
     $report->subcategory( $params{subcategory} );
 
@@ -1805,7 +1807,7 @@ sub check_for_category : Private {
         # Group is either an actual group, or a category that wasn't in a group
         my $group = $c->get_param('category') || $c->get_param('filter_group') || '';
         if (any { $_->{name} && $group eq $_->{name} } @{$c->stash->{category_groups}}) {
-            $c->stash->{filter_group} = $group;
+            $c->stash->{group} = $c->stash->{filter_group} = $group;
             (my $group_id = $group) =~ s/[^a-zA-Z]+//g;
             my $cat_param = "category.$group_id";
             $category = $c->get_param($cat_param);

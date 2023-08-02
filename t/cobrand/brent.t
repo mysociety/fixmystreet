@@ -94,6 +94,10 @@ my $brent = $mech->create_body_ok(2488, 'Brent', {
 my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
+my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Overgrown grass',
+    email => 'ATAK-OVERGROWN_GRASS', group => 'Parks and open spaces');
+my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category => 'Leaf clearance',
+    email => 'ATAK-LEAF_CLEARANCE', group => 'Parks and open spaces');
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
 
@@ -589,6 +593,89 @@ FixMyStreet::override_config {
         my $closest = $cobrand->find_closest($problem);
         is $closest->summary, 'Studio 1, 29, Buckingham Road, London, Brent, NW10 4RP';
     }
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    COBRAND_FEATURES => {
+        anonymous_account => { brent => 'anonymous' },
+        category_groups => { brent => 1 },
+    }
+}, sub {
+    $mech->log_in_ok($user1->email); # Simplify report submission params by logging in
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Brent');
+
+    subtest 'Prevents reports being made outside maintained areas' => sub {
+        # Simulate no locations found
+        $cobrand->mock('_get', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
+
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Please select a location in a Brent maintained area');
+    };
+
+    subtest 'Allows reports to be made in maintained areas' => sub {
+        # Now simulate a location being found
+        $cobrand->mock('_get', sub {
+            '<wfs:FeatureCollection>
+  <gml:featureMember>
+    <ms:Parks_and_Open_Spaces gml:id="Parks_and_Open_Spaces.King Edward VII Park, Wembley">
+      <ms:site_name>King Edward VII Park, Wembley</ms:site_name>
+    </ms:Parks_and_Open_Spaces>
+  </gml:featureMember>
+</wfs:FeatureCollection>'
+        });
+
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+
+        FixMyStreet::Script::Reports::send();
+
+        # Get the most recent report
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
+    };
+
+    subtest "Doesn't overwrite location_name if already set" => sub {
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+
+
+        # Get the most recent report and set the location_name
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report->update_extra_field( { name => 'location_name', value => 'Test location name' } );
+        $report->update;
+
+        FixMyStreet::Script::Reports::send();
+
+        $report->discard_changes;
+        is $report->get_extra_field_value('location_name'), 'Test location name', 'Location name is set';
+    };
 };
 
 FixMyStreet::override_config {

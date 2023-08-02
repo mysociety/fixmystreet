@@ -51,39 +51,73 @@ brent:
     geometryName: 'msGeometry'
     srsName: "EPSG:3857"
     body: "Brent Council"
-  - wfs_feature: "Housing"
-    asset_type: 'area'
-    stylemap: 'fixmystreet.assets.stylemap_invisible'
-    nearest_radius: '0.1'
-    always_visible: 1
-    non_interactive: 1
-    no_asset_msg_id: '#js-brent-tenant-services'
-    road: 1
-    actions:
-      found: "fixmystreet.assets.brent.found"
-      not_found: "fixmystreet.assets.brent.not_found"
   - wfs_feature: "Highways"
     asset_type: 'area'
     stylemap: 'fixmystreet.assets.stylemap_invisible'
     nearest_radius: '0.1'
     non_interactive: 1
-    asset_category: [ 'Fly-tipping', 'Pavement damage', 'Grass verges / shrub beds - littering' ]
+    asset_category: [ 'Fly-tipping', 'Pavement damage' ]
     no_asset_msg_id: '#js-brent-road-services'
     road: 1
     actions:
-     found: "fixmystreet.assets.brent.found_filter"
-     not_found: "fixmystreet.assets.brent.not_found_filter"
-  - wfs_feature: "Parks_and_Open_Spaces"
-    asset_type: 'area'
-    stylemap: 'fixmystreet.assets.stylemap_invisible'
-    nearest_radius: '0.1'
-    non_interactive: 1
-    asset_category: [ 'Grass verges / shrub beds - littering' ]
-    no_asset_msg_id: '#js-brent-park-services'
-    road: 1
+      found: fixmystreet.assets.brent.road_found
+      not_found: fixmystreet.assets.brent.road_not_found
+  - wfs_feature: Housing
+    asset_item: estate
+    asset_type: area
+    asset_group: Council estates grounds maintenance
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select a housing estate from the map</strong></p><p>This type of issue can only be reported within housing estates that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
     actions:
-     found: "fixmystreet.assets.brent.found_filter"
-     not_found: "fixmystreet.assets.brent.not_found_filter"
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 1
+    disable_pin_snapping: true
+  - wfs_feature: Parks_and_Open_Spaces
+    asset_item: park
+    asset_type: area
+    asset_group: Parks and open spaces
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select a park from the map</strong></p><p>This type of issue can only be reported within parks and green spaces that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 1
+    disable_pin_snapping: true
+  - wfs_feature: Allotments
+    asset_item: allotment
+    asset_type: area
+    asset_group: Allotments
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select an allotment from the map</strong></p><p>This type of issue can only be reported within allotments that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 1
+    disable_pin_snapping: true
+  - wfs_feature: Highway_Verges
+    asset_item: verge or flower bed
+    asset_type: area
+    asset_group: Roadside verges and flower beds
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select a verge or flower bed from the map</strong></p><p>This type of issue can only be reported within verges or flower beds that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 5
+    disable_pin_snapping: true
   - wfs_feature: 'queens_park'
     asset_type: 'area'
     always_visible: true

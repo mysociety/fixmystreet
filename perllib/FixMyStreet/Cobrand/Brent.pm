@@ -17,6 +17,8 @@ use Moo;
 use DateTime;
 use DateTime::Format::Strptime;
 use Try::Tiny;
+use LWP::Simple;
+use URI;
 
 =head1 INTEGRATIONS
 
@@ -350,6 +352,15 @@ Same as Symology above, but different attribute name.
                 $row->update_extra_field({ name => 'usrn', description => 'USRN', value => $ref });
             }
         }
+
+=item * Adds location name from WFS service for ATAK reports if missing
+
+=cut
+
+    } elsif ($contact->email =~ /^ATAK/ && !$row->get_extra_field_value('location_name')) {
+        if (my $name = $self->lookup_location_name($row)) {
+            $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
+        }
     }
 
 =item * The title field gets pushed to location fields in Echo/Symology, so include closest address
@@ -403,6 +414,124 @@ to put the UnitID in the detail field for sending
 sub open311_post_send {
     my ($self, $row) = @_;
     $row->detail($self->{brent_original_detail}) if $self->{brent_original_detail};
+}
+
+=head2 lookup_location_name
+
+Looks up the location name from the WFS service
+
+=cut
+
+sub lookup_location_name {
+    my ($self, $report) = @_;
+
+    my $locations = $self->_atak_wfs_query($report);
+
+    # Match the first element like <ms:site_name>King Edward VII Park, Wembley</ms:site_name> and return the value
+    if ($locations && $locations =~ /<ms:site_name>(.+?)<\/ms:site_name>/) {
+        return $1;
+    }
+}
+
+=head2 report_validation
+
+Ensure ATAK reports are in ATAK-owned areas
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $self->body->id,
+        category => $report->category,
+    });
+
+    if ($contact && $contact->email =~ /^ATAK/) {
+        my $locations = $self->_atak_wfs_query($report);
+
+        if (index($locations, '<gml:featureMember>') == -1) {
+            # Location not found
+            $errors->{category} = 'Please select a location in a Brent maintained area';
+        }
+    }
+
+    return $errors;
+}
+
+sub _atak_wfs_query {
+    my ($self, $report) = @_;
+
+    my $group = $report->get_extra_metadata('group');
+    return unless $group;
+
+    my $asset_layer = $self->_group_to_asset_layer($group);
+    return unless $asset_layer;
+
+    my $uri = URI->new('https://tilma.mysociety.org/mapserver/brent');
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => $asset_layer,
+        VERSION => "1.1.0",
+        properties => 'site_name',
+    );
+
+    try {
+        return $self->_get($self->_wfs_uri($report, $uri));
+    } catch {
+        # Ignore WFS errors.
+        return '';
+    };
+}
+
+sub _group_to_asset_layer {
+    my ($self, $group) = @_;
+
+    my %group_to_layer = (
+        'Parks and open spaces' => 'Parks_and_Open_Spaces',
+        'Allotments' => 'Allotments',
+        'Council estates grounds maintenance' => 'Housing',
+        'Roadside verges and flower beds' => 'Highway_Verges',
+    );
+
+    return $group_to_layer{$group};
+}
+
+sub _wfs_uri {
+    my ($self, $report, $base_uri) = @_;
+
+    # This fn may be called before cobrand has been set in the
+    # reporting flow and local_coords needs it to be set
+    $report->cobrand('brent') if !$report->cobrand;
+
+    my ($x, $y) = $report->local_coords;
+    my $buffer = 50; # metres
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $filter = "
+    <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
+        <ogc:BBOX>
+            <ogc:PropertyName>Shape</ogc:PropertyName>
+            <gml:Envelope xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:27700'>
+                <gml:lowerCorner>$w $s</gml:lowerCorner>
+                <gml:upperCorner>$e $n</gml:upperCorner>
+            </gml:Envelope>
+        </ogc:BBOX>
+    </ogc:Filter>";
+    $filter =~ s/\n\s+//g;
+
+    $filter = URI::Escape::uri_escape_utf8($filter);
+
+    return "$base_uri&filter=$filter";
+}
+
+# Wrapper around LWP::Simple::get to make mocking in tests easier.
+sub _get {
+    my ($self, $uri) = @_;
+
+    return get($uri);
 }
 
 =head2 prevent_questionnaire_updating_status

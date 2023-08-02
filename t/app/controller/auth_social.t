@@ -16,7 +16,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body2 = $mech->create_body_ok(2508, 'Hackney Council');
-my $body3 = $mech->create_body_ok(2488, 'Brent Council');
+my $body3 = $mech->create_body_ok(2488, 'Brent Council', {}, { cobrand => 'brent' });
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
 my $test_email = $report->user->email;

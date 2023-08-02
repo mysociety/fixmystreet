@@ -205,75 +205,22 @@ fixmystreet.assets.brent.construct_asset_name = function(id) {
 };
 
 fixmystreet.assets.brent.found = function(layer) {
-    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    fixmystreet.message_controller.road_found(layer);
 };
 
 fixmystreet.assets.brent.not_found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+fixmystreet.assets.brent.road_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
 };
 
-fixmystreet.assets.brent.no_asset_message_defaults = {
-    'Parks_and_Open_Spaces' : '#js-brent-park-services',
-    'Highways' : '#js-brent-road-services'
-};
-
-var brent_parkRoadIsFound = {
-    park: false,
-    road: false,
-    isParkorRoad: function() { return this.park || this.road; }
-};
-
-fixmystreet.assets.brent.found_filter = function(layer) {
-    if (fixmystreet.reporting.selectedCategory().category === 'Grass verges / shrub beds - littering' ||
-    fixmystreet.reporting.selectedCategory().category === 'Grass verge / shrub beds - maintenance issue') {
-        var other_layer_name;
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
-            brent_parkRoadIsFound.park = true;
-            other_layer_name = 'Highways';
-        }
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
-            brent_parkRoadIsFound.road = true;
-            other_layer_name = 'Parks_and_Open_Spaces';
-        }
-        /* Find the other layer involved and mark that as found as well - this
-         * is in case it had already been called as not_found and set up the
-         * map page for repositioning the pin, we need that gone */
-        var other_layer = fixmystreet.assets.layers.filter(function(elem) {
-            return test_layer_typename(elem.fixmystreet, 'Brent Council', other_layer_name);
-        })[0];
-        fixmystreet.message_controller.road_found(other_layer);
-    }
-    fixmystreet.message_controller.road_found(layer);
-};
-
-fixmystreet.assets.brent.not_found_filter = function(layer) {
-    var selected = fixmystreet.reporting.selectedCategory();
-    if (selected.category === 'Grass verges / shrub beds - littering' ||
-    selected.category === 'Grass verge / shrub beds - maintenance issue') {
-        layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
-            brent_parkRoadIsFound.park = false;
-        }
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
-            brent_parkRoadIsFound.road = false;
-        }
-        if (brent_parkRoadIsFound.isParkorRoad()) {
-            fixmystreet.message_controller.road_found(layer);
-        } else {
-            fixmystreet.message_controller.road_not_found(layer);
-        }
-    } else {
-        // Need to clear parks/highways message as may still be there
-        // if we have changed category while it was in place
-        layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
+fixmystreet.assets.brent.road_not_found = function(layer) {
+    if (brent_on_red_route()) {
         fixmystreet.message_controller.road_found(layer);
-        layer.fixmystreet.no_asset_msg_id = fixmystreet.assets.brent.no_asset_message_defaults[layer.fixmystreet.http_options.params.TYPENAME];
-
-        if (brent_on_red_route()) {
-            fixmystreet.message_controller.road_found(layer);
-        } else {
-            fixmystreet.message_controller.road_not_found(layer);
-        }
+    } else {
+        fixmystreet.message_controller.road_not_found(layer);
     }
 };
 
