@@ -505,4 +505,20 @@ sub garden_waste_cost_pa {
     return $cost;
 }
 
+sub find_available_bulky_slots {
+    my ( $self, $property, $last_earlier_date_str ) = @_;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
+    #date_from => $window->{date_from},
+    #date_to   => $window->{date_to},
+    #uprn      => $property->{uprn},
+
+    my @available_slots;
+    # list of { workpack_id, date }
+    return \@available_slots;
+}
+
 1;

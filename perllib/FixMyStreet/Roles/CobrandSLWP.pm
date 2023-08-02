@@ -10,6 +10,7 @@ package FixMyStreet::Roles::CobrandSLWP;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
 
 use Integrations::Echo;
 use JSON::MaybeXS;
@@ -443,6 +444,9 @@ sub bin_services_for_address {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, $self->council_url, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+
+    # XXX need proper check here
+    $property->{show_bulky_waste} = $self->bulky_enabled;
 
     my @out;
     my %task_ref_to_row;
@@ -1136,5 +1140,37 @@ sub dashboard_export_problems_add_columns {
 }
 
 
+
+sub bulky_collection_window_days { 56 }
+
+sub bulky_allowed_property {
+    my ($self, $property) = @_;
+    return 1 if $property->{show_bulky_waste} && !$property->{commercial_property};
+}
+
+sub collection_date {
+    my ($self, $p) = @_;
+    return '???';
+}
+
+sub _bulky_cancellation_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
+    my $dt = $collection_date->clone->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    );
+    return $dt;
+}
+
+sub _bulky_refund_cutoff_date {
+    my ($self, $collection_dt) = @_;
+    my $cutoff_dt = $collection_dt->clone->set(
+        hour => 0, minute => 0,
+    )->subtract( days => 2 );
+    return $cutoff_dt;
+}
+
+sub bulky_free_collection_available { 0 }
 
 1;
