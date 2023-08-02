@@ -103,6 +103,17 @@ sub make_categories {
                 order => 0,
             });
         }
+        if ( $cat->{user_notice} ) {
+            $child_cat->update_extra_field(
+                {   code        => "user_notice",
+                    variable    => "false",
+                    protected   => "true",
+                    description => $cat->{user_notice} eq 1
+                        ? $config->{user_notice}
+                        : $cat->{user_notice},
+                }
+            );
+        }
         $child_cat->set_extra_fields(@{ $cat->{extra_fields} }) if $cat->{extra_fields};
         if (my $asset_field = $cat->{asset_field}) {
             my ($description, $code) = @$asset_field;
