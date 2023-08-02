@@ -61,4 +61,16 @@ sub new {
     return $new;
 }
 
+sub redeemed {
+    my $self = shift;
+    return $self->data->{redeemed};
+}
+
+sub mark_redeemed {
+    my ( $self, $epoch_seconds ) = @_;
+    my $data = $self->data;
+    $data->{redeemed} = $epoch_seconds;
+    $self->update({ data => $data });
+}
+
 1;

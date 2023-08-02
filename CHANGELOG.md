@@ -10,6 +10,7 @@
         - Fix RSS feed subscription from alert page button.
         - Fix link to edit category with apostrophe in category name.
         - Fallback extra field in submit email should be `name`, not `code`.
+        - Allow confirmation links to login user 30s within first use to prevent things like Outlook 'safelinks' breaking the UX.
     - Admin improvements:
         - Rename emergency message to site message.
     - Development improvements:

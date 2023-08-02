@@ -1502,6 +1502,9 @@ sub process_confirmation : Private {
     my ( $self, $c ) = @_;
 
     my $data = $c->stash->{token_data};
+    my $token_redeem_cooldown_seconds = $c->stash->{token_redeem_cooldown_seconds};
+    my $token = $c->stash->{token_object};
+
     $c->stash->{template} = $data->{template} || 'tokens/confirm_problem.html';
 
     unless ($c->stash->{report}) {
@@ -1543,55 +1546,68 @@ sub process_confirmation : Private {
         return 1;
     }
 
-    if ($problem->state ne 'unconfirmed') {
+    if ($problem->state ne 'unconfirmed' && (!$token_redeem_cooldown_seconds ||
+        (!$token->redeemed || $token->redeemed < time() - $token_redeem_cooldown_seconds))) {
+
+        # Don't log the user in on the confirmation link unless it was redeemed within
+        # some specified cooldown period.
+
         my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         $c->res->redirect($report_uri);
         return;
     }
 
-    # We have an unconfirmed problem(s)
-    my @problems = ($problem);
-    if (my $grouped_ids = $problem->get_extra_metadata('grouped_ids')) {
-        foreach my $id (@$grouped_ids) {
-            my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
-            push @problems, $problem;
+    if ($problem->state eq 'unconfirmed') {
+        # We have an unconfirmed problem(s)
+        my @problems = ($problem);
+        if (my $grouped_ids = $problem->get_extra_metadata('grouped_ids')) {
+            foreach my $id (@$grouped_ids) {
+                my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
+                push @problems, $problem;
+            }
         }
-    }
-    foreach my $problem (@problems) {
-        $problem->confirm;
-        $problem->update({ lastupdate => \'current_timestamp' });
+        foreach my $problem (@problems) {
+            $problem->confirm;
+            $problem->update({ lastupdate => \'current_timestamp' });
 
-        # Subscribe problem reporter to email updates
-        $c->forward( '/report/new/create_related_things', [ $problem ] );
-    }
-
-    # log the problem creation user in to the site
-    if ( $data->{name} || $data->{password} ) {
-        if (!$problem->user->email_verified) {
-            $problem->user->email( $data->{email} ) if $data->{email};
-        } elsif (!$problem->user->phone_verified) {
-            $problem->user->phone( $data->{phone} ) if $data->{phone};
+            # Subscribe problem reporter to email updates
+            $c->forward( '/report/new/create_related_things', [ $problem ] );
         }
-        $problem->user->password( $data->{password}, 1 ) if $data->{password};
-        for (qw(name title facebook_id twitter_id)) {
-            $problem->user->$_( $data->{$_} ) if $data->{$_};
+
+        if ($token_redeem_cooldown_seconds) {
+            # Mark when the token was redeemed if there is a cooldown set so
+            # we can track if new uses are within the window.
+            $token->mark_redeemed(time());
         }
-        $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
-        $problem->user->extra({
-            %{ $problem->user->get_extra() },
-            %{ $data->{extra} }
-        }) if $data->{extra};
 
-        $problem->user->update;
+        # update user details
+        if ( $data->{name} || $data->{password} ) {
+            if (!$problem->user->email_verified) {
+                $problem->user->email( $data->{email} ) if $data->{email};
+            } elsif (!$problem->user->phone_verified) {
+                $problem->user->phone( $data->{phone} ) if $data->{phone};
+            }
+            $problem->user->password( $data->{password}, 1 ) if $data->{password};
+            for (qw(name title facebook_id twitter_id)) {
+                $problem->user->$_( $data->{$_} ) if $data->{$_};
+            }
+            $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+            $problem->user->extra({
+                %{ $problem->user->get_extra() },
+                %{ $data->{extra} }
+            }) if $data->{extra};
+            $problem->user->update;
 
-        # Make sure extra oauth state is restored, if applicable
-        foreach (qw/logout_redirect_uri change_password_uri/) {
-            if ($data->{$_}) {
-                $c->session->{oauth} ||= ();
-                $c->session->{oauth}{$_} = $data->{$_};
+            # Make sure extra oauth state is restored, if applicable
+            foreach (qw/logout_redirect_uri change_password_uri/) {
+                if ($data->{$_}) {
+                    $c->session->{oauth} ||= ();
+                    $c->session->{oauth}{$_} = $data->{$_};
+                }
             }
         }
     }
+    # log the problem creation user in to the site
     if ($problem->user->email_verified) {
         $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );
     } elsif ($problem->user->phone_verified) {

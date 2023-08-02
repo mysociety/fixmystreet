@@ -19,6 +19,7 @@ package main;
 
 use Test::Deep;
 use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 
 # disable info logs for this test run
@@ -1347,6 +1348,68 @@ subtest "check title field overrides for categories" => sub {
     is $json_response->{by_category}->{test}->{title_label}, undef, "cobrand title label override not applied";
     is $json_response->{by_category}->{test}->{title_hint}, undef, "title hint override not applied";
     is $json_response->{by_category}->{test}->{detail_hint}, undef, "detail hint override not applied";
+};
+
+subtest "confirmation links log a user in within 30 seconds of first use" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+
+    set_fixed_time('2023-08-03T17:00:00Z');
+
+    my $test_email = 'confirmation-links-test@example.com';
+    my $user = $mech->create_user_ok($test_email);
+
+    # submit form
+    $mech->get_ok('/around');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+            "submit location" );
+
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo1        => '',
+                    username_register => $user->email,
+                    name          => 'Joe Bloggs',
+                    category      => 'Street lighting',
+                }
+            },
+            "submit good details"
+        );
+    };
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    like $mech->get_text_body_from_email($email), qr/confirm that you want to send your\s+report/i, "confirm the problem";
+
+    my $url = $mech->get_link_from_email($email);
+
+    # first visit
+    $mech->get_ok($url);
+    $mech->logged_in_ok;
+    $mech->log_out_ok;
+
+    # immediately again...
+    $mech->get_ok($url);
+    $mech->logged_in_ok;
+    $mech->log_out_ok;
+
+    # after 30 seconds...
+    set_fixed_time('2023-08-03T17:00:31Z');
+    $mech->get_ok($url);
+    $mech->not_logged_in_ok;
+
+    # cleanup
+    $mech->delete_user($user);
 };
 
 done_testing();

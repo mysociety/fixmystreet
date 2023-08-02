@@ -31,6 +31,13 @@ sub confirm_problem : Path('/P') {
     my $auth_token =
       $c->forward( 'load_auth_token', [ $token_code, 'problem' ] );
 
+    $c->stash->{token_object} = $auth_token;
+
+    # Allow a confirmation link to log a person in for a short period after it was used.
+    # This handles the user accidentally opening the link twice or something like Outlook's
+    # 'safelinks' opening the link before the user is directed ot it.
+    $c->stash->{token_redeem_cooldown_seconds} = 30;
+
     # Load the problem
     my $data = $auth_token->data;
     $data = { id => $data } unless ref $data;
@@ -135,6 +142,13 @@ sub confirm_update : Path('/C') {
 
     my $auth_token =
       $c->forward( 'load_auth_token', [ $token_code, 'comment' ] );
+
+    $c->stash->{token_object} = $auth_token;
+
+    # Allow a confirmation link to log a person in for a short period after it was used.
+    # This handles the user accidentally opening the link twice or something like Outlook's
+    # 'safelinks' opening the link before the user is directed ot it.
+    $c->stash->{token_redeem_cooldown_seconds} = 30;
 
     # Load the update
     my $data = $c->stash->{token_data} = $auth_token->data;

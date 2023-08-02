@@ -615,6 +615,8 @@ sub process_confirmation : Private {
 
     $c->stash->{template} = 'tokens/confirm_update.html';
     my $data = $c->stash->{token_data};
+    my $token_redeem_cooldown_seconds = $c->stash->{token_redeem_cooldown_seconds};
+    my $token = $c->stash->{token_object};
 
     unless ($c->stash->{update}) {
         $c->stash->{update} = $c->model('DB::Comment')->find({ id => $data->{id} }) || return;
@@ -627,28 +629,41 @@ sub process_confirmation : Private {
         return;
     }
 
-    if ( $comment->state ne 'unconfirmed' ) {
+    if ($comment->state ne 'unconfirmed' && (!$token_redeem_cooldown_seconds ||
+        (!$token->redeemed || $token->redeemed < time() - $token_redeem_cooldown_seconds))) {
+
+        # Don't log the user in on the confirmation link unless it was redeemed within
+        # some specified cooldown period.
+
         my $report_uri = $c->cobrand->base_url_for_report( $comment->problem ) . $comment->problem->url;
         $c->res->redirect($report_uri);
         return;
     }
 
-    if ( $data->{name} || $data->{password} ) {
-        for (qw(name facebook_id twitter_id)) {
-            $comment->user->$_( $data->{$_} ) if $data->{$_};
+    if ($comment->state eq 'unconfirmed') {
+        if ($token_redeem_cooldown_seconds) {
+            # Mark when the token was redeemed if there is a cooldown set so
+            # we can track if new uses are within the window.
+            $token->mark_redeemed(time());
         }
-        $comment->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
-        $comment->user->extra({
-            %{ $comment->user->get_extra() },
-            %{ $data->{extra} }
-        }) if $data->{extra};
-        $comment->user->password( $data->{password}, 1 ) if $data->{password};
-        $comment->user->update;
-        # Make sure extra oauth state is restored, if applicable
-        foreach (qw/logout_redirect_uri change_password_uri/) {
-            if ($data->{$_}) {
-                $c->session->{oauth} ||= ();
-                $c->session->{oauth}{$_} = $data->{$_};
+
+        if ( $data->{name} || $data->{password} ) {
+            for (qw(name facebook_id twitter_id)) {
+                $comment->user->$_( $data->{$_} ) if $data->{$_};
+            }
+            $comment->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+            $comment->user->extra({
+                %{ $comment->user->get_extra() },
+                %{ $data->{extra} }
+            }) if $data->{extra};
+            $comment->user->password( $data->{password}, 1 ) if $data->{password};
+            $comment->user->update;
+            # Make sure extra oauth state is restored, if applicable
+            foreach (qw/logout_redirect_uri change_password_uri/) {
+                if ($data->{$_}) {
+                    $c->session->{oauth} ||= ();
+                    $c->session->{oauth}{$_} = $data->{$_};
+                }
             }
         }
     }
@@ -662,11 +677,13 @@ sub process_confirmation : Private {
     }
     $c->set_session_cookie_expire(0);
 
-    $c->stash->{update}->confirm;
-    $c->stash->{update}->update;
-    $c->forward('update_problem');
-    $c->stash->{add_alert} = $data->{add_alert};
-    $c->forward('signup_for_alerts');
+    if ($comment->state eq 'unconfirmed') {
+        $c->stash->{update}->confirm;
+        $c->stash->{update}->update;
+        $c->forward('update_problem');
+        $c->stash->{add_alert} = $data->{add_alert};
+        $c->forward('signup_for_alerts');
+    }
 
     return 1;
 }

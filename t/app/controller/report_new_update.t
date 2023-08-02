@@ -1,3 +1,5 @@
+use Test::MockTime qw(:all);
+
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
@@ -109,6 +111,45 @@ subtest "test report creation with initial auto-update and alternative email tex
     $mech->get_ok("/admin/update_edit/$update_id");
     $mech->content_contains("Text:", 'Text box shown for standard update');
     $mech->content_lacks("Template email response:", 'Email text box not shown for standard update');
+};
+
+subtest "confirmation links log a user in within 30 seconds of first use" => sub {
+    set_fixed_time('2023-08-03T17:00:00Z');
+
+    my $report = make_report();
+    my $report_id = $report->id;
+    my $user4_email = 'asdf@asdf.com';
+
+    $mech->clear_emails_ok;
+    $mech->log_out_ok;
+
+    $mech->get_ok("/report/$report_id");
+    my $resp = $mech->submit_form_ok({
+        with_fields => {
+            update => "still not fixed",
+            name => "Joe Bloggs",
+            username_register => $user4_email,
+        }
+    }, "submit update");
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+
+    my $url = $mech->get_link_from_email($email);
+
+    # first visit
+    $mech->get_ok($url);
+    $mech->logged_in_ok;
+    $mech->log_out_ok;
+
+    # immediately again...
+    $mech->get_ok($url);
+    $mech->logged_in_ok;
+    $mech->log_out_ok;
+
+    # after 30 seconds...
+    set_fixed_time('2023-08-03T17:00:31Z');
+    $mech->get_ok($url);
+    $mech->not_logged_in_ok;
 };
 
 done_testing;
