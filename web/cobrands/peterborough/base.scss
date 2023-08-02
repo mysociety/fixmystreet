@@ -236,6 +236,153 @@ h1, h2 {
 }
 
 // Bulky Goods/Waste
+
+body.bulky {
+  $border: 1px solid #e9e9e9;
+  $bulky-mobile-breakpoint: 720px;
+
+  .govuk-summary-list {
+    padding-bottom: 0;
+  }
+
+  .govuk-summary-list__row {
+    border-bottom: none;
+    .govuk-summary-list__key, .govuk-summary-list__value {
+      border-bottom: none;
+      padding-top: 0.5em;
+    }
+  }
+
+  .waste-service-descriptor {
+    border-bottom: none;
+  }
+
+  .waste-service-name {
+    margin-top: 1em;
+  }
+
+  .waste-service-image {
+    display: block;
+    margin-right: auto;
+  }
+
+  .waste-services-launch-panel {
+    margin-bottom: 2em;
+    padding-bottom: 1.5em;
+  }
+
+  .waste-service-name.govuk-heading-m {
+    text-align: left;
+    border-bottom: none;
+    margin-top: 0;
+  }
+
+  .waste-service-wrapper {
+    margin-bottom: 5em;
+    .govuk-summary-list__key, .govuk-summary-list__value {
+      border-bottom: none;
+    }
+  }
+
+  .govuk-warning-text__img {
+    align-self: auto;
+  }
+
+  .govuk-grid-column-two-thirds {
+    @media only screen and (max-width: ($bulky-mobile-breakpoint - 1px)) {
+      // So the service-navbar on the right doesn't overlap with the content on the left.
+      width:100%;
+    }
+  }
+
+  .services-navbar {
+    // This variables will help when we want to reuse this
+    //component on another cobrand and the default colors
+    // don't pass the contrast test.
+    $background-color: $primary !default;
+    $color: $primary_text !default;
+    $padding-x: 1rem;
+
+    display: none;
+    background-color: $background-color;
+    max-width: 200px;
+
+    position: fixed;
+    top: 100px;
+    right: 0;
+
+    @media only screen and (min-width: $bulky-mobile-breakpoint) {
+      display:block;
+    }
+
+    @media only screen and (min-width: 1500px) {
+      // To take advantage of the extra space on the right side
+      // of the screen. Because of the size and  background of the element
+      // the user probably won't overlook it.
+      left: 0;
+    }
+
+    h3 {
+      color: $color;
+      margin-top:$padding-x;
+      padding: 0 $padding-x;
+    }
+
+    a {
+      display: block;
+      color: $color;
+      padding: 0.5em $padding-x;
+
+      &:hover, &:active, &:focus {
+        // To improve accessibility
+        background-color: $color;
+        color: $background-color;
+
+        .highlight-label {
+          background-color: $background-color;
+          color: $color;
+        }
+      }
+
+      .highlight-label {
+        background-color: $color;
+        color: $background-color;
+        font-size: 0.8em;
+        padding: 0.2em 0.3em;
+        border-radius: 5px;
+        margin-left: 5px;
+      }
+    }
+
+    hr {
+      border-top: none;
+      height: 1px;
+      background-color: transparentize($color, 0.8);
+    }
+  }
+
+  .cta-announcement-wrapper {
+    .cta-announcement {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1em;
+      padding: 0.5em 1em;
+      background-color: transparentize($primary, 0.8);
+      border-radius: 0.2em;
+
+    }
+
+    &.is--mobile-only {
+      @media only screen and (min-width: $bulky-mobile-breakpoint) {
+        display:none;
+      }
+    }
+  }
+}
+
 .img-preview {
     border-radius: 5px;
     object-fit: cover;

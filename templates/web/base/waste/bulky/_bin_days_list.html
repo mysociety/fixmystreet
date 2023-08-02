@@ -1,0 +1,81 @@
+[% IF property.pending_bulky_collection AND NOT c.user_exists %]
+    [% TRY %][% PROCESS waste/_bulky_not_signed_user.html %][% CATCH file %][% END %]
+[% END %]
+
+<dl class="govuk-summary-list govuk-!-margin-bottom-0">
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Cost</dt>
+    <dd class="govuk-summary-list__value">
+      [% cost = cobrand.bulky_minimum_cost %]
+      [% IF cobrand.bulky_free_collection_available %]
+        <!-- #03 Should only display when: There is a free collection option and
+          the property hasn't had a collection on this tax year. -->
+        <!-- I know we are not implementing this at the moment, so feel free
+        to delete it -->
+        <p class="label is--low-priority govuk-!-margin-bottom-1">Free</p>
+        <p class="govuk-!-margin-bottom-2"><strong>One free</strong> collection per tax year.</p>
+        <!-- END #03 -->
+        <!-- #02 Always visible EXCEPT when address is commercial-->
+        <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong> Afterwards.</p>
+        <!-- END #02 -->
+      [% ELSE %]
+          <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong></p>
+      [% END %]
+    </dd>
+  </div>
+
+    [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
+        <!-- #01 Should only display when: There IS a booking AND is a signed user -->
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Next collection</dt>
+          <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(property.pending_bulky_collection.get_extra_field_value('DATE')) %]</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Reference number</dt>
+          <dd class="govuk-summary-list__value">[% property.pending_bulky_collection.id %]</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Items to be collected</dt>
+          <dd class="govuk-summary-list__value">
+            <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(property.pending_bulky_collection).size %]</p>
+          </dd>
+        </div>
+        <!-- END #01 -->
+  [% END %]
+
+  [% IF c.user_exists AND NOT property.pending_bulky_collection %]
+    <!-- #04 Should only display when: There is NO booking AND is a signed user -->
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Next collection</dt>
+      <dd class="govuk-summary-list__value"> None booked </dd>
+    </div>
+    <!-- END #04 -->
+  [% END %]
+</dl>
+
+<hr>
+
+<div class="waste-services-launch-panel">
+  [% IF c.cobrand.bulky_can_view_collection(property.pending_bulky_collection) %]
+    <!-- #05 Should only display when: There IS a booking AND is a signed user -->
+    <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% property.pending_bulky_collection.id %]">Check collection details</a>
+    [% IF c.cobrand.bulky_collection_can_be_cancelled(property.pending_bulky_collection) %]
+      <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id ]) %]">Cancel booking</a>
+    [% END %]
+    <!-- END #05 -->
+  [% END %]
+  [% UNLESS c.user_exists %]
+    <!-- #07 Should be displayed when: user HASN'T signed in -->
+    <a class="btn btn-primary govuk-!-margin-bottom-2" href="/auth?r=report/[% property.pending_bulky_collection.id %]">Sign in</a>
+    <!-- END #07 -->
+  [% END %]
+  [% UNLESS property.pending_bulky_collection %]
+    <!-- #06 Should NOT be displayed when: there is a signed user with a booking request -->
+    <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
+      <input type="hidden" name="token" value="[% csrf_token %]">
+      <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Book a collection" value="Book a collection">
+    </form>
+    <!-- END #06 -->
+  [% END %]
+</div>

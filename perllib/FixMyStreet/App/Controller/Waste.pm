@@ -583,11 +583,6 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
 
     my $cfg = $c->cobrand->feature('waste_features');
 
-    # Bulky goods has a new design for the bin days page
-    if ($c->cobrand->call_hook('bulky_enabled')) {
-        $c->stash->{template} = 'waste/bin_days_bulky.html';
-    }
-
     return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
 
     # Allow lookups of max_per_day different properties per day

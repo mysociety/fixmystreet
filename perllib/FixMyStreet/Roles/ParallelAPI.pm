@@ -114,14 +114,6 @@ sub call_api {
         $c->log->info("[$cobrand] call_api $key took $time seconds");
     } elsif ($background) {
         # Bail out here to show loading page
-
-        # Need to set the custom template here because Waste::bin_days
-        # doesn't actually get run because of the detach
-        # XXX This can be removed when the bulky template is removed
-        if ( $c->cobrand->call_hook('bulky_enabled') ) {
-            $c->stash->{template} = 'waste/bin_days_bulky.html';
-        }
-
         $c->stash->{data_loading} = 1;
         $c->stash->{page_refresh} = 2;
         $c->detach;

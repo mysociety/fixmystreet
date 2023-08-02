@@ -714,6 +714,7 @@ sub bin_services_for_address {
     my %seen_containers;
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $property->{show_bulky_waste} = 0;
     foreach (@$job_dates) {
         my $last = construct_bin_date($_->{PreviousDate});
         my $next = construct_bin_date($_->{NextDate});

@@ -1,4 +1,9 @@
-[% SET bodyclass = 'waste' %]
+[%
+SET bodyclass = 'waste';
+IF c.cobrand.call_hook('bulky_enabled');
+  SET bodyclass = 'waste govuk bulky';
+END;
+%]
 [% extra_js = [
     version('/vendor/accessible-autocomplete.min.js'),
     version('/js/waste.js')
