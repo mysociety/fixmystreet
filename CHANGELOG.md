@@ -18,6 +18,8 @@
         - Auto-spot a default favicon.ico.
         - Add `send_state` column to reports. #4048
         - Return random unprocessed row to daemon.
+    - Performance improvements:
+        - Reduce database queries on shortlist page.
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 

@@ -81,7 +81,7 @@ sub planned : Local : Args(0) {
     $c->detach('/page_error_403_access_denied', [])
         unless $c->user->has_body_permission_to('planned_reports');
 
-    $c->stash->{problems_rs} = $c->user->active_planned_reports;
+    $c->stash->{problems_rs} = $c->user->active_planned_reports->search(undef, { '+columns' => [ { 'upr_id' => 'me.id' } ] });
     $c->forward('planned_reorder');
     $c->forward('/reports/stash_report_sort', [ 'shortlist' ]);
     $c->forward('get_problems');
@@ -322,7 +322,7 @@ sub by_shortlisted {
         1; # Want non-ordered to come last
     } else {
         # Default to order added to planned reports
-        $a->user_planned_reports->first->id <=> $b->user_planned_reports->first->id;
+        $a->get_column('upr_id') <=> $b->get_column('upr_id');
     }
 }
 
