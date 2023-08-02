@@ -20,6 +20,7 @@
         - Return random unprocessed row to daemon.
     - Performance improvements:
         - Reduce database queries on shortlist page.
+        - Provide ResultSet fallback translation in lookup.
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 
