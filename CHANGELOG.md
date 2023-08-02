@@ -31,6 +31,7 @@
     - Performance improvements:
         - Reduce database queries on shortlist page.
         - Provide ResultSet fallback translation in lookup.
+        - Mark non-Open311 updates as processed by daemon. #4552
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
 

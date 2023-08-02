@@ -57,4 +57,38 @@ subtest 'Normal sending works' => sub {
     is $p->send_state, 'sent';
 };
 
+# Update existing data
+$body->update({ send_method => 'Open311', send_comments => 1, api_key => 'key', endpoint => 'endpoint', jurisdiction => 'jurisdiction' });
+my $c = $mech->create_comment_for_problem($p, $p->user, $p->user->name, 'An update', 'f', 'confirmed', 'confirmed');
+
+# Add another body for update testing
+my $body2 = $mech->create_body_ok(2636, 'Isle of Wight');
+$mech->create_contact_ok(email => 'g@example.org', category => 'Graffiti', body => $body2);
+my ($p2) = $mech->create_problems_for_body(1, $body2->id, 'Title', { category => 'Graffiti' });
+my $c2 = $mech->create_comment_for_problem($p2, $p->user, $p->user->name, 'An update', 'f', 'confirmed', 'confirmed');
+
+subtest 'Unconfirmed update ignored' => sub {
+    $c->update({ state => 'unconfirmed' });
+    FixMyStreet::Script::SendDaemon::look_for_update($opts);
+    $c->discard_changes;
+    $c2->discard_changes;
+    is $c->send_state, 'unprocessed', 'Unconfirmed update ignored';
+    is $c2->send_state, 'processed', 'Non-Open311 update marked as processed';
+    $c->update({ state => 'confirmed' });
+};
+
+$p->update({ external_id => 123, send_method_used => 'Open311' });
+
+subtest 'Normal update sending works' => sub {
+    my $mock = Test::MockModule->new('Open311');
+    $mock->mock('post_service_request_update', sub { 456 });
+
+    is $c->whensent, undef, 'No sent timestamp';
+    FixMyStreet::Script::SendDaemon::look_for_update($opts);
+    $c->discard_changes;
+    isnt $c->whensent, undef, 'Has a sent timestamp';
+    is $c->send_state, 'sent', 'Marked as sent';
+    is $c->external_id, 456, 'Correct external ID';
+};
+
 done_testing;

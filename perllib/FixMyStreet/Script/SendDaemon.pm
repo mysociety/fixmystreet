@@ -45,19 +45,28 @@ sub look_for_update {
     my $bodies = $updates->fetch_bodies;
     my $params = $updates->construct_query($opts->debug);
     my $comment = FixMyStreet::DB->resultset('Comment')
-        ->to_body([ keys %$bodies ])
         ->search($params, {
             for => \'UPDATE SKIP LOCKED',
             rows => 1,
             order_by => \'RANDOM()'
         })->single or return;
 
-    print_log('debug', "Trying to send update " . $comment->id);
-
-    my ($body) = grep { $bodies->{$_} } @{$comment->problem->bodies_str_ids};
-    $body = $bodies->{$body};
-
-    $updates->process_update($body, $comment);
+    my $problem = $comment->problem;
+    my ($body) = grep { $bodies->{$_} } @{$problem->bodies_str_ids};
+    if (!$body) {
+        $comment->update({ send_state => 'processed' });
+        print_log('debug', '[', $comment->id, '] marking as processed due to non matching bodies_str');
+    } elsif (!$problem->whensent && !$problem->is_open) {
+        $comment->update({ send_state => 'processed' });
+        print_log('debug', '[', $comment->id, '] marking as processed due to unsent problem, non-open problem state');
+    } elsif (!$problem->whensent) {
+        # Might just not be sent yet
+    } else {
+        # Okay to send!
+        $body = $bodies->{$body};
+        print_log('debug', "Trying to send update " . $comment->id);
+        $updates->process_update($body, $comment);
+    }
 }
 
 sub setverboselevel { $verbose = shift || 0; }
