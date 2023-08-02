@@ -860,17 +860,21 @@ sub relevant_jobs {
     return \@jobs;
 }
 
+=pod
+
+Missed bins can be reported up until 4pm the working day following the last
+collection day. So a bin not collected on Tuesday can be rung through up to
+4pm on Wednesday, and one not collected on Friday can be rung through up to
+4pm Monday.
+
+=cut
+
 sub _waste_report_allowed {
     my ($self, $dt) = @_;
 
-    # missed bin reports are allowed if we're within 1.5 working days of the last collection day
-    # e.g.:
-    #  A bin not collected on Tuesday can be rung through up to noon Thursday
-    #  A bin not collected on Thursday can be rung through up to noon Monday
-
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
     $dt = $wd->add_days($dt, 1);
-    $dt->set( hour => 12, minute => 0, second => 0 );
+    $dt->set( hour => 16, minute => 0, second => 0 );
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     return $now <= $dt;
 }

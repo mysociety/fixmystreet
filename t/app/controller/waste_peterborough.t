@@ -85,10 +85,10 @@ FixMyStreet::override_config {
         $mech->content_contains('Every two weeks');
         $mech->content_contains('Thursday, 5th August 2021');
         $mech->content_contains('Report a recycling bin collection as missed');
-        set_fixed_time('2021-08-06T10:00:00Z');
+        set_fixed_time('2021-08-06T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('Report a recycling bin collection as missed');
-        set_fixed_time('2021-08-06T14:00:00Z');
+        set_fixed_time('2021-08-06T18:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('Report a recycling bin collection as missed');
     };
