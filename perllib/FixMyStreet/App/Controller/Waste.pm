@@ -131,12 +131,6 @@ sub check_payment_redirect_id : Private {
     $c->detach( '/page_error_404_not_found' )
         unless $p && $p->get_extra_metadata('redirect_id') eq $token;
 
-    if ( $p->state ne 'unconfirmed' ) {
-        $c->stash->{error} = 'Already confirmed';
-        $c->stash->{template} = 'waste/pay_error.html';
-        $c->detach;
-    }
-
     $c->stash->{report} = $p;
 }
 
@@ -252,8 +246,23 @@ sub pay_complete : Path('pay_complete') : Args(2) {
 
 sub confirm_subscription : Private {
     my ($self, $c, $reference) = @_;
-
     my $p = $c->stash->{report};
+
+    $c->stash->{property_id} = $p->get_extra_field_value('property_id');
+
+    if ($p->category eq 'Bulky collection') {
+        $c->stash->{template} = 'waste/bulky/confirmation.html';
+    } else {
+        $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
+    }
+
+    # Set an override template, so that the form processing can finish (to e.g.
+    # clear the session unique ID) and have the form code load this template
+    # rather than the default 'done' form one
+    $c->stash->{override_template} = $c->stash->{template};
+
+    return unless $p->state eq 'unconfirmed';
+
     $p->update_extra_field( {
             name => 'LastPayMethod',
             description => 'LastPayMethod',
@@ -273,17 +282,7 @@ sub confirm_subscription : Private {
     $p->set_extra_metadata('payment_reference', $reference) if $reference;
     $p->confirm;
     $c->forward( '/report/new/create_related_things', [ $p ] );
-    $c->stash->{property_id} = $p->get_extra_field_value('property_id');
     $p->update;
-    if ($p->category eq 'Bulky collection') {
-        $c->stash->{template} = 'waste/bulky/confirmation.html';
-    } else {
-        $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
-    }
-    # Set an override template, so that the form processing can finish (to e.g.
-    # clear the session unique ID) and have the form code load this template
-    # rather than the default 'done' form one
-    $c->stash->{override_template} = $c->stash->{template};
 }
 
 sub cancel_subscription : Private {

@@ -511,6 +511,12 @@ FixMyStreet::override_config {
         $mech->content_contains('We will aim to deliver your garden waste bin ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
+        # Someone double-clicked
+        $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+        check_extra_data_post_confirm($new_report);
+        $mech->content_contains('We will aim to deliver your garden waste bin ');
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $body = $mech->get_text_body_from_email($emails[1]);
