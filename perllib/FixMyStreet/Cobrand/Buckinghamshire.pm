@@ -290,6 +290,13 @@ sub open311_config_updates {
     $params->{mark_reopen} = 1;
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
