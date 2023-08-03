@@ -48,7 +48,7 @@ sub get_geocoder {
 }
 
 sub new_report_title_field_label {
-    "Summarise the problem and location";
+    "Location of the problem";
 }
 
 sub on_map_default_status { 'open' }
