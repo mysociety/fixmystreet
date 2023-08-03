@@ -1,6 +1,6 @@
 Subject: Adroddiadau newydd [% site_name %] i [% area_name %] o fewn [% ward_name %]
 
-Mae'r adroddiadau [% site name %] newydd canlynol wedi'u hanfon at [% area_name %]
+Mae'r adroddiadau [% site_name %] newydd canlynol wedi'u hanfon at [% area_name %]
 o fewn [% ward_name %]:
 
 [% INCLUDE '_email_report_list.txt' %]
