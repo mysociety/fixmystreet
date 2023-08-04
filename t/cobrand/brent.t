@@ -111,6 +111,22 @@ sub create_contact {
     $contact->update;
 }
 
+create_contact({ category => 'Fly-tipping', email => 'flytipping@brent.example.org' },
+    { code => 'Did_you_see_the_Flytip_take_place?_', required => 1, values => [
+        { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
+    ] },
+    { code => 'Are_you_willing_to_be_a_WItness?_', required => 1, values => [
+        { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
+    ] },
+    { code => 'Flytip_Size', required => 1, values => [
+        { name => 'Single item', key => 2 }, { name => 'Small van load', key => 4 }
+
+    ] },
+    { code => 'Flytip_Type', required => 1, values => [
+        { name => 'Appliance', key => 13 }, { name => 'Bagged waste', key => 3 }
+    ] },
+);
+
 create_contact({ category => 'Report missed collection', email => 'missed' });
 create_contact({ category => 'Request new container', email => 'request@example.org' },
     { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
@@ -876,6 +892,41 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('service_id'), '269';
     };
 };
+
+subtest 'Dashboard CSV extra columns' => sub {
+    FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'brent',
+}, sub {
+    my ($flexible_problem) = $mech->create_problems_for_body(1, $brent->id, 'Flexible problem', {
+        areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
+    $mech->log_in_ok( $staff_user->email );
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID"', "New columns added");
+    ok $mech->content_like(qr/Flexible problem.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
+    ok $mech->content_like(qr/Flexible problem.*?,,,,Y,,,,,,,,/, "All fields empty but photo exists");
+    $flexible_problem->set_extra_fields(
+        {name => 'Container_Request_Action', value => 1},
+        {name => 'Container_Request_Container_Type', value => 1},
+        {name => 'Container_Request_Reason', value => 1},
+        {name => 'service_id', value => 1},
+        {name => 'usrn', value => 1234},
+        {name => 'uprn', value => 4321},
+    );
+    $flexible_problem->external_id('121');
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,1,1,1,1/, "Bin request values added");
+    $flexible_problem->category('Fly-tipping');
+    $flexible_problem->set_extra_fields(
+        {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
+        {name => 'Are_you_willing_to_be_a_WItness?_', value => 0},
+        {name => 'Flytip_Size', value => 4},
+        {name => 'Flytip_Type', value => 13},
+    );
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,121,Y,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+}};
 
 sub get_report_from_redirect {
     my $url = shift;

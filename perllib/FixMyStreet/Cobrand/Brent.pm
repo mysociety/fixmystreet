@@ -208,7 +208,7 @@ sub user_from_oidc {
 
 =head2 dashboard_export_problems_add_columns
 
-Brent have an additional column for street name.
+Brent have various additional columns for extra report data.
 
 =cut
 
@@ -217,13 +217,61 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         street_name => 'Street Name',
+        created_by => 'Created By',
+        email => 'Email',
+        usrn => 'USRN',
+        uprn => 'UPRN',
+        external_id => 'External ID',
+        image_included => 'Does the report have an image?',
+
+        flytipping_did_you_see => 'Did you see the fly-tipping take place',
+        flytipping_statement => "If 'Yes', are you willing to provide a statement?",
+        flytipping_quantity => 'How much waste is there',
+        flytipping_type => 'Type of waste',
+
+        container_req_action => 'Container Request Action',
+        container_req_type => 'Container Request Container Type',
+        container_req_reason => 'Container Request Reason',
+
+        missed_collection_id => 'Service ID',
     );
+
+    my $values;
+    if (my $flytipping = $self->body->contacts->search({ category => 'Fly-tipping' })->first) {
+        foreach my $field (@{$flytipping->get_extra_fields}) {
+            next unless @{$field->{values} || []};
+            foreach (@{$field->{values}}) {
+                $values->{$field->{code}}{$_->{key}} = $_->{name};
+            }
+        }
+    }
+
+    my $flytipping_lookup = sub {
+        my ($report, $field) = @_;
+
+        my $v = $report->get_extra_field_value($field) // return '';
+        return $values->{$field}{$v} || '';
+    };
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+
         return {
-            street_name =>
-                $report->nearest_address_parts->{street}
+            street_name => $report->nearest_address_parts->{street},
+            created_by => $report->name || '',
+            email => $report->user->email || '',
+            usrn => $report->get_extra_field_value('usrn') || '',
+            uprn => $report->get_extra_field_value('uprn') || '',
+            external_id => $report->external_id || '',
+            image_included => $report->photo ? 'Y' : 'N',
+            flytipping_did_you_see => $flytipping_lookup->($report, 'Did_you_see_the_Flytip_take_place?_'),
+            flytipping_statement => $flytipping_lookup->($report, 'Are_you_willing_to_be_a_WItness?_'),
+            flytipping_quantity => $flytipping_lookup->($report, 'Flytip_Size'),
+            flytipping_type => $flytipping_lookup->($report, 'Flytip_Type'),
+            container_req_action => $report->get_extra_field_value('Container_Request_Action') || '',
+            container_req_type => $report->get_extra_field_value('Container_Request_Container_Type') || '',
+            container_req_reason => $report->get_extra_field_value('Container_Request_Reason') || '',
+            missed_collection_id => $report->get_extra_field_value('service_id') || '',
         }
     });
 }
