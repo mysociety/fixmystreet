@@ -74,8 +74,8 @@ $container-max-width: 1100px;
 
     // lbs-button--tertiary class on Sutton website
     border: 2px solid $border-color;
-    color: $color;
-    background: $background-color;
+    color: $color !important;
+    background: $background-color !important;
     border-radius: $border-radius;
     padding: 0.5em;
 
@@ -84,13 +84,13 @@ $container-max-width: 1100px;
 
     // Make sure a.govuk-button elements with have visible text
     &:link, &:visited {
-        color: $color;
-        background: $background-color;
+        color: $color !important;
+        background: $background-color !important;
     }
 
     &:hover {
-        background: $color;
-        color: $background-color;
+        background: $color !important;
+        color: $background-color !important;
         text-decoration: none;
     }
 
