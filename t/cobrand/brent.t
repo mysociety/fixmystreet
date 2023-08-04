@@ -832,6 +832,49 @@ FixMyStreet::override_config {
         $report->delete;
         $report->update;
     };
+
+    $echo->mock('GetServiceUnitsForObject' => sub {
+    return [
+        {
+            Id => 1001,
+            ServiceId => 269,
+            ServiceName => 'FAS DMR Collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 401,
+                ServiceTaskSchedules => { ServiceTaskSchedule => {
+                    ScheduleDescription => 'every other Wednesday',
+                    StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                    },
+                } },
+            } },
+        }, ]
+    });
+    subtest 'test requesting a sack' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 8 } }, "Choose sack");
+        $mech->content_contains("Why do you need more sacks?");
+        $mech->content_lacks("My container is damaged", "Can report damaged container");
+        $mech->content_lacks("My container is missing", "Can report missing container");
+        $mech->content_contains("I am a new resident without any", "Can request new container as new resident");
+        $mech->content_contains("I have used all the sacks provided", "Can request more sacks");
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+        $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+        $mech->content_contains('Your container request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->get_extra_field_value('Container_Request_Container_Type'), '8';
+        is $report->get_extra_field_value('Container_Request_Action'), '1';
+        is $report->get_extra_field_value('Container_Request_Reason'), '6';
+        is $report->get_extra_field_value('Container_Request_Notes'), '';
+        is $report->get_extra_field_value('Container_Request_Quantity'), '1';
+        is $report->get_extra_field_value('service_id'), '269';
+    };
 };
 
 sub get_report_from_redirect {
