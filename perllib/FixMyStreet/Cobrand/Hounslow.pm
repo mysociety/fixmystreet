@@ -69,15 +69,10 @@ sub categories_restriction {
     # Email categories with a devolved send_method, so can identify Open311
     # categories as those which have a blank send_method.
     return $rs->search({
-        'body.name' => [ 'Hounslow Borough Council', 'National Highways' ],
-        -or => [
-            'me.send_method' => undef,
-            'me.send_method' => q[],
-            'me.category' => { -in => [
-                'Pavement Overcrowding',
-                'Streetspace Suggestions and Feedback',
-            ] },
-        ],
+        'me.category' => {
+            -not_in => [ 'Car parking', 'Public toilets' ],
+            -not_like => 'River Piers%'
+        }
     });
 }
 
