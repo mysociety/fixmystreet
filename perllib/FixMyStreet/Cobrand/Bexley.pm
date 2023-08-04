@@ -252,6 +252,8 @@ sub open311_post_send {
             $outofhours_email = 1;
         }
         $p1_email = 1;
+    } elsif ($row->category eq 'Alleyway') { #FlytippingAlleyway
+        $p1_email = 1 if $dangerous eq 'Yes';
     } elsif ($row->category eq 'Obstructions on pavements and roads') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
         my $issueDescription = $row->get_extra_field_value('issueDescription') || '';
