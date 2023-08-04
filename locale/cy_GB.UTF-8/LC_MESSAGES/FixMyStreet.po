@@ -4267,7 +4267,7 @@ msgstr "Adroddwyd drwy %s yn y categori %s yn ddienw am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:745
 msgid "Reported via %s in the %s category by %s at %s"
-msgstr "Adroddwyd drwy %s yn y categori %s am %s"
+msgstr "Adroddwyd drwy %s yn y categori %s gan %s am %s"
 
 #: templates/web/fixmystreet.com/reports/summary.html:90
 #: templates/web/zurich/admin/report_edit-sdm.html:38
