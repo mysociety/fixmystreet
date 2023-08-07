@@ -71,6 +71,18 @@ sub send_questionnaires { 0 }
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * Custom label and hint for new report detail field
+
+=cut
+
+sub new_report_detail_field_label {
+    'Where is the location of the problem, and can you give us a little more information?'
+}
+
+sub new_report_detail_field_hint {
+    "e.g. 'The drain outside number 42 is blocked'"
+}
+
 =pod
 
 =back

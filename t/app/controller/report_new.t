@@ -13,6 +13,8 @@ sub new_report_title_field_label { "cobrand title label" }
 
 sub new_report_title_field_hint { "cobrand title hint" }
 
+sub new_report_detail_field_label { "cobrand detail label" }
+
 sub new_report_detail_field_hint { "cobrand detail hint" }
 
 package main;
@@ -1417,6 +1419,7 @@ subtest "check title field overrides for categories" => sub {
     };
     is $json_response->{by_category}->{test}->{title_label}, "cobrand title label", "cobrand title label applied";
     is $json_response->{by_category}->{test}->{title_hint}, "cobrand title hint", "cobrand title hint override applied";
+    is $json_response->{by_category}->{test}->{detail_label}, "cobrand detail label", "cobrand detail label override applied";
     is $json_response->{by_category}->{test}->{detail_hint}, "cobrand detail hint", "cobrand detail hint override applied";
 
     # Contact level overrides supersede cobrand level ones.
@@ -1433,6 +1436,7 @@ subtest "check title field overrides for categories" => sub {
     };
     is $json_response->{by_category}->{test}->{title_label}, "cobrand title label", "cobrand title label override applied";
     is $json_response->{by_category}->{test}->{title_hint}, "contact title hint", "contact title hint override applied";
+    is $json_response->{by_category}->{test}->{detail_label}, "cobrand detail label", "cobrand detail label override applied";
     is $json_response->{by_category}->{test}->{detail_hint}, "contact detail hint", "contact detail hint override applied";
 
     # Cobrand level overrides don't apply if the category has multiple bodies.
@@ -1456,6 +1460,7 @@ subtest "check title field overrides for categories" => sub {
     };
     is $json_response->{by_category}->{test}->{title_label}, undef, "cobrand title label override not applied";
     is $json_response->{by_category}->{test}->{title_hint}, undef, "title hint override not applied";
+    is $json_response->{by_category}->{test}->{detail_label}, undef, "detail label override not applied";
     is $json_response->{by_category}->{test}->{detail_hint}, undef, "detail hint override not applied";
 };
 

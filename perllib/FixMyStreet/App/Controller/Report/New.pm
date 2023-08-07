@@ -357,10 +357,12 @@ sub by_category_ajax_data : Private {
     my $title_label_override = $cobrand_overrides->{title_label};
     # prefer category specific overrides if present.
     my $title_hint_override = $category_overrides->{title} || $cobrand_overrides->{title_hint};
+    my $detail_label_override = $cobrand_overrides->{detail_label};
     my $detail_hint_override = $category_overrides->{detail} || $cobrand_overrides->{detail_hint};
 
     $body->{title_label} = $title_label_override if $title_label_override;
     $body->{title_hint} = $title_hint_override if $title_hint_override;
+    $body->{detail_label} = $detail_label_override if $detail_label_override;
     $body->{detail_hint} = $detail_hint_override if $detail_hint_override;
 
     return $body;
@@ -868,11 +870,13 @@ sub setup_categories_and_bodies : Private {
 
         my $title_label = $cobrand_for_body->new_report_title_field_label;
         my $title_hint = $cobrand_for_body->new_report_title_field_hint;
+        my $detail_label = $cobrand_for_body->new_report_detail_field_label;
         my $detail_hint = $cobrand_for_body->new_report_detail_field_hint;
 
         my %overrides;
         $overrides{title_label} = $title_label if $title_label;
         $overrides{title_hint} = $title_hint if $title_hint;
+        $overrides{detail_label} = $detail_label if $detail_label;
         $overrides{detail_hint} = $detail_hint if $detail_hint;
         $cobrand_field_overrides_by_body{$body->name} = \%overrides;
     }
