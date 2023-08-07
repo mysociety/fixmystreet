@@ -2,12 +2,13 @@
 
 $layout_front_stats_color: $primary !default;
 $mappage-header-height: 4em !default; // eg: might want this to equal outer height of #site-header on normal pages
-$mappage-sidebar-width: 29em;
+$mappage-sidebar-width: 29em !default;
 $mappage-sidebar-padding: 1em;
 $mappage-notes-width: 15em;
-$mappage-actions-width: 25em;
-$mappage-sidebar-width--medium: 24em;
-$mappage-actions-width--medium: 20em;
+$mappage-actions-width: 25em !default;
+$mappage-actions-sidebar-width: $mappage-sidebar-width !default;
+$mappage-sidebar-width--medium: 24em !default;
+$mappage-actions-width--medium: 20em !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
@@ -239,7 +240,7 @@ body.mappage.admin {
   }
 
   .with-actions & {
-    #{$left}: $mappage-sidebar-width + $mappage-actions-width;
+    #{$left}: $mappage-actions-sidebar-width + $mappage-actions-width;
 
     @media (max-width: 79em) {
       #{$left}: $mappage-sidebar-width--medium  + $mappage-actions-width--medium;
@@ -267,7 +268,7 @@ body.mappage.admin {
   }
 
   .with-actions & {
-    width: $mappage-sidebar-width + $mappage-actions-width;
+    width: $mappage-actions-sidebar-width + $mappage-actions-width;
     max-width: 100%; // Secondary column will squish on screens 768-960px
     padding: 0; // Padding will be handled by children of .two_column_sidebar
 
@@ -316,6 +317,10 @@ body.mappage.admin {
     @media (max-width: 79em) {
       width: $mappage-sidebar-width--medium;
     }
+
+    .with-actions & {
+      width: $mappage-actions-sidebar-width;
+    }
   }
 
   // Line up edge of .shadow-wrap with edge of #side-report
@@ -324,6 +329,10 @@ body.mappage.admin {
 
     @media (max-width: 79em) {
       width: $mappage-sidebar-width--medium;
+    }
+
+    .with-actions & {
+      width: $mappage-actions-sidebar-width;
     }
   }
 
