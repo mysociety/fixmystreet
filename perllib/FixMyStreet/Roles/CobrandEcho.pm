@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
+use UUID::Tiny ':std';
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
@@ -508,16 +509,36 @@ sub garden_waste_cost_pa {
 sub find_available_bulky_slots {
     my ( $self, $property, $last_earlier_date_str ) = @_;
 
+    my $key
+        = $self->council_url . ":echo:available_bulky_slots:"
+        . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
+        . $property->{id};
+    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
 
-    my $window = $self->_bulky_collection_window($last_earlier_date_str);
-    #date_from => $window->{date_from},
-    #date_to   => $window->{date_to},
-    #uprn      => $property->{uprn},
+    my $service_id = 413; # XXX
+    my $event_type_id = 1636; # XXX
 
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
+    my $guid = $self->{c}->session->{$guid_key};
+    unless ($guid) {
+        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string;
+    }
+
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
     my @available_slots;
-    # list of { workpack_id, date }
+    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
+    foreach (@$slots) {
+        push @available_slots, {
+            date => construct_bin_date($_->{StartDate}),
+            reference => $_->{Reference},
+        };
+    }
+
+    $self->{c}->session->{$key} = \@available_slots;
+
     return \@available_slots;
 }
 

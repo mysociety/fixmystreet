@@ -204,10 +204,15 @@ sub available_permissions {
 sub clear_cached_lookups_property {
     my ($self, $id) = @_;
 
-    my $key = $self->council_url . ":echo:look_up_property:$id";
-    delete $self->{c}->session->{$key};
-    $key = $self->council_url . ":echo:bin_services_for_address:$id";
-    delete $self->{c}->session->{$key};
+    foreach my $key (
+        $self->council_url . ":echo:look_up_property:$id",
+        $self->council_url . ":echo:bin_services_for_address:$id",
+        $self->council_url . ":echo:available_bulky_slots:earlier:$id",
+        $self->council_url . ":echo:available_bulky_slots:later:$id",
+        $self->council_url . ":echo:bulky_event_guid:$id",
+    ) {
+        delete $self->{c}->session->{$key};
+    }
 }
 
 around look_up_property => sub {
