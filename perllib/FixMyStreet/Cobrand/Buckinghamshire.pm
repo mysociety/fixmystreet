@@ -614,7 +614,31 @@ sub disable_phone_number_entry {
     return $staff ? 0 : 1;
 }
 
-sub report_sent_confirmation_email { 'id' }
+=head2 report_sent_confirmation_email
+
+Don't send report has been logged emails for reports in the "for triage" state.
+Otherwise, we will using the report ID as its identifier.
+
+=cut
+
+sub report_sent_confirmation_email {
+    my ($self, $report) = @_;
+    return if $report && $report->state eq 'for triage';
+    return 'id';
+}
+
+=head2 post_report_sent
+
+If a report is sent when it's in the "for triage" state, set it back to open.
+
+=cut
+
+sub post_report_sent {
+    my ($self, $report) = @_;
+    if ($report->state eq 'for triage') {
+        $report->update({ state => 'confirmed' });
+    }
+}
 
 sub handle_email_status_codes { 1 }
 
