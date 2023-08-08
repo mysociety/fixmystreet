@@ -46,6 +46,18 @@ sub reopening_disallowed {
     return 1;
 }
 
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
+
+    $self->SUPER::munge_report_new_contacts($contacts);
+
+    foreach (@$contacts) {
+        if (grep { $_ eq 'Staff Only - Out Of Hours' } @{$_->groups}) {
+            $_->set_extra_metadata(nh_council_cleaning => 1);
+        }
+    }
+}
+
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 

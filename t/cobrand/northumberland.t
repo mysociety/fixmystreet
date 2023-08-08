@@ -1,14 +1,12 @@
 use FixMyStreet::TestMech;
-use FixMyStreet::App;
-
-# disable info logs for this test run
-FixMyStreet::App->log->disable('info');
-END { FixMyStreet::App->log->enable('info'); }
-
+use Test::MockModule;
 
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2248, 'Northumberland County Council', {}, { cobrand => 'northumberland' });
+$mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => 'foo@northumberland', group => 'Staff Only - Out Of Hours');
+$mech->create_contact_ok(body_id => $body->id, category => 'Trees', email => 'foo@northumberland');
+
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 my $role = FixMyStreet::DB->resultset("Role")->create({ name => 'Role 1', body => $body, permissions => [], });
 $staffuser->add_to_roles($role);
@@ -27,6 +25,63 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('Test User', 'name of anonymous user');
         $mech->content_contains('counciluser@example.com,"Role 1"', 'staff user and role');
+    };
+
+    subtest 'Staff OOH shown on National Highways roads' => sub {
+        my $he = $mech->create_body_ok(2248, 'National Highways');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Slip Roads (NH)', email => 'litter@he', group => 'Litter');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Main Carriageway (NH)', email => 'litter@he', group => 'Litter');
+        $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he');
+
+        our $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        sub mock_road {
+            my ($name, $litter) = @_;
+            $he_mod->mock('_fetch_features', sub {
+                my ($self, $cfg, $x, $y) = @_;
+                my $road = {
+                    properties => { area_name => 'Area 1', ROA_NUMBER => $name, sect_label => "$name/111" },
+                    geometry => {
+                        type => 'LineString',
+                        coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                    }
+                };
+                if ($cfg->{typename} eq 'highways_litter_pick') {
+                    return $litter ? [$road] : [];
+                }
+                return [$road];
+            });
+        }
+
+        my $url = "/report/new?longitude=-1.691012&latitude=55.169081";
+        # Motorway, NH responsible for litter (but not in dataset), council categories will also be present
+        mock_road("M1", 0);
+        $mech->get_ok($url);
+        $mech->content_contains('Litter');
+        $mech->content_contains('Slip Roads');
+        $mech->content_contains('Main Carriageway');
+        $mech->content_contains('Potholes');
+        $mech->content_contains("Trees'>");
+        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
+
+        # A-road where NH responsible for litter, council categories will also be present
+        mock_road("A5103", 1);
+        $mech->get_ok($url);
+        $mech->content_contains('Litter');
+        $mech->content_contains('Slip Roads');
+        $mech->content_contains('Main Carriageway');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees\'>');
+        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
+
+        # A-road where NH not responsible for litter, no NH litter categories
+        mock_road("A34", 0);
+        $mech->get_ok($url);
+        $mech->content_lacks('Litter');
+        $mech->content_lacks('Slip Roads');
+        $mech->content_lacks('Main Carriageway');
+        $mech->content_contains('Potholes');
+        $mech->content_contains('Trees\'>');
+        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
     };
 };
 
