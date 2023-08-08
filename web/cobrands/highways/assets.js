@@ -77,7 +77,7 @@ fixmystreet.assets.add(defaults, {
 
 function _update_category(input, he_flag) {
     var nh = input.val().match('NH');
-    if ((nh && he_flag) || (!nh && !he_flag)) {
+    if ((nh && he_flag) || (!nh && !he_flag) || input.data('nh')) {
         input.parent().show();
         return 0;
     } else {

@@ -243,6 +243,12 @@ sub national_highways_cleaning_groups {
         } @$contacts;
     } else {
         @$contacts = grep {
+            # Mark any council street cleaning categories we can find,
+            # so they'll still appear if "on the NH road" is picked
+            my @groups = @{$_->groups};
+            if ( $cleaning_cats{$_->category_display} || grep { $cleaning_cats{$_} } @groups ) {
+                $_->set_extra_metadata(nh_council_cleaning => 1);
+            }
             $_->body->name ne 'National Highways'
             || ( $_->category_display !~ /Flytipping/ && $_->groups->[0] ne 'Litter' )
         } @$contacts;

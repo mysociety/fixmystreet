@@ -34,7 +34,10 @@ END
             [% END ~%]
           [% ELSE # A category not in a group %]
             [% cat_lc = group_or_cat.category | lower =%]
-            <input class="govuk-radios__input" required id="category_[% group_or_cat.id %]" type="radio" name="category" data-category_display="[% group_or_cat.category_display %]" value='[% group_or_cat.category %]'[% ' checked' IF ( report.category == group_or_cat.category || category_lc == cat_lc ) AND NOT filter_group ~%]>
+            <input class="govuk-radios__input" required id="category_[% group_or_cat.id %]" type="radio" name="category" data-category_display="[% group_or_cat.category_display %]" value='[% group_or_cat.category %]'
+                [%~ ' checked' IF ( report.category == group_or_cat.category || category_lc == cat_lc ) AND NOT filter_group ~%]
+                [%~ ' data-nh="1"' IF group_or_cat.get_extra_metadata('nh_council_cleaning') ~%]
+                >
             <label class="govuk-label govuk-radios__label" for="category_[% group_or_cat.id %]">[% group_or_cat.category_display %]
             [%~ IF group_or_cat.get_extra_metadata('help_text') %]
                 ([% group_or_cat.get_extra_metadata('help_text') %])
