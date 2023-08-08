@@ -139,7 +139,11 @@ fixmystreet.staff_set_up = {
             $nameInput.val(txt).prop('disabled', true);
             $phoneInput.val('-').prop('disabled', true);
             $showNameCheckbox.prop('checked', true).prop('disabled', true);
-            $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+            if (fixmystreet.cobrand !== 'fixamingata') {
+                $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+            } else {
+                $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+            }
         }
     });
     $('.js-contribute-as').trigger('change');
