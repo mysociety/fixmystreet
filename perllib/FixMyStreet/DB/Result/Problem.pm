@@ -1063,6 +1063,7 @@ sub send_fail_bodies {
 sub mark_as_sent {
     my $self = shift;
     $self->whensent( \'current_timestamp' );
+    $self->send_state('sent');
     $self->send_fail_body_ids( [] );
 }
 
