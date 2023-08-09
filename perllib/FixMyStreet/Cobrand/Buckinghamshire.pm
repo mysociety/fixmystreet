@@ -195,6 +195,12 @@ around open311_extra_data_include => sub {
         }
     }
 
+    if ($contact->email =~ /^Abavus/ && $h->{closest_address}) {
+        push @$open311_only, {
+            name => 'closest_address', value => $h->{closest_address}->multiline(5) };
+        $h->{closest_address} = '';
+    }
+
     return $open311_only;
 };
 
