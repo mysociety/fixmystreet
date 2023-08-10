@@ -156,8 +156,10 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 }
 
                 # we have an image we can use - save it to storage
+                my $convert_to_jpeg = 0;
+                $convert_to_jpeg = 1 if $self->c->cobrand->moniker eq 'brent' && $type eq 'png';
                 $photo_blob = try {
-                    FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob;
+                    FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob($convert_to_jpeg);
                 } catch { $photo_blob };
                 return $self->storage->store_photo($photo_blob);
             }
