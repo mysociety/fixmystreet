@@ -100,7 +100,21 @@ around open311_extra_data_include => sub {
     my ( $orig, $self, $row, $h ) = @_;
     my $open311_only = $self->$orig( $row, $h );
 
-    my $description = $row->category . "\n\n" . $row->detail;
+    my $category = $row->category;
+    my $wrapped_for_report
+        = $row->get_extra_field_value('_wrapped_service_code');
+    my $wrapped_categories
+        = $row->contact->get_extra_field( code => '_wrapped_service_code' );
+
+    if ( $wrapped_for_report && $wrapped_categories ) {
+        ($category)
+            = grep { $_->{key} eq $wrapped_for_report }
+            @{ $wrapped_categories->{values} };
+
+        $category = $category->{name};
+    }
+
+    my $description = $category . ' | ' . $row->detail;
 
     push @$open311_only, {
         name  => 'description',
