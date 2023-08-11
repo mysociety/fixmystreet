@@ -534,6 +534,7 @@ sub find_available_bulky_slots {
         push @available_slots, {
             date => construct_bin_date($_->{StartDate}),
             reference => $_->{Reference},
+            expiry => construct_bin_date($_->{Expiry}),
         };
     }
 
@@ -541,5 +542,54 @@ sub find_available_bulky_slots {
 
     return \@available_slots;
 }
+
+sub check_bulky_slot_available {
+    my ( $self, $date ) = @_;
+    return 1; # XXX need to check reserved slot expiry
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    $data->{title} = "Bulky goods collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
+    $data->{extra_Collection_Date} = $date;
+    $data->{extra_Event_Reference} = $ref;
+    $data->{extra_GUID} = $self->{c}->session->{bulky_event_guid};
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+
+    my @notes;
+    my @ids;
+
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @notes, $item; # XXX this should be per-item note field from user, not item description
+            push @ids, $items{$item};
+        };
+    }
+    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
+    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
+
+    $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
+}
+
+sub bulky_nice_collection_date {
+    my ($self, $report_or_date) = @_;
+    if (ref $report_or_date eq 'FixMyStreet::DB::Result::Problem') {
+        $report_or_date = $report_or_date->get_extra_field_value('Collection_Date');
+    }
+    my $dt = $self->_bulky_date_to_dt($report_or_date);
+    return $dt->strftime('%d %B');
+}
+
+
 
 1;
