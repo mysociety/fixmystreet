@@ -273,8 +273,14 @@ sub _check_within_bulky_refund_window {
 }
 
 sub bulky_nice_collection_date {
-    my ($self, $date) = @_;
-    my $dt = $self->_bulky_date_to_dt($date);
+    my ($self, $report_or_date) = @_;
+    my $dt = do {
+        if (ref $report_or_date eq 'FixMyStreet::DB::Result::Problem') {
+            $self->collection_date($report_or_date);
+        } else {
+            $self->_bulky_date_to_dt($report_or_date);
+        }
+    };
     return $dt->strftime('%d %B');
 }
 
