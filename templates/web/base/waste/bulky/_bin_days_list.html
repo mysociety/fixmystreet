@@ -29,7 +29,7 @@
         <!-- #01 Should only display when: There IS a booking AND is a signed user -->
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Next collection</dt>
-          <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(property.pending_bulky_collection.get_extra_field_value('DATE')) %]</dd>
+          <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(property.pending_bulky_collection) %]</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Reference number</dt>

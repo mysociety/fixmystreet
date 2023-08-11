@@ -486,4 +486,13 @@ sub unset_free_bulky_used {
         'FREE BULKY USED' );
 }
 
+sub bulky_nice_collection_date {
+    my ($self, $report_or_date) = @_;
+    if (ref $report_or_date eq 'FixMyStreet::DB::Result::Problem') {
+        $report_or_date = $report_or_date->get_extra_field_value('DATE');
+    }
+    my $dt = $self->_bulky_date_to_dt($report_or_date);
+    return $dt->strftime('%d %B');
+}
+
 1;

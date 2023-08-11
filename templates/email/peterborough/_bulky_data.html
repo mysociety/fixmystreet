@@ -1,7 +1,7 @@
 [%
 
 SET payment = report.get_extra_field_value('payment');
-SET collection_date = cobrand.bulky_nice_collection_date(report.get_extra_field_value('DATE'));
+SET collection_date = cobrand.bulky_nice_collection_date(report);
 SET item_list = cobrand.bulky_nice_item_list(report);
 SET email_summary = "Thank you for booking a bulky waste collection with Peterborough City Council.";
 SET staff_cancellation = cobrand.feature('waste_features').bulky_enabled == 'staff';

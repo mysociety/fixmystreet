@@ -272,12 +272,6 @@ sub _check_within_bulky_refund_window {
     return $now_dt <= $cutoff_dt;
 }
 
-sub bulky_nice_collection_date {
-    my ($self, $date) = @_;
-    my $dt = $self->_bulky_date_to_dt($date);
-    return $dt->strftime('%d %B');
-}
-
 sub bulky_nice_collection_time {
     my $self = shift;
     my $time = $self->bulky_collection_time();
