@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use Test::Deep;
 
 my $mech    = FixMyStreet::TestMech->new;
 my $cobrand = FixMyStreet::Cobrand::Gloucestershire->new;
@@ -13,7 +14,7 @@ my $body    = $mech->create_body_ok(
     { cobrand => 'gloucestershire', },
 );
 
-$mech->create_contact_ok(
+my $graffiti = $mech->create_contact_ok(
     body_id  => $body->id,
     category => 'Graffiti',
     email    => 'GLOS_GRAFFITI',
@@ -62,6 +63,77 @@ FixMyStreet::override_config {
         }
     };
 
+    subtest 'open311_extra_data_include' => sub {
+        my ($report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'My report',
+            {   cobrand => 'gloucestershire',
+                user    => $standard_user_1,
+                category => 'Graffiti',
+            },
+        );
+
+        cmp_deeply $cobrand->open311_extra_data_include($report), [
+            { name => 'report_url', value => undef },
+            { name => 'title',      value => re('My report Test') },
+            {   name  => 'description',
+                value => re('My report Test.*Detail'),
+            },
+            {   name  => 'description',
+                value => re('Graffiti \| My report Test.*Detail'),
+            },
+        ], 'Correct data set for standard report';
+
+        my $pothole = $mech->create_contact_ok(
+            body_id  => $body->id,
+            category => 'Potholes',
+            email    => 'POTHOLE_WRAPPED',
+        );
+        $pothole->set_extra_fields(
+            {   code        => '_wrapped_service_code',
+                description => "Pothole wrapped group",
+                values      => [
+                    {   key  => 'GLOS_POTHOLE_PAVEMENT',
+                        name => 'Pothole in pavement',
+                    },
+                ],
+                datatype => 'singlevaluelist',
+                required => 'true',
+                variable => 'true',
+            },
+        );
+        $pothole->update;
+
+        my ($report_2) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'My report',
+            {   cobrand => 'gloucestershire',
+                user    => $standard_user_1,
+                category => 'Potholes',
+            },
+        );
+        $report_2->set_extra_fields(
+            {
+                name => '_wrapped_service_code',
+                value => 'GLOS_POTHOLE_PAVEMENT',
+                description => 'Pothole in pavement',
+            },
+        );
+
+        cmp_deeply $cobrand->open311_extra_data_include($report_2), [
+            { name => 'report_url', value => undef },
+            { name => 'title',      value => re('My report Test') },
+            {   name  => 'description',
+                value => re('My report Test.*Detail'),
+            },
+            {   name  => 'description',
+                value => re('Pothole in pavement \| My report Test.*Detail'),
+            },
+        ], 'Correct data set for report with a wrapped category';
+    };
+
     subtest 'test report creation anonymously by button' => sub {
         $mech->log_in_ok( $standard_user_1->email );
         $mech->get_ok('/around');
@@ -82,7 +154,7 @@ FixMyStreet::override_config {
             },
             'submit report anonymously',
         );
-        is_deeply $mech->page_errors, [], 'check there were no errors';
+        cmp_deeply $mech->page_errors, [], 'check there were no errors';
 
         my $report = FixMyStreet::DB->resultset('Problem')
             ->find( { title => 'Anon report' } );
