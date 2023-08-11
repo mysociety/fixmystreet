@@ -80,7 +80,26 @@ sub make_categories {
         $child_cat->whenedited(\'current_timestamp');
         $child_cat->note($child_cat->in_storage ? 'Updated by import_categories' : 'Created by import_categories');
         say colored("WARNING", 'red') . " " . $child_cat->category . " already exists" if $child_cat->in_storage and $child_cat->category ne 'Other (TfL)';
-        $child_cat->extra(undef) if $child_cat->in_storage;
+
+        if ( $child_cat->in_storage && !$cat->{preserve_existing_extra} ) {
+            $child_cat->extra(undef);
+        } elsif ( $child_cat->in_storage && $cat->{preserve_existing_extra} ) {
+            # We may wish to add categories to the _wrapped_service_code
+            # list that disable the form (these can't be added in
+            # open311-adapter configs)
+            if ( my $extra_wrapped
+                = $cat->{extra_wrapped_service_code_values} )
+            {
+                my $wrapped = $child_cat->get_extra_field(
+                    code => '_wrapped_service_code' );
+
+                # Prevent extra_wrapped from being clobbered by Open311 script
+                $wrapped->{protected} = 'true';
+
+                push @{ $wrapped->{values} }, @$extra_wrapped;
+            }
+        }
+
         $child_cat->set_extra_metadata(open311_protect => 1) if $cat->{open311_protect} // $config->{open311_protect};
         $child_cat->set_extra_metadata( display_name => $cat->{display_name} )
             if $cat->{display_name};
@@ -114,7 +133,8 @@ sub make_categories {
                 }
             );
         }
-        $child_cat->set_extra_fields(@{ $cat->{extra_fields} }) if $cat->{extra_fields};
+        $child_cat->push_extra_fields( @{ $cat->{extra_fields} } )
+            if $cat->{extra_fields};
         if (my $asset_field = $cat->{asset_field}) {
             my ($description, $code) = @$asset_field;
             $child_cat->update_extra_field({
