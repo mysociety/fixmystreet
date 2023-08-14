@@ -1768,7 +1768,7 @@ sub check_for_category : Private {
         # Group is either an actual group, or a category that wasn't in a group
         my $group = $c->get_param('category') || $c->get_param('filter_group') || '';
         if (any { $_->{name} && $group eq $_->{name} } @{$c->stash->{category_groups}}) {
-            $c->stash->{filter_group} = $group;
+            $c->stash->{group} = $c->stash->{filter_group} = $group;
             (my $group_id = $group) =~ s/[^a-zA-Z]+//g;
             my $cat_param = "category.$group_id";
             $category = $c->get_param($cat_param);

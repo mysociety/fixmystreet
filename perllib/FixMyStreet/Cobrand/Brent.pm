@@ -280,6 +280,15 @@ Same as Symology above, but different attribute name.
                 $row->update_extra_field({ name => 'usrn', description => 'USRN', value => $ref });
             }
         }
+
+=item * Adds location name from WFS service for ATAK reports if missing
+
+=cut
+
+    } elsif ($contact->email =~ /^ATAK/) {
+        if (my $name = $self->lookup_location_name($row)) {
+            $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
+        }
     }
 
     # The title field gets pushed to location fields in Echo/Symology, so include closest address
@@ -325,6 +334,62 @@ to put the UnitID in the detail field for sending
 sub open311_post_send {
     my ($self, $row) = @_;
     $row->detail($self->{brent_original_detail}) if $self->{brent_original_detail};
+}
+
+=head2 lookup_location_name
+
+Looks up the location name from the WFS service
+
+=cut
+
+sub lookup_location_name {
+    my ($self, $row) = @_;
+
+}
+
+=head2 report_validation
+
+Ensure ATAK reports have a location_name
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    return $errors if $report->get_extra_field_value('location_name'); # Already has a location_name, so we're done
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $self->body->id,
+        category => $report->category,
+    });
+
+    return $errors unless $contact; # Contact not found
+    return $errors unless $contact->email =~ /^ATAK/; # Not an ATAK report
+
+    # If we got to here then we've got a report that's missing a location_name,
+    # and it's an ATAK report, so we'll try to find a location_name from the
+    # WFS service.
+
+    my %groups = map { $_ => 1 } @{ $contact->groups };
+    return $errors unless $groups{'Parks and open spaces'} ||
+                            $groups{'Allotments'} ||
+                            $groups{'Council estates'} ||
+                            $groups{'Highway verges and flower beds'};
+
+    my $locations = $self->locations_wfs_query($report);
+
+    if (index($locations, '<gml:featureMember>') == -1) {
+        # Location not found
+        $errors->{category} = 'Please select a location in a Brent maintained area';
+    }
+
+    return $errors;
+}
+
+sub locations_wfs_query {
+    my ($self, $report) = @_;
+
+    # my $query = <<END;
 }
 
 =head2 prevent_questionnaire_updating_status

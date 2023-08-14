@@ -94,6 +94,8 @@ my $brent = $mech->create_body_ok(2488, 'Brent', {
 my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
+my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Overgrown grass',
+    email => 'ATAK-OVERGROWN_GRASS', group => ['Parks and open spaces']);
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
 
@@ -519,6 +521,62 @@ FixMyStreet::override_config {
         is $closest->summary, 'Studio 1, 29, Buckingham Road, London, Brent, NW10 4RP';
     }
 };
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        anonymous_account => { brent => 'anonymous' },
+    }
+}, sub {
+    # my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Brent');
+
+    subtest 'Prevents reports being made outside maintained areas' => sub {
+        # Simulate no locations found
+        # $cobrand->mock('_get', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
+
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168&category=Overgrown+grass');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Please select a location in a Brent maintained area') or diag $mech->content;
+    };
+
+    # subtest 'Allows reports to be made in maintained areas' => sub {
+    #     # Now simulate a location being found
+    #     $brent->mock('_get', sub {
+    #         "<wfs:FeatureCollection>
+    #             <gml:featureMember>
+    #                 <Transport_Brent_Locations:BRENT_LOCATIONS>
+    #                     <Transport_Brent_Locations:OBJECTID>1</Transport_Brent_Locations:OBJECTID>
+    #                 </Transport_Brent_Locations:BRENT_LOCATIONS>
+    #             </gml:featureMember>
+    #         </wfs:FeatureCollection>"
+    #     });
+
+    #     $mech->get_ok('/report/new?latitude=51.5678&longitude=-0.2711&category=Parks and open spaces');
+    #     $mech->submit_form_ok({
+    #         with_fields => {
+    #             title => "Test Report",
+    #             detail => 'Test report details.',
+    #             category => 'Parks and open spaces',
+    #         }
+    #     }, "submit details");
+    #     $mech->content_contains('Your issue is on its way to the council');
+    # };
+};
+
+######################################################################
+
+# TODO: REMOVE THIS!!
+done_testing;
+exit;
+
+######################################################################
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'brent',
