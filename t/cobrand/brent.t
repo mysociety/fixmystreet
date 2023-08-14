@@ -161,6 +161,32 @@ create_contact({ category => 'Additional collection', email => 'general@brent.go
     { code => 'service_id', required => 1, automated => 'hidden_field' },
 );
 
+subtest "title is labelled 'location of problem' in open311 extended description" => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+        category => 'Graffiti' ,
+        areas => '2488',
+        cobrand => 'brent',
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_FLAGS => { send_reports => 1 },
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'anonymous'
+            },
+        },
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        like $c->param('description'), qr/location of problem: title/, "title labeled correctly";
+    };
+
+    $problem->delete;
+};
+
 for my $test (
     {
         desc => 'Problem has stayed open when user reported fixed with update',
