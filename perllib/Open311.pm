@@ -260,7 +260,11 @@ sub _generate_service_request_description {
         $description .= "detail: " . $problem->detail . "\n\n";
         $description .= "url: " . $extra->{url} . "\n\n";
         $description .= "Submitted via FixMyStreet\n";
-        $description = "title: " . $problem->title . "\n\n$description";
+        if ($problem->cobrand eq 'brent') {
+            $description = "location of problem: " . $problem->title . "\n\n$description";
+        } else {
+            $description = "title: " . $problem->title . "\n\n$description";
+        }
     } elsif ($problem->cobrand eq 'fixamingata') {
         $description .= "Titel: " . $problem->title . "\n\n";
         $description .= "Beskrivning: " . $problem->detail . "\n\n";
