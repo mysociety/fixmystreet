@@ -132,9 +132,6 @@ sub view : Private {
     $saved_data->{phone} = $p->user->phone;
     $saved_data->{resident} = 'Yes';
 
-    my $items_list = $c->cobrand->call_hook('bulky_items_master_list');
-    my $per_item = $c->cobrand->bulky_per_item_costs;
-
     $c->stash->{form} = {
         items_extra => $c->cobrand->call_hook('bulky_items_extra'),
         saved_data  => $saved_data,
