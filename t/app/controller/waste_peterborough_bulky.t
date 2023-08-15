@@ -440,6 +440,10 @@ FixMyStreet::override_config {
         }
         sub test_payment_page {
             my $sent_params = shift;
+
+            like $sent_params->{backUrl}, qr/\/waste\/pay_cancel/;
+            like $sent_params->{returnUrl}, qr/\/waste\/pay_complete/;
+
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
             is $new_report->category, 'Bulky collection', 'correct category on report';
