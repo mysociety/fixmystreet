@@ -17,6 +17,8 @@ my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
 $body->set_extra_metadata(
     wasteworks_config => {
         base_price => '6100',
+        band1_price => '4000',
+        band1_max => 4,
         items_per_collection_max => 8,
         per_item_costs => 0,
         show_location_page => 'users',
@@ -289,7 +291,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
             $mech->content_contains('No image of the location has been attached.');
-            $mech->content_contains('£61.00');
+            $mech->content_contains('£40.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:30 on 01 July 2023");
         }
@@ -364,7 +366,7 @@ FixMyStreet::override_config {
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->state, 'unconfirmed', 'report not confirmed'; # XXX TODO Needs to be confirmed/sent before payment
 
-            is $sent_params->{items}[0]{amount}, 6100, 'correct amount used';
+            is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
 
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
@@ -388,7 +390,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 6100;
+            is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
@@ -413,7 +415,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
-            $mech->content_contains('£61.00');
+            $mech->content_contains('£40.00');
             $mech->content_contains('08 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');

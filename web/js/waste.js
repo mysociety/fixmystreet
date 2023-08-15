@@ -77,11 +77,42 @@ $(function() {
     var firstItem = $('.bulky-item-wrapper').first();
 
     function disableAddItemButton() {
-        // It will disable button if the first item is empty and the max number of items has been reached.
+        // It will disable button if the first item is empty or the max number of items has been reached.
         if (numItemsVisible == maxNumItems || $('.bulky-item-wrapper').first().find('ul.autocomplete__menu').children().length == 0) {
             $("#add-new-item").prop('disabled', true);
         } else {
             $("#add-new-item").prop('disabled', false);
+        }
+    }
+
+    function updateTotal() {
+        var totalId = $('#js-bulky-total');
+        var pricing = totalId.data('pricing');
+        // Update total
+        var total = 0;
+        if (pricing.strategy === 'per_item') {
+            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+                var extra = $(this).data('extra');
+                var price = extra ? parseFloat(extra.price) : 0;
+                if (!isNaN(price)) {
+                    total += price;
+                }
+            });
+            totalId.text((total / 100).toFixed(2));
+        } else if (pricing.strategy === 'banded') {
+            var count = 0;
+            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+                if ($(this).val()) {
+                    count++;
+                }
+            });
+            for (var i=0; i<pricing.bands.length; i++) {
+                if (count <= pricing.bands[i].max) {
+                    total = pricing.bands[i].price;
+                    break;
+                }
+            }
+            totalId.text((total / 100).toFixed(2));
         }
     }
 
@@ -99,16 +130,7 @@ $(function() {
             $this.closest('.bulky-item-wrapper').find('.bulky-item-message').hide();
         }
 
-        // Update total
-        var total = 0;
-        $('.govuk-select[name^="item_"]').each(function(i, e) {
-            var extra = $(this).find('option').filter(':selected').data('extra');
-            var price = extra ? parseFloat(extra.price) : 0;
-            if (!isNaN(price)) {
-                total += price;
-            }
-        });
-        $('#js-bulky-total').text((total / 100).toFixed(2));
+        updateTotal();
     });
 
     // If page reloads reveals any wrapper with an item already selected.
@@ -170,6 +192,7 @@ $(function() {
         $(this).closest('.bulky-item-wrapper').find('select.js-autocomplete').val('');
         numItemsVisible = $('.bulky-item-wrapper:visible').length;
         disableAddItemButton();
+        updateTotal();
     });
 
 });
