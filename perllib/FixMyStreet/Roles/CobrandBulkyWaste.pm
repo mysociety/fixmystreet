@@ -66,6 +66,20 @@ sub bulky_show_location_page {
 };
 sub bulky_show_location_field_mandatory { 0 }
 
+sub bulky_pricing_strategy {
+    my $self = shift;
+    my $base_price = $self->wasteworks_config->{base_price};
+    my $band1_max = $self->wasteworks_config->{band1_max};
+    my $max = $self->bulky_items_maximum;
+    if ($self->bulky_per_item_costs) {
+        return encode_json({ strategy => 'per_item' });
+    } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
+        return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
+    } else {
+        return encode_json({ strategy => 'single' });
+    }
+}
+
 =head2 Requirements
 
 Users of this role must supply the following:
@@ -127,6 +141,8 @@ sub bulky_minimum_cost {
             map { $_->{price} } @{ $self->bulky_items_master_list };
 
         return $sorted[0] // 0;
+    } elsif ( $cfg->{band1_price} ) {
+        return $cfg->{band1_price};
     } else {
         return $cfg->{base_price} // 0;
     }
@@ -152,6 +168,18 @@ sub bulky_total_cost {
                 $total += $prices{$item};
             }
             $c->stash->{payment} = $total;
+        } elsif ($cfg->{band1_price}) {
+            my $count = 0;
+            my $max = $self->bulky_items_maximum;
+            for (1..$max) {
+                my $item = $data->{"item_$_"} or next;
+                $count++;
+            }
+            if ($count <= $cfg->{band1_max}) {
+                $c->stash->{payment} = $cfg->{band1_price};
+            } else {
+                $c->stash->{payment} = $cfg->{base_price};
+            }
         } else {
             $c->stash->{payment} = $cfg->{base_price};
         }

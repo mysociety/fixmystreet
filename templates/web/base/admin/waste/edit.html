@@ -22,25 +22,37 @@
         <div class="form-error">[% errors.site_wide %]</div>
     [% END %]
 
-    <p>
-    <label for="waste_items_per_collection_max">Maximum items per collection (1-200)</label>
-    <input class="form-control" type=text max=200 min=1 name="items_per_collection_max" id="waste_items_per_collection_max"
-        value="[% items_per_collection_max %]">
-
-    <p>
+    <div style="display:flex;gap:1em;">
+    <div>
     <label for="waste_base_price">Price for a collection (in <strong>pence</strong>)</label>
     <input class="form-control" type=text name="base_price" id="waste_base_price"
         value="[% base_price %]">
+    </div>
+
+    <div>
+    <label for="waste_items_per_collection_max">Maximum items per collection (1-200)</label>
+    <input class="form-control" type=text max=200 min=1 name="items_per_collection_max" id="waste_items_per_collection_max"
+        value="[% items_per_collection_max %]">
+    </div>
+    </div>
+
+    <div style="display:flex;gap:1em;">
+    <div>
+    <label for="waste_band1_price">Price for a small collection (in pence)</label>
+    <input class="form-control" type=text name="band1_price" id="waste_band1_price"
+        value="[% band1_price %]">
+    </div>
+    <div>
+    <label for="waste_band1_max">Up to how many items</label>
+    <input class="form-control" type=text name="band1_max" id="waste_band1_max"
+        value="[% band1_max %]">
+    </div>
+    </div>
 
     <p>
     <label for="waste_daily_slots">Available slots each day</label>
     <input class="form-control" type=text name="daily_slots" id="waste_daily_slots"
         value="[% daily_slots %]">
-
-    <p>
-    <input type=checkbox name="free_mode" value="1" id="waste_free_mode"
-        [% 'checked' IF free_mode %]>
-    <label class="inline" for="waste_free_mode">Free collection allowed</label>
 
     <p>
     <input type=checkbox name="per_item_costs" value=1 id="waste_per_item_costs"
@@ -59,13 +71,19 @@
         [% 'checked' IF per_item_costs %]>
     <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
 
+  [% IF c.cobrand.moniker == 'peterborough' %]
+    <p>
+    <input type=checkbox name="free_mode" value="1" id="waste_free_mode"
+        [% 'checked' IF free_mode %]>
+    <label class="inline" for="waste_free_mode">Free collection allowed</label>
+
     <h3>General Options</h3>
 
     <p>
     <input type=checkbox name="food_bags_disabled" value="1" id="waste_food_bags_disabled"
         [% 'checked' IF food_bags_disabled %]>
     <label class="inline" for="waste_food_bags_disabled">Food bag ordering disabled</label>
-
+  [% END %]
 
     <hr />
 
