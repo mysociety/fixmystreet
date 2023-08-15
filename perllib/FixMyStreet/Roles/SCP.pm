@@ -30,7 +30,7 @@ sub waste_cc_get_redirect_url {
     if ($back eq 'bulky') {
         # Need to pass through property ID as not sure how to work it out once we're back
         my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
-        $backUrl = $c->uri_for('pay_cancel', $p->id, $redirect_id ) . '?property_id=' . $id;
+        $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
     } else {
         $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
     }
@@ -53,7 +53,7 @@ sub waste_cc_get_redirect_url {
         };
     }
     my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
+        returnUrl => $c->uri_for_action('/waste/pay_complete', [ $p->id, $redirect_id ] ) . '',
         backUrl => $backUrl,
         ref => $self->waste_cc_payment_sale_ref($p),
         request_id => $p->id,

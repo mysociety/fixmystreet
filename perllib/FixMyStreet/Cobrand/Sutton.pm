@@ -94,11 +94,11 @@ sub garden_waste_cc_munge_form_details {
 
     $c->stash->{payment_amount} = $c->stash->{amount} * 100;
 
-    my $url = $c->uri_for(
-        'pay_complete',
-        $c->stash->{report}->id,
-        $c->stash->{report}->get_extra_metadata('redirect_id')
-    );
+    my $url = $c->uri_for_action(
+        '/waste/pay_complete', [
+            $c->stash->{report}->id,
+            $c->stash->{report}->get_extra_metadata('redirect_id')
+        ]);
 
     $c->stash->{redirect_url} = $url;
 
