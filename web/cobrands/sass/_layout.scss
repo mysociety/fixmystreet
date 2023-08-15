@@ -2,13 +2,17 @@
 
 $layout_front_stats_color: $primary !default;
 $mappage-header-height: 4em !default; // eg: might want this to equal outer height of #site-header on normal pages
-$mappage-sidebar-width: 29em !default;
-$mappage-sidebar-padding: 1em;
+$screen-size--medium: 63em !default;
+$screen-size--large:  79em !default;
+$mappage-sidebar-width: 26em !default;
 $mappage-notes-width: 15em;
-$mappage-actions-width: 25em !default;
+$mappage-actions-width: 18em !default;
+$mappage-sidebar-width--large:  28em !default;
+$mappage-actions-width--large:  20em !default;
+$mappage-sidebar-width--xlarge: 29em !default;
+$mappage-actions-width--xlarge: 25em !default;
+$mappage-sidebar-padding: 1em;
 $mappage-actions-sidebar-width: $mappage-sidebar-width !default;
-$mappage-sidebar-width--medium: 24em !default;
-$mappage-actions-width--medium: 20em !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
@@ -252,6 +256,14 @@ body.mappage.admin {
   height: auto; // stretch from bottom of header to bottom of window
   margin: 0;
 
+  @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+    #{$left}: $mappage-sidebar-width--large;
+  }
+
+  @media (min-width: $screen-size--large) {
+    #{$left}: $mappage-sidebar-width--xlarge;
+  }
+
   .with-notes & {
     #{$left}: $mappage-sidebar-width + $mappage-notes-width;
   }
@@ -259,8 +271,12 @@ body.mappage.admin {
   .with-actions & {
     #{$left}: $mappage-actions-sidebar-width + $mappage-actions-width;
 
-    @media (max-width: 79em) {
-      #{$left}: $mappage-sidebar-width--medium  + $mappage-actions-width--medium;
+    @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+      #{$left}: $mappage-sidebar-width--large + $mappage-actions-width--large;
+    }
+  
+    @media (min-width: $screen-size--large) {
+      #{$left}: $mappage-sidebar-width--xlarge + $mappage-actions-width--xlarge;
     }
   }
 }
@@ -284,6 +300,14 @@ body.mappage.admin {
     background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
   }
 
+  @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+    width: ($mappage-sidebar-width--large - ($mappage-sidebar-padding * 2));
+  }
+
+  @media (min-width: $screen-size--large) {
+    width: ($mappage-sidebar-width--xlarge - ($mappage-sidebar-padding * 2));
+  }
+
   .with-actions & {
     width: $mappage-actions-sidebar-width + $mappage-actions-width;
     max-width: 100%; // Secondary column will squish on screens 768-960px
@@ -293,8 +317,12 @@ body.mappage.admin {
       display: none; // 4em bottom spacing will be handled by children of .two_column_sidebar
     }
 
-    @media (max-width: 79em) {
-      width: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
+    @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+      width: $mappage-sidebar-width--large + $mappage-actions-width--large;
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: $mappage-sidebar-width--xlarge + $mappage-actions-width--xlarge;
     }
   }
 }
@@ -331,12 +359,24 @@ body.mappage.admin {
     width: $mappage-sidebar-width;
     flex: 0 0 auto;
 
-    @media (max-width: 79em) {
-      width: $mappage-sidebar-width--medium;
+    @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+      width: $mappage-sidebar-width--large;
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: $mappage-sidebar-width--xlarge;
     }
 
     .with-actions & {
       width: $mappage-actions-sidebar-width;
+
+      @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+        width: $mappage-sidebar-width--large;
+      }
+  
+      @media (min-width: $screen-size--large) {
+        width: $mappage-sidebar-width--xlarge;
+      }
     }
   }
 
@@ -344,12 +384,24 @@ body.mappage.admin {
   .shadow-wrap {
     width: $mappage-sidebar-width;
 
-    @media (max-width: 79em) {
-      width: $mappage-sidebar-width--medium;
+    @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+      width: $mappage-sidebar-width--large;
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: $mappage-sidebar-width--xlarge;
     }
 
     .with-actions & {
       width: $mappage-actions-sidebar-width;
+
+      @media only screen and (max-width: $screen-size--large) and (min-width: $screen-size--medium)  {
+        width: $mappage-sidebar-width--large;
+      }
+  
+      @media (min-width: $screen-size--large) {
+        width: $mappage-sidebar-width--xlarge;
+      }
     }
   }
 
