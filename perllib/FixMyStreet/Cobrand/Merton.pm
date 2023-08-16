@@ -54,8 +54,6 @@ sub get_geocoder { 'OSM' }
 
 sub admin_user_domain { 'merton.gov.uk' }
 
-sub allow_anonymous_reports { 'button' }
-
 # Merton requested something other than @merton.gov.uk due to their CRM misattributing reports to staff.
 sub anonymous_domain { 'anonymous-fms.merton.gov.uk' }
 
