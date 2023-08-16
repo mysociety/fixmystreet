@@ -1088,9 +1088,9 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check staff renewal' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
         foreach ({ email => 'a_user@example.net' }, { phone => '07700900002' }) {
-            $mech->log_out_ok;
-            $mech->log_in_ok($staff_user->email);
             $mech->get_ok('/waste/12345/garden_renew');
             $mech->submit_form_ok({ with_fields => {
                 name => 'a user',
@@ -1099,6 +1099,10 @@ FixMyStreet::override_config {
                 bins_wanted => 1,
                 payment_method => 'credit_card',
             }});
+            if (!$_->{email}) {
+                $mech->content_contains("Please provide an email");
+                next;
+            }
             $mech->content_contains('20.00');
 
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });

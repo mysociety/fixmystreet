@@ -1406,40 +1406,34 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check staff renewal' => sub {
-        foreach ({ email => 'a_user@example.net' }, { phone => '07700900002' }) {
-            $mech->log_out_ok;
-            $mech->log_in_ok($staff_user->email);
-            $mech->get_ok('/waste/12345/garden_renew');
-            $mech->submit_form_ok({ with_fields => {
-                name => 'a user',
-                %$_, # email or phone,
-                current_bins => 1,
-                bins_wanted => 1,
-                payment_method => 'credit_card',
-            }});
-            $mech->content_contains('20.00');
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'a user',
+            email => 'a_user@example.net',
+            current_bins => 1,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+        }});
+        $mech->content_contains('20.00');
 
-            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-            is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
-            is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
-            if ($_->{email}) {
-                is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, $_->{email}, 'Correct email';
-            } else {
-                is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}, undef, 'No email section';
-            }
-            is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-            is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, 'a_user@example.net', 'Correct email';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
 
-            my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-            check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0);
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0);
 
-            $mech->get_ok("/waste/pay_complete/$report_id/$token");
-            is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-            check_extra_data_post_confirm($report);
-            $report->delete; # Otherwise next test sees this as latest
-        }
+        check_extra_data_post_confirm($report);
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check staff renewal with direct debit' => sub {
