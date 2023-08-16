@@ -81,7 +81,10 @@ FixMyStreet::override_config {
                 value => re('My report Test.*Detail'),
             },
             {   name  => 'description',
-                value => re('Graffiti \| My report Test.*Detail'),
+                value => re('Graffiti | My report Test'),
+            },
+            {   name  => 'location',
+                value => re('My report Test.*Detail'),
             },
         ], 'Correct data set for standard report';
 
@@ -129,7 +132,10 @@ FixMyStreet::override_config {
                 value => re('My report Test.*Detail'),
             },
             {   name  => 'description',
-                value => re('Pothole in pavement \| My report Test.*Detail'),
+                value => re('Pothole in pavement | My report Test'),
+            },
+            {   name  => 'location',
+                value => re('My report Test.*Detail'),
             },
         ], 'Correct data set for report with a wrapped category';
     };

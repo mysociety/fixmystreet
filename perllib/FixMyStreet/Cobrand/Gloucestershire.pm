@@ -91,8 +91,11 @@ sub new_report_detail_field_hint {
 
 =head2 open311_extra_data_include
 
-Prepend subcategory to report description (as it is not otherwise captured by
-Confirm).
+Gloucestershire want report title to be in description field, along with
+subcategory text, which is not otherwise captured by Confirm. Report detail
+goes into the location field.
+Subcategory text may need to be fetched from '_wrapped_service_code'
+extra data.
 
 =cut
 
@@ -114,11 +117,13 @@ around open311_extra_data_include => sub {
         $category = $category->{name};
     }
 
-    my $description = $category . ' | ' . $row->detail;
-
     push @$open311_only, {
         name  => 'description',
-        value => $description,
+        value => $category . ' | ' . $row->title,
+    };
+    push @$open311_only, {
+        name  => 'location',
+        value => $row->detail,
     };
 
     return $open311_only;
