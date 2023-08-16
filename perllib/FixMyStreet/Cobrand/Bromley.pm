@@ -262,7 +262,7 @@ sub _include_user_title_in_extra {
 
     my $extra = $row->extra || {};
     unless ( $extra->{title} ) {
-        $extra->{title} = $row->user->title;
+        $extra->{title} = $row->user->title || 'n/a';
         $row->extra( $extra );
     }
 }
@@ -361,9 +361,8 @@ sub open311_contact_meta_override {
 
 =head2 should_skip_sending_update
 
-Do not send updates to the backend if they were made by a staff user, and
-either don't have any text (public or private), or lack a title (made by the
-inspector form).
+Do not send updates to the backend if they were made by a staff user and
+don't have any text (public or private).
 
 =cut
 
@@ -371,10 +370,8 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $private_comments = $update->get_extra_metadata('private_comments');
-
     my $has_text = $update->text || $private_comments;
-    my $has_title = $update->get_extra_metadata('title');
-    return $update->user->from_body && (!$has_text || !$has_title);
+    return $update->user->from_body && !$has_text;
 }
 
 sub munge_report_new_category_list {

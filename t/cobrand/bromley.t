@@ -125,7 +125,6 @@ subtest 'Updates from staff with no text but with private comments are sent' => 
     } );
     $comment->send_state('unprocessed');
     $comment->set_extra_metadata(private_comments => 'This comment has secret notes');
-    $comment->set_extra_metadata(title => 'MRS');
     $comment->update;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
@@ -141,6 +140,7 @@ subtest 'Updates from staff with no text but with private comments are sent' => 
 
         my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
+        is $c->param('title'), 'n/a';
         like $c->param('description'), qr/Private comments: This comment has secret notes/, 'private comments included in update description';
     };
 };
