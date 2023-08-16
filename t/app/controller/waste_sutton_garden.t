@@ -1267,7 +1267,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        $mech->content_contains("Cheque reference field is required");
+        $mech->content_contains("Payment reference field is required");
         $mech->submit_form_ok({ with_fields => {
             cheque_reference => 'Cheque123',
         } });

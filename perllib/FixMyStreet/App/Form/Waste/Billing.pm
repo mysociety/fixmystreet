@@ -28,7 +28,7 @@ sub options_payment_method {
 
 has_field cheque_reference => (
     type => 'Text',
-    label => 'Cheque reference',
+    label => 'Payment reference',
     required_when => { payment_method => 'cheque' },
 );
 
