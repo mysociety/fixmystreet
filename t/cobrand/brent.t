@@ -91,6 +91,7 @@ my $brent = $mech->create_body_ok(2488, 'Brent', {
 }, {
     cobrand => 'brent'
 });
+my $atak_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'ATAK', email => 'ATAK');
 my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
@@ -184,6 +185,31 @@ subtest "title is labelled 'location of problem' in open311 extended description
         like $c->param('description'), qr/location of problem: title/, "title labeled correctly";
     };
 
+    $problem->delete;
+};
+
+subtest "ATAK reports go straight to investigating after being sent" => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+        category => 'ATAK' ,
+        areas => '2488',
+        cobrand => 'brent',
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_FLAGS => { send_reports => 1 },
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'anonymous'
+            },
+        },
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $problem = FixMyStreet::DB->resultset('Problem')->find( { id => $problem->id } );
+    is $problem->state, "investigating", "ATAK problem is in investigating after being sent";
     $problem->delete;
 };
 

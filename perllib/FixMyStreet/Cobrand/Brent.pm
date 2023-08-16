@@ -413,6 +413,10 @@ to put the UnitID in the detail field for sending
 
 sub open311_post_send {
     my ($self, $row) = @_;
+    if ($row->contact->email =~ /ATAK/ && $row->external_id) {
+        $row->state('investigating');
+    }
+
     $row->detail($self->{brent_original_detail}) if $self->{brent_original_detail};
 }
 
