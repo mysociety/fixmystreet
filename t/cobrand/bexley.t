@@ -131,7 +131,7 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'No' } },
         { category => 'Street cleaning and litter', email => ['p1', 'outofhours', 'ooh2'], code => 'STREET',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Oil Spillage' } },
-        { category => 'Street cleaning and litter', email => ['p1'], code => 'STREET',
+        { category => 'Street cleaning and litter', code => 'STREET',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Litter' } },
         { category => 'Gulley covers', email => ['p1', 'outofhours', 'ooh2'], code => 'GULL',
             extra => { 'name' => 'reportType', description => 'Type of report', 'value' => 'Cover missing' } },

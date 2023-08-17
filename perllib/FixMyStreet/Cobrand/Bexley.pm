@@ -240,8 +240,8 @@ sub open311_post_send {
         my $reportType = $row->get_extra_field_value('reportType') || '';
         if ($reportType eq 'Oil Spillage' || $reportType eq 'Clinical / Needles' || $reportType eq 'Glass') {
             $outofhours_email = 1;
+            $p1_email = 1;
         }
-        $p1_email = 1;
     } elsif ($row->category eq 'Damage to kerb' || $row->category eq 'Damaged road' || $row->category eq 'Damaged pavement') {
         $p1_email = 1;
         $outofhours_email = 1;
