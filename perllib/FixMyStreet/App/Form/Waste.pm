@@ -59,7 +59,7 @@ sub validate {
     my $c = $self->c;
     my $cobrand = $c->cobrand->moniker;
     my $is_staff_user = ($c->user_exists && ($c->user->from_body || $c->user->is_superuser));
-    my $staff_provide_email = $c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton';
+    my $staff_provide_email = (ref $self) =~ /Garden/ && ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton');
 
     $self->add_form_error('Please provide an email address')
         unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email);
