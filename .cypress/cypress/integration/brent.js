@@ -43,21 +43,21 @@ describe('Brent road behaviour', function() {
     it('prevents reporting not on a road', function() {
         cy.visit('http://brent.localhost:3001/report/new?longitude=-0.28168&latitude=51.55904');
         make_flytip();
-        cy.contains('please select a point on a public road').should('be.visible');
+        cy.contains('problem on the public highway').should('be.visible');
         cy.get('span').contains('Photo').should('not.be.visible');
     });
 
     it('allows reporting on a Brent road', function() {
         cy.visit('http://brent.localhost:3001/report/new?longitude=-0.276120&latitude=51.563683');
         make_flytip();
-        cy.contains('please select a point on a public road').should('not.be.visible');
+        cy.contains('problem on the public highway').should('not.be.visible');
         cy.get('span').contains('Photo').should('be.visible');
     });
 
     it('allows reporting on a TfL road', function() {
         cy.visit('http://brent.localhost:3001/report/new?longitude=-0.260869&latitude=51.551717');
         make_flytip();
-        cy.contains('please select a point on a public road').should('not.be.visible');
+        cy.contains('problem on the public highway').should('not.be.visible');
         cy.get('span').contains('Photo').should('be.visible');
     });
 });

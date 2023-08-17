@@ -57,7 +57,7 @@ brent:
     nearest_radius: '0.1'
     non_interactive: 1
     asset_category: [ 'Fly-tipping', 'Pavement damage' ]
-    no_asset_msg_id: '#js-brent-road-services'
+    no_asset_message: 'The current category selected is only for reporting this type of problem on the public highway. If the problem is within a park or open space or a council estate please go back and choose ‘Council estate grounds maintenance’ or ‘Parks and open spaces’.'
     road: 1
     actions:
       found: fixmystreet.assets.brent.road_found
