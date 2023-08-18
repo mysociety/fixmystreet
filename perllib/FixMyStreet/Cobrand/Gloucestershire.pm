@@ -89,6 +89,18 @@ sub new_report_detail_field_hint {
 
 =cut
 
+=head2 open311_skip_report_fetch
+
+Do not fetch reports from Confirm for categories that are marked private.
+
+=cut
+
+sub open311_skip_report_fetch {
+    my ( $self, $problem ) = @_;
+
+    return 1 if $problem->non_public;
+}
+
 =head2 open311_extra_data_include
 
 Gloucestershire want report title to be in description field, along with
