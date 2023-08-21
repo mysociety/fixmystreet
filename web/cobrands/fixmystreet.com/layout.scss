@@ -386,29 +386,11 @@ footer {
     border-bottom: none;
     background: #fff;
     position: relative;
-
-    &:before {
-        content: "NEW";
-        display: block;
-        position: absolute;
-        top: -0.5em;
-        right: 0.5em;
-        background: $primary;
-        font-weight: bold;
-        width: 4em;
-        line-height: 4em;
-        text-align: center;
-        border-radius: 100%;
-        transform: rotate(5deg);
-    }
 }
 
 .footer-marketing {
-  color: #ccc;
-
-  a {
-      color: white;
-  }
+    margin: 0;
+    width: auto;
 }
 
 .healthcheck-unit {

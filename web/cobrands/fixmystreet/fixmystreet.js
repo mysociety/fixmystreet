@@ -1485,6 +1485,12 @@ $.extend(fixmystreet.set_up, {
               }
           }
       });
+  },
+
+  mobile_content_navigation_bar: function() {
+    $("#mobile-sticky-sidebar-button").click(function () {
+        $(".sticky-sidebar").toggle(300);
+    });
   }
 
 });

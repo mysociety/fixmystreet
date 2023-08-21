@@ -466,44 +466,6 @@ body.twothirdswidthpage {
     // negative z-index.
     z-index: 1;
   }
-  .content {
-    width:40em;
-    position: relative;
-    aside {
-      background:#eee;
-      position:absolute;
-      #{$left}: 42em;
-      top:0;
-      width:13em;
-      padding:1em;
-      h2 {
-        margin-top: 0;
-      }
-      img {
-        margin-bottom: 0.25em;
-      }
-    }
-    .sticky-sidebar {
-      position: absolute;
-      #{$left}: 42em;
-      aside {
-        position: fixed;
-        top:7em;
-        #{$left}: auto;
-      }
-    }
-  }
-
-  @media (max-width: 61em) {
-    // make twothirdswidthpage nearly as small as main
-    // .content: just enough to still fit the sidebar in
-    .content {
-      width:30em;
-      .sticky-sidebar {
-        #{$left}: 32em;
-      }
-    }
-  }
 }
 
 // Centre the login and password change pages,
@@ -515,7 +477,6 @@ body.authpage {
     margin-#{$right}: auto;
   }
 }
-
 
 // table wrapper - this enables anything to become a
 // table with div children as table cells

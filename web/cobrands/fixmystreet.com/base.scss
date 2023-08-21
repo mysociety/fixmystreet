@@ -377,6 +377,18 @@ html.lazyload .js-lazyload {
     border-bottom: 0.25em solid $primary;
 }
 
+.footer-marketing {
+  background-color: #222;
+  color: #ccc;
+  padding: 2em 1em;
+  margin: 0 -1em;
+  margin-top: 0;
+
+  a {
+      color: white;
+  }
+}
+
 .healthcheck-unit {
     padding-left: 50px;
     @include svg-background-image('/cobrands/fixmystreet.com/images/healthcheck-good');
