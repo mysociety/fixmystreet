@@ -83,7 +83,7 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
             ],
             template => 'waste/bulky/items.html',
             title => 'Add items for collection',
-            next => $c->stash->{is_staff} ? 'location' : 'summary',
+            next => $c->cobrand->call_hook('bulky_show_location_page') ? 'location' : 'summary',
             update_field_list => sub {
                 my $form = shift;
                 my $fields = {};

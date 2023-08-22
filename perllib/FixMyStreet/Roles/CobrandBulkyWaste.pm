@@ -50,6 +50,20 @@ sub bulky_tandc_link {
     my $cfg = $self->feature('waste_features') || {};
     return FixMyStreet::Template::SafeString->new($cfg->{bulky_tandc_link});
 }
+sub bulky_show_location_page {
+    my ($self) = @_;
+
+    if (my $permission = $_[0]->wasteworks_config->{show_location_page}) {
+        if ($permission eq 'staff') {
+            if ($self->{c}->stash->{is_staff}) {
+                return 1;
+            }
+        } elsif ($permission eq 'users') {
+            return 1;
+        }
+    }
+};
+
 =head2 Requirements
 
 Users of this role must supply the following:
