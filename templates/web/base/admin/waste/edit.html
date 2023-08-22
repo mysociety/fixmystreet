@@ -67,9 +67,9 @@
         <option value="users" [% 'selected' IF show_location_page == 'users' %]>[% loc('Users') %]</option>
 
     <p>
-    <input type=checkbox name="per_item_costs" value=1 id="waste_per_item_costs"
-        [% 'checked' IF per_item_costs %]>
-    <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
+    <input type=checkbox name="show_individual_notes" value=1 id="waste_show_individual_notes"
+        [% 'checked' IF show_individual_notes %]>
+    <label class="inline" for="waste_show_individual_notes">Add text box for extra notes on every item</label>
 
   [% IF c.cobrand.moniker == 'peterborough' %]
     <p>

@@ -721,7 +721,7 @@ sub save_item_names_to_report {
     my ($self, $data) = @_;
 
     my $report = $self->{c}->stash->{report};
-    foreach (grep { /^item_\d/ } keys %$data) {
+    foreach (grep { /^item_(notes_)?\d/ } keys %$data) {
         $report->set_extra_metadata($_ => $data->{$_}) if $data->{$_};
     }
 }
@@ -729,21 +729,24 @@ sub save_item_names_to_report {
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
 
-    my @items_list = grep { /^item_\d/ } keys %{$report->get_extra_metadata};
-    my @items = sort { (($a =~ /_(\d+)/)[0] || 0) <=> (($b =~ /_(\d+)/)[0] || 0) } @items_list;
+    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @items = sort { $a <=> $b } @item_nums;
 
     my @fields;
     for my $item (@items) {
-        if (my $value = $report->get_extra_metadata($item)) {
-            push @fields, {name => $item, value => $value };
+        if (my $value = $report->get_extra_metadata("item_$item")) {
+            if (my $note = $report->get_extra_metadata("item_notes_$item")) {
+                $value .= " ($note)";
+            }
+            push @fields, $value;
         }
     }
     my $items_extra = $self->bulky_items_extra;
 
     return [
         map {
-            value       => $_->{value},
-            message     => $items_extra->{ $_->{value} }{message},
+            value => $_,
+            message => $items_extra->{$_}{message},
         },
         @fields,
     ];
