@@ -47,6 +47,7 @@ sub item_list : Private {
 
     my $max_items = $c->cobrand->bulky_items_maximum;
     my $field_list = [];
+
     for my $num ( 1 .. $max_items ) {
         push @$field_list,
             "item_$num" => {
@@ -69,13 +70,18 @@ sub item_list : Private {
                 type => 'FileIdPhoto',
                 num_photos_required => 0,
                 linked_field => "item_photo_$num",
+            },
+            "item_notes_${num}" => {
+                type => 'TextArea',
+                label => 'Item note (optional)',
+                tags => { hint => 'Describe the item to help our crew pick up the right thing' },
             };
     }
 
     $c->stash->{page_list} = [
         add_items => {
             fields => [ 'continue',
-                map { ("item_$_", "item_photo_$_", "item_photo_${_}_fileid") } ( 1 .. $max_items ),
+                map { ("item_$_", "item_photo_$_", "item_photo_${_}_fileid", "item_notes_$_") } ( 1 .. $max_items ),
             ],
             template => 'waste/bulky/items.html',
             title => 'Add items for collection',
