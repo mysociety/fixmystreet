@@ -1148,8 +1148,13 @@ sub dashboard_export_problems_add_columns {
 sub bulky_collection_window_days { 56 }
 
 sub bulky_allowed_property {
-    my ($self, $property) = @_;
-    return $self->bulky_enabled;
+    my ( $self, $property ) = @_;
+
+    my $cfg = $self->feature('echo');
+
+    return $self->bulky_enabled
+        && grep { $_ == $property->{type_id} }
+        @{ $cfg->{bulky_address_types} // [] };
 }
 
 sub collection_date {
