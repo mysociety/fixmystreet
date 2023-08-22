@@ -105,8 +105,9 @@
         item_key = 'item_' _ num;
         photo_key = 'item_photo_' _ num;
         item = data.$item_key;
+        notes_key = 'item_notes_' _ num;
         NEXT UNLESS item;
-        items.push({ item => item, photo => data.$photo_key });
+        items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
       END %]
       <dl>
         <dt>Price</dt>
@@ -142,6 +143,11 @@
                     <span>No image attached for this item</span>
                   [% END %]
               </td>
+              [% IF item.notes %]
+              <td>
+                <p class="govuk-!-margin-bottom-0">Item location notes: [% item.notes %]</p>
+              </td>
+              [% END %]
           </tr>
           [% IF extra_text %]
             <tr>
