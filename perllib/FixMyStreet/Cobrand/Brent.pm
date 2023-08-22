@@ -1391,8 +1391,12 @@ sub waste_munge_bulky_data {
 
     my (%types, @photos);
     my $max = $self->bulky_items_maximum;
+    my $other_item = 'Small electricals: Other item under 30x30x30 cm';
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
+            if ($item eq $other_item) {
+                $item .= ' (' . ($data->{"item_notes_$_"} || '') . ')';
+            }
             $types{$item}++;
             if ($item eq 'Tied bag of domestic batteries (min 10 - max 100)') {
                 $data->{extra_Batteries} = 1;

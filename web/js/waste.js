@@ -161,6 +161,20 @@ $(function() {
             updateTotal();
         });
 
+        if (fixmystreet.cobrand == 'brent') {
+            update_small_items_other_notes = function() {
+                var $this = $(this);
+                var $notes = $this.closest('.bulky-item-wrapper').find('[id^="form-item_notes_"]');
+                if ($this.val() == 'Small electricals: Other item under 30x30x30 cm') {
+                    $notes.show();
+                } else {
+                    $notes.hide();
+                }
+            };
+            $('.govuk-select[name^="item_"]').change(update_small_items_other_notes);
+            $('.govuk-select[name^="item_"]').each(update_small_items_other_notes);
+        }
+
     });
 
     window.addEventListener("pageshow", function(e){
