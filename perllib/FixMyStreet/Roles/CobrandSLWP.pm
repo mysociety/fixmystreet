@@ -450,8 +450,7 @@ sub bin_services_for_address {
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, $self->council_url, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
 
-    # XXX need proper check here
-    $property->{show_bulky_waste} = $self->bulky_enabled;
+    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
 
     my @out;
     my %task_ref_to_row;
@@ -1149,8 +1148,13 @@ sub dashboard_export_problems_add_columns {
 sub bulky_collection_window_days { 56 }
 
 sub bulky_allowed_property {
-    my ($self, $property) = @_;
-    return 1 if $property->{show_bulky_waste} && !$property->{commercial_property};
+    my ( $self, $property ) = @_;
+
+    my $cfg = $self->feature('echo');
+
+    return $self->bulky_enabled
+        && grep { $_ == $property->{type_id} }
+        @{ $cfg->{bulky_address_types} // [] };
 }
 
 sub collection_date {
