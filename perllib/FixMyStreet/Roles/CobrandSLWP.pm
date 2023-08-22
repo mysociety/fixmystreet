@@ -1104,8 +1104,13 @@ sub bulky_can_refund { 0 }
 sub _bulky_refund_cutoff_date { }
 
 sub bulky_allowed_property {
-    my ($self, $property) = @_;
-    return $self->bulky_enabled;
+    my ( $self, $property ) = @_;
+
+    my $cfg = $self->feature('echo');
+
+    return $self->bulky_enabled
+        && grep { $_ == $property->{type_id} }
+        @{ $cfg->{bulky_address_types} // [] };
 }
 
 sub collection_date {
