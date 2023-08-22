@@ -64,6 +64,8 @@ sub bulky_show_location_page {
     }
 };
 
+sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} };
+
 =head2 Requirements
 
 Users of this role must supply the following:
