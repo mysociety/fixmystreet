@@ -1007,6 +1007,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         my $cfg = $body->get_extra_metadata('wasteworks_config');
         $cfg->{per_item_costs} = 1;
+        $cfg->{show_location_page} = 'staff';
         $body->set_extra_metadata(wasteworks_config => $cfg);
         $body->update;
 
