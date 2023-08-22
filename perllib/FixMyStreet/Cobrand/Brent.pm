@@ -1394,8 +1394,12 @@ sub waste_munge_bulky_data {
 
     my (%types);
     my $max = $self->bulky_items_maximum;
+    my $other_item = 'Small electricals: Other item under 30x30x30 cm';
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
+            if ($item eq $other_item) {
+                $item .= ' (' . ($data->{"item_notes_$_"} || '') . ')';
+            }
             $types{$item}++;
             if ($item eq 'Tied bag of domestic batteries (min 10 - max 100)') {
                 $data->{extra_Batteries} = 1;
@@ -1425,6 +1429,7 @@ sub waste_reconstruct_bulky_data {
     my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_notes_$id"} = $p->get_extra_metadata("item_notes_$id");
     }
 
     $saved_data->{name} = $p->name;

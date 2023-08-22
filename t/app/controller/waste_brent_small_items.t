@@ -19,6 +19,7 @@ $body->set_extra_metadata(
         items_per_collection_max => 11,
         base_price => 0,
         show_location_page => 'users',
+        show_individual_notes => 1,
         item_list => [
             { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
@@ -27,6 +28,7 @@ $body->set_extra_metadata(
             { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
             { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
             { bartec_id => '7', name => 'Games console', category => 'Small electrical items' },
+            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items' },
         ],
     },
 );
@@ -179,6 +181,8 @@ FixMyStreet::override_config {
                     'item_1' => 'Tied bag of domestic batteries (min 10 - max 100)',
                     'item_2' => 'Toaster',
                     'item_3' => 'Podback Bag',
+                    'item_4' => 'Small electricals: Other item under 30x30x30 cm',
+                    'item_notes_4' => 'A widget',
                 },
             },
         );
@@ -188,8 +192,9 @@ FixMyStreet::override_config {
             $mech->content_contains('Booking Summary');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Tied bag of domestic batteries/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback Bag/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Other.*/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Toaster/s);
-            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('4 items requested for collection');
             $mech->content_lacks('you can add up to');
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_lacks('£0.00');
@@ -213,7 +218,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
 
-            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
+            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
             is $report->get_extra_field_value('Textiles'), '';
             is $report->get_extra_field_value('Paint'), '';
             is $report->get_extra_field_value('Batteries'), 1;
@@ -244,6 +249,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1';
             like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
+            like $confirmation_email_txt, qr/- Small electricals: Other/, 'Includes item 3';
             unlike $confirmation_email_txt, qr/Total cost/, 'There is not total cost';
             like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
@@ -255,6 +261,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1 (html mail)';
             like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr/Small electricals: Other/, 'Includes item 3 (html mail)';
             unlike $confirmation_email_html, qr/Total cost/, 'There is no total cost (html mail)';
             like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
             like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
@@ -277,6 +284,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1';
             like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
+            like $confirmation_email_txt, qr/- Small electricals: Other item under 30x30x30 cm \(A widget\)/, 'Includes item 3';
             like $confirmation_email_txt, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
             like $confirmation_email_html, qr/Thank you for booking a small items collection with Brent Council/, 'Includes Brent greeting (html mail)';
             like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
@@ -285,6 +293,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1 (html mail)';
             like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr/Small electricals: Other item under 30x30x30 cm \(A widget\)/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link (html mail)';
             $mech->clear_emails_ok;
         }
@@ -364,7 +373,8 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Toaster/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*batteries/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback/s);
-            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('A widget');
+            $mech->content_contains('4 items requested for collection');
             $mech->content_lacks('you can add up to');
             $mech->content_lacks('£0.00');
             $mech->content_contains('01 July');
