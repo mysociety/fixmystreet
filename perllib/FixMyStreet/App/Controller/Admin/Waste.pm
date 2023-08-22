@@ -91,7 +91,8 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 daily_slots => 'int',
                 items_per_collection_max => 'int',
                 food_bags_disabled => 'bool',
-                show_location_page => 'sel'
+                show_location_page => 'sel',
+                show_individual_notes => 'bool',
             );
             foreach (keys %keys) {
                 my $val = $c->get_param($_);
@@ -215,7 +216,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs base_price daily_slots items_per_collection_max food_bags_disabled show_location_page)) {
+    foreach (qw(free_mode per_item_costs base_price daily_slots items_per_collection_max food_bags_disabled show_location_page show_individual_notes)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }
