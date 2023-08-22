@@ -798,6 +798,7 @@ FixMyStreet::override_config {
             $body->discard_changes;
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
                 show_location_page => 'noshow',
+                show_individual_notes => 0,
                 band1_max => '',
                 band1_price => '',
                 daily_slots => 50,

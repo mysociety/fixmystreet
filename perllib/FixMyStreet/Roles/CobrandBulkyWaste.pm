@@ -66,6 +66,8 @@ sub bulky_show_location_page {
 };
 sub bulky_show_location_field_mandatory { 0 }
 
+sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} };
+
 sub bulky_pricing_strategy {
     my $self = shift;
     my $base_price = $self->wasteworks_config->{base_price};
