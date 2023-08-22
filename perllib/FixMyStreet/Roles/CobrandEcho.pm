@@ -54,6 +54,7 @@ sub look_up_property {
         address => FixMyStreet::Template::title($result->{Description}),
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
+        type_id => $result->{PointAddressType}{Id},
     };
 }
 
