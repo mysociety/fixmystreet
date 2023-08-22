@@ -54,15 +54,16 @@ sub bulky_show_location_page {
     my ($self) = @_;
 
     if (my $permission = $_[0]->wasteworks_config->{show_location_page}) {
-        if ($permission && $permission eq 'staff') {
+        if ($permission eq 'staff') {
             if ($self->{c}->stash->{is_staff}) {
                 return 1;
             }
-        } elsif ($permission && $permission eq 'users') {
+        } elsif ($permission eq 'users') {
             return 1;
         }
     }
 };
+sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} };
 
 =head2 Requirements
 
