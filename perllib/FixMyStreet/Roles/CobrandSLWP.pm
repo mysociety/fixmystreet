@@ -1174,14 +1174,13 @@ sub waste_munge_bulky_data {
     my $max = $self->bulky_items_maximum;
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
-            push @notes, $item; # XXX this should be per-item note field from user, not item description
+            push @notes, $data->{"item_notes_$_"} || '';
             push @ids, $items{$item};
             push @photos, $data->{"item_photos_$_"} || '';
         };
     }
     $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
     $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
-
     $data->{extra_Image} = join("::", @photos);
     $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
 }
@@ -1196,8 +1195,10 @@ sub waste_reconstruct_bulky_data {
     };
 
     my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
+    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_notes_$id"} = $notes[$id-1];
         $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
     }
 
