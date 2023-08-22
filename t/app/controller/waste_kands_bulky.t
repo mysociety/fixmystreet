@@ -154,6 +154,35 @@ FixMyStreet::override_config {
         },
     ] });
 
+    subtest 'Ineligible property' => sub {
+        $echo->mock(
+            'GetPointAddress',
+            sub {
+                return {
+                    PointAddressType => {
+                        Id   => 99,
+                        Name => 'Air force',
+                    },
+
+                    Id        => '12345',
+                    SharedRef => { Value => { anyType => '1000000002' } },
+                    PointType => 'PointAddress',
+                    Coordinates => {
+                        GeoPoint =>
+                            { Latitude => 51.408688, Longitude => -0.304465 }
+                    },
+                    Description => '2 Example Street, Kingston, KT1 1AA',
+                };
+            }
+        );
+
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
+        $mech->submit_form_ok( { with_fields => { address => '12345' } } );
+
+        $mech->content_lacks('Bulky Waste');
+    };
+
     subtest 'Eligible property' => sub {
         $echo->mock(
             'GetPointAddress',
