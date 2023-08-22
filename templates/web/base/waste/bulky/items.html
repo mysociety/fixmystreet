@@ -74,6 +74,10 @@ END; END %]
     [% photo = 'item_photo_' _ num %]
     [% photo_fileid = photo _ '_fileid' %]
     [% PROCESS form override_fields = [ photo, photo_fileid ] %]
+    [% IF c.cobrand.call_hook('bulky_show_individual_notes') %]
+      [% notes = 'item_notes_' _ num %]
+      [% PROCESS form override_fields = [ notes ] %]
+    [% END %]
 
     [% IF num > 1 %]
     <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
