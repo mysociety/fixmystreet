@@ -16,6 +16,7 @@ $body->set_extra_metadata(
         base_price => '6100',
         items_per_collection_max => 8,
         per_item_costs => 0,
+        show_location_page => 'users',
         item_list => [
             { bartec_id => '83', name => 'Bath' },
             { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
@@ -270,6 +271,7 @@ FixMyStreet::override_config {
                 },
             },
         );
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
 
         sub test_summary {
             $mech->content_contains('Booking Summary');

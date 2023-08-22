@@ -47,6 +47,18 @@
         [% 'checked' IF per_item_costs %]>
     <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
 
+    <p>
+    <label for="show_location_page">[% loc('Show location information page') %]</label>
+    <select class="form-control" name="show_location_page" id="waste_show_location_page">
+        <option value="noshow" [% 'selected' IF (NOT show_location_page || show_location_page == 'noshow') %]>[% loc("Don't show") %]</option>
+        <option value="staff" [% 'selected' IF show_location_page == 'staff' %]>[% loc('Staff') %]</option>
+        <option value="users" [% 'selected' IF show_location_page == 'users' %]>[% loc('Users') %]</option>
+
+    <p>
+    <input type=checkbox name="per_item_costs" value=1 id="waste_per_item_costs"
+        [% 'checked' IF per_item_costs %]>
+    <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
+
     <h3>General Options</h3>
 
     <p>
