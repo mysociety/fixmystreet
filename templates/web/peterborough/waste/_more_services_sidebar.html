@@ -39,11 +39,11 @@
     </li>
   [% END %]
   [% IF c.cobrand.call_hook('bulky_enabled') %]
-   [% IF c.cobrand.bulky_allowed_property(property) %]
-    <li>
-        <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
-    </li>
-   [% END %]
+    [% IF property.show_bulky_waste %]
+      <li>
+          <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
+      </li>
+    [% END %]
     <li>
       <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/household-recycling-centre">Household Recycling Centre</a>
     </li>
