@@ -1,4 +1,4 @@
-       [% IF service_data.size AND NOT c.cobrand.call_hook('bulky_enabled') %]
+       [% IF service_data.size AND (c.cobrand.moniker != 'peterborough' OR NOT c.cobrand.call_hook('bulky_enabled')) %]
        <div class="aside-download">
          <h3>Download your collection schedule</h3>
          <ul>
