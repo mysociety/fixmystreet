@@ -160,7 +160,10 @@
 [% END %]
 [% END %]
 
-[% IF c.cobrand.call_hook('bulky_enabled') AND (property.commercial_property || property.show_bulky_waste) %]
+[% IF
+  property.show_bulky_waste
+  || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property)
+%]
   <div class="govuk-grid-row waste-service-wrapper">
     <div class="govuk-grid-column-one-quarter text-centered">
       <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>

@@ -345,7 +345,11 @@ sub bulky_free_collection_available {
 
 sub bulky_allowed_property {
     my ($self, $property) = @_;
-    return 1 if $property->{show_bulky_waste} && !$property->{commercial_property};
+
+    return
+           $self->bulky_enabled
+        && $property->{has_black_bin}
+        && !$property->{commercial_property};
 }
 
 sub bulky_available_feature_types {

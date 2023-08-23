@@ -21,8 +21,7 @@ has index_template => (
 sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    if (  !$c->cobrand->call_hook('bulky_enabled')
-        || !$c->cobrand->call_hook(bulky_allowed_property => $c->stash->{property})
+    if (  !$c->stash->{property}{show_bulky_waste}
         || $c->stash->{property}{pending_bulky_collection} )
     {
         $c->detach('/waste/property_redirect');

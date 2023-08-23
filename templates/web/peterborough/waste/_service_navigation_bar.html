@@ -5,7 +5,7 @@
         <a href="#[% unit.service_name %]">[% unit.service_name %]</a>
     [% END %]
     [% END %]
-    [% IF c.cobrand.call_hook('bulky_enabled') AND property.show_bulky_waste %]
+    [% IF property.show_bulky_waste %]
     <a href="#bulky-waste">Bulky Waste<span class="highlight-label">New</span></a>
     [% END %]
     <hr>
