@@ -768,7 +768,8 @@ textarea{
 /* form errors */
 div.form-error,
 p.form-error {
-  display:block;
+  display: block;
+  width: fit-content;
 }
 
 input.form-error,
