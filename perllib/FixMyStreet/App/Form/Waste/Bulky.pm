@@ -89,6 +89,14 @@ has_page summary => (
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
     next => sub { $_[0]->{no_slots} ? 'choose_date_earlier' : 'done' },
+    update_field_list => sub {
+        my $form = shift;
+        my $c = $form->c;
+        my $label = FixMyStreet::Template::SafeString->new('I have read the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">bulky waste collection</a> page on the council’s website');
+        return {
+            tandc => { option_label => $label }
+        };
+    },
     # Return to 'Choose date' page if slot has been taken in the meantime.
     # Otherwise, proceed to payment.
     pre_finished => sub {
@@ -246,9 +254,7 @@ has_field tandc => (
     type => 'Checkbox',
     required => 1,
     label => 'Terms and conditions',
-    option_label => FixMyStreet::Template::SafeString->new(
-        'I have read the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">bulky waste collection</a> page on the council’s website',
-    ),
+    option_label => '' # Generated in update_field_list of page summary
 );
 
 has_field location => (
@@ -268,11 +274,12 @@ has_field location_photo => (
     tags => {
         max_photos => 1,
     },
-    label => <<HERE,
-Please check the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.
+    build_label_method => sub {
+        my $self = shift;
 
-Help us by attaching a photo of where the items will be left for collection.
-HERE
+        return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
+        . 'Help us by attaching a photo of where the items will be left for collection.'
+    }
 );
 
 sub validate {

@@ -104,6 +104,7 @@ FixMyStreet::override_config {
         waste => { peterborough => 1 },
         waste_features => { peterborough => {
             bulky_enabled => 1,
+            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
         } },
         payment_gateway => { peterborough => {
             cc_url => 'https://example.org/scp/',
@@ -343,6 +344,7 @@ FixMyStreet::override_config {
         subtest 'Intro page' => sub {
             $mech->content_contains('Book bulky goods collection');
             $mech->content_contains('Before you start your booking');
+            $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
             $mech->content_contains('You can request up to <strong>five items per collection');
             $mech->content_contains('You can amend the items in your booking up until 3pm the day before the collection is scheduled');
             $mech->submit_form_ok;
@@ -425,6 +427,7 @@ FixMyStreet::override_config {
             $mech->content_contains("15:00 on $day_before August 2022");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
+            $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
         }
         sub test_summary_submission {
             # external redirects make Test::WWW::Mechanize unhappy so clone
@@ -1030,6 +1033,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_contains("Confirm Booking");
