@@ -15,6 +15,21 @@ $link-hover-text-decoration: underline !default;
 $primary_link_decoration: underline !default;
 $primary_link_hover_decoration: $primary_link_decoration !default;
 
+$button-primary-bg-top: #222 !default;
+$button-primary-bg-bottom: $button-primary-bg-top !default;
+$button-primary-border: darken($button-primary-bg-top, 50%) !default;
+$button-primary-text: #fff !default;
+
+$button-primary-hover-bg-top: mix($button-primary-bg-top, #fff, 80%) !default;
+$button-primary-hover-bg-bottom: mix($button-primary-bg-bottom, #fff, 80%) !default;
+$button-primary-hover-border: darken($button-primary-border, 100%) !default;
+$button-primary-hover-text: #fff !default;
+
+$button-primary-focus-bg-top: #ffe100 !default;
+$button-primary-focus-bg-bottom: #ffe100 !default;
+$button-primary-focus-border: $button-primary-border !default;
+$button-primary-focus-text: #222 !default;
+
 $pagination_background: #f6f6f6 !default;
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
@@ -1051,7 +1066,7 @@ footer {
 .btn-primary,
 .green-btn,
 .btn--primary {
-  @include button-variant(#9fde23, #7fb900, #5b9700, #fff, #9fde23, #7fb900, #5b9700, #fff);
+  @include button-variant($button-primary-bg-top, $button-primary-bg-bottom, $button-primary-border, $button-primary-text, $button-primary-hover-bg-top, $button-primary-hover-bg-bottom, $button-primary-hover-border, $button-primary-hover-text,$button-primary-focus-bg-bottom,$button-primary-focus-bg-top, $button-primary-focus-border, $button-primary-focus-text);
 }
 
 .btn-danger,

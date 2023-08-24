@@ -47,3 +47,8 @@ $front-main-background-desktop: $blue;
 $front-main-color: $primary_text;
 $front-main-background: $blue;
 $postcodeform-background: $blue;
+
+// This is not the colour the use on their website for their buttons, but at it matches the navbar and more important is accessible.
+$button-primary-bg-top: $blue;
+$button-primary-border: $blue;
+$button-primary-text: #fff;
