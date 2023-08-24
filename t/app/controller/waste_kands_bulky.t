@@ -65,6 +65,7 @@ FixMyStreet::override_config {
         waste_features => {
             kingston => {
                 bulky_enabled => 1,
+                bulky_tandc_link => 'tandc_link',
             },
         },
         echo => {
