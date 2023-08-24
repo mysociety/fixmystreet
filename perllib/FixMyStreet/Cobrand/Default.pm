@@ -543,6 +543,10 @@ sub updates_disallowed {
     return '';
 }
 
+sub body_disallows_state_change {
+    return $_[0]->feature('update_states_disallowed');
+}
+
 =item reopening_disallowed
 
 Returns a boolean indicating whether reopening of a particular report is
