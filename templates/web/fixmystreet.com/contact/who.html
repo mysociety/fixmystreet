@@ -5,49 +5,59 @@
 [% END %]
 
 [% IF problem %]
-<div class="checkbox-group">
-    <input name="dest" id="dest_rules" type="radio" value="rules" class="required"[% IF dest AND dest == 'rules' %] checked[% END %]>
-    <label class="inline" for="dest_rules">[%
-        IF update;
-            loc('This update breaks the <a href="/about/house-rules">Conditions of Use</a>');
-        ELSE;
-            loc('This report breaks the <a href="/about/house-rules">Conditions of Use</a>');
-        END;
-    %]</label>
+<div class="govuk-form-group">
+    <div class="govuk-radios govuk-radios--small">
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_rules" type="radio" value="rules" class="govuk-radios__input required"[% IF dest AND dest == 'rules' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_rules">[%
+                IF update;
+                    loc('This update breaks the <a href="/about/house-rules">Conditions of Use</a>');
+                ELSE;
+                    loc('This report breaks the <a href="/about/house-rules">Conditions of Use</a>');
+                END;
+            %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_update" type="radio" value="update" class="govuk-radios__input required"[% IF dest AND dest == 'update' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_update">[% loc('This report has not been fixed') %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_council" type="radio" value="council" class="govuk-radios__input required"[% IF dest AND dest == 'council' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_council">[% loc('I want to make a new report about a street problem') %]</label>
+        </div>
+    </div>
 </div>
-<div class="checkbox-group">
-    <input name="dest" id="dest_update" type="radio" value="update" class="required"[% IF dest AND dest == 'update' %] checked[% END %]>
-    <label class="inline" for="dest_update">[% loc('This report has not been fixed') %]</label>
-</div>
-<div class="checkbox-group">
-    <input name="dest" id="dest_council" type="radio" value="council" class="required"[% IF dest AND dest == 'council' %] checked[% END %]>
-    <label class="inline" for="dest_council">[% loc('I want to make a new report about a street problem') %]</label>
-</div>
+
 [% ELSE %]
-<div class="checkbox-group">
-    <input name="dest" id="dest_help" type="radio" value="help" class="required"[% IF dest AND dest == 'help' %] checked[% END %]>
-    <label class="inline" for="dest_help">[% loc('I need help using the site') %]</label>
+<div class="govuk-form-group">
+    <div class="govuk-radios govuk-radios--small">
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_help" type="radio" value="help" class="govuk-radios__input required"[% IF dest AND dest == 'help' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_help">[% loc('I need help using the site') %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_feedback" type="radio" value="feedback" class="govuk-radios__input required"[% IF dest AND dest == 'feedback' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_feedback">[% loc('I have feedback about the site') %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_from_council" type="radio" value="from_council" class="govuk-radios__input required"[% IF dest AND dest == 'from_council' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_from_council">[% loc('I am from a council and I have a question for the FixMyStreet team') %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_from_council" type="radio" value="from_council" class="govuk-radios__input required"[% IF dest AND dest == 'from_council' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_from_council">[% loc('I am from a council and I have a question for the FixMyStreet team') %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input name="dest" id="dest_council" type="radio" value="council" class="govuk-radios__input required"[% IF dest AND dest == 'council' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_council">[% loc('I want to report a street problem') %]</label>
+        </div>
+        <div class="govuk-radios__item">
+            <input class="govuk-radios__input" name="dest" id="dest_update" type="radio" value="update"[% IF dest AND dest == 'update' %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="dest_update">[% loc('My street problem hasn’t been fixed') %]</label>
+        </div>
+    </div>
 </div>
 
-<div class="checkbox-group">
-    <input name="dest" id="dest_feedback" type="radio" value="feedback" class="required"[% IF dest AND dest == 'feedback' %] checked[% END %]>
-    <label class="inline" for="dest_feedback">[% loc('I have feedback about the site') %]</label>
-</div>
-
-<div class="checkbox-group">
-    <input name="dest" id="dest_from_council" type="radio" value="from_council" class="required"[% IF dest AND dest == 'from_council' %] checked[% END %]>
-    <label class="inline" for="dest_from_council">[% loc('I am from a council and I have a question for the FixMyStreet team') %]</label>
-</div>
-
-<div class="checkbox-group">
-    <input name="dest" id="dest_council" type="radio" value="council" class="required"[% IF dest AND dest == 'council' %] checked[% END %]>
-    <label class="inline" for="dest_council">[% loc('I want to report a street problem') %]</label>
-</div>
-
-<div class="checkbox-group">
-    <input name="dest" id="dest_update" type="radio" value="update"[% IF dest AND dest == 'update' %] checked[% END %]>
-    <label class="inline" for="dest_update">[% loc('My street problem hasn’t been fixed') %]</label>
-</div>
 [% END %]
 
 <div id="dest-error"[% IF NOT field_errors.not_for_us %] class="hidden"[% END %]>
