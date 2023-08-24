@@ -133,6 +133,12 @@ sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{always_send_email} = 1;
+    $params->{multi_photos} = 1;
+}
+
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{multi_photos} = 1;
 }
 
 =head2 open311_contact_meta_override

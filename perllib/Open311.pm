@@ -462,8 +462,13 @@ sub _populate_service_request_update_params {
     if ( $comment->photo ) {
         my $cobrand = $comment->get_cobrand_logged;
         my $email_base_url = $cobrand->base_url($comment->cobrand_data);
-        my $url = $email_base_url . $comment->photos->[0]->{url_full};
-        $params->{media_url} = $url;
+        if ($self->multi_photos) {
+            my @all_images = map { $email_base_url . $_->{url_full} } @{ $comment->photos };
+            $params->{media_url} = \@all_images;
+        } else {
+            my $url = $email_base_url . $comment->photos->[0]->{url_full};
+            $params->{media_url} = $url;
+        }
     }
 
     # The following will only set by UK in Bromley/Bromley cobrands
