@@ -45,7 +45,11 @@ sub bulky_enabled_staff_only {
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
-
+sub bulky_tandc_link {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return FixMyStreet::Template::SafeString->new($cfg->{bulky_tandc_link});
+}
 =head2 Requirements
 
 Users of this role must supply the following:
