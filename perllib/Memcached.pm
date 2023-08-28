@@ -44,4 +44,14 @@ sub increment {
     return $count;
 }
 
+sub get_or_calculate {
+    my ($key, $expiry, $callback) = @_;
+    my $result = instance->get($key);
+    if (!defined($result)) {
+        $result = $callback->();
+        instance->set($key, $result, $expiry);
+    }
+    return $result;
+}
+
 1;

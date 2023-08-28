@@ -95,44 +95,35 @@ sub recent_fixed {
 sub _recent_in_states {
     my ($rs, $state_key, $states) = @_;
     my $key = "recent_$state_key:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = $rs->search( {
+    return Memcached::get_or_calculate($key, _cache_timeout(), sub {
+        return $rs->search( {
             state => $states,
             lastupdate => { '>', \"current_timestamp-'1 month'::interval" },
         } )->count;
-        Memcached::set($key, $result, _cache_timeout());
-    }
-    return $result;
+    });
 }
 
 sub number_comments {
     my $rs = shift;
     my $key = "number_comments:$site_key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = $rs->search(
+    return Memcached::get_or_calculate($key, _cache_timeout(), sub {
+        return $rs->search(
             { 'comments.state' => 'confirmed' },
             { join => 'comments' }
         )->count;
-        Memcached::set($key, $result, _cache_timeout());
-    }
-    return $result;
+    });
 }
 
 sub recent_new {
     my ( $rs, $interval ) = @_;
     (my $key = $interval) =~ s/\s+//g;
     $key = "recent_new:$site_key:$key";
-    my $result = Memcached::get($key);
-    unless ($result) {
-        $result = $rs->search( {
+    return Memcached::get_or_calculate($key, _cache_timeout(), sub {
+        return $rs->search( {
             state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
             confirmed => { '>', \"current_timestamp-'$interval'::interval" },
         } )->count;
-        Memcached::set($key, $result, _cache_timeout());
-    }
-    return $result;
+    });
 }
 
 # Front page recent lists
