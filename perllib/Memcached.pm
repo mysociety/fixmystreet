@@ -5,6 +5,7 @@ package Memcached;
 
 use strict;
 use warnings;
+use Time::HiRes qw(usleep);
 use Cache::Memcached;
 use FixMyStreet;
 
@@ -46,11 +47,19 @@ sub increment {
 
 sub get_or_calculate {
     my ($key, $expiry, $callback) = @_;
+    if (!instance->get_sock) {
+        return $callback->();
+    }
+
+    while (!instance->add($key . "_lock", 10)) {
+        usleep 100_000;
+    }
     my $result = instance->get($key);
     if (!defined($result)) {
         $result = $callback->();
         instance->set($key, $result, $expiry);
     }
+    instance->delete($key . "_lock");
     return $result;
 }
 
