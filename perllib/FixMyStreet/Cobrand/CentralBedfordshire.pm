@@ -95,6 +95,32 @@ sub send_questionnaires { 0 }
 
 =cut
 
+=head2 pin_colour
+
+Central Bedfordshire uses the following pin colours:
+
+=over 4
+
+=item * grey: 'not responsible'
+
+=item * green: fixed or closed
+
+=item * red: confirmed
+
+=item * yellow: any other open state (e.g. 'action scheduled' or 'in progress')
+
+=back
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->state eq 'not responsible';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'yellow';
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
