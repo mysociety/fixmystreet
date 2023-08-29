@@ -470,6 +470,7 @@ if ($opt->test_fixtures) {
         required => 'true',
         disable_form => 'false',
     });
+    $child_cat->set_extra_metadata(anonymous_allowed => 1);
     $child_cat->update;
 
     FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2457 });

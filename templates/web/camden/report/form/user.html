@@ -14,8 +14,8 @@
       Camden Staff Sign-in
   </button>
 [% END %]
-[% IF type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
-  <div class="js-show-if-anonymous">
+[% IF type == 'report' %]
+  <div class="js-show-if-anonymous" class="[% 'hidden-nojs hidden-js' IF c.cobrand.allow_anonymous_reports != 'button' %]">
     <small class="or">[% loc('or') %]</small>
     <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">[% loc('Report anonymously') %]</button>
     <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
