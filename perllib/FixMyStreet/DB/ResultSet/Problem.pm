@@ -76,7 +76,10 @@ sub to_body {
 # Front page statistics
 
 sub _cache_timeout {
-    FixMyStreet->config('CACHE_TIMEOUT') // 3600;
+    my $timeout = FixMyStreet->config('CACHE_TIMEOUT') // 3600;
+    # Spread it out a bit
+    $timeout = $timeout * (0.75 + rand()/2);
+    return $timeout;
 }
 
 sub recent_completed {
