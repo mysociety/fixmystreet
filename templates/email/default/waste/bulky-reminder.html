@@ -27,6 +27,24 @@ INCLUDE '_email_top.html';
     [% END %]
   </p>
 
+  <p style="[% p_style %]">
+    Items to be collected:
+    <ul>
+      [% FOR item IN item_list %]
+        <li>
+          [% item.value %]
+          [% IF item.message %]
+            <ul>
+              <li>
+                [% item.message %]
+              </li>
+            </ul>
+          [% END %]
+        </li>
+      [% END %]
+    </ul>
+  </p>
+
     [% INCLUDE '_council_reference.html' problem=report %]
 
   <p style="[% p_style %]">
