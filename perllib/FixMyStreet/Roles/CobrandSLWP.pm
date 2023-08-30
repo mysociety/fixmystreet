@@ -1277,4 +1277,7 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+### Stub until https://github.com/mysociety/societyworks/issues/3761 is implemented
+sub bulky_cancellation_report { 0 };
+
 1;
