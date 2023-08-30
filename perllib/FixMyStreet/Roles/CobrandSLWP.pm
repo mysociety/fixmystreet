@@ -218,6 +218,10 @@ sub clear_cached_lookups_property {
 around look_up_property => sub {
     my ($orig, $self, $id) = @_;
     my $data = $orig->($self, $id);
+
+    $data->{pending_bulky_collection}
+        = $self->find_pending_bulky_collection($data);
+
     my $cfg = $self->feature('echo');
     if ($cfg->{nlpg} && $data->{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));

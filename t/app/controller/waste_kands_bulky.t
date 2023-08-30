@@ -1,5 +1,6 @@
 use utf8;
 use Test::MockModule;
+use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use Path::Tiny;
 
@@ -8,6 +9,8 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
+
+my $user = $mech->create_user_ok('bob@example.org');
 
 my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
     {}, { cobrand => 'kingston' } );
@@ -54,10 +57,11 @@ create_contact(
     { code => 'Payment_Details_Payment_Failure_Reason' },
     { code => 'Bulky_Collection_Bulky_Items' },
     { code => 'Bulky_Collection_Notes' },
+    { code => 'Exact_Location' },
     { code => 'GUID' },
     { code => 'reservation' },
-    { code => 'Customer Selected Date Beyond SLA?' },
-    { code => 'First Date Returned to Customer' },
+    { code => 'Customer_Selected_Date_Beyond_SLA?' },
+    { code => 'First_Date_Returned_to_Customer' },
 );
 
 FixMyStreet::override_config {
@@ -245,6 +249,7 @@ FixMyStreet::override_config {
         };
     });
 
+    my $report;
     subtest 'Bulky goods collection booking' => sub {
         $mech->get_ok('/waste/12345/bulky');
 
@@ -258,7 +263,7 @@ FixMyStreet::override_config {
         # TODO Remove this page
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
 
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'bob@example.org' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('01 July');
         $mech->content_contains('08 July');
         $mech->submit_form_ok(
@@ -323,7 +328,7 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Payment successful');
 
-            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->detail, "Address: 2 Example Street, Kingston, KT1 1AA";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
@@ -337,6 +342,59 @@ FixMyStreet::override_config {
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
     };
+
+    # Collection date: 2023-07-01T00:00:00
+    # Time/date that is within the cancellation & refund window:
+    my $good_date = '2023-06-25T05:44:59Z'; # 06:44:59 UK time
+
+    subtest 'Bulky goods collection viewing' => sub {
+        subtest 'View own booking' => sub {
+            $mech->log_in_ok($report->user->email);
+            $mech->get_ok('/report/' . $report->id);
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_contains('2 Example Street, Kingston, KT1 1AA');
+            $mech->content_lacks('Please read carefully all the details');
+            $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bicycle/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
+            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('5 remaining slots available');
+            $mech->content_contains('£40.00');
+            $mech->content_contains('01 July');
+            $mech->content_lacks('Request a bulky waste collection');
+            $mech->content_contains('Your bulky waste collection');
+            $mech->content_contains('Show upcoming bin days');
+
+            # Cancellation messaging & options
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->content_lacks('View cancellation report');
+
+            set_fixed_time($good_date);
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains("06:30 on 01 July 2023");
+
+            # Presence of external_id in report implies we have sent request
+            # to Echo
+            $mech->content_lacks('/waste/12345/bulky_cancel');
+            $mech->content_lacks('Cancel this booking');
+
+            $report->external_id('Echo-123');
+            $report->update;
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_contains('/waste/12345/bulky_cancel');
+            $mech->content_contains('Cancel this booking');
+        };
+
+        subtest "Can follow link to booking from bin days page" => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
+            is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
+        };
+    };
+
 };
 
 done_testing;

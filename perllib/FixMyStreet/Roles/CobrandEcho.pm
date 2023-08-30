@@ -560,6 +560,7 @@ sub waste_munge_bulky_data {
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
     $data->{category} = "Bulky collection";
     $data->{extra_Collection_Date} = $date;
+    $data->{extra_Exact_Location} = $data->{location};
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
     $data->{extra_GUID} = $self->{c}->session->{$guid_key};
     $data->{extra_reservation} = $ref;
@@ -583,6 +584,29 @@ sub waste_munge_bulky_data {
     $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
     $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
+    };
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{bartec_id} => $_->{name} } @items_list;
+
+    my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
+    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $items{$fields[$id-1]};
+        $saved_data->{"item_notes_$id"} = $notes[$id-1];
+        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
+    }
+
+    return $saved_data;
 }
 
 1;
