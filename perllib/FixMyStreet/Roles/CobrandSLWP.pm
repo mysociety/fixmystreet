@@ -207,6 +207,11 @@ sub available_permissions {
 around look_up_property => sub {
     my ($orig, $self, $id) = @_;
     my $data = $orig->($self, $id);
+
+    my @pending = $self->find_pending_bulky_collections($data->{uprn})->all;
+    $self->{c}->stash->{pending_bulky_collections}
+        = @pending ? \@pending : undef;
+
     my $cfg = $self->feature('echo');
     if ($cfg->{nlpg} && $data->{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
@@ -1212,6 +1217,26 @@ sub waste_munge_bulky_data {
     $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
     $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
+    };
+
+    my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
+    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_notes_$id"} = $notes[$id-1];
+        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
+    }
+
+    return $saved_data;
 }
 
 1;
