@@ -155,6 +155,20 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+=head2 should_skip_sending_update
+
+Do not try and send updates to the Jadu backend.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $code = $update->problem->contact->email;
+    return 1 if $code =~ /^Jadu/;
+    return 0;
+}
+
 sub lookup_site_code_config {
     my ($self, $property) = @_;
 
