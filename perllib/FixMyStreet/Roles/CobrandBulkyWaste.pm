@@ -2,6 +2,7 @@ package FixMyStreet::Roles::CobrandBulkyWaste;
 
 use Moo::Role;
 use JSON::MaybeXS;
+use FixMyStreet::Map;
 
 =head1 NAME
 
@@ -328,6 +329,7 @@ sub bulky_nice_cancellation_cutoff_time {
 sub bulky_reminders {
     my ($self, $params) = @_;
 
+    FixMyStreet::Map::set_map_class($self->moniker);
     # Can't see an easy way to find these apart from loop through them all.
     # Is only daily.
     my $collections = FixMyStreet::DB->resultset('Problem')->search({
