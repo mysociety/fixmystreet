@@ -1,5 +1,7 @@
 [% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' ~%]
 [% PROCESS 'other-reported-garden.txt' ~%]
+[% ELSIF report.category == 'Bulky collection' ~%]
+[% PROCESS 'waste/other-reported-bulky.txt' ~%]
 [% ELSE ~%]
 Subject: Your report has been logged, reference LBS-[% report.id %]
 
