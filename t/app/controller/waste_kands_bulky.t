@@ -304,6 +304,36 @@ FixMyStreet::override_config {
         }
 
         subtest 'Summary page' => \&test_summary;
+
+        subtest 'Chosen date expired' => sub {
+            set_fixed_time('2023-06-25T10:10:01');
+
+            $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
+            $mech->content_contains(
+                'Unfortunately, the slot you originally chose has become fully booked. Please select another date.',
+                'Redirects to slot selection page',
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        chosen_date =>
+                            '2023-07-08T00:00:00;reserve1==;2023-06-25T10:20:00'
+                    }
+                },
+                'submit new slot selection',
+            );
+
+            subtest 'submit items & location again' => sub {
+                $mech->submit_form_ok;
+                $mech->submit_form_ok;
+            };
+
+            subtest 'date info has changed on summary page' => sub {
+                $mech->content_contains("<dd>08 July</dd>");
+                $mech->content_contains("06:30 on 08 July 2023");
+            };
+        };
+
         subtest 'Summary submission' => \&test_summary_submission;
         subtest 'Payment page' => sub {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -339,7 +369,7 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
+            is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;

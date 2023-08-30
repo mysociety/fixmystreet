@@ -110,10 +110,9 @@ has_page summary => (
         return 1 if $slot_still_available;
 
         # Clear date cache so user gets updated selection
-        my $uprn = $c->stash->{property}{uprn};
-        for (qw/earlier later/) {
-            delete $c->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};
-        }
+        $c->cobrand->call_hook(
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{uprn} );
+
         $c->stash->{flash_message} = 'choose_another_date';
         $form->saved_data->{no_slots} = 1;
         return 0;
