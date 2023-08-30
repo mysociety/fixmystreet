@@ -325,4 +325,90 @@ sub bulky_nice_cancellation_cutoff_time {
     return $time;
 }
 
+sub bulky_reminders {
+    my ($self, $params) = @_;
+
+    # Can't see an easy way to find these apart from loop through them all.
+    # Is only daily.
+    my $collections = FixMyStreet::DB->resultset('Problem')->search({
+        category => 'Bulky collection',
+        state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
+    });
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+    while (my $report = $collections->next) {
+        my $r1 = $report->get_extra_metadata('reminder_1');
+        my $r3 = $report->get_extra_metadata('reminder_3');
+        next if $r1; # No reminders left to do
+
+        my $date = $self->collection_date($report);
+
+        # Shouldn't happen, but better to be safe.
+        next unless $date;
+
+        my $dt = $self->_bulky_date_to_dt($date);
+
+        # If booking has been cancelled (or somehow the collection date has
+        # already passed) then mark this report as done so we don't see it
+        # again tomorrow.
+        my $cancelled = $self->bulky_cancellation_report($report);
+        if ( $cancelled || $dt < $now) {
+            $report->set_extra_metadata(reminder_1 => 1);
+            $report->set_extra_metadata(reminder_3 => 1);
+            $report->update;
+            next;
+        }
+
+        my $d1 = $dt->clone->subtract(days => 1);
+        my $d3 = $dt->clone->subtract(days => 3);
+
+        my $h = {
+            report => $report,
+            cobrand => $self,
+        };
+        if (!$r3 && $now >= $d3 && $now < $d1) {
+            $h->{days} = 3;
+            $self->_bulky_send_reminder_email($report, $h, $params);
+            $report->set_extra_metadata(reminder_3 => 1);
+            $report->update;
+        } elsif ($now >= $d1 && $now < $dt) {
+            $h->{days} = 1;
+            $self->_bulky_send_reminder_email($report, $h, $params);
+            $report->set_extra_metadata(reminder_1 => 1);
+            $report->update;
+        }
+    }
+}
+
+sub _bulky_send_reminder_email {
+    my ($self, $report, $h, $params) = @_;
+
+    my $token = FixMyStreet::DB->resultset('Token')->new({
+        scope => 'email_sign_in',
+        data  => {
+            # This should be the view your collections page, most likely
+            r => $report->url,
+        }
+    });
+    $h->{url} = "/M/" . $token->token;
+
+    my $result = FixMyStreet::Email::send_cron(
+        FixMyStreet::DB->schema,
+        'waste/bulky-reminder.txt',
+        $h,
+        { To => [ [ $report->user->email, $report->name ] ] },
+        undef,
+        $params->{nomail},
+        $self,
+        $report->lang,
+    );
+    unless ($result) {
+        print "  ...success\n" if $params->{verbose};
+        $token->insert();
+    } else {
+        print " ...failed\n" if $params->{verbose};
+    }
+}
+
 1;

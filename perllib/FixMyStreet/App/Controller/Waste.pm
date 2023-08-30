@@ -1486,6 +1486,8 @@ sub add_report : Private {
         $k =~ s/^(.+)_fileid$/$1/;
         $c->stash->{report}->set_extra_metadata($k => $data->{$_});
     }
+
+    $c->cobrand->call_hook('save_item_names_to_report' => $data);
     $c->stash->{report}->update;
 
     # we don't want to confirm reports that are for things that require a payment because
