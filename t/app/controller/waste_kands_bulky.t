@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use Path::Tiny;
+use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -47,7 +48,7 @@ sub create_contact {
 }
 
 create_contact(
-    { category => 'Bulky collection', email => '1636' },
+    { category => 'Bulky collection', email => '1636@test.com' },
     { code => 'payment' },
     { code => 'payment_method' },
     { code => 'Payment_Type' },
@@ -440,9 +441,9 @@ FixMyStreet::override_config {
         };
     };
 
-    # Collection date: 2023-07-01T00:00:00
+    # Collection date: 2023-07-08T00:00:00
     # Time/date that is within the cancellation window:
-    my $good_date = '2023-06-25T05:44:59Z'; # 06:44:59 UK time
+    my $good_date = '2023-07-02T05:44:59Z'; # 06:44:59 UK time
 
     subtest 'Bulky goods collection viewing' => sub {
         subtest 'View own booking' => sub {
@@ -490,6 +491,70 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         };
+    };
+
+    subtest 'Bulky goods email confirmation and reminders' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report->confirmed('2023-08-30T00:00:00');
+        $report->update;
+        my $id = $report->id;
+        subtest 'Email confirmation of booking' => sub {
+            FixMyStreet::Script::Reports::send();
+            my @emails = $mech->get_email;
+            my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
+            my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
+            like $confirmation_email_txt, qr/Date booking made: 30 August/, 'Includes booking date';
+            like $confirmation_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Items to be collected:/, 'Includes header for items';
+            like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
+            like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
+            like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
+            like $confirmation_email_txt, qr/Total cost: £40.00/, 'Includes price';
+            like $confirmation_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Collection date: 08 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
+            like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
+            like $confirmation_email_txt, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection';
+            like $confirmation_email_html, qr/Date booking made: 30 August/, 'Includes booking date (html mail)';
+            like $confirmation_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
+            like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
+            like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
+            like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr/Total cost: £40.00/, 'Includes price (html mail)';
+            like $confirmation_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Collection date: 08 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
+            like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
+            like $confirmation_email_html, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection (html mail)';
+            $mech->clear_emails_ok;
+        };
+
+        subtest 'Reminder email' => sub {
+            set_fixed_time('2023-07-05T05:44:59Z');
+            my $cobrand = $body->get_cobrand_handler;
+            $cobrand->bulky_reminders;
+            my $email = $mech->get_email;
+            my $confirmation_email_txt = $mech->get_text_body_from_email($email);
+            my $confirmation_email_html = $mech->get_html_body_from_email($email);
+            like $confirmation_email_txt, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting';
+            like $confirmation_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Collection date: 08 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
+            like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
+            like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
+            like $confirmation_email_txt, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
+            like $confirmation_email_html, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting (html mail)';
+            like $confirmation_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Collection date: 08 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
+            like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
+            like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
+            $mech->clear_emails_ok;
+        }
     };
 
     subtest 'Cancellation' => sub {
