@@ -1136,6 +1136,8 @@ sub dashboard_export_problems_add_columns {
 
 sub bulky_collection_window_days { 56 }
 
+sub bulky_cancel_by_update { 1 }
+
 sub _bulky_refund_cutoff_date { }
 
 sub bulky_allowed_property {
