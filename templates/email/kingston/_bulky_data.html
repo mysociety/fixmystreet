@@ -1,0 +1,9 @@
+[%
+
+SET payment = report.get_extra_field_value('Payment_Details_Payment_Amount');
+SET collection_date = cobrand.bulky_nice_collection_date(report);
+SET report_date = cobrand.bulky_nice_collection_date(report.confirmed);
+SET item_list = cobrand.bulky_nice_item_list(report);
+SET email_summary = "Thank you for booking a bulky waste collection with Kingston Borough Council.";
+
+~%]
