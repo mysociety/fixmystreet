@@ -2,7 +2,7 @@ Subject: Bulky waste collection service - reference [% report.id %]
 
 [%
 USE pounds = format('%.2f');
-PROCESS '_bulky_data.html';
+PROCESS 'waste/_bulky_data.html';
 ~%]
 
 Dear [% report.name %],
@@ -12,6 +12,10 @@ Dear [% report.name %],
 [% INCLUDE '_council_reference.txt' problem=report %]
 
 [% report.detail %]
+
+[% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+Date booking made: [% report_date %]
+[% END %]
 
 Collection date: [% collection_date %]
 
@@ -28,7 +32,7 @@ Total cost: £[% pounds(payment / 100) %]
 
 [% END ~%]
 
-[%~ IF staff_cancellation %]
+[%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
 
 If you wish to cancel your booking, please call 01733 74 74 74.
 
@@ -40,9 +44,20 @@ If you wish to cancel your booking, please visit:
 
 [% END ~%]
 
+[% IF cobrand.moniker == 'peterborough' %]
 Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service and obtaining a refund:
 
     https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
+
+[% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+Items must be accessible and clearly visible from the front of your house, placed as close to the pavement as possible (but not on it). Our collections crews will not enter your home or retrieve items from your back garden.
+If you live in a block of flats, you can place your items (on the morning of collection) in your communal bin store area. If the bin store has an access code you should have supplied that during the booking as we won't be able to collect otherwise.
+Items must be out for collection by [% cobrand.bulky_nice_collection_time %] on the collection day.
+[% END %]
+
+[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
+[% END %]
 
 [% signature %]
 
