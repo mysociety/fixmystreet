@@ -370,22 +370,6 @@ sub bulky_available_feature_types {
     return { map { $_->{ID} => $_->{Name} } @types };
 }
 
-sub bulky_nice_item_list {
-    my ($self, $report) = @_;
-
-    my @fields = grep { $_->{value} && $_->{name} =~ /ITEM_/ } @{$report->get_extra_fields};
-
-    my $items_extra = $self->bulky_items_extra;
-
-    return [
-        map {
-            value       => $_->{value},
-            message     => $items_extra->{ $_->{value} }{message},
-        },
-        @fields,
-    ];
-}
-
 sub bulky_reminders {
     my ($self, $params) = @_;
 

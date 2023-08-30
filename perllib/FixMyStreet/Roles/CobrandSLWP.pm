@@ -1232,6 +1232,8 @@ sub waste_munge_bulky_data {
             push @notes, $data->{"item_notes_$_"} || '';
             push @ids, $items{$item};
             push @photos, $data->{"item_photos_$_"} || '';
+            my $two = sprintf("%02d", $_);
+            $data->{"extra_ITEM_$two"} = $data->{"item_$_"};
         };
     }
     $data->{extra_Bulky_Collection_Notes} = join("::", @notes);

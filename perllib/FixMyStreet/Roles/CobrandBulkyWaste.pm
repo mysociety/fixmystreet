@@ -357,4 +357,20 @@ sub bulky_nice_cancellation_cutoff_time {
 
 sub bulky_send_before_payment { 0 }
 
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @fields = grep { $_->{value} && $_->{name} =~ /ITEM_/ } @{$report->get_extra_fields};
+
+    my $items_extra = $self->bulky_items_extra;
+
+    return [
+        map {
+            value       => $_->{value},
+            message     => $items_extra->{ $_->{value} }{message},
+        },
+        @fields,
+    ];
+}
+
 1;
