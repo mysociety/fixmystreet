@@ -103,7 +103,8 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
     $c->forward('form');
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
-        $c->cobrand->call_hook(clear_cached_lookups_bulky_slots => $c->stash->{property}{uprn});
+        $c->cobrand->call_hook(
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
     }
 }
 

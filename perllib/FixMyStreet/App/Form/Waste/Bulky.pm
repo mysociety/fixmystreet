@@ -103,17 +103,18 @@ has_page summary => (
         my $form = shift;
         my $c = $form->c;
 
-        my $slot_still_available
-            = $c->cobrand->call_hook(
-            check_bulky_slot_available => $form->saved_data->{chosen_date} );
+        # Some cobrands may set a new chosen_date on the form
+        my $slot_still_available = $c->cobrand->call_hook(
+            check_bulky_slot_available => $form->saved_data->{chosen_date},
+            form                       => $form,
+        );
 
         return 1 if $slot_still_available;
 
         # Clear date cache so user gets updated selection
-        my $uprn = $c->stash->{property}{uprn};
-        for (qw/earlier later/) {
-            delete $c->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};
-        }
+        $c->cobrand->call_hook(
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
+
         $c->stash->{flash_message} = 'choose_another_date';
         $form->saved_data->{no_slots} = 1;
         return 0;
@@ -121,7 +122,6 @@ has_page summary => (
     finished => sub {
         return $_[0]->wizard_finished('process_bulky_data');
     },
-
 );
 
 has_page done => (

@@ -223,6 +223,7 @@ FixMyStreet::override_config {
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
     $echo->mock('GetTasks', sub { [] });
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'Look up of address not in correct borough' => sub {
         $mech->get_ok('/waste');
@@ -306,6 +307,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     my $sent_params;
     my $call_params;
@@ -1043,6 +1045,8 @@ FixMyStreet::override_config {
     subtest 'renew credit card sub with direct debit' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        mock_CancelReservedSlotsForEvent($echo);
+
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
@@ -1862,6 +1866,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'check no sub when disabled' => sub {
         set_fixed_time('2021-03-09T17:00:00Z');
@@ -1899,6 +1904,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'check no renew when disabled' => sub {
         set_fixed_time('2021-03-05T17:00:00Z');
@@ -1974,6 +1980,13 @@ sub check_extra_data_post_confirm {
     is $report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
     is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+}
+
+sub mock_CancelReservedSlotsForEvent {
+    shift->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
 }
 
 done_testing;

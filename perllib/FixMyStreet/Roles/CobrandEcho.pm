@@ -2,6 +2,8 @@ package FixMyStreet::Roles::CobrandEcho;
 
 use strict;
 use warnings;
+use DateTime;
+use DateTime::Format::Strptime;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use UUID::Tiny ':std';
@@ -506,14 +508,51 @@ sub garden_waste_cost_pa {
     return $cost;
 }
 
+sub clear_cached_lookups_property {
+    my ( $self, $id, $skip_echo ) = @_;
+
+    # Need to call this before clearing GUID
+    $self->clear_cached_lookups_bulky_slots( $id, $skip_echo );
+
+    foreach my $key (
+        $self->council_url . ":echo:look_up_property:$id",
+        $self->council_url . ":echo:bin_services_for_address:$id",
+        $self->council_url . ":echo:bulky_event_guid:$id",
+    ) {
+        delete $self->{c}->session->{$key};
+    }
+}
+
+sub clear_cached_lookups_bulky_slots {
+    my ( $self, $id, $skip_echo ) = @_;
+
+    for (qw/earlier later/) {
+        delete $self->{c}->session->{ $self->council_url
+                . ":echo:available_bulky_slots:$_:$id" };
+    }
+
+    return if $skip_echo;
+
+    # We also need to cancel the reserved slots in Echo
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:$id";
+    my $guid = $self->{c}->session->{$guid_key};
+
+    return unless $guid;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    $echo->CancelReservedSlotsForEvent($guid);
+}
+
 sub find_available_bulky_slots {
-    my ( $self, $property, $last_earlier_date_str ) = @_;
+    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
 
     my $key
         = $self->council_url . ":echo:available_bulky_slots:"
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{id};
-    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+    return $self->{c}->session->{$key}
+        if $self->{c}->session->{$key} && !$no_cache;
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
@@ -538,14 +577,48 @@ sub find_available_bulky_slots {
         };
     }
 
-    $self->{c}->session->{$key} = \@available_slots;
+    $self->{c}->session->{$key} = \@available_slots if !$no_cache;
 
     return \@available_slots;
 }
 
 sub check_bulky_slot_available {
-    my ( $self, $date ) = @_;
-    return 1; # XXX need to check reserved slot expiry
+    my ( $self, $chosen_date_string, %args ) = @_;
+
+    my $form = $args{form};
+
+    # chosen_date_string is of the form
+    # '2023-08-29T00:00:00;AS3aUwCS7NwGCTIzMDMtMTEwMTyNVqC8SCJe+A==;2023-08-25T15:49:38'
+    my ( $collection_date, undef, $slot_expiry_date )
+        = $chosen_date_string =~ /[^;]+/g;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $slot_expiry_dt = $parser->parse_datetime($slot_expiry_date);
+
+    my $now_dt = DateTime->now;
+
+    # Note: Both $slot_expiry_dt and $now_dt are UTC
+    if ( $slot_expiry_dt <= $now_dt ) {
+        # Call ReserveAvailableSlots again, try to get
+        # the same collection date
+        my $available_slots = $self->find_available_bulky_slots(
+            $self->{c}->stash->{property}, undef, 'no_cache' );
+
+        my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
+
+        if ($slot) {
+            $form->saved_data->{chosen_date}
+                = $slot->{date} . ";"
+                . $slot->{reference} . ";"
+                . $slot->{expiry};
+
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 1;
+    }
 }
 
 sub save_item_names_to_report {

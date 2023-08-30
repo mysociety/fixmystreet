@@ -472,6 +472,9 @@ sub ReserveAvailableSlotsForEvent {
             To => dt_to_hash($to),
         ),
     );
+
+    return [] unless ref $res eq 'HASH';
+
     return force_arrayref($res->{ReservedTaskInfo}{ReservedSlots}, 'ReservedSlot');
 }
 

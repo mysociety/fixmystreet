@@ -959,15 +959,6 @@ sub service_name_override {
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
 }
 
-sub clear_cached_lookups_property {
-    my ($self, $id) = @_;
-
-    my $key = "brent:echo:look_up_property:$id";
-    delete $self->{c}->session->{$key};
-    $key = "brent:echo:bin_services_for_address:$id";
-    delete $self->{c}->session->{$key};
-}
-
 sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());

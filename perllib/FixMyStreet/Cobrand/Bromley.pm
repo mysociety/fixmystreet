@@ -399,15 +399,6 @@ sub updates_disallowed {
     return $self->next::method(@_);
 }
 
-sub clear_cached_lookups_property {
-    my ($self, $id) = @_;
-
-    my $key = "bromley:echo:look_up_property:$id";
-    delete $self->{c}->session->{$key};
-    $key = "bromley:echo:bin_services_for_address:$id";
-    delete $self->{c}->session->{$key};
-}
-
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};

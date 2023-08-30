@@ -1508,7 +1508,10 @@ sub add_report : Private {
 
     $c->user->update({ name => $original_name }) if $original_name;
 
-    $c->cobrand->call_hook( clear_cached_lookups_property => $c->stash->{property}{id} );
+    $c->cobrand->call_hook(
+        clear_cached_lookups_property => $c->stash->{property}{id},
+        'skip_echo', # We do not want to remove/cancel anything in Echo just before payment
+    );
 
     return 1;
 }
