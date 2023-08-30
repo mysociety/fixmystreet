@@ -2,6 +2,8 @@ package FixMyStreet::Roles::CobrandEcho;
 
 use strict;
 use warnings;
+use DateTime;
+use DateTime::Format::Strptime;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use UUID::Tiny ':std';
@@ -548,8 +550,21 @@ sub find_available_bulky_slots {
 }
 
 sub check_bulky_slot_available {
-    my ( $self, $date ) = @_;
-    return 1; # XXX need to check reserved slot expiry
+    my ( $self, $expiry_string ) = @_;
+
+    # expiry_string is of the form
+    # '2023-08-29T00:00:00;AS3aUwCS7NwGCTIzMDMtMTEwMTyNVqC8SCJe+A==;2023-08-25T15:49:38'.
+    # We only need the last part.
+    my (undef, undef, $expiry_date) = $expiry_string =~ /[^;]+/g;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $expiry_dt = $parser->parse_datetime($expiry_date);
+
+    my $now_dt = DateTime->now;
+
+    # Note: Both $expiry_dt and $now_dt are UTC
+
+    return $expiry_dt >= $now_dt;
 }
 
 sub save_item_names_to_report {

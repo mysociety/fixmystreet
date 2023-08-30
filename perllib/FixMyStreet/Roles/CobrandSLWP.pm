@@ -207,11 +207,20 @@ sub clear_cached_lookups_property {
     foreach my $key (
         $self->council_url . ":echo:look_up_property:$id",
         $self->council_url . ":echo:bin_services_for_address:$id",
-        $self->council_url . ":echo:available_bulky_slots:earlier:$id",
-        $self->council_url . ":echo:available_bulky_slots:later:$id",
         $self->council_url . ":echo:bulky_event_guid:$id",
     ) {
         delete $self->{c}->session->{$key};
+    }
+
+    $self->clear_cached_lookups_bulky_slots($id);
+}
+
+sub clear_cached_lookups_bulky_slots {
+    my ( $self, $id ) = @_;
+
+    for (qw/earlier later/) {
+        delete $self->{c}->session->{ $self->council_url
+                . ":echo:available_bulky_slots:$_:$id" };
     }
 }
 

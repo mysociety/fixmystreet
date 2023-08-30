@@ -304,6 +304,36 @@ FixMyStreet::override_config {
         }
 
         subtest 'Summary page' => \&test_summary;
+
+        subtest 'Chosen date expired' => sub {
+            set_fixed_time('2023-06-25T10:10:01');
+
+            $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
+            $mech->content_contains(
+                'Unfortunately, the slot you originally chose has become fully booked. Please select another date.',
+                'Redirects to slot selection page',
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        chosen_date =>
+                            '2023-07-08T00:00:00;reserve1==;2023-06-25T10:20:00'
+                    }
+                },
+                'submit new slot selection',
+            );
+
+            subtest 'submit items & location again' => sub {
+                $mech->submit_form_ok;
+                $mech->submit_form_ok;
+            };
+
+            subtest 'date info has changed on summary page' => sub {
+                $mech->content_contains("<dd>08 July</dd>");
+                $mech->content_contains("06:30 on 08 July 2023");
+            };
+        };
+
         subtest 'Summary submission' => \&test_summary_submission;
         subtest 'Payment page' => sub {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -339,21 +369,21 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
+            is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '01/07/2023';
+            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '1';
+            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve1==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
     };
 
-    # Collection date: 2023-07-01T00:00:00
+    # Collection date: 2023-07-08T00:00:00
     # Time/date that is within the cancellation & refund window:
-    my $good_date = '2023-06-25T05:44:59Z'; # 06:44:59 UK time
+    my $good_date = '2023-07-02T05:44:59Z'; # 06:44:59 UK time
 
     subtest 'Bulky goods collection viewing' => sub {
         subtest 'View own booking' => sub {
@@ -370,7 +400,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
             $mech->content_contains('£40.00');
-            $mech->content_contains('01 July');
+            $mech->content_contains('08 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
@@ -382,7 +412,7 @@ FixMyStreet::override_config {
             set_fixed_time($good_date);
             $mech->get_ok('/report/' . $report->id);
             $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("06:30 on 01 July 2023");
+            $mech->content_contains("06:30 on 08 July 2023");
 
             # Presence of external_id in report implies we have sent request
             # to Echo
@@ -421,7 +451,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
             like $confirmation_email_txt, qr/Total cost: £40.00/, 'Includes price';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: 08 July/, 'Includes collection date';
             like $confirmation_email_txt, qr#http://kingston.example.org/waste/12345/bulky_cancel#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
             like $confirmation_email_txt, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection';
@@ -433,7 +463,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr/Total cost: £40.00/, 'Includes price (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: 08 July/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr#http://kingston.example.org/waste/12345/bulky_cancel#, 'Includes cancellation link (html mail)';
             like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
             like $confirmation_email_html, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection (html mail)';
@@ -441,7 +471,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Reminder email' => sub {
-            set_fixed_time('2023-06-28T05:44:59Z');
+            set_fixed_time('2023-07-05T05:44:59Z');
             my $cobrand = $body->get_cobrand_handler;
             $cobrand->bulky_reminders;
             my $email = $mech->get_email;
@@ -450,7 +480,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting';
             like $confirmation_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: 08 July/, 'Includes collection date';
             like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
             like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
@@ -459,7 +489,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting (html mail)';
             like $confirmation_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: 08 July/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
             like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
