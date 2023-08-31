@@ -475,4 +475,6 @@ sub _bulky_send_reminder_email {
     }
 }
 
+sub bulky_send_before_payment { 0 }
+
 1;

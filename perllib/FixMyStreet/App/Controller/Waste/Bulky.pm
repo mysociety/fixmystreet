@@ -222,7 +222,8 @@ sub process_bulky_data : Private {
             amend_extra_data($c, $c->stash->{report}, $data);
             $c->stash->{report}->update;
         } else {
-            $c->forward('/waste/add_report', [ $data, 1 ]) or return;
+            my $no_confirm = !$c->cobrand->bulky_send_before_payment;
+            $c->forward('/waste/add_report', [ $data, $no_confirm ]) or return;
         }
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->stash->{message} = 'Payment skipped on staging';

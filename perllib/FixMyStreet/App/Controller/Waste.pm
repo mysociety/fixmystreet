@@ -266,8 +266,10 @@ sub confirm_subscription : Private {
 
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
 
+    my $already_confirmed;
     if ($p->category eq 'Bulky collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
+        $already_confirmed = $c->cobrand->bulky_send_before_payment;
     } else {
         $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
     }
@@ -277,7 +279,7 @@ sub confirm_subscription : Private {
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
 
-    return unless $p->state eq 'unconfirmed';
+    return unless $p->state eq 'unconfirmed' || $already_confirmed;
 
     $p->update_extra_field( {
             name => 'LastPayMethod',
