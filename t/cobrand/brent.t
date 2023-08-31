@@ -1033,9 +1033,10 @@ FixMyStreet::override_config {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
-    FixMyStreet::override_config {
+  FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'brent',
-}, sub {
+    MAPIT_URL => 'http://mapit.uk/',
+  }, sub {
     my ($flexible_problem) = $mech->create_problems_for_body(1, $brent->id, 'Flexible problem', {
         areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
     $mech->log_in_ok( $staff_user->email );
@@ -1065,7 +1066,8 @@ subtest 'Dashboard CSV extra columns' => sub {
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
     ok $mech->content_like(qr/Flexible problem.*?,121,Y,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
-}};
+  }
+};
 
 sub get_report_from_redirect {
     my $url = shift;
