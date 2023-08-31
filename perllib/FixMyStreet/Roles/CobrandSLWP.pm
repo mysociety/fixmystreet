@@ -1151,6 +1151,8 @@ sub dashboard_export_problems_add_columns {
 
 sub bulky_collection_window_days { 56 }
 
+sub bulky_send_before_payment { 1 }
+
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
 

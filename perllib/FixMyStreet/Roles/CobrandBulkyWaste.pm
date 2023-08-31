@@ -355,4 +355,6 @@ sub bulky_nice_cancellation_cutoff_time {
     return $time;
 }
 
+sub bulky_send_before_payment { 0 }
+
 1;
