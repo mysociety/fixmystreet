@@ -51,7 +51,7 @@ sub get_or_calculate {
         return $callback->();
     }
 
-    while (!instance->add($key . "_lock", 10)) {
+    while (!instance->add($key . "_lock", 1, 10)) {
         usleep 100_000;
     }
     my $result = instance->get($key);
