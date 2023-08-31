@@ -385,7 +385,7 @@ FixMyStreet::override_config {
             is $new_report->category, 'Bulky collection', 'correct category on report';
             is $new_report->title, 'Bulky goods collection', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-            is $new_report->state, 'unconfirmed', 'report not confirmed'; # XXX TODO Needs to be confirmed/sent before payment
+            is $new_report->state, 'confirmed', 'report confirmed';
 
             is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
 
