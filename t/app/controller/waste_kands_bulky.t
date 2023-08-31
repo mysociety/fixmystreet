@@ -417,6 +417,8 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;
+            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
+            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
