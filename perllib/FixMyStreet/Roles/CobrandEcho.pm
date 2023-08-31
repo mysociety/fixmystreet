@@ -549,43 +549,6 @@ sub check_bulky_slot_available {
     return 1; # XXX need to check reserved slot expiry
 }
 
-sub waste_munge_bulky_data {
-    my ($self, $data) = @_;
-
-    my $c = $self->{c};
-
-    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
-
-    $data->{title} = "Bulky goods collection";
-    $data->{detail} = "Address: " . $c->stash->{property}->{address};
-    $data->{category} = "Bulky collection";
-    $data->{extra_Collection_Date} = $date;
-    $data->{extra_Exact_Location} = $data->{location};
-    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
-    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
-    $data->{extra_reservation} = $ref;
-
-    my @items_list = @{ $self->bulky_items_master_list };
-    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
-
-    my @notes;
-    my @ids;
-    my @photos;
-
-    my $max = $self->bulky_items_maximum;
-    for (1..$max) {
-        if (my $item = $data->{"item_$_"}) {
-            push @notes, $data->{"item_notes_$_"} || '';
-            push @ids, $items{$item};
-            push @photos, $data->{"item_photos_$_"} || '';
-        };
-    }
-    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
-    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
-    $data->{extra_Image} = join("::", @photos);
-    $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
-}
-
 sub waste_reconstruct_bulky_data {
     my ($self, $p) = @_;
 
