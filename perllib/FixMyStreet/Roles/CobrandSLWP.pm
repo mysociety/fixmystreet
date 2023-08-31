@@ -1164,6 +1164,11 @@ sub waste_munge_bulky_data {
     $data->{extra_Collection_Date} = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
+    my $first_date = $self->{c}->session->{first_date_returned};
+    my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
+    $data->{'extra_First_Date_Returned_to_Customer'} = $first_date->strftime("%d/%m/%Y");
+    $data->{'extra_Customer_Selected_Date_Beyond_SLA?'} = $dt > $first_date ? 1 : 0;
+
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
 

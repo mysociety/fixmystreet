@@ -719,12 +719,15 @@ sub find_available_bulky_slots {
     my $window = $self->_bulky_collection_window($last_earlier_date_str);
     my @available_slots;
     my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
+    $self->{c}->session->{first_date_returned} = undef;
     foreach (@$slots) {
+        my $date = construct_bin_date($_->{StartDate});
         push @available_slots, {
-            date => construct_bin_date($_->{StartDate}),
+            date => $date,
             reference => $_->{Reference},
             expiry => construct_bin_date($_->{Expiry}),
         };
+        $self->{c}->session->{first_date_returned} //= $date;
     }
 
     $self->{c}->session->{$key} = \@available_slots if !$no_cache;
