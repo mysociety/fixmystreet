@@ -301,10 +301,8 @@ sub _check_within_bulky_cancel_window {
 }
 
 sub bulky_can_refund {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    return $self->within_bulky_refund_window;
+    my ($self, $p) = @_;
+    return $self->within_bulky_refund_window($p);
 }
 
 sub within_bulky_refund_window {

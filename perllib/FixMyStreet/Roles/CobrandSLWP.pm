@@ -1137,12 +1137,19 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 Bulky waste collection
 
+SLWP looks 8 weeks ahead for collection dates, sends the event to the backend
+before collecting payment, and does not refund on cancellations. It has a
+hard-coded list of property types allowed to book collections.
+
+=cut
 
 sub bulky_collection_window_days { 56 }
 
 sub bulky_cancel_by_update { 1 }
 
+sub bulky_can_refund { 0 }
 sub _bulky_refund_cutoff_date { }
 
 sub bulky_allowed_property {
