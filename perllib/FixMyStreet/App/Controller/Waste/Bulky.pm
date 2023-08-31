@@ -196,7 +196,7 @@ sub cancel : Chained('setup') : Args(1) {
     $c->stash->{cancelling_booking} = $collection;
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
-    $c->stash->{entitled_to_refund} = $c->cobrand->call_hook('bulky_can_refund');
+    $c->stash->{entitled_to_refund} = $c->cobrand->call_hook(bulky_can_refund => $collection);
     $c->forward('form');
 }
 
@@ -337,7 +337,7 @@ sub process_bulky_cancellation : Private {
     # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
     $c->cobrand->call_hook('unset_free_bulky_used');
 
-    if ( $c->cobrand->call_hook('bulky_can_refund') ) {
+    if ( $c->cobrand->call_hook(bulky_can_refund => $collection_report) ) {
         $c->send_email(
             'waste/bulky-refund-request.txt',
             {   to => [

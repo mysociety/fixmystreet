@@ -88,7 +88,7 @@
               <span class="govuk-warning-text__assistive">Warning</span>
               <p class="govuk-!-margin-bottom-3">You can cancel this booking till
                 [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
-              [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
+              [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
               <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
               [% END %]
           </div>
