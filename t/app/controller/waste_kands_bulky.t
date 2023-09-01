@@ -374,8 +374,11 @@ FixMyStreet::override_config {
             is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
             $new_report->discard_changes;
-            is $new_report->state, 'confirmed', 'report confirmed'; # XXX TODO Needs to send update to confirm payment made
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+            my $update = $new_report->comments->first;
+            is $update->state, 'confirmed';
+            is $update->text, 'Payment confirmed';
         };
 
         subtest 'Confirmation page' => sub {
