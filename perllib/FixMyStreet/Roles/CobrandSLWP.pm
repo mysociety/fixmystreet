@@ -1194,5 +1194,6 @@ sub _bulky_date_to_dt {
     return $dt ? $dt->truncate( to => 'day' ) : undef;
 }
 
+sub bulky_hide_later_dates { 1 };
 
 1;
