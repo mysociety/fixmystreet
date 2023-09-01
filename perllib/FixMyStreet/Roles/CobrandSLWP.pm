@@ -1188,7 +1188,7 @@ sub waste_munge_bulky_data {
     $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
     $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
-    $data->{extra_Payment_Details_Payment_Amount} = $self->bulky_total_cost($data);
+    $self->bulky_total_cost($data);
 }
 
 sub waste_reconstruct_bulky_data {

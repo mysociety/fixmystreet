@@ -299,7 +299,7 @@ FixMyStreet::override_config {
 
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
-            is $update->text, 'Payment confirmed, reference 54321';
+            is $update->text, 'Payment confirmed, reference 54321, amount £30.00';
         };
 
         subtest 'Confirmation page' => sub {
