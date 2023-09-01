@@ -1,6 +1,17 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
 
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, width=device-width, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+[% IF page_refresh %]
+    <noscript>
+        <meta http-equiv="refresh" content="[% page_refresh %];url=?page_loading=1">
+    </noscript>
+[% END %]
+
+[% INCLUDE 'header/title.html' %]
+[% INCLUDE 'header/css.html' %]
+
 [% IF c.req.uri.path.match('^/waste') %]
     <link rel="manifest" href="/.well-known/manifest-waste.webmanifest">
 [% ELSE %]
@@ -44,8 +55,6 @@ if ('serviceWorker' in navigator) {
 
 [% INCLUDE 'header_rss.html' %]
 
-[% INCLUDE 'header/title.html' %]
-
 [% IF bodyclass.match('frontpage') %]
     <link rel="prefetch" href="[% version('/js/validation_rules.js') %]">
   [%~ IF NOT c.user_exists OR NOT (c.user.from_body OR c.user.is_superuser) %]
@@ -68,3 +77,6 @@ if ('serviceWorker' in navigator) {
 [% IF file_exists("web/cobrands/" _ c.cobrand.moniker _ "/favicon.ico") %]
 <link rel="icon" href="/cobrands/[% c.cobrand.moniker %]/favicon.ico">
 [% END %]
+
+[% INCLUDE 'header_opengraph.html' %]
+[% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
