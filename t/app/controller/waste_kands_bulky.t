@@ -52,9 +52,6 @@ create_contact(
     { code => 'payment_method' },
     { code => 'Payment_Type' },
     { code => 'Collection_Date' },
-    { code => 'Payment_Details_Payment_Reference' },
-    { code => 'Payment_Details_Payment_Amount' },
-    { code => 'Payment_Details_Payment_Failure_Reason' },
     { code => 'Bulky_Collection_Bulky_Items' },
     { code => 'Bulky_Collection_Notes' },
     { code => 'Exact_Location' },
@@ -396,8 +393,11 @@ FixMyStreet::override_config {
             is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
             $new_report->discard_changes;
-            is $new_report->state, 'confirmed', 'report confirmed'; # XXX TODO Needs to send update to confirm payment made
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+            my $update = $new_report->comments->first;
+            is $update->state, 'confirmed';
+            is $update->text, 'Payment confirmed, reference 54321, amount £40.00';
         };
 
         subtest 'Confirmation page' => sub {
@@ -416,7 +416,6 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;
             is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
             is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
