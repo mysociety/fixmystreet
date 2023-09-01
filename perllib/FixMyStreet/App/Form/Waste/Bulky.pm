@@ -10,7 +10,17 @@ has_page intro => (
     title => 'Book bulky goods collection',
     intro => 'bulky/intro.html',
     fields => ['continue'],
-    next => 'residency_check',
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->c;
+        $data->{_residency_check} = 1 if $c->cobrand->moniker eq 'peterborough';
+        return {};
+    },
+    next => sub {
+        return 'residency_check' if $_[0]->{_residency_check};
+        'about_you';
+    }
 );
 
 has_page residency_check => (
