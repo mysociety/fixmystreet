@@ -301,6 +301,15 @@ sub confirm_subscription : Private {
     $p->confirm;
     $c->forward( '/report/new/create_related_things', [ $p ] );
     $p->update;
+
+    if ($already_confirmed) {
+        my $payment = $p->get_extra_field_value('payment');
+        $payment = sprintf( '%.2f', $payment / 100 );
+        $p->add_to_comments({
+            text => "Payment confirmed, reference $reference, amount £$payment",
+            user => $p->user,
+        });
+    }
 }
 
 sub cancel_subscription : Private {
