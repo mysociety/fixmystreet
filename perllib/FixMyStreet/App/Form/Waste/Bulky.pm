@@ -320,6 +320,11 @@ after 'process' => sub {
     # XXX Do we want to let the user know there are no available dates
     # much earlier in the journey?
 
+    # Hide 'show_later_dates' for certain cobrands
+    if ( $self->c->cobrand->call_hook('bulky_hide_later_dates') ) {
+        $self->field('show_later_dates')->inactive(1);
+    }
+
     # Hide certain fields if no date options
     if ( $self->current_page->name eq 'choose_date_earlier'
         && !@{ $self->field('chosen_date')->options } )
