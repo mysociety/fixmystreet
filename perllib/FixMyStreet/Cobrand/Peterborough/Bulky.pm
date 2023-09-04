@@ -144,7 +144,7 @@ sub find_available_bulky_slots {
             date        => $workpack->{WorkPackDate},
             }
             if $self->check_bulky_slot_available( $workpack->{WorkPackDate},
-            $bartec );
+            bartec => $bartec );
 
         $last_workpack_date = $workpack->{WorkPackDate};
 
@@ -175,7 +175,9 @@ sub _bulky_date_to_dt {
 
 # Checks if there is a slot available for a given date
 sub check_bulky_slot_available {
-    my ( $self, $date, $bartec ) = @_;
+    my ( $self, $date, %args ) = @_;
+
+    my $bartec = $args{bartec};
 
     unless ($bartec) {
         $bartec = $self->feature('bartec');

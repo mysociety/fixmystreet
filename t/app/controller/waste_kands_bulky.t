@@ -120,6 +120,10 @@ FixMyStreet::override_config {
     $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
+    $echo->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
     $echo->mock(
         'FindPoints',
         sub {
@@ -305,9 +309,18 @@ FixMyStreet::override_config {
 
         subtest 'Summary page' => \&test_summary;
 
-        subtest 'Chosen date expired' => sub {
+        subtest 'Chosen date expired, no matching slot available' => sub {
             set_fixed_time('2023-06-25T10:10:01');
+            $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
+                {
+                    StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                    EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                    Expiry => { DateTime => '2023-06-25T10:20:00Z' },
+                    Reference => 'reserve4==',
+                },
+            ] } );
 
+            # Submit summary form
             $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
             $mech->content_contains(
                 'Unfortunately, the slot you originally chose has become fully booked. Please select another date.',
@@ -317,7 +330,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         chosen_date =>
-                            '2023-07-08T00:00:00;reserve1==;2023-06-25T10:20:00'
+                            '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00'
                     }
                 },
                 'submit new slot selection',
@@ -334,7 +347,20 @@ FixMyStreet::override_config {
             };
         };
 
-        subtest 'Summary submission' => \&test_summary_submission;
+        subtest 'Chosen date expired, but matching slot is available' => sub {
+            set_fixed_time('2023-06-25T10:20:01');
+            $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
+                {
+                    StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                    EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                    Expiry => { DateTime => '2023-06-25T10:30:00Z' },
+                    Reference => 'reserve5==',
+                },
+            ] } );
+
+            subtest 'Summary submission' => \&test_summary_submission;
+        };
+
         subtest 'Payment page' => sub {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -374,9 +400,9 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;
             is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '01/07/2023';
+            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
-            is $report->get_extra_field_value('reservation'), 'reserve1==';
+            is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
     };
@@ -400,7 +426,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
             $mech->content_contains('£40.00');
-            $mech->content_contains('01 July');
+            $mech->content_contains('08 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
@@ -412,7 +438,7 @@ FixMyStreet::override_config {
             set_fixed_time($good_date);
             $mech->get_ok('/report/' . $report->id);
             $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("06:30 on 01 July 2023");
+            $mech->content_contains("06:30 on 08 July 2023");
 
             # Presence of external_id in report implies we have sent request
             # to Echo
