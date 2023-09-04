@@ -552,4 +552,34 @@ sub check_bulky_slot_available {
     return 1; # XXX need to check reserved slot expiry
 }
 
+sub save_item_names_to_report {
+    my ($self, $data) = @_;
+
+    foreach (grep { /^item_\d/ } keys %$data) {
+        my $k = $_;
+        $self->{c}->stash->{report}->set_extra_metadata($k => $data->{$_});
+    }
+}
+
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @items = grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @fields;
+    for my $item (@items) {
+        if (my $value = ${$report->get_extra_metadata}{$item}) {
+            push @fields, {name => $item, value => $value };
+        }
+    }
+    my $items_extra = $self->bulky_items_extra;
+
+    return [
+        map {
+            value       => $_->{value},
+            message     => $items_extra->{ $_->{value} }{message},
+        },
+        @fields,
+    ];
+}
+
 1;

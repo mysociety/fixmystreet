@@ -388,4 +388,20 @@ sub unset_free_bulky_used {
         'FREE BULKY USED' );
 }
 
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @fields = grep { $_->{value} && $_->{name} =~ /ITEM_/ } @{$report->get_extra_fields};
+
+    my $items_extra = $self->bulky_items_extra;
+
+    return [
+        map {
+            value       => $_->{value},
+            message     => $items_extra->{ $_->{value} }{message},
+        },
+        @fields,
+    ];
+}
+
 1;
