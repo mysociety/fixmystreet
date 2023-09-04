@@ -826,7 +826,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'brent' ],
+    ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => {
