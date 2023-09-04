@@ -505,6 +505,9 @@ sub clear_cached_lookups_property {
 sub clear_cached_lookups_bulky_slots {
     my ($self, $uprn) = @_;
 
+    # might be prefixed with postcode
+    $uprn =~ s/^.+\://g;
+
     for (qw/earlier later/) {
         delete $self->{c}
             ->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};

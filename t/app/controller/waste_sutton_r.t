@@ -321,6 +321,10 @@ sub shared_echo_mocks {
     $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     $e->mock('GetEventsForObject', sub { [] });
     $e->mock('GetTasks', sub { [] });
+    $e->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
     return $e;
 }
 

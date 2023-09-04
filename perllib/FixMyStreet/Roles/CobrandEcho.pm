@@ -510,13 +510,14 @@ sub garden_waste_cost_pa {
 }
 
 sub find_available_bulky_slots {
-    my ( $self, $property, $last_earlier_date_str ) = @_;
+    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
 
     my $key
         = $self->council_url . ":echo:available_bulky_slots:"
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{id};
-    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+    return $self->{c}->session->{$key}
+        if $self->{c}->session->{$key} && !$no_cache;
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
@@ -544,27 +545,48 @@ sub find_available_bulky_slots {
         $self->{c}->session->{first_date_returned} //= $date;
     }
 
-    $self->{c}->session->{$key} = \@available_slots;
+    $self->{c}->session->{$key} = \@available_slots if !$no_cache;
 
     return \@available_slots;
 }
 
 sub check_bulky_slot_available {
-    my ( $self, $expiry_string ) = @_;
+    my ( $self, $chosen_date_string, %args ) = @_;
 
-    # expiry_string is of the form
-    # '2023-08-29T00:00:00;AS3aUwCS7NwGCTIzMDMtMTEwMTyNVqC8SCJe+A==;2023-08-25T15:49:38'.
-    # We only need the last part.
-    my (undef, undef, $expiry_date) = $expiry_string =~ /[^;]+/g;
+    my $form = $args{form};
+
+    # chosen_date_string is of the form
+    # '2023-08-29T00:00:00;AS3aUwCS7NwGCTIzMDMtMTEwMTyNVqC8SCJe+A==;2023-08-25T15:49:38'
+    my ( $collection_date, undef, $slot_expiry_date )
+        = $chosen_date_string =~ /[^;]+/g;
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-    my $expiry_dt = $parser->parse_datetime($expiry_date);
+    my $slot_expiry_dt = $parser->parse_datetime($slot_expiry_date);
 
     my $now_dt = DateTime->now;
 
-    # Note: Both $expiry_dt and $now_dt are UTC
+    # Note: Both $slot_expiry_dt and $now_dt are UTC
+    if ( $slot_expiry_dt <= $now_dt ) {
+        # Call ReserveAvailableSlots again, try to get
+        # the same collection date
+        my $available_slots = $self->find_available_bulky_slots(
+            $self->{c}->stash->{property}, undef, 'no_cache' );
 
-    return $expiry_dt >= $now_dt;
+        my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
+
+        if ($slot) {
+            $form->saved_data->{chosen_date}
+                = $slot->{date} . ";"
+                . $slot->{reference} . ";"
+                . $slot->{expiry};
+
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 1;
+    }
 }
 
 sub save_item_names_to_report {

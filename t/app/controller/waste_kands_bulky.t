@@ -120,6 +120,10 @@ FixMyStreet::override_config {
     $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
+    $echo->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
     $echo->mock(
         'FindPoints',
         sub {
@@ -305,9 +309,18 @@ FixMyStreet::override_config {
 
         subtest 'Summary page' => \&test_summary;
 
-        subtest 'Chosen date expired' => sub {
+        subtest 'Chosen date expired, no matching slot available' => sub {
             set_fixed_time('2023-06-25T10:10:01');
+            $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
+                {
+                    StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                    EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                    Expiry => { DateTime => '2023-06-25T10:20:00Z' },
+                    Reference => 'reserve4==',
+                },
+            ] } );
 
+            # Submit summary form
             $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
             $mech->content_contains(
                 'Unfortunately, the slot you originally chose has become fully booked. Please select another date.',
@@ -317,7 +330,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         chosen_date =>
-                            '2023-07-08T00:00:00;reserve1==;2023-06-25T10:20:00'
+                            '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00'
                     }
                 },
                 'submit new slot selection',
@@ -334,7 +347,20 @@ FixMyStreet::override_config {
             };
         };
 
-        subtest 'Summary submission' => \&test_summary_submission;
+        subtest 'Chosen date expired, but matching slot is available' => sub {
+            set_fixed_time('2023-06-25T10:20:01');
+            $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
+                {
+                    StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                    EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                    Expiry => { DateTime => '2023-06-25T10:30:00Z' },
+                    Reference => 'reserve5==',
+                },
+            ] } );
+
+            subtest 'Summary submission' => \&test_summary_submission;
+        };
+
         subtest 'Payment page' => sub {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -373,10 +399,10 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Payment_Details_Payment_Amount'), 4000;
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '1';
+            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
             is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
-            is $report->get_extra_field_value('reservation'), 'reserve1==';
+            is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
     };

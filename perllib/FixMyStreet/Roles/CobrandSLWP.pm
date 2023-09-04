@@ -202,7 +202,10 @@ sub available_permissions {
 }
 
 sub clear_cached_lookups_property {
-    my ($self, $id) = @_;
+    my ( $self, $id, $skip_echo ) = @_;
+
+    # Need to call this before clearing GUID
+    $self->clear_cached_lookups_bulky_slots( $id, $skip_echo );
 
     foreach my $key (
         $self->council_url . ":echo:look_up_property:$id",
@@ -211,17 +214,27 @@ sub clear_cached_lookups_property {
     ) {
         delete $self->{c}->session->{$key};
     }
-
-    $self->clear_cached_lookups_bulky_slots($id);
 }
 
 sub clear_cached_lookups_bulky_slots {
-    my ( $self, $id ) = @_;
+    my ( $self, $id, $skip_echo ) = @_;
 
     for (qw/earlier later/) {
         delete $self->{c}->session->{ $self->council_url
                 . ":echo:available_bulky_slots:$_:$id" };
     }
+
+    return if $skip_echo;
+
+    # We also need to cancel the reserved slots in Echo
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:$id";
+    my $guid = $self->{c}->session->{$guid_key};
+
+    return unless $guid;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    $echo->CancelReservedSlotsForEvent($guid);
 }
 
 around look_up_property => sub {
