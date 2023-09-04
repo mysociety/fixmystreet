@@ -446,7 +446,7 @@ FixMyStreet::override_config {
             my $email = $mech->get_email;
             my $confirmation_email_txt = $mech->get_text_body_from_email($email);
             my $confirmation_email_html = $mech->get_html_body_from_email($email);
-            like $confirmation_email_txt, qr/Thank you for booking a bulky waste collection with Kingston Borough Council/, 'Includes Kingston greeting';
+            like $confirmation_email_txt, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting';
             like $confirmation_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
@@ -455,7 +455,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
             like $confirmation_email_txt, qr#http://kingston.example.org/waste/12345/bulky_cancel#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/You can obtain a refund if you cancel by 6.30am two days prior to your collection/, 'Includes Kingston cancellation info';
-            like $confirmation_email_html, qr/Thank you for booking a bulky waste collection with Kingston Borough Council/, 'Includes Kingston greeting (html mail)';
+            like $confirmation_email_html, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting (html mail)';
             like $confirmation_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
             like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';

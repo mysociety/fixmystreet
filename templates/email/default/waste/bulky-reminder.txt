@@ -2,7 +2,7 @@ Subject: Bulky waste collection reminder - reference [% report.id %]
 
 [%
 USE pounds = format('%.2f');
-PROCESS '_bulky_data.html';
+PROCESS 'waste/_bulky_data.html';
 ~%]
 
 Dear [% report.name %],
