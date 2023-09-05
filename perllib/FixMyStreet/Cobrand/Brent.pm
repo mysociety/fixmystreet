@@ -196,7 +196,7 @@ sub munge_overlapping_asset_bodies {
     my ($self, $bodies) = @_;
 
     # in_area will be true if the point is within the administrative area of Brent
-    my $in_area = scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    my $in_area = $self->{c}->stash->{all_areas} && scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
     # cobrand will be true if the point is within an area of different responsibility from the norm
     my $cobrand = $self->check_report_is_on_cobrand_asset;
 
@@ -248,7 +248,7 @@ sub munge_cobrand_asset_categories {
     );
 
     # in_area will be true if the point is within the administrative area of Brent
-    my $in_area = scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    my $in_area = $self->{c}->stash->{all_areas} && scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
     # cobrand will be true if the point is within an area of different responsibility from the norm
     my $cobrand = $self->check_report_is_on_cobrand_asset || '';
     return unless $cobrand;
