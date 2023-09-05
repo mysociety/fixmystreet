@@ -301,6 +301,21 @@ sub open311_munge_update_params {
     $params->{service_request_id_ext} = $comment->problem->id;
 }
 
+=head2 should_skip_sending_update
+
+Do not try and send updates to the ATAK backend.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $code = $update->problem->contact->email;
+    return 1 if $code =~ /^ATAK/;
+    return 0;
+}
+
+
 =head2 open311_extra_data_include
 
 =over 4
