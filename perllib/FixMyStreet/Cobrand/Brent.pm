@@ -353,13 +353,23 @@ Same as Symology above, but different attribute name.
             }
         }
 
-=item * Adds location name from WFS service for ATAK reports if missing
+=item * Adds information for constructing the description on the open311 side.
 
 =cut
 
-    } elsif ($contact->email =~ /^ATAK/ && !$row->get_extra_field_value('location_name')) {
-        if (my $name = $self->lookup_location_name($row)) {
-            $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
+    } elsif ($contact->email =~ /^ATAK/) {
+
+        push @$open311_only, { name => 'title', value => $row->title };
+        push @$open311_only, { name => 'report_url', value => $h->{url} };
+        push @$open311_only, { name => 'detail', value => $row->detail };
+
+=item * Adds location name from WFS service for ATAK reports if missing
+
+=cut
+        if (!$row->get_extra_field_value('location_name')) {
+            if (my $name = $self->lookup_location_name($row)) {
+                $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
+            }
         }
     }
 
@@ -369,18 +379,20 @@ We use {closest_address}->summary as this is geocoder-agnostic.
 
 =cut
 
-    my $title = $row->title;
-    if ( $h->{closest_address} ) {
-        my $addr = $h->{closest_address}->summary;
+    if ($contact->email =~ /^Echo/ || $contact->email =~ /^Symology/) {
+        my $title = $row->title;
+        if ( $h->{closest_address} ) {
+            my $addr = $h->{closest_address}->summary;
 
-        $addr =~ s/, England//;
-        $addr =~ s/, United Kingdom$//;
+            $addr =~ s/, England//;
+            $addr =~ s/, United Kingdom$//;
 
-        $title .= '; Nearest calculated address = ' . $addr;
+            $title .= '; Nearest calculated address = ' . $addr;
+        }
+
+        push @$open311_only, { name => 'title', value => $title };
+        push @$open311_only, { name => 'description', value => $row->detail };
     }
-
-    push @$open311_only, { name => 'title', value => $title };
-    push @$open311_only, { name => 'description', value => $row->detail };
 
     return $open311_only;
 }
