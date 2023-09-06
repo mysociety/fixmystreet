@@ -19,13 +19,13 @@ $body->set_extra_metadata(
         base_price => 0,
         show_location_page => 'users',
         item_list => [
-            { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)' },
+            { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
             { bartec_id => '3', name => 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' },
             { bartec_id => '4', name => 'Textiles, up to 60 litres (one black sack / 3 carrier bags)' },
-            { bartec_id => '5', name => 'Small WEEE: Toaster' },
-            { bartec_id => '6', name => 'Small WEEE: Kettle' },
-            { bartec_id => '7', name => 'Small WEEE: Games console' },
+            { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
+            { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
+            { bartec_id => '7', name => 'Games console', category => 'Small electrical items' },
         ],
     },
 );
@@ -65,6 +65,7 @@ FixMyStreet::override_config {
         waste_features => {
             brent => {
                 bulky_enabled => 1,
+                bulky_multiple_bookings => 1,
                 bulky_tandc_link => 'tandc_link',
             },
         },
@@ -143,6 +144,7 @@ FixMyStreet::override_config {
             Reference => 'reserve3==',
         },
     ] });
+    $echo->mock('CancelReservedSlotsForEvent', sub { });
 
     $mech->get_ok('/waste');
     $mech->submit_form_ok( { with_fields => { postcode => 'HA0 5HF' } } );
@@ -173,7 +175,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     'item_1' => 'Tied bag of domestic batteries (min 10 - max 100)',
-                    'item_2' => 'Small WEEE: Toaster',
+                    'item_2' => 'Toaster',
                     'item_3' => 'Podback Bag',
                 },
             },
@@ -184,7 +186,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Booking Summary');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Tied bag of domestic batteries/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback Bag/s);
-            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Small WEEE: Toaster/s);
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Toaster/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_lacks('you can add up to');
             $mech->content_contains('No image of the location has been attached.');
@@ -209,7 +211,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
 
-            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Small WEEE: Toaster\n1 x Tied bag of domestic batteries (min 10 - max 100)";
+            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
             is $report->get_extra_field_value('Textiles'), '';
             is $report->get_extra_field_value('Paint'), '';
             is $report->get_extra_field_value('Batteries'), 1;
@@ -222,11 +224,69 @@ FixMyStreet::override_config {
             is $report->photo, undef;
         };
     };
+    my %error_messages = (
+                            'weee' => 'Too many small electrical items: maximum 4',
+                            'categories' => 'Too many categories: maximum of 3 types',
+                            'peritem' => 'Too many of item: '
+    );
+    sub item_fields {
+        my $stem = 'item_';
+        my %item_list;
+        my $num = 1;
+        for my $item (@_) {
+            $item_list{$stem . $num++} = $item;
+        };
+        return \%item_list;
+    };
+
+    for my $test (
+            {
+                items => &item_fields('Tied bag of domestic batteries (min 10 - max 100)', 'Toaster',
+                  'Podback Bag', 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' ),
+                content_contains => [$error_messages{categories}],
+                content_lacks => [$error_messages{weee}, $error_messages{peritem}]
+            },
+            {
+                items => &item_fields('Toaster', 'Kettle', 'Games console',
+                    'Toaster', 'Kettle', 'Podback Bag', 'Up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' ),
+                content_contains => [$error_messages{weee}],
+                content_lacks => [$error_messages{categories}, $error_messages{peritem}]
+            },
+            {
+                items => &item_fields('Tied bag of domestic batteries (min 10 - max 100)', 'Tied bag of domestic batteries (min 10 - max 100)'),
+                content_contains => [$error_messages{peritem}],
+                content_lacks => [$error_messages{categories}, $error_messages{weee}]
+            },
+            {
+                items => &item_fields('Tied bag of domestic batteries (min 10 - max 100)', 'Tied bag of domestic batteries (min 10 - max 100)',
+                'Toaster', 'Kettle', 'Games console', 'Toaster', 'Kettle'),
+                content_contains => [$error_messages{peritem}, $error_messages{weee}],
+                content_lacks => [$error_messages{categories}]
+            }
+        )
+        {
+            subtest 'Validation of items' => sub {
+                $mech->get_ok('/waste/12345/small_items');
+                $mech->submit_form_ok;
+                $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+                $mech->submit_form_ok(
+                    { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+                );
+                $mech->submit_form_ok(
+                    {  with_fields => $test->{items} }
+                );
+                for my $present_text (@{$test->{content_contains}}) {
+                    ok $mech->content_contains($present_text);
+                }
+                for my $missing_text (@{$test->{content_lacks}}) {
+                    ok $mech->content_lacks($missing_text);
+                }
+            }
+    }
 
     # Collection date: 2023-07-01T00:00:00
     # Time/date that is within the cancellation & refund window:
     my $good_date = '2023-06-25T05:44:59Z'; # 06:44:59 UK time
-
     subtest 'Small items collection viewing' => sub {
         subtest 'View own booking' => sub {
             $mech->log_in_ok($report->user->email);

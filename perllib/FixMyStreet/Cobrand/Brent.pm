@@ -1386,7 +1386,7 @@ sub waste_munge_bulky_data {
                 $data->{extra_Paint} = 1;
             } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
                 $data->{extra_Textiles} = 1;
-            } elsif ($item =~ /Small WEEE/) {
+            } else {
                 $data->{extra_Small_WEEE} = 1;
             }
         };

@@ -49,7 +49,7 @@
   item_maximums.push({ key = item.key, max = item.value.max });
 END; END %]
 
-[% IF item_maximums.size %]
+[% IF item_maximums.size && c.cobrand.moniker != 'brent' %]
   <div class="govuk-warning-text due" style="max-width:550px">
     <div class="govuk-warning-text__img">
       <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
@@ -66,6 +66,24 @@ END; END %]
 
     </div>
   </div>
+[% ELSIF c.cobrand.moniker == 'brent' %]
+<div class="govuk-warning-text due" style="max-width:550px">
+  <div class="govuk-warning-text__img">
+    <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+  </div>
+  <div class="govuk-warning-text__content">
+    <span class="govuk-warning-text__assistive">Important information</span>
+    <p class="govuk-!-margin-bottom-1"><strong>Maximum numbers</strong></p>
+    <p>Householders will be able to book up to three categories per collection. This could be, for example; 10 x AA batteries, two x 5L paint, one x black sack of textiles.</p>
+    <p>The following types of item have a maximum number that can be collected in one collection:</p>
+    <ul>
+      <li>Textiles: Up to 3 - each one up to 60L (eg 3 carrier bags or one black bin bag)</li>
+      <li>Small electrical items: Up to 4 small electrical items</li>
+      <li>Batteries: 1 tied bag of domestic batteries (minimum of ten and maximum of 100)</li>
+      <li>Paint: Up to 4 - each item can be up to 5 litres of capacity (for example 1 x 5 litre tin or 5 x 1 litre tin), the maximum total for a booking is 20 litres of capacity</li>
+    </ul>
+  </div>
+</div>
 [% END %]
 
 <form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data">

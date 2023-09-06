@@ -284,6 +284,26 @@ sub validate {
                 $self->add_form_error("Too many of item: $_");
             }
         }
+        if ($self->{c}->cobrand->moniker eq 'brent') {
+            my %category_count;
+            for my $name (keys %given) {
+                for my $list_item (@{ $self->items_master_list }) {
+                    if ($list_item->{'name'} eq $name) {
+                        if ($list_item->{'category'}) {
+                            $category_count{$list_item->{'category'}} += $given{$name};
+                        } else {
+                            $category_count{$list_item->{'name'}} += $given{$name};
+                        }
+                    }
+                }
+            }
+            if (scalar keys %category_count > 3) {
+                $self->add_form_error("Too many categories: maximum of 3 types");
+            }
+            if (scalar $category_count{'Small electrical items'} && scalar $category_count{'Small electrical items'} > 4) {
+                $self->add_form_error("Too many small electrical items: maximum 4");
+            }
+        }
     }
 }
 
