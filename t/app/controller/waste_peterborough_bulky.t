@@ -347,6 +347,7 @@ FixMyStreet::override_config {
             $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
             $mech->content_contains('You can request up to <strong>five items per collection');
             $mech->content_contains('You can amend the items in your booking up until 3pm the day before the collection is scheduled');
+            $mech->content_contains('the day before collection is scheduled are entitled to a refund');
             $mech->submit_form_ok;
         };
 
