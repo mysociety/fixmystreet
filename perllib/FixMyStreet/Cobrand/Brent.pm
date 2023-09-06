@@ -1391,20 +1391,26 @@ sub waste_munge_bulky_data {
     $data->{extra_Collection_Date} = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
-    my @items_list = @{ $self->bulky_items_master_list };
-    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
-
-    my @ids;
-    my @photos;
-
+    my (%types, @photos);
     my $max = $self->bulky_items_maximum;
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
-            push @ids, $items{$item};
+            $types{$item}++;
+            if ($item eq 'Tied bag of domestic batteries (min 10 - max 100)') {
+                $data->{extra_Batteries} = 1;
+            } elsif ($item eq 'Podback Bag') {
+                $data->{extra_Coffee_Pods} = 1;
+            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)') {
+                $data->{extra_Paint} = 1;
+            } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
+                $data->{extra_Textiles} = 1;
+            } elsif ($item =~ /Small WEEE/) {
+                $data->{extra_Small_WEEE} = 1;
+            }
             push @photos, $data->{"item_photos_$_"} || '';
         };
     }
-    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
+    $data->{extra_Notes} = join("\n", map { "$types{$_} x $_" } sort keys %types);
     $data->{extra_Image} = join("::", @photos);
 }
 
