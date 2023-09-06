@@ -494,7 +494,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
 
-
+        is $form->value('ORDERID'), 'LBS-' . $new_report->id . '-' . '1000000002';
         is $form->value("AMOUNT"), 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report);
 
