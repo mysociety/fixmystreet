@@ -204,7 +204,7 @@ sub find_pending_bulky_collections {
     my ( $self, $uprn ) = @_;
 
     return $self->problems->search({
-        category => 'Bulky collection',
+        category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
         state => [ FixMyStreet::DB::Result::Problem->open_states ],
     }, {
