@@ -4,6 +4,7 @@
 
 <dl class="govuk-summary-list govuk-!-margin-bottom-0">
 
+  [% IF c.cobrand.moniker != 'brent' %]
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Cost</dt>
     <dd class="govuk-summary-list__value">
@@ -24,6 +25,7 @@
       [% END %]
     </dd>
   </div>
+  [% END %]
 
   [% FOR booking IN pending_bulky_collections %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
@@ -100,7 +102,11 @@
     <!-- END #07 -->
   [% END %]
   [% IF waste_features.bulky_multiple_bookings OR NOT pending_bulky_collections %]
+    [% IF c.cobrand.moniker != 'brent' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
+    [% ELSE %]
+    <form method="post" action="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">
+    [% END %]
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Book a collection" value="Book a collection">
     </form>
