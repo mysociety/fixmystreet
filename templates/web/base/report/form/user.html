@@ -30,7 +30,9 @@
         [% loc('Log in with Twitter') %]
     </button>
   [% END %]
-    <button type="button" class="btn btn--block hidden-nojs js-reporting-page--next[% IF type != 'report' %] js-new-report-user-show[% END %]">[% loc('Log in with email') %]</button>
+    <button type="button" class="btn btn--block hidden-nojs js-reporting-page--next[% IF type != 'report' %] js-new-report-user-show[% END %]">[%
+        c.cobrand.sms_authentication ? loc('Log in with email/text') : loc('Log in with email')
+    %]</button>
   [% IF c.cobrand.moniker == 'brent' %]
     <small>Receive updates and view your reports</small>
   [% END %]

@@ -1,7 +1,4 @@
 [% FILTER collapse %]
-var fixmystreet = fixmystreet || {};
-fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
-
     translation_strings = {
         update: '[% loc('Please enter a message', "JS") %]',
         error: '[% loc('Error', "JS") %]',
@@ -31,7 +28,7 @@ fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
             required: '[% loc('Please enter a password', "JS") %]'
         },
         password_register: {
-            short: '[% tprintf(loc('Please make sure your password is at least %d characters long', "JS"), c.cobrand.password_minimum_length) %]',
+            short: '[% loc('Please make sure your password is at least %d characters long', "JS") %]',
         },
         phone: {
             required: '[% loc('Please enter your phone number', "JS") %]',
@@ -79,12 +76,6 @@ fixmystreet.password_minimum_length = [% c.cobrand.password_minimum_length %];
         upload_cancel_confirmation: '[% loc('Are you sure you want to cancel this upload?', "JS") %]',
         upload_invalid_file_type: '[% loc('Please upload an image only', "JS") %]',
         upload_aria_label: '[% loc('You can add an optional photo', "JS") %]',
-
-        [% IF c.cobrand.sms_authentication ~%]
-        login_with_email: '[% loc('Log in with email/text', "JS") %]',
-        [% ELSE ~%]
-        login_with_email: '[% loc('Log in with email', "JS") %]',
-        [% END ~%]
 
         redaction_link: '[% loc('Redact', "JS") %]',
         redaction_help: '[% loc('Draw rectangles on the picture then click Done.', "JS") %]',
