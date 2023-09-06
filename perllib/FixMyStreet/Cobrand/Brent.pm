@@ -11,6 +11,11 @@ Brent is a London borough using FMS and WasteWorks
 package FixMyStreet::Cobrand::Brent;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use Moo;
+
+# We use the functionality of bulky waste, though it's called small items
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
+
 use strict;
 use warnings;
 use Moo;
@@ -700,7 +705,7 @@ sub bin_services_for_address {
     $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
 
     my $result = $self->{api_serviceunits};
-    return [] unless @$result;
+    #return [] unless @$result;
 
     my $events = $self->_parse_events($self->{api_events});
     $self->{c}->stash->{open_service_requests} = $events->{enquiry};
@@ -749,6 +754,8 @@ sub bin_services_for_address {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+
+    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
 
     my @out;
     my %task_ref_to_row;
@@ -958,6 +965,17 @@ sub service_name_override {
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
 }
+
+around look_up_property => sub {
+    my ($orig, $self, $id) = @_;
+    my $data = $orig->($self, $id);
+
+    my @pending = $self->find_pending_bulky_collections($data->{uprn})->all;
+    $self->{c}->stash->{pending_bulky_collections}
+        = @pending ? \@pending : undef;
+
+    return $data;
+};
 
 sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
@@ -1318,6 +1336,102 @@ sub waste_get_pro_rata_cost {
     my $self = shift;
 
     return $self->feature('payment_gateway')->{ggw_cost};
+}
+
+
+sub bulky_collection_time { { hours => 6, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0 } }
+sub bulky_cancel_by_update { 1 }
+sub bulky_collection_window_days { 28 }
+sub bulky_can_refund { 0 }
+sub bulky_free_collection_available { 0 }
+sub bulky_hide_later_dates { 1 }
+
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+    return $self->bulky_enabled;
+}
+
+sub collection_date {
+    my ($self, $p) = @_;
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+}
+
+sub _bulky_cancellation_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
+    my $dt = $collection_date->clone->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    );
+    return $dt;
+}
+
+sub _bulky_refund_cutoff_date { }
+
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_reservation} = $ref;
+
+    $data->{title} = "Small items collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Small items collection";
+    $data->{extra_Collection_Date} = $date;
+    $data->{extra_Exact_Location} = $data->{location};
+
+    my (%types, @photos);
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            $types{$item}++;
+            if ($item eq 'Tied bag of domestic batteries (min 10 - max 100)') {
+                $data->{extra_Batteries} = 1;
+            } elsif ($item eq 'Podback Bag') {
+                $data->{extra_Coffee_Pods} = 1;
+            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)') {
+                $data->{extra_Paint} = 1;
+            } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
+                $data->{extra_Textiles} = 1;
+            } elsif ($item =~ /Small WEEE/) {
+                $data->{extra_Small_WEEE} = 1;
+            }
+            push @photos, $data->{"item_photos_$_"} || '';
+        };
+    }
+    $data->{extra_Notes} = join("\n", map { "$types{$_} x $_" } sort keys %types);
+    $data->{extra_Image} = join("::", @photos);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
+    };
+
+    my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
+    }
+
+    return $saved_data;
 }
 
 1;
