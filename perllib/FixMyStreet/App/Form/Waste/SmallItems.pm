@@ -1,4 +1,4 @@
-package FixMyStreet::App::Form::Waste::Bulky;
+package FixMyStreet::App::Form::Waste::SmallItems;
 
 use utf8;
 use DateTime::Format::Strptime;
@@ -7,32 +7,10 @@ use JSON::MaybeXS;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
-    title => 'Book bulky goods collection',
+    title => 'Book small items collection',
     intro => 'bulky/intro.html',
     fields => ['continue'],
-    update_field_list => sub {
-        my $form = shift;
-        my $data = $form->saved_data;
-        my $c = $form->c;
-        $data->{_residency_check} = 1 if $c->cobrand->moniker eq 'peterborough';
-        return {};
-    },
-    next => sub {
-        return 'residency_check' if $_[0]->{_residency_check};
-        'about_you';
-    }
-);
-
-has_page residency_check => (
-    title => 'Book bulky goods collection',
-    fields => ['resident', 'continue'],
-    next => sub { $_[0]->{resident} eq 'Yes' ? 'about_you' : 'cannot_book' },
-);
-
-has_page cannot_book => (
-    fields => [],
-    intro => 'bulky/cannot_book.html',
-    title => 'Book bulky goods collection',
+    next => 'about_you',
 );
 
 has_page about_you => (
@@ -92,7 +70,7 @@ has_page summary => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
-        my $label = FixMyStreet::Template::SafeString->new('I have read the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">bulky waste collection</a> page on the council’s website');
+        my $label = FixMyStreet::Template::SafeString->new('I have read the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">small items collection</a> page on the council’s website');
         return {
             tandc => { option_label => $label }
         };
@@ -140,21 +118,8 @@ has_field continue => (
 
 has_field submit => (
     type => 'Submit',
-    value => 'Continue to payment',
-    tags => { hint => "You will be redirected to the council’s card payments provider." },
+    value => 'Submit booking',
     element_attr => { class => 'govuk-button' },
-    order => 999,
-);
-
-has_field resident => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    required => 1,
-    label => 'Do you live at the property or are you booking on behalf of the householder?',
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
 );
 
 has_field chosen_date => (
