@@ -866,22 +866,37 @@ sub garden_waste_new_bin_admin_fee {
     return $cost;
 }
 
+=head2 waste_cc_payment_line_item_ref
+
+This is only used by Kingston (which uses the SCP role) to provide the
+reference for the credit card payment. It differs for bulky waste.
+
+=cut
+
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return $self->_waste_cc_line_item_ref($p, "GW Sub");
+    if ($p->category eq 'Bulky collection') {
+        return $self->_waste_cc_line_item_ref($p, "BULKY", "");
+    } else {
+        return $self->_waste_cc_line_item_ref($p, "GGW", "GW Sub");
+    }
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
     my ($self, $p) = @_;
-    return $self->_waste_cc_line_item_ref($p, "GW admin charge");
+    return $self->_waste_cc_line_item_ref($p, "GGW", "GW admin charge");
 }
 
 sub _waste_cc_line_item_ref {
-    my ($self, $p, $str) = @_;
-    my $id = $self->waste_payment_ref_council_code . '-GGW-' . $p->id;
-    my $len = 50 - length($id) - length($str) - 2;
+    my ($self, $p, $type, $str) = @_;
+    my $id = $self->waste_payment_ref_council_code . "-$type-" . $p->id;
+    my $len = 50 - length($id) - 1;
+    if ($str) {
+        $str = "-$str";
+        $len -= length($str);
+    }
     my $name = substr($p->name, 0, $len);
-    return "$id-$name-$str";
+    return "$id-$name$str";
 }
 
 sub waste_cc_payment_sale_ref {
