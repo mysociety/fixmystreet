@@ -735,6 +735,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         echo => { brent => { sample_data => 1 } },
+        waste_features => { brent => { bulky_enabled => 1 } },
         waste => { brent => 1 },
         anonymous_account => { brent => 'anonymous' },
         waste_calendar_links => { brent => {
@@ -863,6 +864,11 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/12345');
         restore_time();
+    };
+
+    subtest 'bulky waste allowed for property with domestic collection' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Book bulky goods collection');
     };
 
     subtest 'shows time band' => sub {

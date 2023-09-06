@@ -127,7 +127,12 @@ FixMyStreet::override_config {
     #$mech->content_contains('small items');
     #$mech->submit_form_ok; # 'Book Collection'
     $mech->get_ok('/waste/12345/small_items');
-
+    is $mech->content_contains('Your bin days'), 1, 'Bulky waste not available with no domestic refuse';
+    $echo->mock( 'GetServiceUnitsForObject', sub { &domestic_bin_service_expired } );
+    $mech->get_ok('/waste/12345/small_items');
+    is $mech->content_contains('Your bin days'), 1, 'Bulky waste not available on expired domestic refuse';
+    $echo->mock( 'GetServiceUnitsForObject', sub { &domestic_bin_service } );
+    $mech->get_ok('/waste/12345/small_items');
     $mech->content_contains( 'Before you start your booking',
         'Should be able to access the booking form' );
 
@@ -311,6 +316,67 @@ FixMyStreet::override_config {
         #    is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         #};
     };
+
+sub domestic_bin_service {
+return [
+        {
+            Id => 1002,
+            ServiceId => 262,
+            ServiceName => 'Domestic Refuse Collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 402,
+                ServiceTaskSchedules => { ServiceTaskSchedule => {
+                    ScheduleDescription => 'every other Wednesday',
+                    Allocation => {
+                        RoundName => 'Friday ',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
+                    StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 234, 567 ] } },
+                    },
+                } },
+            } },
+        }, ]
+}
+
+sub domestic_bin_service_expired {
+return [
+        {
+            Id => 1002,
+            ServiceId => 262,
+            ServiceName => 'Domestic Refuse Collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 402,
+                ServiceTaskSchedules => { ServiceTaskSchedule => {
+                    ScheduleDescription => 'every other Wednesday',
+                    Allocation => {
+                        RoundName => 'Friday ',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
+                    StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                    EndDate => { DateTime => '2020-01-02T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 234, 567 ] } },
+                    },
+                } },
+            } },
+        }, ]
+}
+
 
 };
 
