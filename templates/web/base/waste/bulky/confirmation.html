@@ -5,6 +5,14 @@ ELSIF report.category == 'Small items collection';
     title = 'Small items collection booking confirmed';
 ELSE;
     title = 'Enquiry has been submitted';
+END;
+
+IF cobrand.moniker == 'sutton';
+    report_id = 'LBS-' _ report.id;
+ELSIF cobrand.moniker == 'kingston';
+    report_id = 'RBK-' _ report.id;
+ELSE;
+    report_id = report.id;
 END ~%]
 
 [% PROCESS 'waste/header.html' %]
@@ -14,24 +22,26 @@ END ~%]
       [% title %]
   </h1>
   <div class="govuk-panel__body">
+    [% IF c.cobrand.moniker == 'brent' %]
+      <p>Subject to the terms and conditions, our contractor will collect the items you have booked on [% cobrand.bulky_nice_collection_date(report) %].
+      <p>Please ensure your items are out for collection by [% cobrand.bulky_nice_collection_time %], clearly labelled in the exact location specified.
+      [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+        <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
+      [% END %]
+      <p>If you need to contact us about your booking please use the reference number:&nbsp;[% report_id %]</p>
+    [% ELSE %]
       <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
       <p>Item collection starts from [% cobrand.bulky_nice_collection_time %]. Please have your items ready and dismantled if required.</p>
       [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
       <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
       [% END %]
-      <p>If you need to contact us about your application please use the application reference:&nbsp;
-        [%~ IF cobrand.moniker == 'sutton' ~%]
-          LBS-
-        [%~ ELSIF cobrand.moniker == 'kingston' ~%]
-          RBK-
-        [%~ END ~%]
-        [%~ report.id %]
-      </p>
+      <p>If you need to contact us about your application please use the application reference:&nbsp;[% report_id %]</p>
       [% IF reference %]
         <p>
             Card payment reference: [% reference %]
         </p>
       [% END %]
+    [% END %]
   </div>
 </div>
 

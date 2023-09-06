@@ -18,6 +18,10 @@
     <span class="govuk-warning-text__assistive">Information</span>
     <p class="govuk-!-margin-bottom-1"><strong>Note</strong></p>
     <p>If an item is not available for selection on this page, it is not eligible for collection.</p>
+  [% IF c.cobrand.moniker == 'brent' %]
+    <p>To see your options for coffee pod recycling please visit
+        <a href="https://www.podback.org/recycle-checker">https://www.podback.org/recycle-checker</a>
+  [% END %]
   </div>
 </div>
 
@@ -71,9 +75,11 @@ END; END %]
     [% item = 'item_' _ num %]
     [% PROCESS form override_fields = [ item ] %]
     [% PROCESS extra_text num = num %]
+  [% IF c.cobrand.moniker != 'brent' %]
     [% photo = 'item_photo_' _ num %]
     [% photo_fileid = photo _ '_fileid' %]
     [% PROCESS form override_fields = [ photo, photo_fileid ] %]
+  [% END %]
 
     [% IF num > 1 %]
     <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
@@ -84,9 +90,11 @@ END; END %]
   [% END %]
   <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+ Add item</button>
 
+    [% IF c.cobrand.moniker != 'brent' %]
     <p>
         Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy %]" id="js-bulky-total">[% pounds(total) %]</span>
     </p>
+    [% END %]
 
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>

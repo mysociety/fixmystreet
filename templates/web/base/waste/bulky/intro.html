@@ -1,10 +1,25 @@
+[% service_name = "bulky goods" %]
+
+[% IF c.cobrand.moniker == 'brent' %]
+    [% service_name = "small items" %]
+[% END %]
+
 <h3>Before you start your booking</h3>
 <ol>
-    <li>Requesting a bulky waste collection usually takes approximately <strong>10 minutes</strong></li>
+    <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong></li>
+  [% IF c.cobrand.moniker != 'brent' %]
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
-    <li>Please ensure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">bulky waste collection</a></strong> page on the council’s website</li>
+  [% END %]
+    <li>Please make sure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">[% service_name %] collection</a></strong> page on the council’s website</li>
+  [% IF c.cobrand.moniker == 'brent' %]
+    <li>You can arrange to have any of the following small items collected from outside your home for free: textiles, small electricals, household batteries, and paint tins.
+    <li>Householders will be able to book up to <strong>three</strong> categories per collection. For example, a collection could include 10 AA batteries, two x 5 litre paint tins, one black sack of textiles.
+    <li>To see your options for coffee pod recycling please visit
+        <a href="https://www.podback.org/recycle-checker" target="_blank">https://www.podback.org/recycle-checker</a>
+  [% ELSE %]
     <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
-    <li>Before confirming your booking, check all the info provided is correct</li>
+  [% END %]
+    <li>Before confirming your booking, you need to check all the information provided is correct</li>
     [% IF cobrand.moniker == 'peterborough' -%]
     <li>You can amend the items in your booking up until [% c.cobrand.bulky_nice_cancellation_cutoff_time %] the day before the collection is scheduled by calling 01733 747474 (9am to 5pm Monday to Friday excluding bank holidays)</li>
     [% END %]

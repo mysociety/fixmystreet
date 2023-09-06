@@ -1,4 +1,11 @@
 [% USE date(format = c.cobrand.bin_day_format) %]
+[%
+IF c.cobrand.moniker == 'brent';
+    SET index_url = c.uri_for_action('waste/bulky/index_small', [ property.id ]);
+ELSE;
+    SET index_url = c.uri_for_action('waste/bulky/index', [ property.id ]);
+END;
+~%]
 [% USE pounds = format('%.2f'); ~%]
 [% PROCESS 'waste/header.html' %]
 [% PROCESS 'govuk/fields.html' ~%]
@@ -8,7 +15,7 @@
 
 [% BLOCK change_answers_button %]
   [% UNLESS problem %]
-    <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
+    <form method="post" action="[% index_url %]">
       <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
       <input type="hidden" name="goto" value="[% goto %]">
       <input type="submit" class="fake-link" value="Change answers">
@@ -18,10 +25,14 @@
 
 
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
-  [% IF problem %]
-    Your bulky waste collection
+  [% IF cobrand.moniker == 'brent' %]
+    Your small items collection
   [% ELSE %]
-    Request a bulky waste collection
+    [% IF problem %]
+      Your bulky waste collection
+    [% ELSE %]
+      Request a bulky waste collection
+    [% END %]
   [% END %]
 </h1>
 <div class="bulky__summary">
@@ -86,10 +97,14 @@
           </div>
           <div class="govuk-warning-text__content">
               <span class="govuk-warning-text__assistive">Warning</span>
-              <p class="govuk-!-margin-bottom-3">You can cancel this booking till
-                [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
-              [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
-              <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
+              [% IF c.cobrand.moniker == 'brent' %]
+                  <p class="govuk-!-margin-bottom-3">If you no longer need the collection you can cancel the booking up to 23:59 on the night before booking.</p>
+              [% ELSE %]
+                  <p class="govuk-!-margin-bottom-3">You can cancel this booking till
+                    [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
+                  [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
+                      <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
+                  [% END %]
               [% END %]
           </div>
         </div>
@@ -108,11 +123,13 @@
         NEXT UNLESS item;
         items.push({ item => item, photo => data.$photo_key });
       END %]
+      [% IF c.cobrand.moniker != 'brent' %]
       <dl>
         <dt>Price</dt>
         [% payment = cobrand.bulky_total_cost(data) %]
         <dd>£[% pounds(payment / 100) %]</dd>
       </dl>
+      [% END %]
       <div class="govuk-!-margin-bottom-4">
         <p class="govuk-!-margin-bottom-0">[% tprintf(nget('%d item requested for collection.', '%d items requested for collection.', items.size), items.size) %]</p>
         [% IF c.cobrand.moniker != 'brent' %]
@@ -125,9 +142,11 @@
         <thead>
           <tr>
               <th>Item</th>
+            [% IF c.cobrand.moniker != 'brent' %]
               <th>
                 <span class="govuk-text__assistive">Item images preview</span>
               </th>
+            [% END %]
           </tr>
         </thead>
         <tbody>
@@ -137,6 +156,7 @@
               <td>
                 <p class="govuk-!-margin-bottom-0">[% item.item %]</p>
               </td>
+            [% IF c.cobrand.moniker != 'brent' %]
               <td>
                   [% IF item.photo %]
                     <img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.[% item.photo %]">
@@ -144,6 +164,7 @@
                     <span>No image attached for this item</span>
                   [% END %]
               </td>
+            [% END %]
           </tr>
           [% IF extra_text %]
             <tr>
@@ -211,7 +232,13 @@
     [% END %]
     [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
       <p>
-        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id, problem.id ] ) %]">Cancel this booking</a>
+        <a class="govuk-button govuk-button--secondary" href="[%
+            IF problem.category == 'Small items collection';
+                c.uri_for_action( 'waste/bulky/cancel_small', [ property.id, problem.id ] );
+            ELSE;
+                c.uri_for_action( 'waste/bulky/cancel', [ property.id, problem.id ] );
+            END;
+        %]">Cancel this booking</a>
       </p>
     [% END %]
     <p>
@@ -219,12 +246,12 @@
     </p>
   [% ELSE %]
     <form class="waste" method="post" action="[%
-        IF c.action == 'waste/bulky/amend';
+      IF c.action == 'waste/bulky/amend';
         c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
-        ELSE;
-        c.uri_for_action('waste/bulky/index', [ property.id ]);
-        END;
-        %]">
+      ELSE;
+        index_url;
+      END;
+    %]">
       [% PROCESS form %]
     </form>
   [% END %]
