@@ -747,6 +747,7 @@ sub bin_services_for_address {
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
+        $property->{show_bulky_waste} ||= $self->bulky_allowed_property($_->{ServiceId});
         $schedules{$_->{Id}} = $schedules;
         push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
@@ -774,8 +775,6 @@ sub bin_services_for_address {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
-
-    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
 
     my @out;
     my %task_ref_to_row;
@@ -1325,9 +1324,18 @@ sub bulky_can_refund { 0 }
 sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 
+=head2 bulky_allowed_property
+
+Brent allows bulky waste collection for any property
+with a domestic refuse collection so check against
+any domestic refuse service id
+
+=cut
+
 sub bulky_allowed_property {
-    my ( $self, $property ) = @_;
-    return $self->bulky_enabled;
+    my ($self, $id) = @_;
+
+    return $self->bulky_enabled && $id == 262;
 }
 
 sub collection_date {
