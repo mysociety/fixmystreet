@@ -187,8 +187,14 @@ FixMyStreet::override_config {
             is $report->detail, "Address: 1 Example Street, Brent, HA0 5HF";
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
-            # TODO
-            # Check right booleans set as extra field values
+
+            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Small WEEE: Toaster\n1 x Tied bag of domestic batteries (min 10 - max 100)";
+            is $report->get_extra_field_value('Textiles'), '';
+            is $report->get_extra_field_value('Paint'), '';
+            is $report->get_extra_field_value('Batteries'), 1;
+            is $report->get_extra_field_value('Small_WEEE'), 1;
+            is $report->get_extra_field_value('Coffee_Pods'), 1;
+
             is $report->get_extra_field_value('property_id'), '12345';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve1==';
