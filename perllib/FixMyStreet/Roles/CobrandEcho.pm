@@ -720,9 +720,9 @@ sub check_bulky_slot_available {
 sub save_item_names_to_report {
     my ($self, $data) = @_;
 
+    my $report = $self->{c}->stash->{report};
     foreach (grep { /^item_\d/ } keys %$data) {
-        my $k = $_;
-        $self->{c}->stash->{report}->set_extra_metadata($k => $data->{$_});
+        $report->set_extra_metadata($_ => $data->{$_}) if $data->{$_};
     }
 }
 

@@ -84,6 +84,7 @@ END; END %]
   [% END %]
   <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+ Add item</button>
 
+    [% IF c.cobrand.moniker != 'brent' %]
     <p>
       [% IF c.cobrand.bulky_per_item_costs %]
         Total cost: £<span id="js-bulky-total">[% pounds(total) %]</span>
@@ -91,6 +92,7 @@ END; END %]
         Total cost: £[% pounds(total) %]
       [% END %]
     </p>
+    [% END %]
 
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
