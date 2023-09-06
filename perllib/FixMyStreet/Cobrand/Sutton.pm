@@ -163,4 +163,13 @@ sub garden_cc_check_payment_status {
     }
 }
 
+=head2 Bulky waste collection
+
+Sutton starts collections at 6am, and lets you cancel up until 6am.
+
+=cut
+
+sub bulky_collection_time { { hours => 6, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0 } }
+
 1;
