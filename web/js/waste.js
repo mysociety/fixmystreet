@@ -84,6 +84,10 @@ $(function() {
 
     function updateTotal() {
         var totalId = $('#js-bulky-total');
+        if (!totalId.length) {
+            // No price section, could be free collection
+            return;
+        }
         var pricing = totalId.data('pricing');
         // Update total
         var total = 0;
