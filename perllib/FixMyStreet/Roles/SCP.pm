@@ -27,20 +27,23 @@ sub waste_cc_get_redirect_url {
     $p->update;
 
     my $backUrl;
+    my $reference;
     if ($back eq 'bulky') {
         # Need to pass through property ID as not sure how to work it out once we're back
         my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
         $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
+        $reference = $payment->config->{customer_ref_bulky};
     } else {
         $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
     }
+    $reference ||= $payment->config->{customer_ref};
 
     my $address = $c->stash->{property}{address};
     my @parts = split ',', $address;
 
     my @items = ({
         amount => $amount,
-        reference => $payment->config->{customer_ref},
+        reference => $reference,
         description => $p->title,
         lineId => $self->waste_cc_payment_line_item_ref($p),
     });
