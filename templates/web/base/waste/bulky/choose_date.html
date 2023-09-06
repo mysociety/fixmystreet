@@ -21,7 +21,11 @@
   [% PROCESS form %]
   [% IF form.current_page.name == 'choose_date_earlier' && !form.field('chosen_date').options.size %]
     <p>
+     [% IF c.cobrand.moniker == 'peterborough' %]
       There are no slots available in the next 90 days. Please refer to information regarding and link to information about taking waste to the local <a href='https://www.peterborough.gov.uk/residents/rubbish-and-recycling/household-recycling-centre'>Household Waste Recycling Centre</a>.
+     [% ELSE %]
+      There are no slots available at present, please try again later.
+     [% END %]
     </p>
   [% END %]
   [% IF form.current_page.name == 'choose_date_later' && !form.field('chosen_date').options.size %]
