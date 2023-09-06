@@ -81,7 +81,7 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
-sub garden_waste_cc_munge_form_details {
+sub waste_cc_munge_form_details {
     my ($self, $c) = @_;
 
     my $sha_passphrase = $self->feature('payment_gateway')->{sha_passphrase};
@@ -96,8 +96,15 @@ sub garden_waste_cc_munge_form_details {
 
     $c->stash->{redirect_url} = $url;
 
+    my $pspid;
+    if ($c->stash->{report}->category eq 'Bulky collection') {
+        $pspid = $c->stash->{payment_details}->{pspid_bulky};
+    } else {
+        $pspid = $c->stash->{payment_details}->{pspid};
+    }
+
     my $form_params = {
-        'PSPID' => $c->stash->{payment_details}->{pspid},
+        'PSPID' => $pspid,
         'ORDERID' => $c->stash->{reference},
         'AMOUNT' => $c->stash->{payment_amount},
         'CURRENCY' => 'GBP',

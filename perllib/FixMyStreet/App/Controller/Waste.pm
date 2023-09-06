@@ -215,7 +215,7 @@ sub pay : Path('pay') : Args(0) {
         }
     } else {
         $c->forward('populate_cc_details');
-        $c->cobrand->call_hook('garden_waste_cc_munge_form_details' => $c);
+        $c->cobrand->call_hook('waste_cc_munge_form_details' => $c);
         $c->stash->{template} = 'waste/cc.html';
         $c->detach;
     }
@@ -332,7 +332,7 @@ sub populate_payment_details : Private {
 
     my $address = $c->stash->{property}{address};
 
-    my @parts = split ',', $address;
+    my @parts = split /\s*,\s*/, $address;
 
     my $name = $c->stash->{report}->name;
     my ($first, $last) = split /\s/, $name, 2;
@@ -348,7 +348,12 @@ sub populate_payment_details : Private {
 
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
-    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
+
+    if ($c->cobrand->moniker eq 'sutton' && $p->category eq 'Bulky collection') {
+        $c->stash->{reference} = $p->id . substr(mySociety::AuthToken::random_token(), 0, 8);
+    } else {
+        $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
+    }
     $c->stash->{lookup} = $reference;
 }
 
