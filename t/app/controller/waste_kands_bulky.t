@@ -92,6 +92,8 @@ FixMyStreet::override_config {
             company_name => 'rbk',
             form_name => 'rbk_user_form',
             staff_form_name => 'rbk_staff_form',
+            customer_ref => 'customer-ref',
+            customer_ref_bulky => 'customer-ref-bulky',
         } },
     },
 }, sub {
@@ -366,6 +368,8 @@ FixMyStreet::override_config {
             is $new_report->state, 'confirmed', 'report confirmed';
 
             is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
+            is $sent_params->{items}[0]{reference}, 'customer-ref-bulky';
+            is $sent_params->{items}[0]{lineId}, $new_report->id . '-' . $new_report->name;
 
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
