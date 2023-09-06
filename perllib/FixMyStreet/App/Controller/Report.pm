@@ -82,7 +82,8 @@ Display a report.
 sub display :PathPart('') :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
-    if ($c->stash->{problem}->cobrand_data eq 'waste' && $c->stash->{problem}->category eq 'Bulky collection' ) {
+    my $problem = $c->stash->{problem};
+    if ($problem->cobrand_data eq 'waste' && ($problem->category eq 'Bulky collection' || $problem->category eq 'Small items collection')) {
         $c->detach('/waste/bulky/view');
     }
 

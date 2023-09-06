@@ -18,10 +18,14 @@
 
 
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
-  [% IF problem %]
-    Your bulky waste collection
+  [% IF cobrand.moniker == 'brent' %]
+    Your small items collection
   [% ELSE %]
-    Request a bulky waste collection
+    [% IF problem %]
+      Your bulky waste collection
+    [% ELSE %]
+      Request a bulky waste collection
+    [% END %]
   [% END %]
 </h1>
 <div class="bulky__summary">
@@ -88,7 +92,7 @@
               <span class="govuk-warning-text__assistive">Warning</span>
               <p class="govuk-!-margin-bottom-3">You can cancel this booking till
                 [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
-              [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
+              [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') || c.cobrand.moniker == 'brent' %]
               <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
               [% END %]
           </div>
@@ -108,11 +112,13 @@
         NEXT UNLESS item;
         items.push({ item => item, photo => data.$photo_key });
       END %]
+      [% IF c.cobrand.moniker != 'brent' %]
       <dl>
         <dt>Price</dt>
         [% payment = cobrand.bulky_total_cost(data) %]
         <dd>£[% pounds(payment / 100) %]</dd>
       </dl>
+      [% END %]
       <div class="govuk-!-margin-bottom-4">
         <p class="govuk-!-margin-bottom-0">[% items.size %] item[% 's' IF items.size > 1 %] requested for collection.</p>
         [% remaining = cobrand.bulky_items_maximum - items.size %]
@@ -202,14 +208,26 @@
   [% IF problem %]
     [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
       <p>
-        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id, problem.id ] ) %]">Cancel this booking</a>
+        <a class="govuk-button govuk-button--secondary" href="[%
+            IF problem.category == 'Small items collection';
+                c.uri_for_action( 'waste/bulky/cancel_small', [ property.id, problem.id ] );
+            ELSE;
+                c.uri_for_action( 'waste/bulky/cancel', [ property.id, problem.id ] );
+            END;
+        %]">Cancel this booking</a>
       </p>
     [% END %]
     <p>
       <a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a>
     </p>
   [% ELSE %]
-    <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
+    <form class="waste" method="post" action="[%
+        IF c.cobrand.moniker == 'brent';
+            c.uri_for_action('waste/bulky/index_small', [ property.id ]);
+        ELSE;
+            c.uri_for_action('waste/bulky/index', [ property.id ]);
+        END;
+    %]">
       [% PROCESS form %]
     </form>
   [% END %]
