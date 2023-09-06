@@ -82,4 +82,7 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+sub bulky_collection_time { { hours => 6, minutes => 30 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30 } }
+
 1;
