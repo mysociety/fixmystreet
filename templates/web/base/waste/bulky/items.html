@@ -45,7 +45,7 @@
   item_maximums.push({ key = item.key, max = item.value.max });
 END; END %]
 
-[% IF item_maximums.size %]
+[% IF item_maximums.size && c.cobrand.moniker != 'brent' %]
   <div class="govuk-warning-text due" style="max-width:550px">
     <div class="govuk-warning-text__img">
       <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
@@ -60,6 +60,46 @@ END; END %]
         [% END %]
       </ul>
 
+    </div>
+  </div>
+[% ELSIF c.cobrand.moniker == 'brent' %]
+<div class="govuk-warning-text due" style="max-width:550px">
+  <div class="govuk-warning-text__img">
+    <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+  </div>
+  <div class="govuk-warning-text__content">
+    <span class="govuk-warning-text__assistive">Important information</span>
+    <p class="govuk-!-margin-bottom-1"><strong>Maximum numbers</strong></p>
+    <p>The following types of item have a maximum number that can be collected in one collection:</p>
+    <ul>
+      <li>Batteries: 1 tied bag of domestic batteries (min 10 - max 100)</li>
+      <li>Coffee pods: Up to 3 - each one must be in a Podback bag</li>
+      <li>Paint: Up to 4 - each one up to 5L (eg 1 x 5 litre tin, 5 x 1 litre tins)</li>
+      <li>Textiles: Up to 3 - each one up to 60L (eg 3 carrier bags or one black bin bag)</li>
+      <li>Small WEEE: Up to 4 small WEEE items</li>
+    </ul>
+
+  </div>
+</div>
+[% END %]
+
+[% IF c.cobrand.moniker == 'brent' %]
+  <div class="govuk-warning-text due" style="max-width:550px">
+    <div class="govuk-warning-text__img">
+      <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+    </div>
+    <div class="govuk-warning-text__content">
+      <span class="govuk-warning-text__assistive">Important information</span>
+      <p class="govuk-!-margin-bottom-1"><strong>Maximum types</strong></p>
+      <p>We can only collect 3 types of item in one collection</p>
+      <p>So you can have a collection of batteries, an iron, a kettle and a toaster, and two lots of textiles. But if
+         you wanted to include paint, you would need to remove one of the following:
+      </p>
+      <ul>
+        <li>the batteries</li>
+        <li>the iron, the kettle and the toaster</li>
+        <li>all the textiles</li>
+      </ul>
     </div>
   </div>
 [% END %]
