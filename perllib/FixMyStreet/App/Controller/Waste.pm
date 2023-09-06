@@ -267,7 +267,7 @@ sub confirm_subscription : Private {
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
 
     my $already_confirmed;
-    if ($p->category eq 'Bulky collection') {
+    if ($p->category eq 'Bulky collection' || $p->category eq 'Small items collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
         $already_confirmed = $c->cobrand->bulky_send_before_payment;
     } else {
