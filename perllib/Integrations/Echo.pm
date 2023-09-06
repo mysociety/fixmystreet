@@ -7,6 +7,7 @@ with 'FixMyStreet::Roles::SOAPIntegration';
 with 'FixMyStreet::Roles::ParallelAPI';
 
 use DateTime;
+use DateTime::Format::Strptime;
 use File::Temp;
 use FixMyStreet;
 
@@ -447,6 +448,36 @@ sub GetEventsForObject {
         ),
     );
     return force_arrayref($res, 'Event');
+}
+
+sub ReserveAvailableSlotsForEvent {
+    my ($self, $service, $event_type, $property, $guid, $from, $to) = @_;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d');
+    $from = $parser->parse_datetime($from);
+    $to = $parser->parse_datetime($to);
+
+    my $res = $self->call('ReserveAvailableSlotsForEvent',
+        event => ixhash(
+            Guid => $guid,
+            EventObjects => { EventObject => ixhash(
+                EventObjectType => 'Source',
+                ObjectRef => _id_ref($property, 'PointAddress'),
+            ) },
+            EventTypeId => $event_type,
+            ServiceId => $service,
+        ),
+        parameters => ixhash(
+            From => dt_to_hash($from),
+            To => dt_to_hash($to),
+        ),
+    );
+    return force_arrayref($res->{ReservedTaskInfo}{ReservedSlots}, 'ReservedSlot');
+}
+
+sub CancelReservedSlotsForEvent {
+    my ($self, $guid) = @_;
+    $self->call('CancelReservedSlotsForEvent', eventGuid => $guid);
 }
 
 sub dt_to_hash {

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
+use UUID::Tiny ':std';
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
@@ -503,6 +504,48 @@ sub garden_waste_cost_pa {
 
     my $cost = $per_bin_cost * $bin_count;
     return $cost;
+}
+
+sub find_available_bulky_slots {
+    my ( $self, $property, $last_earlier_date_str ) = @_;
+
+    my $key
+        = $self->council_url . ":echo:available_bulky_slots:"
+        . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
+        . $property->{id};
+    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    my $service_id = $cfg->{bulky_service_id};
+    my $event_type_id = $cfg->{bulky_event_type_id};
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
+    my $guid = $self->{c}->session->{$guid_key};
+    unless ($guid) {
+        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string;
+    }
+
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
+    my @available_slots;
+    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
+    foreach (@$slots) {
+        push @available_slots, {
+            date => construct_bin_date($_->{StartDate}),
+            reference => $_->{Reference},
+            expiry => construct_bin_date($_->{Expiry}),
+        };
+    }
+
+    $self->{c}->session->{$key} = \@available_slots;
+
+    return \@available_slots;
+}
+
+sub check_bulky_slot_available {
+    my ( $self, $date ) = @_;
+    return 1; # XXX need to check reserved slot expiry
 }
 
 1;
