@@ -64,9 +64,6 @@ create_contact(
     { code => 'reservation' },
     { code => 'Customer_Selected_Date_Beyond_SLA?' },
     { code => 'First_Date_Returned_to_Customer' },
-    { code => 'ITEM_01' },
-    { code => 'ITEM_02' },
-    { code => 'ITEM_03' },
 );
 
 FixMyStreet::override_config {
