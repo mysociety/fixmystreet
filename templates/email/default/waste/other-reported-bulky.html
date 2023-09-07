@@ -90,3 +90,5 @@ INCLUDE '_email_top.html';
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     [% report.detail | html_para_email(secondary_p_style) %]
 [% END %]
+
+[% INCLUDE '_email_bottom.html' %]
