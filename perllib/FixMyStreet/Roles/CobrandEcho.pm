@@ -564,10 +564,12 @@ sub save_item_names_to_report {
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
 
-    my @items = grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @items_list = grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @items = sort { (($a =~ /_(\d+)/)[0] || 0) <=> (($b =~ /_(\d+)/)[0] || 0) } @items_list;
+
     my @fields;
     for my $item (@items) {
-        if (my $value = ${$report->get_extra_metadata}{$item}) {
+        if (my $value = $report->get_extra_metadata($item)) {
             push @fields, {name => $item, value => $value };
         }
     }
