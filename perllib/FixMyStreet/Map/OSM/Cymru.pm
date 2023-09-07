@@ -18,7 +18,7 @@ sub map_tiles {
     my ( $self, %params ) = @_;
     return FixMyStreet::Map::Bing->map_tiles(%params) if $params{aerial};
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
-    my $tile_url = "//tilma.mysociety.org/proxy/osm-cymru";
+    my $tile_url = "https://openstreetmap.cymru/osm_tiles";
     return [
         "$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
         "$tile_url/$z/" . ($y - 1) . ".png",
