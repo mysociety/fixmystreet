@@ -1,7 +1,7 @@
 [%
 
 USE pounds = format('%.2f');
-PROCESS '_bulky_data.html';
+PROCESS 'waste/_bulky_data.html';
 
 email_columns = 2;
 
@@ -48,18 +48,20 @@ INCLUDE '_email_top.html';
 [% END %]
 
   <p style="[% p_style %]">
-    [%~ IF staff_cancellation %]
+    [%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
       If you wish to cancel your booking, please call 01733 74 74 74.
     [% ELSE %]
-    If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky_cancel">this link</a>.
+      If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky_cancel">this link</a>.
     [% END %]
   </p>
 
+[% IF cobrand.moniker == 'peterborough' %]
   <p style="[% p_style %]">
     Please check the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections">bulky waste collection</a>
     page on the council’s website for information about this service.
     This includes when and where to put your items out for collection, cancelling the service and obtaining a refund.
   </p>
+[% END %]
 
   <p style="[% p_style %]">
     Kind regards,<br>Waste Services Team

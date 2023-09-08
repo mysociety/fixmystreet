@@ -1,5 +1,5 @@
 [% IF report.category == 'Bulky collection' ~%]
-[% PROCESS 'other-reported-bulky.txt' ~%]
+[% PROCESS 'waste/other-reported-bulky.txt' ~%]
 [% ELSE ~%]
 Subject: Your report has been logged, reference [% report.id %]
 
