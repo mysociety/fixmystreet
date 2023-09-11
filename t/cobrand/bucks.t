@@ -14,6 +14,8 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+FixMyStreet::DB->resultset('State')->create({ label => 'for triage', type => 'open' ,name => 'For triage' });
+
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
     send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
@@ -480,6 +482,7 @@ subtest 'Can triage parish reports' => sub {
     $mech->content_contains('Grass cutting (grass@example.org)');
     $mech->content_contains('Grass cutting (grassparish@example.org)');
     $mech->submit_form_ok({ with_fields => { category => $grass_bucks->id } });
+    $report->discard_changes;
     $report->update({ whensent => \'current_timestamp', send_state => 'sent' });
 };
 
@@ -636,6 +639,8 @@ subtest 'sending of updates and address' => sub {
     my $update2 = $mech->create_comment_for_problem($report2, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
     is $cobrand->should_skip_sending_update($update1), 0;
     is $cobrand->should_skip_sending_update($update2), 1;
+    $report1->update({ send_state => 'sent' });
+    $report2->update({ send_state => 'sent' });
 };
 
 subtest 'body filter on dashboard' => sub {
@@ -819,6 +824,21 @@ subtest "Backend response sends report on to parish" => sub {
     like $text, qr/report's reference number is $id/;
     like $text, qr/we have forwarded to the parish council/;
     like $text, qr/For any further enquiries.*streetlight\@example\.org/;
+};
+
+subtest 'triage reports do not get the logged email' => sub {
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+    $mech->log_in_ok( $counciluser->email );
+    $counciluser->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
+    $report->update({ state => 'for triage' });
+    $mech->get_ok('/admin/report_edit/' . $report->id);
+    $mech->submit_form_ok({ button => 'resend' });
+    FixMyStreet::Script::Reports::send();
+    $report->discard_changes;
+    isnt $report->whensent, undef;
+    is $report->state, 'confirmed';
+    $mech->get_email; # The email to the council
 };
 
 };
