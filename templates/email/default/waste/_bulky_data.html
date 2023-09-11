@@ -1,3 +1,7 @@
+[% IF NOT sent_confirm_id_ref %]
+    [% SET sent_confirm_id_ref = report.id %]
+[% END %]
+
 [%
 IF report.category == 'Small items collection';
     SET email_summary = "Thank you for booking a small items collection with " _ cobrand.council_name _ ".";
