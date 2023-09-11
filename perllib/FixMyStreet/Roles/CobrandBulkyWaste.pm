@@ -343,8 +343,8 @@ sub bulky_reminders {
     FixMyStreet::Map::set_map_class($self->moniker);
     # Can't see an easy way to find these apart from loop through them all.
     # Is only daily.
-    my $collections = FixMyStreet::DB->resultset('Problem')->search({
-        category => 'Bulky collection',
+    my $collections = $self->problems->search({
+        category => ['Bulky collection', 'Small items collection'],
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
