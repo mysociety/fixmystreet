@@ -27,6 +27,24 @@ INCLUDE '_email_top.html';
     [% END %]
   </p>
 
+  <p style="[% p_style %]">
+    Items to be collected:
+    <ul>
+      [% FOR item IN item_list %]
+        <li>
+          [% item.value %]
+          [% IF item.message %]
+            <ul>
+              <li>
+                [% item.message %]
+              </li>
+            </ul>
+          [% END %]
+        </li>
+      [% END %]
+    </ul>
+  </p>
+
     [% INCLUDE '_council_reference.html' problem=report %]
 
   <p style="[% p_style %]">
@@ -43,9 +61,11 @@ INCLUDE '_email_top.html';
   [%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
     If you wish to cancel your booking, please call 01733 74 74 74.
   [% ELSE %]
-    If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky_cancel">this link</a>.
+    If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]">this link</a>.
 
-    [% IF days == 1 %]
+    [% IF days == 1 && cobrand.moniker == 'brent' %]
+      You may still be able to cancel your booking.
+    [% ELSIF days == 1 %]
       You can still cancel your booking, but a refund is no longer available.
     [% ELSE %]
       [% IF cobrand.moniker == 'peterborough' %]

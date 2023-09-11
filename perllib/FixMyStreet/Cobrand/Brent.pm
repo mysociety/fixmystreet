@@ -1440,4 +1440,7 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+# Stub until cancellation implemented
+sub bulky_cancellation_report {0};
+
 1;
