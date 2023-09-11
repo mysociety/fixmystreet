@@ -1,0 +1,37 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname( File::Spec->rel2abs($0) );
+    require "$d/../setenv.pl";
+}
+
+use CronFns;
+use FixMyStreet::Cobrand;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['nomail|n', 'do not actually send any email'],
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+CronFns::language($site);
+
+my @monikers = qw/kingston sutton/;
+
+for (@monikers) {
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($_)->new;
+    $cobrand->send_bulky_payment_echo_update_failed(
+        {   nomail  => $opts->nomail,
+            verbose => $opts->verbose,
+        },
+    );
+}
