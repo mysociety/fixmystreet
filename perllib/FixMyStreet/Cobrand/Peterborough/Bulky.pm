@@ -267,17 +267,6 @@ sub _bulky_refund_cutoff_date {
     return $cutoff_dt;
 }
 
-sub _bulky_cancellation_cutoff_date {
-    my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-    my $dt = $collection_date->clone->subtract( days => 1 )->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    );
-
-    return $dt;
-}
-
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 

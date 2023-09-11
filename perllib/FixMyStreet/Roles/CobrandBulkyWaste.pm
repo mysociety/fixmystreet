@@ -82,7 +82,6 @@ requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
 requires 'collection_date';
-requires '_bulky_cancellation_cutoff_date';
 requires '_bulky_refund_cutoff_date';
 requires 'bulky_free_collection_available';
 
@@ -324,6 +323,17 @@ sub bulky_nice_cancellation_cutoff_time {
     $time = DateTime->now->set(hour => $time->{hours}, minute => $time->{minutes})->strftime('%I:%M%P');
     $time =~ s/^0|:00//g;
     return $time;
+}
+
+sub _bulky_cancellation_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
+    my $days_before = $cutoff_time->{days_before} || 1;
+    my $dt = $collection_date->clone->subtract( days => $days_before )->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    );
+    return $dt;
 }
 
 sub bulky_reminders {
