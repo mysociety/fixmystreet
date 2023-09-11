@@ -1,4 +1,8 @@
-Subject: Bulky waste collection reminder - reference [% report.id %]
+Subject: [%~ IF report.category == 'Small items collection' ~%]
+[%~ " Small items collection reminder - reference " _ report.id %]
+[%~ ELSE ~%]
+[%~ " Bulky waste collection reminder - reference " _ report.id %]
+[%~ END %]
 
 [%
 USE pounds = format('%.2f');
@@ -37,9 +41,11 @@ If you wish to cancel your booking, please call 01733 74 74 74.
 
 If you wish to cancel your booking, please visit:
 
-    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky/cancel/[% report.id %]
+    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]
 
-[% IF days == 1 %]
+[% IF days == 1 && cobrand.moniker == 'brent' %]
+You may still be able to cancel your booking.
+[% ELSIF days == 1 %]
 You can still cancel your booking, but a refund is no longer available.
 [% ELSE %]
     [% IF cobrand.moniker == 'peterborough' %]
