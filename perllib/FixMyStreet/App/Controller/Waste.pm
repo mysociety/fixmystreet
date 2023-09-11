@@ -302,6 +302,13 @@ sub confirm_subscription : Private {
     $p->confirm;
     $c->forward( '/report/new/create_related_things', [ $p ] );
     $p->update;
+
+    if ($already_confirmed) {
+        $p->add_to_comments({
+            text => "Payment confirmed, reference $reference",
+            user => $p->user,
+        });
+    }
 }
 
 sub cancel_subscription : Private {
