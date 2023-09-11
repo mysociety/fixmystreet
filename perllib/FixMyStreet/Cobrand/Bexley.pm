@@ -225,8 +225,8 @@ sub open311_post_send {
         my $reportType = $row->get_extra_field_value('reportType') || '';
         if ($reportType eq 'Horse / Large Animal' || $reportType eq 'Cat / Dog') {
             $outofhours_email = 1;
+            $p1_email = 1;
         };
-        $p1_email = 1;
     } elsif ($row->category eq 'Gulley covers' || $row->category eq 'Manhole covers') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
         if ($reportType eq 'Cover missing' || $dangerous eq 'Yes') {
@@ -250,8 +250,8 @@ sub open311_post_send {
         my $hazardous = $row->get_extra_field_value('hazardous') || '';
         if ($blocking eq 'Yes' || $hazardous eq 'Yes') {
             $outofhours_email = 1;
+            $p1_email = 1;
         }
-        $p1_email = 1;
     } elsif ($row->category eq 'Alleyway') { #FlytippingAlleyway
         $p1_email = 1 if $dangerous eq 'Yes';
     } elsif ($row->category eq 'Obstructions on pavements and roads') {
@@ -259,14 +259,17 @@ sub open311_post_send {
         my $issueDescription = $row->get_extra_field_value('issueDescription') || '';
         if ($reportType eq 'Building Materials' && $issueDescription eq 'The issue is causing access problems') {
             $outofhours_email = 1;
+            $p1_email = 1;
         } elsif ($reportType eq 'Cones on Highways') {
             $outofhours_email = 1;
+            $p1_email = 1;
         } elsif ($reportType eq 'Scaffolding' && $dangerous eq 'Yes') {
             $outofhours_email = 1;
+            $p1_email = 1;
         } elsif ($reportType eq 'Skips' && ($issueDescription eq 'Skip is not illuminated' || $issueDescription eq 'Skip in a dangerous position')) {
             $outofhours_email = 1;
+            $p1_email = 1;
         }
-        $p1_email = 1;
     } elsif (!$lighting{$row->category}) {
         $p1_email = 1 if $dangerous eq 'Yes';
         $outofhours_email = 1 if $dangerous eq 'Yes';
