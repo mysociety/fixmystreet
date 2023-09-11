@@ -1066,6 +1066,12 @@ subtest 'Dashboard CSV extra columns' => sub {
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
     ok $mech->content_like(qr/Flexible problem.*?,121,Y,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    $flexible_problem->set_extra_fields(
+        {name => 'location_name', value => 'Test Park'},
+    );
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,121,Y,,,,,,,,,"Test Park"/, "Location name added") or diag $mech->content;
   }
 };
 
