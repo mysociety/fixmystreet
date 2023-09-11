@@ -1269,17 +1269,4 @@ sub _format_address {
 
 sub bin_day_format { '%A, %-d~~~ %B %Y' }
 
-sub available_permissions {
-    my $self = shift;
-
-    my $perms = $self->next::method();
-
-    my $features = $self->feature('waste_features') || {};
-    if ( $features->{admin_config_enabled} ) {
-        $perms->{Waste}->{wasteworks_config} = "Can edit WasteWorks configuration";
-    }
-
-    return $perms;
-}
-
 1;
