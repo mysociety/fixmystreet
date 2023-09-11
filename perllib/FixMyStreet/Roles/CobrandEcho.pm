@@ -7,6 +7,7 @@ use DateTime::Format::Strptime;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::DateRange;
+use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
 
@@ -811,6 +812,83 @@ sub bulky_nice_item_list {
         },
         @fields,
     ];
+}
+
+sub send_bulky_payment_echo_update_failed {
+    my ( $self, $params ) = @_;
+
+    my $email
+        = ( $self->feature('waste_features') || {} )
+        ->{echo_update_failure_email};
+    return unless $email;
+
+    # 3 hours to allow for Echo downtime
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $cutoff_date
+        = $dtf->format_datetime( DateTime->now->subtract( hours => 3 ) );
+
+    my $rs = FixMyStreet::DB->resultset('Problem')->search(
+        {   category => 'Bulky collection',
+            cobrand  => $self->moniker,
+            created  => { '<'  => $cutoff_date },
+            extra    => { '\?' => 'payment_reference' },
+            -not => {
+                extra => {
+                    '\?' => [
+                        'echo_update_failure_email_sent',
+                        'echo_update_sent',
+                    ],
+                },
+            },
+        },
+    );
+
+    while ( my $report = $rs->next ) {
+        # Ignore if there is an update in Comment table with an external_id
+        if ( $report->comments->search( { external_id => { '!=', undef } } )
+            ->count > 0
+        ) {
+            # Set flag so we don't repeatedly check the comments for this
+            # report
+            $report->set_extra_metadata( echo_update_sent => 1 );
+            $report->update;
+
+            next;
+        }
+
+        # Send email
+        my $h = {
+            report  => $report,
+            cobrand => $self,
+        };
+
+        my $result = eval {
+            FixMyStreet::Email::send_cron(
+                FixMyStreet::DB->schema,
+                'waste/bulky_payment_echo_update_failed.txt',
+                $h,
+                { To => $email },
+                undef,    # env_from
+                $params->{nomail},
+                $self,
+                $report->lang,
+            );
+        };
+
+        if ($@) {
+            warn 'Sending for report ' . $report->id . " failed: $@\n";
+        } elsif ($result) {
+            print 'Sending for report ' . $report->id . ": failed\n"
+                if $params->{verbose};
+        } else {
+            $report->set_extra_metadata(
+                echo_update_failure_email_sent => 1 );
+            $report->update;
+
+            print 'Sending for report ' . $report->id . ": succeeded\n"
+                if $params->{verbose};
+        }
+    }
 }
 
 1;

@@ -72,6 +72,7 @@ FixMyStreet::override_config {
                 bulky_enabled => 1,
                 bulky_missed => 1,
                 bulky_tandc_link => 'tandc_link',
+                echo_update_failure_email => 'fail@example.com',
             },
         },
         echo => {
@@ -556,7 +557,47 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
             $mech->clear_emails_ok;
-        }
+        };
+    };
+
+    subtest 'Email when update fails to be sent to Echo' => sub {
+        $report->unset_extra_metadata('payment_reference');
+        $report->update({ created => '2023-06-25T00:00:00' });
+
+        my $cobrand = $body->get_cobrand_handler;
+        $cobrand->send_bulky_payment_echo_update_failed;
+        ok $mech->email_count_is(0),
+            'No email if report does not have a payment_reference';
+
+        $report->set_extra_metadata( payment_reference => 123 );
+        $report->update;
+        my $ex_id_comment
+            = $mech->create_comment_for_problem( $report, $user, 'User',
+            'Test', undef, 'confirmed', undef, { external_id => 234 },
+            );
+        $cobrand->send_bulky_payment_echo_update_failed;
+        ok $mech->email_count_is(0),
+            'No email if report has comment with external_id';
+
+        $ex_id_comment->delete;
+        $report->discard_changes;
+        $report->unset_extra_metadata('echo_update_sent');
+        $report->update;
+        $cobrand->send_bulky_payment_echo_update_failed;
+        my $email = $mech->get_email;
+        like $email->as_string, qr/Collection date: 08 July/;
+        like $email->as_string, qr/40\.00/;
+
+        $mech->clear_emails_ok;
+
+        $report->discard_changes;
+        is $report->get_extra_metadata('echo_update_failure_email_sent'),
+            1, 'flag set when email sent';
+        $cobrand->send_bulky_payment_echo_update_failed;
+        ok $mech->email_count_is(0),
+            'No email if email previously sent';
+
+        $mech->clear_emails_ok;
     };
 
     subtest 'Cancellation' => sub {
