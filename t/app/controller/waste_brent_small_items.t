@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use Path::Tiny;
+use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -33,7 +34,7 @@ $body->update;
 
 sub create_contact {
     my ($params, @extra) = @_;
-    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
+    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' }, email => 'test@test.com');
     $contact->set_extra_fields(
         { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
@@ -44,7 +45,7 @@ sub create_contact {
 }
 
 create_contact(
-    { category => 'Small items collection', email => '2964' },
+    { category => 'Small items collection', email => '2964@test.com' },
     { code => 'Collection_Date' },
     { code => 'Notes' },
     { code => 'Textiles' },
@@ -224,6 +225,70 @@ FixMyStreet::override_config {
             is $report->photo, undef;
         };
     };
+
+    subtest 'Bulky goods email confirmation and reminders' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report->confirmed('2023-08-30T00:00:00');
+        $report->update;
+        my $id = $report->id;
+        subtest 'Email confirmation of booking' => sub {
+            FixMyStreet::Script::Reports::send();
+            my @emails = $mech->get_email;
+            my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
+            my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
+            like $emails[1]->header('Subject'), qr/Small items collection service - reference $id/, 'Small items in email subject';
+            like $confirmation_email_txt, qr/Date booking made: 30 August/, 'Includes booking date';
+            like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Items to be collected:/, 'Includes header for items';
+            like $confirmation_email_txt, qr/- Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1';
+            like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
+            like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
+            unlike $confirmation_email_txt, qr/Total cost/, 'There is not total cost';
+            like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
+            like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
+            like $confirmation_email_html, qr/Date booking made: 30 August/, 'Includes booking date (html mail)';
+            like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
+            like $confirmation_email_html, qr/Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1 (html mail)';
+            like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
+            like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
+            unlike $confirmation_email_html, qr/Total cost/, 'There is no total cost (html mail)';
+            like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link (html mail)';
+            $mech->clear_emails_ok;
+        };
+
+        subtest 'Reminder email' => sub {
+            set_fixed_time('2023-06-28T05:44:59Z');
+            my $cobrand = $body->get_cobrand_handler;
+            $cobrand->bulky_reminders;
+            my $email = $mech->get_email;
+            my $confirmation_email_txt = $mech->get_text_body_from_email($email);
+            my $confirmation_email_html = $mech->get_html_body_from_email($email);
+            like $email->header('Subject'), qr/Small items collection reminder - reference $id/, 'Small items in email subject';
+            like $confirmation_email_txt, qr/Thank you for booking a small items collection with Brent Council/, 'Includes Brent greeting';
+            like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/- Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1';
+            like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
+            like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
+            like $confirmation_email_txt, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
+            like $confirmation_email_html, qr/Thank you for booking a small items collection with Brent Council/, 'Includes Brent greeting (html mail)';
+            like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1 (html mail)';
+            like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
+            like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link (html mail)';
+            $mech->clear_emails_ok;
+        }
+    };
+
     my %error_messages = (
                             'weee' => 'Too many small electrical items: maximum 4',
                             'categories' => 'Too many categories: maximum of 3 types',

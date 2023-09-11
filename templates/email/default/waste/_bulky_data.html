@@ -1,9 +1,20 @@
 [%
+IF report.category == 'Small items collection';
+    SET email_summary = "Thank you for booking a small items collection with " _ cobrand.council_name _ ".";
+    SET bulky_cancel_url = 'small_items/cancel';
+ELSE;
+    SET email_summary = "Thank you for booking a bulky waste collection with " _ cobrand.council_name _ ".";
+    SET bulky_cancel_url = 'bulky/cancel';
+END;
+
+IF NOT sent_confirm_id_ref;
+    SET sent_confirm_id_ref = report.id;
+END;
 
 SET payment = report.get_extra_field_value('payment');
 SET collection_date = cobrand.bulky_nice_collection_date(report);
+SET report_date = report.confirmed.strftime('%d %B');
 SET item_list = cobrand.bulky_nice_item_list(report);
-SET email_summary = "Thank you for booking a bulky waste collection with " _ cobrand.council_name  _ ".";
 SET staff_cancellation = cobrand.feature('waste_features').bulky_enabled == 'staff';
 
 ~%]
