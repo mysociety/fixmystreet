@@ -150,6 +150,83 @@ FixMyStreet::override_config {
         $mech->content_contains('All reported problems');
         $mech->content_contains('Reported problems within Sandbach Town');
     };
+
+    $mech->delete_problems_for_body($body->id);
+    my $admin_user = $mech->create_user_ok('adminuser@example.com', name => 'An admin user', from_body => $body, is_superuser => 1);
+    my $staff1_user = $mech->create_user_ok('staff1@example.com', name => 'Staff One', from_body => $body);
+    my $staff2_user = $mech->create_user_ok('staff2@example.com', name => 'Staff Two', from_body => $body);
+    my $staff3_user = $mech->create_user_ok('staff3@example.com', name => 'Staff Three', from_body => $body);
+    my $staff1_user_id = $staff1_user->id;
+    my $staff1_user_name = $staff1_user->name;
+    my $staff2_user_id = $staff2_user->id;
+    my $staff2_user_name = $staff2_user->name;
+    my $staff3_user_id = $staff3_user->id;
+    my $staff3_user_name = $staff3_user->name;
+
+    my @new_reports = $mech->create_problems_for_body( 4, $body->id, 'Assignee', {
+        category => 'Zebra Crossing',
+        extra => {
+            contributed_as => 'another_user',
+            contributed_by => $staff_user->id,
+        },
+    });
+
+    subtest 'checking assignee filter on admin/reports page', sub {
+        $mech->log_in_ok($admin_user->email);
+
+        $mech->get_ok('/admin/reports');
+        my $header_count = my @headers = $mech->content =~ /<th>/g;
+        is $header_count, 7, "Additional column in header";
+        $mech->content_contains('Assignee</option>');
+        $mech->content_lacks("<option value=\"$staff1_user_id\">$staff1_user_name</option>");
+        $mech->content_lacks("<option value=\"$staff2_user_id\">$staff2_user_name</option>");
+        $mech->content_lacks("<option value=\"$staff3_user_id\">$staff3_user_name</option>");
+        $mech->content_contains("<td>" . $new_reports[0]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[1]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[2]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[3]->title. "</td>");
+
+        $staff1_user->add_to_planned_reports($new_reports[0]);
+        $staff1_user->add_to_planned_reports($new_reports[2]);
+        $staff2_user->add_to_planned_reports($new_reports[1]);
+
+        $mech->get_ok('/admin/reports');
+        $mech->content_contains("<option value=\"$staff1_user_id\">$staff1_user_name</option>");
+        $mech->content_contains("<option value=\"$staff2_user_id\">$staff2_user_name</option>");
+        $mech->content_lacks("<option value=\"$staff3_user_id\">$staff3_user_name</option>");
+        $mech->content_contains("<td>" . $new_reports[0]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[1]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[2]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[3]->title. "</td>");
+        $mech->submit_form_ok( { with_fields => {
+            'assignee' => $staff1_user->id,
+        }});
+        $mech->content_contains("<td>" . $new_reports[0]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[2]->title. "</td>");
+        $mech->content_lacks("<td>" . $new_reports[1]->title. "</td>");
+        $mech->content_lacks("<td>" . $new_reports[3]->title. "</td>");
+        $mech->submit_form_ok( { with_fields => {
+            'assignee' => $staff2_user->id,
+        }});
+        $mech->content_lacks("<td>" . $new_reports[0]->title. "</td>");
+        $mech->content_lacks("<td>" . $new_reports[2]->title. "</td>");
+        $mech->content_lacks("<td>" . $new_reports[3]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[1]->title. "</td>");
+        $mech->submit_form_ok( { with_fields => {
+            'assignee' => 'Unassigned',
+        }});
+        $mech->content_lacks("<td>" . $new_reports[0]->title. "</td>");
+        $mech->content_lacks("<td>" . $new_reports[2]->title. "</td>");
+        $mech->content_lacks("<td>" . $new_reports[1]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[3]->title. "</td>");
+        $mech->submit_form_ok( { with_fields => {
+            'assignee' => 'All',
+        }});
+        $mech->content_contains("<td>" . $new_reports[0]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[1]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[2]->title. "</td>");
+        $mech->content_contains("<td>" . $new_reports[3]->title. "</td>");
+    };
 };
 
 done_testing();
