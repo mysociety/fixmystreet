@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use FixMyStreet::Geocode;
 
-my $BASE = 'https://api.os.uk/search/places/v1/nearest?dataset=LPI&fq=CLASSIFICATION_CODE:M*+CLASSIFICATION_CODE:C*+CLASSIFICATION_CODE:R*+CLASSIFICATION_CODE:Z*&srs=WGS84';
+my $BASE = 'https://api.os.uk/search/places/v1/nearest?dataset=LPI&fq=CLASSIFICATION_CODE:M*+CLASSIFICATION_CODE:C*+CLASSIFICATION_CODE:R*+CLASSIFICATION_CODE:Z*&srs=WGS84&radius=1000';
 
 sub reverse_geocode {
     my ($cls, $cobrand, $latitude, $longitude) = @_;
