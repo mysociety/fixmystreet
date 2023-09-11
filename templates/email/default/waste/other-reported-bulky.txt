@@ -1,4 +1,8 @@
-Subject: Bulky waste collection service - reference [% report.id %]
+Subject: [%~ IF report.category == 'Small items collection' ~%]
+[%~ " Small items collection service - reference " _ report.id %]
+[%~ ELSE ~%]
+[%~ " Bulky waste collection service - reference " _ report.id %]
+[%~ END %]
 
 [%
 USE pounds = format('%.2f');
@@ -12,6 +16,8 @@ Dear [% report.name %],
 [% INCLUDE '_council_reference.txt' problem=report %]
 
 [% report.detail %]
+
+Date booking made: [% report_date %]
 
 Collection date: [% collection_date %]
 
@@ -31,7 +37,7 @@ If you wish to cancel your booking, please call 01733 74 74 74.
 
 If you wish to cancel your booking, please visit:
 
-    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/bulky/cancel/[% report.id %]
+    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]
 
 [% END ~%]
 
@@ -40,6 +46,10 @@ Please check the bulky waste collection page on the council’s website for info
 
     https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
 
+[% END %]
+
+[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
 [% END %]
 
 [% signature %]
