@@ -491,6 +491,13 @@ sub edit_location : Private {
         return unless $bodies_match;
         $problem->latitude($c->stash->{latitude});
         $problem->longitude($c->stash->{longitude});
+
+        my $handler_cobrand
+            = $c->cobrand->call_hook(
+            get_body_handler_for_problem => $problem );
+        $handler_cobrand->call_hook( land_type_for_problem => $problem )
+            if $handler_cobrand;
+
         my $areas = $c->stash->{all_areas_mapit};
         $problem->areas( ',' . join( ',', sort keys %$areas ) . ',' );
         return 2;

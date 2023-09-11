@@ -36,6 +36,7 @@
     [% END %]
 [% END %]
 
+[% TRY %][% INCLUDE 'land_type.html' list_page = 1 %][% CATCH file %][% END %]
 [% IF page != '' AND c.req.url.path != '/my/planned' %]
     <div class='assigned-to'>
     [% INCLUDE 'admin/_report-assignment.html' %]
