@@ -425,7 +425,7 @@ sub bulky_reminders {
     # Can't see an easy way to find these apart from loop through them all.
     # Is only daily.
     my $collections = $self->problems->search({
-        category => 'Bulky collection',
+        category => ['Bulky collection', 'Small items collection'],
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 

@@ -1,5 +1,7 @@
 [% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' ~%]
 [% PROCESS 'other-reported-garden.txt' ~%]
+[% ELSIF report.category == 'Small items collection' ~%]
+[% PROCESS 'waste/other-reported-bulky.txt' ~%]
 [% ELSIF report.cobrand_data == 'waste' ~%]
 [% PROCESS 'other-reported-waste.txt' ~%]
 [% ELSE ~%]
