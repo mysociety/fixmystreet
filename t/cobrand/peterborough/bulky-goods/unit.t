@@ -66,6 +66,7 @@ subtest 'find_available_bulky_slots' => sub {
     $cobrand->{c} = Test::MockObject->new;
     my %session_hash;
     $cobrand->{c}->mock( session => sub { \%session_hash } );
+    $cobrand->{c}->mock( stash => sub { {} } );
 
     $mock_bartec->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
     is_deeply(

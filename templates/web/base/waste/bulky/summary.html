@@ -8,7 +8,7 @@
 
 [% BLOCK change_answers_button %]
   [% UNLESS problem %]
-    <form method="post">
+    <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
       <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
       <input type="hidden" name="goto" value="[% goto %]">
       <input type="submit" class="fake-link" value="Change answers">
@@ -114,9 +114,9 @@
         <dd>£[% pounds(payment / 100) %]</dd>
       </dl>
       <div class="govuk-!-margin-bottom-4">
-        <p class="govuk-!-margin-bottom-0">[% items.size %] item[% 's' IF items.size > 1 %] requested for collection.</p>
+        <p class="govuk-!-margin-bottom-0">[% tprintf(nget('%d item requested for collection.', '%d items requested for collection.', items.size), items.size) %]</p>
         [% remaining = cobrand.bulky_items_maximum - items.size %]
-        <small >([% remaining %] remaining slot[% 's' IF remaining > 1 %] available)</small>
+        <small>([% tprintf(nget('%d remaining slot available', '%d remaining slots available', remaining), remaining) %])</small>
       </div>
 
       <table class="item-summary-table govuk-!-margin-bottom-9">
@@ -183,10 +183,11 @@
 
     </div>
 
+  [% IF c.action != 'waste/bulky/amend' %]
     <div class="govuk-grid-column-one-third">
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Your details</h3>
-        [% PROCESS change_answers_button goto='about_you' %]
+        [% IF NOT data.continue_id %][% PROCESS change_answers_button goto='about_you' %][% END %]
       </div>
       <dl>
         <dt>Name</dt>
@@ -197,22 +198,36 @@
         <dd>[% data.phone OR 'Not given' %]</dd>
       </dl>
     </div>
+  [% END %]
   </div>
 
   [% IF problem %]
+    [% IF cobrand.bulky_can_amend_collection(problem) %]
+      <p>
+        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/amend', [ property.id, problem.id ] ) %]">Amend this booking</a>
+      </p>
+    [% END %]
     [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
       <p>
-        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id ] ) %]">Cancel this booking</a>
+        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/cancel', [ property.id, problem.id ] ) %]">Cancel this booking</a>
       </p>
     [% END %]
     <p>
       <a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a>
     </p>
   [% ELSE %]
-    <form class="waste" method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
+    <form class="waste" method="post" action="[%
+        IF c.action == 'waste/bulky/amend';
+        c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
+        ELSE;
+        c.uri_for_action('waste/bulky/index', [ property.id ]);
+        END;
+        %]">
       [% PROCESS form %]
     </form>
   [% END %]
+
+[% INCLUDE 'report/updates.html' %]
 
 </div>
 [% INCLUDE footer.html %]

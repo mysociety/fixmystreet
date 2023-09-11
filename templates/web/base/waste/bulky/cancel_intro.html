@@ -1,8 +1,8 @@
 [% USE pounds = format('%.2f') %]
 [% IF entitled_to_refund %]
 <h3>Refund</h3>
-<p class="govuk-!-margin-bottom-2">If you cancel this booking you will receive a refund of £[% pounds(property.pending_bulky_collection.get_extra_field_value('payment') / 100) %].</p>
-[% ELSIF property.pending_bulky_collection.get_extra_field_value('CHARGEABLE') == 'CHARGED' %]
+<p class="govuk-!-margin-bottom-2">If you cancel this booking you will receive a refund of £[% pounds(cancelling_booking.get_extra_field_value('payment') / 100) %].</p>
+[% ELSIF cancelling_booking.get_extra_field_value('CHARGEABLE') == 'CHARGED' %]
 <h3>No Refund Will Be Issued</h3>
 <p class="govuk-!-margin-bottom-2">If you cancel this booking you will not receive a refund as it is within 24 hours of the collection.</p>
 [% END %]
