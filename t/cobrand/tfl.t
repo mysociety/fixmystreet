@@ -89,7 +89,7 @@ $contact1->set_extra_fields(
         description => 'Stop number',
         datatype => 'string',
         automated => 'hidden_field',
-    }
+    },
 );
 $contact1->update;
 my $contact2 = $mech->create_contact_ok(
@@ -483,11 +483,14 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains($dt . ',,,confirmed,51.4021');
     $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 
-    $report->set_extra_fields({ name => 'Question', value => '12345' });
+    $report->set_extra_fields({ name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
     $report->update;
 
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',12345,,no,busstops@example.com,,', "Bike number added to csv");
+    $mech->content_contains('"Council User",,98756', "Stop code added to csv for all categories report");
+    $mech->get_ok('/dashboard?export=1&category=Bus+stops');
+    $mech->content_contains('"Council User",,98756', "Stop code added to csv for bus stop category report");
 };
 
 subtest 'Inspect form state choices' => sub {
