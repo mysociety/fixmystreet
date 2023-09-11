@@ -85,6 +85,17 @@ requires 'collection_date';
 requires '_bulky_refund_cutoff_date';
 requires 'bulky_free_collection_available';
 
+sub bulky_cancel_by_update { 0 }
+
+sub bulky_is_cancelled {
+    my ($self, $p) = @_;
+    if ($self->bulky_cancel_by_update) {
+        return $p->comments->find({ extra => { '@>' => '{"bulky_cancellation":1}' } });
+    } else {
+        return $self->bulky_cancellation_report($p);
+    }
+}
+
 sub bulky_items_extra {
     my $self = shift;
 
@@ -344,17 +355,15 @@ sub bulky_reminders {
         my $r3 = $report->get_extra_metadata('reminder_3');
         next if $r1; # No reminders left to do
 
-        my $date = $self->collection_date($report);
+        my $dt = $self->collection_date($report);
 
         # Shouldn't happen, but better to be safe.
-        next unless $date;
-
-        my $dt = $self->_bulky_date_to_dt($date);
+        next unless $dt;
 
         # If booking has been cancelled (or somehow the collection date has
         # already passed) then mark this report as done so we don't see it
         # again tomorrow.
-        my $cancelled = $self->bulky_cancellation_report($report);
+        my $cancelled = $self->bulky_is_cancelled($report);
         if ( $cancelled || $dt < $now) {
             $report->set_extra_metadata(reminder_1 => 1);
             $report->set_extra_metadata(reminder_3 => 1);

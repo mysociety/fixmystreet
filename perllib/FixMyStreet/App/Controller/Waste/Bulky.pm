@@ -204,7 +204,15 @@ sub add_cancellation_report : Private {
 
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
 
-    $c->forward( '/waste/add_report', [ \%data ] ) or return;
+    if ($c->cobrand->bulky_cancel_by_update) {
+        $collection_report->add_to_comments({
+            text => 'Booking cancelled by customer',
+            user => $collection_report->user,
+            extra => { bulky_cancellation => 1 },
+        });
+    } else {
+        $c->forward( '/waste/add_report', [ \%data ] ) or return;
+    }
 }
 
 sub process_bulky_cancellation : Private {
