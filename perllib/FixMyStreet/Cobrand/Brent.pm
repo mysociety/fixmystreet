@@ -219,6 +219,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         street_name => 'Street Name',
+        location_name => 'Location Name',
         created_by => 'Created By',
         email => 'Email',
         usrn => 'USRN',
@@ -260,6 +261,7 @@ sub dashboard_export_problems_add_columns {
 
         return {
             street_name => $report->nearest_address_parts->{street},
+            location_name => $report->get_extra_field_value('location_name') || '',
             created_by => $report->name || '',
             email => $report->user->email || '',
             usrn => $report->get_extra_field_value('usrn') || '',
