@@ -232,12 +232,12 @@ sub bulky_cancellation_report {
 
     # A cancelled collection will have a corresponding cancellation report
     # linked via external_id / ORIGINAL_SR_NUMBER
-    return FixMyStreet::DB->resultset('Problem')->find(
-        {   extra => {
-                '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] })
-            },
+    return $self->problems->find({
+        category => 'Bulky cancel',
+        extra => {
+            '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] })
         },
-    );
+    });
 }
 
 sub bulky_can_refund {

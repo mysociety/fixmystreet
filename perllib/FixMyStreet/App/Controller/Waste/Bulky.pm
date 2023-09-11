@@ -201,13 +201,21 @@ sub process_bulky_cancellation : Private {
 
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
 
-    $c->forward( '/waste/add_report', [ \%data ] ) or return;
+    if ($c->cobrand->bulky_cancel_by_update) {
+        $collection_report->add_to_comments({
+            text => 'Booking cancelled by customer',
+            user => $collection_report->user,
+            extra => { bulky_cancellation => 1 },
+        });
+    } else {
+        $c->forward( '/waste/add_report', [ \%data ] ) or return;
 
-    # Mark original report as closed
-    $collection_report->state('closed');
-    $collection_report->detail(
-        $collection_report->detail . " | Cancelled at user request", );
-    $collection_report->update;
+        # Mark original report as closed
+        $collection_report->state('closed');
+        $collection_report->detail(
+            $collection_report->detail . " | Cancelled at user request", );
+        $collection_report->update;
+    }
 
     # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
     $c->cobrand->call_hook('unset_free_bulky_used');
