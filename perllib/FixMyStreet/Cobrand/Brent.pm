@@ -378,13 +378,21 @@ Same as Symology above, but different attribute name.
         push @$open311_only, { name => 'report_url', value => $h->{url} };
         push @$open311_only, { name => 'detail', value => $row->detail };
 
-=item * Adds location name from WFS service for ATAK reports if missing
+    }
+
+=item * Adds location name from WFS service for reports in ATAK groups, if missing.
 
 =cut
-        if (!$row->get_extra_field_value('location_name')) {
-            if (my $name = $self->lookup_location_name($row)) {
-                $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
-            }
+
+    my @atak_groups = keys %{$self->group_to_layer};
+    my $group = $row->get_extra_metadata('group');
+    my $group_is_atak = $group && grep { $_ eq $group } @atak_groups;
+    my $contact_location_name_field = $contact->get_extra_field(code => 'location_name');
+    my $row_location_name = $row->get_extra_field_value('location_name');
+
+    if ($group_is_atak && $contact_location_name_field && !$row_location_name) {
+        if (my $name = $self->lookup_location_name($row)) {
+            $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
         }
     }
 
@@ -517,17 +525,22 @@ sub _atak_wfs_query {
     };
 }
 
+has group_to_layer => (
+    is => 'ro',
+    default => sub {
+        return {
+            'Parks and open spaces' => 'Parks_and_Open_Spaces',
+            'Allotments' => 'Allotments',
+            'Council estates grounds maintenance' => 'Housing',
+            'Roadside verges and flower beds' => 'Highway_Verges',
+        };
+    },
+);
+
 sub _group_to_asset_layer {
     my ($self, $group) = @_;
 
-    my %group_to_layer = (
-        'Parks and open spaces' => 'Parks_and_Open_Spaces',
-        'Allotments' => 'Allotments',
-        'Council estates grounds maintenance' => 'Housing',
-        'Roadside verges and flower beds' => 'Highway_Verges',
-    );
-
-    return $group_to_layer{$group};
+    return $self->group_to_layer->{$group};
 }
 
 sub _wfs_uri {

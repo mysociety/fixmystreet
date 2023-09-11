@@ -99,8 +99,18 @@ my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 
     email => 'ATAK-OVERGROWN_GRASS', group => 'Parks and open spaces');
 my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category => 'Leaf clearance',
     email => 'ATAK-LEAF_CLEARANCE', group => 'Parks and open spaces');
+my $parks_contact3 = $mech->create_contact_ok(body_id => $brent->id, category => 'Ponds',
+    email => 'ponds@example.org', group => 'Parks and open spaces');
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
+
+# Add location_name field to parks categories
+for my $contact ($parks_contact, $parks_contact2, $parks_contact3) {
+    $contact->set_extra_fields(
+        { code => 'location_name', required => 0, automated => 'hidden_field' },
+    );
+    $contact->update;
+}
 
 $mech->create_contact_ok(body_id => $brent->id, category => 'Potholes', email => 'potholes@brent.example.org');
 
@@ -727,6 +737,25 @@ FixMyStreet::override_config {
 
         $report->discard_changes;
         is $report->get_extra_field_value('location_name'), 'Test location name', 'Location name is set';
+    };
+
+    subtest "Sets location_name on non-ATAK reports in ATAK groups" => sub {
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Ponds',
+            }
+        }, "submit details");
+        $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+
+        FixMyStreet::Script::Reports::send();
+
+        # Get the most recent report
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
     };
 };
 
