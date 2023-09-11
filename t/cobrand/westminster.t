@@ -3,11 +3,16 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 
+use t::Mock::Tilma;
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
+$mech->host('westminster.fixmystreet.com');
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Westminster');
 $cobrand->mock('lookup_site_code', sub {
@@ -17,6 +22,12 @@ $cobrand->mock('lookup_site_code', sub {
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' }, { cobrand => 'westminster' });
+my $tfl = $mech->create_body_ok(2504, 'TfL', {}, { cobrand => 'tfl' });
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned bike', email => "BIKE");
+$mech->create_contact_ok(body_id => $body->id, category => 'Car parking', email => 'cars@example.org', send_method => 'Email');
+$mech->create_contact_ok(body_id => $tfl->id, category => 'Pothole', email => 'pothole@example.org');
+$mech->create_contact_ok(body_id => $tfl->id, category => 'Traffic light', email => 'trafficlight@example.org');
+
 my $superuser = $mech->create_user_ok(
     'superuser@example.com',
     name => 'Test Superuser',
@@ -37,7 +48,7 @@ my $comment2 = $mech->create_comment_for_problem($report, $normal_user, 'User', 
 my $comment3 = $mech->create_comment_for_problem($report, $normal_user, 'User', 'this update was imported via Open311', 0, 'confirmed', 'confirmed', { cobrand => '' });
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'westminster',
+    ALLOWED_COBRANDS => ['westminster', 'tfl'],
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         updates_allowed => {
@@ -83,6 +94,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks($comment2->text);
     };
+
+    subtest 'Correct categories are shown' => sub {
+        my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.501009&longitude=-0.141588');
+        my @cats = sort keys %{$json->{by_category}};
+        is_deeply \@cats, ['Abandoned bike', 'Traffic light'];
+    };
 };
 
 subtest 'Reports have an update form for superusers' => sub {
@@ -91,7 +108,7 @@ subtest 'Reports have an update form for superusers' => sub {
     $mech->log_in_ok( $superuser->email );
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'westminster',
+        ALLOWED_COBRANDS => ['westminster', 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             anonymous_account => { westminster => 'anon' },
@@ -110,7 +127,7 @@ subtest 'Reports have an update form for superusers' => sub {
 subtest 'Reports have an update form for staff users' => sub {
     $mech->log_in_ok( $staff_user->email );
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'westminster',
+        ALLOWED_COBRANDS => ['westminster', 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             updates_allowed => {
@@ -126,7 +143,7 @@ subtest 'Reports have an update form for staff users' => sub {
 
 for (
     {
-        ALLOWED_COBRANDS => 'westminster',
+        ALLOWED_COBRANDS => ['westminster', 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             oidc_login => {
@@ -135,7 +152,7 @@ for (
         }
     },
     {
-        ALLOWED_COBRANDS => 'westminster',
+        ALLOWED_COBRANDS => ['westminster', 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             oidc_login => {
@@ -150,7 +167,7 @@ for (
         }
     },
     {
-        ALLOWED_COBRANDS => 'westminster',
+        ALLOWED_COBRANDS => ['westminster', 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
     }
 ) {
@@ -168,14 +185,13 @@ for (
 }
 
 $mech->delete_problems_for_body($body->id);
-$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned bike', email => "BIKE");
 ($report) = $mech->create_problems_for_body(1, $body->id, 'Bike', {
     category => "Abandoned bike", cobrand => 'westminster',
     latitude => 51.501009, longitude => -0.141588, areas => '2504',
 });
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'westminster' ],
+    ALLOWED_COBRANDS => ['westminster', 'tfl'],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => { anonymous_account => { westminster => 'anon' } },
@@ -191,7 +207,7 @@ FixMyStreet::override_config {
 
 for my $cobrand (qw(westminster fixmystreet)) {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => $cobrand,
+        ALLOWED_COBRANDS => [$cobrand, 'tfl'],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         subtest "No reporter alert created in $cobrand" => sub {
