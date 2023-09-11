@@ -21,7 +21,8 @@ my $merton = $mech->create_body_ok(2500, 'Merton Council', {
 });
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
 for my $contact ( @cats ) {
-    $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org");
+    $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org",
+        extra => { anonymous_allowed => 1 });
 }
 
 my $hackney = $mech->create_body_ok(2508, 'Hackney Council', {}, { cobrand => 'hackney' });
@@ -80,6 +81,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok( { with_fields => { category => 'Litter', } }, "submit category" );
         $mech->submit_form_ok(
             {
                 button => 'report_anonymously',
@@ -207,6 +209,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok( { with_fields => { category => 'Litter', } }, "submit category");
         $mech->submit_form_ok(
             {
                 button => 'report_anonymously',
