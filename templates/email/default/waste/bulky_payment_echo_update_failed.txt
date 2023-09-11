@@ -1,0 +1,33 @@
+Subject: Failure to update Echo about confirmed payment
+
+[%
+USE pounds = format('%.2f');
+PROCESS 'waste/_bulky_data.html';
+~%]
+
+We failed to update Echo about confirmed payment for the following bulky waste collection:
+
+[% report.detail %]
+
+Collection ref: [% report.id %]
+
+Collection date: [% collection_date %]
+
+Items to be collected:
+[% INCLUDE 'waste/_bulky_list.txt' %]
+
+Amount paid: £[% pounds(payment / 100) %]
+
+Payment ref: [% report.get_extra_metadata('payment_reference') %]
+
+Payment type: [% report.get_extra_field_value('payment_method').replace( '_', ' ' ).ucfirst %]
+
+Customer details:
+
+    Name: [% report.name %]
+
+    Email: [% report.user.email %]
+
+    Phone: [% report.user.phone %] [% # TODO Where is this? %]
+
+Collection instructions: [% report.get_extra_field_value('Exact_Location') %]
