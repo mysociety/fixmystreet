@@ -395,6 +395,8 @@ sub bin_services_for_address {
 
             if ($service_id == 2242) { # Collect Domestic Refuse Bag
                 $self->{c}->stash->{slwp_garden_sacks} = 1;
+            } elsif ($service_id == 2238) { # Collect Domestic Refuse Bin
+                $property->{domestic_refuse_bin} = 1;
             }
 
             my $schedules = _parse_schedules($task, 'task');
@@ -1124,9 +1126,10 @@ sub bulky_allowed_property {
 
     my $cfg = $self->feature('echo');
 
-    return $self->bulky_enabled
-        && grep { $_ == $property->{type_id} }
-        @{ $cfg->{bulky_address_types} // [] };
+    my $type = $property->{type_id} || 0;
+    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
+    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
+    return $self->bulky_enabled && $valid_type && $domestic_farm;
 }
 
 sub collection_date {
