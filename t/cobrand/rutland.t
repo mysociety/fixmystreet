@@ -67,12 +67,15 @@ subtest 'testing special Open311 behaviour', sub {
     ok $report->whensent, 'Report marked as sent';
     is $report->send_method_used, 'Open311', 'Report sent via Open311';
     is $report->external_id, 248, 'Report has right external ID';
+    my ($easting, $northing) = Utils::convert_latlon_to_en($report->latitude, $report->longitude);
 
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[title]'), $report->title, 'Request had title';
     is $c->param('attribute[description]'), $report->detail, 'Request had description';
     is $c->param('attribute[external_id]'), $report->id, 'Request had correct ID';
+    is $c->param('attribute[northing]'), $northing, 'Request had correct ID';
+    is $c->param('attribute[easting]'), $easting, 'Request had correct ID';
     is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
 };
 

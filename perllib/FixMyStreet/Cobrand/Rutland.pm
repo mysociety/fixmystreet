@@ -36,6 +36,8 @@ sub open311_extra_data_include {
         { name => 'external_id', value => $row->id },
         { name => 'title', value => $row->title },
         { name => 'description', value => $row->detail },
+        { name => 'northing', value => $h->{northing} },
+        { name => 'easting', value => $h->{easting} },
         $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
     ];
 }
