@@ -198,6 +198,9 @@ sub available_permissions {
             template_edit => _("Add/edit response templates"),
             emergency_message_edit => _("Add/edit site message"),
         },
+        Waste => {
+            wasteworks_config => "Can edit WasteWorks configuration",
+        },
     };
 }
 
