@@ -304,7 +304,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
-            $mech->content_lacks('No image of the location has been attached.');
+            $mech->content_contains('No image of the location has been attached.');
             $mech->content_contains('£40.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:30 on 01 July 2023");
