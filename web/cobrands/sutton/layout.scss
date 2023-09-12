@@ -101,18 +101,6 @@ body.mappage #site-header {
     height: $mappage-header-height - 3px;
 }
 
-body.twothirdswidthpage .content .sticky-sidebar {
-    position: static;
-
-    aside {
-        position: static;
-        background: transparent;
-        padding: 0;
-        width: auto;
-        margin: 0 0 2em 0;
-    }
-}
-
 // FOOTER
 
 .lbs-footer {

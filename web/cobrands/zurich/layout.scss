@@ -208,14 +208,6 @@ body.mappage {
     }
 }
 
-body.twothirdswidthpage {
-    .content {
-        .sticky-sidebar aside {
-          top: 14em; // overrides default value, due to Zurich nav at top of content
-        }
-    }
-}
-
 // Zurich doesn't want pan controls, just zoom
 #ns_fms_pan_zoom_panup,
 #ns_fms_pan_zoom_pandown,

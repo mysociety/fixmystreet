@@ -1,14 +1,6 @@
 @import "_variables";
 @import "../sass/layout";
 
-body.twothirdswidthpage .content {
-    .sticky-sidebar {
-        aside {
-            top: 14em;
-        }
-    }
-}
-
 #site-logo {
     height: $mappage-header-height;
     font-size: 30px;

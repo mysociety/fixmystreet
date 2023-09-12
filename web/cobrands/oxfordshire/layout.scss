@@ -163,8 +163,6 @@ body.twothirdswidthpage {
     .content {
         .sticky-sidebar {
             aside {
-                position: fixed;
-                top: 10em;
                 li { // from occ website
                   padding-left: 19px;
                   font: 0.813em "Trebuchet MS";
@@ -225,8 +223,7 @@ body.mappage {
     padding-top: 1em;
   }
 
-  #occlss-footer,
-  #pagefooter {
+  #occlss-footer {
     display: none;
   }
 }
