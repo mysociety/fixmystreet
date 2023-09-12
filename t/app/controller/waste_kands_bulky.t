@@ -74,7 +74,7 @@ FixMyStreet::override_config {
         },
         echo => {
             kingston => {
-                bulky_address_types => [ 1 ],
+                bulky_address_types => [ 1, 7 ],
                 bulky_service_id => 413,
                 bulky_event_type_id => 1636,
                 url => 'http://example.org',
@@ -179,6 +179,18 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
+        $mech->content_lacks('Bulky Waste');
+    };
+
+    subtest 'Ineligible farm' => sub {
+        $echo->mock( 'GetPointAddress', sub {
+            return {
+                PointAddressType => { Id => 7, Name => 'Farm' },
+                Id => '12345',
+                Description => '2 Example Street, Kingston, KT1 1AA',
+            };
+        });
+        $mech->get_ok('/waste/12345');
         $mech->content_lacks('Bulky Waste');
     };
 
