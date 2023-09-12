@@ -122,7 +122,7 @@ sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
     my $open311_only;
-    my $feature;
+    my $feature = $self->lookup_site_code($row);
     my $extra = $row->get_extra_fields;
     if ($contact->email =~ /^Confirm/) {
         push @$open311_only,
@@ -134,7 +134,6 @@ sub open311_extra_data_include {
               value => $row->detail };
 
         if (!$row->get_extra_field_value('site_code')) {
-            $feature = $self->lookup_site_code($row);
             if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'site_code', value => $ref, description => 'Site code' });
             }
@@ -144,7 +143,6 @@ sub open311_extra_data_include {
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('uprn')) {
-            $feature = $self->lookup_site_code($row);
             if (my $ref = $feature->{properties}{UPRN}) {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
             }
@@ -154,7 +152,6 @@ sub open311_extra_data_include {
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('NSGRef')) {
-            $feature = $self->lookup_site_code($row);
             if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
@@ -168,10 +165,12 @@ sub open311_extra_data_include {
         # open311-only entries), but it is changed at the end of that call, so
         # a second call to update_extra_field will update extra but not the
         # original_extra and thus will be lost and not available to
-        # open311_post_send. So we push directly on here.
+        # open311_post_send. We'll use extra_metadata here anyway.
         my $address = $feature->{properties}{ADDRESS};
         $address =~ s/([\w']+)/\u\L$1/g;
-        push @$extra, { name => 'NSGName', description => 'Street name', value => $address };
+        my $town = $feature->{properties}{TOWN};
+        $town =~ s/([\w']+)/\u\L$1/g;
+        $row->set_extra_metadata(nsg => { name => $address, area => $town });
     }
 
     # Add private comments field
@@ -288,6 +287,13 @@ sub open311_post_send {
         $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
     }
 
+    if (my $nsg = $row->get_extra_metadata('nsg')) {
+        $row->push_extra_fields({ name => 'NSGName', description => 'Street name', value => $nsg->{name} });
+        $row->push_extra_fields({ name => 'NSGArea', description => 'Street area', value => $nsg->{area} });
+        $row->unset_extra_metadata('nsg');
+    }
+    $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
     return unless @to;
     my $emailsender = FixMyStreet::SendReport::Email->new(
         use_verp => 0,
@@ -298,6 +304,10 @@ sub open311_post_send {
     $self->open311_config($row, $h, {}, $contact); # Populate NSGRef again if needed
 
     $emailsender->send($row, $h);
+
+    $row->remove_extra_field('NSGName');
+    $row->remove_extra_field('NSGArea');
+    $row->remove_extra_field('fixmystreet_id');
 }
 
 sub email_list {
