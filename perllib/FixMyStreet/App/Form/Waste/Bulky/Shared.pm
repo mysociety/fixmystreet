@@ -68,9 +68,8 @@ has_page summary => (
         my $form = shift;
         my $c = $form->c;
 
-        ### DATE is Pboro specific
         if ($c->stash->{amending_booking}) {
-            my $current_date = $c->stash->{amending_booking}->get_extra_field_value('DATE');
+            my $current_date = $c->cobrand->collection_date($c->stash->{amending_booking});
             return 1 if $current_date eq $form->saved_data->{chosen_date};
         }
 

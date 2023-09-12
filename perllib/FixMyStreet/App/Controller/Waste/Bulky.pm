@@ -106,7 +106,8 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
     $c->forward('form');
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
-        $c->cobrand->call_hook(clear_cached_lookups_bulky_slots => $c->stash->{property}{uprn});
+        $c->cobrand->call_hook(
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
     }
 }
 
@@ -305,8 +306,16 @@ sub add_cancellation_report : Private {
         name   => $collection_report->name,
     );
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
-    $c->forward( '/waste/add_report', [ \%data ] ) or return;
-    return 1;
+
+    if ($c->cobrand->bulky_cancel_by_update) {
+        $collection_report->add_to_comments({
+            text => 'Booking cancelled by customer',
+            user => $collection_report->user,
+            extra => { bulky_cancellation => 1 },
+        });
+    } else {
+        $c->forward( '/waste/add_report', [ \%data ] ) or return;
+    }
 }
 
 sub process_bulky_cancellation : Private {
@@ -315,7 +324,7 @@ sub process_bulky_cancellation : Private {
     $c->forward('add_cancellation_report') or return;
 
     # Mark original report as closed
-    my $collection_report = $c->stash->{cancelling_booking};
+    my $collection_report = $c->stash->{cancelling_booking} || $c->stash->{amending_booking};
     $collection_report->state('closed');
     $collection_report->detail(
         $collection_report->detail . " | Cancelled at user request", );

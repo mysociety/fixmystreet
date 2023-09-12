@@ -252,12 +252,12 @@ sub bulky_cancellation_report {
 
     # A cancelled collection will have a corresponding cancellation report
     # linked via external_id / ORIGINAL_SR_NUMBER
-    return $self->problems->find(
-        {   extra => {
-                '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] })
-            },
+    return $self->problems->find({
+        category => 'Bulky cancel',
+        extra => {
+            '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] })
         },
-    );
+    });
 }
 
 sub bulky_can_refund {
@@ -295,17 +295,6 @@ sub _bulky_amendment_cutoff_date {
         minute => $cutoff_time->{minutes},
     )->subtract( days => 1 );
     return $cutoff_dt;
-}
-
-sub _bulky_cancellation_cutoff_date {
-    my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-    my $dt = $collection_date->clone->subtract( days => 1 )->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    );
-
-    return $dt;
 }
 
 sub waste_munge_bulky_data {

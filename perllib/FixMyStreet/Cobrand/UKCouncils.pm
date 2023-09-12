@@ -343,6 +343,11 @@ sub available_permissions {
     $perms->{Problems}->{view_body_contribute_details} = "See user detail for reports created as " . $self->council_name;
     $perms->{Users}->{user_assign_areas} = "Assign users to areas in " . $self->council_name;
 
+    my $features = $self->feature('waste_features') || {};
+    if ( $features->{admin_config_enabled} ) {
+        $perms->{Waste}->{wasteworks_config} = "Can edit WasteWorks configuration";
+    }
+
     return $perms;
 }
 

@@ -45,8 +45,8 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-5">
       [% IF problem %]
-        [% cancellation_report = cobrand.bulky_cancellation_report(problem) %]
-        [% IF cancellation_report %]
+        [% cancelled = cobrand.bulky_is_cancelled(problem) %]
+        [% IF cancelled %]
           <div class="govuk-warning-text due" style="padding:1em">
             <div class="govuk-warning-text__img">
               <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -55,8 +55,8 @@
                 <span class="govuk-warning-text__assistive">Notification of cancellation</span>
                 <p class="govuk-!-margin-bottom-0">
                   This collection has been cancelled.
-                  [% IF cobrand.bulky_can_view_cancellation(problem) %]
-                    <a href="/report/[% cancellation_report.id %]">View cancellation report.</a>
+                  [% IF NOT cobrand.bulky_cancel_by_update AND cobrand.bulky_can_view_cancellation(problem) %]
+                    <a href="/report/[% cancelled.id %]">View cancellation report.</a>
                   [% END %]
                 </p>
             </div>
