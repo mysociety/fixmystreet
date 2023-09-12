@@ -122,7 +122,7 @@ sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
     my $open311_only;
-    my $feature;
+    my $feature = $self->lookup_site_code($row);
     my $extra = $row->get_extra_fields;
     if ($contact->email =~ /^Confirm/) {
         push @$open311_only,
@@ -134,7 +134,6 @@ sub open311_extra_data_include {
               value => $row->detail };
 
         if (!$row->get_extra_field_value('site_code')) {
-            $feature = $self->lookup_site_code($row);
             if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'site_code', value => $ref, description => 'Site code' });
             }
@@ -144,7 +143,6 @@ sub open311_extra_data_include {
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('uprn')) {
-            $feature = $self->lookup_site_code($row);
             if (my $ref = $feature->{properties}{UPRN}) {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
             }
@@ -154,7 +152,6 @@ sub open311_extra_data_include {
         # display the road layer. Instead we'll look up the closest asset from the
         # WFS service at the point we're sending the report over Open311.
         if (!$row->get_extra_field_value('NSGRef')) {
-            $feature = $self->lookup_site_code($row);
             if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
