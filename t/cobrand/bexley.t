@@ -137,7 +137,7 @@ FixMyStreet::override_config {
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'Yes' } },
         { category => 'Abandoned and untaxed vehicles', code => 'ConfirmABAN',
             extra => { 'name' => 'burnt', description => 'Was it burnt?', 'value' => 'No' } },
-        { category => 'Dead animal', code => 'ANIM',
+        { category => 'Dead animal', email => ['p1'], code => 'ANIM',
             extra => { 'name' => 'reportType', description => 'Type of animal', 'value' => 'Fox' } },
         { category => 'Dead animal', email => ['p1', 'outofhours', 'ooh2'], code => 'ANIM',
             extra => { 'name' => 'reportType', description => 'Type of animal', 'value' => 'Horse / Large Animal' } },
@@ -165,10 +165,10 @@ FixMyStreet::override_config {
             extra => { 'name' => 'dangerous', description => 'Was it dangerous?', 'value' => 'Yes' } },
         { category => 'Flytipping', code => 'UniformFLY', email => ['eh'] },
         { category => 'Graffiti', code => 'GRAF', email => ['p1'], extra => { 'name' => 'offensive', description => 'Is the graffiti racist or offensive?', 'value' => 'Yes' } },
-        { category => 'Carriageway', code => 'CARRIAGEWAY', },
+        { category => 'Carriageway', code => 'CARRIAGEWAY', email => ['p1'] },
         { category => 'Carriageway', code => 'CARRIAGEWAY', email => ['p1', 'outofhours', 'ooh2'],
             extra => { 'name' => 'blocking', description => 'Flytipping blocking carriageway?', 'value' => 'Yes' } },
-        { category => 'Obstructions on pavements and roads', code => 'OBSTR',
+        { category => 'Obstructions on pavements and roads', code => 'OBSTR', email => ['p1'],
             extra => { 'name' => 'reportType', description => 'Type of obstruction?', 'value' => 'Tables and Chairs' } },
         { category => 'Obstructions on pavements and roads', code => 'OBSTR', email => ['p1', 'outofhours', 'ooh2'],
             extra => [
@@ -222,7 +222,6 @@ FixMyStreet::override_config {
                 $mech->clear_emails_ok;
             } else {
                 $mech->email_count_is(1);
-                $mech->clear_emails_ok;
             }
         };
     }
