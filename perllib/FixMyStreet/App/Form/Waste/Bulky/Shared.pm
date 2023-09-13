@@ -48,6 +48,10 @@ has_page location => (
         if ($form->c->cobrand->bulky_show_location_field_mandatory) {
             $fields->{location} = { required => 1 };
         }
+        if ($form->c->cobrand->moniker eq 'kingston' || $form->c->cobrand->moniker eq 'sutton') {
+            $fields->{location}{label} = 'Please tell us where you will place the items for collection (include any access codes the crew will need)';
+            $fields->{location}{tags}{hint} = 'For example, ‘On the driveway’ or ‘In bin store - code 1234’';
+        }
         return $fields;
     },
 );

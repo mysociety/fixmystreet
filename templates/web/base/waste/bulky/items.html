@@ -86,7 +86,13 @@ END; END %]
     <hr>
   </div>
   [% END %]
-  <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+ Add item</button>
+  <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+
+    [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' ~%]
+      Add another item
+    [%~ ELSE ~%]
+      Add item
+    [%~ END ~%]
+  </button>
 
     <p>
         Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy %]" id="js-bulky-total">[% pounds(total) %]</span>
