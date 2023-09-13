@@ -36,6 +36,7 @@ has_page cannot_book => (
 );
 
 has_page about_you => (
+    intro => 'bulky/about_you_preamble.html',
     fields => ['name', 'email', 'phone', 'continue'],
     title => 'About you',
     next => 'choose_date_earlier',
