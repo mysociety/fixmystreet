@@ -1,4 +1,8 @@
-Subject: Bulky waste collection service - reference [% report.id %]
+Subject: Bulky waste collection service - reference [%
+  IF cobrand.moniker == 'kingston'; "RBK-";
+  ELSIF cobrand.moniker == 'sutton'; "LBS-";
+  END;
+%][% report.id %]
 
 [%
 USE pounds = format('%.2f');
