@@ -302,6 +302,12 @@ sub _check_within_bulky_cancel_window {
 
 sub bulky_can_refund {
     my ($self, $p) = @_;
+    return 1 unless $p;
+    return $self->bulky_can_refund_collection($p);
+}
+
+sub bulky_can_refund_collection {
+    my ($self, $p) = @_;
     return $self->within_bulky_refund_window($p);
 }
 

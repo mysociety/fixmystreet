@@ -240,7 +240,7 @@ sub bulky_cancellation_report {
     });
 }
 
-sub bulky_can_refund {
+sub bulky_can_refund_collection {
     my ($self, $p) = @_;
     my $c    = $self->{c};
 
