@@ -501,6 +501,7 @@ FixMyStreet::override_config {
         subtest 'Email confirmation of booking' => sub {
             FixMyStreet::Script::Reports::send();
             my @emails = $mech->get_email;
+            is $emails[1]->header('Subject'), "Bulky waste collection service - reference RBK-$id";
             my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
             my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
             like $confirmation_email_txt, qr/Date booking made: 30 August/, 'Includes booking date';
