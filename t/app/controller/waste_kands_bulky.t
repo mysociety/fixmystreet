@@ -534,6 +534,31 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok;
         }
     };
+
+    subtest 'Cancellation' => sub {
+        my $base_path = '/waste/12345';
+        $mech->get_ok($base_path);
+        $mech->content_contains('Cancel booking');
+        $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
+        $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+        $mech->content_contains('Your booking has been cancelled');
+        $mech->follow_link_ok( { text => 'Go back home' } );
+        is $mech->uri->path, $base_path, 'Returned to bin days';
+        $mech->content_lacks('Cancel booking');
+
+        $report->discard_changes;
+        is $report->state, 'closed', 'Original report closed';
+        like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
+
+        subtest 'Viewing original report summary after cancellation' => sub {
+            my $id   = $report->id;
+            $mech->get_ok("/report/$id");
+            $mech->content_contains('This collection has been cancelled');
+            $mech->content_lacks("You can cancel this booking till");
+            $mech->content_lacks('Cancel this booking');
+        };
+    };
+
 };
 
 done_testing;
