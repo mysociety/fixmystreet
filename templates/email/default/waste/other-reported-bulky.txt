@@ -1,7 +1,11 @@
 Subject: [%~ IF report.category == 'Small items collection' ~%]
 [%~ " Small items collection service - reference " _ report.id %]
 [%~ ELSE ~%]
-[%~ " Bulky waste collection service - reference " _ report.id %]
+[%~ " Bulky waste collection service - reference ";
+  IF cobrand.moniker == 'kingston'; "RBK-";
+  ELSIF cobrand.moniker == 'sutton'; "LBS-";
+  END;
+%][% report.id %]
 [%~ END %]
 
 [%
