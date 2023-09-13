@@ -173,6 +173,7 @@ test_overrides hackney =>
             { name => 'title', value => 'Problem' },
             { name => 'description', value => 'A big problem' },
             { name => 'category', value => 'ZZ' },
+            { name => 'group', value => undef },
             { name => 'closest_address', value => '1 Test Street, Testville, TE57 1AB' },
         ),
     });
