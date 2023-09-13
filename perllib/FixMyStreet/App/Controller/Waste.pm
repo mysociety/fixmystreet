@@ -288,7 +288,7 @@ sub confirm_subscription : Private {
 
     if ($already_confirmed) {
         $p->add_to_comments({
-            text => 'Payment confirmed',
+            text => "Payment confirmed, reference $reference",
             user => $p->user,
         });
     }
