@@ -1471,7 +1471,8 @@ sub add_report : Private {
     # So ignore keys that end with 'fileid'.
     # XXX Should fix this so there isn't duplicate data across different keys.
     my @bulky_photo_data;
-    for (grep { /^(item|location)_photo(_\d+)?$/ } keys %$data) {
+    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
+    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
         push @bulky_photo_data, $data->{$_} if $data->{$_};
     }
     $c->stash->{bulky_photo_data} = \@bulky_photo_data;
