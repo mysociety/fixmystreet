@@ -736,6 +736,7 @@ sub bin_services_for_address {
     my %schedules;
     my @task_refs;
     my %expired;
+    my $calendar_save = {};
     foreach (@$result) {
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $desc_to_use = 'schedule';
@@ -750,18 +751,26 @@ sub bin_services_for_address {
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
 
         # Check calendar allocation
-        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317) && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
             my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
-            my $id = sprintf("%s-%s", $day, $week);
             my $links;
-            if ($_->{ServiceId} == 262) {
-                $links = $self->{c}->cobrand->feature('waste_calendar_links');
-                $self->{c}->stash->{calendar_link} = $links->{$id};
+            if ($_->{ServiceId} == 262 || $_->{ServiceId} == 807) {
+                if ($week) {
+                    $calendar_save->{number} = $week;
+                } elsif (($week) = $allocation->{RoundGroupName} =~ /WK(\w)/) {
+                    $calendar_save->{letter} = $week;
+                };
+                if ($calendar_save->{letter} && $calendar_save->{number}) {
+                    my $id = sprintf("%s-%s%s", $day, $calendar_save->{letter}, $calendar_save->{number});
+                    $links = $self->{c}->cobrand->feature('waste_calendar_links');
+                    $self->{c}->stash->{calendar_link} = $links->{$id};
+                }
             } elsif ($_->{ServiceId} == 317) {
-                $links = $self->{c}->cobrand->feature('ggw_calendar_links');
+                my $id = sprintf("%s-%s", $day, $week);
+                my $links = $self->{c}->cobrand->feature('ggw_calendar_links');
                 $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
             }
         }

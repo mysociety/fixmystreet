@@ -767,7 +767,7 @@ FixMyStreet::override_config {
         waste => { brent => 1 },
         anonymous_account => { brent => 'anonymous' },
         waste_calendar_links => { brent => {
-            'friday-2' => 'https://example.org/media/16420712/fridayweek2'
+            'wednesday-B2' => 'https://example.org/media/16420712/wednesdayweek2.pdf'
         } },
         ggw_calendar_links => { brent => {
             'monday-2' => 'https://example.org/media/16420712/mondayweek2'
@@ -807,12 +807,12 @@ FixMyStreet::override_config {
             ServiceId => 262,
             ServiceName => 'Domestic Refuse Collection',
             ServiceTasks => { ServiceTask => {
-                Id => 402,
+                Id => 36384495,
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
-                    ScheduleDescription => 'every other Wednesday',
+                    ScheduleDescription => 'Wednesday every other week',
                     Allocation => {
-                        RoundName => 'Friday ',
-                        RoundGroupName => 'Delta 04 Week 2',
+                        RoundName => 'Wednesday',
+                        RoundGroupName => 'Delta 12 Week 2',
                     },
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
@@ -854,6 +854,33 @@ FixMyStreet::override_config {
                 } },
             } },
         }, {
+            Id => '36404180',
+            ServiceId => 807,
+            ServiceName => 'Domestic Paper/Card Collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 21507618,
+                TaskTypeId => 4317,
+                Data => '',
+                ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                    ScheduleDescription => 'every other Wednesday',
+                    Allocation => {
+                        RoundName => 'Wednesday',
+                        RoundGroupName => 'PaperCard07 WKB',
+                    },
+                    StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 567, 890 ] } },
+                    },
+                } ] },
+            } }
+        },{
             Id => 1004,
             ServiceId => 317,
             ServiceName => 'Garden waste collection',
@@ -897,7 +924,7 @@ FixMyStreet::override_config {
 
     $mech->get_ok('/waste/12345');
     $mech->content_contains("(07:30&ndash;08:30)", 'shows time band');
-    $mech->content_contains('https://example.org/media/16420712/fridayweek2', 'showing PDF calendar');
+    $mech->content_contains('https://example.org/media/16420712/wednesdayweek2', 'showing PDF calendar');
     $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
     $mech->content_contains('every Thursday', 'food showing right schedule');
 
