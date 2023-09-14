@@ -64,6 +64,7 @@ sub bulky_show_location_page {
         }
     }
 };
+sub bulky_show_location_field_mandatory { 0 }
 
 =head2 Requirements
 

@@ -45,6 +45,9 @@ has_page location => (
         my ($form) = @_;
         my $fields = {};
         $form->update_photo('location_photo', $fields);
+        if ($form->c->cobrand->bulky_show_location_field_mandatory) {
+            $fields->{location} = { required => 1 };
+        }
         return $fields;
     },
 );
