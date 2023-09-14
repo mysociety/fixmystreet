@@ -1165,6 +1165,7 @@ sub bulky_collection_window_days { 56 }
 
 sub bulky_cancel_by_update { 1 }
 sub bulky_send_before_payment { 1 }
+sub bulky_show_location_field_mandatory { 1 }
 
 sub bulky_can_refund { 0 }
 sub _bulky_refund_cutoff_date { }

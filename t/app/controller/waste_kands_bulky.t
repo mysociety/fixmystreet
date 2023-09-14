@@ -294,6 +294,7 @@ FixMyStreet::override_config {
                 },
             },
         );
+        $mech->submit_form_ok({ with_fields => { location => '' } }, 'Will error with a blank location');
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
 
         sub test_summary {
