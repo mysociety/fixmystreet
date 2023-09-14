@@ -102,33 +102,6 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
-=item * When sending via Open311, make sure closest address is included
-
-=cut
-
-around open311_extra_data_include => sub {
-    my ($orig, $self) = (shift, shift);
-    my $open311_only = $self->$orig(@_);
-
-    my ($row, $h, $contact) = @_;
-
-    # Make sure contact 'email' set correctly for Open311
-    if (my $split_match = $row->get_extra_metadata('split_match')) {
-        $row->unset_extra_metadata('split_match');
-        my $code = $split_match->{$contact->email};
-        $contact->email($code) if $code;
-    }
-
-    if (my $address = $row->nearest_address) {
-        push @$open311_only, (
-            { name => 'closest_address', value => $address }
-        );
-        $h->{closest_address} = '';
-    }
-
-    return $open311_only;
-};
-
 =item * Hackney use OSM maps
 
 =cut
@@ -260,6 +233,10 @@ sub munge_sendreport_params {
     }
 }
 
+=item * When sending via Open311, make sure closest address is included
+
+=cut
+
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
@@ -270,6 +247,8 @@ sub open311_extra_data_include {
           value => $row->detail },
         { name => 'category',
           value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group') },
     ];
 
     my $title = $row->title;
@@ -291,6 +270,20 @@ sub open311_extra_data_include {
               value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) };
     }
     push @$open311_only, { name => 'title', value => $title };
+
+    # Make sure contact 'email' set correctly for Open311
+    if (my $split_match = $row->get_extra_metadata('split_match')) {
+        $row->unset_extra_metadata('split_match');
+        my $code = $split_match->{$contact->email};
+        $contact->email($code) if $code;
+    }
+
+    if (my $address = $row->nearest_address) {
+        push @$open311_only, (
+            { name => 'closest_address', value => $address }
+        );
+        $h->{closest_address} = '';
+    }
 
     return $open311_only;
 }

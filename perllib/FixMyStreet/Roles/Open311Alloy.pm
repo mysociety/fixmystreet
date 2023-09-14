@@ -26,6 +26,8 @@ sub open311_extra_data_include {
           value => $row->detail },
         { name => 'category',
           value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group') },
     ];
 
     return $open311_only;
