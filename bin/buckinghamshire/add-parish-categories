@@ -68,6 +68,13 @@ my $contacts = [
         },
         extra_fields => [ $speed_limit_q ],
     },
+    {
+        category => 'Unauthorised signs',
+        extra_metadata => {
+            group => 'Road and street signs',
+        },
+        extra_fields => [ $speed_limit_q ],
+    },
 ];
 
 my @parishes;

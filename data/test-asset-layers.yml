@@ -194,7 +194,7 @@ buckinghamshire:
       found: fixmystreet.assets.buckinghamshire.speed_found
       not_found: fixmystreet.assets.buckinghamshire.speed_not_found
     no_asset_msg_id: '#js-not-a-road'
-    asset_category: ["Grass cutting", "Hedge problem", "Dirty signs"]
+    asset_category: ["Grass cutting", "Hedge problem", "Dirty signs", "Unauthorised signs"]
     non_interactive: true
     road: true
     asset_item: 'road'

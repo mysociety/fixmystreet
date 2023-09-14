@@ -826,7 +826,7 @@ around 'report_validation' => sub {
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
-    my $parish_cats = [ 'Grass cutting', 'Hedge problem', 'Dirty signs' ];
+    my $parish_cats = [ 'Grass cutting', 'Hedge problem', 'Dirty signs', 'Unauthorised signs' ];
     my %parish_cats = map { $_ => 1 } @$parish_cats;
 
     return unless $parish_cats{$report->category};
