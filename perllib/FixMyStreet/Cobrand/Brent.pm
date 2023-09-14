@@ -692,6 +692,7 @@ sub bin_services_for_address {
         6 => 'Recycling bin (blue bin)',
         11 => 'Food waste caddy',
         13 => 'Garden waste (green bin)',
+        46 => 'Paper and cardboard blue sack',
     };
 
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
@@ -702,6 +703,7 @@ sub bin_services_for_address {
         269 => [ 8 ],
         316 => [ 11 ],
         317 => [ 13 ],
+        #807 => [ 46 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -710,6 +712,7 @@ sub bin_services_for_address {
         269 => 1,
         316 => 1,
         317 => 5,
+        #807 => 1,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -907,6 +910,7 @@ sub image_for_unit {
         271 => "$base/bin-brown",
         267 => "$base/sack-black",
         269 => "$base/sack-clear",
+        807 => "$base/bag-blue",
     };
     return $images->{$service_id};
 }
@@ -924,6 +928,7 @@ sub service_name_override {
         271 => 'Communal food waste',
         267 => 'Rubbish (black sacks)',
         269 => 'Recycling (clear sacks)',
+        807 => 'Paper and Cardboard (blue sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
@@ -1057,6 +1062,7 @@ sub waste_munge_request_data {
         8 => 269,
         11 => 316,
         13 => 317,
+        46 => 807,
     );
     $c->set_param('service_id', $service_id{$id});
 }
