@@ -753,6 +753,56 @@ fixmystreet.assets.gloucestershire.street_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+
+function glos_job_open(f) {
+    return f &&
+           f.attributes &&
+           f.attributes.open;
+}
+
+function glos_job_closed(f) {
+    return !glos_job_open(f);
+}
+
+var glos_jobs_default_style = new OpenLayers.Style({
+    fillColor: "#44ff44",
+    fillOpacity: 0.9,
+    strokeColor: "#333333",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 8,
+    title: '${description}.'
+});
+
+var glos_rule_open = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: glos_job_open
+    }),
+    symbolizer: {
+        fillColor: "#FF00FF",
+        // strokeColor: "#DD00DD",
+        title: '${description}',
+    }
+});
+
+var glos_rule_closed = new OpenLayers.Rule({
+    filter: new OpenLayers.Filter.FeatureId({
+        type: OpenLayers.Filter.Function,
+        evaluate: glos_job_closed
+    })
+});
+glos_jobs_default_style.addRules([glos_rule_open, glos_rule_closed]);
+
+fixmystreet.assets.gloucestershire.jobs_stylemap = new OpenLayers.StyleMap({
+    'default': glos_jobs_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': new OpenLayers.Style({
+        pointRadius: 8,
+        cursor: 'pointer'
+    })
+});
+
 /* Hounslow */
 
 fixmystreet.assets.hounslow = {};
