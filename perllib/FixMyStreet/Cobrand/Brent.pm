@@ -377,6 +377,8 @@ Same as Symology above, but different attribute name.
         push @$open311_only, { name => 'title', value => $row->title };
         push @$open311_only, { name => 'report_url', value => $h->{url} };
         push @$open311_only, { name => 'detail', value => $row->detail };
+        push @$open311_only, { name => 'group', value => $row->get_extra_metadata('group') };
+
 
 =item * Adds location name from WFS service for ATAK reports if missing
 
