@@ -783,16 +783,12 @@ FixMyStreet::override_config {
     return [
         {
             Id => 1001,
-            ServiceId => 262,
+            ServiceId => 265,
             ServiceName => 'Domestic Dry Recycling Collection',
             ServiceTasks => { ServiceTask => {
                 Id => 401,
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     ScheduleDescription => 'every other Wednesday',
-                    Allocation => {
-                        RoundName => 'Friday ',
-                        RoundGroupName => 'Delta 04 Week 2',
-                    },
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
@@ -808,12 +804,16 @@ FixMyStreet::override_config {
             } },
         }, {
             Id => 1002,
-            ServiceId => 265,
+            ServiceId => 262,
             ServiceName => 'Domestic Refuse Collection',
             ServiceTasks => { ServiceTask => {
                 Id => 402,
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     ScheduleDescription => 'every other Wednesday',
+                    Allocation => {
+                        RoundName => 'Friday ',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {

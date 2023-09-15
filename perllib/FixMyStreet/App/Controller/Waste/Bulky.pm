@@ -8,6 +8,8 @@ use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::App::Form::Waste::Bulky::Amend;
 use FixMyStreet::App::Form::Waste::Bulky::Cancel;
+use FixMyStreet::App::Form::Waste::SmallItems;
+use FixMyStreet::App::Form::Waste::SmallItems::Cancel;
 
 has feature => (
     is => 'ro',
@@ -25,6 +27,11 @@ sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     if ( !$c->stash->{property}{show_bulky_waste} ) {
         $c->detach('/waste/property_redirect');
     }
+}
+
+sub setup_small : Chained('/waste/property') : PathPart('small_items') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+    $c->forward('setup');
 }
 
 sub bulky_item_options_method {
@@ -86,7 +93,7 @@ sub item_list : Private {
                 my $data = $form->saved_data;
                 my $c = $form->{c};
                 $c->cobrand->bulky_total_cost($data);
-                $c->stash->{total} = $c->stash->{payment} / 100;
+                $c->stash->{total} = ($c->stash->{payment} || 0) / 100;
                 for my $num ( 1 .. $max_items ) {
                     $form->update_photo("item_photo_$num", $fields);
                 }
@@ -101,7 +108,7 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
 
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky';
     $c->forward('item_list');
     $c->forward('form');
 
@@ -109,6 +116,12 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
         $c->cobrand->call_hook(
             clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
     }
+}
+
+sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems';
+    $c->detach('index');
 }
 
 sub amend : Chained('setup') : Args(1) {
@@ -190,9 +203,15 @@ sub cancel : Chained('setup') : Args(1) {
 
     $c->stash->{cancelling_booking} = $collection;
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
     $c->stash->{entitled_to_refund} = $c->cobrand->call_hook('bulky_can_refund');
     $c->forward('form');
+}
+
+sub cancel_small : PathPart('cancel') : Chained('setup_small') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems::Cancel';
+    $c->go('cancel');
 }
 
 sub process_bulky_data : Private {
