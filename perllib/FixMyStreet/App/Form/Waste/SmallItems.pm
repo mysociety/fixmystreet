@@ -83,7 +83,8 @@ has_page summary => (
 
         my $slot_still_available
             = $c->cobrand->call_hook(
-            check_bulky_slot_available => $form->saved_data->{chosen_date} );
+            check_bulky_slot_available => $form->saved_data->{chosen_date},
+            form                       => $form );
 
         return 1 if $slot_still_available;
 

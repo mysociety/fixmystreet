@@ -348,7 +348,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('8 remaining slots available');
-            $mech->content_contains('£0.00');
+            $mech->content_lacks('£0.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a small items collection');
             $mech->content_contains('Your small items collection');
