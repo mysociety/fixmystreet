@@ -220,6 +220,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         street_name => 'Street Name',
+        location_name => 'Location Name',
         created_by => 'Created By',
         email => 'Email',
         usrn => 'USRN',
@@ -237,8 +238,6 @@ sub dashboard_export_problems_add_columns {
         container_req_reason => 'Container Request Reason',
 
         missed_collection_id => 'Service ID',
-
-        location_name => 'Location Name',
     );
 
     my $values;
@@ -263,6 +262,7 @@ sub dashboard_export_problems_add_columns {
 
         return {
             street_name => $report->nearest_address_parts->{street},
+            location_name => $report->get_extra_field_value('location_name') || '',
             created_by => $report->name || '',
             email => $report->user->email || '',
             usrn => $report->get_extra_field_value('usrn') || '',
@@ -277,7 +277,6 @@ sub dashboard_export_problems_add_columns {
             container_req_type => $report->get_extra_field_value('Container_Request_Container_Type') || '',
             container_req_reason => $report->get_extra_field_value('Container_Request_Reason') || '',
             missed_collection_id => $report->get_extra_field_value('service_id') || '',
-            location_name => $report->get_extra_field_value('location_name') || '',
         }
     });
 }
