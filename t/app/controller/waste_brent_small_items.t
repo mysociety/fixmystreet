@@ -174,7 +174,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('8 remaining slots available');
             $mech->content_lacks('No image of the location has been attached.');
-            $mech->content_contains('£0.00'); # TODO Don't show pricing at all
+            $mech->content_lacks('£0.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:00 on 01 July 2023");
         }
@@ -351,7 +351,7 @@ FixMyStreet::override_config {
             $mech->content_contains('£0.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a small items collection');
-            $mech->content_contains('Your bulky waste collection');
+            $mech->content_contains('Your small items collection');
             $mech->content_contains('Show upcoming bin days');
 
             # Cancellation messaging & options

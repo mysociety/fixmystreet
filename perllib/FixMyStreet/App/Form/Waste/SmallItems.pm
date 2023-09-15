@@ -120,6 +120,7 @@ has_field submit => (
     type => 'Submit',
     value => 'Submit booking',
     element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 has_field chosen_date => (

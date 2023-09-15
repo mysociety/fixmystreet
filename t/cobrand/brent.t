@@ -866,9 +866,9 @@ FixMyStreet::override_config {
         restore_time();
     };
 
-    subtest 'bulky waste allowed for property with domestic collection' => sub {
+    subtest 'small items allowed for property with domestic collection' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Book bulky goods collection');
+        $mech->content_contains('Book small items collection');
     };
 
     subtest 'shows time band' => sub {

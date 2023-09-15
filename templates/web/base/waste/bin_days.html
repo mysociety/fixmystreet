@@ -166,7 +166,11 @@
 %]
   <div class="govuk-grid-row waste-service-wrapper">
     <div class="govuk-grid-column-one-quarter text-centered">
-      <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
+      [% IF c.cobrand.moniker == 'brent' %]
+        <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Small items</h3>
+      [% ELSE %]
+        <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
+      [% END %]
       <img src="/cobrands/peterborough/images/bulky-waste.png" alt="" class="waste-service-image">
     </div>
     <div class="govuk-grid-column-three-quarters">
