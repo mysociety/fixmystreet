@@ -24,6 +24,7 @@ has index_template => (
 sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     my ($self, $c) = @_;
 
+    $c->detach('/waste/property_redirect') if $c->cobrand->moniker eq 'brent';
     if ( !$c->stash->{property}{show_bulky_waste} ) {
         $c->detach('/waste/property_redirect');
     }
@@ -31,7 +32,11 @@ sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
 
 sub setup_small : Chained('/waste/property') : PathPart('small_items') : CaptureArgs(0) {
     my ($self, $c) = @_;
-    $c->forward('setup');
+
+    $c->detach('/waste/property_redirect') if $c->cobrand->moniker ne 'brent';
+    if ( !$c->stash->{property}{show_bulky_waste} ) {
+        $c->detach('/waste/property_redirect');
+    }
 }
 
 sub bulky_item_options_method {
