@@ -136,6 +136,8 @@ sub bulky_items : Chained('body') {
     my $cobrand = $c->stash->{body}->get_cobrand_handler;
     $c->stash->{available_features} =
         $cobrand->call_hook('bulky_available_feature_types') if $cobrand;
+    $c->stash->{per_item_pricing_property_types} =
+        $cobrand->call_hook('bulky_per_item_pricing_property_types');
 
     if ($c->req->method eq 'POST') {
         $c->forward('/auth/check_csrf_token');
@@ -157,6 +159,11 @@ sub bulky_items : Chained('body') {
                 price => $c->get_param("price[$i]"),
                 max => $c->get_param("max[$i]"),
             };
+
+            foreach my $property_type (@{$c->{stash}->{per_item_pricing_property_types}}) {
+                my $key = "price_" . $property_type;
+                $item->{$key} = $c->get_param($key . "[$i]");
+            }
 
             # validate the row - if any field has a value then need to check
             # that the three required fields are all present
