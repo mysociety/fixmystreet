@@ -584,11 +584,23 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # If we have a service ID for trade properties, consider a property domestic
+    # unless we see it.
+    my $trade_service_id;
+    if (my $waste_cfg = $self->feature('waste_features')) {
+        if ($trade_service_id = $waste_cfg->{bulky_trade_service_id}) {
+            $property->{pricing_property_type} = 'Domestic';
+        }
+    }
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
     my %expired;
     foreach (@$result) {
+        if (defined($trade_service_id) && $_->{ServiceId} eq $trade_service_id) {
+            $property->{pricing_property_type} = 'Trade';
+        }
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
@@ -1096,5 +1108,7 @@ sub waste_reconstruct_bulky_data {
 
     return $saved_data;
 }
+
+sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
 
 1;
