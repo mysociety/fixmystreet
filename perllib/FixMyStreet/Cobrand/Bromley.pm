@@ -1091,4 +1091,17 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+sub bulky_per_item_pricing_by_property_type { 1 }
+
+sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
+
+sub bulky_get_property_type_for_pricing {
+    my ($self, $property) = @_;
+    my $cfg = $self->feature('waste_features');
+    if (grep { $_ == $property->{type_id} } @{ $cfg->{bulky_trade_address_types} || [] }) {
+        return 'Trade';
+    }
+    return 'Domestic';
+}
+
 1;

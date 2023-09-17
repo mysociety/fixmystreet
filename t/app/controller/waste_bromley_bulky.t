@@ -16,21 +16,21 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council',
     {}, { cobrand => 'bromley' } );
 $body->set_extra_metadata(
     wasteworks_config => {
-        base_price => '1000',
-        per_item_costs => 0,
+        per_item_costs => 1,
         items_per_collection_max => 8,
         show_location_page => 'users',
         item_list => [
-            { bartec_id => '83', name => 'Bath' },
-            { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
-            { bartec_id => '85', name => 'Bicycle' },
-            { bartec_id => '3', name => 'BBQ' },
-            { bartec_id => '6', name => 'Bookcase, Shelving Unit' },
+            { bartec_id => '83', name => 'Bath', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '85', name => 'Bicycle', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '3', name => 'BBQ', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '6', name => 'Bookcase, Shelving Unit', price_Domestic => 1000, price_Trade => 2000 },
         ],
     },
 );
 $body->update;
 
+my $echo = Test::MockModule->new('Integrations::Echo');
 
 sub create_contact {
     my ($params, @extra) = @_;
@@ -57,6 +57,7 @@ FixMyStreet::override_config {
         waste => { bromley => 1 },
         waste_features => {
             bromley => {
+                bulky_trade_address_types => [ 1 ],
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
             },
@@ -71,7 +72,7 @@ FixMyStreet::override_config {
     },
 }, sub {
     my $lwp = Test::MockModule->new('LWP::UserAgent');
-    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock( 'CancelReservedSlotsForEvent', sub { [] } );
     $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
     $echo->mock( 'GetTasks', sub { [] } );
     $echo->mock( 'GetEventsForObject', sub { [] } );
@@ -165,7 +166,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
             $mech->content_contains('No image of the location has been attached.');
-            $mech->content_contains('£10.00');
+            $mech->content_contains('£60.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:30 on 01 July 2023");
         }
@@ -207,7 +208,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
-            $mech->content_contains('£10.00');
+            $mech->content_contains('£60.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
@@ -239,6 +240,42 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         };
+    };
+
+    $report->delete;
+
+    subtest 'Different pricing depending on domestic or trade property' => sub {
+        sub test_prices {
+            my ($address_type_id, $minimum_cost, $total_cost) = @_;
+            $echo->mock('GetPointAddress', sub {
+                return {
+                    Id  => '12345',
+                    PointAddressType => { Id => $address_type_id, Name => 'Detached', },
+                    SharedRef => { Value => { anyType => '1000000002' } },
+                    PointType => 'PointAddress',
+                    Coordinates => { GeoPoint => { Latitude => 51.402092, Longitude => 0.015783 } },
+                    Description => '2 Example Street, Bromley, BR1 1AF',
+                };
+            });
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('From ' . $minimum_cost);
+            $mech->get_ok('/waste/12345/bulky');
+            $mech->submit_form_ok; # Intro page.
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'item_1' => 'BBQ',
+                    },
+                },
+            );
+            $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+            $mech->content_contains($total_cost); # Summary page.
+        }
+        test_prices(1, '£20.00', '£20.00');
+        test_prices(2, '£10.00', '£10.00');
     };
 };
 
