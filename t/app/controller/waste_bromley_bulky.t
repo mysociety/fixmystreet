@@ -17,21 +17,21 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council',
     {}, { cobrand => 'bromley' } );
 $body->set_extra_metadata(
     wasteworks_config => {
-        base_price => '1000',
-        per_item_costs => 0,
+        per_item_costs => 1,
         items_per_collection_max => 8,
         show_location_page => 'users',
         item_list => [
-            { bartec_id => '83', name => 'Bath' },
-            { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
-            { bartec_id => '85', name => 'Bicycle' },
-            { bartec_id => '3', name => 'BBQ' },
-            { bartec_id => '6', name => 'Bookcase, Shelving Unit' },
+            { bartec_id => '83', name => 'Bath', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '85', name => 'Bicycle', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '3', name => 'BBQ', price_Domestic => 1000, price_Trade => 2000 },
+            { bartec_id => '6', name => 'Bookcase, Shelving Unit', price_Domestic => 1000, price_Trade => 2000 },
         ],
     },
 );
 $body->update;
 
+my $echo = Test::MockModule->new('Integrations::Echo');
 
 sub create_contact {
     my ($params, @extra) = @_;
@@ -57,6 +57,22 @@ create_contact(
     { code => 'Bulky_Collection_Details_Qty' },
 );
 
+sub domestic_waste_service_units {
+    my ($self, $service_id) = @_;
+    return [ {
+        Id => 1,
+        ServiceId => 531,
+    } ]
+}
+
+sub trade_waste_service_units {
+    my ($self, $service_id) = @_;
+    return [ {
+        Id => 1,
+        ServiceId => 532,
+    } ]
+}
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'bromley',
@@ -64,6 +80,7 @@ FixMyStreet::override_config {
         waste => { bromley => 1 },
         waste_features => {
             bromley => {
+                bulky_trade_service_id => 532,
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
                 bulky_quantity_1_code => 2,
@@ -91,8 +108,7 @@ FixMyStreet::override_config {
     },
 }, sub {
     my $lwp = Test::MockModule->new('LWP::UserAgent');
-    my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
+    $echo->mock( 'CancelReservedSlotsForEvent', sub { [] } );
     $echo->mock( 'GetTasks', sub { [] } );
     $echo->mock( 'GetEventsForObject', sub { [] } );
     $echo->mock( 'FindPoints',sub { [
@@ -112,6 +128,7 @@ FixMyStreet::override_config {
             Description => '2 Example Street, Bromley, BR1 1AF',
         };
     });
+    $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
         is $service, 413;
@@ -225,7 +242,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('you can add up to 5 more items');
-            $mech->content_contains('£10.00');
+            $mech->content_contains('£30.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:30 on 01 July 2023");
         }
@@ -244,7 +261,7 @@ FixMyStreet::override_config {
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->state, 'confirmed', 'report confirmed';
 
-            is $sent_params->{items}[0]{amount}, 1000, 'correct amount used';
+            is $sent_params->{items}[0]{amount}, 3000, 'correct amount used';
             is $sent_params->{items}[0]{reference}, 'customer-ref';
             is $sent_params->{items}[0]{lineId}, $new_report->id;
 
@@ -301,6 +318,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('you can add up to 5 more items');
+            $mech->content_contains('£30.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
@@ -332,6 +350,35 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         };
+    };
+
+    $report->comments->delete;
+    $report->delete;
+
+    subtest 'Different pricing depending on domestic or trade property' => sub {
+        sub test_prices {
+            my ($minimum_cost, $total_cost) = @_;
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('From ' . $minimum_cost);
+            $mech->get_ok('/waste/12345/bulky');
+            $mech->submit_form_ok; # Intro page.
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'item_1' => 'BBQ',
+                    },
+                },
+            );
+            $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+            $mech->content_contains($total_cost); # Summary page.
+        }
+        $echo->mock('GetServiceUnitsForObject', \&trade_waste_service_units );
+        test_prices('£20.00', '£20.00');
+        $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
+        test_prices('£10.00', '£10.00');
     };
 };
 
