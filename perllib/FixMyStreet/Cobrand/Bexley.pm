@@ -216,6 +216,8 @@ sub open311_post_send {
     my $emails = $self->feature('open311_email') || return;
     my $dangerous = $row->get_extra_field_value('dangerous') || '';
 
+    my $is_out_of_hours = _is_out_of_hours();
+
     my $p1_email = 0;
     my $outofhours_email = 0;
     if ($row->category eq 'Abandoned and untaxed vehicles') {
@@ -251,7 +253,9 @@ sub open311_post_send {
         if ($blocking eq 'Yes' || $hazardous eq 'Yes') {
             $outofhours_email = 1;
         }
-        $p1_email = 1;
+        if (!$is_out_of_hours || ($blocking eq 'Yes' && $hazardous eq 'Yes')) {
+            $p1_email = 1;
+        }
     } elsif ($row->category eq 'Alleyway') { #FlytippingAlleyway
         $p1_email = 1 if $dangerous eq 'Yes';
     } elsif ($row->category eq 'Obstructions on pavements and roads') {
@@ -278,7 +282,7 @@ sub open311_post_send {
     push @to, email_list($p1_email_to_use, 'Bexley P1 email') if $p1_email;
     push @to, email_list($emails->{lighting}, 'FixMyStreet Bexley Street Lighting') if $lighting{$row->category};
     push @to, email_list($emails->{flooding}, 'FixMyStreet Bexley Flooding') if $flooding{$row->category};
-    push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && _is_out_of_hours();
+    push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && $is_out_of_hours;
     if ($contact->email =~ /^Uniform/) {
         push @to, email_list($emails->{eh}, 'FixMyStreet Bexley EH');
         $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
