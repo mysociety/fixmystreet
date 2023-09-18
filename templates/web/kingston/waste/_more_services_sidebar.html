@@ -22,6 +22,11 @@
     [% IF show_garden_subscribe %]
       <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
     [% END %]
+    [% IF property.show_bulky_waste %]
+      <li>
+          <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
+      </li>
+    [% END %]
   </ul>
 [% END %]
 
