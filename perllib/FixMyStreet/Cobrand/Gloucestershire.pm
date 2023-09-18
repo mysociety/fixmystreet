@@ -18,6 +18,12 @@ use warnings;
 
 use Moo;
 
+use LWP::Simple;
+use URI;
+use Try::Tiny;
+use JSON::MaybeXS;
+
+
 =pod
 
 Confirm backends expect some extra values and have some maximum lengths for
@@ -170,5 +176,68 @@ sub lookup_site_code_config {
         buffer => 200, # metres
     }
 }
+
+sub extra_around_pins {
+    my ($self, $bbox) = @_;
+
+    if (!defined($bbox)) {
+        return [];
+    }
+
+    my $res = $self->pins_from_wfs($bbox);
+
+    return $res;
+}
+
+
+# Get defects from WDM feed and display them on /around page.
+sub pins_from_wfs {
+    my ($self, $bbox) = @_;
+
+    my $wfs = $self->defect_wfs_query($bbox);
+
+    # Generate a negative fake ID so it doesn't clash with FMS report IDs.
+    my $fake_id = -1;
+    my @pins = map {
+        my $coords = $_->{geometry}->{coordinates};
+        my $props = $_->{properties};
+        {
+            id => $fake_id--,
+            latitude => @$coords[1],
+            longitude => @$coords[0],
+            colour => $props->{state} eq 'open' ? 'yellow' : 'green',
+            title => $props->{description},
+        };
+    } @{ $wfs->{features} };
+
+    return \@pins;
+}
+
+sub defect_wfs_query {
+    my ($self, $bbox) = @_;
+
+    return if FixMyStreet->test_mode eq 'cypress';
+
+    my $uri = URI->new("https://tilma.staging.mysociety.org/confirm.php");
+    $uri->query_form(
+        layer => 'jobs',
+        url => 'https://gloucestershire.assets',
+        bbox => $bbox,
+    );
+
+    try {
+        my $response = get($uri);
+        my $json = JSON->new->utf8->allow_nonref;
+        return $json->decode($response);
+    } catch {
+        # Ignore WFS errors.
+        return {};
+    };
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/oxfordshire/images/';
+}
+
 
 1;
