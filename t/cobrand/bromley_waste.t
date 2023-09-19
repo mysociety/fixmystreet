@@ -216,7 +216,8 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-21T12:00:00Z'); # After sample container mix
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Mixed Recycling.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection was adjusted/s);
-        $mech->content_contains('A missed collection cannot be reported, please see the last collection status above.');
+        $mech->content_contains('A missed collection cannot be reported;');
+        $mech->content_contains('please see the last collection status above.');
         $mech->content_lacks('Report a mixed recycling ');
         restore_time();
     };

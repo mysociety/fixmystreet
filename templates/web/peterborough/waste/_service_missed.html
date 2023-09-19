@@ -50,7 +50,7 @@
         <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
       [% END %]
     </form>
-  [% ELSE %]
+  [% ELSIF NOT no_default %]
     [% IF unit.next AND unit.next.date.ymd == date.format(date.now, "%Y-%m-%d") %]
       <span class="waste-service-descriptor">The crew have not recorded your street as complete and may still be planning to attend. You will not be able to report a missed bin at this time.</span>
     [% ELSE %]

@@ -125,7 +125,8 @@ sub _parse_events {
 
         # Only care about open requests/enquiries
         my $closed = $self->_closed_event($_);
-        next if $type ne 'missed' && $closed;
+        next if $type ne 'missed' && $type ne 'bulky' && $closed;
+        next if $type eq 'bulky' && !$closed;
 
         if ($type eq 'request') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
@@ -141,6 +142,15 @@ sub _parse_events {
             }
         } elsif ($type eq 'missed') {
             $self->parse_event_missed($_, $closed, $events);
+        } elsif ($type eq 'bulky') {
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            my $resolved_date = construct_bin_date($_->{ResolvedDate});
+            $events->{enquiry}->{$event_type} = {
+                date => $resolved_date,
+                report => $report,
+                resolution => $_->{ResolutionCodeId},
+                state => $_->{EventStateId},
+            };
         } else { # General enquiry of some sort
             $events->{enquiry}->{$event_type} = 1;
         }
@@ -598,6 +608,36 @@ sub clear_cached_lookups_bulky_slots {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     $echo->CancelReservedSlotsForEvent($guid);
+}
+
+sub bulky_check_missed_collection {
+    my ($self, $events, $blocked_codes) = @_;
+
+    my $cfg = $self->feature('echo');
+    my $service_id = $cfg->{bulky_service_id} or return;
+    my $event_type_id = $cfg->{bulky_event_type_id} or return;
+    my $event = $events->{enquiry}{$event_type_id};
+    return unless $event;
+    my $row = {
+        service_name => 'Bulky waste',
+        service_id => $service_id,
+    };
+    my $in_time = $self->within_working_days($event->{date}, 2);
+    foreach my $state_id (keys %$blocked_codes) {
+        next unless $event->{state} eq $state_id;
+        foreach (keys %{$blocked_codes->{$state_id}}) {
+            if ($event->{resolution} eq $_ || $_ eq 'all') {
+                $row->{report_locked_out} = 1;
+                $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
+            }
+        }
+    }
+    $row->{report_allowed} = $in_time && !$row->{report_locked_out};
+
+    my $missed_events = $events->{missed}->{$service_id} || [];
+    my $recent_events = $self->_events_since_date($event->{date}, $missed_events);
+    $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+    $self->{c}->stash->{bulky_missed} = $row;
 }
 
 sub find_available_bulky_slots {
