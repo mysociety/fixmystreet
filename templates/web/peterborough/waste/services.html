@@ -2,65 +2,7 @@
 [% SET pboro_staff_request = ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
 
 [% UNLESS waste_features.report_disabled %]
-  [% IF unit.report_open %]
-    <span class="waste-service-descriptor">
-      A [% unit.service_name FILTER lower %] collection has been reported as missed
-      [% IF unit.report_open.report %] – <a href="[% unit.report_open.report.url %]" class="waste-service-link">check status</a>[% END %]
-    </span>
-  [% ELSIF unit.report_locked_out %]
-    <span class="waste-service-descriptor">
-      [%~ IF unit.report_locked_out.join(', ').match('NO ACCESS - street') %]
-        There is no need to report this as there was no access to your property,
-        [%~ IF unit.service_name == 'Black Bin' OR unit.service_name == 'Refuse' %]
-          excess waste will be taken on your next scheduled collection, up to 3 black bags,
-        [%~ ELSIF unit.service_name == 'Green Bin' OR unit.service_name == 'Recycling Bin' %]
-          excess waste will be taken on your next scheduled collection, up to 3 clear bags,
-        [%~ ELSIF unit.service_name == 'Brown Bin' %]
-          unfortunately no excess can be taken on your next scheduled collection,
-        [%~ ELSE %]
-          excess waste may be taken on your next scheduled collection,
-        [%~ END %]
-        we apologise for any inconvenience.
-      [%~ ELSIF unit.report_locked_out.join(', ').match('ON DAY PRE 5PM') %]
-        [%~ IF c.user.from_body OR c.user.is_superuser %]
-          Please call through to Aragon to see if they can return to collect, if not
-          <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]" style="display: inline">
-            <input type="hidden" name="token" value="[% csrf_token %]">
-            <input type="hidden" name="service-[% unit.service_id %]" value="1">
-            <input type="submit" value="click here to raise re-collection request" class="fake-link waste-service-link">
-          </form>
-        [% ELSE %]
-          The crew may still be in the area so before 5pm on collection day, to report a missed [% unit.service_name FILTER lower %] please call 01733 74 74 74.
-        [% END %]
-      [%~ ELSE %]
-        There was a problem with your bin collection
-    [%~ IF c.user.from_body OR c.user.is_superuser %]
-        ([% unit.report_locked_out.join(', ') %])
-    [%~ END %], please call 01733 74 74 74 or email us at
-        <a href="mailto:ask&#64;peterborough.gov.uk?subject=[% property.address %] - missed bin">ask&#64;peterborough.gov.uk</a>, quoting your collection address in the subject line.<br />
-        <small>Please note: we will not return to collect bins that have been recorded
-        by the crew as overweight, contaminated or bin not presented. For more
-        information please visit
-        <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice">https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice</a></small>
-      [%~ END ~%]
-    </span>
-  [% ELSIF unit.report_allowed %]
-    <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
-      <input type="hidden" name="token" value="[% csrf_token %]">
-      <input type="hidden" name="service-[% unit.service_id %]" value="1">
-      [% IF c.cobrand.call_hook('bulky_enabled') %]
-        <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a [% unit.service_name FILTER lower %] collection as missed" value="Report a missed collection" class="waste-service-descriptor waste-service-link">
-      [% ELSE %]
-        <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
-      [% END %]
-    </form>
-  [% ELSE %]
-    [% IF unit.next AND unit.next.date.ymd == date.format(date.now, "%Y-%m-%d") %]
-      <span class="waste-service-descriptor">The crew have not recorded your street as complete and may still be planning to attend. You will not be able to report a missed bin at this time.</span>
-    [% ELSE %]
-      <span class="waste-service-descriptor">Please note that missed bin collections can only be reported until 4pm the next working day after your scheduled collection.</span>
-    [% END %]
-  [% END %]
+  [% PROCESS 'waste/_service_missed.html' %]
 [% END %]
 
 [% UNLESS waste_features.problem_disabled OR (open_service_requests.422 AND unit.service_id == 6533) %]
