@@ -268,7 +268,7 @@ sub title_list {
     my $areas = shift;
     my $first_area = ( values %$areas )[0];
 
-    return ["MR", "MISS", "MRS", "MS", "DR"] if $first_area->{id} eq COUNCIL_ID_BROMLEY;
+    return ["MR", "MISS", "MRS", "MS", "DR", "PCSO", "PC", "N/A"] if $first_area->{id} eq COUNCIL_ID_BROMLEY;
     return undef;
 }
 
