@@ -11,8 +11,14 @@
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
 [% ELSIF unit.report_locked_out %]
-  <span class="waste-service-descriptor">A missed collection cannot be reported, please see the last collection status above.</span>
-[% ELSE %]
+  <span class="waste-service-descriptor">A missed collection cannot be reported;
+    [% IF unit.report_locked_out_reason %]
+        [% unit.report_locked_out_reason %]
+    [% ELSE %]
+        please see the last collection status above.
+    [% END %]
+  </span>
+[% ELSIF NOT no_default %]
   [% IF unit.garden_overdue AND unit.garden_waste AND NOT waste_features.garden_renew_disabled %]
   <div class="govuk-warning-text overdue">
     <div class="govuk-warning-text__img">
