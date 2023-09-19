@@ -382,6 +382,30 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # Bulky collection event
+    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
+        $self->bulky_check_missed_collection($events, {
+            # Partially completed
+            12399 => {
+                507 => 'Not all items presented',
+                380 => 'Some items too heavy',
+            },
+            # Completed
+            12400 => {
+                606 => 'More items presented than booked',
+            },
+            # Not Completed
+            12401 => {
+                460 => 'Nothing out',
+                379 => 'Item not as described',
+                100 => 'No access',
+                212 => 'Too heavy',
+                473 => 'Damage on site',
+                234 => 'Hazardous waste',
+            },
+        });
+    }
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
@@ -550,6 +574,7 @@ sub missed_event_types { {
     1566 => 'missed',
     1568 => 'missed',
     1571 => 'missed',
+    1636 => 'bulky',
 } }
 
 sub parse_event_missed {
@@ -573,6 +598,8 @@ sub parse_event_missed {
     } elsif ($service_id == 420) { # TODO Will food events come in as this?
         push @{$events->{missed}->{2239}}, $event;
         push @{$events->{missed}->{2248}}, $event;
+    } elsif ($service_id == 413) {
+        push @{$events->{missed}->{413}}, $event;
     } elsif ($service_id == 408 || $service_id == 410) {
         my $data = Integrations::Echo::force_arrayref($echo_event->{Data}, 'ExtensibleDatum');
         foreach (@$data) {

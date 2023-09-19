@@ -70,6 +70,7 @@ FixMyStreet::override_config {
         waste_features => {
             kingston => {
                 bulky_enabled => 1,
+                bulky_missed => 1,
                 bulky_tandc_link => 'tandc_link',
             },
         },
@@ -580,6 +581,61 @@ FixMyStreet::override_config {
             $mech->content_lacks("You can cancel this booking till");
             $mech->content_lacks('Cancel this booking');
         };
+    };
+
+    subtest 'Missed collections' => sub {
+        # Fixed date still set to 5th July
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a bulky waste collection as missed');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 1636,
+            ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
+            ResolutionCodeId => 232,
+            EventStateId => 12400,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a bulky waste collection as missed', 'Too long ago');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 1636,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 232,
+            EventStateId => 12400,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a bulky waste collection as missed', 'In time, normal completion');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_contains('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 1636,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 379,
+            EventStateId => 12401,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A missed collection cannot be reported', 'Not completed');
+        $mech->content_contains('Item not as described');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 1636,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 100,
+            EventStateId => 12401,
+        }, {
+            EventTypeId => 1571,
+            ServiceId => 413,
+            Guid => 'guid',
+            EventDate => { DateTime => '2023-07-05T00:00:00Z' },
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A bulky waste collection has been reported as missed');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [] } );
     };
 };
 
