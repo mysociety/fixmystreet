@@ -142,7 +142,7 @@ sub tweak_all_reports_map {
 }
 
 sub title_list {
-    return ["MR", "MISS", "MRS", "MS", "DR"];
+    return ["MR", "MISS", "MRS", "MS", "DR", 'PCSO', 'PC', 'N/A'];
 }
 
 sub waste_check_staff_payment_permissions {
