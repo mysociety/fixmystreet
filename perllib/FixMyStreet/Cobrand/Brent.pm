@@ -873,6 +873,7 @@ sub waste_subscription_types {
 sub missed_event_types { {
     1062 => 'request',
     918 => 'missed',
+    787 => 'bulky',
 } }
 
 sub image_for_unit {
