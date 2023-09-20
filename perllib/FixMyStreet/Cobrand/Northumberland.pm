@@ -25,8 +25,6 @@ sub disambiguate_location {
 
 sub admin_user_domain { 'northumberland.gov.uk' }
 
-sub allow_anonymous_reports { 'button' }
-
 sub default_map_zoom { 4 }
 
 sub abuse_reports_only { 1 }
