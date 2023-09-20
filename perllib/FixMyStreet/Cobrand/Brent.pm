@@ -737,6 +737,18 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # Small items collection event
+    $self->bulky_check_missed_collection($events, {
+        # Completed
+        18490 => {
+            9999 => 'More items presented than booked',
+        },
+        # Not Completed
+        18491 => {
+            all => 'the collection could not be completed',
+        },
+    });
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
@@ -899,7 +911,16 @@ sub waste_subscription_types {
 sub missed_event_types { {
     1062 => 'request',
     918 => 'missed',
+    2964 => 'bulky',
 } }
+
+around bulky_check_missed_collection => sub {
+    my ($orig, $self) = (shift, shift);
+    $orig->($self, @_);
+    if ($self->{c}->stash->{bulky_missed}) {
+        $self->{c}->stash->{bulky_missed}{service_name} = 'Small items';
+    }
+};
 
 sub image_for_unit {
     my ($self, $unit) = @_;
