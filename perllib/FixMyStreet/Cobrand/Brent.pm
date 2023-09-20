@@ -887,55 +887,10 @@ sub waste_subscription_types {
     };
 }
 
-sub _closed_event {
-    my $event = shift;
-    return 1 if $event->{ResolvedDate};
-    return 0;
-}
-
-sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
-    my $events;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $type = 'enquiry';
-        $type = 'request' if $event_type == 1062;
-        $type = 'missed' if $event_type == 918;
-
-        # Only care about open requests/enquiries
-        my $closed = _closed_event($_);
-        next if $type ne 'missed' && $closed;
-
-        if ($type eq 'request') {
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            my $container;
-            DATA: foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        $container = $_->{Value};
-                        last DATA;
-                    }
-                }
-            }
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            $events->{request}->{$container} = $report ? { report => $report } : 1;
-        } elsif ($type eq 'missed') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $service_id = $_->{ServiceId};
-            my $data = {
-                closed => $closed,
-                date => construct_bin_date($_->{EventDate}),
-            };
-            $data->{report} = $report if $report;
-            push @{$events->{missed}->{$service_id}}, $data;
-        } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
-        }
-    }
-    return $events;
-}
+sub missed_event_types { {
+    1062 => 'request',
+    918 => 'missed',
+} }
 
 sub image_for_unit {
     my ($self, $unit) = @_;
@@ -955,8 +910,6 @@ sub image_for_unit {
     };
     return $images->{$service_id};
 }
-
-sub bin_day_format { '%A, %-d~~~ %B' }
 
 sub service_name_override {
     my ($self, $service) = @_;

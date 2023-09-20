@@ -17,6 +17,8 @@ FixMyStreet::Roles::CobrandEcho - shared code between cobrands using an Echo bac
 
 =cut
 
+sub bin_day_format { '%A, %-d~~~ %B' }
+
 sub bin_addresses_for_postcode {
     my $self = shift;
     my $pc = shift;
@@ -102,6 +104,60 @@ sub _get_current_service_task {
         }
     }
     return $current;
+}
+
+sub missed_event_types {}
+
+sub _closed_event {
+    my ($self, $event) = @_;
+    return 1 if $event->{ResolvedDate};
+    return 0;
+}
+
+sub _parse_events {
+    my $self = shift;
+    my $events_data = shift;
+    my $events = {};
+    my $missed_event_types = $self->missed_event_types;
+    foreach (@$events_data) {
+        my $event_type = $_->{EventTypeId};
+        my $type = $missed_event_types->{$event_type} || 'enquiry';
+
+        # Only care about open requests/enquiries
+        my $closed = $self->_closed_event($_);
+        next if $type ne 'missed' && $closed;
+
+        if ($type eq 'request') {
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+            foreach (@$data) {
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    if ($_->{DatatypeName} eq 'Container Type') {
+                        my $container = $_->{Value};
+                        $events->{request}->{$container} = $report ? { report => $report } : 1;
+                    }
+                }
+            }
+        } elsif ($type eq 'missed') {
+            $self->parse_event_missed($_, $closed, $events);
+        } else { # General enquiry of some sort
+            $events->{enquiry}->{$event_type} = 1;
+        }
+    }
+    return $events;
+}
+
+sub parse_event_missed {
+    my ($self, $event, $closed, $events) = @_;
+    my $report = $self->problems->search({ external_id => $event->{Guid} })->first;
+    my $service_id = $event->{ServiceId};
+    my $data = {
+        closed => $closed,
+        date => construct_bin_date($event->{EventDate}),
+    };
+    $data->{report} = $report if $report;
+    push @{$events->{missed}->{$service_id}}, $data;
 }
 
 sub _events_since_date {
