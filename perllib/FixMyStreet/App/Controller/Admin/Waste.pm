@@ -137,7 +137,7 @@ sub bulky_items : Chained('body') {
     $c->stash->{available_features} =
         $cobrand->call_hook('bulky_available_feature_types') if $cobrand;
     $c->stash->{per_item_pricing_property_types} =
-        $cobrand->call_hook('bulky_per_item_pricing_property_types') if $cobrand || [];
+        $cobrand->call_hook('bulky_per_item_pricing_property_types');
 
     if ($c->req->method eq 'POST') {
         $c->forward('/auth/check_csrf_token');
