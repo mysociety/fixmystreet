@@ -176,7 +176,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Toaster/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('8 remaining slots available');
-            $mech->content_lacks('No image of the location has been attached.');
+            $mech->content_contains('No image of the location has been attached.');
             $mech->content_lacks('£0.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:00 on 01 July 2023");
@@ -385,6 +385,63 @@ FixMyStreet::override_config {
         #};
     };
 
+    subtest 'Missed collections' => sub {
+        # Fixed date still set to 5th July
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a small items collection as missed');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 2964,
+            ResolvedDate => { DateTime => '2023-06-21T00:00:00Z' },
+            ResolutionCodeId => 232,
+            EventStateId => 18490,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a small items collection as missed', 'Too long ago');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 2964,
+            ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
+            ResolutionCodeId => 232,
+            EventStateId => 18490,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a small items collection as missed', 'In time, normal completion');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_contains('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 2964,
+            ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
+            ResolutionCodeId => 379,
+            EventStateId => 18491,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A missed collection cannot be reported', 'Not completed');
+        $mech->content_contains('could not be completed');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            EventTypeId => 2964,
+            ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
+            EventStateId => 18490,
+        }, {
+            EventTypeId => 918,
+            ServiceId => 787,
+            Guid => 'guid',
+            EventDate => { DateTime => '2023-07-05T00:00:00Z' },
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A small items collection has been reported as missed');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [] } );
+    };
+};
+
+done_testing;
+
 sub domestic_bin_service {
 return [
         {
@@ -444,8 +501,3 @@ return [
             } },
         }, ]
 }
-
-
-};
-
-done_testing;
