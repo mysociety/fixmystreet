@@ -17,7 +17,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council',
 $body->set_extra_metadata(
     wasteworks_config => {
         per_item_costs => 1,
-        items_per_collection_max => 8,
+        items_per_collection_max => 200,
         show_location_page => 'users',
         item_list => [
             { bartec_id => '83', name => 'Bath', price_Domestic => 1000, price_Trade => 2000 },
@@ -152,7 +152,7 @@ FixMyStreet::override_config {
         subtest 'Intro page' => sub {
             $mech->content_contains('Book bulky goods collection');
             $mech->content_contains('Before you start your booking');
-            $mech->content_contains('You can request up to <strong>eight items per collection');
+            $mech->content_contains('You can request up to <strong>two hundred items per collection');
             $mech->submit_form_ok;
         };
 
@@ -180,7 +180,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('5 remaining slots available');
+            $mech->content_contains('197 remaining slots available');
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_contains('£30.00');
             $mech->content_contains("<dd>01 July</dd>");
@@ -223,7 +223,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bicycle/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('5 remaining slots available');
+            $mech->content_contains('197 remaining slots available');
             # TODO: Make the price display based on the booking rather than
             # calculating it afresh.
             # $mech->content_contains('£30.00');
