@@ -46,7 +46,10 @@ if ($opts->out) {
     flock($fd, LOCK_EX | LOCK_NB) or die;
 }
 
-my $calls = decode_json($opts->calls);
+use UUID::Tiny;
+my $c = $opts->calls;
+$c =~ s/UUID/'"' . UUID::Tiny::create_uuid_as_string . '"'/e;
+my $calls = decode_json($c);
 $calls = $integration->_parallel_api_calls(@$calls);
 if ($fd) {
     store_fd($calls, $fd);
