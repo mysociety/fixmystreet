@@ -467,7 +467,7 @@ sub bulky_per_item_pricing_property_types { [] }
 
 sub bulky_per_item_price_key {
     my $self = shift;
-    return 'price' if !$self->bulky_per_item_pricing_property_types;
+    return 'price' if !@{$self->bulky_per_item_pricing_property_types};
     my $property = $self->{c}->stash->{property};
     my $type = $self->bulky_get_property_type_for_pricing($property);
     return "price_" . $type;
