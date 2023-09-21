@@ -36,7 +36,7 @@ function setup_defect_popup() {
             hover: true,
             clickFeature: function (feature) {
                 close_defect_popup();
-                if (feature.attributes.colour !== 'defects') {
+                if (feature.attributes.id >= 0) {
                     // We're only interested in defects
                     return;
                 }

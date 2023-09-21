@@ -868,6 +868,19 @@ sub construct_bin_report_form {
         };
     }
 
+    # XXX Should we refactor bulky into the general service data (above)?
+    # Plus side, gets the report missed stuff built in; minus side it
+    # doesn't have any next/last collection stuff which is assumed
+    if ($c->stash->{bulky_missed}{report_allowed} && !$c->stash->{bulky_missed}{report_open}) {
+        my $service_id = $c->stash->{bulky_missed}{service_id};
+        my $service_name = $c->stash->{bulky_missed}{service_name};
+        push @$field_list, "service-$service_id" => {
+            type => 'Checkbox',
+            label => "$service_name collection",
+            option_label => "$service_name collection",
+        };
+    }
+
     $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
 
     return $field_list;
@@ -1487,7 +1500,8 @@ sub add_report : Private {
     # So ignore keys that end with 'fileid'.
     # XXX Should fix this so there isn't duplicate data across different keys.
     my @bulky_photo_data;
-    for (grep { /^(item|location)_photo(_\d+)?$/ } keys %$data) {
+    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
+    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
         push @bulky_photo_data, $data->{$_} if $data->{$_};
     }
     $c->stash->{bulky_photo_data} = \@bulky_photo_data;

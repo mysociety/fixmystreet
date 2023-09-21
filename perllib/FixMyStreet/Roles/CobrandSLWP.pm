@@ -561,87 +561,55 @@ sub bin_services_for_address {
     return \@out;
 }
 
-sub _closed_event {
-    my $event = shift;
-    return 1 if $event->{ResolvedDate};
-#    return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock TODO Check this
-    return 0;
-}
+sub missed_event_types { {
+    1635 => 'request',
+    1566 => 'missed',
+    1568 => 'missed',
+    1571 => 'missed',
+} }
 
-sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
-    my $events;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $type = 'enquiry';
-        $type = 'request' if $event_type == 1635;
-        $type = 'missed' if $event_type == 1566 || $event_type == 1568;
+sub parse_event_missed {
+    my ($self, $echo_event, $closed, $events) = @_;
+    my $report = $self->problems->search({ external_id => $echo_event->{Guid} })->first;
+    my $event = {
+        closed => $closed,
+        date => construct_bin_date($echo_event->{EventDate}),
+    };
+    $event->{report} = $report if $report;
 
-        # Only care about open requests/enquiries
-        my $closed = _closed_event($_);
-        next if $type ne 'missed' && $closed;
-
-        if ($type eq 'request') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        my $container = $_->{Value};
-                        $events->{request}->{$container} = $report ? { report => $report } : 1;
-                    }
-                }
-            }
-        } elsif ($type eq 'missed') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $event = {
-                closed => $closed,
-                date => construct_bin_date($_->{EventDate}),
-            };
-            $event->{report} = $report if $report;
-
-            my $service_id = $_->{ServiceId};
-            if ($service_id == 405) {
-                push @{$events->{missed}->{2238}}, $event;
-                push @{$events->{missed}->{2242}}, $event;
-                push @{$events->{missed}->{3576}}, $event;
-            } elsif ($service_id == 406) {
-                push @{$events->{missed}->{2243}}, $event;
-            } elsif ($service_id == 409) {
-                push @{$events->{missed}->{2247}}, $event;
-            } elsif ($service_id == 420) { # TODO Will food events come in as this?
+    my $service_id = $echo_event->{ServiceId};
+    if ($service_id == 405) {
+        push @{$events->{missed}->{2238}}, $event;
+        push @{$events->{missed}->{2242}}, $event;
+        push @{$events->{missed}->{3576}}, $event;
+    } elsif ($service_id == 406) {
+        push @{$events->{missed}->{2243}}, $event;
+    } elsif ($service_id == 409) {
+        push @{$events->{missed}->{2247}}, $event;
+    } elsif ($service_id == 420) { # TODO Will food events come in as this?
+        push @{$events->{missed}->{2239}}, $event;
+        push @{$events->{missed}->{2248}}, $event;
+    } elsif ($service_id == 408 || $service_id == 410) {
+        my $data = Integrations::Echo::force_arrayref($echo_event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
+                push @{$events->{missed}->{2240}}, $event;
+                push @{$events->{missed}->{2249}}, $event;
+                push @{$events->{missed}->{2632}}, $event;
+            } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
+                push @{$events->{missed}->{2241}}, $event;
+                push @{$events->{missed}->{2246}}, $event;
+                push @{$events->{missed}->{2250}}, $event;
+                push @{$events->{missed}->{3571}}, $event;
+            } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
                 push @{$events->{missed}->{2239}}, $event;
                 push @{$events->{missed}->{2248}}, $event;
-            } elsif ($service_id == 408 || $service_id == 410) {
-                my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-                foreach (@$data) {
-                    if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
-                        push @{$events->{missed}->{2240}}, $event;
-                        push @{$events->{missed}->{2249}}, $event;
-                        push @{$events->{missed}->{2632}}, $event;
-                    } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
-                        push @{$events->{missed}->{2241}}, $event;
-                        push @{$events->{missed}->{2246}}, $event;
-                        push @{$events->{missed}->{2250}}, $event;
-                        push @{$events->{missed}->{3571}}, $event;
-                    } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
-                        push @{$events->{missed}->{2239}}, $event;
-                        push @{$events->{missed}->{2248}}, $event;
-                    }
-                }
-            } else {
-                push @{$events->{missed}->{$service_id}}, $event;
             }
-        } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
         }
+    } else {
+        push @{$events->{missed}->{$service_id}}, $event;
     }
-    return $events;
 }
-
-sub bin_day_format { '%A, %-d~~~ %B' }
 
 =head2 within_working_days
 

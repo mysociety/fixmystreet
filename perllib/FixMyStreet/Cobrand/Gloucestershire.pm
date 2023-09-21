@@ -201,13 +201,12 @@ sub pins_from_wfs {
     my @pins = map {
         my $coords = $_->{geometry}->{coordinates};
         my $props = $_->{properties};
-        my $title = $props->{description};
         {
             id => $fake_id--,
             latitude => @$coords[1],
             longitude => @$coords[0],
-            colour => 'defects',
-            title => $title,
+            colour => $props->{state} eq 'open' ? 'yellow' : 'green',
+            title => $props->{description},
         };
     } @{ $wfs->{features} };
 
@@ -222,7 +221,7 @@ sub defect_wfs_query {
     my $uri = URI->new("https://tilma.staging.mysociety.org/confirm.php");
     $uri->query_form(
         layer => 'jobs',
-        url => 'https://gloucestershire.staging',
+        url => 'https://gloucestershire.assets',
         bbox => $bbox,
     );
 

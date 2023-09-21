@@ -790,6 +790,7 @@ sub bin_services_for_address {
         6 => 'Recycling bin (blue bin)',
         11 => 'Food waste caddy',
         13 => 'Garden waste (green bin)',
+        46 => 'Paper and cardboard blue sack',
     };
 
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
@@ -800,6 +801,7 @@ sub bin_services_for_address {
         269 => [ 8 ],
         316 => [ 11 ],
         317 => [ 13 ],
+        #807 => [ 46 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -808,6 +810,7 @@ sub bin_services_for_address {
         269 => 1,
         316 => 1,
         317 => 5,
+        #807 => 1,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -986,55 +989,10 @@ sub waste_subscription_types {
     };
 }
 
-sub _closed_event {
-    my $event = shift;
-    return 1 if $event->{ResolvedDate};
-    return 0;
-}
-
-sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
-    my $events;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $type = 'enquiry';
-        $type = 'request' if $event_type == 1062;
-        $type = 'missed' if $event_type == 918;
-
-        # Only care about open requests/enquiries
-        my $closed = _closed_event($_);
-        next if $type ne 'missed' && $closed;
-
-        if ($type eq 'request') {
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            my $container;
-            DATA: foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        $container = $_->{Value};
-                        last DATA;
-                    }
-                }
-            }
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            $events->{request}->{$container} = $report ? { report => $report } : 1;
-        } elsif ($type eq 'missed') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $service_id = $_->{ServiceId};
-            my $data = {
-                closed => $closed,
-                date => construct_bin_date($_->{EventDate}),
-            };
-            $data->{report} = $report if $report;
-            push @{$events->{missed}->{$service_id}}, $data;
-        } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
-        }
-    }
-    return $events;
-}
+sub missed_event_types { {
+    1062 => 'request',
+    918 => 'missed',
+} }
 
 sub image_for_unit {
     my ($self, $unit) = @_;
@@ -1051,11 +1009,10 @@ sub image_for_unit {
         271 => "$base/bin-brown",
         267 => "$base/sack-black",
         269 => "$base/sack-clear",
+        807 => "$base/bag-blue",
     };
     return $images->{$service_id};
 }
-
-sub bin_day_format { '%A, %-d~~~ %B' }
 
 sub service_name_override {
     my ($self, $service) = @_;
@@ -1070,6 +1027,7 @@ sub service_name_override {
         271 => 'Communal food waste',
         267 => 'Rubbish (black sacks)',
         269 => 'Recycling (clear sacks)',
+        807 => 'Paper and Cardboard (blue sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
@@ -1214,6 +1172,7 @@ sub waste_munge_request_data {
         8 => 269,
         11 => 316,
         13 => 317,
+        46 => 807,
     );
     $c->set_param('service_id', $service_id{$id});
 }

@@ -1731,13 +1731,14 @@ subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
     </service_requests_updates>
     };
 
-    $problem->comments->delete;
-
     my $dt2 = $dt->clone->subtract( minutes => 30 );
     my $dt3 = $dt2->clone->subtract( minutes => 30 );
     $requests_xml =~ s/UPDATED_DATETIME3/$dt/;
     $requests_xml =~ s/UPDATED_DATETIME2/$dt2/;
     $requests_xml =~ s/UPDATED_DATETIME/$dt3/;
+
+    $problem->whensent( $dt3->clone->subtract( minutes => 30 ) );
+    $problem->comments->delete;
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
     Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
