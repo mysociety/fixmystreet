@@ -11,7 +11,7 @@ my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Counci
 my $role = FixMyStreet::DB->resultset("Role")->create({ name => 'Role 1', body => $body, permissions => [], });
 $staffuser->add_to_roles($role);
 
-$mech->create_problems_for_body(1, $body->id, 'Test', {
+my ($problem1, $problem2) = $mech->create_problems_for_body(2, $body->id, 'Test', {
     anonymous => 't',
     extra => { contributed_by => $staffuser->id },
 });
@@ -24,7 +24,14 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('Test User', 'name of anonymous user');
-        $mech->content_contains('counciluser@example.com,"Role 1"', 'staff user and role');
+        $mech->content_like(qr{counciluser\@example.com,"Role 1",$}, 'staff user, role, and unassigned');
+        $staffuser->add_to_planned_reports($problem1);
+        $staffuser->add_to_planned_reports($problem2);
+        $mech->get_ok('/dashboard?export=1');
+        my $id1 = $problem1->id;
+        my $id2 = $problem2->id;
+        $mech->content_like(qr{/report/$id1,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
+        $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
     };
 
     subtest 'Staff OOH shown on National Highways roads' => sub {
