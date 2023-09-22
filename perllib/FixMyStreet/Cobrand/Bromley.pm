@@ -622,10 +622,12 @@ sub bin_services_for_address {
         my $garden = 0;
         my $garden_bins;
         my $garden_cost = 0;
-        my $garden_due = $self->waste_sub_due($schedules->{end_date});
-        my $garden_overdue = $expired{$_->{Id}};
+        my $garden_due;
+        my $garden_overdue;
         if ($service_name eq 'Garden Waste') {
             $garden = 1;
+            $garden_due = $self->waste_sub_due($schedules->{end_date});
+            $garden_overdue = $expired{$_->{Id}};
             foreach (@$data) {
                 next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');

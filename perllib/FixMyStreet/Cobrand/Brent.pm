@@ -791,10 +791,12 @@ sub bin_services_for_address {
         my $garden_bins;
         my $garden_sacks;
         my $garden_cost = 0;
-        my $garden_due = $self->waste_sub_due($schedules->{end_date});
-        my $garden_overdue = $expired{$_->{Id}};
+        my $garden_due;
+        my $garden_overdue;
         if ($service_name eq 'Garden waste') {
             $garden = 1;
+            $garden_due = $self->waste_sub_due($schedules->{end_date});
+            $garden_overdue = $expired{$_->{Id}};
             my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
             foreach (@$data) {
                 if ( $_->{DatatypeName} eq 'BRT - Paid Collection Container Quantity' ) {
