@@ -985,7 +985,6 @@ sub waste_munge_request_data {
     my $reason = $data->{request_reason} || '';
 
     $reason = {
-        cracked => "Cracked bin\n\nPlease remove cracked bin.",
         lost_stolen => 'Lost/stolen bin',
         new_build => 'New build',
         other_staff => '(Other - PD STAFF)',
@@ -1134,17 +1133,9 @@ sub waste_munge_problem_data {
 
     my $bin = $c->stash->{containers}{$container_id};
     $data->{category} = $category;
-    if ($category_verbose =~ /cracked/) {
-        my $address = $c->stash->{property}->{address};
-        $data->{title} = "Request new $bin";
-        $data->{detail} = "Quantity: 1\n\n$address";
-        $data->{detail} .= "\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
-    } else {
-        $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
-                         $category =~ /Not returned/ ? "Bin not returned" : $bin;
-        $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
-    }
-
+    $data->{title} = $category =~ /Lid|Wheels/ ? "Damaged $bin bin" :
+                    $category =~ /Not returned/ ? "Bin not returned" : $bin;
+    $data->{detail} = "$category_verbose\n\n" . $c->stash->{property}->{address};
     if ( $data->{extra_detail} ) {
         $data->{detail} .= "\n\nExtra detail: " . $data->{extra_detail};
     }
@@ -1169,11 +1160,6 @@ sub waste_munge_problem_form_fields {
             container_name => "Black bin",
             label => "The bin’s wheels are damaged",
         },
-        419 => {
-            container => 6533,
-            container_name => "Black bin",
-            label => "The bin is cracked",
-        },
         537 => {
             container => 6534,
             container_name => "Green bin",
@@ -1183,11 +1169,6 @@ sub waste_munge_problem_form_fields {
             container => 6534,
             container_name => "Green bin",
             label => "The bin’s wheels are damaged",
-        },
-        420 => {
-            container => 6534,
-            container_name => "Green bin",
-            label => "The bin is cracked",
         },
         539 => {
             container => 6579,

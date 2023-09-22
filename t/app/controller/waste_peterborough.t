@@ -261,7 +261,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
         $mech->submit_form_ok({ with_fields => { 'container-425' => 1 }});
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'cracked' }});
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'lost_stolen' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
@@ -270,25 +270,9 @@ FixMyStreet::override_config {
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
-    };
-    subtest 'Report a cracked bin raises a bin delivery request' => sub {
-        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
-        $mech->submit_form_ok({ with_fields => { 'service-420' => 1 } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->content_contains('The bin is cracked', "Cracked category found");
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Damaged bin reported');
-        $mech->content_contains('Please leave your bin accessible');
-        $mech->content_contains('Show upcoming bin days');
-        $mech->content_contains('/waste/PE1%203NA:100090215480"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
-        is $report->category, 'Green 240L bin';
-        is $report->title, 'Request new 240L Green';
     };
     subtest 'Staff-only request reason shown correctly' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
@@ -455,13 +439,6 @@ FixMyStreet::override_config {
         $b->mock('Premises_Attributes_Get', sub { [] });
     };
     subtest 'Report broken bin, already reported' => sub {
-        $b->mock('ServiceRequests_Get', sub { [
-            { ServiceType => { ID => 419 }, ServiceStatus => { Status => "OPEN" } },
-        ] });
-        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
-        $mech->content_like(qr/name="service-419" value="1"\s+disabled/);
-        $mech->content_like(qr/name="service-538" value="1"\s+disabled/);
-        $mech->content_like(qr/name="service-541" value="1"\s+disabled/);
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 538 }, ServiceStatus => { Status => "OPEN" } },
         ] });
