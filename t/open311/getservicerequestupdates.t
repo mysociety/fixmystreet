@@ -1738,6 +1738,7 @@ subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
     $requests_xml =~ s/UPDATED_DATETIME/$dt3/;
 
     $problem->whensent( $dt3->clone->subtract( minutes => 30 ) );
+    $problem->update;
     $problem->comments->delete;
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
