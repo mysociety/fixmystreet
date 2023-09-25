@@ -1006,6 +1006,7 @@ subtest 'updating of waste reports' => sub {
             my $external_id = ${$value->value}->value->value;
             my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
             return SOAP::Result->new(result => {
+                Guid => $external_id,
                 EventStateId => $event_state_id,
                 EventTypeId => '1638',
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
