@@ -112,6 +112,11 @@ sub item_list : Private {
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
 
+    my $cfg = $c->cobrand->feature('waste_features');
+    if ($c->stash->{pending_bulky_collections} && !$cfg->{bulky_multiple_bookings}) {
+        $c->detach('/waste/property_redirect');
+    }
+
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky';
     $c->forward('item_list');
@@ -209,7 +214,7 @@ sub cancel : Chained('setup') : Args(1) {
     $c->stash->{cancelling_booking} = $collection;
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
-    $c->stash->{entitled_to_refund} = $c->cobrand->call_hook('bulky_can_refund');
+    $c->stash->{entitled_to_refund} = $c->cobrand->call_hook(bulky_can_refund => $collection);
     $c->forward('form');
 }
 
@@ -241,7 +246,8 @@ sub process_bulky_data : Private {
             amend_extra_data($c, $c->stash->{report}, $data);
             $c->stash->{report}->update;
         } else {
-            $c->forward('/waste/add_report', [ $data, 1 ]) or return;
+            my $no_confirm = !$c->cobrand->bulky_send_before_payment;
+            $c->forward('/waste/add_report', [ $data, $no_confirm ]) or return;
         }
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->stash->{message} = 'Payment skipped on staging';
@@ -292,11 +298,11 @@ sub process_bulky_amend : Private {
     return 1;
 }
 
-# TODO Move some of below to cobrand
 sub amend_extra_data {
     my ($c, $p, $data) = @_;
-    $p->update_extra_field({ name => 'DATE', value => $data->{chosen_date} });
-    $p->update_extra_field({ name => 'CREW NOTES', value => $data->{location} });
+
+    $c->cobrand->waste_munge_bulky_amend($p, $data);
+
     if ($data->{location_photo}) {
         $p->set_extra_metadata(location_photo => $data->{location_photo})
     } else {
@@ -305,8 +311,6 @@ sub amend_extra_data {
 
     my $max = $c->cobrand->bulky_items_maximum;
     for (1..$max) {
-        my $two = sprintf("%02d", $_);
-        $p->update_extra_field({ name => "ITEM_$two", value => $data->{"item_$_"} || '' });
         if ($data->{"item_photo_$_"}) {
             $p->set_extra_metadata("item_photo_$_" => $data->{"item_photo_$_"})
         } else {
@@ -315,7 +319,8 @@ sub amend_extra_data {
     }
 
     my @bulky_photo_data;
-    for (grep { /^(item|location)_photo(_\d+)?$/ } keys %$data) {
+    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
+    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
         push @bulky_photo_data, $data->{$_} if $data->{$_};
     }
     $p->photo( join(',', @bulky_photo_data) );
@@ -357,7 +362,7 @@ sub process_bulky_cancellation : Private {
     # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
     $c->cobrand->call_hook('unset_free_bulky_used');
 
-    if ( $c->cobrand->call_hook('bulky_can_refund') ) {
+    if ( $c->cobrand->call_hook(bulky_can_refund => $collection_report) ) {
         $c->send_email(
             'waste/bulky-refund-request.txt',
             {   to => [

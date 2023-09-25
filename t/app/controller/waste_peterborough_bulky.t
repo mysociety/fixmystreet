@@ -104,6 +104,9 @@ FixMyStreet::override_config {
         waste => { peterborough => 1 },
         waste_features => { peterborough => {
             bulky_enabled => 1,
+            bulky_amend_enabled => 'staff',
+            bulky_multiple_bookings => 1,
+            bulky_retry_bookings => 1,
             bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
         } },
         payment_gateway => { peterborough => {
@@ -1285,6 +1288,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
+        $mech->submit_form_ok({ with_fields => { location => '' } });
+        $mech->content_contains('tandc', 'Can have a blank location');
+        $mech->back;
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_contains("Confirm Booking");
@@ -1443,8 +1449,51 @@ FixMyStreet::override_config {
 
         $report->delete;
         $b->mock('Premises_Attributes_Get', sub { [] });
+
+        my $cfg = $body->get_extra_metadata('wasteworks_config');
+        $cfg->{free_mode} = 0;
+        $cfg->{per_item_costs} = 0;
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
     };
 
+};
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'peterborough',
+    COBRAND_FEATURES => {
+        bartec => { peterborough => { sample_data => 1 } },
+        waste => { peterborough => 1 },
+        waste_features => { peterborough => {
+            bulky_enabled => 1,
+            bulky_multiple_bookings => 1,
+            bulky_retry_bookings => 0,
+            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
+        } },
+    },
+}, sub {
+    my ($b, $jobs_fsd_get, $fs_get) = shared_bartec_mocks();
+    subtest 'Bulky collection, payment by staff, no retrying enabled' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/PE1%203NA:100090215480/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
+        $mech->content_lacks("can be used to retry the payment");
+
+        my $email = $mech->get_text_body_from_email;
+        unlike $email, qr/Provide the reference number/;
+        $mech->get_ok('/waste');
+        $mech->content_lacks('continue_id');
+        $mech->get_ok('/waste/PE1%203NA:100090215480');
+        $mech->content_lacks('Retry booking');
+    };
 };
 
 FixMyStreet::override_config {

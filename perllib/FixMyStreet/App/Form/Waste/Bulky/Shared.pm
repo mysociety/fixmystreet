@@ -45,6 +45,9 @@ has_page location => (
         my ($form) = @_;
         my $fields = {};
         $form->update_photo('location_photo', $fields);
+        if ($form->c->cobrand->bulky_show_location_field_mandatory) {
+            $fields->{location} = { required => 1 };
+        }
         return $fields;
     },
 );
@@ -141,11 +144,13 @@ sub _get_dates {
 
     my %dates_booked;
     foreach (@{$c->stash->{pending_bulky_collections} || []}) {
-        $dates_booked{$_->get_extra_field_value('DATE')} = 1;
+        my $date = $c->cobrand->collection_date($_);
+        $dates_booked{$date} = 1;
     }
     if (my $amend = $c->stash->{amending_booking}) {
         # Want to allow amendment without changing the date
-        delete $dates_booked{$amend->get_extra_field_value('DATE')};
+        my $date = $c->cobrand->collection_date($amend);
+        delete $dates_booked{$date};
     }
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );

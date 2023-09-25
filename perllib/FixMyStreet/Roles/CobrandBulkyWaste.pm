@@ -64,6 +64,7 @@ sub bulky_show_location_page {
         }
     }
 };
+sub bulky_show_location_field_mandatory { 0 }
 
 =head2 Requirements
 
@@ -242,8 +243,16 @@ sub bulky_can_amend_collection {
     my ( $self, $p ) = @_;
     my $c = $self->{c};
     return unless $c->user_exists;
-    my $staff = $c->user->is_superuser || $c->user->belongs_to_body( $self->body->id);
-    return 1 if $self->bulky_collection_can_be_amended($p) && $staff;
+
+    my $cfg = $self->feature('waste_features') || {};
+    return unless $cfg->{bulky_amend_enabled};
+
+    my $can_be = $self->bulky_collection_can_be_amended($p);
+    if ($cfg->{bulky_amend_enabled} eq 'staff') {
+        my $staff = $c->user->is_superuser || $c->user->belongs_to_body($self->body->id);
+        return $can_be && $staff;
+    }
+    return $can_be;
 }
 
 sub bulky_collection_can_be_amended {
@@ -311,10 +320,14 @@ sub _check_within_bulky_cancel_window {
 }
 
 sub bulky_can_refund {
-    my $self = shift;
-    my $c    = $self->{c};
+    my ($self, $p) = @_;
+    return 1 unless $p;
+    return $self->bulky_can_refund_collection($p);
+}
 
-    return $self->within_bulky_refund_window;
+sub bulky_can_refund_collection {
+    my ($self, $p) = @_;
+    return $self->within_bulky_refund_window($p);
 }
 
 sub within_bulky_refund_window {
@@ -461,5 +474,7 @@ sub _bulky_send_reminder_email {
         print " ...failed\n" if $params->{verbose};
     }
 }
+
+sub bulky_send_before_payment { 0 }
 
 1;

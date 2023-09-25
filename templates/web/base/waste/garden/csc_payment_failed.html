@@ -13,7 +13,9 @@
       [% IF report.category == 'Bulky collection' %]
         <p>
             No booking has been created.
+          [% IF waste_features.bulky_retry_bookings %]
             The following code – <strong>[% report.id %]</strong> – can be used to retry the payment.
+          [% END %]
         </p>
       [% ELSE %]
         <p>

@@ -260,19 +260,18 @@ sub bulky_cancellation_report {
     });
 }
 
-sub bulky_can_refund {
-    my $self = shift;
+sub bulky_can_refund_collection {
+    my ($self, $p) = @_;
     my $c    = $self->{c};
 
     # Skip refund eligibility check for bulky goods soft launch; just
     # assume if a collection can be cancelled, it can be refunded
     # (see https://3.basecamp.com/4020879/buckets/26662378/todos/5870058641)
-    return $self->within_bulky_cancel_window($c->stash->{cancelling_booking})
+    return $self->within_bulky_cancel_window($p)
         if $self->bulky_enabled_staff_only;
 
-    return $c->stash->{cancelling_booking}
-        ->get_extra_field_value('CHARGEABLE') ne 'FREE'
-        && $self->within_bulky_refund_window($c->stash->{cancelling_booking});
+    return $p->get_extra_field_value('CHARGEABLE') ne 'FREE'
+        && $self->within_bulky_refund_window($p);
 }
 
 # A cancellation made less than 24 hours before the collection is scheduled to
@@ -339,6 +338,18 @@ sub waste_reconstruct_bulky_data {
     $saved_data->{resident} = 'Yes';
 
     return $saved_data;
+}
+
+sub waste_munge_bulky_amend {
+    my ($self, $p, $data) = @_;
+    $p->update_extra_field({ name => 'DATE', value => $data->{chosen_date} });
+    $p->update_extra_field({ name => 'CREW NOTES', value => $data->{location} });
+
+    my $max = $self->{c}->cobrand->bulky_items_maximum;
+    for (1..$max) {
+        my $two = sprintf("%02d", $_);
+        $p->update_extra_field({ name => "ITEM_$two", value => $data->{"item_$_"} || '' });
+    }
 }
 
 sub waste_munge_bulky_cancellation_data {
