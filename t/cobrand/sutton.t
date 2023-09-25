@@ -1,11 +1,15 @@
 use CGI::Simple;
 use Test::MockModule;
 use Test::Output;
+use MIME::Base64;
+use Path::Tiny;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
+
 my $mech = FixMyStreet::TestMech->new;
+my $sample_file = path(__FILE__)->parent->child("zurich-logo_portal.x.jpg");
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -172,11 +176,20 @@ subtest 'updating of waste reports' => sub {
             my ($key, $type, $value) = ${$args[3]->value}->value;
             my $external_id = ${$value->value}->value->value;
             my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            my $data = [];
+            if ($external_id eq 'waste-with-image') {
+                push @$data, {
+                    DatatypeName => 'Post Collection Photo',
+                    Value => encode_base64($sample_file->slurp_raw),
+                };
+            }
             return SOAP::Result->new(result => {
+                Guid => $external_id,
                 EventStateId => $event_state_id,
                 EventTypeId => '1638',
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2010-10-12T14:00:00Z' },
                 ResolutionCodeId => $resolution_code,
+                Data => { ExtensibleDatum => $data },
             });
         } elsif ($method eq 'GetEventType') {
             return SOAP::Result->new(result => {
@@ -289,6 +302,33 @@ EOF
         is $report->comments->count, 3, 'A new update';
         $report->discard_changes;
         is $report->state, 'investigating', 'A state change';
+
+        $report->update({ external_id => 'waste-with-image' });
+        $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-with-image</Guid>
+        <EventTypeId>1638</EventTypeId>
+        <EventStateId>15004</EventStateId>
+        <ResolutionCodeId></ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 4, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'fixed - council', 'A state change';
+        my $update = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
     };
 };
 
