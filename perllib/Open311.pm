@@ -369,11 +369,24 @@ sub post_service_request_update {
 sub add_media {
     my ($self, $url, $object) = @_;
 
-    my $ua = LWP::UserAgent->new;
-    my $res = $ua->get($url);
-    if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
+    $url = [ $url ] unless ref $url;
+
+    my @photos;
+    foreach (@$url) {
+        if ($_ =~ /^data:/) {
+            my @parts = split ',', $_, 2;
+            push @photos, $parts[1];
+        } else {
+            my $ua = LWP::UserAgent->new;
+            my $res = $ua->get($_);
+            if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
+                push @photos, $res->decoded_content;
+            }
+        }
+    }
+    if (@photos) {
         my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-            data_items => [ $res->decoded_content ],
+            data_items => \@photos,
         });
         $object->photo($photoset->data);
     }
