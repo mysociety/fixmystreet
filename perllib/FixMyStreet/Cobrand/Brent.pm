@@ -930,7 +930,7 @@ sub service_name_override {
         271 => 'Communal food waste',
         267 => 'Rubbish (black sacks)',
         269 => 'Recycling (clear sacks)',
-        807 => 'Paper and Cardboard (blue sacks)',
+        807 => 'Paper and cardboard (blue sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
