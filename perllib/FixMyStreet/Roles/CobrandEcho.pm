@@ -435,12 +435,14 @@ sub construct_waste_open311_update {
     } else {
         $external_status_code = $resolution_id ? "$resolution_id,," : "",
     }
+    my %extra = $self->call_hook(open311_waste_update_extra => $cfg, $event);
     return {
         description => $description,
         status => $status,
         update_id => 'waste',
         external_status_code => $external_status_code,
         prefer_template => 1,
+        %extra,
     }
 }
 
