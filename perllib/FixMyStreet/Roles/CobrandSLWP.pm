@@ -15,6 +15,7 @@ with 'FixMyStreet::Roles::CobrandBulkyWaste';
 use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
+use MIME::Base64;
 use FixMyStreet::WorkingDays;
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -128,6 +129,29 @@ sub open311_post_send {
             $row->discard_changes;
         }
     });
+}
+
+=item * Look for completion photos on updates
+
+=cut
+
+sub open311_waste_update_extra {
+    my ($self, $cfg, $event) = @_;
+
+    # Could have got here with a full event (pull) or subset (push)
+    if (!$event->{Data}) {
+        $event = $cfg->{echo}->GetEvent($event->{Guid});
+    }
+    my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+    my @media;
+    foreach (@$data) {
+        if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
+            my $value = decode_base64($_->{Value});
+            my $type = FixMyStreet::PhotoStorage->detect_type($value);
+            push @media, "data:image/$type,$value";
+        }
+    }
+    return @media ? ( media_url => \@media ) : ();
 }
 
 =item * No updates on waste reports
