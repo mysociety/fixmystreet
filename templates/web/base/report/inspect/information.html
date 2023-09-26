@@ -28,6 +28,9 @@
           [% IF non_anon_email %]
             <strong>[% loc('Email:') %]</strong>
             <a href="mailto:[% problem.user.email %]">[% problem.user.email %]</a>
+            <p>
+              <strong>[% loc('Name:') %]</strong> [% problem.name %]
+            </p>
           [% END %]
           </p>
         [% END %]
