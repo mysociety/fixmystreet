@@ -168,6 +168,7 @@ sub new { my $c = shift; bless { @_ }, $c; }
 package main;
 
 subtest 'updating of waste reports' => sub {
+    my $date = DateTime->now->subtract(days => 1)->strftime('%Y-%m-%dT%H:%M:%SZ');
     my $integ = Test::MockModule->new('SOAP::Lite');
     $integ->mock(call => sub {
         my ($cls, @args) = @_;
@@ -187,7 +188,7 @@ subtest 'updating of waste reports' => sub {
                 Guid => $external_id,
                 EventStateId => $event_state_id,
                 EventTypeId => '1638',
-                LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2010-10-12T14:00:00Z' },
+                LastUpdatedDate => { OffsetMinutes => 60, DateTime => $date },
                 ResolutionCodeId => $resolution_code,
                 Data => { ExtensibleDatum => $data },
             });
@@ -223,7 +224,7 @@ subtest 'updating of waste reports' => sub {
     }, sub {
         $mech->clear_emails_ok;
 
-        $normal_user->create_alert($report->id, { cobrand => 'sutton' });
+        $normal_user->create_alert($report->id, { cobrand => 'sutton', whensubscribed => $date });
 
         my $cobrand = FixMyStreet::Cobrand::Sutton->new;
 
@@ -262,7 +263,7 @@ subtest 'updating of waste reports' => sub {
         is $report->state, 'fixed - council', 'State changed';
 
         FixMyStreet::Script::Alerts::send_updates();
-        $mech->email_count_is(0);
+        $mech->email_count_is(1);
     };
 
     FixMyStreet::override_config {
