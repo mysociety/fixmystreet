@@ -130,6 +130,7 @@ sub send_alert_type {
                 my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand_name);
 
                 my $update = _('State changed to:') . ' ' . $state;
+                $row->{item_text_original} = $row->{item_text};
                 $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
                                                         $update;
                 $last_problem_state = $row->{item_problem_state};

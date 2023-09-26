@@ -1,7 +1,11 @@
 [% FOR row IN data -%]
+[% IF report.category == 'Bulky collection' AND (row.item_problem_state == 'closed' OR row.item_problem_state == 'fixed - council' OR row.item_problem_state == 'unable to fix') -%]
+[% INCLUDE 'waste/_bulky_email_comment_end.txt' -%]
+[% ELSE -%]
 [% row.item_name _ ' : ' IF row.item_name AND NOT row.item_anonymous -%]
 [% '(' _ cobrand.prettify_dt(row.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
-[% email_sanitize_text(row) %]
+[% email_sanitize_text(row) -%]
+[% END %]
 
 ------
 
