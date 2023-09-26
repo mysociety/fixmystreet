@@ -30,6 +30,14 @@ my $kingston = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
     cobrand => 'kingston',
 });
 
+FixMyStreet::DB->resultset('ResponseTemplate')->create({
+    body_id => $body->id,
+    auto_response => 1,
+    title => 'Completed bulky waste',
+    text => 'Your collection has now been completed',
+    state => 'fixed - council',
+});
+
 $mech->create_contact_ok(
     body => $body,
     category => 'Graffiti',
@@ -304,7 +312,13 @@ EOF
         $report->discard_changes;
         is $report->state, 'investigating', 'A state change';
 
-        $report->update({ external_id => 'waste-with-image' });
+        FixMyStreet::Script::Alerts::send_updates();
+        $mech->clear_emails_ok;
+
+        $report->update_extra_field({ name => 'Collection_Date', value => '2023-09-26T00:00:00Z' });
+        $report->set_extra_metadata( item_1 => 'Armchair' );
+        $report->set_extra_metadata( item_2 => 'BBQ' );
+        $report->update({ category => 'Bulky collection', external_id => 'waste-with-image' });
         $in = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
 <Envelope>
@@ -330,6 +344,14 @@ EOF
         is $report->state, 'fixed - council', 'A state change';
         my $update = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
+
+        FixMyStreet::Script::Alerts::send_updates();
+        my $body = $mech->get_text_body_from_email;
+        my $id = $report->id;
+        like $body, qr/reference number is LBS-$id/;
+        like $body, qr/Armchair/;
+        like $body, qr/26 September/;
+        like $body, qr/Your collection has now been completed/;
     };
 };
 
