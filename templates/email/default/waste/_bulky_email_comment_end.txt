@@ -1,0 +1,17 @@
+[% PROCESS 'waste/_bulky_data.html' ~%]
+
+[% email_summary %]
+
+[% email_sanitize_text(row, 'item_text_original') %]
+
+Collection date: [% collection_date %]
+
+Items for collection:
+[% FOR item IN item_list %]
+    - [% item.value %]
+[% IF item.message %]
+        - [% item.message %]
+[% END %]
+[% END %]
+
+[% INCLUDE '_council_reference.txt' problem=report %]
