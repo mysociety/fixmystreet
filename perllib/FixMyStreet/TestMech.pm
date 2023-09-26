@@ -255,8 +255,8 @@ sub get_email_envelope {
     return $emails[0];
 }
 
-sub get_text_body_from_email {
-    my ($mech, $email, $obj) = @_;
+sub _get_body_from_email {
+    my ($type, $mech, $email, $obj) = @_;
     unless ($email) {
         $email = $mech->get_email;
         $mech->clear_emails_ok;
@@ -266,30 +266,15 @@ sub get_text_body_from_email {
     $email->walk_parts(sub {
         my $part = shift;
         return if $part->subparts;
-        return if $part->content_type !~ m{text/plain};
+        return if $part->content_type !~ m{text/$type};
         $body = $obj ? $part : $part->body_str;
-        ok $body, "Found text body";
+        ok $body, "Found $type body";
     });
     return $body;
 }
 
-sub get_html_body_from_email {
-    my ($mech, $email, $obj) = @_;
-    unless ($email) {
-        $email = $mech->get_email;
-        $mech->clear_emails_ok;
-    }
-
-    my $body;
-    $email->walk_parts(sub {
-        my $part = shift;
-        return if $part->subparts;
-        return if $part->content_type !~ m{text/html};
-        $body = $obj ? $part : $part->body_str;
-        ok $body, "Found HTML body";
-    });
-    return $body;
-}
+sub get_text_body_from_email { _get_body_from_email('plain', @_) }
+sub get_html_body_from_email { _get_body_from_email('html', @_) }
 
 sub get_link_from_email {
     my ($mech, $email, $multiple, $mismatch) = @_;
