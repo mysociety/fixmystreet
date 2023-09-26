@@ -10,20 +10,7 @@
 
 <p style="[% p_style %]">
     Items for collection:
-    <ul>
-      [% FOR item IN item_list %]
-        <li>
-          [% item.value %]
-          [% IF item.message %]
-            <ul>
-              <li>
-                [% item.message %]
-              </li>
-            </ul>
-          [% END %]
-        </li>
-      [% END %]
-    </ul>
+    [% INCLUDE 'waste/_bulky_list.html' %]
 </p>
 
 [% INCLUDE '_council_reference.html' problem=report %]

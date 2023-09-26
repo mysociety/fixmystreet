@@ -14,12 +14,7 @@ Collection ref: [% report.id %]
 Collection date: [% collection_date %]
 
 Items to be collected:
-[% FOR item IN item_list %]
-    - [% item.value %]
-[% IF item.message %]
-        - [% item.message %]
-[% END %]
-[% END %]
+[% INCLUDE 'waste/_bulky_list.txt' %]
 
 Amount paid: £[% pounds(payment / 100) %]
 
