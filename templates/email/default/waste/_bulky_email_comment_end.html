@@ -1,0 +1,16 @@
+[% PROCESS 'waste/_bulky_data.html' -%]
+
+[% email_summary %]
+
+[% email_sanitize_html(update, 'item_text_original') | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
+
+<p style="[% p_style %]">
+    Collection date: [% collection_date %]
+</p>
+
+<p style="[% p_style %]">
+    Items for collection:
+    [% INCLUDE 'waste/_bulky_list.html' %]
+</p>
+
+[% INCLUDE '_council_reference.html' problem=report %]
