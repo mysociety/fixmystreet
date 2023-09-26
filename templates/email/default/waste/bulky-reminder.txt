@@ -15,6 +15,9 @@ This is a reminder that your collection is in 3 days.
 This is a reminder that your collection is tomorrow.
 [% END %]
 
+Items to be collected:
+[% INCLUDE 'waste/_bulky_list.txt' %]
+
 [% INCLUDE '_council_reference.txt' problem=report %]
 
 [% report.detail %]

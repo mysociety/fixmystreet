@@ -27,6 +27,11 @@ INCLUDE '_email_top.html';
     [% END %]
   </p>
 
+  <p style="[% p_style %]">
+    Items to be collected:
+    [% INCLUDE 'waste/_bulky_list.html' %]
+  </p>
+
     [% INCLUDE '_council_reference.html' problem=report %]
 
   <p style="[% p_style %]">
