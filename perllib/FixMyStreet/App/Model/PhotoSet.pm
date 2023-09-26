@@ -155,9 +155,15 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     return ();
                 }
 
+                my %params;
+                # Brent has a quite-small file size limit, make sure we convert to JPEGs
+                if ($self->c->cobrand->moniker eq 'brent') {
+                    $params{magick} = 'JPEG';
+                }
+
                 # we have an image we can use - save it to storage
                 $photo_blob = try {
-                    FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob;
+                    FixMyStreet::ImageMagick->new(blob => $photo_blob)->shrink('2048x2048')->as_blob(%params);
                 } catch { $photo_blob };
                 return $self->storage->store_photo($photo_blob);
             }
