@@ -1,20 +1,32 @@
 [% PROCESS 'waste/header.html' %]
-[% IF property %]
-  [% INCLUDE 'waste/_address_display.html' %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">
+    Your booking has been cancelled
+  </h1>
+  <div class="govuk-panel__body">
+   [% IF entitled_to_refund %]
+    <p>Your refund is on its way.</p>
+   [% END %]
+    <p>If you need to contact us about your application please use the application reference:&nbsp;
+     [%~ IF cobrand.moniker == 'sutton' ~%]
+      LBS-
+     [%~ ELSIF cobrand.moniker == 'kingston' ~%]
+      RBK-
+     [%~ END ~%]
+      [%~ cancelling_booking.id %]
+    </p>
+  </div>
+</div>
+
+[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') %]
+  [% button_text = 'Return to property details' %]
+[% ELSE %]
+  [% button_text = 'Show upcoming bin days' %]
 [% END %]
 
-<div class="govuk-warning-text whole-page govuk-!-margin-bottom-9">
-    <div class="govuk-warning-text__img govuk-!-margin-bottom-5">
-        <span class="govuk-warning-text__icon success" aria-hidden="true">&#x2714;</span>
-    </div>
-    <div class="govuk-warning-text__content">
-        <span class="govuk-warning-text__assistive">Important information</span>
-        <h3 class="govuk-heading-l govuk-warning-text__heading">Your booking has been cancelled</h3>
-        <dt><strong>Booking reference number</strong></dt>
-        <dd class="govuk-!-margin-bottom-4">[% cancelling_booking.id %]</dd>
-        [% IF entitled_to_refund %]
-            <p class="govuk-!-margin-bottom-2">Your refund is on its way.</p>
-        [% END %]
-        <a href="[% c.uri_for_action('waste/bin_days', [ property.id ]) %]" class="btn btn-primary">Go back home</a>
-    </div>
-</div>
+<p>
+  <a href="[% c.uri_for_action('waste/bin_days', [ property.id ]) %]" class="govuk-button">[% button_text %]</a>
+</p>
+
+[% INCLUDE footer.html %]
