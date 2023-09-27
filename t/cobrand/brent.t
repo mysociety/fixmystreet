@@ -833,17 +833,18 @@ FixMyStreet::override_config {
             ServiceName => 'Domestic Food Waste Collection',
             ServiceTasks => { ServiceTask => {
                 Id => 403,
+                ScheduleDescription => 'every Thursday',
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
-                    ScheduleDescription => 'every other Wednesday',
+                    ScheduleDescription => 'every other Thursday',
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
-                        CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
-                        OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-06-04T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-04T00:00:00Z' },
                     },
                     LastInstance => {
                         OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                        CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-21T00:00:00Z' },
                         Ref => { Value => { anyType => [ 345, 678 ] } },
                     },
                     TimeBand => {
@@ -894,20 +895,11 @@ FixMyStreet::override_config {
         restore_time();
     };
 
-    subtest 'shows time band' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains("(07:30&ndash;08:30)");
-    };
-
-    subtest 'showing PDF calendar' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains('https://example.org/media/16420712/fridayweek2');
-    };
-
-    subtest 'showing green garden waste PDF calendar' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains('https://example.org/media/16420712/mondayweek2');
-    };
+    $mech->get_ok('/waste/12345');
+    $mech->content_contains("(07:30&ndash;08:30)", 'shows time band');
+    $mech->content_contains('https://example.org/media/16420712/fridayweek2', 'showing PDF calendar');
+    $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
+    $mech->content_contains('every Thursday', 'food showing right schedule');
 
     subtest 'test requesting a container' => sub {
         $mech->log_in_ok($user1->email);
