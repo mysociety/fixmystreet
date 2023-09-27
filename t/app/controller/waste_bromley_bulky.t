@@ -302,9 +302,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
-            # TODO: Make the price display based on the booking rather than
-            # calculating it afresh.
-            # $mech->content_contains('£30.00');
+            $mech->content_contains('£30.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
