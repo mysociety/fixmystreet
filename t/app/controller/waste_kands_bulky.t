@@ -401,9 +401,14 @@ FixMyStreet::override_config {
         };
 
         subtest 'Confirmation page' => sub {
-            $mech->content_contains('Payment successful');
-
             $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $mech->content_contains('Bulky collection booking confirmed');
+            $mech->content_contains('Our contractor will collect the items you have requested on 08 July.');
+            $mech->content_contains('Item collection starts from 6:30am. Please have your items ready and dismantled if required.');
+            $mech->content_contains('We have emailed confirmation of your booking to pkg-tappcontrollerwaste_kands_bulkyt-bob@example.org.');
+            $mech->content_contains('If you need to contact us about your application please use the application reference:&nbsp;RBK-' . $report->id);
+            $mech->content_contains('Card payment reference: 54321');
+            $mech->content_contains('Return to property details');
             is $report->detail, "Address: 2 Example Street, Kingston, KT1 1AA";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
@@ -584,7 +589,7 @@ FixMyStreet::override_config {
         $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
         $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
         $mech->content_contains('Your booking has been cancelled');
-        $mech->follow_link_ok( { text => 'Go back home' } );
+        $mech->follow_link_ok( { text => 'Return to property details' } );
         is $mech->uri->path, $base_path, 'Returned to bin days';
         $mech->content_lacks('Cancel booking');
 

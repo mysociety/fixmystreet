@@ -1,35 +1,50 @@
+[%
+IF report.category == 'Bulky collection';
+    title = 'Bulky collection booking confirmed';
+ELSIF report.category == 'Small items collection';
+    title = 'Small items collection booking confirmed';
+ELSE;
+    title = 'Enquiry has been submitted';
+END ~%]
+
 [% PROCESS 'waste/header.html' %]
 
-<div class="govuk-warning-text whole-page govuk-!-margin-bottom-9">
-    <div class="govuk-warning-text__img govuk-!-margin-bottom-5">
-       <span class="govuk-warning-text__icon success" aria-hidden="true">&#x2714;</span>
-    </div>
-    <div class="govuk-warning-text__content">
-        <span class="govuk-warning-text__assistive">Important information</span>
-        <h3 class="govuk-heading-l govuk-warning-text__heading">Collection booked</h3>
-        <dl>
-            <dt><strong>Booking reference number</strong></dt>
-            <dd class="govuk-!-margin-bottom-4">[% report.id %]</dd>
-            <dt><strong>Date of collection</strong></dt>
-            <dd class="govuk-!-margin-bottom-6">
-                <p class="govuk-!-margin-bottom-1">[% cobrand.bulky_nice_collection_date(report) %]</p>
-                <small style="max-width: 350px; display:block;">
-                    Item collection starts from [% cobrand.bulky_nice_collection_time %].
-                    Please have your items ready and dismantled if required.
-                </small>
-            </dd>
-          [% IF reference %]
-            <dt><strong>Payment reference</strong></dt>
-            <dd class="govuk-!-margin-bottom-4">[% reference %]</dd>
-          [% END %]
-        </dl>
-        [% message %]
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">
+      [% title %]
+  </h1>
+  <div class="govuk-panel__body">
+      <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
+      <p>Item collection starts from [% cobrand.bulky_nice_collection_time %]. Please have your items ready and dismantled if required.</p>
       [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
-        <p class="govuk-!-margin-bottom-2">We have sent you an email confirming this booking.</p>
-        <p>Can’t find our email? <strong>Check your spam folder.</strong></p>
+      <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
       [% END %]
-        <a href="[% c.uri_for_action('waste/bin_days', [ report.get_extra_field_value('property_id') ]) %]" class="btn btn-primary">Go back home</a>
-    </div>
+      <p>If you need to contact us about your application please use the application reference:&nbsp;
+        [%~ IF cobrand.moniker == 'sutton' ~%]
+          LBS-
+        [%~ ELSIF cobrand.moniker == 'kingston' ~%]
+          RBK-
+        [%~ END ~%]
+        [%~ report.id %]
+      </p>
+      [% IF reference %]
+        <p>
+            Card payment reference: [% reference %]
+        </p>
+      [% END %]
+  </div>
 </div>
+
+[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') %]
+  [% button_text = 'Return to property details' %]
+[% ELSE %]
+  [% button_text = 'Show upcoming bin days' %]
+[% END %]
+
+<p>
+  [% # sometimes we have the property on the stash, sometimes it's just the report (e.g. token confirmation)
+     property_id = property.id OR report.get_extra_field_value('property_id') %]
+  <a href="[% c.uri_for_action('waste/bin_days', [ property_id ]) %]" class="govuk-button">[% button_text %]</a>
+</p>
 
 [% INCLUDE footer.html %]
