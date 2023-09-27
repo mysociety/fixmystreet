@@ -922,7 +922,8 @@ sub waste_payment_ref_council_code { "LBB" }
 
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->get_extra_field_value('uprn') unless $p->category eq 'Bulky collection';
+    return $p->id;
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
@@ -1064,6 +1065,8 @@ sub waste_munge_bulky_data {
         };
     }
     $data->{extra_Image} = join("::", @photos);
+
+    $self->bulky_total_cost($data);
 }
 
 sub waste_reconstruct_bulky_data {

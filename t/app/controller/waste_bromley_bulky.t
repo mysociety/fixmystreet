@@ -48,6 +48,8 @@ create_contact(
     { category => 'Bulky collection', email => '1636' },
     { code => 'collection_date' },
     { code => 'Exact_Location' },
+    { code => 'payment' },
+    { code => 'payment_method' },
 );
 
 sub domestic_waste_service_units {
@@ -83,6 +85,18 @@ FixMyStreet::override_config {
                 bulky_service_id => 413,
                 bulky_event_type_id => 1636,
                 url => 'http://example.org',
+            },
+        },
+        payment_gateway => {
+            bromley => {
+                cc_url => 'http://example.com',
+                hmac => '1234',
+                hmac_id => '1234',
+                scpID => '1234',
+                company_name => 'rbk',
+                form_name => 'rbk_user_form',
+                staff_form_name => 'rbk_staff_form',
+                customer_ref => 'customer-ref',
             },
         },
     },
@@ -132,6 +146,44 @@ FixMyStreet::override_config {
             Reference => 'reserve3==',
         },
     ] });
+
+    my $sent_params;
+    my $call_params;
+    my $pay = Test::MockModule->new('Integrations::SCP');
+
+    $pay->mock(call => sub {
+        my $self = shift;
+        my $method = shift;
+        $call_params = { @_ };
+    });
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        $pay->original('pay')->($self, $sent_params);
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
 
     subtest 'Eligible property' => sub {
 
@@ -192,6 +244,32 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $url = $mech->get_link_from_email($email);
         $mech->get_ok($url);
+
+        subtest 'Payment page' => sub {
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+            is $new_report->category, 'Bulky collection', 'correct category on report';
+            is $new_report->title, 'Bulky goods collection', 'correct title on report';
+            is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $new_report->state, 'confirmed', 'report confirmed';
+
+            is $sent_params->{items}[0]{amount}, 3000, 'correct amount used';
+            is $sent_params->{items}[0]{reference}, 'customer-ref';
+            is $sent_params->{items}[0]{lineId}, $new_report->id;
+
+            $new_report->discard_changes;
+            is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+            is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+
+            $new_report->discard_changes;
+            is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+            my $update = $new_report->comments->first;
+            is $update->state, 'confirmed';
+            is $update->text, 'Payment confirmed, reference 54321';
+        };
 
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Collection booked');
@@ -260,6 +338,7 @@ FixMyStreet::override_config {
         };
     };
 
+    $report->comments->delete;
     $report->delete;
 
     subtest 'Different pricing depending on domestic or trade property' => sub {
