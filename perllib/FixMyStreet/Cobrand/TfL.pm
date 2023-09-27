@@ -570,6 +570,16 @@ sub _cleaning_categories { [
     'Graffiti',
     'Litter or Weeds on a Street',
     'Faulty Christmas Lights',
+    # Westminster additional categories by request
+    'Abandoned bike',
+    'Abandoned hire bicycles/e-scooters',
+    'Animal Nuisance',
+    'Busking and Street performance',
+    'Engine idling',
+    'Flytipping',
+    'Parks/landscapes',
+    'Street bin issue',
+    'Street cleaning',
 ] }
 
 sub _cleaning_groups { [ 'Street cleaning', 'Street Cleansing', 'Fly-tipping', 'Street cleaning issues' ] }

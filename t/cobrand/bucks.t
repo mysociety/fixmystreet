@@ -220,7 +220,7 @@ subtest 'Flytipping not on a road going to HE does not get recategorised' => sub
             'road-placement' => 'off-road',
         }
     }, "submit details");
-    $mech->content_contains('We don&rsquo;t handle this type of problem');
+    $mech->content_contains('From the information you have given, we have passed this report on to:');
     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping", 'Report was not recategorised';
