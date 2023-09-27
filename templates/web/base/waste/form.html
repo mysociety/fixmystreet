@@ -1,6 +1,8 @@
 [% SET title = form.title ~%]
 [% PROCESS 'waste/header.html' %]
 
+<div class="waste__loading_wrapper">
+
   [% PROCESS 'govuk/fields.html' %]
   [% PROCESS back %]
   [% PROCESS errors %]
@@ -16,4 +18,5 @@
   [% PROCESS form %]
 </form>
 
+</div>
 [% INCLUDE footer.html %]
