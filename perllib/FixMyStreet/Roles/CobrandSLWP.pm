@@ -65,6 +65,15 @@ sub problems_on_dashboard {
     return $rs;
 }
 
+=item * We can send multiple photos through to Echo
+
+=cut
+
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+    $params->{multi_photos} = 1;
+}
+
 =item * When a garden subscription is sent to Echo, we include payment details
 
 =cut
