@@ -122,7 +122,11 @@
       END %]
       <dl>
         <dt>Price</dt>
-        [% payment = cobrand.bulky_total_cost(data) %]
+        [% IF problem %]
+            [% payment = problem.get_extra_field_value('payment') %]
+        [% ELSE %]
+            [% payment = cobrand.bulky_total_cost(data) %]
+        [% END %]
         <dd>£[% pounds(payment / 100) %]</dd>
       </dl>
       <div class="govuk-!-margin-bottom-4">
