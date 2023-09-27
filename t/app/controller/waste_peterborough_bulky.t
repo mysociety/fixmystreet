@@ -556,6 +556,12 @@ FixMyStreet::override_config {
 
     subtest 'Bulky goods collection viewing' => sub {
         subtest 'View own booking' => sub {
+            # Raise the price to check it hasn't changed on the report page
+            my $cfg = $body->get_extra_metadata('wasteworks_config');
+            $cfg->{base_price} = 2450;
+            $body->set_extra_metadata( wasteworks_config => $cfg );
+            $body->update;
+
             $mech->log_in_ok($user->email);
             $mech->get_ok('/report/' . $report->id);
 
@@ -575,6 +581,10 @@ FixMyStreet::override_config {
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
+
+            $cfg->{base_price} = 2350;
+            $body->set_extra_metadata( wasteworks_config => $cfg );
+            $body->update;
 
             # Cancellation messaging & options
             $mech->content_lacks('This collection has been cancelled');
