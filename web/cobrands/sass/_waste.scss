@@ -463,6 +463,63 @@ body.bulky {
   }
 }
 
+.bulky__summary {
+    dt {
+        opacity: 0.85;
+        font-size: 0.95em;
+    }
+
+    .item-summary-table {
+        $padding-cell: 0.5em;
+        // The table inner border should be different so users
+        // don't cofuse them with a different section.
+        $border-colour-table: transparentize($primary, 0.7);
+
+        thead {
+            background-color: transparentize($primary, 0.9);
+            border-bottom: 1px solid $border-colour-table;
+            border-top: 1px solid $border-colour-table;
+            tr {
+                th {
+                    text-align: left;
+                    padding: $padding-cell;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                border-bottom: 1px solid $border-colour-table;
+
+                &.is--no-border-bottom {
+                    border-bottom: none;
+                }
+
+                td {
+                    padding: $padding-cell;
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+
+    @media (min-width: 48em) {
+        // This should increase the gap on desktop.
+        // It is currently too tight and it makes it hard to scan the content.
+        $gap: 2em;
+        .govuk-grid-column-two-thirds {
+            padding-right: $gap;
+        }
+        .govuk-grid-column-one-third {
+            padding-left: $gap;
+        }
+
+        .item-summary-table {
+            width: 85%;
+        }
+    }
+}
+
 // Summary page
 .bulky__summary .summary-section-header {
     margin-top: 1.2em;
