@@ -255,6 +255,11 @@ sub pay_complete : Path('pay_complete') : Args(2) {
         $c->stash->{reference} = $ref;
         $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
         $c->forward( 'confirm_subscription', [ $ref ] );
+        if ($c->cobrand->suppress_report_sent_email($p)) {
+            # Send bulky confirmation email after payment confirmation (see
+            # the suppress_report_sent_email in CobrandSLWP.pm)
+            $p->send_logged_email({ %{$c->stash} }, 0, $c->cobrand);
+        }
     } else {
         $c->stash->{template} = 'waste/pay_error.html';
         $c->detach;
