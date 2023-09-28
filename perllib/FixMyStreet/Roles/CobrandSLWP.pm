@@ -1294,4 +1294,21 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+=head2 suppress_report_sent_email
+
+For Bulky Waste reports, we want to send the email after payment has been confirmed, so we
+suppress the email here.
+
+=cut
+
+sub suppress_report_sent_email {
+    my ($self, $report) = @_;
+
+    if ($report->cobrand_data eq 'waste' && $report->category eq 'Bulky collection') {
+        return 1;
+    }
+
+    return 0;
+}
+
 1;
