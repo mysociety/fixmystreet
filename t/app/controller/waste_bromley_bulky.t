@@ -9,6 +9,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
+my $sample_file_2 = path(__FILE__)->parent->child("sample2.jpg");
 
 my $user = $mech->create_user_ok('bob@example.org');
 
@@ -50,6 +51,10 @@ create_contact(
     { code => 'Exact_Location' },
     { code => 'payment' },
     { code => 'payment_method' },
+    { code => 'Image' },
+    { code => 'Bulky_Collection_Details_Item' },
+    { code => 'Bulky_Collection_Details_Description' },
+    { code => 'Bulky_Collection_Details_Qty' },
 );
 
 FixMyStreet::override_config {
@@ -61,6 +66,7 @@ FixMyStreet::override_config {
             bromley => {
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
+                bulky_quantity_1_code => 2,
             },
         },
         echo => {
@@ -206,7 +212,10 @@ FixMyStreet::override_config {
                 },
             },
         );
-        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => {
+            location => 'in the middle of the drive',
+            'location_photo' => [ $sample_file_2, undef, Content_Type => 'image/jpeg' ],
+        }});
 
         sub test_summary {
             $mech->content_contains('Booking Summary');
@@ -216,7 +225,6 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('5 remaining slots available');
-            $mech->content_contains('No image of the location has been attached.');
             $mech->content_contains('£10.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("06:30 on 01 July 2023");
@@ -263,7 +271,15 @@ FixMyStreet::override_config {
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+            is $report->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
+            is $report->get_extra_field_value('Bulky_Collection_Details_Qty'), '2::2::2';
+            is $report->get_extra_field_value('Bulky_Collection_Details_Item'), '3::85::83';
+            is $report->get_extra_field_value('Bulky_Collection_Details_Description'), 'BBQ::Bicycle::Bath';
+            # A location image is first followed by the item ones.
+            is $report->get_extra_field_value('Image'),
+                '685286eab13ad917f614937170661171b488f280.jpeg::74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg::::';
+            is $report->photo,
+                '685286eab13ad917f614937170661171b488f280.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
     };
 
