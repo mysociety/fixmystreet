@@ -1532,6 +1532,10 @@ sub waste_reconstruct_bulky_data {
         $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
     }
 
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->user->phone;
+
     return $saved_data;
 }
 

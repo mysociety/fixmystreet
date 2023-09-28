@@ -66,6 +66,7 @@ FixMyStreet::override_config {
         waste_features => {
             brent => {
                 bulky_enabled => 1,
+                bulky_multiple_bookings => 1,
                 bulky_tandc_link => 'tandc_link',
             },
         },
@@ -136,13 +137,12 @@ FixMyStreet::override_config {
     $echo->mock( 'GetServiceUnitsForObject', sub { &domestic_bin_service } );
     $mech->get_ok('/waste/12345');
     $mech->content_contains('Book small items collection');
-    $mech->get_ok('/waste/12345/small_items');
-    $mech->content_contains( 'Before you start your booking',
-        'Should be able to access the booking form' );
 
     my $report;
     subtest 'Small items collection booking' => sub {
         $mech->get_ok('/waste/12345/small_items');
+        $mech->content_contains( 'Before you start your booking',
+            'Should be able to access the booking form' );
 
         subtest 'Intro page' => sub {
             $mech->content_contains('Book small items collection');
@@ -378,11 +378,11 @@ FixMyStreet::override_config {
             $mech->content_contains('Cancel this booking');
         };
 
-        #subtest "Can follow link to booking from bin days page" => sub {
-        #    $mech->get_ok('/waste/12345');
-        #    $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
-        #    is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
-        #};
+        subtest "Can follow link to booking from bin days page" => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
+            is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
+        };
     };
 
     subtest 'Missed collections' => sub {

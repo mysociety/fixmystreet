@@ -229,15 +229,15 @@
     </p>
   [% ELSE %]
     <form class="waste" method="post" action="[%
+      IF c.action == 'waste/bulky/amend';
+        c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
+      ELSE;
         IF c.cobrand.moniker == 'brent';
             c.uri_for_action('waste/bulky/index_small', [ property.id ]);
         ELSE;
-            IF c.action == 'waste/bulky/amend';
-                c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
-            ELSE;
-                c.uri_for_action('waste/bulky/index', [ property.id ]);
-            END;
+            c.uri_for_action('waste/bulky/index', [ property.id ]);
         END;
+      END;
     %]">
       [% PROCESS form %]
     </form>
