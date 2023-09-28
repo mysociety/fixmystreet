@@ -69,16 +69,13 @@ $(function() {
 
 // Bulky waste
 
-$(function() {
-
-    var numItemsVisible = $('.bulky-item-wrapper:visible').length;
-    var maxNumItems = $('.bulky-item-wrapper').length;
-    var itemSelectionCounter = 0;
-    var firstItem = $('.bulky-item-wrapper').first();
+(function(){
+    var maxNumItems;
 
     function disableAddItemButton() {
         // It will disable button if the first item is empty or the max number of items has been reached.
-        if (numItemsVisible == maxNumItems || $('.bulky-item-wrapper').first().find('ul.autocomplete__menu').children().length == 0) {
+        var numItemsVisible = $('.bulky-item-wrapper:visible').length;
+        if (numItemsVisible == maxNumItems || !$('.bulky-item-wrapper').first().find('select').val()) {
             $("#add-new-item").prop('disabled', true);
         } else {
             $("#add-new-item").prop('disabled', false);
@@ -116,83 +113,74 @@ $(function() {
         }
     }
 
-    $('.govuk-select[name^="item_"]').change(function(e) {
-        var $this = $(this);
-        disableAddItemButton();
-
-        // To display message if option has a data-extra message
-        var valueAttribute = $this.find('option').filter(':selected').data('extra');
-        valueAttribute = valueAttribute ? valueAttribute.message : '';
-        if (valueAttribute) {
-            $this.closest('.bulky-item-wrapper').find('.item-message').text(valueAttribute);
-            $this.closest('.bulky-item-wrapper').find('.bulky-item-message').css('display', 'flex');
+    function update_extra_message(select) {
+        var data = select.find('option').filter(':selected').data('extra');
+        data = data ? data.message : '';
+        var wrapper = select.closest('.bulky-item-wrapper');
+        if (data) {
+            wrapper.find('.item-message').text(data);
+            wrapper.find('.bulky-item-message').css('display', 'flex');
         } else {
-            $this.closest('.bulky-item-wrapper').find('.bulky-item-message').hide();
+            wrapper.find('.bulky-item-message').hide();
         }
-
-        updateTotal();
-    });
-
-    // If page reloads reveals any wrapper with an item already selected.
-    $( '.bulky-item-wrapper' ).each(function() {
-       if ($(this).find('ul.autocomplete__menu').children().length > 0) {
-            itemSelectionCounter++;
-        }
-    });
-
-    if (itemSelectionCounter == 0) {
-        firstItem.show();
-    } else {
-        $( '.bulky-item-wrapper' ).each(function() {
-            var addedItems = $(this).find('ul.autocomplete__menu');
-            if (addedItems.children().length > 0 ) {
-                $(this).show();
-                numItemsVisible = $('.bulky-item-wrapper:visible').length;
-            } else {
-                $(this).hide();
-                firstItem.show();
-            }
-        });
     }
 
-    disableAddItemButton();
+    $(function() {
+        maxNumItems = $('.bulky-item-wrapper').length;
 
-    // Check if current item has a message. Useful when the user refresh the page
-    $( '.bulky-item-wrapper' ).each(function() {
-        var $this = $(this);
-        var label = $this.find('.autocomplete__option').text();
-        var match = $this.find('.js-autocomplete').children("option").filter(function () {return $(this).html() == label; });
-        var value = match.val();
-        var matchExtra = match.data('extra');
-        var itemMessage = matchExtra ? matchExtra.message : '';
-        if (itemMessage) {
-            $this.find('#item-message').text(itemMessage);
-            $this.find('.bulky-item-message').css('display', 'flex');
-        } else {
-            $this.find('.bulky-item-message').hide();
-        }
+        $('.govuk-select[name^="item_"]').change(function(e) {
+            var $this = $(this);
+            disableAddItemButton();
+            // To display message if option has a data-extra message
+            update_extra_message($this);
+            updateTotal();
+        });
+
+        // Add items
+        $("#add-new-item").click(function(){
+            var firstHidden = $('#item-selection-form > .bulky-item-wrapper:hidden:first');
+            var hiddenInput = firstHidden.find('input.autocomplete__input');
+            firstHidden.show();
+            hiddenInput.focus(); // To make it friendly to screen readers
+            $("#add-new-item").prop('disabled', true);
+        });
+
+        //Erase bulky item
+        //https://github.com/OfficeForProductSafetyAndStandards/product-safety-database/blob/master/app/assets/javascripts/autocomplete.js#L40
+        $(".delete-item").click(function(){
+            var $wrapper = $(this).closest('.bulky-item-wrapper');
+            var $enhancedElement = $wrapper.find('.autocomplete__input');
+            $wrapper.hide();
+            $enhancedElement.val('');
+            $wrapper.find('select.js-autocomplete').val('');
+            disableAddItemButton();
+            updateTotal();
+        });
+
     });
 
-    // Add items
-    $("#add-new-item").click(function(){
-        var firstHidden = $('#item-selection-form > .bulky-item-wrapper:hidden:first');
-        var hiddenInput = firstHidden.find('input.autocomplete__input');
-        firstHidden.show();
-        hiddenInput.focus(); // To make it friendly to screen readers
-        numItemsVisible = $('.bulky-item-wrapper:visible').length;
-        $("#add-new-item").prop('disabled', true);
-    });
+    window.addEventListener("pageshow", function(e){
+        // If page reloads reveals any wrapper with an item already selected.
+        $( '.bulky-item-wrapper' ).each(function() {
+            var $wrapper = $(this),
+                select = $wrapper.find('select'),
+                value = select.val();
+            if (value) {
+                $wrapper.show();
+                // If we do it immediately, it remains blank in Safari, I think
+                // some interaction with the 100ms polling in the autocomplete
+                // to spot changes to the value
+                setTimeout(function() {
+                    $wrapper.find('.autocomplete__wrapper input').val(value);
+                }, 110);
+                update_extra_message(select);
+            } else {
+                $wrapper.hide();
+                $('.bulky-item-wrapper').first().show();
+            }
+        });
 
-    //Erase bulky item
-    //https://github.com/OfficeForProductSafetyAndStandards/product-safety-database/blob/master/app/assets/javascripts/autocomplete.js#L40
-    $(".delete-item").click(function(){
-        var $enhancedElement = $(this).closest('.bulky-item-wrapper').find('.autocomplete__input');
-        $(this).closest('.bulky-item-wrapper').hide();
-        $enhancedElement.val('');
-        $(this).closest('.bulky-item-wrapper').find('select.js-autocomplete').val('');
-        numItemsVisible = $('.bulky-item-wrapper:visible').length;
-        disableAddItemButton();
         updateTotal();
+        disableAddItemButton();
     });
-
-});
+})();
