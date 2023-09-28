@@ -1043,16 +1043,30 @@ sub waste_munge_bulky_data {
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
 
     my @ids;
+    my @item_names;
+    my @item_quantity_codes;
     my @photos;
+
+    if ($data->{location_photo}) {
+        push @photos, $data->{location_photo};
+    }
+
+    my $cfg = $self->feature('waste_features');
+    my $quantity_1_code = $cfg->{bulky_quantity_1_code};
 
     my $max = $self->bulky_items_maximum;
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
+            push @item_names, $item;
             push @ids, $items{$item};
-            push @photos, $data->{"item_photos_$_"} || '';
+            push @item_quantity_codes, $quantity_1_code;
+            push @photos, $data->{"item_photo_$_"} || '';
         };
     }
     $data->{extra_Image} = join("::", @photos);
+    $data->{extra_Bulky_Collection_Details_Item} = join("::", @ids);
+    $data->{extra_Bulky_Collection_Details_Qty} = join("::", @item_quantity_codes);
+    $data->{extra_Bulky_Collection_Details_Description} = join("::", @item_names);
 
     $self->bulky_total_cost($data);
 }
