@@ -114,6 +114,7 @@ sub call_api {
         $c->log->info("[$cobrand] call_api $key took $time seconds");
     } elsif ($background) {
         # Bail out here to show loading page
+        $c->stash->{template} = 'waste/async_loading.html';
         $c->stash->{data_loading} = 1;
         $c->stash->{page_refresh} = 2;
         $c->detach;

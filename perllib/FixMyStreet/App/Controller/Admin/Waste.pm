@@ -100,8 +100,8 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 } elsif ($keys{$_} eq 'int') {
                     if ($val ne $val+0) {
                         $c->stash->{errors}->{site_wide} = "Not an integer";
-                    } elsif ($_ eq 'items_per_collection_max' && $val > 20) {
-                        $c->stash->{errors}->{site_wide} = "Maximum items per collection cannot be more than 20";
+                    } elsif ($_ eq 'items_per_collection_max' && $val > 200) {
+                        $c->stash->{errors}->{site_wide} = "Maximum items per collection cannot be more than 200";
                     }
                     $new_cfg->{$_} = $val;
                 } elsif ($keys{$_} eq 'sel') {

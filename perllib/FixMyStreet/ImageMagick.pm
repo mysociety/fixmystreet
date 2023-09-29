@@ -78,8 +78,9 @@ sub crop {
 
 sub as_blob {
     my $self = shift;
+    my %params = @_;
     return $self->blob unless $self->image;
-    my @blobs = $self->image->ImageToBlob();
+    my @blobs = $self->image->ImageToBlob(%params);
     $self->_set_image(undef);
     return $blobs[0];
 }
