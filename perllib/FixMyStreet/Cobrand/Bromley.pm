@@ -10,6 +10,7 @@ use DateTime::Format::W3CDTF;
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
+use FixMyStreet::DB;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
@@ -1070,6 +1071,11 @@ sub bulky_refund_amount {
     return $charged;
 }
 
+sub bulky_cancel_no_payment_minutes {
+    my $self = shift;
+    $self->feature('waste_features')->{bulky_cancel_no_payment_minutes};
+}
+
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
     return $self->bulky_enabled;
@@ -1175,6 +1181,48 @@ sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
 sub bulky_contact_email {
     my $self = shift;
     return $self->feature('bulky_contact_email');
+}
+
+sub cancel_bulky_collections_without_payment {
+    my ($self, $params) = @_;
+
+    # Allow 30 minutes for payment before cancelling the booking.
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $cutoff_date = $dtf->format_datetime( DateTime->now->subtract( minutes => $self->bulky_cancel_no_payment_minutes ) );
+
+    my $rs = $self->problems->search(
+        {   category => 'Bulky collection',
+            created  => { '<'  => $cutoff_date },
+            external_id => { '!=', undef },
+            state => [ FixMyStreet::DB::Result::Problem->open_states ],
+            -or => [
+                extra => undef,
+                -not => { extra => { '\?' => 'payment_reference' } }
+            ],
+        },
+    );
+
+    while ( my $report = $rs->next ) {
+        if ($params->{commit}) {
+            $report->add_to_comments({
+                text => 'Booking cancelled since payment was not made in time',
+                user_id => $self->body->comment_user_id,
+                extra => { bulky_cancellation => 1 },
+            });
+            $report->state('closed');
+            $report->detail(
+                $report->detail . " | Cancelled since payment was not made in time"
+            );
+            $report->update;
+        }
+        if ($params->{verbose}) {
+            printf(
+                'Cancelled booking %s for report %d.',
+                $report->external_id,
+                $report->id,
+            );
+        }
+    }
 }
 
 1;

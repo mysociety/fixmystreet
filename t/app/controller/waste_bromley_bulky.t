@@ -33,6 +33,9 @@ $body->set_extra_metadata(
 );
 $body->update;
 
+my $staff_user = $mech->create_user_ok('bromley@example.org', name => 'Council User', from_body => $body);
+$body->update( { comment_user_id => $staff_user->id } );
+
 my $echo = Test::MockModule->new('Integrations::Echo');
 
 sub create_contact {
@@ -90,6 +93,7 @@ FixMyStreet::override_config {
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
                 bulky_quantity_1_code => 2,
+                bulky_cancel_no_payment_minutes => 30,
             },
         },
         echo => {
@@ -514,6 +518,42 @@ FixMyStreet::override_config {
         $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
         test_prices('£10.00', '£10.00');
     };
+
+    subtest "Cancel booking when no payment within 30 minutes" => sub {
+        my ( $p ) = $mech->create_problems_for_body(1, $body->id, "Bulky goods collection", {
+            category => "Bulky collection",
+            state => "confirmed",
+            external_id => "123",
+            created => "2023-10-01T08:00:00Z",
+            cobrand => "bromley",
+        });
+        $p->set_extra_metadata('payment_reference', 'test');
+        $p->update;
+
+        my $cobrand = $body->get_cobrand_handler;
+
+        # 31 minutes after creation.
+        set_fixed_time('2023-10-01T08:31:00Z');
+
+        # Has payment - not cancelled.
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
+        $p->discard_changes;
+        is $p->state, "confirmed";
+        is $p->comments->count, 0;
+
+        # No payment - cancelled.
+        $p->unset_extra_metadata('payment_reference');
+        $p->update;
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1});
+        $p->discard_changes;
+        is $p->state, "closed";
+        is $p->comments->count, 1;
+
+        my $cancellation_update = $p->comments->first;
+        is $cancellation_update->text, "Booking cancelled since payment was not made in time";
+        is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+        is $cancellation_update->user_id, $staff_user->id;
+    }
 };
 
 done_testing;
