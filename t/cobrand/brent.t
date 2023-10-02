@@ -833,7 +833,7 @@ FixMyStreet::override_config {
             ServiceName => 'Domestic Food Waste Collection',
             ServiceTasks => { ServiceTask => {
                 Id => 403,
-                ScheduleDescription => 'every Thursday',
+                ScheduleDescription => 'every Thursday fortnightly',
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     ScheduleDescription => 'every other Thursday',
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },

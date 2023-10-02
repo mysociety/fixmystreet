@@ -739,10 +739,9 @@ sub bin_services_for_address {
     my $calendar_save = {};
     foreach (@$result) {
         my $servicetask = $self->_get_current_service_task($_) or next;
-        my $desc_to_use = 'schedule';
+        my $schedules = _parse_schedules($servicetask);
         # Brent has two overlapping schedules for food
-        $desc_to_use = 'task' if $_->{ServiceId} == 316;
-        my $schedules = _parse_schedules($servicetask, $desc_to_use);
+        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316;
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
