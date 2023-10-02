@@ -142,12 +142,13 @@
 
 [% IF
   property.show_bulky_waste
-  || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property)
+  || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property);
+    SET image = c.cobrand.image_for_unit({ service_id => 'bulky' });
 %]
   <div class="govuk-grid-row waste-service-wrapper">
     <div class="govuk-grid-column-one-quarter text-centered">
       <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
-      <img src="/cobrands/peterborough/images/bulky-waste.png" alt="" class="waste-service-image">
+      <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
     </div>
     <div class="govuk-grid-column-three-quarters">
         <hr>
