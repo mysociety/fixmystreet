@@ -218,10 +218,12 @@ sub defect_wfs_query {
 
     return if FixMyStreet->test_mode eq 'cypress';
 
-    my $uri = URI->new("https://tilma.staging.mysociety.org/confirm.php");
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $uri = URI->new("https://$host/confirm.php");
+    my $suffix = FixMyStreet->config('STAGING_SITE') ? "staging" : "assets";
     $uri->query_form(
         layer => 'jobs',
-        url => 'https://gloucestershire.assets',
+        url => "https://gloucestershire.$suffix",
         bbox => $bbox,
     );
 
