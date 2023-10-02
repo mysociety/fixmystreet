@@ -13,6 +13,8 @@ Dear [% report.name %],
 
 [% report.detail %]
 
+Date booking made: [% report_date %]
+
 Collection date: [% collection_date %]
 
 Items to be collected:
@@ -40,6 +42,10 @@ Please check the bulky waste collection page on the council’s website for info
 
     https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
 
+[% END %]
+
+[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
 [% END %]
 
 [% signature %]
