@@ -1304,6 +1304,7 @@ sub image_for_unit {
         267 => "$base/sack-black",
         269 => "$base/sack-clear",
         807 => "$base/bag-blue",
+        bulky => "$base/electricals-batteries-textiles",
     };
     return $images->{$service_id};
 }

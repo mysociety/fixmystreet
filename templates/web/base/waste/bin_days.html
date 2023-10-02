@@ -141,7 +141,8 @@
 
 [% IF
   property.show_bulky_waste
-  || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property)
+  || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property);
+    SET image = c.cobrand.image_for_unit({ service_id => 'bulky' });
 %]
   [% IF c.cobrand.moniker != 'peterborough' %]
   <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">[%
@@ -154,13 +155,7 @@
     <div class="govuk-grid-column-one-quarter">
       <h3 id="bulky-waste" class="govuk-heading-m">Bulky Waste</h3>
   [% END %]
-      [% IF c.cobrand.moniker == 'brent' %]
-        <img src="/i/waste-containers/electricals-batteries-textiles.png"
-            srcset="/i/waste-containers/electricals-batteries-textiles.png 1x, /i/waste-containers/electricals-batteries-textiles@2x.png 2x"
-            alt="" class="waste-service-image">
-      [% ELSE %]
-        <img src="/cobrands/peterborough/images/bulky-waste.png" alt="" class="waste-service-image">
-      [% END %]
+      <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
     </div>
     <div class="govuk-grid-column-three-quarters">
       [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]

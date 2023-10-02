@@ -54,6 +54,10 @@ sub image_for_unit {
         return "";
     }
 
+    if ($unit->{service_id} eq 'bulky') {
+        return "$base/bulky-black";
+    }
+
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
     return "$base/bin-green" if $containers{12} && $self->{c}->stash->{container_recycling_bin};
