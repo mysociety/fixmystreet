@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
 use Path::Tiny;
+use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -46,7 +47,7 @@ sub create_contact {
 }
 
 create_contact(
-    { category => 'Bulky collection', email => '1636' },
+    { category => 'Bulky collection', email => '1636@test.com' },
     { code => 'Collection_Date' },
     { code => 'Exact_Location' },
     { code => 'payment' },
@@ -312,6 +313,67 @@ FixMyStreet::override_config {
                 '685286eab13ad917f614937170661171b488f280.jpeg::74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg::::';
             is $report->photo,
                 '685286eab13ad917f614937170661171b488f280.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+        };
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report->confirmed('2023-08-30T00:00:00');
+        $report->update;
+        my $id = $report->id;
+        my $property_id = $report->get_extra_field_value('property_id');
+        subtest 'Email confirmation' => sub {
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+            my @emails = $mech->get_email;
+            my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
+            my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
+            like $confirmation_email_txt, qr/Date booking made: 30 August/, 'Includes booking date';
+            like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Items to be collected:/, 'Includes header for items';
+            like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
+            like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
+            like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
+            like $confirmation_email_txt, qr/Total cost: £30.00/, 'Includes price';
+            like $confirmation_email_txt, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr#http://bromley.example.org/waste/12345/bulky/cancel/$id#, 'Includes cancellation link';
+            like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
+            like $confirmation_email_html, qr/Date booking made: 30 August/, 'Includes booking date (html mail)';
+            like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
+            like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
+            like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
+            like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr/Total cost: £30.00/, 'Includes price (html mail)';
+            like $confirmation_email_html, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr#http://bromley.example.org/waste/12345/bulky/cancel/$id#, 'Includes cancellation link (html mail)';
+            like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
+            $mech->clear_emails_ok;
+        };
+
+        subtest 'Reminder email' => sub {
+            set_fixed_time('2023-06-28T05:44:59Z');
+            my $cobrand = $body->get_cobrand_handler;
+            $cobrand->bulky_reminders;
+            my $email = $mech->get_email;
+            my $confirmation_email_txt = $mech->get_text_body_from_email($email);
+            my $confirmation_email_html = $mech->get_html_body_from_email($email);
+            like $confirmation_email_txt, qr/Thank you for booking a bulky waste collection with Bromley Council/, 'Includes Bromley greeting';
+            like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
+            like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
+            like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
+            like $confirmation_email_txt, qr#http://bromley.example.org/waste/12345/bulky/cancel/$id#, 'Includes cancellation link';
+            like $confirmation_email_html, qr/Thank you for booking a bulky waste collection with Bromley Council/, 'Includes Bromley greeting (html mail)';
+            like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_html, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
+            like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
+            like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr#http://bromley.example.org/waste/12345/bulky/cancel/$id#, 'Includes cancellation link (html mail)';
+            $mech->clear_emails_ok;
         };
     };
 

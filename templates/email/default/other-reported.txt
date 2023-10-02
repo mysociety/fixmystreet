@@ -1,3 +1,6 @@
+[% IF report.category == 'Bulky collection' ~%]
+[% PROCESS 'waste/other-reported-bulky.txt' ~%]
+[% ELSE ~%]
 Subject: Your report has been logged: [% report.title %]
 
 Hello [% report.name %],
@@ -34,3 +37,4 @@ And details:
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
+[% END %]
