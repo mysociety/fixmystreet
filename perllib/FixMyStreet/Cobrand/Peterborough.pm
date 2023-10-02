@@ -580,6 +580,7 @@ sub image_for_unit {
         6533 => "$base/bin-black",
         6534 => "$base/bin-green",
         6579 => "$base/bin-brown",
+        bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
 }
