@@ -621,6 +621,28 @@ sub update_extra_fields : Private {
     $object->set_extra_fields(@extra_fields);
 }
 
+sub body_specific_page : Private {
+    my ( $self, $c, $load_all_action, $view_action ) = @_;
+
+    my $user = $c->user;
+
+    if ($user->is_superuser) {
+        $c->forward($load_all_action);
+    } elsif ( $user->from_body ) {
+        my $body_id = $user->from_body->id;
+        $body_id = $c->cobrand->call_hook(permission_body_override => [ $body_id ]) || [ $body_id ];
+        if (@$body_id > 1) {
+            $c->forward($load_all_action);
+            my %bodies = map { $_ => 1 } @$body_id;
+            $c->stash->{bodies} = [ grep { $bodies{$_->id} } @{$c->stash->{bodies}} ];
+        } else {
+            $c->res->redirect( $c->uri_for_action($view_action, $body_id) );
+        }
+    } else {
+        $c->detach( '/page_error_404_not_found' );
+    }
+}
+
 sub trim {
     my $self = shift;
     my $e = shift;

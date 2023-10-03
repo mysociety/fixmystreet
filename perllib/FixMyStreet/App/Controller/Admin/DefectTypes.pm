@@ -9,17 +9,11 @@ BEGIN { extends 'Catalyst::Controller'; }
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $user = $c->user;
-
-    if ($user->is_superuser) {
-        $c->stash->{with_defect_type_count} = 1;
-        $c->forward('/admin/fetch_all_bodies');
-    } elsif ( $user->from_body ) {
-        $c->forward('load_user_body', [ $user->from_body->id ]);
-        $c->res->redirect( $c->uri_for( '', $c->stash->{body}->id ) );
-    } else {
-        $c->detach( '/page_error_404_not_found' );
-    }
+    $c->stash->{with_defect_type_count} = 1;
+    $c->forward('/admin/body_specific_page', [
+        '/admin/fetch_all_bodies',
+        '/admin/defecttypes/edit'
+    ]);
 }
 
 sub list : Path : Args(1) {
@@ -93,7 +87,7 @@ sub edit : Path : Args(2) {
 sub load_user_body : Private {
     my ($self, $c, $body_id) = @_;
 
-    my $has_permission = $c->user->has_body_permission_to('defect_type_edit', $body_id);
+    my $has_permission = $c->user->has_permission_to('defect_type_edit', $body_id);
 
     unless ( $has_permission ) {
         $c->detach( '/page_error_404_not_found' );
