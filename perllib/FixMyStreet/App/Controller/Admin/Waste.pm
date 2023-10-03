@@ -22,27 +22,17 @@ Admin pages for configuring WasteWorks parameters
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $user = $c->user;
-
-    if ($user->is_superuser) {
-        $c->forward('fetch_wasteworks_bodies');
-    } elsif ( $user->from_body ) {
-        $c->res->redirect( $c->uri_for_action( 'admin/waste/edit', [ $user->from_body->id ] ) );
-    } else {
-        $c->detach( '/page_error_404_not_found', [] );
-    }
+    $c->forward('/admin/body_specific_page', [
+        '/admin/waste/fetch_wasteworks_bodies',
+        '/admin/waste/edit'
+    ]);
 }
 
 sub body : Chained('/') : PathPart('admin/waste') : CaptureArgs(1) {
     my ($self, $c, $body_id) = @_;
 
-    unless ( $c->user->has_body_permission_to('wasteworks_config', $body_id) ) {
+    unless ( $c->user->has_permission_to('wasteworks_config', $body_id) ) {
         $c->detach( '/page_error_404_not_found', [] );
-    }
-
-    # Regular users can only view their own body's config
-    if ( !$c->user->is_superuser && $body_id ne $c->user->from_body->id ) {
-        $c->res->redirect( $c->uri_for_action( '/admin/waste/edit', [ $c->user->from_body->id ] ) );
     }
 
     $c->stash->{body} = $c->model('DB::Body')->find($body_id)
@@ -205,7 +195,9 @@ sub bulky_items : Chained('body') {
 sub fetch_wasteworks_bodies : Private {
     my ( $self, $c ) = @_;
 
-    my @bodies = $c->model('DB::Body')->search(undef, {
+    my @bodies = $c->model('DB::Body')->search({
+        extra => { '\?' => 'cobrand' },
+    }, {
         columns => [ "id", "name", "extra" ],
     })->active;
 
