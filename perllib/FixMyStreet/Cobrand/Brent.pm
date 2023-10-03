@@ -703,7 +703,7 @@ sub bin_services_for_address {
         269 => [ 8 ],
         316 => [ 11 ],
         317 => [ 13 ],
-        #807 => [ 46 ],
+        807 => [ 46 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -712,7 +712,7 @@ sub bin_services_for_address {
         269 => 1,
         316 => 1,
         317 => 5,
-        #807 => 1,
+        807 => 1,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
