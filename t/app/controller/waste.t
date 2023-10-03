@@ -151,7 +151,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'service-531' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test" } });
         $mech->content_contains('Please enter your full name');
-        $mech->content_contains('Please provide email and/or phone');
+        $mech->content_contains('Please provide an email address');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", phone => '+441234567890' } });
         $mech->content_contains('Please provide an email address');
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => 'test@example.org' } });

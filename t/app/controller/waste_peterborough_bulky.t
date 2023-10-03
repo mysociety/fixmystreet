@@ -366,7 +366,7 @@ FixMyStreet::override_config {
             $mech->content_contains('About you');
             $mech->content_contains('Aragon Direct Services may contact you to obtain more');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
-            $mech->content_contains('Please provide email and/or phone');
+            $mech->content_contains('Please provide an email address');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         };
 
