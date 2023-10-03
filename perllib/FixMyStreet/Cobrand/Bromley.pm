@@ -993,14 +993,14 @@ sub report_form_extras {
 
 =head2 Bulky waste collection
 
-Bromley has bulky waste collections starting at 6:30. It looks 4 weeks ahead
+Bromley has bulky waste collections starting at 7:00. It looks 4 weeks ahead
 for collection dates, and sends the event to the backend before collecting
 payment. Cancellations are done by update.
 
 =cut
 
-sub bulky_collection_time { { hours => 6, minutes => 30 } }
-sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30 } }
+sub bulky_collection_time { { hours => 7, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 7, minutes => 0 } }
 sub bulky_collection_window_days { 28 }
 sub bulky_cancel_by_update { 1 }
 sub bulky_can_refund { 0 }
