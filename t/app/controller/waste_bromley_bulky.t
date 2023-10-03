@@ -260,7 +260,7 @@ FixMyStreet::override_config {
             $mech->content_contains('you can add up to 5 more items');
             $mech->content_contains('£30.00');
             $mech->content_contains("<dd>01 July</dd>");
-            $mech->content_contains("06:30 on 01 July 2023");
+            $mech->content_contains("07:00 on 01 July 2023");
         }
         subtest 'Summary page' => \&test_summary;
 
@@ -377,9 +377,9 @@ FixMyStreet::override_config {
         };
     };
 
-    # Collection time: 2023-07-01T:06:30:00
+    # Collection time: 2023-07-01T:07:00:00
     # Time within the cancellation window:
-    my $cancell_allowed_time = '2023-07-01T05:29:59Z'; # 06:29:59 UK time
+    my $cancell_allowed_time = '2023-07-01T05:59:59Z'; # 06:59:59 UK time
 
     subtest 'Bulky goods collection viewing' => sub {
         subtest 'View own booking' => sub {
@@ -408,7 +408,7 @@ FixMyStreet::override_config {
             set_fixed_time($cancell_allowed_time);
             $mech->get_ok('/report/' . $report->id);
             $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("06:30 on 01 July 2023");
+            $mech->content_contains("07:00 on 01 July 2023");
 
             # Presence of external_id in report implies we have sent request
             # to Echo
