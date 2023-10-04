@@ -417,28 +417,7 @@ sub process_bulky_cancellation : Private {
     $c->cobrand->call_hook('unset_free_bulky_used');
 
     if ( $c->cobrand->call_hook(bulky_can_refund => $collection_report) ) {
-        $c->send_email(
-            'waste/bulky-refund-request.txt',
-            {   to => [
-                    [ $c->cobrand->contact_email, $c->cobrand->council_name ]
-                ],
-
-                payment_method =>
-                    $collection_report->get_extra_field_value('payment_method'),
-                payment_code =>
-                    $collection_report->get_extra_field_value('PaymentCode'),
-                auth_code =>
-                    $collection_report->get_extra_metadata('authCode'),
-                continuous_audit_number =>
-                    $collection_report->get_extra_metadata(
-                    'continuousAuditNumber'),
-                original_sr_number => $c->get_param('ORIGINAL_SR_NUMBER'),
-                payment_date       => $collection_report->created,
-                scp_response       =>
-                    $collection_report->get_extra_metadata('scpReference'),
-            },
-        );
-
+        $c->cobrand->call_hook(bulky_refund_collection => $collection_report);
         $c->stash->{entitled_to_refund} = 1;
     }
 
