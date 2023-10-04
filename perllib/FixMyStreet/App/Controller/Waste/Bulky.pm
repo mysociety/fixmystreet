@@ -213,7 +213,7 @@ sub view : Private {
 
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
     $c->stash->{form} = {
-        items_extra => $c->cobrand->call_hook('bulky_items_extra'),
+        items_extra => $c->cobrand->call_hook('bulky_items_extra', exclude_pricing => 1),
         saved_data  => $saved_data,
     };
 }
