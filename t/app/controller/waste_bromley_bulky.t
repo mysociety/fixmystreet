@@ -11,6 +11,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 my $sample_file_2 = path(__FILE__)->parent->child("sample2.jpg");
+my $minimum_charge = 3600;
 
 my $user = $mech->create_user_ok('bob@example.org');
 
@@ -84,6 +85,7 @@ FixMyStreet::override_config {
         waste => { bromley => 1 },
         waste_features => {
             bromley => {
+                bulky_minimum_charge => $minimum_charge,
                 bulky_trade_service_id => 532,
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
@@ -400,8 +402,8 @@ FixMyStreet::override_config {
         };
 
         # Collection time: 2023-07-01T:07:00:00
-        # Time within the cancellation window.
-        my $cancel_time = '2023-07-01T05:59:59Z'; # 06:59:59 UK time
+        my $full_refund_time = '2023-06-30T05:59:59Z'; # 06:59:59 UK time
+        my $partial_refund_time = '2023-07-01T05:59:59Z'; # 06:59:59 UK time
 
         # Consider report to have been sent.
         $report->external_id('Echo-123');
@@ -412,17 +414,43 @@ FixMyStreet::override_config {
             $mech->get_ok('/report/' . $report->id);
             $mech->content_lacks('This collection has been cancelled');
 
-            set_fixed_time($cancel_time);
+            set_fixed_time($full_refund_time);
             $mech->get_ok('/report/' . $report->id);
             $mech->content_contains("You can cancel this booking till");
             $mech->content_contains("07:00 on 01 July 2023");
             $mech->content_contains('/waste/12345/bulky/cancel/' . $report->id);
             $mech->content_contains('Cancel this booking');
-            $mech->content_contains('You can get a refund if cancelled by 7am on the day prior to your collection');
+            $mech->content_contains('You can get a full refund if cancelled by 7am on the day prior to your collection');
+            $mech->content_contains(
+                'Cancellations within 24 hours of collection are only eligible for ' .
+                'a partial refund for any amount paid over the minimum charge.'
+            );
 
             $mech->clear_emails_ok();
 
-            subtest 'Sends refund email' =>sub {
+            subtest 'Refund info' => sub {
+                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->content_contains('If you cancel you will be refunded £30.00');
+
+                set_fixed_time($partial_refund_time);
+                $report->update_extra_field({ name => 'payment', value => $minimum_charge });
+                $report->update;
+                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->content_contains(
+                    'Since you paid no more than the minimum charge you ' .
+                    'are not eligible for a refund if you cancel this booking.'
+                );
+                $report->update_extra_field({ name => 'payment', value => $minimum_charge + 1 });
+                $report->update;
+                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->content_contains(
+                    'Cancellations within 24 hours of collection are only eligibile to ' .
+                    'be refunded the amount paid above the minimum charge £36.00.'
+                );
+                $mech->content_contains('If you cancel you will be refunded £0.01.');
+            };
+
+            subtest 'Sends refund email' => sub {
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
                 $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
                 $mech->content_contains('Your booking has been cancelled');
@@ -444,7 +472,7 @@ FixMyStreet::override_config {
                 my $user_email = $report->user->email;
                 like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";
                 # =C2=A3 is the quoted printable for '£'.
-                like $text, qr/Payment Amount: =C2=A330.00/, "Correct payment amount";
+                like $text, qr/Payment Amount: =C2=A336.01/, "Correct payment amount";
                 like $text, qr/Capita SCP Response: 12345/,
                     'Correct SCP response';
                 # XXX Not picking up on mocked time
