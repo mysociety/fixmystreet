@@ -1,0 +1,23 @@
+[% USE pounds = format('%.2f'); ~%]
+Subject: Refund requested for cancelled bulky goods collection [% wasteworks_id %]
+
+A bulky goods collection has been cancelled and is entitled to a refund.
+
+Payment Date: [% USE date; date.format( payment_date, '%d/%m/%y %H:%M' ) %]
+
+Payment Amount: £[% pounds(payment_amount / 100) %]
+
+[% IF payment_method == 'csc' %]
+PAYE.net code: [% payment_code %]
+[% ELSE %]
+Capita SCP Response: [% scp_response %]
+
+CAN: [% continuous_audit_number %]
+
+Auth Code: [% auth_code %]
+
+reference2: [% wasteworks_id %]
+[% END %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
