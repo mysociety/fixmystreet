@@ -266,7 +266,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_lacks('you can add up to 5 more items');
             $mech->content_contains('£30.00');
-            $mech->content_contains("<dd>01 July</dd>");
+            $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("07:00 on 01 July 2023");
         }
         subtest 'Summary page' => \&test_summary;
@@ -334,7 +334,7 @@ FixMyStreet::override_config {
             my @emails = $mech->get_email;
             my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
             my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
-            like $confirmation_email_txt, qr/Date booking made: 30 August/, 'Includes booking date';
+            like $confirmation_email_txt, qr/Date booking made: Wednesday 30 August/, 'Includes booking date';
             like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Items to be collected:/, 'Includes header for items';
             like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
@@ -342,10 +342,10 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
             like $confirmation_email_txt, qr/Total cost: £30.00/, 'Includes price';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: Saturday 01 July/, 'Includes collection date';
             like $confirmation_email_txt, qr#http://bromley.example.org/waste/12345/bulky/cancel/$id#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
-            like $confirmation_email_html, qr/Date booking made: 30 August/, 'Includes booking date (html mail)';
+            like $confirmation_email_html, qr/Date booking made: Wednesday 30 August/, 'Includes booking date (html mail)';
             like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
             like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
@@ -353,7 +353,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr/Total cost: £30.00/, 'Includes price (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: Saturday 01 July/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr#http://bromley.example.org/waste/12345/bulky/cancel/$id#, 'Includes cancellation link (html mail)';
             like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
             $mech->clear_emails_ok;
@@ -369,7 +369,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/Thank you for booking a bulky waste collection with Bromley Council/, 'Includes Bromley greeting';
             like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: Saturday 01 July/, 'Includes collection date';
             like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
             like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
@@ -377,7 +377,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Thank you for booking a bulky waste collection with Bromley Council/, 'Includes Bromley greeting (html mail)';
             like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Bromley, BR1 1AF/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: Saturday 01 July/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
             like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
@@ -506,7 +506,7 @@ FixMyStreet::override_config {
                         'Correct recipient';
                     my $text = $email->as_string;
                     like $text, qr/Bulky goods collection slot ${report_id}/, "Correct ID";
-                    like $text, qr/scheduled for 01 July/, "Correct scheduled time";
+                    like $text, qr/scheduled for Saturday 01 July/, "Correct scheduled time";
                     unlike $text, qr/=C2=A30.01 will be refunded/, "Correct refund amount";
                 };
 
@@ -521,7 +521,7 @@ FixMyStreet::override_config {
 
             subtest 'Refund info' => sub {
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
-                $mech->content_like(qr{<dt>Date</dt>\s*<dd>01 July</dd>});
+                $mech->content_like(qr{<dt>Date</dt>\s*<dd>Saturday 01 July 2023</dd>});
                 $mech->content_contains('BBQ');
                 $mech->content_contains('If you cancel you will be refunded £30.00');
 
@@ -561,7 +561,7 @@ FixMyStreet::override_config {
                     'Correct recipient';
                 my $text = $email->as_string;
                 like $text, qr/Bulky goods collection slot ${report_id}/, "Correct ID";
-                like $text, qr/scheduled for 01 July/, "Correct scheduled time";
+                like $text, qr/scheduled for Saturday 01 July/, "Correct scheduled time";
                 like $text, qr/=C2=A30.01 will be refunded/, "Correct refund amount";
             };
 

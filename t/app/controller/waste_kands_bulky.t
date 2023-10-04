@@ -327,7 +327,7 @@ FixMyStreet::override_config {
             $mech->content_contains('you can add up to 5 more items');
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_contains('£40.00');
-            $mech->content_contains("<dd>01 July</dd>");
+            $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("06:30 on 01 July 2023");
         }
         sub test_summary_submission {
@@ -374,7 +374,7 @@ FixMyStreet::override_config {
             };
 
             subtest 'date info has changed on summary page' => sub {
-                $mech->content_contains("<dd>08 July</dd>");
+                $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
                 $mech->content_contains("06:30 on 08 July 2023");
             };
         };
@@ -428,7 +428,7 @@ FixMyStreet::override_config {
 
         subtest 'Bulky goods email confirmation' => sub {
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-            my $today = $report->confirmed->strftime('%d %B');
+            my $today = $report->confirmed->strftime('%A %d %B %Y');
             my $id = $report->id;
             is $catch_email->header('Subject'), "Bulky waste collection service - reference RBK-$id";
             my $confirmation_email_txt = $mech->get_text_body_from_email($catch_email);
@@ -441,7 +441,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
             like $confirmation_email_txt, qr/Total cost: £40.00/, 'Includes price';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 08 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date';
             like $confirmation_email_txt, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
             like $confirmation_email_txt, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection';
@@ -453,7 +453,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr/Total cost: £40.00/, 'Includes price (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 08 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
             like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
             like $confirmation_email_html, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection (html mail)';
@@ -463,7 +463,7 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             $mech->content_contains('Bulky collection booking confirmed');
-            $mech->content_contains('Our contractor will collect the items you have requested on 08 July.');
+            $mech->content_contains('Our contractor will collect the items you have requested on Saturday 08 July 2023.');
             $mech->content_contains('Item collection starts from 6:30am. Please have your items ready and dismantled if required.');
             $mech->content_contains('We have emailed confirmation of your booking to pkg-tappcontrollerwaste_kands_bulkyt-bob@example.org.');
             $mech->content_contains('If you need to contact us about your application please use the application reference:&nbsp;RBK-' . $report->id);
@@ -538,7 +538,7 @@ FixMyStreet::override_config {
 
     subtest 'Bulky goods email reminders' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        my $today = $report->confirmed->strftime('%d %B');
+        my $today = $report->confirmed->strftime('%A %d %B %Y');
         my $id = $report->id;
         set_fixed_time('2023-07-05T05:44:59Z');
         my $cobrand = $body->get_cobrand_handler;
@@ -549,7 +549,7 @@ FixMyStreet::override_config {
         like $reminder_email_txt, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting';
         like $reminder_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
         like $reminder_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
-        like $reminder_email_txt, qr/Collection date: 08 July/, 'Includes collection date';
+        like $reminder_email_txt, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date';
         like $reminder_email_txt, qr/- BBQ/, 'Includes item 1';
         like $reminder_email_txt, qr/- Bicycle/, 'Includes item 2';
         like $reminder_email_txt, qr/- Bath/, 'Includes item 3';
@@ -557,7 +557,7 @@ FixMyStreet::override_config {
         like $reminder_email_html, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting (html mail)';
         like $reminder_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
         like $reminder_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
-        like $reminder_email_html, qr/Collection date: 08 July/, 'Includes collection date (html mail)';
+        like $reminder_email_html, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date (html mail)';
         like $reminder_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
         like $reminder_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
         like $reminder_email_html, qr/Bath/, 'Includes item 3 (html mail)';
@@ -590,7 +590,7 @@ FixMyStreet::override_config {
         $report->update;
         $cobrand->send_bulky_payment_echo_update_failed;
         my $email = $mech->get_email;
-        like $email->as_string, qr/Collection date: 08 July/;
+        like $email->as_string, qr/Collection date: Saturday 08 July 2023/;
         like $email->as_string, qr/40\.00/;
 
         $mech->clear_emails_ok;
