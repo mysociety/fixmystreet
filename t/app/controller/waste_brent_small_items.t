@@ -204,7 +204,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('you can add up to');
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_lacks('£0.00');
-            $mech->content_contains("<dd>01 July</dd>");
+            $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("23:59 on the night before");
         }
 
@@ -224,7 +224,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
 
-            is $report->get_extra_field_value('Notes'), "Collection date: 01 July\n1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
+            is $report->get_extra_field_value('Notes'), "Collection date: Saturday 01 July 2023\n1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
             is $report->get_extra_field_value('Textiles'), '';
             is $report->get_extra_field_value('Paint'), '';
             is $report->get_extra_field_value('Batteries'), 1;
@@ -249,7 +249,7 @@ FixMyStreet::override_config {
             my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
             my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
             like $emails[1]->header('Subject'), qr/Small items collection service - reference $id/, 'Small items in email subject';
-            like $confirmation_email_txt, qr/Date booking made: 30 August/, 'Includes booking date';
+            like $confirmation_email_txt, qr/Date booking made: Wednesday 30 August/, 'Includes booking date';
             like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Items to be collected:/, 'Includes header for items';
             like $confirmation_email_txt, qr/- Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1';
@@ -259,10 +259,10 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Check the size/, 'Includes item 3 message';
             unlike $confirmation_email_txt, qr/Total cost/, 'There is not total cost';
             like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: Saturday 01 July/, 'Includes collection date';
             like $confirmation_email_txt, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
-            like $confirmation_email_html, qr/Date booking made: 30 August/, 'Includes booking date (html mail)';
+            like $confirmation_email_html, qr/Date booking made: Wednesday 30 August/, 'Includes booking date (html mail)';
             like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
             like $confirmation_email_html, qr/Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1 (html mail)';
@@ -271,7 +271,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Small electricals: Other/, 'Includes item 3 (html mail)';
             unlike $confirmation_email_html, qr/Total cost/, 'There is no total cost (html mail)';
             like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: Saturday 01 July/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link (html mail)';
             $mech->clear_emails_ok;
         };
@@ -287,7 +287,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/Thank you for booking a small items collection with Brent Council/, 'Includes Brent greeting';
             like $confirmation_email_txt, qr/The report's reference number is $id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
-            like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';
+            like $confirmation_email_txt, qr/Collection date: Saturday 01 July/, 'Includes collection date';
             like $confirmation_email_txt, qr/- Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1';
             like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
@@ -296,7 +296,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Thank you for booking a small items collection with Brent Council/, 'Includes Brent greeting (html mail)';
             like $confirmation_email_html, qr#The report's reference number is <strong>$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
-            like $confirmation_email_html, qr/Collection date: 01 July/, 'Includes collection date (html mail)';
+            like $confirmation_email_html, qr/Collection date: Saturday 01 July/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr/Tied bag of domestic batteries \(min 10 - max 100\)/, 'Includes item 1 (html mail)';
             like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
@@ -435,7 +435,7 @@ FixMyStreet::override_config {
         $mech->get_ok($base_path);
         $mech->content_contains('Cancel booking');
         $mech->get_ok("$base_path/small_items/cancel/" . $report->id);
-        $mech->content_like(qr{<dt>Date</dt>\s*<dd>01 July</dd>});
+        $mech->content_like(qr{<dt>Date</dt>\s*<dd>Saturday 01 July 2023</dd>});
         $mech->content_contains('Toaster');
         $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
         $mech->content_contains('Your booking has been cancelled');
