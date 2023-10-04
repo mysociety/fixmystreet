@@ -80,6 +80,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'bromley',
     COBRAND_FEATURES => {
+        bulky_contact_email => { bromley => 'bulkycontact@example.org' },
         waste => { bromley => 1 },
         waste_features => {
             bromley => {
@@ -186,6 +187,10 @@ FixMyStreet::override_config {
             paymentResult => {
                 status => 'SUCCESS',
                 paymentDetails => {
+                    authDetails => {
+                        authCode              => 112233,
+                        continuousAuditNumber => 123,
+                    },
                     paymentHeader => {
                         uniqueTranId => 54321
                     }
@@ -366,9 +371,6 @@ FixMyStreet::override_config {
         };
     };
 
-    # Collection time: 2023-07-01T:07:00:00
-    # Time within the cancellation window:
-    my $cancell_allowed_time = '2023-07-01T05:59:59Z'; # 06:59:59 UK time
 
     subtest 'Bulky goods collection viewing' => sub {
         subtest 'View own booking' => sub {
@@ -389,32 +391,70 @@ FixMyStreet::override_config {
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
-
-            # Cancellation messaging & options
-            $mech->content_lacks('This collection has been cancelled');
-            $mech->content_lacks('View cancellation report');
-
-            set_fixed_time($cancell_allowed_time);
-            $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("07:00 on 01 July 2023");
-
-            # Presence of external_id in report implies we have sent request
-            # to Echo
-            $mech->content_lacks('/waste/12345/bulky/cancel');
-            $mech->content_lacks('Cancel this booking');
-
-            $report->external_id('Echo-123');
-            $report->update;
-            $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains('/waste/12345/bulky/cancel');
-            $mech->content_contains('Cancel this booking');
         };
 
         subtest "Can follow link to booking from bin days page" => sub {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
+        };
+
+        # Collection time: 2023-07-01T:07:00:00
+        # Time within the cancellation window.
+        my $cancel_time = '2023-07-01T05:59:59Z'; # 06:59:59 UK time
+
+        # Consider report to have been sent.
+        $report->external_id('Echo-123');
+        $report->update;
+
+        subtest 'Cancel booking' => sub {
+            $mech->log_in_ok($report->user->email);
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_lacks('This collection has been cancelled');
+
+            set_fixed_time($cancel_time);
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains("07:00 on 01 July 2023");
+            $mech->content_contains('/waste/12345/bulky/cancel/' . $report->id);
+            $mech->content_contains('Cancel this booking');
+            $mech->content_contains('You can get a refund if cancelled by 7am on the day prior to your collection');
+
+            $mech->clear_emails_ok();
+
+            subtest 'Sends refund email' =>sub {
+                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+                $mech->content_contains('Your booking has been cancelled');
+
+                my $email = $mech->get_email;
+
+                is $email->header('Subject'),
+                    'Refund requested for cancelled bulky goods collection ' . $report->id,
+                    'Correct subject';
+                is $email->header('To'),
+                    '"Bromley Council" <bulkycontact@example.org>',
+                    'Correct recipient';
+
+                my $text = $email->as_string;
+
+                like $text, qr/Address: 2 Example Street, Bromley, BR1 1AF/, "Includes resident's address";
+                my $name = $report->name;
+                like $text, qr/Resident's Name: ${name}/, "Includes resident's name";
+                my $user_email = $report->user->email;
+                like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";
+                # =C2=A3 is the quoted printable for '£'.
+                like $text, qr/Payment Amount: =C2=A330.00/, "Correct payment amount";
+                like $text, qr/Capita SCP Response: 12345/,
+                    'Correct SCP response';
+                # XXX Not picking up on mocked time
+                like $text, qr|Payment Date: \d{2}/\d{2}/\d{2} \d{2}:\d{2}|,
+                    'Correct date format';
+                like $text, qr/CAN: 123/, 'Correct CAN';
+                like $text, qr/Auth Code: 112233/, 'Correct auth code';
+                my $report_id = $report->id;
+                like $text, qr/reference2: ${report_id}/, 'Correct reference2';
+            };
         };
     };
 
