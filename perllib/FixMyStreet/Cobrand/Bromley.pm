@@ -1004,10 +1004,44 @@ sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 7, minutes => 0 } }
 sub bulky_collection_window_days { 28 }
 sub bulky_cancel_by_update { 1 }
-sub bulky_can_refund { 0 }
 sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 sub bulky_send_before_payment { 1 }
+
+sub bulky_can_refund_collection {
+    my ($self, $collection) = @_;
+    return $self->within_bulky_cancel_window($collection);
+}
+
+sub bulky_refund_collection {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-refund-request.txt',
+        {   to => [
+                [ $c->cobrand->bulky_contact_email, $c->cobrand->council_name ]
+            ],
+
+            wasteworks_id => $collection_report->id,
+            payment_amount => $collection_report->get_extra_field_value('payment'),
+            payment_method =>
+                $collection_report->get_extra_field_value('payment_method'),
+            payment_code =>
+                $collection_report->get_extra_field_value('PaymentCode'),
+            auth_code =>
+                $collection_report->get_extra_metadata('authCode'),
+            continuous_audit_number =>
+                $collection_report->get_extra_metadata('continuousAuditNumber'),
+            payment_date       => $collection_report->created,
+            scp_response       =>
+                $collection_report->get_extra_metadata('scpReference'),
+            detail  => $collection_report->detail,
+            resident_name => $collection_report->name,
+            resident_email => $collection_report->user->email,
+        },
+    );
+}
+
 
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
@@ -1110,5 +1144,10 @@ sub waste_reconstruct_bulky_data {
 }
 
 sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
+
+sub bulky_contact_email {
+    my $self = shift;
+    return $self->feature('bulky_contact_email');
+}
 
 1;
