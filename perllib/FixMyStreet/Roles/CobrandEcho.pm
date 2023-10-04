@@ -745,7 +745,7 @@ sub bulky_nice_item_list {
             push @fields, $value;
         }
     }
-    my $items_extra = $self->bulky_items_extra;
+    my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
 
     return [
         map {

@@ -114,10 +114,14 @@ sub bulky_is_cancelled {
 }
 
 sub bulky_items_extra {
-    my $self = shift;
+    my ($self, %args) = @_;
 
-    my $per_item = $self->bulky_per_item_costs;
-    my $price_key = $self->bulky_per_item_price_key;
+    my $per_item = '';
+    my $price_key = '';
+    unless ($args{exclude_pricing}) {
+        $per_item = $self->bulky_per_item_costs;
+        $price_key = $self->bulky_per_item_price_key;
+    };
 
     my $json = JSON::MaybeXS->new;
     my %hash;
