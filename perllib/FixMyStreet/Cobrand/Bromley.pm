@@ -4,6 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use utf8;
+use DateTime;
 use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
 use Integrations::Echo;
@@ -1008,9 +1009,16 @@ sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 sub bulky_send_before_payment { 1 }
 
+# TODO: Enforce the minumum charge.
+sub bulky_minimum_charge {
+    my $self = shift;
+    $self->feature('waste_features')->{bulky_minimum_charge};
+}
+
 sub bulky_can_refund_collection {
     my ($self, $collection) = @_;
-    return $self->within_bulky_cancel_window($collection);
+    return 0 if !$self->within_bulky_cancel_window($collection);
+    return $self->bulky_refund_amount($collection) > 0;
 }
 
 sub bulky_refund_collection {
@@ -1042,6 +1050,25 @@ sub bulky_refund_collection {
     );
 }
 
+sub bulky_refund_would_be_partial {
+    my ($self, $collection) = @_;
+    my $d = $self->collection_date($collection);
+    my $t = $self->_bulky_cancellation_cutoff_date($d);
+    return $t->subtract( days => 1 ) <= DateTime->now;
+}
+
+sub bulky_refund_amount {
+    my ($self, $collection) = @_;
+    my $charged = $collection->get_extra_field_value('payment');
+    if ($self->bulky_refund_would_be_partial($collection)) {
+        my $refund_amount = $charged - $self->bulky_minimum_charge;
+        if ($refund_amount < 0) {
+            return 0;
+        }
+        return $refund_amount;
+    }
+    return $charged;
+}
 
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
