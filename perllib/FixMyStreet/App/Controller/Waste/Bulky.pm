@@ -74,6 +74,7 @@ sub item_list : Private {
             "item_notes_${num}" => {
                 type => 'TextArea',
                 label => 'Item note (optional)',
+                maxlength => 100,
                 tags => { hint => 'Describe the item to help our crew pick up the right thing' },
             };
     }
