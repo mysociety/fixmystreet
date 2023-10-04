@@ -410,7 +410,7 @@ FixMyStreet::override_config {
         };
 
         sub test_summary {
-            my $date_day = shift;
+            my ($date_dow, $date_day) = @_;
             $mech->content_contains('Request a bulky waste collection');
             $mech->content_lacks('Your bulky waste collection');
             $mech->content_contains('Booking Summary');
@@ -426,7 +426,7 @@ FixMyStreet::override_config {
             $mech->content_contains('you can add up to 2 more items');
             $mech->content_lacks('No image of the location has been attached.');
             $mech->content_contains('£23.50');
-            $mech->content_contains("<dd>$date_day August</dd>");
+            $mech->content_contains("<dd>$date_dow $date_day August 2022</dd>");
             my $day_before = $date_day - 1;
             $mech->content_contains("15:00 on $day_before August 2022");
             $mech->content_lacks('Cancel this booking');
@@ -462,7 +462,7 @@ FixMyStreet::override_config {
             return ($token, $new_report, $report_id);
         }
 
-        subtest 'Summary page' => sub { test_summary(12) }; # 12th August
+        subtest 'Summary page' => sub { test_summary('Friday', 12) }; # 12th August
 
         subtest 'Slot has become fully booked' => sub {
             # Slot has become fully booked in the meantime - should
@@ -504,7 +504,7 @@ FixMyStreet::override_config {
             $mech->get_ok("/waste/pay_cancel/$report_id/$token?property_id=PE1%203NA:100090215480");
         };
 
-        subtest 'Summary page' => sub { test_summary(26) }; # 26th August
+        subtest 'Summary page' => sub { test_summary('Friday', 26) }; # 26th August
         subtest 'Summary submission again' => \&test_summary_submission;
         subtest 'Payment page again' => sub {
             my ($token, $new_report, $report_id) = test_payment_page($sent_params);
@@ -577,7 +577,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('you can add up to 2 more items');
             $mech->content_contains('£23.50');
-            $mech->content_contains('26 August');
+            $mech->content_contains('Friday 26 August 2022');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
@@ -751,7 +751,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('you can add up to 2 more items');
             $mech->content_contains('£23.50');
-            $mech->content_contains("<dd>26 August</dd>");
+            $mech->content_contains("<dd>Friday 26 August 2022</dd>");
             $mech->content_contains("15:00 on 25 August 2022");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
@@ -792,7 +792,7 @@ FixMyStreet::override_config {
         $mech->content_contains('2 items requested for collection');
         $mech->content_contains('you can add up to 3 more items');
         $mech->content_contains('£23.50');
-        $mech->content_contains("<dd>26 August</dd>");
+        $mech->content_contains("<dd>Friday 26 August 2022</dd>");
         $mech->content_contains("15:00 on 25 August 2022");
         $mech->content_lacks('Cancel this booking');
         $mech->content_lacks('Show upcoming bin days');
@@ -869,7 +869,7 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
             my $email = $mech->get_email->as_string;
             like $email, qr/1 Pope Way/;
-            like $email, qr/Collection date: 26 August/;
+            like $email, qr/Collection date: Friday 26 August 2022/;
             like $email, qr{rborough.example.org/waste/PE1%203NA%3A100090215480/bulky/cancel/$report_id};
             $mech->clear_emails_ok;
         };
@@ -880,7 +880,7 @@ FixMyStreet::override_config {
             $cobrand->bulky_reminders;
             if ($days) {
                 my $email = $mech->get_email->as_string;
-                like $email, qr/26 August/;
+                like $email, qr/Friday 26 August 2022/;
                 like $email, qr{peterborough.example.org/waste/PE1%203NA%3A100090};
                 like $email, qr{215480/bulky/cancel/$report_id};
                 if ($days == 3) {
@@ -945,7 +945,7 @@ FixMyStreet::override_config {
         $mech->content_contains('1 item requested for collection');
         $mech->content_contains('you can add up to 4 more items');
         $mech->content_contains('£23.50');
-        $mech->content_contains("<dd>02 September</dd>");
+        $mech->content_contains("<dd>Friday 02 September 2022</dd>");
         $mech->content_contains("15:00 on 01 September 2022");
         $mech->content_lacks('Cancel this booking');
         $mech->content_lacks('Show upcoming bin days');
