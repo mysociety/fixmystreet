@@ -1,0 +1,16 @@
+Subject: Bulky waste cancellation - reference [% report.id %]
+
+Dear [% report.name %],
+
+Your bulky waste collection has been cancelled.
+
+[% report.detail %]
+
+Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service and obtaining a refund:
+
+    https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

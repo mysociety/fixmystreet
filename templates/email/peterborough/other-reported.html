@@ -1,5 +1,7 @@
 [% IF report.category == 'Bulky collection' ~%]
 [% PROCESS 'waste/other-reported-bulky.html' ~%]
+[% ELSIF report.category == 'Bulky cancel' ~%]
+[% PROCESS 'waste/other-reported-bulky-cancel.html' ~%]
 [% ELSE ~%]
 [%
 
