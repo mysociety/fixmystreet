@@ -281,8 +281,9 @@ FixMyStreet::override_config {
             $mech->content_contains('Bookings are final and non refundable');
             $mech->submit_form_ok;
         };
-
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Collections take place any time from 6:30am to 4:30pm.');
+        $mech->content_contains('placed outside before 6:30am on the collection day.');
         $mech->content_contains('01 July');
         $mech->content_contains('08 July');
         $mech->submit_form_ok(
