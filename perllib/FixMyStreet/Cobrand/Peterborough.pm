@@ -338,6 +338,12 @@ sub open311_post_send {
     }
 }
 
+sub suppress_report_sent_email {
+    my ($self, $report) = @_;
+    return 1 if $report->category eq 'Bulky cancel' && $report->get_extra_metadata('bulky_amendment_cancel');
+    return 0;
+}
+
 sub post_report_sent {
     my ($self, $problem) = @_;
 

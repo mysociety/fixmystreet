@@ -809,8 +809,9 @@ FixMyStreet::override_config {
             is $report->photo, '';
         };
 
+        my $cancellation_report;
         subtest 'cancellation report' => sub {
-            my $cancellation_report
+            $cancellation_report
                 = FixMyStreet::DB->resultset('Problem')->find(
                     { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
                 );
@@ -828,7 +829,6 @@ FixMyStreet::override_config {
             like $cancellation_report->detail,
                 qr/Original report ID: SR00100001 \(WasteWorks ${\$report->id}\)/,
                 'Original report ID in detail field';
-            $cancellation_report->delete;
         };
 
         subtest 'Viewing original report summary after cancellation' => sub {
@@ -843,6 +843,13 @@ FixMyStreet::override_config {
             $mech->content_contains('Previously submitted as');
         };
 
+        subtest 'Check no email sent for amending cancellation report' => sub {
+            $report->update({ state => 'hidden' }); # So logged email for actual booking not sent
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(0); # No email from the cancellation report
+            $report->update({ state => 'confirmed' }); # Reset
+        };
+        $cancellation_report->delete;
     };
 
     subtest 'Bulky goods email confirmation and reminders' => sub {

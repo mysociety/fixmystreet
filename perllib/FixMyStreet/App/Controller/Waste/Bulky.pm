@@ -262,6 +262,13 @@ sub process_bulky_amend : Private {
 
     amend_extra_data($c, $p, $data);
 
+    if ($c->cobrand->bulky_cancel_by_update) {
+        # TODO In this case we would want to update the event; we can't both
+        # cancel the booking by update and also resend it as a new booking
+        # (which works okay when a new cancellation event is being created)
+        die "Not currently functional";
+    }
+
     $c->forward('add_cancellation_report');
 
     $p->resend;
@@ -320,7 +327,12 @@ sub add_cancellation_report : Private {
         });
     } else {
         $c->forward( '/waste/add_report', [ \%data ] ) or return;
+        if ($c->stash->{amending_booking}) {
+            $c->stash->{report}->set_extra_metadata(bulky_amendment_cancel => 1);
+            $c->stash->{report}->update;
+        }
     }
+    return 1;
 }
 
 sub process_bulky_cancellation : Private {
