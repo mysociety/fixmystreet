@@ -151,9 +151,10 @@ sub view : Private {
 
     my $p = $c->stash->{problem};
 
-    if (!$c->stash->{property}) {
-        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
-    }
+    $c->stash->{property} = {
+        id => $p->get_extra_field_value('property_id'),
+        address => $p->get_extra_metadata('property_address'),
+    };
 
     $c->stash->{template} = 'waste/bulky/summary.html';
 
