@@ -1196,6 +1196,7 @@ FixMyStreet::override_config {
             is $cancellation->header('Subject'), 'Bulky waste cancellation - reference ' . $cancellation_report->id;
             $text = $cancellation->as_string;
             like $text, qr/Your bulky waste collection has been cancelled/;
+            unlike $text, qr/The FixMyStreet team/;
         };
 
         $mech->clear_emails_ok;

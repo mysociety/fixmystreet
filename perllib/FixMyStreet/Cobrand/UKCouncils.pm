@@ -38,6 +38,7 @@ sub path_to_email_templates {
     my $paths = [
         FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code ),
         FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet-uk-councils' ),
         FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
     ];
     return $paths;
