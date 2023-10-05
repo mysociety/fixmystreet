@@ -374,6 +374,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Choose date page' => sub {
+            $mech->content_lacks('The list displays the available collection dates for your address');
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
             $mech->content_contains('05 August');
