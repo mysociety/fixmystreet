@@ -192,24 +192,7 @@ sub view : Private {
 
     $c->stash->{template} = 'waste/bulky/summary.html';
 
-    # And include moderation changes...
-    my $user_can_moderate = $c->user_exists && $c->user->can_moderate($p);
-    my @combined;
-    if ($user_can_moderate) {
-        my @history = $p->moderation_history;
-        my $last_history = $p;
-        foreach my $history (@history) {
-            push @combined, [ $history->created, {
-                id => 'm' . $history->id,
-                type => 'moderation',
-                last => $last_history,
-                entry => $history,
-            } ];
-            $last_history = $history;
-        }
-    }
-    @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;
-    $c->stash->{updates} = \@combined;
+    $c->forward('/report/load_updates');
 
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
     $c->stash->{form} = {
