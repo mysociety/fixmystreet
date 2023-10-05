@@ -145,4 +145,11 @@ subtest 'test display of bulky cancellation reports' => sub {
     };
 };
 
+subtest 'test status filter display' => sub {
+    FixMyStreet::override_config { ALLOWED_COBRANDS => 'fixmystreet' }, sub {
+        $mech->get_ok('/my');
+        $mech->content_lacks('data-none="Open"');
+    };
+};
+
 done_testing();

@@ -12,6 +12,7 @@
         - Fix link to edit category with apostrophe in category name.
         - Fallback extra field in submit email should be `name`, not `code`.
         - Allow confirmation links to login user 30s within first use to prevent things like Outlook 'safelinks' breaking the UX.
+        - Fixes default status report filter text on Your Account page. #4558
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
