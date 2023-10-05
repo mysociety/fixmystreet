@@ -2,6 +2,26 @@
 <ol>
     <li>Requesting a bulky waste collection usually takes approximately <strong>10 minutes</strong></li>
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
+    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
+    [%
+        USE pounds = format('%.2f');
+        SET cfg = c.cobrand.wasteworks_config;
+        SET band1_items = cfg.band1_max;
+        SET max_items = cfg.items_per_collection_max;
+        SET base_price = cfg.base_price / 100;
+        SET band1_price = cfg.band1_price / 100;
+    %]
+    <li>The price you pay depends how many items you would like collected:
+        <ul class="bulky-intro-pricing">
+            <li class="bulky-intro-pricing">
+                Up to [% band1_items %] items = £[% pounds(band1_price) %]
+            </li>
+            <li class="bulky-intro-pricing">
+                Up to [% max_items %] items = £[% pounds(base_price) %]
+            </li>
+        </ul>
+    </li>
+    [% END %]
     <li>Please ensure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">bulky waste collection</a></strong> page on the council’s website</li>
     <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
     <li>Before confirming your booking, check all the info provided is correct</li>
@@ -12,5 +32,8 @@
         [% IF cobrand.moniker == 'peterborough' %]
     <li><strong>Cancellations made by [% c.cobrand.bulky_nice_collection_time %]</strong> the day before collection is scheduled are entitled to a refund</li>
         [% END %]
+    [% END %]
+    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
+    <li>Bookings are final and non refundable</li>
     [% END %]
 </ol>

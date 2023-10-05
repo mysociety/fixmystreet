@@ -123,6 +123,11 @@ ol li {
   list-style: decimal;
 }
 
+.bulky-intro-pricing {
+  list-style: none;
+  margin-bottom: 0em;
+}
+
 // lets you have a traditional ol but with nicely styled numbers
 // for older browsers it just falls back to the normal ol
 ol.big-numbers {

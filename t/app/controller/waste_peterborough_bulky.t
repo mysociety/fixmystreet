@@ -351,6 +351,9 @@ FixMyStreet::override_config {
             $mech->content_contains('You can request up to <strong>five items per collection');
             $mech->content_contains('You can amend the items in your booking up until 3pm the day before the collection is scheduled');
             $mech->content_contains('the day before collection is scheduled are entitled to a refund');
+            $mech->content_lacks('The price you pay depends how many items you would like collected:');
+            $mech->content_lacks('Up to 4 items');
+            $mech->content_lacks('Bookings are final and non refundable');
             $mech->submit_form_ok;
         };
 
