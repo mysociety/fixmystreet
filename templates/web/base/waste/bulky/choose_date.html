@@ -8,6 +8,12 @@
   [% IF property %]
     [% INCLUDE 'waste/_address_display.html' %]
   [% END %]
+  [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+  [% SET collection_time = c.cobrand.bulky_nice_collection_time %]
+    <p>The list displays the available collection dates for your address for the next eight weeks.
+      Collections take place any time from [% collection_time %] to 4:30pm. You do not need to be in on the collection day, just
+      make sure the items are placed outside before [% collection_time %] on the collection day.</p>
+  [% END %]
 
 [% IF flash_message && flash_message == 'choose_another_date' %]
   <div class="govuk-error-summary">
