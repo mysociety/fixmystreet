@@ -174,7 +174,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback Bag/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Toaster/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('8 remaining slots available');
+            $mech->content_lacks('you can add up to');
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_lacks('£0.00');
             $mech->content_contains("<dd>01 July</dd>");
@@ -349,7 +349,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*batteries/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('8 remaining slots available');
+            $mech->content_lacks('you can add up to');
             $mech->content_lacks('£0.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a small items collection');
