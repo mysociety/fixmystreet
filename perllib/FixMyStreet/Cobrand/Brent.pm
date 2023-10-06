@@ -1437,8 +1437,8 @@ sub waste_get_pro_rata_cost {
 }
 
 
-sub bulky_collection_time { { hours => 6, minutes => 0 } }
-sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0 } }
+sub bulky_collection_time { { hours => 7, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }
 sub bulky_cancel_by_update { 1 }
 sub bulky_collection_window_days { 28 }
 sub bulky_can_amend_collection { 0 }
@@ -1463,16 +1463,6 @@ sub bulky_allowed_property {
 sub collection_date {
     my ($self, $p) = @_;
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
-}
-
-sub _bulky_cancellation_cutoff_date {
-    my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-    my $dt = $collection_date->clone->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    );
-    return $dt;
 }
 
 sub _bulky_refund_cutoff_date { }

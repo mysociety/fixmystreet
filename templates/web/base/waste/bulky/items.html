@@ -93,9 +93,11 @@ END; END %]
     [% item = 'item_' _ num %]
     [% PROCESS form override_fields = [ item ] %]
     [% PROCESS extra_text num = num %]
+  [% IF c.cobrand.moniker != 'brent' %]
     [% photo = 'item_photo_' _ num %]
     [% photo_fileid = photo _ '_fileid' %]
     [% PROCESS form override_fields = [ photo, photo_fileid ] %]
+  [% END %]
 
     [% IF num > 1 %]
     <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>

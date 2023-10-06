@@ -159,7 +159,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     'item_1' => 'Tied bag of domestic batteries (min 10 - max 100)',
-                    'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                     'item_2' => 'Toaster',
                     'item_3' => 'Podback Bag',
                 },
@@ -170,7 +169,6 @@ FixMyStreet::override_config {
         sub test_summary {
             $mech->content_contains('Booking Summary');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Tied bag of domestic batteries/s);
-            $mech->content_contains('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Podback Bag/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Toaster/s);
             $mech->content_contains('3 items requested for collection');
@@ -178,7 +176,7 @@ FixMyStreet::override_config {
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_lacks('£0.00');
             $mech->content_contains("<dd>01 July</dd>");
-            $mech->content_contains("06:00 on 01 July 2023");
+            $mech->content_contains("23:59 on the night before");
         }
 
         subtest 'Summary page' => \&test_summary;
@@ -207,7 +205,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('property_id'), '12345';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve1==';
-            is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+            is $report->photo, undef;
         };
     };
 
@@ -362,8 +360,7 @@ FixMyStreet::override_config {
 
             set_fixed_time($good_date);
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("06:00 on 01 July 2023");
+            $mech->content_contains("you can cancel the booking up to 23:59 on the night before");
 
             # Presence of external_id in report implies we have sent request
             # to Echo
@@ -403,7 +400,7 @@ FixMyStreet::override_config {
             my $id   = $report->id;
             $mech->get_ok("/report/$id");
             $mech->content_contains('This collection has been cancelled');
-            $mech->content_lacks("You can cancel this booking till");
+            $mech->content_lacks("you can cancel the booking up to 23:59 on the night before");
             $mech->content_lacks('Cancel this booking');
         };
     };

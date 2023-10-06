@@ -70,7 +70,7 @@ has_page summary => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
-        my $label = FixMyStreet::Template::SafeString->new('I have read the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">small items collection</a> page on the council’s website');
+        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
         return {
             tandc => { option_label => $label }
         };
@@ -227,7 +227,7 @@ has_field tandc => (
 has_field location => (
     type => 'Text',
     widget => 'Textarea',
-    label => "Please provide the exact location where the items will be left (e.g., On the driveway; To the left of the front door; By the front hedge, etc.)",
+    label => "Please provide the exact location where the items will be left and details of any access codes required for bin stores (e.g., on the driveway by the front gate; left hand side of the bin store – access code 2343)",
 );
 
 has_field location_photo_fileid => (
@@ -245,7 +245,7 @@ has_field location_photo => (
         my $self = shift;
 
         return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
-        . 'Help us by attaching a photo of where the items will be left for collection.'
+        . 'Help us by attaching a photo of where the items will be left for collection (optional).'
     }
 );
 
