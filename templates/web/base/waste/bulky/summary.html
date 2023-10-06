@@ -97,10 +97,14 @@ END;
           </div>
           <div class="govuk-warning-text__content">
               <span class="govuk-warning-text__assistive">Warning</span>
-              <p class="govuk-!-margin-bottom-3">You can cancel this booking till
-                [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
-              [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
-              <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
+              [% IF c.cobrand.moniker == 'brent' %]
+                  <p class="govuk-!-margin-bottom-3">If you no longer need the collection you can cancel the booking up to 23:59 on the night before booking.</p>
+              [% ELSE %]
+                  <p class="govuk-!-margin-bottom-3">You can cancel this booking till
+                    [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
+                  [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
+                      <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
+                  [% END %]
               [% END %]
           </div>
         </div>
@@ -138,9 +142,11 @@ END;
         <thead>
           <tr>
               <th>Item</th>
+            [% IF c.cobrand.moniker != 'brent' %]
               <th>
                 <span class="govuk-text__assistive">Item images preview</span>
               </th>
+            [% END %]
           </tr>
         </thead>
         <tbody>
@@ -150,6 +156,7 @@ END;
               <td>
                 <p class="govuk-!-margin-bottom-0">[% item.item %]</p>
               </td>
+            [% IF c.cobrand.moniker != 'brent' %]
               <td>
                   [% IF item.photo %]
                     <img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.[% item.photo %]">
@@ -157,6 +164,7 @@ END;
                     <span>No image attached for this item</span>
                   [% END %]
               </td>
+            [% END %]
           </tr>
           [% IF extra_text %]
             <tr>
