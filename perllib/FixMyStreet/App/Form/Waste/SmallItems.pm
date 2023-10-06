@@ -201,7 +201,7 @@ has items_master_list => (
 );
 
 sub _build_items_master_list {
-    [ sort { lc $a->{name} cmp lc $b->{name} }
+    [ sort { $a->{bartec_id} <=> $b->{bartec_id} }
             @{ $_[0]->c->cobrand->call_hook('bulky_items_master_list') } ];
 }
 
