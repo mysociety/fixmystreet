@@ -335,7 +335,7 @@ FixMyStreet::override_config {
             $mech->content_contains('No image of the location has been attached.');
             $mech->content_contains('£40.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
-            $mech->content_contains("06:30 on 01 July 2023");
+            $mech->content_contains("on or before Saturday 01 July 2023");
         }
         sub test_summary_submission {
             # external redirects make Test::WWW::Mechanize unhappy so clone
@@ -382,7 +382,7 @@ FixMyStreet::override_config {
 
             subtest 'date info has changed on summary page' => sub {
                 $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
-                $mech->content_contains("06:30 on 08 July 2023");
+                $mech->content_contains("on or before Saturday 08 July 2023");
             };
         };
 
@@ -521,8 +521,8 @@ FixMyStreet::override_config {
 
             set_fixed_time($good_date);
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains("You can cancel this booking till");
-            $mech->content_contains("06:30 on 08 July 2023");
+            $mech->content_contains("You can cancel this booking any time before");
+            $mech->content_contains("on or before Saturday 08 July 2023");
 
             # Presence of external_id in report implies we have sent request
             # to Echo
