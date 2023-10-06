@@ -72,7 +72,7 @@ FixMyStreet::override_config {
         },
         echo => {
             brent => {
-                bulky_service_id => 787,
+                bulky_service_id => 274,
                 bulky_event_type_id => 2964,
                 url => 'http://example.org',
             },
@@ -99,7 +99,7 @@ FixMyStreet::override_config {
     });
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 787;
+        is $service, 274;
         is $event_type, 2964;
         is $property, 12345;
         return [
@@ -186,7 +186,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         subtest 'Confirmation page' => sub {
-            $mech->content_contains('Collection booked');
+            $mech->content_contains('Small items collection booking confirmed');
 
             $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
@@ -427,8 +427,8 @@ FixMyStreet::override_config {
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
             EventStateId => 18490,
         }, {
-            EventTypeId => 918,
-            ServiceId => 787,
+            EventTypeId => 2891,
+            ServiceId => 274,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
         } ] } );

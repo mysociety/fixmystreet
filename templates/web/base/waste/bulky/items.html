@@ -126,11 +126,7 @@ END; END %]
 
     [% IF c.cobrand.moniker != 'brent' %]
     <p>
-      [% IF c.cobrand.bulky_per_item_costs %]
-        Total cost: £<span id="js-bulky-total">[% pounds(total) %]</span>
-      [% ELSE %]
-        Total cost: £[% pounds(total) %]
-      [% END %]
+        Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy %]" id="js-bulky-total">[% pounds(total) %]</span>
     </p>
     [% END %]
 

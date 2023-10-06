@@ -1,0 +1,14 @@
+<ul>
+  [% FOR item IN item_list %]
+    <li>
+      [% item.value %]
+      [% IF item.message %]
+        <ul>
+          <li>
+            [% item.message %]
+          </li>
+        </ul>
+      [% END %]
+    </li>
+  [% END %]
+</ul>

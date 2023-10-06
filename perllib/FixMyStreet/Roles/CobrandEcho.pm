@@ -6,7 +6,6 @@ use DateTime;
 use DateTime::Format::Strptime;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
-use UUID::Tiny ':std';
 use FixMyStreet::DateRange;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
@@ -659,7 +658,8 @@ sub find_available_bulky_slots {
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
     my $guid = $self->{c}->session->{$guid_key};
     unless ($guid) {
-        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string;
+        require UUID::Tiny;
+        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string();
     }
 
     my $window = $self->_bulky_collection_window($last_earlier_date_str);

@@ -1,0 +1,20 @@
+[% PROCESS 'waste/header.html' %]
+[% IF property %]
+  [% INCLUDE 'waste/_address_display.html' %]
+[% END %]
+
+<div class="govuk-warning-text whole-page govuk-!-margin-bottom-9">
+    <div class="govuk-warning-text__img govuk-!-margin-bottom-5">
+        <span class="govuk-warning-text__icon success" aria-hidden="true">&#x2714;</span>
+    </div>
+    <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Important information</span>
+        <h3 class="govuk-heading-l govuk-warning-text__heading">Your booking has been cancelled</h3>
+        <dt><strong>Booking reference number</strong></dt>
+        <dd class="govuk-!-margin-bottom-4">[% cancelling_booking.id %]</dd>
+        [% IF entitled_to_refund %]
+            <p class="govuk-!-margin-bottom-2">Your refund is on its way.</p>
+        [% END %]
+        <a href="[% c.uri_for_action('waste/bin_days', [ property.id ]) %]" class="btn btn-primary">Go back home</a>
+    </div>
+</div>

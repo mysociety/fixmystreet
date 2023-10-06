@@ -85,11 +85,13 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
         } else {
             $new_cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
             my %keys = (
-                free_mode => 'bool',
                 per_item_costs => 'bool',
                 base_price => 'int',
                 daily_slots => 'int',
                 items_per_collection_max => 'int',
+                band1_price => 'int',
+                band1_max => 'int',
+                free_mode => 'bool',
                 food_bags_disabled => 'bool',
                 show_location_page => 'sel'
             );
@@ -98,7 +100,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 if ($keys{$_} eq 'bool') {
                     $new_cfg->{$_} = $val ? 1 : 0;
                 } elsif ($keys{$_} eq 'int') {
-                    if ($val ne $val+0) {
+                    if ($val && $val ne $val+0) {
                         $c->stash->{errors}->{site_wide} = "Not an integer";
                     } elsif ($_ eq 'items_per_collection_max' && $val > 200) {
                         $c->stash->{errors}->{site_wide} = "Maximum items per collection cannot be more than 200";
@@ -215,7 +217,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs base_price daily_slots items_per_collection_max food_bags_disabled show_location_page)) {
+    foreach (qw(free_mode per_item_costs base_price daily_slots items_per_collection_max food_bags_disabled show_location_page band1_price band1_max)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }
