@@ -318,6 +318,7 @@ FixMyStreet::override_config {
                 },
             },
         );
+        $mech->content_contains('Items must be out for collection by 6:30am on the collection day.');
         $mech->submit_form_ok({ with_fields => { location => '' } }, 'Will error with a blank location');
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
 
