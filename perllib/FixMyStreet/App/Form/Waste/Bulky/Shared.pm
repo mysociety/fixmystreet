@@ -38,6 +38,7 @@ has_page choose_date_later => (
 
 has_page location => (
     title    => 'Location details',
+    intro => 'bulky/location.html',
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
