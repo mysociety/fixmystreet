@@ -35,8 +35,13 @@
           </div>
           <div class="govuk-warning-text__content">
               <span class="govuk-warning-text__assistive">Warning</span>
+                [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+                <p class="govuk-!-margin-bottom-0">Please carefully read all the details for your booking including the items as you
+                   won't be able to amend the booking once you have paid for the service.</p>
+                [% ELSE %]
                 <p class="govuk-!-margin-bottom-0">Please read carefully all the details for your booking. You won't be
                   able to amend your details afterwards.</p>
+                [% END %]
           </div>
         </div>
       </div>
@@ -86,8 +91,14 @@
           </div>
           <div class="govuk-warning-text__content">
               <span class="govuk-warning-text__assistive">Warning</span>
+              [% IF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]
+              <p class="govuk-!-margin-bottom-3">You can cancel this booking any time before the collection
+                 takes place on or before [% cobrand.bulky_nice_collection_date(data.chosen_date) %].
+                 Bookings are not refundable.</p>
+              [% ELSE %]
               <p class="govuk-!-margin-bottom-3">You can cancel this booking till
                 [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
+              [% END %]
               [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
               <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
               [% END %]
