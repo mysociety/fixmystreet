@@ -1307,6 +1307,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
+        $mech->content_lacks('Items must be out for collection by', 'Lacks Kingston/Sutton extra text');
         $mech->submit_form_ok({ with_fields => { location => '' } });
         $mech->content_contains('tandc', 'Can have a blank location');
         $mech->back;
