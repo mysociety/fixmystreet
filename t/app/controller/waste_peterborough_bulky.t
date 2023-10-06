@@ -809,8 +809,9 @@ FixMyStreet::override_config {
             is $report->photo, '';
         };
 
+        my $cancellation_report;
         subtest 'cancellation report' => sub {
-            my $cancellation_report
+            $cancellation_report
                 = FixMyStreet::DB->resultset('Problem')->find(
                     { extra => { '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => 'SR00100001' } ] }) } },
                 );
@@ -828,7 +829,6 @@ FixMyStreet::override_config {
             like $cancellation_report->detail,
                 qr/Original report ID: SR00100001 \(WasteWorks ${\$report->id}\)/,
                 'Original report ID in detail field';
-            $cancellation_report->delete;
         };
 
         subtest 'Viewing original report summary after cancellation' => sub {
@@ -843,6 +843,13 @@ FixMyStreet::override_config {
             $mech->content_contains('Previously submitted as');
         };
 
+        subtest 'Check no email sent for amending cancellation report' => sub {
+            $report->update({ state => 'hidden' }); # So logged email for actual booking not sent
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(0); # No email from the cancellation report
+            $report->update({ state => 'confirmed' }); # Reset
+        };
+        $cancellation_report->delete;
     };
 
     subtest 'Bulky goods email confirmation and reminders' => sub {
@@ -957,7 +964,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { show_later_dates => 1 } });
         $mech->content_like(qr/name="chosen_date" value="2022-08-26T00:00:00"\s+disabled/, 'Already booked date disabled');
         $mech->content_like(qr/name="chosen_date" value="2022-09-02T00:00:00"\s+checked\s+>/, 'Existing booked date not disabled');
-        $report2->update({ external_id => undef });
+        $report2->update({ external_id => undef, send_state => 'sent' });
     };
 
     subtest 'Cancellation' => sub {
@@ -1162,8 +1169,11 @@ FixMyStreet::override_config {
             $mech->content_lacks('Cancel this booking');
         };
 
-        subtest 'refund request email' => sub {
-            my $email = $mech->get_email;
+        subtest 'cancellation/refund request email' => sub {
+            FixMyStreet::Script::Reports::send();
+            my @email = $mech->get_email;
+            my $email = $email[0];
+            my $cancellation = $email[1];
 
             is $email->header('Subject'),
                 'Refund requested for cancelled bulky goods collection SR00100001',
@@ -1182,6 +1192,11 @@ FixMyStreet::override_config {
             like $text, qr/Auth Code: 112233/, 'Correct auth code';
             like $text, qr/Original Service Request Number: SR00100001/,
                 'Correct SR number';
+
+            is $cancellation->header('Subject'), 'Bulky waste cancellation - reference ' . $cancellation_report->id;
+            $text = $cancellation->as_string;
+            like $text, qr/Your bulky waste collection has been cancelled/;
+            unlike $text, qr/The FixMyStreet team/;
         };
 
         $mech->clear_emails_ok;

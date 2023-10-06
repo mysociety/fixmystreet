@@ -832,10 +832,6 @@ sub bin_services_for_address {
 
     # Small items collection event
     $self->bulky_check_missed_collection($events, {
-        # Completed
-        18490 => {
-            9999 => 'More items presented than booked',
-        },
         # Not Completed
         18491 => {
             all => 'the collection could not be completed',
