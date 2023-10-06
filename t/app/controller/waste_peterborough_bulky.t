@@ -423,7 +423,7 @@ FixMyStreet::override_config {
             # Extra text for wardrobes
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('2 remaining slots available');
+            $mech->content_contains('you can add up to 2 more items');
             $mech->content_lacks('No image of the location has been attached.');
             $mech->content_contains('£23.50');
             $mech->content_contains("<dd>$date_day August</dd>");
@@ -569,7 +569,7 @@ FixMyStreet::override_config {
             # Extra text for wardrobes
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('2 remaining slots available');
+            $mech->content_contains('you can add up to 2 more items');
             $mech->content_contains('£23.50');
             $mech->content_contains('26 August');
             $mech->content_lacks('Request a bulky waste collection');
@@ -739,7 +739,7 @@ FixMyStreet::override_config {
             $mech->content_contains('High chairs');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('2 remaining slots available');
+            $mech->content_contains('you can add up to 2 more items');
             $mech->content_contains('£23.50');
             $mech->content_contains("<dd>26 August</dd>");
             $mech->content_contains("15:00 on 25 August 2022");
@@ -780,7 +780,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('High chairs');
         $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
         $mech->content_contains('2 items requested for collection');
-        $mech->content_contains('3 remaining slots available');
+        $mech->content_contains('you can add up to 3 more items');
         $mech->content_contains('£23.50');
         $mech->content_contains("<dd>26 August</dd>");
         $mech->content_contains("15:00 on 25 August 2022");
@@ -933,7 +933,7 @@ FixMyStreet::override_config {
         $mech->content_contains('You will be redirected to the council’s card payments provider.');
         $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Chest of drawers/s);
         $mech->content_contains('1 item requested for collection');
-        $mech->content_contains('4 remaining slots available');
+        $mech->content_contains('you can add up to 4 more items');
         $mech->content_contains('£23.50');
         $mech->content_contains("<dd>02 September</dd>");
         $mech->content_contains("15:00 on 01 September 2022");
