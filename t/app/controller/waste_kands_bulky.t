@@ -289,6 +289,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
         );
+        $mech->content_contains('Select the items that you need us to collect using the');
+        $mech->content_contains('You can book the collection of up to eight items');
 
         subtest 'higher band try' => sub {
             $mech->submit_form_ok(
