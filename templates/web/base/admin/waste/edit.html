@@ -59,6 +59,12 @@
         [% 'checked' IF per_item_costs %]>
     <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
 
+    <div>
+    <label for="waste_per_item_min_collection_price">Minimum price for a per-item charged collection (in <strong>pence</strong>)</label>
+    <input class="form-control" type=text name="per_item_min_collection_price" id="waste_per_item_min_collection_price"
+        value="[% per_item_min_collection_price %]">
+    </div>
+
     <p>
     <label for="show_location_page">[% loc('Show location information page') %]</label>
     <select class="form-control" name="show_location_page" id="waste_show_location_page">

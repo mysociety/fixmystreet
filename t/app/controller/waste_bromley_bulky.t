@@ -11,7 +11,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 my $sample_file_2 = path(__FILE__)->parent->child("sample2.jpg");
-my $minimum_charge = 3600;
+my $minimum_charge = 500;
 
 my $user = $mech->create_user_ok('bob@example.org');
 
@@ -20,6 +20,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council',
 $body->set_extra_metadata(
     wasteworks_config => {
         per_item_costs => 1,
+        per_item_min_collection_price => $minimum_charge,
         items_per_collection_max => 8,
         show_location_page => 'users',
         item_list => [
@@ -88,7 +89,6 @@ FixMyStreet::override_config {
         waste => { bromley => 1 },
         waste_features => {
             bromley => {
-                bulky_minimum_charge => $minimum_charge,
                 bulky_trade_service_id => 532,
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
@@ -449,7 +449,7 @@ FixMyStreet::override_config {
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
                 $mech->content_contains(
                     'Cancellations within 24 hours of collection are only eligibile to ' .
-                    'be refunded the amount paid above the minimum charge £36.00.'
+                    'be refunded the amount paid above the minimum charge £5.00.'
                 );
                 $mech->content_contains('If you cancel you will be refunded £0.01.');
             };
@@ -476,7 +476,7 @@ FixMyStreet::override_config {
                 my $user_email = $report->user->email;
                 like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";
                 # =C2=A3 is the quoted printable for '£'.
-                like $text, qr/Payment Amount: =C2=A336.01/, "Correct payment amount";
+                like $text, qr/Payment Amount: =C2=A35.01/, "Correct payment amount";
                 like $text, qr/Capita SCP Response: 12345/,
                     'Correct SCP response';
                 # XXX Not picking up on mocked time
@@ -493,30 +493,39 @@ FixMyStreet::override_config {
     $report->comments->delete;
     $report->delete;
 
-    subtest 'Different pricing depending on domestic or trade property' => sub {
-        sub test_prices {
-            my ($minimum_cost, $total_cost) = @_;
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains('From ' . $minimum_cost);
-            $mech->get_ok('/waste/12345/bulky');
-            $mech->submit_form_ok; # Intro page.
-            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-            $mech->submit_form_ok(
-                { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
-            );
-            $mech->submit_form_ok(
-                {   with_fields => {
-                        'item_1' => 'BBQ',
-                    },
+    sub test_prices {
+        my ($minimum_cost, $total_cost) = @_;
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('From ' . $minimum_cost);
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok; # Intro page.
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'item_1' => 'BBQ',
                 },
-            );
-            $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
-            $mech->content_contains($total_cost); # Summary page.
-        }
+            },
+        );
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->content_contains($total_cost); # Summary page.
+    }
+
+    subtest 'Different pricing depending on domestic or trade property' => sub {
         $echo->mock('GetServiceUnitsForObject', \&trade_waste_service_units );
         test_prices('£20.00', '£20.00');
         $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
         test_prices('£10.00', '£10.00');
+    };
+
+    subtest 'Minimum charged enforced' => sub {
+        my $cfg = $body->get_extra_metadata('wasteworks_config');
+        $cfg->{per_item_min_collection_price} = 5000;
+        $body->set_extra_metadata(wasteworks_config => $cfg);
+        $body->update;
+        test_prices('£50.00', '£50.00');
     };
 
     subtest "Cancel booking when no payment within 30 minutes" => sub {
