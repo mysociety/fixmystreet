@@ -119,6 +119,9 @@ END; END %]
     <hr>
   </div>
   [% END %]
+  [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' %]
+  <p id="band-pricing-info"></p>
+  [% END %]
   <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+
     [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' ~%]
       Add another item
