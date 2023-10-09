@@ -178,6 +178,7 @@ FixMyStreet::override_config {
         );
 
         $mech->get_ok('/waste');
+        $mech->content_contains('Book bulky waste collection');
         $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
