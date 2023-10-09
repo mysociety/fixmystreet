@@ -82,6 +82,16 @@ $(function() {
         }
     }
 
+    function numberOfItems() {
+        var count = 0;
+        $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+            if ($(this).val()) {
+                count++;
+            }
+        });
+        return count;
+    }
+
     function updateTotal() {
         var totalId = $('#js-bulky-total');
         if (!totalId.length) {
@@ -116,12 +126,7 @@ $(function() {
             totalId.text((total / 100).toFixed(2));
 
         } else if (pricing.strategy === 'banded') {
-            var count = 0;
-            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
-                if ($(this).val()) {
-                    count++;
-                }
-            });
+            var count = numberOfItems();
             for (var i=0; i<pricing.bands.length; i++) {
                 if (count <= pricing.bands[i].max) {
                     total = pricing.bands[i].price;
@@ -145,6 +150,31 @@ $(function() {
         }
     }
 
+    function display_band_pricing() {
+        var totalId = $('#js-bulky-total');
+        var pricing = totalId.data('pricing') || {};
+
+        if (pricing.strategy !== 'banded') {
+            return;
+        }
+
+        var base_price = pricing.bands[1].price / 100;
+        var base_max = pricing.bands[1].max;
+        var band1_max = pricing.bands[0].max;
+        var count = numberOfItems();
+        var message = count + ' ' + (count === 1 ? 'item' : 'items') + ' selected - ';
+        message += 'you can add up to ' + (base_max - count) + ' more ' + (base_max - count === 1 ? 'item' : 'items') + '.';
+        if (count && count < band1_max) {
+            message += ' Adding another item will not increase the cost';
+        } else if (count && count == band1_max) {
+            message += ' Adding another item will increase the cost to £' + base_price.toFixed(2);
+        } else if (count && count < base_max) {
+        } else {
+            message = '';
+        }
+        $('#band-pricing-info').text(message);
+    }
+
     $(function() {
         maxNumItems = $('.bulky-item-wrapper').length;
 
@@ -154,6 +184,7 @@ $(function() {
             // To display message if option has a data-extra message
             update_extra_message($this);
             updateTotal();
+            display_band_pricing();
         });
 
         // Add items
@@ -175,6 +206,7 @@ $(function() {
             $wrapper.find('select.js-autocomplete').val('');
             disableAddItemButton();
             updateTotal();
+            display_band_pricing();
         });
 
         if (fixmystreet.cobrand == 'brent') {
@@ -215,6 +247,7 @@ $(function() {
         });
 
         updateTotal();
+        display_band_pricing();
         disableAddItemButton();
     });
 })();
