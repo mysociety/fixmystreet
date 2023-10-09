@@ -86,6 +86,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
             $new_cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
             my %keys = (
                 per_item_costs => 'bool',
+                per_item_min_collection_price => 'int',
                 base_price => 'int',
                 daily_slots => 'int',
                 items_per_collection_max => 'int',
@@ -224,7 +225,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs base_price daily_slots items_per_collection_max food_bags_disabled show_location_page band1_price band1_max)) {
+    foreach (qw(free_mode per_item_costs per_item_min_collection_price base_price daily_slots items_per_collection_max food_bags_disabled show_location_page band1_price band1_max)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }

@@ -84,6 +84,7 @@ $(function() {
 
     function updateTotal() {
         var totalId = $('#js-bulky-total');
+        var totalDetailId = $('#js-bulky-total-detail');
         var pricing = totalId.data('pricing');
         // Update total
         var total = 0;
@@ -95,7 +96,21 @@ $(function() {
                     total += price;
                 }
             });
+            if (pricing.min) {
+                if (total < pricing.min) {
+                    var itemTotal = total;
+                    total = pricing.min;
+                    totalDetailId.text(
+                        'You will be charged £' + (pricing.min / 100).toFixed(2) + ' as this is the minimum charge ' +
+                        'and your selected items add up to £' + (itemTotal / 100).toFixed(2) + '. '
+                    );
+                    totalDetailId.show();
+                } else {
+                    totalDetailId.hide();
+                }
+            }
             totalId.text((total / 100).toFixed(2));
+
         } else if (pricing.strategy === 'banded') {
             var count = 0;
             $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
@@ -112,6 +127,7 @@ $(function() {
             totalId.text((total / 100).toFixed(2));
         }
     }
+    updateTotal();
 
     function update_extra_message(select) {
         var data = select.find('option').filter(':selected').data('extra');
