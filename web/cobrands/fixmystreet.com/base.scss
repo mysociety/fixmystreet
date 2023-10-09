@@ -348,33 +348,51 @@ html.lazyload .js-lazyload {
   @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
 }
 
-.fms-pro-promo {
-    margin: 0 -1em;
+.fms-footer-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 
-    h2 {
-        margin-top: 0;
+  .fms-footer-cta__item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    flex-basis: 100%;
+    background-color: $primary;
+    padding: 1.5rem 1rem;
+
+    :last-child {
+      margin-bottom: 0;
     }
 
-    .lead {
-        font-weight: bold;
+    .item__heading {
+      margin-top: 0;
+      background-repeat: no-repeat;
+      background-position: left center;
+      padding-left: 2.5rem;
+      background-size: 2rem;
     }
 
-    p:last-child {
-        margin-bottom: 0;
+    &.is__citizen {
+      .item__heading {
+        background-image: url('/cobrands/fixmystreet.com/images/residents-icon.svg'), none;
+      }
     }
-}
 
-.fms-pro-promo__pro,
-.fms-pro-promo__stats {
-    padding: 1.5em 1em;
-}
+    &.is__council {
+      .item__heading {
+        background-image: url('/cobrands/fixmystreet.com/images/council-icon.svg'), none;
+      }
+    }
 
-.fms-pro-promo__pro {
-    background: $primary;
-}
-
-.fms-pro-promo__stats {
-    border-bottom: 0.25em solid $primary;
+    &.is__developer {
+      .item__heading {
+        background-image: url('/cobrands/fixmystreet.com/images/developers-icon.svg'), none;
+      }
+    }
+  }
 }
 
 .footer-marketing {
