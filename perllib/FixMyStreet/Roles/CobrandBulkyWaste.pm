@@ -74,7 +74,8 @@ sub bulky_pricing_strategy {
     my $band1_max = $self->wasteworks_config->{band1_max};
     my $max = $self->bulky_items_maximum;
     if ($self->bulky_per_item_costs) {
-        return encode_json({ strategy => 'per_item' });
+        my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
+        return encode_json({ strategy => 'per_item', min => $min_collection_price });
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
     } else {
@@ -148,8 +149,13 @@ sub bulky_minimum_cost {
         # Get the item with the lowest cost
         my @sorted = sort { $a <=> $b }
             map { $_->{$price_key} } @{ $self->bulky_items_master_list };
+        my $min_item_price =  $sorted[0] // 0;
+        my $min_collection_price = $cfg->{per_item_min_collection_price};
+        if ($min_collection_price && $min_collection_price > $min_item_price) {
+            return $min_collection_price;
+        }
+        return $min_item_price;
 
-        return $sorted[0] // 0;
     } elsif ( $cfg->{band1_price} ) {
         return $cfg->{band1_price};
     } else {
@@ -177,7 +183,12 @@ sub bulky_total_cost {
                 my $item = $data->{"item_$_"} or next;
                 $total += $prices{$item};
             }
-            $c->stash->{payment} = $total;
+            my $min_collection_price = $cfg->{per_item_min_collection_price};
+            if ($min_collection_price && $min_collection_price > $total) {
+                $c->stash->{payment} = $min_collection_price;
+            } else {
+                $c->stash->{payment} = $total;
+            }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
             my $max = $self->bulky_items_maximum;

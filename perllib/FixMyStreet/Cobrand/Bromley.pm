@@ -1010,11 +1010,7 @@ sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 sub bulky_send_before_payment { 1 }
 
-# TODO: Enforce the minumum charge.
-sub bulky_minimum_charge {
-    my $self = shift;
-    $self->feature('waste_features')->{bulky_minimum_charge};
-}
+sub bulky_minimum_charge { $_[0]->wasteworks_config->{per_item_min_collection_price} }
 
 sub bulky_can_refund_collection {
     my ($self, $collection) = @_;
