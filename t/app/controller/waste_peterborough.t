@@ -781,7 +781,7 @@ FixMyStreet::override_config {
                 daily_slots => 50,
                 free_mode => 0, # not checked
                 food_bags_disabled => 0, # not checked
-                base_price => 1234, per_item_costs => 1, items_per_collection_max => 7 };
+                base_price => 1234, per_item_costs => 1, per_item_min_collection_price => '', items_per_collection_max => 7 };
         };
     };
 };

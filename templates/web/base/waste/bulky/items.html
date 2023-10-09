@@ -116,6 +116,9 @@ END; END %]
     <p>
         Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy %]" id="js-bulky-total">[% pounds(total) %]</span>
     </p>
+    <p>
+        <span hidden id="js-bulky-total-detail"></span>
+    </p>
     [% END %]
 
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
