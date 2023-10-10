@@ -205,7 +205,7 @@ sub pins_from_wfs {
             id => $fake_id--,
             latitude => @$coords[1],
             longitude => @$coords[0],
-            colour => $props->{state} eq 'open' ? 'yellow' : 'green',
+            colour => $props->{state} eq 'open' ? 'defects' : 'green',
             title => $props->{description},
         };
     } @{ $wfs->{features} };
