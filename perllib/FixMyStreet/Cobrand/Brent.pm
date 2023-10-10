@@ -295,6 +295,7 @@ Sends all photo urls in the Open311 data
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
 }
 
 =head2 open311_munge_update_params
