@@ -1475,6 +1475,38 @@ subtest 'check direct debit reconcilliation' => sub {
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
 
+    warnings_are {
+        $c->waste_reconcile_direct_debits({ reference => $hidden_ref });
+    } [
+        "\n",
+        "looking at payment $hidden_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription (1)\n",
+        "extra query is {payerReference: $hidden_ref\n",
+        "is a new/ad hoc\n",
+        "looking at potential match " . $hidden->id . "\n",
+        "potential match is a dd payment\n",
+        "potential match type is 1\n",
+        "found matching report " . $hidden->id . " with state hidden\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "done looking at payment $hidden_ref\n",
+    ], "warns if given reference";
+
+    $hidden->update({ state => 'fixed - council' });
+    warnings_are {
+        $c->waste_reconcile_direct_debits({ reference => $hidden_ref, force_renewal => 1 });
+    } [
+        "\n",
+        "looking at payment $hidden_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription (1)\n",
+        "Overriding type 1 to renew\n",
+        "extra query is {payerReference: $hidden_ref\n",
+        "is a renewal\n",
+        "looking at potential match " . $hidden->id . " with state fixed - council\n",
+        "is a matching new report\n",
+        "no matching service to renew for $hidden_ref\n",
+    ], "gets past the first stage if forced renewal";
 };
 
 };
