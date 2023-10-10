@@ -2,15 +2,15 @@
 [% USE pounds = format('%.2f'); ~%]
 [% PROCESS 'waste/header.html' %]
 
-[% IF c.cobrand.moniker != 'sutton' %]
-<h1 class="govuk-heading-xl">Your bin days</h1>
-[% END %]
-
 <div class="waste__loading_wrapper"
   hx-get="[% c.req.uri.path %]"
   hx-swap="outerHTML"
   hx-select=".waste__loading_wrapper"
   hx-trigger="every [% page_refresh %]s">
+
+  [% IF c.cobrand.moniker != 'sutton' %]
+    <h1 class="govuk-heading-xl">Your bin days</h1>
+  [% END %]
 
     <div class="waste__collections">
         <div class="govuk-grid-row">
