@@ -181,8 +181,8 @@ FixMyStreet::override_config {
                     'item_1' => 'Tied bag of domestic batteries (min 10 - max 100)',
                     'item_2' => 'Toaster',
                     'item_3' => 'Podback Bag',
-                    'item_4' => 'Small electricals: Other item under 30x30x30 cm',
-                    'item_notes_4' => 'A widget',
+                    'item_5' => 'Small electricals: Other item under 30x30x30 cm',
+                    'item_notes_5' => 'A widget',
                 },
             },
         );

@@ -243,7 +243,7 @@ sub cancel_small : PathPart('cancel') : Chained('setup_small') : Args(1) {
 
 sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
-    my $data = $form->saved_data;
+    my $data = renumber_items($form->saved_data, $c->cobrand->bulky_items_maximum);
 
     $c->cobrand->call_hook("waste_munge_bulky_data", $data);
 
@@ -283,9 +283,34 @@ sub process_bulky_data : Private {
     return 1;
 }
 
+=head2 renumber_items
+
+This function is used to make sure that the incoming item data uses 1, 2, 3,
+... in case the user had deleted a middle item and sent us 1, 3, 4, 6, ...
+
+=cut
+
+sub renumber_items {
+    my ($data, $max) = @_;
+
+    my $c = 1;
+    my %items;
+    for (1..$max) {
+        next unless $data->{"item_$_"};
+        $items{"item_$c"} = $data->{"item_$_"};
+        $items{"item_notes_$c"} = $data->{"item_notes_$_"};
+        $items{"item_photo_$c"} = $data->{"item_photo_$_"};
+        $c++;
+    }
+    my $data_itemless = { map { $_ => $data->{$_} } grep { !/^item_(notes_|photo_)?\d/ } keys %$data };
+    $data = { %$data_itemless, %items };
+
+    return $data;
+}
+
 sub process_bulky_amend : Private {
     my ($self, $c, $form) = @_;
-    my $data = $form->saved_data;
+    my $data = renumber_items($form->saved_data, $c->cobrand->bulky_items_maximum);
 
     $c->stash->{override_confirmation_template} = 'waste/bulky/confirmation.html';
 
