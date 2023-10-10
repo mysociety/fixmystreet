@@ -120,8 +120,9 @@ END;
         item_key = 'item_' _ num;
         photo_key = 'item_photo_' _ num;
         item = data.$item_key;
+        notes_key = 'item_notes_' _ num;
         NEXT UNLESS item;
-        items.push({ item => item, photo => data.$photo_key });
+        items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
       END %]
       [% IF c.cobrand.moniker != 'brent' %]
       <dl>
@@ -155,6 +156,9 @@ END;
           <tr [% IF extra_text %]class="is--no-border-bottom"[% END %]>
               <td>
                 <p class="govuk-!-margin-bottom-0">[% item.item %]</p>
+              [% IF item.notes %]
+                <p class="govuk-!-margin-bottom-0"><i>[% item.notes %]</i></p>
+              [% END %]
               </td>
             [% IF c.cobrand.moniker != 'brent' %]
               <td>
@@ -168,7 +172,7 @@ END;
           </tr>
           [% IF extra_text %]
             <tr>
-              <td colspan="3">
+              <td colspan="2">
                 <div class="govuk-warning-text due" style="padding:1em">
                   <div class="govuk-warning-text__img">
                     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
