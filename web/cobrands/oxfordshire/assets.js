@@ -18,6 +18,19 @@ function show_defect_popup(feature) {
         close_defect_popup
     );
     fixmystreet.map.addPopup(defect_popup);
+
+    // On mobile the popup is obscured by the crosshairs, so hide them (and
+    // the "Start new report here" button) when the popup is shown
+    if ($('html').hasClass('mobile')) {
+        $(".map-crosshairs, .map-mobile-report-button").addClass("hidden");
+
+        // after a short delay (to ignore any `maps:click` events that trigger
+        // during the current handler code) add a callback to close the popup
+        // when the map is clicked.
+        window.setTimeout(function() {
+            $(fixmystreet).on('maps:click', close_defect_popup);
+        }, 500);
+    }
 }
 
 function close_defect_popup() {
@@ -25,6 +38,14 @@ function close_defect_popup() {
         fixmystreet.map.removePopup(defect_popup);
         defect_popup.destroy();
         defect_popup = null;
+    }
+
+    if ($('html').hasClass('mobile')) {
+        // Don't forget to restore the crosshair/new report button
+        $(".map-crosshairs, .map-mobile-report-button").removeClass("hidden");
+
+        // and remove the callback handler for clicking the map
+        $(fixmystreet).off('maps:click', close_defect_popup);
     }
 }
 
@@ -59,7 +80,13 @@ function handle_marker_click(e, feature) {
 
 $(fixmystreet).on('maps:render_duplicates', setup_defect_popup);
 $(fixmystreet).on('maps:marker_click', handle_marker_click);
-$(fixmystreet).on('maps:click', close_defect_popup);
+
+if (!$('html').hasClass('mobile')) {
+    // Prevent the popup being closed as soon as it's opened on mobile.
+    // Mobile reports are started with the crosshair & button so no
+    // need to deal with getting the popup out of the way.
+    $(fixmystreet).on('maps:click', close_defect_popup);
+}
 
 $(function() {
     if (fixmystreet.page == 'reports') {
