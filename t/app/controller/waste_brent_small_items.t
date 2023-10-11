@@ -218,7 +218,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
 
-            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
+            is $report->get_extra_field_value('Notes'), "Collection date: 01 July\n1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
             is $report->get_extra_field_value('Textiles'), '';
             is $report->get_extra_field_value('Paint'), '';
             is $report->get_extra_field_value('Batteries'), 1;

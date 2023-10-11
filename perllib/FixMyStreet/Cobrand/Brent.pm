@@ -1414,7 +1414,8 @@ sub waste_munge_bulky_data {
             }
         };
     }
-    $data->{extra_Notes} = join("\n", map { "$types{$_} x $_" } sort keys %types);
+    $data->{extra_Notes} = "Collection date: " . $self->bulky_nice_collection_date($date) . "\n";
+    $data->{extra_Notes} .= join("\n", map { "$types{$_} x $_" } sort keys %types);
 }
 
 sub waste_reconstruct_bulky_data {
