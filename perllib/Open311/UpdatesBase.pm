@@ -261,19 +261,7 @@ sub process_update {
     $comment->insert();
 
     if ( $self->suppress_alerts ) {
-        my @alerts = $self->schema->resultset('Alert')->search( {
-            alert_type => 'new_updates',
-            parameter  => $p->id,
-            confirmed  => 1,
-            user_id    => $p->user->id,
-        } );
-
-        for my $alert (@alerts) {
-            my $alerts_sent = $self->schema->resultset('AlertSent')->find_or_create( {
-                alert_id  => $alert->id,
-                parameter => $comment->id,
-            } );
-        }
+        $p->cancel_update_alert($comment->id, $p->user->id);
     }
 
     return $comment;

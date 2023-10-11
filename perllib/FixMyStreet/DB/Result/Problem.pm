@@ -1352,4 +1352,35 @@ has comment_count => (
     },
 );
 
+=item cancel_update_alert
+
+Takes a comment id as a mandatory argument and will suppress
+alerts being sent out for that comment when
+FixMyStreet::Script::Alerts::send_updates is run.
+
+Optionally adding user_id argument will restrict the suppression to only
+updates provided by the original problem reporter.
+
+=cut
+
+sub cancel_update_alert {
+    my ($self, $comment_id, $user_id) = @_;
+
+    my $cfg = {
+        alert_type => 'new_updates',
+        parameter  => $self->id,
+        confirmed  => 1,
+    };
+    $cfg->{user_id} = $user_id if $user_id;
+
+    my @alerts = FixMyStreet::DB->resultset('Alert')->search( $cfg );
+
+    for my $alert (@alerts) {
+        FixMyStreet::DB->resultset('AlertSent')->find_or_create( {
+            alert_id  => $alert->id,
+            parameter => $comment_id,
+        } );
+    }
+};
+
 1;

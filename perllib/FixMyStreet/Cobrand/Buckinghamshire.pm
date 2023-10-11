@@ -250,17 +250,7 @@ sub _add_claim_auto_response {
             };
 
             # Stop any alerts being sent out about this update as included here.
-            my @alerts = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $row->id,
-                confirmed => 1,
-            });
-            for my $alert (@alerts) {
-                my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create({
-                    alert_id  => $alert->id,
-                    parameter => $update->id,
-                });
-            }
+            $h->{report}->cancel_update_alert($update->id);
         }
     }
 }
