@@ -17,20 +17,20 @@ jobs:
       HARNESS_PERL_SWITCHES: "-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,Test.pm,^t"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - uses: niden/actions-memcached@v7
 
     - name: Setup cache (carton)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: local
         key: ubuntu-22-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (coverage)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: local-coverage
         key: ubuntu-22-coverage

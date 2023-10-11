@@ -8,23 +8,23 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: Setup node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: 8.x
 
     - name: Setup cache (carton)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: local
         key: ubuntu-22-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (cypress)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.npm

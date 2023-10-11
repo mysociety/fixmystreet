@@ -15,19 +15,19 @@ jobs:
         perl_version: [ 5.32.1, 5.30.3, 5.28.3, 5.26.3 ]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: Setup cache (carton)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: local
         key: ubuntu-22-perl-${{ matrix.perl_version }}-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (perl)
       id: cache-perl
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/perl5
         key: ubuntu-22-perl-${{ matrix.perl_version }}
