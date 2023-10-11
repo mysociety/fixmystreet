@@ -313,7 +313,7 @@ sub add_cancellation_report : Private {
     if ($c->cobrand->bulky_cancel_by_update) {
         $collection_report->add_to_comments({
             text => 'Booking cancelled by customer',
-            user => $collection_report->user,
+            user => $c->cobrand->body->comment_user || $collection_report->user,
             extra => { bulky_cancellation => 1 },
         });
     } else {
