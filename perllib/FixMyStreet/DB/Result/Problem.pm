@@ -1358,8 +1358,8 @@ Takes a comment id as a mandatory argument and will suppress
 alerts being sent out for that comment when
 FixMyStreet::Script::Alerts::send_updates is run.
 
-Optionally adding user_id argument will restrict the suppression to only
-updates provided by the original problem reporter.
+Optionally adding user_id argument will restrict the suppression
+to only alerts for that user ID.
 
 =cut
 
