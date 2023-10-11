@@ -372,7 +372,7 @@ sub add_cancellation_report : Private {
         my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : "Booking cancelled by customer";
         $collection_report->add_to_comments({
             text => $description,
-            user => $collection_report->user,
+            user => $c->cobrand->body->comment_user || $collection_report->user,
             extra => { bulky_cancellation => 1 },
         });
     } else {
