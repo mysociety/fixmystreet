@@ -5,6 +5,7 @@ use strict;
 use warnings;
 with 'FixMyStreet::Roles::SOAPIntegration';
 with 'FixMyStreet::Roles::ParallelAPI';
+with 'FixMyStreet::Roles::Syslog';
 
 use DateTime;
 use DateTime::Format::Strptime;
@@ -18,6 +19,18 @@ has password => ( is => 'ro' );
 has url => ( is => 'ro' );
 
 has sample_data => ( is => 'ro', default => 0 );
+
+has log_ident => (
+    is => 'ro',
+    default => sub {
+        my $feature = 'echo';
+        my $features = FixMyStreet->config('COBRAND_FEATURES');
+        return unless $features && ref $features eq 'HASH';
+        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+        my $f = $features->{$feature}->{_fallback};
+        return $f->{log_ident};
+    }
+);
 
 has endpoint => (
     is => 'lazy',
@@ -475,6 +488,7 @@ sub ReserveAvailableSlotsForEvent {
 
     return [] unless ref $res eq 'HASH';
 
+    $self->log($res);
     return force_arrayref($res->{ReservedTaskInfo}{ReservedSlots}, 'ReservedSlot');
 }
 
