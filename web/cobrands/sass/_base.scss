@@ -2066,6 +2066,14 @@ html.js #map .noscript {
   .map-pins-toggle {
     @include svg-background-image("/cobrands/fixmystreet/images/hide-pins-link");
   }
+
+  .js-recentre-map {
+    @include svg-background-image("/cobrands/fixmystreet/images/geolocate-link-icon");
+
+    &.loading {
+      @include svg-background-image("/cobrands/fixmystreet/images/geolocate-link-loading");
+    }
+  }
 }
 
 %sub-map-link-icon {

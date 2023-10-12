@@ -6,6 +6,7 @@
         - Use email field type for username if SMS authentication not enabled. #4455
         - Text overrides for new report fields can be configured to apply when it is known the report will go to a particular cobrand. #4466, #4516
         - Improve handling cache expiry for front page statistics.
+        - Add geolocation button to centre map at user's location. #4671
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.

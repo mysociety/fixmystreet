@@ -405,14 +405,14 @@ $.extend(fixmystreet.utils, {
       },
 
       setup_geolocation: function() {
-          if (!OpenLayers.Control.Geolocate || !fixmystreet.map ||
-              !fixmystreet.utils || !fixmystreet.utils.parse_query_string ||
-              fixmystreet.utils.parse_query_string().geolocate !== '1'
-          ) {
+          if (!OpenLayers.Control.Geolocate || !fixmystreet.map) {
               return;
           }
 
           var layer;
+          var control;
+          var recentre_on_location = false;
+          var last_location;
 
           function createCircleOfUncertainty(e) {
               var loc = new OpenLayers.Geometry.Point(e.point.x, e.point.y);
@@ -453,6 +453,8 @@ $.extend(fixmystreet.utils, {
           }
 
           function updateGeolocationMarker(e) {
+              last_location = new OpenLayers.LonLat(e.point.x, e.point.y);
+
               if (!layer) {
                   addGeolocationLayer(e);
               } else {
@@ -480,18 +482,49 @@ $.extend(fixmystreet.utils, {
                   // element.
 
                   // Don't forget to update the position of the GPS marker.
-                  marker.move(new OpenLayers.LonLat(e.point.x, e.point.y));
+                  marker.move(last_location);
+              }
+
+              if (recentre_on_location) {
+                fixmystreet.map.setCenter(last_location);
+                recentre_on_location = false;
+                $(".js-recentre-map").removeClass("loading");
               }
           }
 
-          var control = new OpenLayers.Control.Geolocate({
-              bind: false, // Don't want the map to pan to each location
-              watch: true,
-              enableHighAccuracy: true
+          function addControlToMap() {
+            if (control) {
+                return;
+            }
+            control = new OpenLayers.Control.Geolocate({
+                bind: false, // Don't want the map to pan to each location
+                watch: true,
+                enableHighAccuracy: true
+            });
+            control.events.register("locationupdated", null, updateGeolocationMarker);
+            fixmystreet.map.addControl(control);
+            control.activate();
+          }
+
+          if (fixmystreet.utils && fixmystreet.utils.parse_query_string &&
+              fixmystreet.utils.parse_query_string().geolocate === '1') {
+                // loading a page with geolocate=1 in the query string so add
+                // and activate the control immediately
+                addControlToMap();
+          }
+
+          $(".js-recentre-map").click(function() {
+            if (last_location) {
+                // if we've already got a geolocation centre the map there
+                fixmystreet.map.setCenter(last_location);
+            } else {
+                // otherwise, set up the geolocation control and set the flag
+                // to centre the map the first time we get a location.
+                $(".js-recentre-map").addClass("loading");
+                recentre_on_location = true;
+                addControlToMap();
+            }
           });
-          control.events.register("locationupdated", null, updateGeolocationMarker);
-          fixmystreet.map.addControl(control);
-          control.activate();
       },
       toggle_base: function(e) {
           e.preventDefault();
