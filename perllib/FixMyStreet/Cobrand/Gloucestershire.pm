@@ -241,5 +241,17 @@ sub path_to_pin_icons {
     return '/cobrands/oxfordshire/images/';
 }
 
+=head2 open311_config
+
+Send multiple photos as files to Open311
+
+=cut
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+}
 
 1;
