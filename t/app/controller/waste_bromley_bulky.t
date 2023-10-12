@@ -52,7 +52,7 @@ sub create_contact {
 }
 
 create_contact(
-    { category => 'Bulky collection', email => '1636@test.com' },
+    { category => 'Bulky collection', email => '2175@test.com' },
     { code => 'Collection_Date' },
     { code => 'Exact_Location' },
     { code => 'payment' },
@@ -94,12 +94,13 @@ FixMyStreet::override_config {
                 bulky_tandc_link => 'tandc_link',
                 bulky_quantity_1_code => 2,
                 bulky_cancel_no_payment_minutes => 30,
+                bulky_missed => 1,
             },
         },
         echo => {
             bromley => {
                 bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_event_type_id => 2175,
                 url => 'http://example.org',
             },
         },
@@ -144,7 +145,7 @@ FixMyStreet::override_config {
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
         is $service, 413;
-        is $event_type, 1636;
+        is $event_type, 2175;
         is $property, 12345;
         return [
         {
@@ -406,6 +407,25 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
+        };
+
+        subtest 'Missed collections' => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a bulky waste collection as missed',
+                "Can't report missing when no closed collection event");
+            # Closed collection event.
+            $echo->mock( 'GetEventsForObject', sub { [ {
+                EventTypeId => 2175,
+                ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
+            } ] } );
+            $mech->get_ok('/waste/12345');
+            set_fixed_time('2023-07-04T08:00:00Z');
+            $mech->content_contains('Report a bulky waste collection as missed',
+                'Can report missing when closed collection event and within two working days');
+            set_fixed_time('2023-07-05T08:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a bulky waste collection as missed',
+                "Can't report missing when closed collection but after two working days");
         };
 
         # Collection time: 2023-07-01T:07:00:00

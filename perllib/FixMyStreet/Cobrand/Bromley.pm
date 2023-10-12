@@ -586,10 +586,17 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    my $waste_cfg = $self->feature('waste_features');
+    if ($waste_cfg && $waste_cfg->{bulky_missed}) {
+        # Bulky collection event. No blocks on reporting a missed collection based on the
+        # state and resolution code.
+        $self->bulky_check_missed_collection($events, {});
+    }
+
     # If we have a service ID for trade properties, consider a property domestic
     # unless we see it.
     my $trade_service_id;
-    if (my $waste_cfg = $self->feature('waste_features')) {
+    if ($waste_cfg) {
         if ($trade_service_id = $waste_cfg->{bulky_trade_service_id}) {
             $property->{pricing_property_type} = 'Domestic';
         }
@@ -736,7 +743,7 @@ sub missed_event_types { {
     2102 => 'missed',
     2103 => 'missed',
     2104 => 'request',
-
+    2175 => 'bulky',
 } }
 
 =over
