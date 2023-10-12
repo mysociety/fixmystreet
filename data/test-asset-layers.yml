@@ -148,6 +148,17 @@ bromley:
     usrn:
       attribute: 'PROW_REFER'
       field: 'prow_reference'
+  - wfs_feature: "Crystal_Palace_Park"
+    asset_type: 'area'
+    always_visible: true
+    road: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    all_categories: true
+    no_asset_message: "<p>The Management of Crystal Palace Park has transferred to the Crystal Palace Park Trust who are now responsible for the day-to-day management and maintenance of the park, as well as any community or commercial events and concession agreements within the park. Their website can be found at: <a href='https://www.crystalpalaceparktrust.org/'>https://www.crystalpalaceparktrust.org</a> where any issues or queries regarding the park can be submitted.</p>"
+    actions:
+      found: fixmystreet.assets.bromley.found
+      not_found: fixmystreet.assets.bromley.not_found
 buckinghamshire:
   - - name: 'default'
       http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"
