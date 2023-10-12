@@ -75,7 +75,7 @@ describe('National Highways litter picking test', function() {
         cy.wait('@report-ajax');
         cy.wait('@highways-tilma');
         cy.wait('@highways-tilma-litter');
-        cy.pickCategory('Litter');
+        cy.pickCategory('Flytipping');
         cy.contains('Report a litter issue').should('be.visible');
         cy.contains('litter issues on this road are handled by the local council').should('be.visible');
     });
