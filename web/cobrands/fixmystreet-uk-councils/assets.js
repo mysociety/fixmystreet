@@ -288,6 +288,14 @@ fixmystreet.assets.bromley.prow_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+fixmystreet.assets.bromley.found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+fixmystreet.assets.bromley.not_found = function(layer) {
+    fixmystreet.message_controller.road_found(layer);
+};
+
 /* Buckinghamshire */
 
 fixmystreet.assets.buckinghamshire = {};

@@ -4,11 +4,13 @@ describe('Bromley cobrand', function() {
     cy.server();
     cy.route('**mapserver/bromley*Streetlights*', 'fixture:bromley-lights.xml').as('lights');
     cy.route('**mapserver/bromley*PROW*', 'fixture:bromley-prow.xml').as('prow');
+    cy.route('**mapserver/bromley*Crystal_Palace*', 'fixture:crystal_palace_park.xml').as('crystal');
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.viewport(480, 800);
     cy.visit('http://bromley.localhost:3001/report/new?latitude=51.4021&longitude=0.01578');
     cy.contains('Bromley');
     cy.wait('@prow');
+    cy.wait('@crystal');
     cy.wait('@report-ajax');
     cy.get('#mob_ok').click();
   });
@@ -39,6 +41,14 @@ describe('Bromley cobrand', function() {
     cy.wait('@lights');
     cy.nextPageReporting();
     cy.get('.mobile-map-banner').should('be.visible');
+  });
+
+  it('adds stopper for Crystal Palace Park', function() {
+    cy.visit('http://bromley.localhost:3001/report/new?longitude=-0.064555&latitude=51.422382');
+    cy.wait('@crystal');
+    cy.wait('@report-ajax');
+    cy.contains('transferred to the Crystal Palace Park Trust');
+    cy.get('#mob_ok').should('not.be.visible');
   });
 
 });
