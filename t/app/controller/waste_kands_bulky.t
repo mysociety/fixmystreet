@@ -474,7 +474,7 @@ FixMyStreet::override_config {
             $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('Our contractor will collect the items you have requested on Saturday 08 July 2023.');
-            $mech->content_contains('Item collection starts from 6:30am. Please have your items ready and dismantled if required.');
+            $mech->content_contains('Item collection starts from 6:30am.&nbsp;Please have your items ready for collection.');
             $mech->content_contains('We have emailed confirmation of your booking to pkg-tappcontrollerwaste_kands_bulkyt-bob@example.org.');
             $mech->content_contains('If you need to contact us about your application please use the application reference:&nbsp;RBK-' . $report->id);
             $mech->content_contains('Card payment reference: 54321');
