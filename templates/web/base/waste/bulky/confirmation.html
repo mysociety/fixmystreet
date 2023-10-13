@@ -15,7 +15,13 @@ END ~%]
   </h1>
   <div class="govuk-panel__body">
       <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
-      <p>Item collection starts from [% cobrand.bulky_nice_collection_time %]. Please have your items ready and dismantled if required.</p>
+      <p>Item collection starts from [% cobrand.bulky_nice_collection_time %].&nbsp;
+        [%~ IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ~%]
+        Please have your items ready for collection.
+        [%~ ELSE ~%]
+        Please have your items ready and dismantled if required.
+        [%~ END ~%]
+      </p>
       [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
       <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
       [% END %]
