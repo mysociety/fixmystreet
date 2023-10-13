@@ -1,6 +1,19 @@
 [% IF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]
 [% SET collection_time = c.cobrand.bulky_nice_collection_time %]
-<p>Items must be accessible and clearly visible from the front of your house, placed as close to the pavement as possible (but not on it). Our collections crews will not enter your home or retrieve items from your back garden.</p>
-<p>If you live in a block of flats, you can place your items (on the morning of collection) in your communal bin store area. If an access code is needed please tell us below.</p>
-<p>Items must be out for collection by [% collection_time %] on the collection day.</p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-warning-text due">
+        <div class="govuk-warning-text__img">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        </div>
+        <div class="govuk-warning-text__content">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            <p class="govuk-!-margin-bottom-0">Items must be accessible and clearly visible from the front of your house, placed as close to the pavement as possible (but not on it).</p>
+            <p class="govuk-!-margin-bottom-0">Our collections crews will not enter your home or retrieve items from your back garden.</p>
+            <p class="govuk-!-margin-bottom-0">If you live in a block of flats, you can place your items (on the morning of collection) in your communal bin store area. If an access code is needed please tell us below.</p>
+            <p class="govuk-!-margin-bottom-0">Items must be out for collection by [% collection_time %] on the collection day.</p>
+        </div>
+      </div>
+    </div>
+</div>
 [% END %]
