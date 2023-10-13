@@ -14,7 +14,7 @@ use Memcached;
 use XML::Simple;
 use Utils;
 
-my $osmapibase    = "https://www.openstreetmap.org/api/";
+my $osmapibase    = "https://api.openstreetmap.org/api/";
 my $nominatimbase = "https://nominatim.openstreetmap.org/";
 
 # string STRING CONTEXT
