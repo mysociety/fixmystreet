@@ -23,7 +23,11 @@
     </li>
     [% END %]
     <li>Please ensure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">bulky waste collection</a></strong> page on the council’s website</li>
+    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
+    <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
+    [% ELSE %]
     <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
+    [% END %]
     <li>Before confirming your booking, check all the info provided is correct</li>
     [% IF cobrand.moniker == 'peterborough' -%]
     <li>You can amend the items in your booking up until [% c.cobrand.bulky_nice_cancellation_cutoff_time %] the day before the collection is scheduled by calling 01733 747474 (9am to 5pm Monday to Friday excluding bank holidays)</li>
