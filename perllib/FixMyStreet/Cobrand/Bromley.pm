@@ -172,6 +172,10 @@ sub available_permissions {
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
+    if ($contact->category eq 'Bulky collection') {
+        $params->{multi_photos} = 1;
+    }
+
     $params->{always_send_latlong} = 0;
     $params->{send_notpinpointed} = 1;
     $params->{extended_description} = 0;
