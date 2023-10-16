@@ -1089,7 +1089,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
     $mech->log_in_ok( $staff_user->email );
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID"', "New columns added");
+    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
     ok $mech->content_like(qr/Flexible problem.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
     ok $mech->content_like(qr/Flexible problem.*?,,,,Y,,,,,,,,/, "All fields empty but photo exists");
     $flexible_problem->set_extra_fields(
@@ -1119,7 +1119,11 @@ subtest 'Dashboard CSV extra columns' => sub {
     );
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,/, "Location name added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,,/, "Location name added") or diag $mech->content;
+    $flexible_problem->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
   }
 };
 
