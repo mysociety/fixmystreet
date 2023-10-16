@@ -177,6 +177,20 @@ sub lookup_site_code_config {
     }
 }
 
+=head2 pin_colour
+
+Green for anything completed or closed, yellow for the rest.
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+
+    return 'green' if $p->is_fixed || $p->is_closed;
+
+    return 'yellow';
+}
+
 sub extra_around_pins {
     my ($self, $bbox) = @_;
 
