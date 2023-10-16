@@ -61,6 +61,8 @@ create_contact(
     { code => 'Bulky_Collection_Details_Item' },
     { code => 'Bulky_Collection_Details_Description' },
     { code => 'Bulky_Collection_Details_Qty' },
+    { code => 'GUID' },
+    { code => 'reservation' },
 );
 
 sub domestic_waste_service_units {
@@ -320,6 +322,8 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Bulky_Collection_Details_Qty'), '2::2::2';
             is $report->get_extra_field_value('Bulky_Collection_Details_Item'), '3::85::83';
             is $report->get_extra_field_value('Bulky_Collection_Details_Description'), 'BBQ::Bicycle::Bath';
+            like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
+            is $report->get_extra_field_value('reservation'), 'reserve1==';
             # A location image is first followed by the item ones.
             is $report->get_extra_field_value('Image'),
                 '685286eab13ad917f614937170661171b488f280.jpeg::74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg::::';
