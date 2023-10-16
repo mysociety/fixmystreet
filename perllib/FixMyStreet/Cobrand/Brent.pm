@@ -386,7 +386,7 @@ Same as Symology above, but different attribute name.
         push @$open311_only, { name => 'title', value => $row->title };
         push @$open311_only, { name => 'report_url', value => $h->{url} };
         push @$open311_only, { name => 'detail', value => $row->detail };
-        push @$open311_only, { name => 'group', value => $row->get_extra_metadata('group') };
+        push @$open311_only, { name => 'group', value => $row->get_extra_metadata('group') || '' };
 
 
     }
@@ -832,12 +832,14 @@ sub bin_services_for_address {
     }
 
     # Small items collection event
-    $self->bulky_check_missed_collection($events, {
-        # Not Completed
-        18491 => {
-            all => 'the collection could not be completed',
-        },
-    });
+    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
+        $self->bulky_check_missed_collection($events, {
+            # Not Completed
+            18491 => {
+                all => 'the collection could not be completed',
+            },
+        });
+    }
 
     my @to_fetch;
     my %schedules;
@@ -848,7 +850,7 @@ sub bin_services_for_address {
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
         # Brent has two overlapping schedules for food
-        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316;
+        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316 || $_->{ServiceId} == 263;
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
@@ -1443,7 +1445,6 @@ sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }
 sub bulky_cancel_by_update { 1 }
 sub bulky_collection_window_days { 28 }
-sub bulky_can_amend_collection { 0 }
 sub bulky_can_refund { 0 }
 sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
@@ -1484,7 +1485,7 @@ sub waste_munge_bulky_data {
     $data->{extra_Collection_Date} = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
-    my (%types, @photos);
+    my (%types);
     my $max = $self->bulky_items_maximum;
     my $other_item = 'Small electricals: Other item under 30x30x30 cm';
     for (1..$max) {
@@ -1504,11 +1505,10 @@ sub waste_munge_bulky_data {
             } else {
                 $data->{extra_Small_WEEE} = 1;
             }
-            push @photos, $data->{"item_photos_$_"} || '';
         };
     }
-    $data->{extra_Notes} = join("\n", map { "$types{$_} x $_" } sort keys %types);
-    $data->{extra_Image} = join("::", @photos);
+    $data->{extra_Notes} = "Collection date: " . $self->bulky_nice_collection_date($date) . "\n";
+    $data->{extra_Notes} .= join("\n", map { "$types{$_} x $_" } sort keys %types);
 }
 
 sub waste_reconstruct_bulky_data {
@@ -1523,7 +1523,6 @@ sub waste_reconstruct_bulky_data {
     my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
-        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
         $saved_data->{"item_notes_$id"} = $p->get_extra_metadata("item_notes_$id");
     }
 

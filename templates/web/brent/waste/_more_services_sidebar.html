@@ -15,7 +15,7 @@
        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=262">Set up for assisted collection</a></li>
      -->
      [% END %]
-     [% IF property.show_bulky_waste %]
+     [% IF property.show_bulky_waste AND NOT pending_bulky_collections %]
       <li>
           <a href="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">Book small items collection</a>
       </li>

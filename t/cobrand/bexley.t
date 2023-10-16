@@ -217,6 +217,8 @@ FixMyStreet::override_config {
                 if ($test->{code} =~ /Confirm/) {
                     like $text, qr/Site code: Road ID/;
                     like $text, qr/Street name: Postal Close/;
+                    my $id = $report->id;
+                    like $text, qr/FMS reference: $id/;
                 } elsif ($test->{code} =~ /Uniform/) {
                     like $text, qr/UPRN: UPRN/;
                     like $text, qr/Uniform ID: 248/;
@@ -224,6 +226,7 @@ FixMyStreet::override_config {
                 } else {
                     like $text, qr/NSG Ref: Road ID/;
                     like $text, qr/Street name: Postal Close/;
+                    like $text, qr/Street area: Bexley/;
                 }
                 $mech->clear_emails_ok;
             } else {

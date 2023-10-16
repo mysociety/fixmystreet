@@ -123,7 +123,7 @@ if ($opt->test_fixtures) {
     my $params = {
         name => 'National Highways',
         area_id => 2608,
-        categories => ['Fallen sign (NH)', 'Driver on phone (NH)', 'Litter (NH)']
+        categories => ['Fallen sign (NH)', 'Driver on phone (NH)', 'Flytipping (NH)']
     };
     $bodies->{HE} = FixMyStreet::DB::Factory::Body->find_or_create($params);
     $bodies->{HE}->set_extra_metadata(cobrand => 'highwaysengland');

@@ -10,27 +10,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        part: [ 1, 2, 3 ]
+        part: [ 1, 2, 3, 4 ]
 
     env:
       PERL5LIB: local-coverage/lib/perl5
       HARNESS_PERL_SWITCHES: "-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,Test.pm,^t"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - uses: niden/actions-memcached@v7
 
     - name: Setup cache (carton)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: local
         key: ubuntu-22-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (coverage)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: local-coverage
         key: ubuntu-22-coverage
@@ -45,15 +45,19 @@ jobs:
 
     - name: Run tests (with coverage, part 1)
       if: matrix.part == 1
-      run: script/test --jobs 3 $(find t/app/controller -name "[a-q]*.t")
+      run: script/test --jobs 3 $(find t/app/controller -name "[a-qs-u]*.t")
 
     - name: Run tests (with coverage, part 2)
       if: matrix.part == 2
-      run: script/test --jobs 3 $(find t/app/controller -name "[r-z]*.t")
+      run: script/test --jobs 3 $(find t/app/controller -name "[rv-z]*.t")
 
     - name: Run tests (with coverage, part 3)
       if: matrix.part == 3
-      run: script/test --jobs 3 $(find t -name "*.t" ! -path "t/app/controller*")
+      run: script/test --jobs 3 $(find t/cobrand -name "*.t")
+
+    - name: Run tests (with coverage, part 4)
+      if: matrix.part == 4
+      run: script/test --jobs 3 $(find t -name "*.t" ! -path "t/app/controller*" ! -path "t/cobrand*")
 
     - name: Generate coverage report
       if: success()

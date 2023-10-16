@@ -255,7 +255,7 @@ FixMyStreet::override_config {
     subtest 'check sack subscription template change for sacks' => sub {
         set_fixed_time('2020-05-09T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('£50.00 per year (Sack subscription)');
+        $mech->content_contains('<dd class="govuk-summary-list__value">Sacks</dd>');
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -263,7 +263,7 @@ FixMyStreet::override_config {
     subtest 'check sack subscription template does not affect normal bin count' => sub {
         set_fixed_time('2020-05-09T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('£50.00 per year (1 bin)');
+        $mech->content_contains('<dd class="govuk-summary-list__value">1 bin</dd>');
     };
 
     subtest 'check subscription link present' => sub {

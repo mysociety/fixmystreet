@@ -4,16 +4,19 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use utf8;
+use DateTime;
 use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
+use FixMyStreet::DB;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -628,11 +631,31 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    my $waste_cfg = $self->feature('waste_features');
+    if ($waste_cfg && $waste_cfg->{bulky_missed}) {
+        # Bulky collection event. No blocks on reporting a missed collection based on the
+        # state and resolution code.
+        $self->bulky_check_missed_collection($events, {});
+    }
+
+    # If we have a service ID for trade properties, consider a property domestic
+    # unless we see it.
+    my $trade_service_id;
+    if ($waste_cfg) {
+        if ($trade_service_id = $waste_cfg->{bulky_trade_service_id}) {
+            $property->{pricing_property_type} = 'Domestic';
+        }
+    }
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
     my %expired;
     foreach (@$result) {
+        if (defined($trade_service_id) && $_->{ServiceId} eq $trade_service_id) {
+            $property->{pricing_property_type} = 'Trade';
+        }
+        $property->{show_bulky_waste} ||= $self->bulky_allowed_property($_->{ServiceId});
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
@@ -766,7 +789,7 @@ sub missed_event_types { {
     2102 => 'missed',
     2103 => 'missed',
     2104 => 'request',
-
+    2175 => 'bulky',
 } }
 
 =over
@@ -954,7 +977,8 @@ sub waste_payment_ref_council_code { "LBB" }
 
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->get_extra_field_value('uprn') unless $p->category eq 'Bulky collection';
+    return $p->id;
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
@@ -1008,8 +1032,239 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+around look_up_property => sub {
+    my ($orig, $self, $id) = @_;
+    my $data = $orig->($self, $id);
+
+    my @pending = $self->find_pending_bulky_collections($data->{uprn})->all;
+    $self->{c}->stash->{pending_bulky_collections}
+        = @pending ? \@pending : undef;
+
+    return $data;
+};
+
 sub report_form_extras {
     ( { name => 'private_comments' } )
+}
+
+=head2 Bulky waste collection
+
+Bromley has bulky waste collections starting at 7:00. It looks 4 weeks ahead
+for collection dates, and sends the event to the backend before collecting
+payment. Cancellations are done by update.
+
+=cut
+
+sub bulky_collection_time { { hours => 7, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 7, minutes => 0 } }
+sub bulky_collection_window_days { 28 }
+sub bulky_cancel_by_update { 1 }
+sub bulky_free_collection_available { 0 }
+sub bulky_hide_later_dates { 1 }
+sub bulky_send_before_payment { 1 }
+
+sub bulky_minimum_charge { $_[0]->wasteworks_config->{per_item_min_collection_price} }
+
+sub bulky_can_refund_collection {
+    my ($self, $collection) = @_;
+    return 0 if !$self->within_bulky_cancel_window($collection);
+    return $self->bulky_refund_amount($collection) > 0;
+}
+
+sub bulky_refund_collection {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-refund-request.txt',
+        {   to => [
+                [ $c->cobrand->bulky_contact_email, $c->cobrand->council_name ]
+            ],
+
+            wasteworks_id => $collection_report->id,
+            payment_amount => $collection_report->get_extra_field_value('payment'),
+            payment_method =>
+                $collection_report->get_extra_field_value('payment_method'),
+            payment_code =>
+                $collection_report->get_extra_field_value('PaymentCode'),
+            auth_code =>
+                $collection_report->get_extra_metadata('authCode'),
+            continuous_audit_number =>
+                $collection_report->get_extra_metadata('continuousAuditNumber'),
+            payment_date       => $collection_report->created,
+            scp_response       =>
+                $collection_report->get_extra_metadata('scpReference'),
+        },
+    );
+}
+
+sub bulky_refund_would_be_partial {
+    my ($self, $collection) = @_;
+    my $d = $self->collection_date($collection);
+    my $t = $self->_bulky_cancellation_cutoff_date($d);
+    return $t->subtract( days => 1 ) <= DateTime->now;
+}
+
+sub bulky_refund_amount {
+    my ($self, $collection) = @_;
+    my $charged = $collection->get_extra_field_value('payment');
+    if ($self->bulky_refund_would_be_partial($collection)) {
+        my $refund_amount = $charged - $self->bulky_minimum_charge;
+        if ($refund_amount < 0) {
+            return 0;
+        }
+        return $refund_amount;
+    }
+    return $charged;
+}
+
+sub bulky_cancel_no_payment_minutes {
+    my $self = shift;
+    $self->feature('waste_features')->{bulky_cancel_no_payment_minutes};
+}
+
+sub bulky_allowed_property {
+    my ( $self, $id ) = @_;
+
+    return $self->bulky_enabled && $id =~ /^(531|532)$/;
+}
+
+sub collection_date {
+    my ($self, $p) = @_;
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+}
+
+sub _bulky_cancellation_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
+    my $dt = $collection_date->clone->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    );
+    return $dt;
+}
+
+sub _bulky_refund_cutoff_date { }
+
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    $data->{title} = "Bulky goods collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
+    $data->{extra_Collection_Date} = $date;
+    $data->{extra_Exact_Location} = $data->{location};
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+
+    my @ids;
+    my @item_names;
+    my @item_quantity_codes;
+    my @photos;
+
+    if ($data->{location_photo}) {
+        push @photos, $data->{location_photo};
+    }
+
+    my $cfg = $self->feature('waste_features');
+    my $quantity_1_code = $cfg->{bulky_quantity_1_code};
+
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @item_names, $item;
+            push @ids, $items{$item};
+            push @item_quantity_codes, $quantity_1_code;
+            push @photos, $data->{"item_photo_$_"} || '';
+        };
+    }
+    $data->{extra_Image} = join("::", @photos);
+    $data->{extra_Bulky_Collection_Details_Item} = join("::", @ids);
+    $data->{extra_Bulky_Collection_Details_Qty} = join("::", @item_quantity_codes);
+    $data->{extra_Bulky_Collection_Details_Description} = join("::", @item_names);
+
+    $self->bulky_total_cost($data);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+    };
+
+    my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
+    }
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->user->phone;
+
+    return $saved_data;
+}
+
+sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
+
+sub bulky_contact_email {
+    my $self = shift;
+    return $self->feature('bulky_contact_email');
+}
+
+sub cancel_bulky_collections_without_payment {
+    my ($self, $params) = @_;
+
+    # Allow 30 minutes for payment before cancelling the booking.
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $cutoff_date = $dtf->format_datetime( DateTime->now->subtract( minutes => $self->bulky_cancel_no_payment_minutes ) );
+
+    my $rs = $self->problems->search(
+        {   category => 'Bulky collection',
+            created  => { '<'  => $cutoff_date },
+            external_id => { '!=', undef },
+            state => [ FixMyStreet::DB::Result::Problem->open_states ],
+            -or => [
+                extra => undef,
+                -not => { extra => { '\?' => 'payment_reference' } }
+            ],
+        },
+    );
+
+    while ( my $report = $rs->next ) {
+        if ($params->{commit}) {
+            $report->add_to_comments({
+                text => 'Booking cancelled since payment was not made in time',
+                user_id => $self->body->comment_user_id,
+                extra => { bulky_cancellation => 1 },
+            });
+            $report->state('closed');
+            $report->detail(
+                $report->detail . " | Cancelled since payment was not made in time"
+            );
+            $report->update;
+        }
+        if ($params->{verbose}) {
+            printf(
+                'Cancelled booking %s for report %d.',
+                $report->external_id,
+                $report->id,
+            );
+        }
+    }
 }
 
 1;

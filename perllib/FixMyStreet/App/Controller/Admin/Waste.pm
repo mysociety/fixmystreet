@@ -86,6 +86,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
             $new_cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
             my %keys = (
                 per_item_costs => 'bool',
+                per_item_min_collection_price => 'int',
                 base_price => 'int',
                 daily_slots => 'int',
                 items_per_collection_max => 'int',
@@ -136,6 +137,8 @@ sub bulky_items : Chained('body') {
     my $cobrand = $c->stash->{body}->get_cobrand_handler;
     $c->stash->{available_features} =
         $cobrand->call_hook('bulky_available_feature_types') if $cobrand;
+    $c->stash->{per_item_pricing_property_types} =
+        $cobrand->call_hook('bulky_per_item_pricing_property_types');
 
     if ($c->req->method eq 'POST') {
         $c->forward('/auth/check_csrf_token');
@@ -157,6 +160,11 @@ sub bulky_items : Chained('body') {
                 price => $c->get_param("price[$i]"),
                 max => $c->get_param("max[$i]"),
             };
+
+            foreach my $property_type (@{$c->{stash}->{per_item_pricing_property_types}}) {
+                my $key = "price_" . $property_type;
+                $item->{$key} = $c->get_param($key . "[$i]");
+            }
 
             # validate the row - if any field has a value then need to check
             # that the three required fields are all present
@@ -218,7 +226,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs base_price daily_slots items_per_collection_max food_bags_disabled show_location_page band1_price band1_max show_individual_notes)) {
+    foreach (qw(free_mode per_item_costs per_item_min_collection_price base_price daily_slots items_per_collection_max food_bags_disabled show_location_page band1_price band1_max show_individual_notes)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }

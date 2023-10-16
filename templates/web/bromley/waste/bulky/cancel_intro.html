@@ -1,0 +1,27 @@
+[% USE pounds = format('%.2f') %]
+[% partial = c.cobrand.bulky_refund_would_be_partial(cancelling_booking) %]
+[% IF partial %]
+  [% minimum_charge_amount = c.cobrand.bulky_minimum_charge %]
+  [% minimum_charge = pounds(minimum_charge_amount / 100) %]
+  [% partial_explainer = "Cancellations within 24 hours of collection are only eligibile to be refunded the amount paid above the minimum charge £" _ minimum_charge _ "." %]
+[% END %]
+[% IF entitled_to_refund %]
+  [% refund_amount = c.cobrand.bulky_refund_amount(cancelling_booking) %]
+  <h3>Refund</h3>
+  <p class="govuk-!-margin-bottom-2">
+  [% IF partial %]
+    [% partial_explainer %]
+  [% END %]
+  If you cancel you will be refunded £[% pounds(refund_amount / 100) %].
+  </p>
+[% ELSE %]
+<h3>No Refund Will Be Issued</h3>
+<p class="govuk-!-margin-bottom-2">
+  [% IF partial %]
+    [% partial_explainer %]
+    Since you paid no more than the minimum charge you are not eligible for a refund if you cancel this booking.
+  [% ELSE %]
+    You are not eligible for a refund if you cancel this booking.
+  [% END %]
+</p>
+[% END %]

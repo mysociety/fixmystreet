@@ -68,6 +68,7 @@ FixMyStreet::override_config {
         waste_features => {
             brent => {
                 bulky_enabled => 1,
+                bulky_missed => 1,
                 bulky_multiple_bookings => 1,
                 bulky_tandc_link => 'tandc_link',
             },
@@ -83,7 +84,32 @@ FixMyStreet::override_config {
     },
 }, sub {
     my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
+    $echo->mock( 'GetServiceUnitsForObject', sub { [ {
+        Id => 1002,
+        ServiceId => 262,
+        ServiceName => 'Domestic Refuse Collection',
+        ServiceTasks => { ServiceTask => {
+            Id => 402,
+            ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every other Wednesday',
+                Allocation => {
+                    RoundName => 'Friday ',
+                    RoundGroupName => 'Delta 04 Week 2',
+                },
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-10T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ 234, 567 ] } },
+                },
+            } },
+        } },
+    } ] } );
     $echo->mock( 'GetTasks', sub { [] } );
     $echo->mock( 'GetEventsForObject', sub { [] } );
     $echo->mock( 'FindPoints', sub { [
@@ -129,7 +155,7 @@ FixMyStreet::override_config {
     $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
     $mech->content_contains('small items');
-    $mech->submit_form_ok; # 'Book Collection'
+    $mech->submit_form_ok({ form_number => 2 }); # 'Book Collection'
 
     $mech->content_contains( 'Before you start your booking',
         'Should be able to access the booking form' );
@@ -155,8 +181,8 @@ FixMyStreet::override_config {
                     'item_1' => 'Tied bag of domestic batteries (min 10 - max 100)',
                     'item_2' => 'Toaster',
                     'item_3' => 'Podback Bag',
-                    'item_4' => 'Small electricals: Other item under 30x30x30 cm',
-                    'item_notes_4' => 'A widget',
+                    'item_5' => 'Small electricals: Other item under 30x30x30 cm',
+                    'item_notes_5' => 'A widget',
                 },
             },
         );
@@ -192,7 +218,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
 
-            is $report->get_extra_field_value('Notes'), "1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
+            is $report->get_extra_field_value('Notes'), "Collection date: 01 July\n1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
             is $report->get_extra_field_value('Textiles'), '';
             is $report->get_extra_field_value('Paint'), '';
             is $report->get_extra_field_value('Batteries'), 1;

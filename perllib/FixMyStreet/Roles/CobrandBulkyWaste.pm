@@ -74,7 +74,8 @@ sub bulky_pricing_strategy {
     my $band1_max = $self->wasteworks_config->{band1_max};
     my $max = $self->bulky_items_maximum;
     if ($self->bulky_per_item_costs) {
-        return encode_json({ strategy => 'per_item' });
+        my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
+        return encode_json({ strategy => 'per_item', min => $min_collection_price });
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
     } else {
@@ -114,15 +115,20 @@ sub bulky_is_cancelled {
 }
 
 sub bulky_items_extra {
-    my $self = shift;
+    my ($self, %args) = @_;
 
-    my $per_item = $self->bulky_per_item_costs;
+    my $per_item = '';
+    my $price_key = '';
+    unless ($args{exclude_pricing}) {
+        $per_item = $self->bulky_per_item_costs;
+        $price_key = $self->bulky_per_item_price_key;
+    };
 
     my $json = JSON::MaybeXS->new;
     my %hash;
     for my $item ( @{ $self->bulky_items_master_list } ) {
         $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
-        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
+        $hash{ $item->{name} }{price} = $item->{$price_key} if $item->{$price_key} && $per_item;
         $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
         $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
     }
@@ -138,11 +144,18 @@ sub bulky_minimum_cost {
     my $cfg = $self->wasteworks_config;
 
     if ( $cfg->{per_item_costs} ) {
+
+        my $price_key = $self->bulky_per_item_price_key;
         # Get the item with the lowest cost
         my @sorted = sort { $a <=> $b }
-            map { $_->{price} } @{ $self->bulky_items_master_list };
+            map { $_->{$price_key} } @{ $self->bulky_items_master_list };
+        my $min_item_price =  $sorted[0] // 0;
+        my $min_collection_price = $cfg->{per_item_min_collection_price};
+        if ($min_collection_price && $min_collection_price > $min_item_price) {
+            return $min_collection_price;
+        }
+        return $min_item_price;
 
-        return $sorted[0] // 0;
     } elsif ( $cfg->{band1_price} ) {
         return $cfg->{band1_price};
     } else {
@@ -162,14 +175,20 @@ sub bulky_total_cost {
 
         my $cfg = $self->wasteworks_config;
         if ($cfg->{per_item_costs}) {
-            my %prices = map { $_->{name} => $_->{price} } @{ $self->bulky_items_master_list };
+            my $price_key = $self->bulky_per_item_price_key;
+            my %prices = map { $_->{name} => $_->{$price_key} } @{ $self->bulky_items_master_list };
             my $total = 0;
             my $max = $self->bulky_items_maximum;
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
                 $total += $prices{$item};
             }
-            $c->stash->{payment} = $total;
+            my $min_collection_price = $cfg->{per_item_min_collection_price};
+            if ($min_collection_price && $min_collection_price > $total) {
+                $c->stash->{payment} = $min_collection_price;
+            } else {
+                $c->stash->{payment} = $total;
+            }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
             my $max = $self->bulky_items_maximum;
@@ -506,5 +525,14 @@ sub _bulky_send_reminder_email {
 }
 
 sub bulky_send_before_payment { 0 }
+
+sub bulky_per_item_pricing_property_types { [] }
+
+sub bulky_per_item_price_key {
+    my $self = shift;
+    return 'price' if !@{$self->bulky_per_item_pricing_property_types};
+    my $property = $self->{c}->stash->{property};
+    return "price_" . $property->{pricing_property_type};
+}
 
 1;

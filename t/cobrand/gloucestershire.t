@@ -216,6 +216,15 @@ FixMyStreet::override_config {
                         'make a new report in the same location',
                         'Lacks option to make a new report in same location',
                     );
+                } else {
+                    $mech->content_contains(
+                        'This report is now closed to updates.',
+                        'Correct message shown',
+                    );
+                    $mech->content_lacks(
+                        'Only the original reporter may leave updates',
+                        'Doesn’t mention original reporter being able to leave updates',
+                    );
                 }
 
                 note 'Original reporter';

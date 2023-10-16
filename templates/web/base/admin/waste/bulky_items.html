@@ -33,6 +33,13 @@
             [% IF item.errors.price %]<label for="[[% i %]]">[% item.errors.price %]</label>[% END %]
             <input type="text" value="[% item.price %]" name="price[[% i %]]" />
         </td>
+        [% FOR property_type IN per_item_pricing_property_types %]
+            [% price_for_property_type = "price_$property_type" %]
+            <td>
+                [% IF item.errors.$price_for_property_type %]<label for="[[% i %]]">[% item.errors.$price_for_property_type %]</label>[% END %]
+                <input type="text" value="[% item.$price_for_property_type %]" name="[% price_for_property_type %][[% i %]]" />
+            </td>
+        [% END %]
         <td>
             [% IF item.errors.max %]<label for="[[% i %]]">[% item.errors.max %]</label>[% END %]
             <input type="text" value="[% item.max %]" name="max[[% i %]]" />
@@ -54,6 +61,9 @@
                 <th>Name</th>
                 <th>Message</th>
                 <th>Price (pence)</th>
+                [% FOR property_type IN per_item_pricing_property_types %]
+                    <th>[% property_type %] Price (pence)</th>
+                [% END %]
                 <th title="Max per collection">Max</th>
                 <th></th>
             </tr>

@@ -24,6 +24,10 @@ INCLUDE '_email_top.html';
     </p>
 
   <p style="[% p_style %]">
+        Date booking made: [% report_date %]
+  </p>
+
+  <p style="[% p_style %]">
     Collection date: [% collection_date %]
   </p>
 
@@ -36,6 +40,10 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">
     Total cost: £[% pounds(payment / 100) %]
   </p>
+[% END %]
+
+[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+  <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
 [% END %]
 
   <p style="[% p_style %]">

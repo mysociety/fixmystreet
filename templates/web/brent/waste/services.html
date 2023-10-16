@@ -32,15 +32,13 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Subscription</dt>
-        [% IF unit.garden_sacks %]
         <dd class="govuk-summary-list__value">
-          £[% tprintf('%.2f', unit.garden_cost) %] per year (Sack subscription)
+          [%~ IF unit.garden_sacks ~%]
+            Sacks
+          [%~ ELSE ~%]
+            [% unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) %]
+          [%~ END ~%]
         </dd>
-        [% ELSE %]
-        <dd class="govuk-summary-list__value">
-          £[% tprintf('%.2f', unit.garden_cost) %] per year ([% unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) %])
-        </dd>
-        [% END %]
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>

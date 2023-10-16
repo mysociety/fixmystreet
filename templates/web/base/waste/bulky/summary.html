@@ -103,7 +103,14 @@ END;
                   <p class="govuk-!-margin-bottom-3">You can cancel this booking till
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
                   [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
-                      <p class="govuk-!-margin-bottom-0">You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.</p>
+                      <p class="govuk-!-margin-bottom-0">
+                        [% IF cobrand.moniker == 'bromley' %]
+                          You can get a full refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
+                          Cancellations within 24 hours of collection are only eligible for a partial refund for any amount paid over the minimum charge.
+                        [% ELSE %]
+                          You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
+                        [% END %]
+                      </p>
                   [% END %]
               [% END %]
           </div>
@@ -127,7 +134,11 @@ END;
       [% IF c.cobrand.moniker != 'brent' %]
       <dl>
         <dt>Price</dt>
-        [% payment = cobrand.bulky_total_cost(data) %]
+        [% IF problem %]
+            [% payment = problem.get_extra_field_value('payment') %]
+        [% ELSE %]
+            [% payment = cobrand.bulky_total_cost(data) %]
+        [% END %]
         <dd>£[% pounds(payment / 100) %]</dd>
       </dl>
       [% END %]
