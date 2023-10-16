@@ -223,25 +223,28 @@ sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
     $csv->add_csv_columns(
-        street_name => 'Street Name',
-        location_name => 'Location Name',
-        created_by => 'Created By',
-        email => 'Email',
-        usrn => 'USRN',
-        uprn => 'UPRN',
-        external_id => 'External ID',
-        image_included => 'Does the report have an image?',
+        (
+            street_name => 'Street Name',
+            location_name => 'Location Name',
+            created_by => 'Created By',
+            email => 'Email',
+            usrn => 'USRN',
+            uprn => 'UPRN',
+            external_id => 'External ID',
+            image_included => 'Does the report have an image?',
 
-        flytipping_did_you_see => 'Did you see the fly-tipping take place',
-        flytipping_statement => "If 'Yes', are you willing to provide a statement?",
-        flytipping_quantity => 'How much waste is there',
-        flytipping_type => 'Type of waste',
+            flytipping_did_you_see => 'Did you see the fly-tipping take place',
+            flytipping_statement => "If 'Yes', are you willing to provide a statement?",
+            flytipping_quantity => 'How much waste is there',
+            flytipping_type => 'Type of waste',
 
-        container_req_action => 'Container Request Action',
-        container_req_type => 'Container Request Container Type',
-        container_req_reason => 'Container Request Reason',
+            container_req_action => 'Container Request Action',
+            container_req_type => 'Container Request Container Type',
+            container_req_reason => 'Container Request Reason',
 
-        missed_collection_id => 'Service ID',
+            missed_collection_id => 'Service ID',
+            map { "item_" . $_ => "Small Item $_" } (1..11)
+        )
     );
 
     my $values;
@@ -264,7 +267,7 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        return {
+        my $data = {
             street_name => $report->nearest_address_parts->{street},
             location_name => $report->get_extra_field_value('location_name') || '',
             created_by => $report->name || '',
@@ -281,7 +284,13 @@ sub dashboard_export_problems_add_columns {
             container_req_type => $report->get_extra_field_value('Container_Request_Container_Type') || '',
             container_req_reason => $report->get_extra_field_value('Container_Request_Reason') || '',
             missed_collection_id => $report->get_extra_field_value('service_id') || '',
-        }
+        };
+
+        my $extra = $report->get_extra_metadata;
+
+        %$data = (%$data, map {$_ => $extra->{$_} || ''} grep { $_ =~ /^(item_\d+)$/ } keys %$extra);
+
+        return $data;
     });
 }
 
