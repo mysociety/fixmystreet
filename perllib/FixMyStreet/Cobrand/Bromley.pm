@@ -174,6 +174,7 @@ sub open311_config {
 
     if ($contact->category eq 'Bulky collection') {
         $params->{multi_photos} = 1;
+        $params->{upload_files} = 1;
     }
 
     $params->{always_send_latlong} = 0;
