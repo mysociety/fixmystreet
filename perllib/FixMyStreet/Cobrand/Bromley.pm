@@ -1165,6 +1165,7 @@ sub waste_reconstruct_bulky_data {
     my $saved_data = {
         "chosen_date" => $p->get_extra_field_value('Collection_Date'),
         "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
     };
 
     my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
