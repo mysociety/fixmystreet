@@ -81,14 +81,6 @@ sub trade_waste_service_units {
     } ]
 }
 
-sub non_trade_or_domestic_waste_service_units {
-    my ($self, $service_id) = @_;
-    return [ {
-        Id => 1,
-        ServiceId => 533, # Random ServiceId for test
-    } ]
-}
-
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'bromley',
@@ -214,15 +206,8 @@ FixMyStreet::override_config {
         };
     });
 
-    subtest 'Ineligible/Eligible property' => sub {
+    subtest 'Eligible property' => sub {
 
-        $echo->mock('GetServiceUnitsForObject', \&non_trade_or_domestic_waste_service_units );
-        $mech->get_ok('/waste');
-        $mech->submit_form_ok( { with_fields => { postcode => 'BR1 1AF' } } );
-        $mech->submit_form_ok( { with_fields => { address => '12345' } } );
-
-        $mech->content_lacks('Bulky Waste');
-        $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'BR1 1AF' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );

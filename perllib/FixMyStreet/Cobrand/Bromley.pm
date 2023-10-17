@@ -538,6 +538,8 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
+    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
+
     $self->{c}->stash->{containers} = {
         1 => 'Green Box (Plastic)',
         3 => 'Wheeled Bin (Plastic)',
@@ -612,7 +614,6 @@ sub bin_services_for_address {
         if (defined($trade_service_id) && $_->{ServiceId} eq $trade_service_id) {
             $property->{pricing_property_type} = 'Trade';
         }
-        $property->{show_bulky_waste} ||= $self->bulky_allowed_property($_->{ServiceId});
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
@@ -1080,9 +1081,8 @@ sub bulky_cancel_no_payment_minutes {
 }
 
 sub bulky_allowed_property {
-    my ( $self, $id ) = @_;
-
-    return $self->bulky_enabled && $id =~ /^(531|532)$/;
+    my ( $self, $property ) = @_;
+    return $self->bulky_enabled;
 }
 
 sub collection_date {
