@@ -4,6 +4,10 @@ my $mech = FixMyStreet::TestMech->new;
 use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
 use Test::MockModule;
+use t::Mock::Tilma;
+
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
 # Create test data
 my $comment_user = $mech->create_user_ok('bristol@example.net');
@@ -14,6 +18,8 @@ my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
 }, {
     cobrand => 'bristol',
 });
+$comment_user->update({ from_body => $bristol->id });
+$comment_user->user_body_permissions->create({ body => $bristol, permission_type => 'report_edit' });
 
 # Setup Bristol to cover North Somerset and South Gloucestershire
 $bristol->body_areas->create({ area_id => 2642 });
@@ -192,8 +198,6 @@ FixMyStreet::override_config {
     my $bristol_mock = Test::MockModule->new('FixMyStreet::Cobrand::Bristol');
     $bristol_mock->mock('_fetch_features', sub { [] });
 
-
-
     # Make sure we're handling National Highways correctly by testing on and off NH roads.
     my $national_highways_mock = Test::MockModule->new('FixMyStreet::Cobrand::HighwaysEngland');
 
@@ -246,6 +250,22 @@ FixMyStreet::override_config {
         $mech->content_lacks($south_gloucestershire_contact->category);
         $mech->content_contains($north_somerset_contact->category);
     };
+
+    subtest 'check report pages after creation' => sub {
+        $mech->host('bristol.fixmystreet.com');
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $open311_contact->category,
+            latitude => 51.494885,
+            longitude => -2.602237,
+            areas => ',2561,66009,148659,164861,',
+        } );
+        $mech->log_in_ok($comment_user->email);
+        $mech->get_ok('/admin/report_edit/' . $p->id);
+        $mech->content_contains('Flooding');
+        $mech->content_contains('Inactive roadworks');
+    };
+
 };
 
 done_testing();

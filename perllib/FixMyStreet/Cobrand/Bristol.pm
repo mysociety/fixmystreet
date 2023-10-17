@@ -188,15 +188,17 @@ sub munge_overlapping_asset_bodies {
     my ($self, $bodies) = @_;
 
     my $all_areas = $self->{c}->stash->{all_areas};
-    my $in_area = scalar(%$all_areas) == 1 && (values %$all_areas)[0]->{id} eq $self->council_area_id->[0];
-    return if $in_area;
 
-    # If we get here, assume we are outside Bristol boundaries.
-    if ($self->check_report_is_on_cobrand_asset) {
-        # The report is in a park that Bristol is responsible for, so only show Bristol categories.
+    if (grep ($self->council_area_id->[0] == $_, keys %$all_areas)) {
+        # We are in the Bristol area so carry on as normal
+        return;
+    } elsif ($self->check_report_is_on_cobrand_asset) {
+        # We are not in a Bristol area but the report is in a park that Bristol is responsible for,
+        # so only show Bristol categories.
         %$bodies = map { $_->id => $_ } grep { $_->name eq $self->council_name } values %$bodies;
     } else {
-        # The report is not in a park that Bristol is responsible for, so only show other categories.
+        # We are not in a Bristol area and the report is not in a park that Bristol is responsible for,
+        # so only show other categories.
         %$bodies = map { $_->id => $_ } grep { $_->name ne $self->council_name } values %$bodies;
     }
 }
