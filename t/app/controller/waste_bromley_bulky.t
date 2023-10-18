@@ -227,7 +227,7 @@ FixMyStreet::override_config {
         subtest 'Intro page' => sub {
             $mech->content_contains('Book bulky goods collection');
             $mech->content_contains('Before you start your booking');
-            $mech->content_contains('You can request up to <strong>eight items per collection');
+            $mech->content_lacks('You can request up to <strong>eight items per collection');
             $mech->submit_form_ok;
         };
 
