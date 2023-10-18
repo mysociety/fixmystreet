@@ -450,7 +450,7 @@ FixMyStreet::override_config {
             $mech->content_contains('You can get a full refund if cancelled by 7am on the day prior to your collection');
             $mech->content_contains(
                 'Cancellations within 24 hours of collection are only eligible for ' .
-                'a partial refund for any amount paid over the minimum charge.'
+                'a partial refund for any amount paid over the minimum charge of £5.00.'
             );
 
             $mech->clear_emails_ok();
