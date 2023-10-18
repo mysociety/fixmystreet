@@ -114,7 +114,7 @@ sub pay {
                 },
             ) : (),
             'scpbase:lgItemDetails' => ixhash(
-                'scpbase:fundCode' => $self->config->{scp_fund_code},
+                'scpbase:fundCode' => $args->{fund_code},
                 'scpbase:additionalReference' => $_->{lineId},
                 'scpbase:narrative' => $args->{uprn},
                 'scpbase:accountName' => {
