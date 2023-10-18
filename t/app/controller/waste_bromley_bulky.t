@@ -256,7 +256,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('you can add up to 5 more items');
+            $mech->content_lacks('you can add up to 5 more items');
             $mech->content_contains('£30.00');
             $mech->content_contains("<dd>01 July</dd>");
             $mech->content_contains("07:00 on 01 July 2023");
@@ -392,7 +392,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bicycle/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('you can add up to 5 more items');
+            $mech->content_lacks('you can add up to 5 more items');
             $mech->content_contains('£30.00');
             $mech->content_contains('01 July');
             $mech->content_lacks('Request a bulky waste collection');
