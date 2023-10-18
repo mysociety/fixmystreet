@@ -1021,6 +1021,11 @@ sub bulky_cancel_by_update { 1 }
 sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 sub bulky_send_before_payment { 1 }
+sub bulky_location_text_prompt {
+  "Please provide the exact location where the items will be left ".
+  "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.)." .
+  " Please note items can't be collected inside the property."
+}
 
 sub bulky_minimum_charge { $_[0]->wasteworks_config->{per_item_min_collection_price} }
 

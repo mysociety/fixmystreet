@@ -246,6 +246,7 @@ FixMyStreet::override_config {
                 },
             },
         );
+        $mech->content_contains("Please note items can&#39;t be collected inside the property.");
         $mech->submit_form_ok({ with_fields => {
             location => 'in the middle of the drive',
             'location_photo' => [ $sample_file_2, undef, Content_Type => 'image/jpeg' ],
