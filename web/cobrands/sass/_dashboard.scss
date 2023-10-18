@@ -85,7 +85,7 @@
     @include box-sizing(border-box);
 
     @media (min-width: 48em) {
-        padding-right: 20%; // Same way round, regardless of text direction
+        padding-right: 15%; // Same way round, regardless of text direction
     }
 
     .label {
@@ -99,7 +99,7 @@
         margin-top: -1em;
         margin-#{$right}: 0;
         right: 0;
-        width: 18%; // 20% padding from .labelled-line-chart, 2% gutter
+        width: 14%; // 15% padding from .labelled-line-chart, 1% gutter
     }
 }
 
