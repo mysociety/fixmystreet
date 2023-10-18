@@ -26,11 +26,16 @@ sub waste_cc_get_redirect_url {
     $p->set_extra_metadata('redirect_id', $redirect_id);
     $p->update;
 
+    my $fund_code = $payment->config->{scp_fund_code};
+
     my $backUrl;
     if ($back eq 'bulky') {
         # Need to pass through property ID as not sure how to work it out once we're back
         my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
         $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
+        if (my $bulky_fund_code = $payment->config->{bulky_scp_fund_code}) {
+            $fund_code = $bulky_fund_code;
+        }
     } else {
         $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
     }
@@ -67,6 +72,7 @@ sub waste_cc_get_redirect_url {
         postcode => pop @parts,
         items => \@items,
         staff => $c->stash->{staff_payments_allowed} eq 'cnp',
+        fund_code => $fund_code,
     });
 
     if ( $result ) {

@@ -109,6 +109,8 @@ FixMyStreet::override_config {
                 hmac => '1234',
                 hmac_id => '1234',
                 scpID => '1234',
+                scp_fund_code => 10,
+                bulky_scp_fund_code => 20,
                 company_name => 'rbk',
                 form_name => 'rbk_user_form',
                 staff_form_name => 'rbk_staff_form',
@@ -275,6 +277,7 @@ FixMyStreet::override_config {
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->state, 'confirmed', 'report confirmed';
 
+            is $sent_params->{fund_code}, 20, 'bulky fund code used';
             is $sent_params->{items}[0]{amount}, 3000, 'correct amount used';
             is $sent_params->{items}[0]{reference}, 'customer-ref';
             is $sent_params->{items}[0]{lineId}, $new_report->id;
