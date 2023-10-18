@@ -230,7 +230,9 @@ has_field tandc => (
 has_field location => (
     type => 'Text',
     widget => 'Textarea',
-    label => "Please provide the exact location where the items will be left (e.g., On the driveway; To the left of the front door; By the front hedge, etc.)",
+    build_label_method => sub {
+        return shift->parent->{c}->cobrand->call_hook('bulky_location_text_prompt');
+    },
 );
 
 has_field location_photo_fileid => (

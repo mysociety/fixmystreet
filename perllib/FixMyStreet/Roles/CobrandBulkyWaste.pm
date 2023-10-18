@@ -537,4 +537,9 @@ sub bulky_per_item_price_key {
     return "price_" . $property->{pricing_property_type};
 }
 
+sub bulky_location_text_prompt {
+  "Please provide the exact location where the items will be left ".
+  "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.)."
+}
+
 1;
