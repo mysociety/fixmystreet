@@ -1570,6 +1570,7 @@ sub add_report : Private {
     }
 
     $report->set_extra_metadata(property_address => $c->stash->{property}{address});
+    $report->set_extra_metadata(phone => $c->stash->{phone});
     $c->cobrand->call_hook('save_item_names_to_report' => $data);
     $report->update;
 

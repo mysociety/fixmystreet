@@ -12,7 +12,8 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 
-my $user = $mech->create_user_ok('bob@example.org');
+my $user
+    = $mech->create_user_ok( 'bob@example.org', name => 'Original Name' );
 my $body_user = $mech->create_user_ok('body@example.org');
 
 my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
@@ -249,7 +250,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Bookings are final and non refundable');
             $mech->submit_form_ok;
         };
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->content_contains('Collections take place any time from 6:30am to 4:30pm.');
         $mech->content_contains('placed outside before 6:30am on the collection day.');
         $mech->content_contains('01 July');
@@ -305,6 +306,8 @@ FixMyStreet::override_config {
             $mech->content_contains('£40.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("on or before Saturday 01 July 2023");
+            $mech->content_contains('Bob Marge', 'name shown');
+            $mech->content_contains('44 07 111 111 111', 'phone shown');
         }
         sub test_summary_submission {
             # external redirects make Test::WWW::Mechanize unhappy so clone
@@ -457,6 +460,15 @@ FixMyStreet::override_config {
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+
+            is $report->name, 'Bob Marge', 'correct name on report';
+            is $report->get_extra_metadata('phone'), '44 07 111 111 111',
+                'correct phone on report';
+            is $report->user->name, 'Original Name',
+                'name on report user unchanged';
+            is $report->user->phone, undef, 'no phone on report user';
+            is $report->user->email, $user->email,
+                'correct email on report user';
         };
     };
 
@@ -483,6 +495,8 @@ FixMyStreet::override_config {
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
+            $mech->content_contains('Bob Marge', 'name shown');
+            $mech->content_contains('44 07 111 111 111', 'phone shown');
 
             # Cancellation messaging & options
             $mech->content_lacks('This collection has been cancelled');
