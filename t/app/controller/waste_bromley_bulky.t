@@ -482,6 +482,7 @@ FixMyStreet::override_config {
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
                 $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
                 $mech->content_contains('Your booking has been cancelled');
+                $mech->content_lacks('If you need to contact us about your application please use the application reference');
 
                 my $email = $mech->get_email;
 
