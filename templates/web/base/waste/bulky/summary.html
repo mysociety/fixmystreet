@@ -144,7 +144,7 @@ END;
       [% END %]
       <div class="govuk-!-margin-bottom-4">
         <p class="govuk-!-margin-bottom-0">[% tprintf(nget('%d item requested for collection.', '%d items requested for collection.', items.size), items.size) %]</p>
-        [% IF c.cobrand.moniker != 'brent' %]
+        [% IF c.cobrand.moniker != 'brent' && c.cobrand.moniker != 'bromley'%]
             [% remaining = cobrand.bulky_items_maximum - items.size %]
             <small>([% tprintf(nget('you can add up to %d more item', 'you can add up to %d more items', remaining), remaining) %])</small>
         [% END %]
