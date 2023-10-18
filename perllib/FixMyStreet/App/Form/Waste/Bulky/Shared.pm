@@ -231,12 +231,7 @@ has_field location => (
     type => 'Text',
     widget => 'Textarea',
     build_label_method => sub {
-        my $self = shift;
-        my $label = "Please provide the exact location where the items will be left (e.g., On the driveway; To the left of the front door; By the front hedge, etc.)";
-        if ($self->parent->{c}->cobrand->call_hook('bulky_no_item_collection_inside_property')) {
-            $label .= " Please note items can't be collected inside the property.";
-        }
-        return $label;
+        return shift->parent->{c}->cobrand->call_hook('bulky_location_text_prompt');
     },
 );
 
