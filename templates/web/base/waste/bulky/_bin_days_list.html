@@ -4,29 +4,6 @@
 
 <dl class="govuk-summary-list govuk-!-margin-bottom-0">
 
-  [% IF c.cobrand.moniker != 'brent' %]
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Cost</dt>
-    <dd class="govuk-summary-list__value">
-      [% cost = cobrand.bulky_minimum_cost %]
-      [% IF cobrand.bulky_free_collection_available %]
-        <!-- #03 Should only display when: There is a free collection option and
-          the property hasn't had a collection on this tax year. -->
-        <!-- I know we are not implementing this at the moment, so feel free
-        to delete it -->
-        <p class="label is--low-priority govuk-!-margin-bottom-1">Free</p>
-        <p class="govuk-!-margin-bottom-2"><strong>One free</strong> collection per tax year.</p>
-        <!-- END #03 -->
-        <!-- #02 Always visible EXCEPT when address is commercial-->
-        <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong> Afterwards.</p>
-        <!-- END #02 -->
-      [% ELSE %]
-          <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong></p>
-      [% END %]
-    </dd>
-  </div>
-  [% END %]
-
   [% FOR booking IN pending_bulky_collections %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
     <div class="govuk-summary-list__row">
@@ -96,6 +73,33 @@
       [% END %]
     </dl>
   [% END %]
+
+<hr>
+
+[% IF c.cobrand.moniker != 'brent' %]
+<dl class="govuk-summary-list govuk-!-margin-bottom-0">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Cost</dt>
+    <dd class="govuk-summary-list__value">
+      [% cost = cobrand.bulky_minimum_cost %]
+      [% IF cobrand.bulky_free_collection_available %]
+        <!-- #03 Should only display when: There is a free collection option and
+          the property hasn't had a collection on this tax year. -->
+        <!-- I know we are not implementing this at the moment, so feel free
+        to delete it -->
+        <p class="label is--low-priority govuk-!-margin-bottom-1">Free</p>
+        <p class="govuk-!-margin-bottom-2"><strong>One free</strong> collection per tax year.</p>
+        <!-- END #03 -->
+        <!-- #02 Always visible EXCEPT when address is commercial-->
+        <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong> Afterwards.</p>
+        <!-- END #02 -->
+      [% ELSE %]
+          <p class="govuk-!-margin-bottom-0"><strong>From £[% pounds(cost / 100) %]</strong></p>
+      [% END %]
+    </dd>
+  </div>
+</dl>
+[% END %]
 
 <div class="waste-services-launch-panel">
   [% UNLESS c.user_exists %]
