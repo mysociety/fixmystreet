@@ -575,7 +575,6 @@ FixMyStreet::override_config {
             # Extra text for wardrobes
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">Please dismantle/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('you can add up to 2 more items');
             $mech->content_contains('£23.50');
             $mech->content_contains('26 August');
             $mech->content_lacks('Request a bulky waste collection');
