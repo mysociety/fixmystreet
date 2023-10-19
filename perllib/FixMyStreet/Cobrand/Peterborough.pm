@@ -1213,15 +1213,27 @@ sub waste_munge_problem_form_fields {
         my $green_bin_request = ($open_requests->{420} && $id == 6534);
 
         my $categories = $services{$id};
+        my %messages = (
+            537 => "Please note that we are not currently accepting requests for new or replacement bins while we introduce a new system. If your bin isn't usable, please present your recycling in clear bags only.",
+            538 => "Please note that we are not currently accepting requests for new or replacement bins while we introduce a new system. If your bin isn't usable, please present your household waste in black bags.",
+        );
+
         foreach (sort keys %$categories) {
             my $cat_name = $categories->{$_};
             my $disabled = $open_requests->{$_} || $black_bin_request || $green_bin_request;
-            push @$field_list, "service-$_" => {
+            my %service_fields = ("service-$_" => {
                 type => 'Checkbox',
                 label => $name,
                 option_label => $cat_name,
                 disabled => $disabled,
-            };
+            });
+            # We only need to add the hint to the first checkbox in keeping with the layout
+            # Unlike with an empty label field, we get a warning with a blank hint
+            if ($messages{$_}) {
+                $service_fields{"service-$_"}->{tags} = { hint => $messages{$_} },
+            }
+            $messages{$_} = '';
+            push @$field_list, %service_fields;
 
             # Set this to empty so the heading isn't shown multiple times
             $name = '';

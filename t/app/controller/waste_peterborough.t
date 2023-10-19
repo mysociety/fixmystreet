@@ -453,6 +453,8 @@ FixMyStreet::override_config {
     };
     subtest 'Report broken bin' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
+        $mech->content_contains('please present your recycling in clear bags only');
+        $mech->content_contains('please present your household waste in black bags');
         $mech->submit_form_ok({ with_fields => { 'service-538' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => 'email@example.org' }});
         $mech->content_contains('The bin’s lid is damaged', "Damaged lid category found");
