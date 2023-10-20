@@ -76,6 +76,7 @@ FixMyStreet::override_config {
         echo => {
             brent => {
                 bulky_service_id => 274,
+                bulky_service_id_missed => 787,
                 bulky_event_type_id => 2964,
                 url => 'http://example.org',
             },

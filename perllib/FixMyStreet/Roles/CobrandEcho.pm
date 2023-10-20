@@ -614,12 +614,13 @@ sub bulky_check_missed_collection {
 
     my $cfg = $self->feature('echo');
     my $service_id = $cfg->{bulky_service_id} or return;
+    my $service_id_missed = $cfg->{bulky_service_id_missed};
     my $event_type_id = $cfg->{bulky_event_type_id} or return;
     my $event = $events->{enquiry}{$event_type_id};
     return unless $event;
     my $row = {
         service_name => 'Bulky waste',
-        service_id => $service_id,
+        service_id => $service_id_missed || $service_id,
     };
     my $in_time = $self->within_working_days($event->{date}, 2);
     foreach my $state_id (keys %$blocked_codes) {
