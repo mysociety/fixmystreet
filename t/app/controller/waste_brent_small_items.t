@@ -59,6 +59,9 @@ create_contact(
     { code => 'GUID' },
     { code => 'reservation' },
 );
+create_contact(
+    { category => 'Report missed collection', email => 'missed@test.com' },
+);
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -76,6 +79,7 @@ FixMyStreet::override_config {
         echo => {
             brent => {
                 bulky_service_id => 274,
+                bulky_service_id_missed => 787,
                 bulky_event_type_id => 2964,
                 url => 'http://example.org',
             },
@@ -459,6 +463,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Report a small items collection as missed', 'In time, normal completion');
         $mech->get_ok('/waste/12345/report');
         $mech->content_contains('Small items collection');
+        $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your missed collection has been reported');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->category, 'Report missed collection';
+        is $report->get_extra_field_value('service_id'), 787;
+
         $echo->mock( 'GetEventsForObject', sub { [ {
             EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
