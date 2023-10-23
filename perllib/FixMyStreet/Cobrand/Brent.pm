@@ -1303,7 +1303,7 @@ sub waste_munge_request_form_data {
 
 =cut
 
-sub waste_never_confirm_reports { 1 }
+sub waste_auto_confirm_report { 1 }
 sub waste_staff_choose_payment_method { 0 }
 sub waste_cheque_payments { 0 }
 

@@ -1238,4 +1238,9 @@ sub cancel_bulky_collections_without_payment {
     }
 }
 
+sub waste_auto_confirm_report {
+    my ($self, $report) = @_;
+    return $report->category eq 'Bulky collection';
+}
+
 1;
