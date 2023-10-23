@@ -2044,6 +2044,7 @@ sub generate_category_extra_json : Private {
         if (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
             foreach my $opt (@{$_->{values}}) {
                 if ($opt->{disable}) {
+                    $opt->{disable} = "1";
                     my $message = $opt->{disable_message} || $_->{datatype_description};
                     $data{datatype_description} = $message;
                 }
