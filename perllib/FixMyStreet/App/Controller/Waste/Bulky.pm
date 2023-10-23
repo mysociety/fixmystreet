@@ -253,6 +253,11 @@ sub process_bulky_data : Private {
             $c->stash->{message} = 'Payment skipped on staging';
             $c->stash->{reference} = $c->stash->{report}->id;
             $c->forward('/waste/confirm_subscription', [ $c->stash->{reference} ] );
+        } elsif ($data->{payment_method} && $data->{payment_method} eq 'cheque') {
+            my $p = $c->stash->{report};
+            $p->set_extra_metadata('chequeReference', $data->{cheque_reference});
+            $p->update;
+            $c->forward('/waste/confirm_subscription', [ undef ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
                 $c->forward('/waste/csc_code');
