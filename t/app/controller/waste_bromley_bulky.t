@@ -495,6 +495,11 @@ FixMyStreet::override_config {
 
                 my $text = $email->as_string;
 
+                like $text, qr/Address: 2 Example Street, Bromley, BR1 1AF/, "Includes resident's address";
+                my $name = $report->user->name;
+                like $text, qr/Resident's Name: ${name}/, "Includes resident's name";
+                my $user_email = $report->user->email;
+                like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";
                 # =C2=A3 is the quoted printable for '£'.
                 like $text, qr/Payment Amount: =C2=A35.01/, "Correct payment amount";
                 like $text, qr/Capita SCP Response: 12345/,
