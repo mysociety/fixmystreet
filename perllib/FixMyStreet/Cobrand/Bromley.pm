@@ -1058,7 +1058,7 @@ sub bulky_refund_collection {
             scp_response       =>
                 $collection_report->get_extra_metadata('scpReference'),
             detail  => $collection_report->detail,
-            resident_name => $collection_report->user->name,
+            resident_name => $collection_report->name,
             resident_email => $collection_report->user->email,
         },
     );
@@ -1236,6 +1236,11 @@ sub cancel_bulky_collections_without_payment {
             );
         }
     }
+}
+
+sub waste_auto_confirm_report {
+    my ($self, $report) = @_;
+    return $report->category eq 'Bulky collection';
 }
 
 1;

@@ -267,9 +267,8 @@ FixMyStreet::override_config {
         subtest 'Summary page' => \&test_summary;
 
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $email = $mech->get_email;
-        my $url = $mech->get_link_from_email($email);
-        $mech->get_ok($url);
+        # No click to confirm email.
+        $mech->email_count_is(0);
 
         subtest 'Payment page' => sub {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -381,7 +380,6 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok;
         };
     };
-
 
     subtest 'Bulky goods collection viewing' => sub {
         subtest 'View own booking' => sub {
@@ -496,7 +494,7 @@ FixMyStreet::override_config {
                 my $text = $email->as_string;
 
                 like $text, qr/Address: 2 Example Street, Bromley, BR1 1AF/, "Includes resident's address";
-                my $name = $report->user->name;
+                my $name = $report->name;
                 like $text, qr/Resident's Name: ${name}/, "Includes resident's name";
                 my $user_email = $report->user->email;
                 like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";

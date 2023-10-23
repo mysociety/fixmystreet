@@ -1540,7 +1540,7 @@ sub add_report : Private {
         $report->confirmed(undef);
         $report->update;
     } else {
-        if ($c->cobrand->call_hook('waste_never_confirm_reports')) {
+        if ($c->cobrand->call_hook('waste_auto_confirm_report', $report)) {
             $report->confirm;
             $report->update;
         }
