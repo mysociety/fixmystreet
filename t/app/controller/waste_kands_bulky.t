@@ -20,52 +20,13 @@ my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
 
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 
-$body->set_extra_metadata(
-    wasteworks_config => {
-        base_price => '6100',
-        band1_price => '4000',
-        band1_max => 4,
-        items_per_collection_max => 8,
-        per_item_costs => 0,
-        show_location_page => 'users',
-        item_list => [
-            { bartec_id => '83', name => 'Bath' },
-            { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
-            { bartec_id => '85', name => 'Bicycle' },
-            { bartec_id => '3', name => 'BBQ' },
-            { bartec_id => '6', name => 'Bookcase, Shelving Unit' },
-        ],
-    },
-);
-$body->update;
+my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council', {}, { cobrand => 'sutton' } );
+my $sutton_staff = $mech->create_user_ok('sutton_staff@example.org', from_body => $sutton->id);
 
-
-sub create_contact {
-    my ($params, @extra) = @_;
-    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
-    $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
-        { code => 'property_id', required => 1, automated => 'hidden_field' },
-        { code => 'service_id', required => 0, automated => 'hidden_field' },
-        @extra,
-    );
-    $contact->update;
+for ($body, $sutton) {
+    add_extra_metadata($_);
+    create_contact($_);
 }
-
-create_contact(
-    { category => 'Bulky collection', email => '1636@test.com' },
-    { code => 'payment' },
-    { code => 'payment_method' },
-    { code => 'Payment_Type' },
-    { code => 'Collection_Date' },
-    { code => 'Bulky_Collection_Bulky_Items' },
-    { code => 'Bulky_Collection_Notes' },
-    { code => 'Exact_Location' },
-    { code => 'GUID' },
-    { code => 'reservation' },
-    { code => 'Customer_Selected_Date_Beyond_SLA?' },
-    { code => 'First_Date_Returned_to_Customer' },
-);
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -731,6 +692,141 @@ FixMyStreet::override_config {
     }
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => ['sutton'],
+    COBRAND_FEATURES => {
+        waste => { sutton => 1 },
+        waste_features => {
+            sutton => {
+                bulky_enabled => 1,
+                bulky_tandc_link => 'tandc_link',
+                echo_update_failure_email => 'fail@example.com',
+            },
+        },
+        echo => {
+            sutton => {
+                bulky_address_types => [ 1, 7 ],
+                bulky_service_id => 413,
+                bulky_event_type_id => 1636,
+                url => 'http://example.org',
+                nlpg => 'https://example.com/%s',
+            },
+        },
+        payment_gateway => {
+            sutton => {
+                cc_url => 'http://example.com',
+                hmac => '1234',
+                hmac_id => '1234',
+                company_name => 'lbs',
+                form_name => 'lbs_user_form',
+                staff_form_name => 'lbs_staff_form',
+                customer_ref => 'customer-ref',
+                bulky_customer_ref => 'customer-ref-bulky',
+            },
+        },
+    }
+}, sub {
+    my $lwp = Test::MockModule->new('LWP::UserAgent');
+    $lwp->mock(
+        'get',
+        sub {
+            my ( $ua, $url ) = @_;
+            return $lwp->original('get')->(@_) unless $url =~ /example.com/;
+            my ( $uprn, $area ) = ( 1000000002, "SUTTON" );
+            my $j
+                = '{ "results": [ { "LPI": { "UPRN": '
+                . $uprn
+                . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "'
+                . $area
+                . '" } } ] }';
+            return HTTP::Response->new( 200, 'OK', [], $j );
+        }
+    );
+
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
+    $echo->mock( 'GetTasks',                 sub { [] } );
+    $echo->mock( 'GetEventsForObject',       sub { [] } );
+
+    $echo->mock(
+        'FindPoints',
+        sub {
+            [   {   Description => '2/3 Example Street, Sutton, SM2 5HF',
+                    Id          => '12345',
+                    SharedRef   => { Value => { anyType => 1000000002 } }
+                },
+            ]
+        }
+    );
+    $echo->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
+    $echo->mock('ReserveAvailableSlotsForEvent', sub {
+        my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
+        is $service, 413;
+        is $event_type, 1636;
+        is $property, 12345;
+        return [
+        {
+            StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+            EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+            Reference => 'reserve1==',
+        }, {
+            StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+            EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+            Reference => 'reserve2==',
+        }, {
+            StartDate => { DateTime => '2023-07-15T00:00:00Z' },
+            EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+            Reference => 'reserve3==',
+        },
+    ] });
+
+    $echo->mock('GetPointAddress', sub {
+        my ($self, $id) = @_;
+        return {
+            Id => $id,
+            SharedRef => { Value => { anyType => '1000000002' } },
+            PointType => 'PointAddress',
+            PointAddressType => { Name => 'House', Id => 1 },
+            Coordinates => { GeoPoint => { Latitude => 51.354679, Longitude => -0.183895 } },
+            Description => '2/3 Example Street, Sutton, SM2 5HF',
+        };
+    });
+
+    subtest 'Sutton staff paye payment sends user confirmation email' => sub {
+        FixMyStreet::Script::Alerts::send_updates();
+        $mech->clear_emails_ok;
+        $mech->log_in_ok($sutton_staff->email);
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00' } }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'item_1' => 'BBQ',
+                    'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+                    'item_2' => 'Bicycle',
+                    'item_3' => 'Bath',
+                },
+            },
+        );
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payenet_code => '54321' } });
+        my $email = $mech->get_email;
+        is $email->header('Subject') =~ /Bulky waste collection service - reference LBS/, 1, "Confirmation booking email sent after staff payment process";
+    }
+};
+
+
 done_testing;
 
 sub get_report_from_redirect {
@@ -743,4 +839,58 @@ sub get_report_from_redirect {
 
     return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
     return ($token, $new_report, $report_id);
+}
+
+sub add_extra_metadata {
+    my $body = shift;
+
+    $body->set_extra_metadata(
+    wasteworks_config => {
+        base_price => '6100',
+        band1_price => '4000',
+        band1_max => 4,
+        items_per_collection_max => 8,
+        per_item_costs => 0,
+        show_location_page => 'users',
+        item_list => [
+            { bartec_id => '83', name => 'Bath' },
+            { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
+            { bartec_id => '85', name => 'Bicycle' },
+            { bartec_id => '3', name => 'BBQ' },
+            { bartec_id => '6', name => 'Bookcase, Shelving Unit' },
+        ],
+    },
+);
+$body->update;
+}
+
+sub create_contact {
+    my ($body) = @_;
+    my ($params, @extra) = &_contact_extra_data;
+
+    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
+    $contact->set_extra_fields(
+        { code => 'uprn', required => 1, automated => 'hidden_field' },
+        { code => 'property_id', required => 1, automated => 'hidden_field' },
+        { code => 'service_id', required => 0, automated => 'hidden_field' },
+        @extra,
+    );
+    $contact->update;
+}
+
+sub _contact_extra_data {
+    return (
+        { category => 'Bulky collection', email => '1636@test.com' },
+        { code => 'payment' },
+        { code => 'payment_method' },
+        { code => 'Payment_Type' },
+        { code => 'Collection_Date' },
+        { code => 'Bulky_Collection_Bulky_Items' },
+        { code => 'Bulky_Collection_Notes' },
+        { code => 'Exact_Location' },
+        { code => 'GUID' },
+        { code => 'reservation' },
+        { code => 'Customer_Selected_Date_Beyond_SLA?' },
+        { code => 'First_Date_Returned_to_Customer' },
+    );
 }
