@@ -17,6 +17,9 @@ my $body_user = $mech->create_user_ok('body@example.org');
 
 my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
     { comment_user => $body_user }, { cobrand => 'kingston' } );
+
+my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
+
 $body->set_extra_metadata(
     wasteworks_config => {
         base_price => '6100',
@@ -694,6 +697,38 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [] } );
     };
+
+    subtest 'Bulky goods cheque payment by contact centre' => sub {
+        $mech->log_in_ok($contact_centre_user->email);
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00' } }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                'item_1' => 'BBQ',
+                'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+                'item_2' => 'Bicycle',
+                'item_3' => 'Bath',
+                'item_4' => 'Bath',
+                'item_5' => 'Bath',
+                },
+            },
+        );
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->content_contains('How do you want to pay');
+        $mech->content_contains('Debit or Credit Card');
+        $mech->content_contains('Cheque payment');
+        $mech->content_contains('Payment reference');
+        $mech->submit_form_ok({ with_fields => { tandc => 1, payment_method => 'cheque' } });
+        $mech->content_contains('Payment reference field is required');
+        $mech->submit_form_ok({ with_fields => { tandc => 1, payment_method => 'cheque', cheque_reference => '12345' } });
+        $mech->content_contains('Bulky collection booking confirmed');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_metadata('chequeReference') eq '12345', 1;
+    }
 };
 
 done_testing;

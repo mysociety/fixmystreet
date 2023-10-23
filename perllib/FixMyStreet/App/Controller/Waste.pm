@@ -313,8 +313,14 @@ sub confirm_subscription : Private {
     if ($already_confirmed) {
         my $payment = $p->get_extra_field_value('payment');
         $payment = sprintf( '%.2f', $payment / 100 );
+        my $reference_text = 'reference ';
+        if (!$reference) {
+            $reference_text .= $p->get_extra_metadata('chequeReference') . ' (phone/cheque)';
+        } else {
+            $reference_text .= $reference;
+        }
         my $comment = $p->add_to_comments({
-            text => "Payment confirmed, reference $reference, amount £$payment",
+            text => "Payment confirmed, $reference_text, amount £$payment",
             user => $c->cobrand->body->comment_user || $p->user,
         });
         $p->cancel_update_alert($comment->id);

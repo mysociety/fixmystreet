@@ -58,10 +58,18 @@ has_page location => (
 );
 
 has_page summary => (
-    fields => ['submit', 'tandc'],
+    fields => ['submit', 'tandc', 'payment_method', 'cheque_reference'],
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
     next => sub { $_[0]->{no_slots} ? 'choose_date_earlier' : 'done' },
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+
+        if (!($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') || !$c->stash->{is_staff}) {
+            return ['payment_method', 'cheque_reference']
+        }
+    },
     # Return to 'Choose date' page if slot has been taken in the meantime.
     # Otherwise, proceed to payment.
     pre_finished => sub {
@@ -103,6 +111,23 @@ has_page done => (
     template => 'waste/bulky/confirmation.html',
 );
 
+has_field payment_method => (
+    label => 'How do you want to pay',
+    type => 'Select',
+    required => 1,
+    default => 'credit_card',
+    widget => 'RadioGroup',
+    options => [
+        { label => 'Debit or Credit Card', value => 'credit_card', data_hide => '#form-cheque_reference-row' },
+        { label => 'Cheque payment', value => 'cheque', data_show => '#form-cheque_reference-row' }
+    ],
+);
+
+has_field cheque_reference =>(
+    label => 'Payment reference',
+    type => 'Text',
+    required_when => { payment_method => 'cheque' },
+);
 
 has_field continue => (
     type => 'Submit',
