@@ -1057,6 +1057,8 @@ sub bulky_refund_collection {
             payment_date       => $collection_report->created,
             scp_response       =>
                 $collection_report->get_extra_metadata('scpReference'),
+            detail  => $collection_report->detail,
+            resident_name => $collection_report->user->name,
         },
     );
 }
