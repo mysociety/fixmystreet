@@ -38,7 +38,7 @@ describe('Basic categories', function() {
         cy.get('#map_box').click(240, 249);
         cy.wait('@report-ajax');
         cy.get('[name=category]').should('be.visible');
-        cy.get('#form_category_fieldset input').each(function (obj, i) {
+        cy.get('#form_category_fieldset input[name="category"]').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
         cy.get('#subcategory_Licensing').should('not.be.visible');
@@ -56,7 +56,7 @@ describe('Basic categories', function() {
         cy.route('/report/new/ajax*').as('report-ajax');
         cy.visit('/report/new?latitude=51.496194&longitude=-2.603439');
         cy.get('[name=category]').should('be.visible');
-        cy.get('#form_category_fieldset input').each(function (obj, i) {
+        cy.get('#form_category_fieldset input[name="category"]').each(function (obj, i) {
             expect(obj[0].value).to.equal(categories[i]);
         });
         cy.get('#subcategory_Licensing').should('not.be.visible');
