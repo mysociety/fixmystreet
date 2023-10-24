@@ -710,6 +710,32 @@ ul.error {
   visibility: visible;
 }
 
+.category-filter-box {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    margin: 1em 0;
+    label {
+        margin: 0;
+    }
+}
+
+.js-filter-subcategory {
+    clear: left;
+    margin-left: 2em;
+}
+
+.js-filter-subcategory legend {
+    display: none;
+}
+
+.govuk-radios--small .govuk-radios__item.js-filter-disabled {
+    padding-left: 0;
+}
+.js-filter-disabled label:before, .js-filter-disabled label:after {
+    display: none;
+}
+
 .no-js .js-back {
   display: none;
 }
@@ -2660,6 +2686,11 @@ label .muted {
 
 // hide anything with this class if js is NOT working
 .no-js .hidden-nojs {
+  display: none !important;
+  visibility: hidden;
+}
+
+.hidden-highways-choice, .hidden-category-filter {
   display: none !important;
   visibility: hidden;
 }

@@ -9,7 +9,7 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
-      cy.get('input[value=Skips]').click();
+      cy.get('.js-subcategory input[value=Skips]').click();
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
       cy.contains('Already been reported?');
@@ -27,7 +27,7 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
-      cy.get('input[value=Skips]').click();
+      cy.get('.js-subcategory input[value=Skips]').click();
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
       cy.contains('Already been reported?');

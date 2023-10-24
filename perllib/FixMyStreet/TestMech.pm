@@ -577,7 +577,7 @@ sub visible_form_values {
       grep { !$_->disabled }
       $form->inputs;
 
-    my @visible_field_names = map { $_->name } @visible_fields;
+    my @visible_field_names = map { $_->name || () } @visible_fields;
 
     my %params = map { $_ => $form->value($_) } @visible_field_names;
 

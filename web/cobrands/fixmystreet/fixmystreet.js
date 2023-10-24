@@ -743,6 +743,136 @@ $.extend(fixmystreet.set_up, {
     }
   },
 
+  category_filtering: function(subsequent) {
+    var category_row = document.getElementById('form_category_row');
+    var category_fieldset = document.getElementById('form_category_fieldset');
+    var category_filter = document.getElementById('category-filter');
+    if (!category_row || !category_fieldset || !category_filter) {
+        return;
+    }
+    /* Make copy of subcats for direct display if matching filter */
+    document.querySelectorAll('#form_subcategory_row fieldset').forEach(function(fieldset) {
+        var copy = fieldset.cloneNode(true);
+        var group_id = copy.id.replace('subcategory_', '');
+        copy.id = 'js-filter-' + copy.id;
+        copy.classList.remove('js-subcategory');
+        copy.classList.add('js-filter-subcategory');
+
+        copy.addEventListener('change', function(evt) {
+            // A subcategory has been picked in this copy. Update the actual entry
+            var target = evt.target;
+            var actual_id = target.id.replace('js-filter-', '');
+            var group_id = target.name.replace('js-filter-category\.', '');
+            var actual = document.getElementById(actual_id);
+
+            // Remove any other selected things
+            category_row.querySelectorAll("input").forEach(function(input) {
+                if (input !== target) {
+                    input.checked = false;
+                }
+            });
+
+            // Select the right category
+            category_fieldset.querySelector('#category_' + group_id).checked = true;
+            // Select the right subcategory
+            actual.checked = true;
+            // Mark the subcategory page as skippable
+            document.querySelector('.js-reporting-page--subcategory').classList.add('js-reporting-page--skip');
+            // Trigger a change event on the choice
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent('change', true, false);
+            actual.dispatchEvent(event);
+        });
+        // Update all the items to have unique IDs
+        copy.querySelectorAll('.govuk-radios__item').forEach(function(item) {
+            var input = item.querySelector('input');
+            var label = item.querySelector('label');
+            input.id = 'js-filter-' + input.id;
+            input.name = 'js-filter-' + input.name;
+            input.classList.remove('required');
+            label.htmlFor = 'js-filter-' + label.htmlFor;
+        });
+
+        // Insert the copy just after the category option these are the subcategories for
+        var category_div = category_fieldset.querySelector('#category_' + group_id).parentNode;
+        category_fieldset.insertBefore(copy, category_div.nextSibling);
+    });
+
+    /* If category picked, make sure to uncheck all copy-of-subcategories */
+    category_fieldset.addEventListener("change", function(e) {
+        if (e.target.name === 'category') {
+            document.querySelectorAll('.js-filter-subcategory input').forEach(function(input) {
+                input.checked = false;
+            });
+        }
+    });
+
+    /* Update when key lifted in search box */
+    var filter_keyup = function() {
+        var items = category_row.querySelectorAll(".govuk-radios__item");
+        var i;
+        if (this.value) {
+            var haystack = [];
+            items.forEach(function(item) {
+                item.querySelector('input').checked = false;
+                var txt = item.textContent;
+                haystack.push(txt);
+            });
+            var uf = new uFuzzy();
+            var results = uf.search(haystack, this.value, 1);
+            var subcats_to_show = {};
+            for (i = 0; i<items.length; i++) {
+                var input = items[i].querySelector('input'),
+                    match = !(results[0] && results[0].indexOf(i) < 0),
+                    in_matching_subcat = subcats_to_show[input.name];
+                items[i].classList.toggle('hidden-category-filter', !(in_matching_subcat || match));
+                if (match && input.name !== 'category') {
+                    // A subcategory, make sure category item is shown, disabled. We've already passed it in the loop
+                    var group_id = input.name.replace('js-filter-category.', '');
+                    var category_div = category_row.querySelector('#category_' + group_id).parentNode; // div
+                    category_div.classList.remove('hidden-category-filter');
+                    category_div.classList.add('js-filter-disabled');
+                }
+                // If this is a category with subcategories, show every item in the subcategory
+                if (input.dataset.subcategory) {
+                    items[i].classList.toggle('js-filter-disabled', match);
+                    if (match) {
+                        subcats_to_show['js-filter-category.' + input.dataset.subcategory] = true;
+                    }
+                }
+            }
+            // Show the fieldsets (their contents hidden/shown by the above)
+            category_row.querySelectorAll('fieldset').forEach(function(fieldset) {
+                fieldset.classList.remove('hidden-js');
+            });
+            /* If the filtering reduces the list to one, the web page becomes
+             * so short that the bottom of the page moves down, underneath the
+             * on-screen keyboard and your input box disappears. This feels like
+             * a bug in the web browser but I doubt it is going to be fixed any
+             * time soon. Introduce some padding so this does not happen. */
+            category_row.style.paddingBottom = window.innerHeight + 'px';
+        } else {
+            // Hide all the copied subcategories
+            document.querySelectorAll('.js-filter-subcategory').forEach(function(fieldset) {
+                fieldset.classList.add('hidden-js');
+            });
+            for (i = 0; i<items.length; i++) {
+                items[i].classList.remove('hidden-category-filter');
+                items[i].classList.remove('js-filter-disabled');
+            }
+            category_row.style.paddingBottom = null;
+        }
+    };
+
+    if (!subsequent) {
+        category_filter.addEventListener('keyup', filter_keyup);
+        category_filter.addEventListener('blur', function() {
+            category_row.style.paddingBottom = null;
+        });
+        filter_keyup.apply(category_filter);
+    }
+  },
+
   reapply_validation: function(rules) {
         if (rules === undefined) {
             return;
@@ -1683,6 +1813,7 @@ fixmystreet.fetch_reporting_data = function() {
         fixmystreet.reporting.topLevelPoke();
 
         fixmystreet.set_up.fancybox_images(); // In case e.g. top_message has pulled in a fancybox
+        fixmystreet.set_up.category_filtering(true);
 
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
