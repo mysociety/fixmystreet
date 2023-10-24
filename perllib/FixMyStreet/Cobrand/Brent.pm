@@ -1013,6 +1013,13 @@ sub waste_munge_report_data {
 
     my $address = $c->stash->{property}->{address};
     my $service = $c->stash->{services}{$id}{service_name};
+
+    my $cfg = $self->feature('echo');
+    my $service_id_missed = $cfg->{bulky_service_id_missed};
+    if (!$service && $id == $service_id_missed) {
+        $service = 'small items / clinical';
+    }
+
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
