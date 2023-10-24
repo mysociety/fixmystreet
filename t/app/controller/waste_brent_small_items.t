@@ -470,6 +470,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->category, 'Report missed collection';
         is $report->get_extra_field_value('service_id'), 787;
+        is $report->title, 'Report missed small items / clinical';
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             EventTypeId => 2964,
