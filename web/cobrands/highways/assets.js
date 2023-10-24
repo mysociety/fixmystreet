@@ -77,13 +77,9 @@ fixmystreet.assets.add(defaults, {
 
 function _update_category(input, he_flag) {
     var nh = input.val().match('NH');
-    if ((nh && he_flag) || (!nh && !he_flag) || input.data('nh')) {
-        input.parent().show();
-        return 0;
-    } else {
-        input.parent().hide();
-        return 1;
-    }
+    to_show = (nh && he_flag) || (!nh && !he_flag) || input.data('nh');
+    input.parent().toggleClass('hidden-highways-choice', !to_show);
+    return to_show ? 0 : 1;
 }
 
 function regenerate_category(he_flag) {
@@ -111,12 +107,13 @@ function regenerate_category(he_flag) {
             inputs.each(function() {
                 hidden += _update_category($(this), he_flag);
             });
-            if (hidden == inputs.length) {
-                $(this).parent().hide();
-            } else {
-                $(this).parent().show();
-            }
+            $(this).parent().toggleClass('hidden-highways-choice', hidden == inputs.length);
         }
+    });
+
+    // Also update any copies of subcategory inputs the category filter may have made
+    document.querySelectorAll('.js-filter-subcategory input').forEach(function(input) {
+        _update_category($(input), he_flag);
     });
 }
 

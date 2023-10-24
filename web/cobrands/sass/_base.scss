@@ -705,6 +705,16 @@ ul.error {
   visibility: visible;
 }
 
+.category-filter-box {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    margin: 1em 0;
+    label {
+        margin: 0;
+    }
+}
+
 .no-js .js-back {
   display: none;
 }
@@ -2655,6 +2665,11 @@ label .muted {
 
 // hide anything with this class if js is NOT working
 .no-js .hidden-nojs {
+  display: none !important;
+  visibility: hidden;
+}
+
+.hidden-highways-choice, .hidden-category-filter {
   display: none !important;
   visibility: hidden;
 }
