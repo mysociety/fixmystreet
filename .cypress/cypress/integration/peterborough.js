@@ -49,10 +49,12 @@ describe('new report form', function() {
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
+    //cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:hidden');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
+    cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:visible');
   });
 
@@ -102,10 +104,12 @@ describe('National site tests', function() {
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
+    cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:hidden');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
+    cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:visible');
   });
 

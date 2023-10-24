@@ -2,16 +2,9 @@ describe('Duplicate tests', function() {
     it('does not try and fetch duplicates which will not get shown', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
-      cy.request({
-        method: 'POST',
-        url: '/auth?r=/',
-        form: true,
-        body: { username: 'admin@example.org', password_sign_in: 'password' }
-      });
-      cy.visit('http://fixmystreet.localhost:3001/report/1');
-      cy.contains('Report another problem here').click();
+      cy.visit('http://fixmystreet.localhost:3001/report/new?latitude=52.563074&longitude=-1.991032');
       cy.wait('@report-ajax');
-      cy.pickCategory('Potholes');
+      cy.pickCategory('Graffiti');
       cy.nextPageReporting();
       cy.get('div.dropzone').should('be.visible');
     });
@@ -26,7 +19,7 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
-      cy.get('input[value=Skips]').click();
+      cy.get('.js-subcategory input[value=Skips]').click();
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
       cy.contains('Already been reported?');
@@ -44,7 +37,7 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
-      cy.get('input[value=Skips]').click();
+      cy.get('.js-subcategory input[value=Skips]').click();
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
       cy.contains('Already been reported?');
