@@ -373,6 +373,9 @@ html.lazyload .js-lazyload {
       background-position: left center;
       padding-left: 2.5rem;
       background-size: 2rem;
+      // Gets rid of styling for pages like contact
+      padding-top: 0;
+      border-top: none;
     }
 
     &.is__citizen {
@@ -392,6 +395,14 @@ html.lazyload .js-lazyload {
         background-image: url('/cobrands/fixmystreet.com/images/developers-icon.svg'), none;
       }
     }
+  }
+}
+
+// Gets rid of the homepage styling for pages like contact
+body.twothirdswidthpage .content {
+  footer {
+    background: none;
+    margin: 0;
   }
 }
 
