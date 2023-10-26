@@ -1035,6 +1035,22 @@ sub bulky_can_refund_collection {
     return $self->bulky_refund_amount($collection) > 0;
 }
 
+sub bulky_send_cancellation_confirmation {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-confirm-cancellation.txt',
+        {   to => [
+                [ $collection_report->user->email, $collection_report->name ]
+            ],
+
+            wasteworks_id => $collection_report->id,
+            refund_amount => $self->bulky_refund_amount($collection_report),
+            collection_date => $self->bulky_nice_collection_date($collection_report),
+        },
+    );
+}
+
 sub bulky_refund_collection {
     my ($self, $collection_report) = @_;
     my $c = $self->{c};

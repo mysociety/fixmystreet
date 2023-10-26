@@ -476,14 +476,30 @@ FixMyStreet::override_config {
                 $mech->content_contains('If you cancel you will be refunded £0.01.');
             };
 
+            $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+            $mech->content_contains('Your booking has been cancelled');
+            $mech->content_lacks('If you need to contact us about your application please use the application reference');
+
+            my $report_id = $report->id;
+            my @emails = $mech->get_email;
+
+            subtest 'Sends cancellation confirmation' => sub {
+                my $email = $emails[0];
+                is $email->header('Subject'),
+                    'Cancelled bulky goods collection ' . $report_id,
+                    'Correct subject';
+                is $email->header('To'),
+                    '"Bob Marge"' . ' <' . $report->user->email . '>',
+                    'Correct recipient';
+                my $text = $email->as_string;
+                like $text, qr/Bulky goods collection ${report_id}/, "Correct ID";
+                like $text, qr/scheduled for 01 July/, "Correct scheduled time";
+                like $text, qr/=C2=A30.01 will be refunded/, "Correct refund amount";
+            };
+
             subtest 'Sends refund email' => sub {
-                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
-                $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
-                $mech->content_contains('Your booking has been cancelled');
-                $mech->content_lacks('If you need to contact us about your application please use the application reference');
-
-                my $email = $mech->get_email;
-
+                my $email = $emails[1];
                 is $email->header('Subject'),
                     'Refund requested for cancelled bulky goods collection ' . $report->id,
                     'Correct subject';
@@ -507,7 +523,6 @@ FixMyStreet::override_config {
                     'Correct date format';
                 like $text, qr/CAN: 123/, 'Correct CAN';
                 like $text, qr/Auth Code: 112233/, 'Correct auth code';
-                my $report_id = $report->id;
                 like $text, qr/reference2: ${report_id}/, 'Correct reference2';
             };
         };
