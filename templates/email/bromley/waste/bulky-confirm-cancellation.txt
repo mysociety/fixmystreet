@@ -1,0 +1,13 @@
+[% USE pounds = format('%.2f'); ~%]
+Subject: Cancelled bulky goods collection [% wasteworks_id %]
+
+Bulky goods collection [% wasteworks_id %] scheduled for [%collection_date %] has been cancelled.
+
+[% IF refund_amount > 0 %]
+£[% pounds(refund_amount / 100) %] will be refunded.
+[% END %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
+
+[% signature %]

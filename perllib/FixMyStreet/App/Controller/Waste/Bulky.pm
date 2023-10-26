@@ -413,6 +413,8 @@ sub process_bulky_cancellation : Private {
         $collection_report->detail . " | Cancelled at user request", );
     $collection_report->update;
 
+    $c->cobrand->call_hook('bulky_send_cancellation_confirmation' => $collection_report);
+
     # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
     $c->cobrand->call_hook('unset_free_bulky_used');
 
