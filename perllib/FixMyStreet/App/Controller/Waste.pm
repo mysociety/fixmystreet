@@ -567,6 +567,18 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
 
+
+    # Some actions chained off /waste/property require user to be logged in.
+    # The redirect to /auth does not work if it follows the asynchronous
+    # property lookup, so force a redirect to /auth here.
+    if ((      $c->action eq 'waste/bulky/cancel'
+            || $c->action eq 'waste/bulky/cancel_small'
+        )
+        && !$c->user_exists
+    ) {
+        $c->detach('/auth/redirect');
+    }
+
     if ($id eq 'missing') {
         $c->stash->{template} = 'waste/missing.html';
         $c->detach;
