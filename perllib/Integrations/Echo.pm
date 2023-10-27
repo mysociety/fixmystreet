@@ -470,7 +470,7 @@ sub ReserveAvailableSlotsForEvent {
     $from = $parser->parse_datetime($from);
     $to = $parser->parse_datetime($to);
 
-    my $res = $self->call('ReserveAvailableSlotsForEvent',
+    my @req = ('ReserveAvailableSlotsForEvent',
         event => ixhash(
             Guid => $guid,
             EventObjects => { EventObject => ixhash(
@@ -485,7 +485,8 @@ sub ReserveAvailableSlotsForEvent {
             To => dt_to_hash($to),
         ),
     );
-
+    $self->log(\@req);
+    my $res = $self->call(@req);
     return [] unless ref $res eq 'HASH';
 
     $self->log($res);
