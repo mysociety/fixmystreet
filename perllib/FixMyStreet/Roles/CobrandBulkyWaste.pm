@@ -478,6 +478,8 @@ sub bulky_reminders {
 sub _bulky_send_reminder_email {
     my ($self, $report, $h, $params) = @_;
 
+    return unless $report->user->email;
+
     my $token = FixMyStreet::DB->resultset('Token')->new({
         scope => 'email_sign_in',
         data  => {

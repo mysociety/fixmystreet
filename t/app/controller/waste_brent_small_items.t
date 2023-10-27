@@ -1,6 +1,7 @@
 use utf8;
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use Test::Output;
 use FixMyStreet::TestMech;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
@@ -12,6 +13,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 
 my $user = $mech->create_user_ok('bob@example.org');
+my $user_phone = $mech->create_user_ok('0123456789');
 
 my $body = $mech->create_body_ok(2488, 'Brent Council', {}, { cobrand => 'brent' });
 $body->set_extra_metadata(
@@ -300,7 +302,21 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Small electricals: Other item under 30x30x30 cm \(A widget\)/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr#http://brent.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link (html mail)';
             $mech->clear_emails_ok;
-        }
+        };
+
+        subtest 'No reminder email if only phone' => sub {
+            $report->discard_changes;
+            $report->unset_extra_metadata('reminder_3');
+            $report->user($user_phone);
+            $report->update;
+            my $cobrand = $body->get_cobrand_handler;
+            stderr_is {
+                $cobrand->bulky_reminders;
+            } '', 'No warnings';
+            $mech->email_count_is(0);
+            $report->user($user);
+            $report->update;
+        };
     };
 
     my %error_messages = (
