@@ -1,4 +1,5 @@
 use Test::MockModule;
+use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
@@ -39,6 +40,7 @@ $contact->set_extra_fields({
     ],
 });
 $contact->update;
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned vehicles', email => 'Abavus-ABANDONED_17821_C');
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POT");
 $mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', email => "DRA");
 $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email => "car\@chiltern", send_method => 'Email');
@@ -80,6 +82,9 @@ FixMyStreet::override_config {
                 flytipping => 'flytipping@example.com',
                 flood => 'floods@example.org',
             }
+        },
+        geocoder_reverse => {
+            buckinghamshire => 'OSPlaces',
         },
         borough_email_addresses => {
             buckinghamshire => {
@@ -601,6 +606,36 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
         my $json = $mech->get_ok_json( "/around/nearby?filter_category=Dirty+signs&latitude=51.615559&longitude=-0.556903" );
         like $json->{reports_list}, qr/Test Dirty signs report/;
     };
+};
+
+subtest 'sending of updates and address' => sub {
+    FixMyStreet::Script::Reports::send(); # Clear out any left above
+    my ($report1) = $mech->create_problems_for_body(1, $body->id, 'Title update', {
+        cobrand => 'buckinghamshire',
+        category => 'Abandoned vehicles' });
+
+    my $geocode = Test::MockModule->new('FixMyStreet::Geocode::OSPlaces');
+    $geocode->mock(reverse_geocode => sub { { LPI => {
+        "ADDRESS" => "STUDIO 1, 29, BUCKINGHAM ROAD, LONDON, BRENT, NW10 4RP",
+        "SAO_TEXT" => "STUDIO 1",
+        "PAO_START_NUMBER" => "29",
+        "STREET_DESCRIPTION" => "BUCKINGHAM ROAD",
+        "TOWN_NAME" => "LONDON",
+        "ADMINISTRATIVE_AREA" => "BRENT",
+        "POSTCODE_LOCATOR" => "NW10 4RP",
+    } } });
+    FixMyStreet::Script::Reports::send();
+    my $req = Open311->test_req_used;
+    my $c = CGI::Simple->new($req->content);
+    is $c->param('attribute[closest_address]'), "Studio 1\r\n29 Buckingham Road\r\n\r\nLondon\r\nNW10 4RP";
+
+    my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Title update', {
+        cobrand => 'buckinghamshire',
+        category => 'Potholes' });
+    my $update1 = $mech->create_comment_for_problem($report1, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
+    my $update2 = $mech->create_comment_for_problem($report2, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
+    is $cobrand->should_skip_sending_update($update1), 0;
+    is $cobrand->should_skip_sending_update($update2), 1;
 };
 
 subtest 'body filter on dashboard' => sub {

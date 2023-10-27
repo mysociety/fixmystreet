@@ -173,6 +173,12 @@ around open311_extra_data_include => sub {
         }
     }
 
+    if ($contact->email =~ /^Abavus/ && $h->{closest_address}) {
+        push @$open311_only, {
+            name => 'closest_address', value => $h->{closest_address}->multiline(5) };
+        $h->{closest_address} = '';
+    }
+
     return $open311_only;
 };
 
@@ -276,6 +282,13 @@ sub email_list {
 sub open311_config_updates {
     my ($self, $params) = @_;
     $params->{mark_reopen} = 1;
+}
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
 }
 
 sub open311_contact_meta_override {
@@ -584,8 +597,17 @@ sub add_extra_area_types {
 
 sub is_two_tier { 1 }
 
+=head2 should_skip_sending_update
+
+Only send updates to one particular backend
+
+=cut
+
 sub should_skip_sending_update {
-    my ($self, $update ) = @_;
+    my ($self, $update) = @_;
+
+    my $contact = $update->problem->contact || return 1;
+    return 0 if $contact->email =~ /^Abavus/;
     return 1;
 }
 
