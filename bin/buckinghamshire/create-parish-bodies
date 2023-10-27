@@ -70,18 +70,19 @@ $db->txn_do(sub {
         my $mapped_name = delete $name_mappings->{$area->{name}};
         my $name = $mapped_name || "$area->{name} Parish Council";
 
-        my $body_rs = FixMyStreet::DB->resultset("Body")->search({
-            name => $name,
-        })->for_areas($id);
+        my $body_rs = FixMyStreet::DB->resultset("Body")->for_areas($id);
 
         if ($body_rs->count > 0) {
             print "Existing body found for $name, skipping...\n";
+            if ($body_rs->first->name ne $name) {
+                print "Name mismatch: $name vs " . $body_rs->first->name . "\n";
+            }
             next;
         }
 
         print "Creating body $name ($id)...";
 
-        my $body = $body_rs->create({ send_method => 'Noop', deleted => 1 });
+        my $body = $body_rs->create({ name => $name, send_method => 'Noop', deleted => 1 });
         $body->body_areas->find_or_create({ area_id => $id });
 
         print "done\n";
