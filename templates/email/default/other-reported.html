@@ -1,3 +1,6 @@
+[% IF report.category == 'Bulky collection' ~%]
+[% PROCESS 'waste/other-reported-bulky.html' ~%]
+[% ELSE ~%]
 [%
 
 email_summary = "Thanks for logging your report";
@@ -37,3 +40,4 @@ of report, so it will instead be sent to [% report.body %].</p>
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
+[% END %]

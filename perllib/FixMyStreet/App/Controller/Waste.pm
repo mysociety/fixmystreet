@@ -302,6 +302,13 @@ sub confirm_subscription : Private {
     $p->confirm;
     $c->forward( '/report/new/create_related_things', [ $p ] );
     $p->update;
+
+    if ($already_confirmed) {
+        $p->add_to_comments({
+            text => "Payment confirmed, reference $reference",
+            user => $p->user,
+        });
+    }
 }
 
 sub cancel_subscription : Private {
@@ -1533,7 +1540,7 @@ sub add_report : Private {
         $report->confirmed(undef);
         $report->update;
     } else {
-        if ($c->cobrand->call_hook('waste_never_confirm_reports')) {
+        if ($c->cobrand->call_hook('waste_auto_confirm_report', $report)) {
             $report->confirm;
             $report->update;
         }

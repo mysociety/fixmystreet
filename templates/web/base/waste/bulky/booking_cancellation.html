@@ -8,14 +8,16 @@
    [% IF entitled_to_refund %]
     <p>Your refund is on its way.</p>
    [% END %]
-    <p>If you need to contact us about your application please use the application reference:&nbsp;
-     [%~ IF cobrand.moniker == 'sutton' ~%]
-      LBS-
-     [%~ ELSIF cobrand.moniker == 'kingston' ~%]
-      RBK-
-     [%~ END ~%]
-      [%~ cancelling_booking.id %]
-    </p>
+    [% IF c.cobrand.moniker != 'bromley' ~%]
+     <p>If you need to contact us about your application please use the application reference:&nbsp;
+      [%~ IF cobrand.moniker == 'sutton' ~%]
+       LBS-
+      [%~ ELSIF cobrand.moniker == 'kingston' ~%]
+       RBK-
+      [%~ END ~%]
+       [%~ cancelling_booking.id %]
+     </p>
+    [% END %]
   </div>
 </div>
 
