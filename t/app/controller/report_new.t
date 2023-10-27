@@ -956,6 +956,20 @@ for my $test (
         user_title => 'MR',
     },
     {
+        desc  => 'PCSO title shown for bromley problem on main site',
+        host  => 'www.fixmystreet.com',
+        postcode => 'BR1 3UH',
+        fms_extra_title => 'PCSO',
+        extra => [
+            {
+                name        => 'fms_extra_title',
+                value       => 'PCSO',
+                description => 'FMS_EXTRA_TITLE',
+            },
+        ],
+        user_title => 'PCSO',
+    },
+    {
         desc =>
           'title, first and last name shown for bromley problem on cobrand',
         host       => 'bromley.fixmystreet.com',
