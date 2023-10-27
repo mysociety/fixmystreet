@@ -106,6 +106,11 @@ function regenerate_category(he_flag) {
             $(this).parent().toggleClass('hidden-highways-choice', hidden == inputs.length);
         }
     });
+
+    // Also update any copies of subcategory inputs the category filter may have made
+    document.querySelectorAll('.js-filter-subcategory input').forEach(function(input) {
+        _update_category($(input), he_flag);
+    });
 }
 
 function he_selected() {

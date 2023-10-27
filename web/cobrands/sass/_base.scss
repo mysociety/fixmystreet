@@ -2655,7 +2655,7 @@ label .muted {
 }
 
 .hidden-highways-choice, .hidden-category-filter {
-  display: none;
+  display: none !important;
   visibility: hidden;
 }
 
