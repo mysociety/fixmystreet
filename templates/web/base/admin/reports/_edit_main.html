@@ -30,6 +30,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</small>
 </li>
 
+[% TRY %][% INCLUDE 'land_type.html' admin_page = 1 %][% CATCH file %][% END %]
+
 <li>[% loc('Bodies') %]:
   [% IF problem.bodies_str %]
     [% FOREACH body IN problem.bodies.values %]

@@ -22,6 +22,7 @@ use DateTime;
 use Integrations::Bartec;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
+use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use FixMyStreet::App::Form::Waste::Request::Peterborough;
 use Utils;
@@ -81,6 +82,27 @@ sub get_geocoder { 'OSM' }
 =cut
 
 sub contact_extra_fields { [ 'display_name' ] }
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+
+    my $c = $self->{c};
+    my $is_staff
+        = $c
+        && $c->user_exists
+        && (
+            ( $c->user->from_body && $c->user->from_body->name eq council_name() )
+            || $c->user->is_superuser
+        );
+
+    if ($is_staff) {
+        my $land_type = $self->land_type_for_problem($p);
+        return 'blue'   if $land_type eq 'public';
+        return 'orange' if $land_type eq 'private';
+    }
+
+    return 'yellow';
+}
 
 sub service_name_override {
     my $self = shift;
@@ -201,74 +223,110 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params, $contact);
 };
 
-sub get_body_sender {
-    my ($self, $body, $problem) = @_;
-    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+# Looks up & sets land_type in extra_metadata if not previously set, or
+# lat or lon have been changed. For flytipping & graffiti only.
+sub land_type_for_problem {
+    my ( $self, $problem ) = @_;
 
-    my ($x, $y) = Utils::convert_latlon_to_en(
-        $problem->latitude,
-        $problem->longitude,
-        'G'
+    my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
+    return '' unless $flytipping_cats{ $problem->category };
+
+    my %dirty_columns = $problem->get_dirty_columns;
+    my $land_type;
+    $land_type = $problem->get_extra_metadata('land_type')
+        if !exists $dirty_columns{longitude}
+        && !exists $dirty_columns{latitude};
+
+    return $land_type if defined $land_type;
+
+    my ( $x, $y )
+        = Utils::convert_latlon_to_en( $problem->latitude,
+        $problem->longitude, 'G' );
+
+    # Council land
+    my $features = $self->_fetch_features(
+        {   type   => 'arcgis',
+            url    => 'https://peterborough.assets/4/query?',
+            buffer => 1,
+        },
+        $x, $y,
     );
-    if ( $flytipping_cats{ $problem->category } ) {
-        # look for land belonging to the council
-        my $features = $self->_fetch_features(
-            {
-                type => 'arcgis',
-                url => 'https://peterborough.assets/4/query?',
+
+    $land_type = 'public' if $features && @$features;
+
+    unless ($land_type) {
+        # Leased land - count as 'private' (i.e. not dealt with in Bartec)
+        $features = $self->_fetch_features(
+            {   type   => 'arcgis',
+                url    => 'https://peterborough.assets/3/query?',
                 buffer => 1,
             },
-            $x,
-            $y,
+            $x, $y,
         );
 
-        # if not then check if it's land leased out or on a road.
-        unless ( $features && scalar @$features ) {
-            my $leased_features = $self->_fetch_features(
-                {
-                    type => 'arcgis',
-                    url => 'https://peterborough.assets/3/query?',
-                    buffer => 1,
-                },
-                $x,
-                $y,
-            );
-
-            # some PCC land is leased out and not dealt with in bartec
-            $features = [] if $leased_features && scalar @$leased_features;
-
-            # if it's not council, or leased out land check if it's on an
-            # adopted road
-            unless ( $leased_features && scalar @$leased_features ) {
-                my $road_features = $self->_fetch_features(
-                    {
-                        buffer => 1, # metres
-                        type => 'arcgis',
-                        url => 'https://peterborough.assets/7/query?',
-                    },
-                    $x,
-                    $y,
-                );
-
-                $features = $road_features if $road_features && scalar @$road_features;
-            }
-        }
-
-        # is on land that is handled by bartec so send
-        if ( $features && scalar @$features ) {
-            return $self->SUPER::get_body_sender($body, $problem);
-        }
-
-        # neither of those so just send email for records
-        my $emails = $self->feature('open311_email');
-        if ( $emails->{flytipping} ) {
-            my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
-            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
-            return { method => 'Email', contact => $contact};
-        }
+        $land_type = 'private' if $features && @$features;
     }
 
-    return $self->SUPER::get_body_sender($body, $problem);
+    unless ($land_type) {
+        # Adopted road - count as 'public'
+        $features = $self->_fetch_features(
+            {   type   => 'arcgis',
+                url    => 'https://peterborough.assets/7/query?',
+                buffer => 1,
+            },
+            $x, $y,
+        );
+
+        $land_type = 'public' if $features && @$features;
+    }
+
+    $land_type = 'private' unless $land_type;
+
+    # We want to save the land type on extra_metadata, but need to make sure
+    # we don't save other fields that may have been changed on the original
+    # problem outside this method. So we fetch a fresh version of the problem
+    # from the DB and update the extra_metadata on that.
+    my $problem_clean = FixMyStreet::DB->resultset('Problem')
+        ->find( { id => $problem->id } );
+
+    if ( $problem_clean ) {
+        $problem_clean->set_extra_metadata( land_type => $land_type );
+        $problem_clean->update;
+    }
+    else {
+        # Ideally, the caller should provide a problem that already
+        # exists in the DB. But in case it doesn't, just set
+        # extra_metadata on the problem object. In this case, we leave it to
+        # the caller to save to the DB.
+        $problem->set_extra_metadata( land_type => $land_type );
+    }
+
+    return $land_type;
+}
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    my $land_type = $self->land_type_for_problem($problem);
+
+    my $emails = $self->feature('open311_email');
+    if ( $land_type eq 'private' && $emails->{flytipping} ) {
+        # Just send email for records
+        $problem->set_extra_metadata(
+            'flytipping_email' => $emails->{flytipping} );
+
+        # P'bro do not want to be notified of smaller incident sizes. They
+        # also do not want email for reports raised by staff.
+        return { method => 'Blackhole' }
+            if _is_small_flytipping_incident($problem)
+            || _is_raised_by_staff($problem);
+
+        my $contact
+            = $self->SUPER::get_body_sender( $body, $problem )->{contact};
+        return { method => 'Email', contact => $contact };
+    }
+
+    return $self->SUPER::get_body_sender( $body, $problem );
 }
 
 sub munge_sendreport_params {
@@ -324,10 +382,22 @@ sub open311_post_send {
     }
 
     # Check Open311 was successful
-    my $send_email = $row->external_id || _witnessed_general_flytipping($row);
+    my $witnessed_flytipping = _witnessed_general_flytipping($row);
+    my $send_email = $row->external_id || $witnessed_flytipping;
     # Unset here because check above used it
     $row->unset_extra_metadata('pcc_witness');
     return unless $send_email;
+
+    # P'bro do not want to be emailed about graffiti on public land
+    return if $row->category =~ /graffiti/i;
+
+    # P'bro do not want to be emailed about smaller incident sizes or staff
+    # reports - with the exception of witnessed flytipping, as this won't
+    # have been sent by Open311
+    return
+        if !$witnessed_flytipping
+        && ( _is_small_flytipping_incident($row)
+        || _is_raised_by_staff($row) );
 
     my $emails = $self->feature('open311_email');
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
@@ -421,7 +491,6 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
-
 sub open311_filter_contacts_for_deletion {
     my ($self, $contacts) = @_;
 
@@ -436,6 +505,22 @@ sub _flytipping_categories { [
     "Offensive graffiti",
     "Offensive graffiti - STAFF ONLY",
 ] }
+
+sub _is_small_flytipping_incident {
+    my $problem = shift;
+
+    my $single_black_bag = qr/S00/;
+    my $single_item      = qr/S01/;
+
+    return ( $problem->get_extra_field_value('Incident_Size') // '' )
+        =~ /$single_black_bag|$single_item/;
+}
+
+sub _is_raised_by_staff {
+    my $problem = shift;
+
+    return $problem->user && $problem->user->body eq council_name();
+}
 
 # We can resend reports upon category change
 sub category_change_force_resend {

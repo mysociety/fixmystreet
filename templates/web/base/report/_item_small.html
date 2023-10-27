@@ -35,6 +35,7 @@
     [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
     [% END %]
 [% END %]
+[% TRY %][% INCLUDE 'land_type.html' list_page = 1 %][% CATCH file %][% END %]
 
 [% IF page != '' AND c.req.url.path != '/my/planned' %]
     <div class='assigned-to'>
