@@ -180,6 +180,11 @@ FixMyStreet::override_config $test->{config}, sub {
 
 $resolver->mock('address', sub { $test->{email} });
 
+# Bodies need to exist for Brent::Cobrand::munge_cobrand_asset_categories searching ids
+$mech->create_body_ok(2505, 'Camden Borough Council', {},{cobrand => 'camden'});
+$mech->create_body_ok(2489, 'Barnet Borough Council');
+$mech->create_body_ok(2487, 'Harrow Borough Council');
+
 for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
     for my $page ( 'my', 'report', 'update' ) {
         next if $page eq 'update' && !$test->{update};

@@ -15,7 +15,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
-sub council_area_id { return 2505; }
+sub council_area_id { return [2505, 2488]; }
 sub council_area { return 'Camden'; }
 sub council_name { return 'Camden Council'; }
 sub council_url { return 'camden'; }
@@ -131,6 +131,103 @@ sub user_from_oidc {
     my $email = $payload->{preferred_username};
 
     return ($name, $email);
+}
+
+=head2 check_report_is_on_cobrand_asset
+
+If the location is covered by an area of differing responsibility (e.g. Brent
+in Camden, or Camden in Brent), return true (either 1 if an area name is
+provided, or the name of the area if not). Identical to function in Brent.pm
+
+=cut
+
+sub check_report_is_on_cobrand_asset {
+    my ($self, $council_area) = shift @_;
+
+    my $lat = $self->{c}->stash->{latitude};
+    my $lon = $self->{c}->stash->{longitude};
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+
+    my $cfg = {
+        url => "https://$host/mapserver/brent",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "BrentDiffs",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        outputformat => 'GML3',
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y, 1);
+
+    if ($$features[0]) {
+        if ($council_area) {
+            if ($$features[0]->{'ms:BrentDiffs'}->{'ms:name'} eq $council_area) {
+                return 1;
+            }
+        } else {
+            return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
+        }
+    }
+}
+
+=head2 munge_overlapping_asset_bodies
+
+Alters the list of available bodies for the location,
+depending on calculated responsibility. Here, we remove the
+Brent body if we're inside Camden and it's not a Brent area.
+
+=cut
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    # in_area will be true if the point is within the administrative area of Camden
+    my $in_area = scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset;
+    if ($in_area && !$cobrand) {
+        # Within Camden, and Camden's responsibility
+        %$bodies = map { $_->id => $_ } grep {
+            $_->name ne 'Brent Council'
+            } values %$bodies;
+    }
+};
+
+=head2 munge_cobrand_asset_categories
+
+If we're in an overlapping area, we want to take the street categories
+of one body, and the non-street categories of the other.
+
+=cut
+
+sub munge_cobrand_asset_categories {
+    my ($self, $contacts) = @_;
+
+    # in_area will be true if the point is within the administrative area of Camden
+    my $in_area = scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset || '';
+
+    my $brent = FixMyStreet::Cobrand::Brent->new();
+    my %non_street = map { $_ => 1 } @{ $brent->_camden_non_street } ;
+    my $brent_body = $brent->body;
+    my $camden_body = $self->body;
+
+    if ($in_area && $cobrand eq 'Brent') {
+        # Within Camden, but Brent's responsibility
+        # Remove the non-street contacts of Brent
+        @$contacts = grep { !($_->email !~ /^Symology/ && $_->body_id == $brent_body->id) } @$contacts
+            if $brent_body;
+        # Remove the street contacts of Camden
+        @$contacts = grep { !(!$non_street{$_->category} && $_->body_id == $camden_body->id) } @$contacts;
+    } elsif (!$in_area && $cobrand eq 'Camden') {
+        # Outside Camden, but Camden's responsibility
+        # Remove the street contacts of Brent
+        @$contacts = grep { !($_->email =~ /^Symology/ && $_->body_id == $brent_body->id) } @$contacts
+            if $brent_body;
+        # Remove the non-street contacts of Camden
+        @$contacts = grep { !($non_street{$_->category} && $_->body_id == $camden_body->id) } @$contacts;
+    }
 }
 
 =head2 dashboard_export_problems_add_columns
