@@ -516,6 +516,7 @@ FixMyStreet::override_config {
                 like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";
                 # =C2=A3 is the quoted printable for '£'.
                 like $text, qr/Payment Amount: =C2=A35.01/, "Correct payment amount";
+                like $text, qr/Amount To Refund: =C2=A30.01/, "Correct payment amount";
                 like $text, qr/Capita SCP Response: 12345/,
                     'Correct SCP response';
                 # XXX Not picking up on mocked time

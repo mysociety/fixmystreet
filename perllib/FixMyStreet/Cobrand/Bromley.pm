@@ -1062,6 +1062,7 @@ sub bulky_refund_collection {
 
             wasteworks_id => $collection_report->id,
             payment_amount => $collection_report->get_extra_field_value('payment'),
+            refund_amount => $self->bulky_refund_amount($collection_report),
             payment_method =>
                 $collection_report->get_extra_field_value('payment_method'),
             payment_code =>
