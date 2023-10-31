@@ -251,6 +251,13 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    subtest 'Fetching property without services give Sutton specific error' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { [] });
+        $mech->get_ok('/waste/12345/');
+        $mech->content_contains('Oh no! Something has gone wrong');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
     subtest 'Okay fetching property with two of the same task type' => sub {
         my @dupe = @$bin_data;
         push @dupe, dclone($dupe[0]);
