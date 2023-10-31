@@ -7,6 +7,8 @@ FixMyStreet::Cobrand::Buckinghamshire - code specific to the Buckinghamshire cob
 We integrate with Buckinghamshire's Alloy back end for highways reporting and
 Evo for red claims, also send emails for some categories, and send
 reports to Buckinghamshire parishes based on category/speed limit.
+Emails for parish bodies can be found on this link if they are found to have changed:
+ https://buckinghamshire.moderngov.co.uk/mgParishCouncilDetails.aspx?bcr=1
 
 =head1 DESCRIPTION
 
