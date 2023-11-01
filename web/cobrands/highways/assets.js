@@ -89,7 +89,11 @@ function _update_category(input, he_flag) {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    $('.js-reporting-page--next').prop('disabled', false);
+    if (he_flag) {
+        // We do not want to reenable the form if it has been disabled for
+        // a non-NH category
+        $('.js-reporting-page--next').prop('disabled', false);
+    }
 
     // If we have come from NH site, the server has returned all the categories to show
     if (window.location.href.indexOf('&he_referral=1') != -1) {
