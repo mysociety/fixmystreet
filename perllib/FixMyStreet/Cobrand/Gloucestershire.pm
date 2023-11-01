@@ -71,6 +71,12 @@ sub privacy_policy_url {
 
 sub send_questionnaires { 0 }
 
+=item * Don't show reports before the go-live date, 4th October 2023
+
+=cut
+
+sub cut_off_date { '2023-10-04' }
+
 =item * Add display_name as an extra contact field
 
 =cut
