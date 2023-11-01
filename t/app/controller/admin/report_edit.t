@@ -10,8 +10,10 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
 my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', from_body => $oxfordshire);
-my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
+my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Yellow lines', email => 'yellow@example.com', extra => { group => 'Road' } );
+
 
 my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
 $mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email => 'graffiti@example.net' );
@@ -58,7 +60,7 @@ my $log_entries = FixMyStreet::DB->resultset('AdminLog')->search(
         object_type => 'problem',
         object_id   => $report->id
     },
-    { 
+    {
         order_by => { -desc => 'id' },
     }
 );
@@ -455,7 +457,8 @@ subtest 'change report category' => sub {
         whensent => \'current_timestamp',
     });
     $mech->get_ok("/admin/report_edit/" . $ox_report->id);
-
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_lacks('<option value="group-Road"');
     $mech->submit_form_ok( { with_fields => { category => 'Traffic lights' } }, 'form_submitted' );
     $ox_report->discard_changes;
     is $ox_report->category, 'Traffic lights';

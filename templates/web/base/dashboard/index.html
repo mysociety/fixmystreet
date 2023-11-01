@@ -56,7 +56,7 @@
             [% SET category = cat.category | html %]
                 <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category %]>[% cat.category_display | html %]</option>
             [% END %]
-            [%~ INCLUDE 'report/new/_category_select.html' ~%]
+            [%~ INCLUDE 'report/new/_category_select.html' include_group_option=1 ~%]
         </select>
     </p>
 

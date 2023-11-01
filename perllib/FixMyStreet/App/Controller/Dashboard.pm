@@ -126,10 +126,24 @@ sub index : Path : Args(0) {
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
+        my %group_names = map { $_->{name} => $_->{categories} } @{$c->stash->{category_groups}};
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = [ $c->get_param_list('category') ];
+        my @remove_from_display;
+
+        foreach (@{$c->stash->{category}}) {
+            next unless /^group-(.*)/;
+            for my $contact (@{$group_names{$1}}) {
+                push @{ $c->stash->{category} }, $contact->category;
+                push @remove_from_display, $contact->category;
+            }
+        }
+
         my %display_categories = map { $_ => 1 } @{$c->stash->{category}};
+        delete $display_categories{$_} for (@remove_from_display);
         $c->stash->{display_categories} = \%display_categories;
+
+        @{$c->stash->{category}} = grep { $_ !~ /^group-/} @{$c->stash->{category}};
 
         $c->stash->{ward} = [ $c->get_param_list('ward') ];
 
@@ -190,7 +204,7 @@ sub construct_rs_filter : Private {
 
     my $reporting = FixMyStreet::Reporting->new(
         type => $updates ? 'updates' : 'problems',
-        category => $c->stash->{category},
+        category => $c->stash->{category} || [],
         state => $c->stash->{q_state},
         wards => $c->stash->{ward},
         body => $c->stash->{body} || undef,
