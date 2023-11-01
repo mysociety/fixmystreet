@@ -51,9 +51,10 @@
 
     <p>
         <label for="category">[% loc('Category:') %]</label>
-        <select class="form-control" name="category" id="category"><option value=''>[% loc('All') %]</option>
+        <select class="form-control js-multiple" multiple name="category" id="category">
             [% BLOCK category_option %]
-                <option value='[% cat.category | html %]'[% ' selected' IF category == cat.category %]>[% cat.category_display | html %]</option>
+            [% SET category = cat.category | html %]
+                <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category %]>[% cat.category_display | html %]</option>
             [% END %]
             [%~ INCLUDE 'report/new/_category_select.html' ~%]
         </select>

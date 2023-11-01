@@ -159,7 +159,7 @@ FixMyStreet::override_config {
 
     subtest 'The correct categories and totals shown by default' => sub {
         $mech->get_ok("/dashboard");
-        my $expected_cats = [ 'All', 'Litter', 'Other', 'Traffic lights & bells', 'Potholes' ];
+        my $expected_cats = [ 'Litter', 'Other', 'Traffic lights & bells', 'Potholes' ];
         my $res = $categories->scrape( $mech->content );
         $mech->content_contains('<optgroup label="Road">');
         is_deeply( $res->{cats}, $expected_cats, 'correct list of categories' );
@@ -179,6 +179,8 @@ FixMyStreet::override_config {
         my $end = DateTime->now->subtract(months => 1)->strftime('%Y-%m-%d');
         $mech->submit_form_ok({ with_fields => { state => '', start_date => $start, end_date => $end } });
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 3, 0, 0, 3);
+        $mech->get_ok("/dashboard?category=Litter&category=Potholes");
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 3, 0, 4, 7);
     };
 
     subtest 'test grouping' => sub {
@@ -196,6 +198,16 @@ FixMyStreet::override_config {
         test_table($mech->content, 0, 0, 4, 0, 4);
         $mech->get_ok("/dashboard?export=2&group_by=category&role=" . $role->id);
         $mech->content_contains('role-' . $role->id, "File link created with role");
+    };
+
+    subtest 'csv for multiple categories' => sub {
+        $mech->get_ok("/dashboard?category=Litter&category=Potholes&export=2");
+        $mech->content_contains('www.example.org-body-' . $body->id . '-category-Litter,Potholes-start_date-2014-01-02.csv');
+        $mech->get_ok("/dashboard?category=Litter&category=Potholes&category=Traffic+lights+&amp;+bells&export=2");
+        $mech->content_contains('www.example.org-body-' . $body->id . '-category-multiple-categories-start_date-2014-01-02.csv');
+        $mech->get_ok("/dashboard?category=Litter&category=Potholes&export=1");
+        my @rows = $mech->content_as_csv;
+        is scalar @rows, 8, '1 (header) + 7 (reports) found = 8 lines';
     };
 
     subtest 'export as csv' => sub {

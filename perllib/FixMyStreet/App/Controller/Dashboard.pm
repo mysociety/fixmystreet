@@ -127,7 +127,10 @@ sub index : Path : Args(0) {
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
         # See if we've had anything from the body dropdowns
-        $c->stash->{category} = $c->get_param('category');
+        $c->stash->{category} = [ $c->get_param_list('category') ];
+        my %display_categories = map { $_ => 1 } @{$c->stash->{category}};
+        $c->stash->{display_categories} = \%display_categories;
+
         $c->stash->{ward} = [ $c->get_param_list('ward') ];
 
         if ($c->user_exists) {

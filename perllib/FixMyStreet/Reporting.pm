@@ -18,7 +18,7 @@ has on_updates => ( is => 'lazy', default => sub { $_[0]->type eq 'updates' } );
 
 has body => ( is => 'ro', isa => Maybe[InstanceOf['FixMyStreet::DB::Result::Body']] );
 has wards => ( is => 'ro', isa => ArrayRef[Int], default => sub { [] } );
-has category => ( is => 'ro', isa => Maybe[Str] );
+has category => ( is => 'ro', isa => Maybe[ArrayRef[Maybe[Str]]], default => sub { [] } );
 has state => ( is => 'ro', isa => Maybe[Str] );
 has start_date => ( is => 'ro',
     isa => Str,
@@ -90,12 +90,14 @@ has csv_extra_data => ( is => 'rw', isa => CodeRef );
 has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
     my $self = shift;
     my %where = (
-        category => $self->category,
         state => $self->state,
         ward => join(',', @{$self->wards}),
         start_date => $self->start_date,
         end_date => $self->end_date,
     );
+    if ($self->category) {
+        $where{category} = @{$self->category} < 3 ? join(',', @{$self->category}) : 'multiple-categories';
+    }
     $where{body} = $self->body->id if $self->body;
     $where{role} = $self->role_id if $self->role_id;
     my $host = URI->new($self->cobrand->base_url)->host;
@@ -121,7 +123,7 @@ sub construct_rs_filter {
     $where{areas} = [ map { { 'like', "%,$_,%" } } @{$self->wards} ]
         if @{$self->wards};
     $where{"$table_name.category"} = $self->category
-        if $self->category;
+        if $self->category && @{$self->category};
 
     my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
     if ( $self->state && FixMyStreet::DB::Result::Problem->fixed_states->{$self->state} ) { # Probably fixed - council
@@ -375,9 +377,10 @@ sub kick_off_process {
     my $cmd = FixMyStreet->path_to('bin/csv-export');
     $cmd .= ' --cobrand ' . $self->cobrand->moniker;
     $cmd .= " --out \Q$out\E";
-    foreach (qw(type category state start_date end_date)) {
+    foreach (qw(type state start_date end_date)) {
         $cmd .= " --$_ " . quotemeta($self->$_) if $self->$_;
     }
+    $cmd .= " --category " . join('::', map { quotemeta } @{$self->category}) if ($self->category && @{$self->category});
     foreach (qw(body user)) {
         $cmd .= " --$_ " . $self->$_->id if $self->$_;
     }
@@ -490,7 +493,7 @@ sub filter_premade_csv {
         }
 
         my $category = $row->{Subcategory} || $row->{Category};
-        next if $self->category && $category ne $self->category;
+        next if ($self->category && @{$self->category}) && !grep { /$category/ } @{$self->category};
 
         if ( $self->state && $fixed_states->{$self->state} ) { # Probably fixed - council
             next unless $fixed_states->{$row->{$state_column}};
