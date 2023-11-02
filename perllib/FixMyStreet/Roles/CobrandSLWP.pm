@@ -476,6 +476,7 @@ sub bin_services_for_address {
     my @to_fetch;
     my %schedules;
     my @task_refs;
+    $property->{has_no_services} = scalar @$result == 0;
     foreach (@$result) {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
@@ -1204,6 +1205,7 @@ sub _bulky_refund_cutoff_date { }
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
 
+    return if $property->{has_no_services};
     my $cfg = $self->feature('echo');
 
     my $type = $property->{type_id} || 0;
