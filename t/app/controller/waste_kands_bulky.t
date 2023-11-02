@@ -81,7 +81,7 @@ FixMyStreet::override_config {
     );
 
     my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
     $echo->mock( 'CancelReservedSlotsForEvent', sub {
@@ -162,6 +162,35 @@ FixMyStreet::override_config {
         });
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Bulky Waste');
+    };
+
+    subtest 'Ineligible property as no services (new build)' => sub {
+    $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
+    $echo->mock(
+        'GetPointAddress',
+            sub {
+                return {
+                    PointAddressType => {
+                        Id   => 1,
+                        Name => 'Detached',
+                    },
+
+                    Id        => '12345',
+                    SharedRef => { Value => { anyType => '1000000002' } },
+                    PointType => 'PointAddress',
+                    Coordinates => {
+                        GeoPoint =>
+                            { Latitude => 51.408688, Longitude => -0.304465 }
+                    },
+                    Description => '2 Example Street, Kingston, KT1 1AA',
+                };
+            }
+        );
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
+        $mech->submit_form_ok( { with_fields => { address => '12345' } } );
+        $mech->content_lacks('Bulky Waste');
+        $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     };
 
     subtest 'Eligible property' => sub {
@@ -758,7 +787,7 @@ FixMyStreet::override_config {
     );
 
     my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock( 'GetServiceUnitsForObject', sub { [] } );
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
 
