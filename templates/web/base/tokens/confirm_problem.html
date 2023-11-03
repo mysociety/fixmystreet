@@ -4,7 +4,7 @@
 
   <h1><a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">[% report.title %]</a></h1>
 
-  [% IF c.cobrand.is_council %]
+  [% IF c.cobrand.is_council || c.cobrand.moniker == 'thamesmead'%]
     [% IF c.cobrand.owns_problem( report ) %]
       [% TRY %]
         [% INCLUDE 'tokens/_confirm_problem_council_id.html' %]
