@@ -327,8 +327,6 @@ sub bin_services_for_address {
     my $property = shift;
 
     my %shared = (
-            23 => 'Food waste bin (kitchen)',
-            24 => 'Food waste bin (outdoor)',
             6 => 'Refuse Red Stripe Bag',
             18 => 'Recycling Blue Stripe Bag',
             21 => 'Paper & Card Reusable Bag',
@@ -351,14 +349,16 @@ sub bin_services_for_address {
     if ($self->moniker eq 'sutton') {
         $self->{c}->stash->{containers} = {
             %shared,
-            1 => 'Brown rubbish bin (140L)',
-            2 => 'Brown rubbish bin (240L)',
-            3 => 'Brown rubbish bin (360L)',
+            1 => 'Brown Rubbish Wheelie Bin (140L)',
+            2 => 'Brown Rubbish Wheelie Bin (240L)',
+            3 => 'Brown Rubbish Wheelie Bin (360L)',
             35 => 'Rubbish bin (180L)',
-            16 => 'Green recycling box',
-            19 => 'Green paper and cardboard bin',
-            26 => 'Garden waste bin',
-            27 => 'Garden waste bin',
+            16 => 'Mixed Recycling Green Box (55L)',
+            19 => 'Paper and Cardboard Green Wheelie Bin (240L)',
+            23 => 'Small Kitchen Food Waste Caddy (7L)',
+            24 => 'Large Outdoor Food Waste Caddy (23L)',
+            26 => 'Garden Waste Wheelie Bin (240L)',
+            27 => 'Garden Waste Wheelie Bin (140L)',
             28 => 'Garden waste sacks',
         };
     } elsif ($self->moniker eq 'kingston') {
@@ -373,6 +373,8 @@ sub bin_services_for_address {
             16 => 'Green recycling box (55L)',
             19 => 'Blue lid paper and cardboard bin (240L)',
             20 => 'Blue lid paper and cardboard bin (360L)',
+            23 => 'Food waste bin (kitchen)',
+            24 => 'Food waste bin (outdoor)',
             36 => 'Blue lid paper and cardboard bin (180L)',
             26 => 'Garden waste bin (240L)',
             27 => 'Garden waste bin (140L)',
