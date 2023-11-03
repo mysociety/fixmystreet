@@ -227,7 +227,7 @@ FixMyStreet::override_config {
         $user->update({ from_body => $body, is_superuser => 1, name => 'Staff User' });
         $mech->get_ok('/admin/report_edit/' . $report->id);
         $mech->content_contains('View report on site');
-        $mech->content_lacks('Resend report');
+        $mech->content_lacks('value="Resend report"');
     };
 
     subtest "resending of reports by changing category" => sub {

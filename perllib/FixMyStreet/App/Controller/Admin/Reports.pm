@@ -292,6 +292,15 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         $c->stash->{status_message} = _('That problem has been marked as sent.');
         $c->forward( '/admin/log_edit', [ $id, 'problem', 'marked sent' ] );
     }
+    elsif ( $c->get_param('resend_report_logged_email') ) {
+        $c->forward('/auth/check_csrf_token');
+        $problem->send_logged_email({
+            report => $problem,
+            cobrand => $c->cobrand,
+        }, 0, $c->cobrand);
+        $c->forward( '/admin/log_edit', [ $id, 'problem', 'resent report logged email' ] );
+        $c->stash->{status_message} = _('Report logged email has been resent');
+    }
     elsif ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
 

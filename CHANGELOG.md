@@ -24,6 +24,7 @@
         - Added support for 'multivaluelist' extra category questions using checkboxes.
         - Added support for 'datetime' extra category questions using a datetime picker.
         - Added option to make a phone number required for a category.
+        - Added button on report admin page to resend the report logged email, where relevant.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456

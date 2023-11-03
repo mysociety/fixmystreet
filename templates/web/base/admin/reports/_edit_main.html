@@ -70,6 +70,11 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li class="sm truncate_height">[% loc('Reason:') %] [% problem.send_fail_reason | html %]</li>
 [% END %]
 <li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
+[% IF (c.cobrand.report_sent_confirmation_email(problem) || problem.get_extra_metadata('contributed_as') == 'another_user') && !c.cobrand.suppress_report_sent_email(problem) %]
+<li class="sm">
+  <input type="submit" class="btn" name="resend_report_logged_email" value="[% loc('Resend report logged email') %]">
+</li>
+[% END %]
 <li>[% loc('Alerts:') %] [% alert_count %]</li>
 <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]

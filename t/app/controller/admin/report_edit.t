@@ -15,8 +15,20 @@ $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic ligh
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Yellow lines', email => 'yellow@example.com', extra => { group => 'Road' } );
 
 
+my $camden = $mech->create_body_ok(2505, 'Camden Council');
+my $camdencontact = $mech->create_contact_ok( body_id => $camden->id, category => 'Potholes', email => 'camden-pothole@example.com' );
+
 my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
 $mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email => 'graffiti@example.net' );
+
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, {
+    cobrand => 'bromley',
+    wasteworks_config => { request_timeframe => "two weeks" }
+});
+my $child_cat = $mech->create_contact_ok( body_id => $bromley->id, category => 'Request new container', email => 'container@example.com' );
+$child_cat->set_extra_metadata( type => 'waste', group => 'Waste' );
+$child_cat->set_extra_fields({ code => 'notes', datatype => 'text', order => 1, variable => 'true', description => 'Notes' });
+$child_cat->update;
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -662,6 +674,80 @@ subtest "Test display of contributed_as data" => sub {
     $mech->get_ok("/admin/report_edit/$report_id");
     $mech->content_like(qr!Created By</strong>: <a[^>]*>Body User \(@{[ $user3->email ]}!);
     $mech->content_contains('Created Body</strong>: Oxfordshire County Council');
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['camden', 'oxfordshire'],
+}, sub {
+    subtest "Resend report logged email" => sub {
+        $mech->clear_emails_ok;
+        ok $mech->host('oxfordshire.fixmystreet.com');
+
+        my ($ox_report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Big pothole in road', {
+            category => 'Potholes',
+        });
+        my $ox_report_id = $ox_report->id;
+
+        $mech->get_ok("/admin/report_edit/$ox_report_id");
+        $mech->content_contains("Resend report logged email");
+        $mech->submit_form_ok({ button => 'resend_report_logged_email' });
+        $mech->content_contains("Report logged email has been resent");
+
+        ok $mech->email_count_is(1), "one email sent";
+        my $email = $mech->get_email;
+        like $email->header('Subject'), qr/Your report has been logged/;
+    };
+
+    subtest "Resend report logged email for reports created on behalf of a user" => sub {
+        $mech->clear_emails_ok;
+        ok $mech->host('camden.fixmystreet.com');
+
+        my ($camden_report) = $mech->create_problems_for_body(1, $camden->id, 'Big pothole in road', {
+            category => 'Potholes',
+        });
+        my $camden_report_id = $camden_report->id;
+
+        $mech->get_ok("/admin/report_edit/$camden_report_id");
+        $mech->content_lacks("Resend report logged email", 'no resend button for reports on camden cobrand');
+
+        # Change the report to be created on behalf of a user
+        $camden_report->set_extra_metadata( contributed_as => 'another_user' );
+        $camden_report->update;
+
+        $mech->get_ok("/admin/report_edit/$camden_report_id");
+        $mech->content_contains("Resend report logged email", 'resend button for reports as another user');
+        $mech->submit_form_ok({ button => 'resend_report_logged_email' });
+        $mech->content_contains("Report logged email has been resent");
+
+        ok $mech->email_count_is(1), "one email sent";
+        my $email = $mech->get_email;
+        like $email->header('Subject'), qr/Your report has been logged/;
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    COBRAND_FEATURES => { echo => { bromley => { sample_data => 1 } }, waste => { bromley => 1 }, payment_gateway => { bromley => { ggw_cost => 1000 } } },
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest "Resend report logged email on WasteWorks" => sub {
+        $mech->log_in_ok($superuser->email);
+        my ($ww_report) = $mech->create_problems_for_body(1, $bromley->id, 'Request new container', {
+            category => 'Request new container',
+            cobrand_data => 'waste',
+        });
+        my $ww_report_id = $ww_report->id;
+        $mech->clear_emails_ok;
+
+        $mech->get_ok("/admin/report_edit/$ww_report_id");
+        $mech->content_contains("Resend report logged email");
+        $mech->submit_form_ok({ button => 'resend_report_logged_email' });
+        $mech->content_contains("Report logged email has been resent");
+
+        ok $mech->email_count_is(1), "one email sent";
+        my $email = $mech->get_email;
+        like $email->header('Subject'), qr/Your report has been logged/;
+    };
 };
 
 done_testing();

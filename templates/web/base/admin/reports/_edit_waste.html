@@ -34,6 +34,12 @@
 <li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
 <!-- <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li> -->
 
+[% IF c.cobrand.report_sent_confirmation_email(problem) && !c.cobrand.suppress_report_sent_email(problem) %]
+<li class="sm">
+  <input type="submit" class="btn" name="resend_report_logged_email" value="[% loc('Resend report logged email') %]">
+</li>
+[% END %]
+
 <li>
     <label class="inline-text" for="state">[% loc('State:') %]</label>
     [% INCLUDE 'admin/state_groups_select.html' %]
