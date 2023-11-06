@@ -181,7 +181,7 @@ sub categories_restriction {
     return $rs->search( { 'me.category' => { '-not_like' => 'River Piers%' } } );
 }
 
-=head2 social_auth_enabled and user_from_oidc
+=head2 social_auth_enabled, user_from_oidc, and oidc_config
 
 =over 4
 
@@ -213,6 +213,27 @@ sub user_from_oidc {
 =back
 
 =cut
+
+=item * Brent FMS and WasteWorks have separate OIDC configurations
+
+This code figures out the correct OIDC config based on the hostname used
+for the request.
+
+=cut
+
+sub oidc_config {
+    my $self = shift;
+
+    my $cfg = $self->{c}->cobrand->feature('oidc_login');
+    my $host = $self->{c}->req->uri->host;
+
+    if ($cfg->{hosts} && $cfg->{hosts}->{$host}) {
+        return $cfg->{hosts}->{$host};
+    }
+
+    return $cfg;
+}
+
 
 =head2 dashboard_export_problems_add_columns
 
