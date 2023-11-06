@@ -138,6 +138,53 @@ for my $test (
 {
     type => 'oidc',
     config => {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'test',
+            },
+            oidc_login => {
+                brent => {
+                    client_id => 'example_client_id',
+                    secret => 'example_secret_key',
+                    auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                    token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                    logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                    password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
+                    display_name => 'MyAccount',
+                    hosts => {
+                        'brent-wasteworks-oidc.example.org' => {
+                            client_id => 'wasteworks_client_id',
+                            secret => 'wasteworks_secret_key',
+                            auth_uri => 'http://brent-wasteworks-oidc.example.org/oauth2/v2.0/authorize',
+                            token_uri => 'http://brent-wasteworks-oidc.example.org/oauth2/v2.0/token',
+                            logout_uri => 'http://brent-wasteworks-oidc.example.org/oauth2/v2.0/logout',
+                            password_change_uri => 'http://brent-wasteworks-oidc.example.org/oauth2/v2.0/password_change',
+                            display_name => 'MyAccount - WasteWorks',
+                        }
+                    }
+                }
+            }
+        }
+    },
+    email => $mech->uniquify_email('oidc@example.org'),
+    uid => "brent:wasteworks_client_id:my_cool_user_id",
+    mock => 't::Mock::OpenIDConnect',
+    mock_hosts => ['brent-wasteworks-oidc.example.org'],
+    host => 'brent-wasteworks-oidc.example.org',
+    error_callback => '/auth/OIDC?error=ERROR',
+    success_callback => '/auth/OIDC?code=response-code&state=login',
+    redirect_pattern => qr{brent-wasteworks-oidc\.example\.org/oauth2/v2\.0/authorize},
+    logout_redirect_pattern => qr{brent-wasteworks-oidc\.example\.org/oauth2/v2\.0/logout},
+    password_change_pattern => qr{brent-wasteworks-oidc\.example\.org/oauth2/v2\.0/password_change},
+    report => $report3,
+    report_email => $test_email3,
+    pc => 'HA9 0FJ',
+},
+{
+    type => 'oidc',
+    config => {
         ALLOWED_COBRANDS => 'hackney',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
@@ -207,7 +254,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             }
 
             # Set up a mock to catch (most, see below) requests to the OAuth API
-            my $mock_api = $test->{mock}->new;
+            my $mock_api = $test->{mock}->new( host => $test->{host} );
 
             if ($test->{uid} =~ /:/) {
                 my ($cobrand) = $test->{uid} =~ /^(.*?):/;
