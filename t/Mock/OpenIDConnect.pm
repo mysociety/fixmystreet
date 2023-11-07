@@ -25,6 +25,12 @@ has cobrand => (
     default => '',
 );
 
+has host => (
+    is => 'rw',
+    isa => Str,
+    default => '',
+);
+
 sub dispatch_request {
     my $self = shift;
 
@@ -57,7 +63,7 @@ sub dispatch_request {
             ver => "1.0",
             iss => "https://login.example.org/12345-6789-4321-abcd-12309812309/v2.0/",
             sub => "my_cool_user_id",
-            aud => "example_client_id",
+            aud => $self->host eq "brent-wasteworks-oidc.example.org" ? "wasteworks_client_id": "example_client_id",
             iat => $now,
             auth_time => $now,
             tfp => "B2C_1_default",
