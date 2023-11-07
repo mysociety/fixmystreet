@@ -500,7 +500,22 @@ fixmystreet.assets.buckinghamshire.street_found = function(layer, feature) {
         if (OpenLayers.Util.indexOf(bucks_types, feature.attributes.feature_ty) != -1) {
             return true;
         }
-        return false;
+
+        // Is NH option selected?
+        if (fixmystreet.highways.he_flag) {
+            // Return false if NH not responsible for litter
+            // TODO Correct message needs to be displayed, not #js-not-council-road-he
+            if (!fixmystreet.highways.highways_responsible_for_litter()) {
+                return false;
+            }
+        } else {
+            // Return false if NH *is* responsible for litter
+            if (fixmystreet.highways.highways_responsible_for_litter()) {
+                return false;
+            }
+        }
+        return true;
+        // return false;
     }, msg_id);
 };
 fixmystreet.assets.buckinghamshire.street_not_found = function(layer) {

@@ -228,6 +228,8 @@ sub national_highways_cleaning_groups {
 
     $self->munge_report_new_contacts($contacts);
 
+$c->stash->{report_new_is_on_he_road_not_litter} = $not_he_litter;
+
     # Don't change anything else unless we're on a HE non-litter road
     return unless $not_he_litter;
 
