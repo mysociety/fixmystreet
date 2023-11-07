@@ -696,10 +696,13 @@ sub check_bulky_slot_available {
 
     # Note: Both $slot_expiry_dt and $now_dt are UTC
     if ( $slot_expiry_dt <= $now_dt ) {
-        # Call ReserveAvailableSlots again, try to get
-        # the same collection date
+        # Cancel the expired slots and call ReserveAvailableSlots again, try to
+        # get the same collection date
+        my $property = $self->{c}->stash->{property};
+        $self->clear_cached_lookups_bulky_slots($property->{id});
+
         my $available_slots = $self->find_available_bulky_slots(
-            $self->{c}->stash->{property}, undef, 'no_cache' );
+            $property, undef, 'no_cache' );
 
         my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
 
