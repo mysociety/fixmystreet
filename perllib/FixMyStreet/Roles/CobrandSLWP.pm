@@ -243,6 +243,9 @@ sub waste_event_state_map {
             'Partially Completed' => 'closed',
             Rejected => 'closed',
         },
+        Cancelled => {
+            Cancelled => 'cancelled',
+        },
     };
 }
 
