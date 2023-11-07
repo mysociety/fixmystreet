@@ -614,5 +614,7 @@ CREATE TABLE manifest_theme (
     short_name text not null,
     background_colour text,
     theme_colour text,
-    images text ARRAY
+    images text ARRAY,
+    wasteworks_name text,
+    wasteworks_short_name text
 );

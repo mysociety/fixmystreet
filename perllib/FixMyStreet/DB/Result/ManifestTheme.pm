@@ -35,13 +35,17 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "images",
   { data_type => "text[]", is_nullable => 1 },
+  "wasteworks_name",
+  { data_type => "text", is_nullable => 1 },
+  "wasteworks_short_name",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("manifest_theme_cobrand_key", ["cobrand"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:el5l7426UkZ6ww/QFp1J+w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-11-20 12:04:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bT9i4HHYfqs/4fo23OdZJg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

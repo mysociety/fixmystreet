@@ -4,8 +4,10 @@
   <thead>
   <tr>
       <th>  [% loc('Cobrand') %] </th>
-      <th>  [% loc('Name') %] </th>
-      <th>  [% loc('Short Name') %] </th>
+      <th>  [% loc('FixMyStreet Name') %] </th>
+      <th>  [% loc('FixMyStreet Short Name') %] </th>
+      <th>  [% loc('WasteWorks Name') %] </th>
+      <th>  [% loc('WasteWorks Short Name') %] </th>
       <th>  [% loc('Background Colour') %] </th>
       <th>  [% loc('Theme Colour') %] </th>
       <th>  &nbsp; </th>
@@ -17,6 +19,8 @@
         <td>[% theme.cobrand %]</td>
         <td>[% theme.name %]</td>
         <td>[% theme.short_name %]</td>
+        <td>[% theme.wasteworks_name %]</td>
+        <td>[% theme.wasteworks_short_name %]</td>
         <td>[% theme.background_colour %]</td>
         <td>[% theme.theme_colour %]</td>
         <td> <a href="[% c.uri_for(c.controller.action_for('edit'), [theme.cobrand]) %]" class="btn">[% loc('Edit') %]</a> </td>
@@ -30,6 +34,6 @@
 <p>
     <a href="[% c.uri_for(c.controller.action_for('create')) %]">[% loc('Create') %]</a>
   </p>
-  
+
 
 [% INCLUDE 'admin/footer.html' %]

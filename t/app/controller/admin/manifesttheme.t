@@ -58,6 +58,8 @@ subtest "cobrand admin lets you create a new theme" => sub {
     my $fields = {
         name => "Lincolnshire FixMyStreet",
         short_name => "Lincs FMS",
+        wasteworks_name => "Lincolnshire WasteWorks",
+        wasteworks_short_name => "Lincs WW",
     };
     $mech->submit_form_ok( { with_fields => $fields } );
     is $mech->uri->path, '/admin/manifesttheme/lincolnshire', "redirected to edit page";
@@ -66,6 +68,8 @@ subtest "cobrand admin lets you create a new theme" => sub {
     my $theme = FixMyStreet::DB->resultset('ManifestTheme')->find({ cobrand => 'lincolnshire' });
     is $theme->name, "Lincolnshire FixMyStreet";
     is $theme->short_name, "Lincs FMS";
+    is $theme->wasteworks_name, "Lincolnshire WasteWorks";
+    is $theme->wasteworks_short_name, "Lincs WW";
     is $theme->background_colour, undef;
 
     my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
@@ -81,12 +85,16 @@ subtest "cobrand admin lets you update an existing theme" => sub {
     my $fields = {
         background_colour => "#663399",
         theme_colour => "rgb(102, 51, 153)",
+        wasteworks_name => "Lincolnshire Waste",
+        wasteworks_short_name => "Lincs Waste",
     };
     $mech->submit_form_ok( { with_fields => $fields } );
 
     my $theme = FixMyStreet::DB->resultset('ManifestTheme')->find({ cobrand => 'lincolnshire' });
     is $theme->background_colour, "#663399";
     is $theme->theme_colour, "rgb(102, 51, 153)";
+    is $theme->wasteworks_name, "Lincolnshire Waste";
+    is $theme->wasteworks_short_name, "Lincs Waste";
 
     my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
     is $log->object_id, $theme->id;
