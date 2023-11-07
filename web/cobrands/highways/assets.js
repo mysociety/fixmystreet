@@ -4,6 +4,12 @@ if (!fixmystreet.maps) {
     return;
 }
 
+fixmystreet.highways = {};
+fixmystreet.highways.highways_responsible_for_litter = function(){
+console.log(document.getElementById('highways-responsible-for-litter'));
+    return document.getElementById('highways-responsible-for-litter').dataset.highways_responsible_for_litter;
+};
+
 var defaults = {
     http_wfs_url: "https://tilma.mysociety.org/mapserver/highways",
     asset_type: 'area',
@@ -89,7 +95,13 @@ function _update_category(input, he_flag) {
 function regenerate_category(he_flag) {
     if (!fixmystreet.reporting_data) return;
 
-    $('.js-reporting-page--next').prop('disabled', false);
+    fixmystreet.highways.he_flag = he_flag;
+
+    if (he_flag) {
+        // We do not want to reenable the form if it has been disabled for
+        // a non-NH category
+        $('.js-reporting-page--next').prop('disabled', false);
+    }
 
     // If we have come from NH site, the server has returned all the categories to show
     if (window.location.href.indexOf('&he_referral=1') != -1) {

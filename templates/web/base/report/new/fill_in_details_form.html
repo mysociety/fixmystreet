@@ -1,4 +1,5 @@
 [% PROCESS 'report/new/form_heading.html' %]
+<div id="highways-responsible-for-litter" data-highways_responsible_for_litter="[% !c.stash.report_new_is_on_he_road_not_litter %]">[% 'National Highways responsible for litter: ' _ (!c.stash.report_new_is_on_he_road_not_litter ? 'yes' : 'no') %]</div>
 
 <div id="js-roads-responsibility" class="box-warning hidden" aria-live="polite">
 [% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
