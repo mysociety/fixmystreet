@@ -499,14 +499,7 @@ sub _bulky_send_reminder_email {
 
     return unless $report->user->email;
 
-    my $token = FixMyStreet::DB->resultset('Token')->new({
-        scope => 'email_sign_in',
-        data  => {
-            # This should be the view your collections page, most likely
-            r => $report->url,
-        }
-    });
-    $h->{url} = "/M/" . $token->token;
+    $h->{url} = $self->base_url_for_report($report) . $report->tokenised_url($report->user);
 
     my $result = FixMyStreet::Email::send_cron(
         FixMyStreet::DB->schema,
@@ -520,7 +513,6 @@ sub _bulky_send_reminder_email {
     );
     unless ($result) {
         print "  ...success\n" if $params->{verbose};
-        $token->insert();
     } else {
         print " ...failed\n" if $params->{verbose};
     }
