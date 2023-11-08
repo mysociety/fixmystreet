@@ -2,9 +2,7 @@ package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
 
 use Moo;
-use LWP::Simple;
 use JSON::MaybeXS;
-use Try::Tiny;
 with 'FixMyStreet::Roles::BoroughEmails';
 
 use constant COUNCIL_ID_BROMLEY => 2482;
@@ -596,41 +594,6 @@ sub add_extra_area_types {
         'CPC',
     );
     return \@types;
-}
-
-sub user_survey_information {
-    my $self = shift;
-    my $c = $self->{c};
-
-    my $q = $c->stash->{questionnaire};
-    my $p = $q->problem;
-
-    my $count = FixMyStreet::DB->resultset("Problem")->search({ user_id => $p->user_id })->count;
-    my $by_user = do {
-        if ($count > 100) { '101+' }
-        elsif ($count > 50) { '51-100' }
-        elsif ($count > 20) { '21-50' }
-        elsif ($count > 10) { '11-20' }
-        elsif ($count > 5) { '6-10' }
-        elsif ($count > 1) { '2-5' }
-        else { '1' }
-    };
-
-    my $imd = get('https://tilma.mysociety.org/lsoa_to_decile.php?lat=' . $p->latitude . '&lon=' . $p->longitude);
-    $imd = try {
-        decode_json($imd);
-    };
-
-    my $uri = URI->new;
-    $uri->query_form(
-        ever_reported => $q->ever_reported,
-        been_fixed => $c->stash->{been_fixed},
-        category => $p->category,
-        num_reports_by_user => $by_user,
-        imd_decile => $imd->{UK_IMD_E_pop_decile},
-        cobrand => $p->cobrand,
-    );
-    return $uri->query;
 }
 
 1;
