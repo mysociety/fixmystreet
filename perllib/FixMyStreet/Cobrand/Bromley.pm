@@ -1225,6 +1225,7 @@ sub cancel_bulky_collections_without_payment {
             created  => { '<'  => $cutoff_date },
             external_id => { '!=', undef },
             state => [ FixMyStreet::DB::Result::Problem->open_states ],
+            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
             -or => [
                 extra => undef,
                 -not => { extra => { '\?' => 'payment_reference' } }

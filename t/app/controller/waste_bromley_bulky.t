@@ -589,8 +589,17 @@ FixMyStreet::override_config {
         is $p->state, "confirmed";
         is $p->comments->count, 0;
 
-        # No payment - cancelled.
+        # No payment but made by staff - not cancelled.
+        $p->set_extra_metadata( contributed_as => 'another_user' );
         $p->unset_extra_metadata('payment_reference');
+        $p->update;
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
+        $p->discard_changes;
+        is $p->state, "confirmed";
+        is $p->comments->count, 0;
+
+        # No payment non-staff - cancelled.
+        $p->unset_extra_metadata('contributed_as');
         $p->update;
         $cobrand->cancel_bulky_collections_without_payment({ commit => 1});
         $p->discard_changes;
