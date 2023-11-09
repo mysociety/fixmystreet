@@ -3,7 +3,7 @@ Subject: Cancelled bulky goods collection [% wasteworks_id %]
 
 Bulky goods collection [% wasteworks_id %] scheduled for [%collection_date %] has been cancelled.
 
-[% IF refund_amount > 0 %]
+[% IF refund_amount > 0 && payment_reference %]
 £[% pounds(refund_amount / 100) %] will be refunded.
 [% END %]
 

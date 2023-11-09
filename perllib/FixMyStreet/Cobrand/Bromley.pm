@@ -1045,6 +1045,7 @@ sub bulky_send_cancellation_confirmation {
             ],
 
             wasteworks_id => $collection_report->id,
+            payment_reference => $collection_report->get_extra_metadata('payment_reference'),
             refund_amount => $self->bulky_refund_amount($collection_report),
             collection_date => $self->bulky_nice_collection_date($collection_report),
         },
