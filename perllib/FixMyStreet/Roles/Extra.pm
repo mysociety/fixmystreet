@@ -1,5 +1,6 @@
 package FixMyStreet::Roles::Extra;
 use Moo::Role;
+use JSON::MaybeXS;
 
 =head1 NAME
 
@@ -82,6 +83,31 @@ sub unset_extra_metadata {
     delete $extra->{$key};
     $self->extra($extra);
 };
+
+=head2 update_extra_metadata
+
+This calls set_extra_metadata, plus immediately updates the database with the
+new data (so update in the DBIx::Class sense, not like update_extra_field),
+using the PostgreSQL || operator, to not affect anything else in the column.
+If you are using this, you probably don't want to then call update and
+potentially overwrite other things in the extra column.
+
+=cut
+
+sub update_extra_metadata {
+    my ($self, %new) = @_;
+
+    $self->set_extra_metadata(%new);
+    my $db = $self->result_source->schema->storage;
+    my $table = $self->result_source->name;
+    $db->dbh_do(sub {
+        my ($storage, $dbh, $json, $id) = @_;
+        $dbh->do("UPDATE $table SET extra = extra || ? WHERE id=?", undef, $json, $id);
+    },
+        encode_json(\%new),
+        $self->id
+    );
+}
 
 =head2 get_extra_metadata
 

@@ -23,8 +23,7 @@ sub waste_cc_get_redirect_url {
     my $admin_fee = $p->get_extra_field_value('admin_fee');
 
     my $redirect_id = mySociety::AuthToken::random_token();
-    $p->set_extra_metadata('redirect_id', $redirect_id);
-    $p->update;
+    $p->update_extra_metadata(redirect_id => $redirect_id);
 
     my $fund_code = $payment->config->{scp_fund_code};
     my $customer_ref = $payment->config->{customer_ref};
@@ -93,10 +92,8 @@ sub waste_cc_get_redirect_url {
         if ( $result->{transactionState} eq 'IN_PROGRESS' &&
              $result->{invokeResult}->{status} eq 'SUCCESS' ) {
 
-             $p->set_extra_metadata('scpReference', $result->{scpReference});
-             $p->update;
+             $p->update_extra_metadata(scpReference => $result->{scpReference});
 
-             # need to save scpReference against request here
              my $redirect = $result->{invokeResult}->{redirectUrl};
              return $redirect;
          } else {
