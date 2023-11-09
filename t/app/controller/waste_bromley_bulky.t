@@ -116,6 +116,7 @@ FixMyStreet::override_config {
                 form_name => 'rbk_user_form',
                 staff_form_name => 'rbk_staff_form',
                 customer_ref => 'customer-ref',
+                bulky_customer_ref => 'bulky-customer-ref',
             },
         },
     },
@@ -280,7 +281,7 @@ FixMyStreet::override_config {
 
             is $sent_params->{fund_code}, 20, 'bulky fund code used';
             is $sent_params->{items}[0]{amount}, 3000, 'correct amount used';
-            is $sent_params->{items}[0]{reference}, 'customer-ref';
+            is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
             is $sent_params->{items}[0]{lineId}, $new_report->id;
 
             $new_report->discard_changes;

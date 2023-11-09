@@ -27,6 +27,7 @@ sub waste_cc_get_redirect_url {
     $p->update;
 
     my $fund_code = $payment->config->{scp_fund_code};
+    my $customer_ref = $payment->config->{customer_ref};
 
     my $backUrl;
     if ($back eq 'bulky') {
@@ -35,6 +36,9 @@ sub waste_cc_get_redirect_url {
         $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
         if (my $bulky_fund_code = $payment->config->{bulky_scp_fund_code}) {
             $fund_code = $bulky_fund_code;
+        }
+        if (my $bulky_customer_ref = $payment->config->{bulky_customer_ref}) {
+            $customer_ref = $bulky_customer_ref;
         }
     } else {
         $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
@@ -45,7 +49,7 @@ sub waste_cc_get_redirect_url {
 
     my @items = ({
         amount => $amount,
-        reference => $payment->config->{customer_ref},
+        reference => $customer_ref,
         description => $p->title,
         lineId => $self->waste_cc_payment_line_item_ref($p),
     });
