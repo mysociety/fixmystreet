@@ -626,7 +626,7 @@ sub bulky_check_missed_collection {
     foreach my $state_id (keys %$blocked_codes) {
         next unless $event->{state} eq $state_id;
         foreach (keys %{$blocked_codes->{$state_id}}) {
-            if ($event->{resolution} eq $_ || $_ eq 'all') {
+            if ($event->{resolution} eq $_) {
                 $row->{report_locked_out} = 1;
                 $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
             }
