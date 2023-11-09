@@ -151,6 +151,16 @@ sub find_problem {
 sub process_update {
     my ($self, $request, $p) = @_;
 
+    my $db = FixMyStreet::DB->schema->storage;
+    my $comment = $db->txn_do(sub {
+        $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
+        return $self->_process_update($request, $p);
+    });
+    return $comment;
+}
+
+sub _process_update {
+    my ($self, $request, $p) = @_;
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
 
