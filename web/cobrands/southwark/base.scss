@@ -694,3 +694,17 @@ border-right-width: $btn-border-width;
 .olControlAttribution {
   right: 80px !important;
 }
+
+/* New report conditional questions */
+
+@supports( #{"selector(:has(*))"} ) {
+    #form_southwark_dead_animal_location,
+    label[for="form_southwark_dead_animal_location"] {
+        .extra-category-questions & {
+            display: none;
+        }
+        .extra-category-questions:has(#form_southwark_dead_animal_council_tenant option[value="no"]:checked) & {
+            display: block;
+        }
+    }
+}
