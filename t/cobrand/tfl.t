@@ -1,7 +1,9 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
+use File::Temp 'tempdir';
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -203,9 +205,11 @@ $mech->create_contact_ok(
     email => 'lonelybikes@example.net',
 );
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet'],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         category_groups => { tfl => 1 },
         internal_ips => { tfl => [ '127.0.0.1' ] },
@@ -491,6 +495,32 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('"Council User",,,98756', "Stop code added to csv for all categories report");
     $mech->get_ok('/dashboard?export=1&category=Bus+stops');
     $mech->content_contains('"Council User",,98756', "Stop code added to csv for bus stop category report");
+
+    $report->set_extra_fields({ name => 'leaning', value => 'Yes' }, { name => 'safety_critical', value => 'yes' },
+        { name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
+    $report->update;
+
+    FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+
+    $mech->get_ok('/dashboard?export=1&category=Not+present');
+    is scalar(split /\n/, $mech->encoded_content), 1;
+    $mech->get_ok('/dashboard?export=1&category=Bus+stops');
+    $mech->content_contains('Category,Subcategory');
+    $mech->content_contains('Query,Borough');
+    $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains('"Bus things","Bus stops"');
+    $mech->content_contains('"BR1 3UH",Bromley,');
+    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
+
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('Category,Subcategory');
+    $mech->content_contains('Query,Borough');
+    $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains('(anonymous ' . $report->id . ')');
+    $mech->content_contains($dt . ',,,confirmed,51.4021');
+    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
 };
 
 subtest 'Inspect form state choices' => sub {

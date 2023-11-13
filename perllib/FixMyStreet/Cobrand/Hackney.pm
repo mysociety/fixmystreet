@@ -349,16 +349,23 @@ sub dashboard_export_problems_add_columns {
 
         my $address = '';
         my $postcode = '';
-
-        if ( $report->geocode ) {
-            $address = $report->nearest_address;
-            $postcode = $report->nearest_address_parts->{postcode};
+        if ($csv->dbi) {
+            if ( $report->{geocode} ) {
+                my $addr = FixMyStreet::Geocode::Address->new($report->{geocode});
+                $address = $addr->summary;
+                $postcode = $addr->parts->{postcode};
+            }
+        } else {
+            if ( $report->geocode ) {
+                $address = $report->nearest_address;
+                $postcode = $report->nearest_address_parts->{postcode};
+            }
         }
 
         return {
             nearest_address => $address,
             nearest_address_postcode => $postcode,
-            extra_details => $report->get_extra_metadata('detailed_information') || '',
+            extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
         };
     });
 }

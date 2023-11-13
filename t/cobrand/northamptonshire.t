@@ -1,5 +1,5 @@
 use Test::MockModule;
-
+use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::Script::Reports;
@@ -380,12 +380,14 @@ FixMyStreet::override_config {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
         from_body => $nh, password => 'password');
     $mech->log_in_ok( $staffuser->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'northamptonshire',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };

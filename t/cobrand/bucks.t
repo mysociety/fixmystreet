@@ -1,6 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use File::Temp 'tempdir';
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
@@ -67,10 +68,12 @@ $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Flypost
 $contact->set_extra_metadata(prefer_if_multiple => 1);
 $contact->update;
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'buckinghamshire', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         open311_email => {
             buckinghamshire => {

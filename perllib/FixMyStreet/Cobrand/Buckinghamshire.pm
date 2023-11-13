@@ -333,6 +333,8 @@ sub _dashboard_export_add_columns {
 
     $csv->add_csv_columns( staff_user => 'Staff User' );
 
+    return if $csv->dbi; # staff_user included by default
+
     my $user_lookup = $self->csv_staff_users;
 
     $csv->csv_extra_data(sub {

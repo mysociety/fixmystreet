@@ -971,6 +971,8 @@ sub dashboard_export_problems_add_columns {
         staff_role => 'Staff Role',
     );
 
+    return if $csv->dbi; # All covered already
+
     my $user_lookup = $self->csv_staff_users;
     my $userroles = $self->csv_staff_roles($user_lookup);
 

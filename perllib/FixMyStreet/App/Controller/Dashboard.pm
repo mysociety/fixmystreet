@@ -158,7 +158,11 @@ sub index : Path : Args(0) {
         $reporting->csv_parameters;
         if ($export == 1) {
             # Existing method, generate and serve
-            $reporting->generate_csv_http($c);
+            if ($reporting->premade_csv_exists) {
+                $reporting->filter_premade_csv_http($c);
+            } else {
+                $reporting->generate_csv_http($c);
+            }
         } elsif ($export == 2) {
             # New offline method
             $reporting->kick_off_process;

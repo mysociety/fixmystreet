@@ -322,6 +322,7 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'tester',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
     subtest 'no body or export, 404' => sub {
         $mech->get('/dashboard');

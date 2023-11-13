@@ -192,8 +192,9 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
+        my $non_public = $csv->dbi ? $report->{non_public} : $report->non_public;
         return {
-            private_report => $report->non_public ? 'Yes' : 'No'
+            private_report => $non_public ? 'Yes' : 'No'
         };
     });
 }

@@ -1,6 +1,7 @@
 use CGI::Simple;
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
@@ -224,10 +225,12 @@ subtest 'check geolocation overrides' => sub {
 
 
 subtest 'Dashboard CSV extra columns' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     $mech->log_in_ok( $staffuser->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'centralbedfordshire',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };

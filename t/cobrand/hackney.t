@@ -2,6 +2,7 @@ use utf8;
 use CGI::Simple;
 use DateTime;
 use DateTime::Format::W3CDTF;
+use File::Temp 'tempdir';
 use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
@@ -11,6 +12,7 @@ use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
 use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 
 # disable info logs for this test run
@@ -518,6 +520,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         latitude => 51.552267,
         longitude => -0.063316,
         cobrand => 'hackney',
+        areas => ',2508,144390,',
         geocode => {
             resourceSets => [ {
                 resources => [ {
@@ -535,14 +538,22 @@ subtest 'Dashboard CSV extra columns' => sub {
     });
 
     $mech->log_in_ok( $hackney_user->email );
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'hackney',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As","Nearest address","Nearest postcode","Extra details"');
+        $mech->content_contains('hackney,,"12 A Street, XX1 1SZ","XX1 1SZ","Some detailed information"');
+
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1&ward=144390');
+        $mech->content_contains('Brownswood');
+        $mech->get_ok('/dashboard?export=1&ward=144387');
+        $mech->content_lacks('Brownswood');
     };
-    $mech->content_contains('"Reported As","Nearest address","Nearest postcode","Extra details"');
-    $mech->content_contains('hackney,,"12 A Street, XX1 1SZ","XX1 1SZ","Some detailed information"');
 };
 
 done_testing();

@@ -346,14 +346,18 @@ sub dashboard_export_problems_add_columns {
 
     $csv->csv_extra_data(sub {
         my $report = shift;
-        my $usrn = $report->get_extra_field_value('usrn') || '';
+        my $usrn = $csv->_extra_field($report, 'usrn') || '';
         # Try and get a HIAMS reference first of all
-        my $ref = $report->get_extra_metadata('customer_reference');
+        my $ref = $csv->_extra_metadata($report, 'customer_reference');
         unless ($ref) {
             # No HIAMS ref which means it's either an older Exor report
             # or a HIAMS report which hasn't had its reference set yet.
             # We detect the latter case by the id and external_id being the same.
-            $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
+            if ($csv->dbi) {
+                $ref = $report->{external_id} if $report->{id} ne ( $report->{external_id} || '' );
+            } else {
+                $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
+            }
         }
         return {
             external_ref => ( $ref || '' ),

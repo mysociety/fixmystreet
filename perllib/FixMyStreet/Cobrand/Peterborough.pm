@@ -395,6 +395,31 @@ sub dashboard_export_problems_add_columns {
         @extra_columns,
     );
 
+    if ($csv->dbi) {
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+
+            my $addr = FixMyStreet::Geocode::Address->new($report->{geocode});
+            my $address = $addr->summary;
+            my $ext_code = $csv->_extra_metadata($report, 'external_status_code');
+            my $state = FixMyStreet::DB->resultset("State")->display($report->{state});
+            my $extra = {
+                nearest_address => $address,
+                external_status_code => $ext_code,
+                state => $state,
+                db_state => $report->{state},
+            };
+
+            foreach (@{$csv->_extra_field($report)}) {
+                $extra->{usrn} = $_->{value} if $_->{name} eq 'site_code';
+                $extra->{"extra.$_->{name}"} = $_->{value} if $_->{name} =~ /^PCC-/i;
+            }
+
+            return $extra;
+        });
+        return;
+    }
+
     my $user_lookup = $self->csv_staff_users;
 
     $csv->csv_extra_data(sub {
@@ -402,7 +427,7 @@ sub dashboard_export_problems_add_columns {
 
         my $address = $report->nearest_address(1);
         my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
-        my $ext_code = $report->get_extra_metadata('external_status_code');
+        my $ext_code = $csv->_extra_metadata($report, 'external_status_code');
         my $state = FixMyStreet::DB->resultset("State")->display($report->state);
         my $extra = {
             nearest_address => $address,
@@ -412,7 +437,7 @@ sub dashboard_export_problems_add_columns {
             state => $state,
         };
 
-        foreach (@{$report->get_extra_fields}) {
+        foreach (@{$csv->_extra_field($report)}) {
             $extra->{usrn} = $_->{value} if $_->{name} eq 'site_code';
             $extra->{"extra.$_->{name}"} = $_->{value} if $_->{name} =~ /^PCC-/i;
         }

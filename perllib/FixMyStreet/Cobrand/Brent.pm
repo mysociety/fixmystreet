@@ -227,8 +227,8 @@ sub dashboard_export_problems_add_columns {
         (
             street_name => 'Street Name',
             location_name => 'Location Name',
-            created_by => 'Created By',
-            email => 'Email',
+            name => 'Created By',
+            user_email => 'Email',
             usrn => 'USRN',
             uprn => 'UPRN',
             external_id => 'External ID',
@@ -260,8 +260,7 @@ sub dashboard_export_problems_add_columns {
 
     my $flytipping_lookup = sub {
         my ($report, $field) = @_;
-
-        my $v = $report->get_extra_field_value($field) // return '';
+        my $v = $csv->_extra_field($report, $field) // return '';
         return $values->{$field}{$v} || '';
     };
 
@@ -269,26 +268,30 @@ sub dashboard_export_problems_add_columns {
         my $report = shift;
 
         my $data = {
-            street_name => $report->nearest_address_parts->{street},
-            location_name => $report->get_extra_field_value('location_name') || '',
-            created_by => $report->name || '',
-            email => $report->user->email || '',
-            usrn => $report->get_extra_field_value('usrn') || '',
-            uprn => $report->get_extra_field_value('uprn') || '',
-            external_id => $report->external_id || '',
-            image_included => $report->photo ? 'Y' : 'N',
+            location_name => $csv->_extra_field($report, 'location_name'),
+            $csv->dbi ? (
+                street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
+                image_included => $report->{photo} ? 'Y' : 'N',
+            ) : (
+                street_name => $report->nearest_address_parts->{street},
+                name => $report->name || '',
+                user_email => $report->user->email || '',
+                image_included => $report->photo ? 'Y' : 'N',
+                external_id => $report->external_id || '',
+            ),
+            usrn => $csv->_extra_field($report, 'usrn'),
+            uprn => $csv->_extra_field($report, 'uprn'),
             flytipping_did_you_see => $flytipping_lookup->($report, 'Did_you_see_the_Flytip_take_place?_'),
             flytipping_statement => $flytipping_lookup->($report, 'Are_you_willing_to_be_a_WItness?_'),
             flytipping_quantity => $flytipping_lookup->($report, 'Flytip_Size'),
             flytipping_type => $flytipping_lookup->($report, 'Flytip_Type'),
-            container_req_action => $report->get_extra_field_value('Container_Request_Action') || '',
-            container_req_type => $report->get_extra_field_value('Container_Request_Container_Type') || '',
-            container_req_reason => $report->get_extra_field_value('Container_Request_Reason') || '',
-            missed_collection_id => $report->get_extra_field_value('service_id') || '',
+            container_req_action => $csv->_extra_field($report, 'Container_Request_Action'),
+            container_req_type => $csv->_extra_field($report, 'Container_Request_Container_Type'),
+            container_req_reason => $csv->_extra_field($report, 'Container_Request_Reason'),
+            missed_collection_id => $csv->_extra_field($report, 'service_id'),
         };
 
-        my $extra = $report->get_extra_metadata;
-
+        my $extra = $csv->_extra_metadata($report);
         %$data = (%$data, map {$_ => $extra->{$_} || ''} grep { $_ =~ /^(item_\d+)$/ } keys %$extra);
 
         return $data;

@@ -216,6 +216,9 @@ sub dispatch_request {
                 151942 => {parent_area => 2514, id => 151942, name => "Birchfield", type => "MTW"},
             });
         }
+        if ($area eq '2508') {
+            return $self->output({144390 => {parent_area => 2508, id => 144390, name => "Brownswood", type => "LBW"}});
+        }
         if ($area eq '2326') {
             return $self->output({23261 => {parent_area => 2326, id => 23261, name => "Lansdown", type => "DIW"}});
         }

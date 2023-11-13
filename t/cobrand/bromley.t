@@ -1,4 +1,5 @@
 use CGI::Simple;
+use File::Temp 'tempdir';
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use Test::Warn;
@@ -6,6 +7,7 @@ use DateTime;
 use JSON::MaybeXS;
 use Test::Output;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
 use Open311::PopulateServiceList;
@@ -30,6 +32,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
+my $roleB = FixMyStreet::DB->resultset("Role")->create({ body => $body, name => 'Role B' });
 $staffuser->add_to_roles($role);
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -434,15 +437,27 @@ subtest 'category restrictions for roles restricts reporting categories for user
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
-    $mech->log_in_ok($staffuser->email);
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'bromley',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
+        $mech->log_in_ok($staffuser->email);
         $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As","Staff User","Staff Role"');
+        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
+
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As","Staff User","Staff Role"');
+        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
+
+        $mech->get_ok('/dashboard?export=1&role=' . $role->id);
+        $mech->content_contains("Role A");
+        $mech->get_ok('/dashboard?export=1&role=' . $roleB->id);
+        $mech->content_lacks("Role A");
     };
-    $mech->content_contains('"Reported As","Staff User","Staff Role"');
-    $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
 };
 
 
