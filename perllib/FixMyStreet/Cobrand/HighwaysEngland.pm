@@ -330,6 +330,31 @@ sub dashboard_export_problems_add_columns {
         );
     }
 
+    if ($csv->dbi) {
+        my $JSON = JSON::MaybeXS->new->allow_nonref;
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+
+            my $fields = {
+                user_name_display => $report->{name},
+                area_name => $csv->_extra_field($report, 'area_name'),
+                where_hear => $csv->_extra_metadata($report, 'where_hear'),
+            };
+
+            my $i = $report->{comment_rn};
+            if ($report->{comment_id} && $i <= 5) {
+                $fields->{"update_text_$i"} = $report->{comment_text};
+                $fields->{"update_date_$i"} = $report->{comment_confirmed};
+                my $extra = $JSON->decode($report->{comment_extra} || '{}');
+                my $staff = $extra->{contributed_by} || $extra->{is_body_user} || $extra->{is_superuser};
+                $fields->{"update_name_$i"} = $staff ? $report->{comment_name} : 'public';
+            }
+
+            return $fields;
+        });
+        return;
+    }
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
@@ -337,8 +362,8 @@ sub dashboard_export_problems_add_columns {
             user_name_display => $report->name,
             user_email => $report->user->email || '',
             user_phone => $report->user->phone || '',
-            area_name => $report->get_extra_field_value('area_name'),
-            where_hear => $report->get_extra_metadata('where_hear'),
+            area_name => $csv->_extra_field($report, 'area_name'),
+            where_hear => $csv->_extra_metadata($report, 'where_hear'),
         };
 
         my $i = 1;

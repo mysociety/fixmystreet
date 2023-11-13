@@ -1,6 +1,7 @@
 use Test::MockModule;
 
 use CGI::Simple;
+use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
@@ -253,10 +254,12 @@ FixMyStreet::override_config {
     ok $mech->host('oxfordshire.fixmystreet.com');
 };
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1, skip_checks => 1 },
     ALLOWED_COBRANDS => 'oxfordshire',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
 
     subtest 'can use customer reference to search for reports' => sub {

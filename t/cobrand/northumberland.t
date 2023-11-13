@@ -1,5 +1,7 @@
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use Test::MockModule;
+use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -16,9 +18,11 @@ my ($problem1, $problem2) = $mech->create_problems_for_body(2, $body->id, 'Test'
     extra => { contributed_by => $staffuser->id },
 });
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'northumberland',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
     subtest 'Dashboard CSV includes correct extra data' => sub {
         $mech->log_in_ok( $staffuser->email );
@@ -30,6 +34,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         my $id1 = $problem1->id;
         my $id2 = $problem2->id;
+        $mech->content_like(qr{/report/$id1,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
+        $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
+
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('Test User', 'name of anonymous user');
         $mech->content_like(qr{/report/$id1,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
         $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
     };

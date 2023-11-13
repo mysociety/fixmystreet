@@ -1,8 +1,10 @@
 use utf8;
+use File::Temp 'tempdir';
 use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
@@ -237,9 +239,11 @@ FixMyStreet::override_config {
     };
 };
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'kingston',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         echo => { kingston => { url => 'http://example.org' } },
         waste => { kingston => 1 },
@@ -1785,6 +1789,20 @@ FixMyStreet::override_config {
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
 
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_lacks("Garden Subscription\n\n");
+        $mech->content_contains('"a user"');
+        $mech->content_contains(1000000002);
+        $mech->content_contains('a_user@example.net');
+        $mech->content_contains('credit_card,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('"a user 2"');
+        $mech->content_contains('a_user_2@example.net');
+        $mech->content_contains('unconfirmed');
+        $mech->content_contains('4000,,1500,26,1,2'); # Fee/fee/fee/bin/current/sub
+    };
+
+    subtest 'check CSV pregeneration' => sub {
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
         $mech->content_lacks("Garden Subscription\n\n");
         $mech->content_contains('"a user"');

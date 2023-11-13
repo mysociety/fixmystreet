@@ -143,7 +143,7 @@ sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
     $csv->add_csv_columns(
-        user_name => 'User Name',
+        name => 'User Name',
         user_email => 'User Email',
     );
 
@@ -152,11 +152,13 @@ sub dashboard_export_problems_add_columns {
         join => 'user',
     });
 
+    return if $csv->dbi; # Already covered
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
         return {
-            user_name => $report->name || '',
+            name => $report->name || '',
             user_email => $report->user->email || '',
         };
     });

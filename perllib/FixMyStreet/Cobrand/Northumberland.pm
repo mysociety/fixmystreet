@@ -86,6 +86,16 @@ sub dashboard_export_problems_add_columns {
         assigned_to => 'Assigned To',
     );
 
+    if ($csv->dbi) {
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+            return {
+                user_name_display => $report->{name},
+            };
+        });
+        return; # Rest already covered
+    }
+
     my $user_lookup = $self->csv_staff_users;
     my $userroles = $self->csv_staff_roles($user_lookup);
     my $problems_to_user = $self->csv_active_planned_reports;
