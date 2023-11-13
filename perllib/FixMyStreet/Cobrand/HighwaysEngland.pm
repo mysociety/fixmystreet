@@ -345,7 +345,6 @@ sub dashboard_export_problems_add_columns {
         my @updates = $report->comments->all;
         @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
         for my $update (@updates) {
-            next unless $update->state eq 'confirmed';
             last if $i > 5;
             $fields->{"update_text_$i"} = $update->text;
             $fields->{"update_date_$i"} = $update->confirmed;

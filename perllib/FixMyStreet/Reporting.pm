@@ -197,18 +197,22 @@ sub _csv_parameters_problems {
 
     my $groups = $self->cobrand->enable_category_groups ? 1 : 0;
     my $join = ['comments'];
-    my $columns = ['comments.id', 'comments.problem_state', 'comments.state', 'comments.confirmed', 'comments.mark_fixed'];
+    my $columns = ['comments.id', 'comments.problem_state', 'comments.confirmed', 'comments.mark_fixed'];
     if ($groups) {
         push @$join, 'contact';
         push @$columns, 'contact.id', 'contact.extra';
     }
-    $self->objects_attrs({
+
+    my $rs = $self->objects_rs->search({
+        "comments.state" => ['confirmed', undef],
+    }, {
         join => $join,
         collapse => 1,
         '+columns' => $columns,
         order_by => ['me.confirmed', 'me.id'],
         cursor_page_size => 1000,
     });
+    $self->_set_objects_rs($rs);
     $self->_set_csv_headers([
         'Report ID',
         'Title',
@@ -289,7 +293,6 @@ sub generate_csv {
             @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
             for my $comment (@updates) {
                 my $problem_state = $comment->problem_state or next;
-                next unless $comment->state eq 'confirmed';
                 next if $problem_state eq 'confirmed';
                 $hashref->{acknowledged} //= $comment->confirmed;
                 $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $comment->confirmed : undef;
