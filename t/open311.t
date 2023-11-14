@@ -590,6 +590,12 @@ foreach my $test (
         extended => 'IN_PROGRESS',
     },
     {
+        desc => 'comment with for triage state sends status of CLOSED',
+        state => 'for triage',
+        status => 'CLOSED',
+        extended => 'FOR_TRIAGE',
+    },
+    {
         desc => 'comment that marks problem open sends OPEN if not mark_reopen',
         state => 'confirmed',
         status => 'OPEN',
