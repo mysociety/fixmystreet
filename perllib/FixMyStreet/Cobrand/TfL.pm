@@ -235,23 +235,18 @@ sub dashboard_export_problems_add_columns {
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
     my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
-
+    my %extra_columns;
     if ($csv->category) {
-        my ($contact) = grep { $_->category eq $csv->category } @contacts;
-        if ($contact) {
-            foreach (@{$contact->get_metadata_for_storage}) {
-                next if $_->{code} eq 'safety_critical';
-                $csv->add_csv_columns( "extra.$_->{code}" => $_->{description} );
-            }
-        }
-    } else {
-        foreach my $contact (@contacts) {
-            foreach (@{$contact->get_metadata_for_storage}) {
-                next if $_->{code} eq 'safety_critical';
-                $csv->add_csv_columns( "extra.$_->{code}" => $_->{description} );
-            }
+        @contacts = grep { $_->category eq $csv->category } @contacts;
+    }
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            next if $_->{code} eq 'safety_critical';
+            $extra_columns{"extra.$_->{code}"} = $_->{description} || $_->{code};
         }
     }
+    my @extra_columns = map { $_ => $extra_columns{$_} } sort keys %extra_columns;
+    $csv->add_csv_columns(@extra_columns);
 
     $csv->csv_extra_data(sub {
         my $report = shift;

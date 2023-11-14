@@ -488,7 +488,7 @@ subtest 'Dashboard CSV extra columns' => sub {
 
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',12345,,no,busstops@example.com,,', "Bike number added to csv");
-    $mech->content_contains('"Council User",,98756', "Stop code added to csv for all categories report");
+    $mech->content_contains('"Council User",,,98756', "Stop code added to csv for all categories report");
     $mech->get_ok('/dashboard?export=1&category=Bus+stops');
     $mech->content_contains('"Council User",,98756', "Stop code added to csv for bus stop category report");
 };
