@@ -116,6 +116,7 @@ FixMyStreet::override_config {
                 form_name => 'rbk_user_form',
                 staff_form_name => 'rbk_staff_form',
                 customer_ref => 'customer-ref',
+                bulky_customer_ref => 'bulky-customer-ref',
             },
         },
     },
@@ -280,7 +281,7 @@ FixMyStreet::override_config {
 
             is $sent_params->{fund_code}, 20, 'bulky fund code used';
             is $sent_params->{items}[0]{amount}, 3000, 'correct amount used';
-            is $sent_params->{items}[0]{reference}, 'customer-ref';
+            is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
             is $sent_params->{items}[0]{lineId}, $new_report->id;
 
             $new_report->discard_changes;
@@ -589,8 +590,17 @@ FixMyStreet::override_config {
         is $p->state, "confirmed";
         is $p->comments->count, 0;
 
-        # No payment - cancelled.
+        # No payment but made by staff - not cancelled.
+        $p->set_extra_metadata( contributed_as => 'another_user' );
         $p->unset_extra_metadata('payment_reference');
+        $p->update;
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
+        $p->discard_changes;
+        is $p->state, "confirmed";
+        is $p->comments->count, 0;
+
+        # No payment non-staff - cancelled.
+        $p->unset_extra_metadata('contributed_as');
         $p->update;
         $cobrand->cancel_bulky_collections_without_payment({ commit => 1});
         $p->discard_changes;

@@ -296,7 +296,7 @@ for my $test (
     };
 }
 
-for my $test ( 
+for my $test (
     {
         desc => 'Check uses report name over user name',
         name => 'Nom de Report',
@@ -590,6 +590,12 @@ foreach my $test (
         extended => 'IN_PROGRESS',
     },
     {
+        desc => 'comment with for_triage state sends status of CLOSED',
+        state => 'for_triage',
+        status => 'CLOSED',
+        extended => 'FOR_TRIAGE',
+    },
+    {
         desc => 'comment that marks problem open sends OPEN if not mark_reopen',
         state => 'confirmed',
         status => 'OPEN',
@@ -829,7 +835,7 @@ subtest 'No request id in reponse' => sub {
             $problem,
             { url => 'http://example.com/report/1' },
             $problem->category,
-            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id></service_request_id></request></service_requests>' 
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id></service_request_id></request></service_requests>'
         );
     } qr/Failed to submit problem \d+ over Open311/, 'correct error message for missing request_id';
 
@@ -843,7 +849,7 @@ subtest 'Bad data in request_id element in reponse' => sub {
             $problem,
             { url => 'http://example.com/report/1' },
             $problem->category,
-            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id><bad_data>BAD</bad_data></service_request_id></request></service_requests>' 
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id><bad_data>BAD</bad_data></service_request_id></request></service_requests>'
         );
     } qr/Failed to submit problem \d+ over Open311/, 'correct error message for bad data in request_id';
 

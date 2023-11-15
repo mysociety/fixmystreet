@@ -43,7 +43,8 @@ sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction(
 sub site_key { FixMyStreet::Cobrand::UKCouncils::site_key($_[0], $_[1]) }
 sub all_reports_single_body { FixMyStreet::Cobrand::UKCouncils::all_reports_single_body($_[0], $_[1]) }
 sub suggest_duplicates { FixMyStreet::Cobrand::UKCouncils::suggest_duplicates($_[0]) }
-
+sub relative_url_for_report { FixMyStreet::Cobrand::UKCouncils::relative_url_for_report($_[0], $_[1]) }
+sub owns_problem { FixMyStreet::Cobrand::UKCouncils::owns_problem($_[0], $_[1]) }
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
 sub contact_email {
@@ -65,8 +66,16 @@ sub example_places {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    %$bodies = map { $_->id => $_ } grep { $_->name eq 'Thamesmead' } values %$bodies;
+    for (FixMyStreet::Cobrand::Bexley->new->body, FixMyStreet::Cobrand::Greenwich->new->body) {
+        if ($_ && $_->{id}) {
+            $bodies->{$_->id} = $_;
+        };
+    }
+
+    FixMyStreet::Cobrand::UKCouncils::munge_report_new_bodies($_[0], $_[1])
 }
+
+sub munge_report_new_contacts { FixMyStreet::Cobrand::UKCouncils::munge_report_new_contacts($_[0], $_[1]) }
 
 sub privacy_policy_url {
     'https://www.thamesmeadnow.org.uk/terms-and-conditions/privacy-statement/'

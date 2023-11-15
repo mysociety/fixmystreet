@@ -1,6 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::UpdateAllReports;
+use FixMyStreet::Script::Alerts;
 use t::Mock::Tilma;
 
 my $tilma = t::Mock::Tilma->new;
@@ -15,7 +16,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $body = $mech->create_body_ok(2494, 'Thamesmead', {}, { cobrand => 'thamesmead' }); # Using Bexley as area
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Overgrown shrub beds', email => 'shrubs@example.org');
 $mech->create_contact_ok(body_id => $body->id, category => 'Thamesmead graffiti', email => 'thamesmead@example.org');
-my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley');
+my $bexley = $mech->create_body_ok(2494, 'London Borough of Bexley', {}, {cobrand => 'bexley'});
 $mech->create_contact_ok(body_id => $bexley->id, category => 'Bexley graffiti', email => 'bexley@example.org');
 
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
@@ -229,20 +230,58 @@ subtest "Thamesmead categories replace cobrand categories on FMS when on Thamesm
     };
 };
 
-subtest "Thamesmead categories appear on thamesmead whether asset location or not" => sub {
+subtest "Thamesmead categories appear on Thamesmead asset, Bexley categories when not on asset in Bexley" => sub {
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'thamesmead' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok("/report/new/ajax?latitude=51.466707&longitude=0.181108");
-        $mech->content_contains('Thamesmead graffiti');
-        $mech->content_lacks('Bexley graffiti');
+        $mech->content_lacks('Thamesmead graffiti');
+        $mech->content_contains('Bexley graffiti');
 
         $mech->get_ok("/report/new/ajax?latitude=51.512868&longitude=0.125436");
         $mech->content_contains('Thamesmead graffiti');
         $mech->content_lacks('Bexley graffiti');
     };
+};
+
+subtest 'Check Thamesmead not in summary stats' => sub {
+    my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
+    is_deeply $data->{top_five_bodies}, [];
+    is_deeply $data->{top_five_categories}, [];
+};
+
+subtest "Bexley report confirmation links to report on FMS" => sub {
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'thamesmead' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+    $mech->log_out_ok;
+    FixMyStreet::Script::Alerts::send_updates();
+    $mech->clear_emails_ok;
+    $mech->get_ok("/report/new?latitude=51.466707&longitude=0.181108");
+    $mech->submit_form_ok({ with_fields => { category => 'Bexley graffiti' } });
+    $mech->submit_form_ok({
+        with_fields => {
+            title => 'Bexley report',
+            detail => 'Report not on Thamesmead',
+        }
+    });
+    $mech->submit_form_ok({
+        with_fields => {
+        username_register => 'test@email.com',
+        name => 'Test user',
+        },
+    }, "submit details");
+    FixMyStreet::Script::Alerts::send_updates();
+    my $email = $mech->get_email;
+    my $link = $mech->get_link_from_email($email);
+    $mech->get_ok($link);
+    $mech->content_like(qr#.*?http://www.example.org.*?Bexley report#, 'Title link goes to FMS');
+    $mech->content_like(qr#follow this problem on.*?http://www.example.org.*?FixMyStreet\.com#, 'FMS link goes to FMS');
+    }
 };
 
 subtest "Thamesmead staff comments are ascribed to Peabody" => sub {
@@ -267,12 +306,6 @@ subtest "Thamesmead staff comments are ascribed to Peabody" => sub {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_contains("Posted by <strong>Peabody</strong>");
     };
-};
-
-subtest 'Check Thamesmead not in summary stats' => sub {
-    my $data = FixMyStreet::Script::UpdateAllReports::generate_dashboard();
-    is_deeply $data->{top_five_bodies}, [];
-    is_deeply $data->{top_five_categories}, [];
 };
 
 done_testing();

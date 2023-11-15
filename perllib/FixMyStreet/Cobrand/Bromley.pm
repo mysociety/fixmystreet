@@ -1092,6 +1092,7 @@ sub bulky_send_cancellation_confirmation {
             ],
 
             wasteworks_id => $collection_report->id,
+            payment_reference => $collection_report->get_extra_metadata('payment_reference'),
             refund_amount => $self->bulky_refund_amount($collection_report),
             collection_date => $self->bulky_nice_collection_date($collection_report),
         },
@@ -1272,6 +1273,7 @@ sub cancel_bulky_collections_without_payment {
             created  => { '<'  => $cutoff_date },
             external_id => { '!=', undef },
             state => [ FixMyStreet::DB::Result::Problem->open_states ],
+            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
             -or => [
                 extra => undef,
                 -not => { extra => { '\?' => 'payment_reference' } }

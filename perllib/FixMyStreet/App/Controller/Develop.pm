@@ -258,7 +258,6 @@ the supplied ?new_state and ?been_fixed query params.
 
 sub questionnaire_completed_previewer : Path('/_dev/questionnaire_completed') : Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{questionnaire} = $c->model('DB::Questionnaire')->search(undef, { rows => 1 } )->first;
     $c->stash->{been_fixed} = $c->get_param('been_fixed');
     $c->stash->{new_state} = $c->get_param('new_state');
     $c->stash->{template} = 'questionnaire/completed.html';
