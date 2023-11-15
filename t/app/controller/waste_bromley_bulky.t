@@ -456,6 +456,14 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok();
 
             subtest 'Refund info' => sub {
+                # Let's just check if no payment yet made
+                $report->unset_extra_metadata('payment_reference');
+                $report->update;
+                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->content_lacks('If you cancel you will be refunded £30.00');
+                $report->set_extra_metadata(payment_reference => 12345);
+                $report->update;
+
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
                 $mech->content_contains('If you cancel you will be refunded £30.00');
 
