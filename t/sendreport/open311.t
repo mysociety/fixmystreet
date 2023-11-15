@@ -257,13 +257,57 @@ A big problem/
     }),
     [ { name => 'site_code', value => 'Road ID' } ];
 
+test_overrides fixmystreet =>
+    {
+        body_name => 'Buckinghamshire',
+        body_cobrand => 'buckinghamshire',
+        area_id   => 2217,
+        row_data  => {
+            postcode => 'HP19 7QF',
+            extra => [
+                { name => 'ADDRESS_POSTCODE', value => "1 Test Road\nTestville\nHP19 7QF" },
+                { name => 'TELEPHONE_NUMBER', value => "07123 456789" },
+            ],
+        },
+    },
+    superhashof({
+        handler => isa('FixMyStreet::Cobrand::Buckinghamshire'),
+        'open311' => noclass(superhashof({
+            %standard_open311_parameters,
+        })),
+        problem_extra => bag(
+            { name => 'group',       value => undef },
+            { name => 'category',       value => 'ZZ' },
+            { name => 'asset_resource_id',       value => 'Road ID' },
+            { name => 'report_url',       value => undef },
+            { name => 'title',       value => 'Problem' },
+            { name => 'ADDRESS_POSTCODE', value => "1 Test Road\nTestville\nHP19 7QF" },
+            { name => 'TELEPHONE_NUMBER', value => "07123 456789" },
+            { name => 'description', value => qq/A big problem
+
+Address:
+1 Test Road
+Testville
+HP19 7QF
+
+Phone:
+07123 456789/
+            },
+        ),
+    }),
+    [
+        { name => 'ADDRESS_POSTCODE', value => "1 Test Road\nTestville\nHP19 7QF" },
+        { name => 'TELEPHONE_NUMBER', value => "07123 456789" },
+        { name => 'asset_resource_id', value => 'Road ID' },
+    ];
+
 sub test_overrides {
     # NB: Open311 and ::SendReport::Open311 are mocked below in BEGIN { ... }
     my ($cobrand, $input, $expected_data, $end_extra) = @_;
     subtest "$cobrand ($input->{body_name}) overrides" => sub {
 
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney', 'shropshire'],
+            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney', 'shropshire', 'buckinghamshire'],
         }, sub {
             #$db->txn_begin;
 

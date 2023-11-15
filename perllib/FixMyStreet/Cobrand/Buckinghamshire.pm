@@ -175,6 +175,18 @@ around open311_extra_data_include => sub {
         }
     }
 
+    # Reports in the "Apply for Access Protection Marking" category have some
+    # extra field values that we want to append to the report description
+    # before it's passed to Alloy
+    if (my $address = $row->get_extra_field_value('ADDRESS_POSTCODE')) {
+        my $phone = $row->get_extra_field_value('TELEPHONE_NUMBER') || "";
+        for (@$open311_only) {
+            if ($_->{name} eq 'description') {
+                $_->{value} .= "\n\nAddress:\n$address\n\nPhone:\n$phone";
+            }
+        }
+    }
+
     return $open311_only;
 };
 
