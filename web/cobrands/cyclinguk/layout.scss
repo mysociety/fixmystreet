@@ -1,0 +1,9 @@
+@import "_colours";
+@import "../sass/layout";
+
+body.mappage #site-logo {
+    padding: 0;
+    height: 60px;
+    width: 265px;
+    background-size: 234px 53px;
+}

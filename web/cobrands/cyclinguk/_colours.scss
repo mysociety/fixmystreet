@@ -1,0 +1,29 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$white: #ffffff;
+$blue: #009fda;
+$light_purple: #bfb1d4;
+$purple: #7a68ae;
+
+$primary: $blue;
+$primary_b: #000000;
+$primary_text: #222222;
+
+$base_bg: $white;
+$base_fg: #000;
+
+$nav_background_colour: $white;
+$nav_colour: #000;
+$nav_hover_background_colour: $primary;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: #ccc;
+
+$col_click_map: $white;
+
+$front-main-background-desktop: $blue;
