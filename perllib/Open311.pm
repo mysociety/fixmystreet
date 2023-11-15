@@ -427,7 +427,7 @@ sub _populate_service_request_update_params {
             $status = 'NO_FURTHER_ACTION';
         } elsif ( $state eq 'internal referral' ) {
             $status = 'INTERNAL_REFERRAL';
-        } elsif ( $state eq 'for_triage' ) {
+        } elsif ( $state eq 'for triage' ) {
             $status = 'FOR_TRIAGE';
         } elsif ( $state eq 'closed' ) {
             $status = 'CLOSED';
