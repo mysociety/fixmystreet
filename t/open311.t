@@ -590,8 +590,8 @@ foreach my $test (
         extended => 'IN_PROGRESS',
     },
     {
-        desc => 'comment with for_triage state sends status of CLOSED',
-        state => 'for_triage',
+        desc => 'comment with for triage state sends status of CLOSED',
+        state => 'for triage',
         status => 'CLOSED',
         extended => 'FOR_TRIAGE',
     },
