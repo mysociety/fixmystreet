@@ -11,3 +11,17 @@
     background: url(/cobrands/cyclinguk/images/logo.png) 0 50% no-repeat;
     background-size: 337px 76px;
 }
+
+/* New report conditional questions */
+
+@supports( #{"selector(:has(*))"} ) {
+    input[name$="CyclingUK_transport_other"],
+    label[for$="form_CyclingUK_transport_other"] {
+        #js-post-category-messages & {
+            display: none;
+        }
+        #js-post-category-messages:has(select[name$="CyclingUK_transport_mode"] option[value="other"]:checked) & {
+            display: block;
+        }
+    }
+}
