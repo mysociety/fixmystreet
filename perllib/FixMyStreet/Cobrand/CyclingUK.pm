@@ -47,5 +47,14 @@ sub problems_on_map_restriction {
     $self->problems_restriction($rs);
 }
 
+=item allow_report_extra_fields
+
+Enables the ReportExtraField feature which allows the addition of
+site-wide extra questions when making reports. Used for the custom Cycling UK
+questions when making reports.
+
+=cut
+
+sub allow_report_extra_fields { 1 }
 
 1;
