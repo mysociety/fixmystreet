@@ -434,6 +434,8 @@ FixMyStreet::override_config {
         $mech->get_ok($base_path);
         $mech->content_contains('Cancel booking');
         $mech->get_ok("$base_path/small_items/cancel/" . $report->id);
+        $mech->content_like(qr{<dt>Date</dt>\s*<dd>01 July</dd>});
+        $mech->content_contains('Toaster');
         $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
         $mech->content_contains('Your booking has been cancelled');
         $mech->follow_link_ok( { text => 'Show upcoming bin days' } );

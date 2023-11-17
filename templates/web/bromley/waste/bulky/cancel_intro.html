@@ -5,6 +5,9 @@
   [% minimum_charge = pounds(minimum_charge_amount / 100) %]
   [% partial_explainer = "Cancellations within 24 hours of collection are only eligibile to be refunded the amount paid above the minimum charge £" _ minimum_charge _ "." %]
 [% END %]
+
+[% PROCESS 'waste/bulky/_cancel_details.html' %]
+
 [% IF entitled_to_refund %]
   [% refund_amount = c.cobrand.bulky_refund_amount(cancelling_booking) %]
   <h3>Refund</h3>
