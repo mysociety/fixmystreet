@@ -77,8 +77,12 @@ sub process {
         my @args = FixMyStreet->dbic_connect_info;
         DBI->connect(@args[0..3]) or die $!;
     };
-    my $bodies = $opts{dbh}->selectcol_arrayref("select id from body where extra->>'cobrand' !='' order by id");
-    process_body($_, \%opts) foreach @$bodies;
+    if ($opts{body}) {
+        process_body($opts{body}, \%opts);
+    } else {
+        my $bodies = $opts{dbh}->selectcol_arrayref("select id from body where extra->>'cobrand' !='' order by id");
+        process_body($_, \%opts) foreach @$bodies;
+    }
 }
 
 =head2 process_body

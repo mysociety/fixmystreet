@@ -24,8 +24,12 @@ CronFns::language($site);
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['verbose|v', 'more verbose output'],
+    ['body|b=i', 'body ID to generate (all by default)'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
 
-FixMyStreet::Script::CSVExport::process(verbose => $opts->verbose);
+FixMyStreet::Script::CSVExport::process(
+    verbose => $opts->verbose,
+    body => $opts->body,
+);
