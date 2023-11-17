@@ -25,6 +25,7 @@
   </div>
 [% END %]
 
+    [% TRY %][% INCLUDE 'report/new/_category_extra_top.html' %][% CATCH file %][% END %]
     [% PROCESS "report/new/category_wrapper.html" %]
     [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
