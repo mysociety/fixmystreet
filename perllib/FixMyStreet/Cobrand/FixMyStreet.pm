@@ -580,6 +580,7 @@ sub reopening_disallowed {
     return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Southwark Council");
     return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
     return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Northumberland County Council");
+    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Gloucestershire County Council");
     return $self->next::method($problem);
 }
 
