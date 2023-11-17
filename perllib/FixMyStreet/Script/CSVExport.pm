@@ -31,13 +31,13 @@ use Utils;
 The database query speed does not vary that much with extra joins/CTEs,
 but it seemed clearer to list particular uses by individual cobrands.
 
+staff_user (the contributed_by's email) and staff_role (their roles) are always
+fetched (so that the role filter in the front end works); to use them they only
+need adding in the cobrand with add_csv_columns.
+
 =over 4
 
 =item user_details - fetch the report `user_email` and `user_phone`
-
-=item staff_user - if present, fetch contributed_by's email as `staff_user`
-
-=item staff_roles - include that staff's roles in `staff_role`
 
 =item assigned_to - include the name of the assigned user in `assigned_to`
 
@@ -173,11 +173,26 @@ sub generate_sql {
         "comments.id as comment_id, comments.problem_state, to_json(date_trunc('second', comments.confirmed))#>>'{}' as comment_confirmed, comments.mark_fixed",
         # Older reports did not store the group on the report, so fetch it from contacts
         "contact.extra->'group' AS group",
+        # Fetch any relevant staff user and their roles
+        "contributed_by_user.email AS staff_user",
+        "staff_roles.role_ids AS roles", "staff_roles.role_names AS staff_role",
     );
-    my @sql_with;
+    # Use a CTE to prefetch the staff roles
+    my @sql_with = (<<EOF);
+staff_roles AS (
+    SELECT users.id AS user_id,
+        string_agg(roles.id::text, ',' order by roles.id) AS role_ids,
+        string_agg(roles.name, ',' order by roles.name) AS role_names
+    FROM user_roles, users, roles
+    WHERE user_roles.user_id = users.id AND user_roles.role_id = roles.id AND from_body = $body_id
+    GROUP BY users.id
+)
+EOF
     my @sql_join = (
         '"contacts" "contact" ON CAST( "contact"."body_id" AS text ) = (regexp_split_to_array( "me"."bodies_str", \',\'))[1] AND "contact"."category" = "me"."category"',
         '"comment" "comments" ON "comments"."problem_id" = "me"."id"',
+        '"users" "contributed_by_user" ON "contributed_by_user"."id" = ("me"."extra"->>\'contributed_by\')::integer',
+        'staff_roles ON contributed_by_user.id = staff_roles.user_id',
     );
 
     if ($EXTRAS->{reassigned}{$cobrand->moniker}) {
@@ -195,24 +210,7 @@ EOF
         push @sql_join, '"user_planned_reports" ON "user_planned_reports"."report_id" = "me"."id" AND "user_planned_reports"."removed" IS NULL';
         push @sql_join, '"users" "planned_user" ON "planned_user"."id" = "user_planned_reports"."user_id"';
     }
-    if ($EXTRAS->{staff_user}{$cobrand->moniker}) {
-        push @sql_select, "contributed_by_user.id AS staff_user_id", "contributed_by_user.email AS staff_user";
-        push @sql_join, '"users" "contributed_by_user" ON "contributed_by_user"."id" = ("me"."extra"->>\'contributed_by\')::integer';
-    }
-    if ($EXTRAS->{staff_roles}{$cobrand->moniker}) {
-        push @sql_select, "staff_roles.role_ids AS roles", "staff_roles.role_names AS staff_role";
-        push @sql_with, <<EOF;
-staff_roles AS (
-    SELECT users.id AS user_id,
-        string_agg(roles.id::text, ',' order by roles.id) AS role_ids,
-        string_agg(roles.name, ',' order by roles.name) AS role_names
-    FROM user_roles, users, roles
-    WHERE user_roles.user_id = users.id AND user_roles.role_id = roles.id AND from_body = $body_id
-    GROUP BY users.id
-)
-EOF
-        push @sql_join, 'staff_roles ON contributed_by_user.id = staff_roles.user_id';
-    }
+
     if ($EXTRAS->{user_details}{$cobrand->moniker}) {
         push @sql_select, "problem_user.email AS user_email", "problem_user.phone AS user_phone";
         push @sql_join, '"users" "problem_user" ON "problem_user"."id" = "me"."user_id"';
