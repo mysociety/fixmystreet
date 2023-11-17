@@ -1093,7 +1093,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
     $mech->log_in_ok( $staff_user->email );
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
+    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Inspection date","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Overall Grade","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
     ok $mech->content_like(qr/Flexible problem.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
     ok $mech->content_like(qr/Flexible problem.*?,,,,Y,,,,,,,,/, "All fields empty but photo exists");
     $flexible_problem->set_extra_fields(
@@ -1107,7 +1107,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $flexible_problem->external_id('121');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,1,1,1,1/, "Bin request values added");
+    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,,,,,,,,1,1,1,1/, "Bin request values added");
     $flexible_problem->category('Fly-tipping');
     $flexible_problem->set_extra_fields(
         {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
@@ -1117,7 +1117,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     );
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,121,Y,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    ok $mech->content_like(qr/Flexible problem.*?,121,Y,,,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
     $flexible_problem->set_extra_fields(
         {name => 'location_name', value => 'Test Park'},
     );
@@ -1127,7 +1127,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $flexible_problem->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
   }
 };
 
@@ -1164,11 +1164,11 @@ subtest 'Dashboard CSV pre-generation' => sub {
     $problems[2]->update;
     FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
     $mech->get_ok('/dashboard?export=1');
-    $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
+    $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Inspection date","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Overall Grade","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
     $mech->content_like(qr/Pregen problem Test 3.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
-    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,1,1,1,1/, "Bin request values added");
-    $mech->content_like(qr/Pregen problem Test 2.*?,,Y,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
-    $mech->content_like(qr/Pregen problem Test 1.*?,,,"Test Park","Test User",.*?,,,,Y,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added");
+    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,,,,,,,1,1,1,1/, "Bin request values added");
+    $mech->content_like(qr/Pregen problem Test 2.*?,,Y,,,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    $mech->content_like(qr/Pregen problem Test 1.*?,,,"Test Park","Test User",.*?,,,,Y,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added");
 
     $mech->get_ok('/dashboard?export=1&state=investigating');
     $mech->content_contains('Pregen problem Test 2');
