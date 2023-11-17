@@ -15,6 +15,7 @@ describe('Queen’s Park', function() {
         cy.route('/report/new/ajax*').as('report-ajax');
         cy.route('**/mapserver/brent*queens_park*', 'fixture:brent-queens_park.xml').as('queens_park');
         cy.visit('/report/new?longitude=-0.211045&latitude=51.534948');
+        cy.wait('@report-ajax');
         cy.pickCategory('Dog fouling');
         cy.wait('@queens_park');
         cy.contains('maintained by the City of London').should('be.visible');
