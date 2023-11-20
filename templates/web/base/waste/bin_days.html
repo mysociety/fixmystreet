@@ -144,12 +144,12 @@
   || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property)
 %]
   [% IF c.cobrand.moniker != 'peterborough' %]
+  <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
   <div class="govuk-grid-row">
   [% ELSE %]
   <div class="govuk-grid-row waste-service-wrapper">
   [% END %]
     [% IF c.cobrand.moniker != 'peterborough' %]
-    <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
     <div class="govuk-grid-column-one-quarter text-centered">
     [% ELSE %]
     <div class="govuk-grid-column-one-quarter">
