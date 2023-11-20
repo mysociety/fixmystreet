@@ -126,10 +126,10 @@ sub garden_cc_check_payment_status {
         if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
             my $auth_details
                 = $resp->{paymentResult}{paymentDetails}{authDetails};
-            $p->set_extra_metadata( 'authCode', $auth_details->{authCode} );
-            $p->set_extra_metadata( 'continuousAuditNumber',
-                $auth_details->{continuousAuditNumber} );
-            $p->update;
+            $p->update_extra_metadata(
+                authCode => $auth_details->{authCode},
+                continuousAuditNumber => $auth_details->{continuousAuditNumber},
+            );
 
             # create sub in echo
             my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
