@@ -455,6 +455,39 @@ FixMyStreet::override_config {
 
             $mech->clear_emails_ok();
 
+            subtest 'No payment yet made' => sub {
+                $report->unset_extra_metadata('payment_reference');
+                $report->update;
+                $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->content_lacks('If you cancel you will be refunded £30.00');
+                $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+                $mech->content_contains('Your booking has been cancelled');
+                $mech->content_lacks('If you need to contact us about your application please use the application reference');
+
+                my $report_id = $report->id;
+                my $email = $mech->get_email;
+                subtest 'Sends cancellation confirmation' => sub {
+                    is $email->header('Subject'),
+                        'Cancelled bulky goods collection ' . $report_id,
+                        'Correct subject';
+                    is $email->header('To'),
+                        '"Bob Marge"' . ' <' . $report->user->email . '>',
+                        'Correct recipient';
+                    my $text = $email->as_string;
+                    like $text, qr/Bulky goods collection slot ${report_id}/, "Correct ID";
+                    like $text, qr/scheduled for 01 July/, "Correct scheduled time";
+                    unlike $text, qr/=C2=A30.01 will be refunded/, "Correct refund amount";
+                };
+
+                # No refund email
+
+                $report->discard_changes;
+                $report->set_extra_metadata(payment_reference => 12345);
+                $report->state('confirmed');
+                $report->update;
+                $mech->clear_emails_ok;
+            };
+
             subtest 'Refund info' => sub {
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
                 $mech->content_contains('If you cancel you will be refunded £30.00');
@@ -494,7 +527,7 @@ FixMyStreet::override_config {
                     '"Bob Marge"' . ' <' . $report->user->email . '>',
                     'Correct recipient';
                 my $text = $email->as_string;
-                like $text, qr/Bulky goods collection ${report_id}/, "Correct ID";
+                like $text, qr/Bulky goods collection slot ${report_id}/, "Correct ID";
                 like $text, qr/scheduled for 01 July/, "Correct scheduled time";
                 like $text, qr/=C2=A30.01 will be refunded/, "Correct refund amount";
             };

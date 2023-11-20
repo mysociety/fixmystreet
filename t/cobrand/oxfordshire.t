@@ -1,8 +1,10 @@
 use Test::MockModule;
 
 use CGI::Simple;
+use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use Open311;
 my $mech = FixMyStreet::TestMech->new;
@@ -253,10 +255,12 @@ FixMyStreet::override_config {
     ok $mech->host('oxfordshire.fixmystreet.com');
 };
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1, skip_checks => 1 },
     ALLOWED_COBRANDS => 'oxfordshire',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
 
     subtest 'can use customer reference to search for reports' => sub {
@@ -297,6 +301,17 @@ FixMyStreet::override_config {
         is $rows[2]->[21], '', 'Report without HIAMS ref has empty ref field';
         is $rows[2]->[22], '20202020', 'USRN included in row if present';
         is $rows[3]->[21], '123098123', 'Older Exor report has correct ref';
+    };
+
+    subtest 'role filter works okay pre-generated' => sub {
+        $problems[1]->set_extra_metadata(contributed_by => $counciluser->id);
+        $problems[1]->update;
+        $problems[2]->set_extra_metadata(contributed_by => $counciluser->id);
+        $problems[2]->update;
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1&role=' . $role->id);
+        my @rows = $mech->content_as_csv;
+        is scalar @rows, 3, '1 (header) + 2 (reports) = 3 lines';
     };
 
     $oxon->update({

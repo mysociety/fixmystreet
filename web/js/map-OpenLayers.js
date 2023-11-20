@@ -769,7 +769,7 @@ $.extend(fixmystreet.utils, {
                     // Look at original href here to know if location was present at load.
                     // If it was, we don't want to zoom out to the bounds of the area.
                     var qs = OpenLayers.Util.getParameters(fixmystreet.original.href);
-                    if (!qs.bbox && !qs.lat && !qs.lon) {
+                    if (!qs.bbox && !qs.lat && !qs.lon && !qs.pc) {
                         zoomToBounds(extent);
                     }
                 } else {

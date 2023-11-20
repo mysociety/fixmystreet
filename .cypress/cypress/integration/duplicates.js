@@ -1,14 +1,4 @@
 describe('Duplicate tests', function() {
-    it('does not try and fetch duplicates which will not get shown', function() {
-      cy.server();
-      cy.route('/report/new/ajax*').as('report-ajax');
-      cy.visit('http://fixmystreet.localhost:3001/report/new?latitude=52.563074&longitude=-1.991032');
-      cy.wait('@report-ajax');
-      cy.pickCategory('Graffiti');
-      cy.nextPageReporting();
-      cy.get('div.dropzone').should('be.visible');
-    });
-
     it('has a separate duplicate suggestions step when needed', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');

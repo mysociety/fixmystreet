@@ -1,6 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use File::Temp 'tempdir';
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -32,9 +33,11 @@ $mech->create_contact_ok(
     group => 'Hired e-bike or e-scooter',
 );
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'camden', 'tfl' ],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
     subtest "hides the TfL River Piers category" => sub {
 

@@ -1018,6 +1018,8 @@ sub dashboard_export_problems_add_columns {
         staff_role => 'Staff Role',
     );
 
+    return if $csv->dbi; # All covered already
+
     my $user_lookup = $self->csv_staff_users;
     my $userroles = $self->csv_staff_roles($user_lookup);
 
@@ -1076,8 +1078,14 @@ sub bulky_location_text_prompt {
 
 sub bulky_minimum_charge { $_[0]->wasteworks_config->{per_item_min_collection_price} }
 
+sub bulky_booking_paid {
+    my ($self, $collection) = @_;
+    return $collection->get_extra_metadata('payment_reference');
+}
+
 sub bulky_can_refund_collection {
     my ($self, $collection) = @_;
+    return 0 if !$self->bulky_booking_paid($collection);
     return 0 if !$self->within_bulky_cancel_window($collection);
     return $self->bulky_refund_amount($collection) > 0;
 }
@@ -1092,7 +1100,7 @@ sub bulky_send_cancellation_confirmation {
             ],
 
             wasteworks_id => $collection_report->id,
-            payment_reference => $collection_report->get_extra_metadata('payment_reference'),
+            paid => $self->bulky_booking_paid($collection_report),
             refund_amount => $self->bulky_refund_amount($collection_report),
             collection_date => $self->bulky_nice_collection_date($collection_report),
         },

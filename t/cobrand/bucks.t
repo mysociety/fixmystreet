@@ -3,6 +3,7 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
+use File::Temp 'tempdir';
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
@@ -74,10 +75,12 @@ $contact->update;
 
 $mech->create_contact_ok(body_id => $parish->id, category => 'Street lighting', email => 'streetlight@example.org', send_method => 'Email', state => 'staff');
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'buckinghamshire', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         open311_email => {
             buckinghamshire => {

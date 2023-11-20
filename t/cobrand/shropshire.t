@@ -1,4 +1,5 @@
 use CGI::Simple;
+use File::Temp 'tempdir';
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
@@ -170,9 +171,11 @@ subtest 'check open311_contact_meta_override' => sub {
     is $extra_fields[0][1]->{fieldtype}, undef, "not added fieldtype 'date' to 'Registration Mark'";
 };
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'shropshire',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
     subtest 'Dashboard CSV adds column "Private" for "non_public" attribute' => sub {
         my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',

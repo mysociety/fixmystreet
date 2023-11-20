@@ -225,7 +225,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         bike_number => "Bike number",
-        agent_responsible => "Agent responsible",
+        assigned_to => "Agent responsible",
         safety_critical => "Safety critical",
         delivered_to => "Delivered to",
         closure_email_at => "Closure email at",
@@ -235,22 +235,48 @@ sub dashboard_export_problems_add_columns {
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
     my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
-
+    my %extra_columns;
     if ($csv->category) {
-        my ($contact) = grep { $_->category eq $csv->category } @contacts;
-        if ($contact) {
-            foreach (@{$contact->get_metadata_for_storage}) {
-                next if $_->{code} eq 'safety_critical';
-                $csv->add_csv_columns( "extra.$_->{code}" => $_->{description} );
-            }
+        @contacts = grep { $_->category eq $csv->category } @contacts;
+    }
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            next if $_->{code} eq 'safety_critical';
+            $extra_columns{"extra.$_->{code}"} = $_->{description} || $_->{code};
         }
-    } else {
-        foreach my $contact (@contacts) {
-            foreach (@{$contact->get_metadata_for_storage}) {
-                next if $_->{code} eq 'safety_critical';
-                $csv->add_csv_columns( "extra.$_->{code}" => $_->{description} );
+    }
+    my @extra_columns = map { $_ => $extra_columns{$_} } sort keys %extra_columns;
+    $csv->add_csv_columns(@extra_columns);
+
+    if ($csv->dbi) {
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+
+            my $user_name_display = $report->{anonymous}
+                ? '(anonymous ' . $report->{id} . ')' : $report->{name};
+
+            my $bike_number = $csv->_extra_field($report, 'Question') || '';
+            my $safety_critical = $csv->_extra_field($report, 'safety_critical') || 'no';
+            my $delivered_to = $csv->_extra_metadata($report, 'sent_to') || [];
+            my $closure_email_at = $csv->_extra_metadata($report, 'closure_alert_sent_at') || '';
+            $closure_email_at = DateTime->from_epoch(
+                epoch => $closure_email_at, time_zone => FixMyStreet->local_time_zone
+            ) if $closure_email_at;
+            my $fields = {
+                acknowledged => $report->{whensent},
+                user_name_display => $user_name_display,
+                safety_critical => $safety_critical,
+                delivered_to => join(',', @$delivered_to),
+                closure_email_at => $closure_email_at,
+                bike_number => $bike_number,
+            };
+            foreach (@{$csv->_extra_field($report)}) {
+                next if $_->{name} eq 'safety_critical';
+                $fields->{"extra.$_->{name}"} = $_->{value};
             }
-        }
+            return $fields;
+        });
+        return;
     }
 
     $csv->csv_extra_data(sub {
@@ -273,16 +299,16 @@ sub dashboard_export_problems_add_columns {
         my $user_name_display = $report->anonymous
             ? '(anonymous ' . $report->id . ')' : $report->name;
 
-        my $bike_number = $report->get_extra_field_value('Question') || '';
-        my $safety_critical = $report->get_extra_field_value('safety_critical') || 'no';
-        my $delivered_to = $report->get_extra_metadata('sent_to') || [];
-        my $closure_email_at = $report->get_extra_metadata('closure_alert_sent_at') || '';
+        my $bike_number = $csv->_extra_field($report, 'Question') || '';
+        my $safety_critical = $csv->_extra_field($report, 'safety_critical') || 'no';
+        my $delivered_to = $csv->_extra_metadata($report, 'sent_to') || [];
+        my $closure_email_at = $csv->_extra_metadata($report, 'closure_alert_sent_at') || '';
         $closure_email_at = DateTime->from_epoch(
             epoch => $closure_email_at, time_zone => FixMyStreet->local_time_zone
         ) if $closure_email_at;
         my $fields = {
             acknowledged => $report->whensent,
-            agent_responsible => $agent ? $agent->name : '',
+            assigned_to => $agent ? $agent->name : '',
             user_name_display => $user_name_display,
             safety_critical => $safety_critical,
             delivered_to => join(',', @$delivered_to),
@@ -291,7 +317,7 @@ sub dashboard_export_problems_add_columns {
             reassigned_by => $reassigned_by,
             bike_number => $bike_number,
         };
-        foreach (@{$report->get_extra_fields}) {
+        foreach (@{$csv->_extra_field($report)}) {
             next if $_->{name} eq 'safety_critical';
             $fields->{"extra.$_->{name}"} = $_->{value};
         }

@@ -71,9 +71,13 @@ my $reporting = FixMyStreet::Reporting->new(
     $opts->start_date ? (start_date => $opts->start_date) : (),
     end_date => $opts->end_date,
 );
-$reporting->construct_rs_filter;
-$reporting->csv_parameters;
-$reporting->generate_csv($fh);
+if ($reporting->premade_csv_exists) {
+    $reporting->filter_premade_csv($fh);
+} else {
+    $reporting->construct_rs_filter;
+    $reporting->csv_parameters;
+    $reporting->generate_csv($fh);
+}
 unless ($use_stdout) {
     $file->move($opts->out);
 }

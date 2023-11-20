@@ -1,6 +1,8 @@
 use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::CSVExport;
+use File::Temp 'tempdir';
 use t::Mock::Tilma;
 use Test::MockTime qw(:all);
 use Test::MockModule;
@@ -1249,15 +1251,17 @@ FixMyStreet::override_config {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'brent',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
   }, sub {
     my ($flexible_problem) = $mech->create_problems_for_body(1, $brent->id, 'Flexible problem', {
         areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
     $mech->log_in_ok( $staff_user->email );
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
+    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
     ok $mech->content_like(qr/Flexible problem.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
     ok $mech->content_like(qr/Flexible problem.*?,,,,Y,,,,,,,,/, "All fields empty but photo exists");
     $flexible_problem->set_extra_fields(
@@ -1271,7 +1275,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $flexible_problem->external_id('121');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,1,1,1,1/, "Bin request values added");
+    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,,,,,,1,1,1,1/, "Bin request values added");
     $flexible_problem->category('Fly-tipping');
     $flexible_problem->set_extra_fields(
         {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
@@ -1281,7 +1285,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     );
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,121,Y,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    ok $mech->content_like(qr/Flexible problem.*?,121,Y,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
     $flexible_problem->set_extra_fields(
         {name => 'location_name', value => 'Test Park'},
     );
@@ -1291,7 +1295,53 @@ subtest 'Dashboard CSV extra columns' => sub {
     $flexible_problem->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
+  }
+};
+
+subtest 'Dashboard CSV pre-generation' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'brent',
+    MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+  }, sub {
+    my @problems = $mech->create_problems_for_body(3, $brent->id, 'Pregen problem', {
+        areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
+    $problems[0]->set_extra_fields(
+        {name => 'Container_Request_Action', value => 1},
+        {name => 'Container_Request_Container_Type', value => 1},
+        {name => 'Container_Request_Reason', value => 1},
+        {name => 'service_id', value => 1},
+        {name => 'usrn', value => 1234},
+        {name => 'uprn', value => 4321},
+    );
+    $problems[0]->external_id('121');
+    $problems[0]->update;
+    $problems[1]->category('Fly-tipping');
+    $problems[1]->state('investigating');
+    $problems[1]->set_extra_fields(
+        {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
+        {name => 'Are_you_willing_to_be_a_WItness?_', value => 0},
+        {name => 'Flytip_Size', value => 4},
+        {name => 'Flytip_Type', value => 13},
+    );
+    $problems[1]->update;
+    $problems[2]->set_extra_fields( {name => 'location_name', value => 'Test Park'},);
+    $problems[2]->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
+    $problems[2]->update;
+    FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
+    $mech->content_like(qr/Pregen problem Test 3.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
+    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,,,,,1,1,1,1/, "Bin request values added");
+    $mech->content_like(qr/Pregen problem Test 2.*?,,Y,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    $mech->content_like(qr/Pregen problem Test 1.*?,,,"Test Park","Test User",.*?,,,,Y,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added");
+
+    $mech->get_ok('/dashboard?export=1&state=investigating');
+    $mech->content_contains('Pregen problem Test 2');
+    $mech->get_ok('/dashboard?export=1&state=fixed');
+    $mech->content_lacks('Pregen problem Test 2');
   }
 };
 

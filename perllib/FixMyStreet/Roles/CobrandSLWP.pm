@@ -1072,20 +1072,30 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my @fields = @{ $report->get_extra_fields() };
-        my %fields = map { $_->{name} => $_->{value} } @fields;
+        my %fields;
+        if ($csv->dbi) {
+            %fields = %{$report->{extra}{_field_value} || {}};
+        } else {
+            my @fields = @{ $report->get_extra_fields() };
+            %fields = map { $_->{name} => $_->{value} } @fields;
+        }
 
-        my $detail = $report->detail;
+        my $detail = $csv->dbi ? $report->{detail} : $report->detail;
         $detail =~ s/^.*?\n\n//; # Remove waste category
 
         return {
             detail => $detail,
             uprn => $fields{uprn},
-            user_name_display => $report->name,
-            user_email => $report->user->email || '',
-            user_phone => $report->user->phone || '',
+            $csv->dbi ? (
+                user_name_display => $report->{name},
+                payment_reference => $fields{PaymentCode} || $report->{extra}{chequeReference} || '',
+            ) : (
+                user_name_display => $report->name,
+                user_email => $report->user->email || '',
+                user_phone => $report->user->phone || '',
+                payment_reference => $fields{PaymentCode} || $report->get_extra_metadata('chequeReference') || '',
+            ),
             payment_method => $fields{payment_method} || '',
-            payment_reference => $fields{PaymentCode} || $report->get_extra_metadata('chequeReference') || '',
             payment => $fields{payment},
             pro_rata => $fields{pro_rata},
             admin_fee => $fields{admin_fee},

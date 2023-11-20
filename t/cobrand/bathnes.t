@@ -1,5 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use File::Temp 'tempdir';
+use FixMyStreet::Script::CSVExport;
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -57,9 +59,11 @@ $mech->create_problems_for_body(1, $body->id, 'Title', {
     }
 });
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bathnes' ],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
 
 subtest 'cobrand displays council name' => sub {
@@ -115,6 +119,13 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
             'Reported As',
         ],
         'Column headers look correct';
+
+    # And if pre-generated, is the same
+    FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+    $mech->get_ok('/dashboard?export=1');
+    @rows = $mech->content_as_csv;
+    is scalar @rows, 5, '1 (header) + 4 (reports) = 5 lines';
+    is scalar @{$rows[0]}, 21, '21 columns present';
 };
 
 subtest "Custom CSV fields permission can be granted" => sub {

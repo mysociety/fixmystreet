@@ -2,6 +2,7 @@ use CGI::Simple;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use Test::Output;
+use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
@@ -73,10 +74,12 @@ $da->set_extra_fields({
 });
 $da->update;
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'bexley' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         open311_email => { bexley => {
             p1 => 'p1@bexley',

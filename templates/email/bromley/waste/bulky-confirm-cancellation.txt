@@ -1,9 +1,9 @@
 [% USE pounds = format('%.2f'); ~%]
 Subject: Cancelled bulky goods collection [% wasteworks_id %]
 
-Bulky goods collection [% wasteworks_id %] scheduled for [%collection_date %] has been cancelled.
+Bulky goods collection slot [% wasteworks_id %] scheduled for [%collection_date %] has been cancelled.
 
-[% IF refund_amount > 0 && payment_reference %]
+[% IF refund_amount > 0 && paid %]
 £[% pounds(refund_amount / 100) %] will be refunded.
 [% END %]
 
