@@ -365,13 +365,14 @@ FixMyStreet::override_config {
             note 'Original reporter';
             $mech->log_in_ok( $standard_user_1->email );
             $mech->get( '/report/' . $report->id );
+
             $mech->content_contains(
                 'name="update" class="form-control" id="form_update"',
                 'Update textbox shown',
             );
-            $mech->content_contains(
+            $mech->content_lacks(
                 'type="checkbox" name="reopen" id="form_reopen"',
-                'State checkbox shown',
+                'State checkbox not shown',
             );
             $mech->content_lacks(
                 'select class="form-control" name="state"  id="state"',
