@@ -150,15 +150,28 @@ sub get_problems : Private {
     }
 
     my $rows = 50;
-    $rows = 5000 if $c->stash->{sort_key} eq 'shortlist'; # Want all reports
+    $rows = 200 if $c->stash->{sort_key} eq 'shortlist'; # Can show more per page
 
     my $rs = $c->stash->{problems_rs}->search( $params, {
         prefetch => 'contact',
+        '+columns' => { 'contact.msgstr' => '' }, # To fill below
         order_by => $c->stash->{sort_order},
         rows => $rows,
     } )->include_comment_counts->page( $p_page );
 
+    my @categories = $c->stash->{problems_rs}->search({
+        "$table.state" => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        "$table.category" => { '!=', 'Bulky cancel' },
+    }, {
+        join => { 'contact' => 'translations' },
+        columns => [ "$table.category", { 'msgstr' => \"COALESCE(translations.msgstr, $table.category)" } ],
+        bind => [ 'category', $c->stash->{lang_code}, 'contact' ],
+        distinct => 1,
+    } )->all;
+    my %cats = map { $_->category => $_->get_column('msgstr') } @categories;
+
     while ( my $problem = $rs->next ) {
+        $problem->contact->set_column(msgstr => $cats{$problem->category});
         $c->stash->{has_content}++;
         push @$pins, $problem->pin_data('my', private => 1);
         push @$problems, $problem;

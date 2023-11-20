@@ -19,7 +19,7 @@ END;
       <input type="submit" value="1"
         data-label-remove="[% loc('Remove from shortlist') %]"
         data-label-add="[% loc('Add to shortlist') %]"
-      [% IF c.user.is_planned_report(problem) ~%]
+      [% IF c.req.uri.path == '/my/planned' OR c.user.is_planned_report(problem) ~%]
         name="shortlist-remove" title="[% loc('Remove from shortlist') %]" class="item-list__item__shortlist-remove"
       [%~ ELSE ~%]
         name="shortlist-add" title="[% IF problem.shortlisted_user %]
