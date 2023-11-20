@@ -419,6 +419,26 @@ p.form-error {
     }
 }
 
+
+.bulky__summary {
+    .item-summary-table {
+        thead {
+            background-color: $white;
+            border-color: #ccc;
+        }
+        tbody {
+            tr {
+                border-color: #ccc;
+            }
+        }
+    }
+    @media (min-width: 48em) {
+        .item-summary-table {
+            width: 100%;
+        }
+    }
+}
+
 input[type="text"], input[type="email"], textarea {
     &.govuk-input {
         @include sutton-form-input;
