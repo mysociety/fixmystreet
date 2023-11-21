@@ -811,6 +811,7 @@ FixMyStreet::override_config {
         is $service, 413;
         is $event_type, 1636;
         is $property, 12345;
+        is $start, '2023-07-07';
         return [
         {
             StartDate => { DateTime => '2023-07-01T00:00:00Z' },
@@ -841,6 +842,14 @@ FixMyStreet::override_config {
             Description => '2/3 Example Street, Sutton, SM2 5HF',
         };
     });
+
+    subtest 'Sutton dates window includes the next day' => sub {
+        set_fixed_time('2023-07-06T10:00:00Z');
+        $mech->log_in_ok($sutton_staff->email);
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Next Day', email => $user->email }});
+    };
 
     subtest 'Sutton staff paye payment sends user confirmation email' => sub {
         FixMyStreet::Script::Alerts::send_updates();

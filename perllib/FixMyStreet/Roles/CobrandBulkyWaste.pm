@@ -254,12 +254,11 @@ sub _bulky_collection_window {
 
         # If now is past cutoff time, push start date one day later
         my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-        if ((      $now->hour == $cutoff_time->{hours}
-                && $now->minute >= $cutoff_time->{minutes}
-            )
-            || $now->hour > $cutoff_time->{hours}
-        ){
-            $start_date->add( days => 1 );
+        my $days_before = $cutoff_time->{days_before} // 1;
+        my $cutoff_date_now = $now->clone->subtract( days => $days_before );
+        my $cutoff_date = $self->_bulky_cancellation_cutoff_date($now);
+        if ($cutoff_date_now >= $cutoff_date) {
+            $start_date->add( days => $days_before );
         }
     }
 
