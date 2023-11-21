@@ -589,7 +589,7 @@ sub tokenised_url {
         $params{login_type} = 'phone';
     }
 
-    my $token = FixMyStreet::App->model('DB::Token')->create(
+    my $token = FixMyStreet::DB->resultset('Token')->create(
         {
             scope => 'email_sign_in',
             data  => {
