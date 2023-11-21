@@ -58,8 +58,7 @@ sub munge_report_new_contacts {
 
 sub open311_title_fetched_report {
     my ($self, $request) = @_;
-    my ($group, $category) = split(/_/, $request->{service_name});
-    return sprintf("%s: %s", $group, $category);
+    return $request->{service_name};
 }
 
 sub pin_colour {
