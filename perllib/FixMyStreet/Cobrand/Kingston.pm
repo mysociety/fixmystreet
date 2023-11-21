@@ -87,6 +87,6 @@ Kingston starts collections at 6:30am, and lets you cancel up until then.
 =cut
 
 sub bulky_collection_time { { hours => 6, minutes => 30 } }
-sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30, days_before => 0 } }
 
 1;

@@ -1203,16 +1203,6 @@ sub collection_date {
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
 
-sub _bulky_cancellation_cutoff_date {
-    my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-    my $dt = $collection_date->clone->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    );
-    return $dt;
-}
-
 sub bulky_free_collection_available { 0 }
 
 sub bulky_hide_later_dates { 1 }
