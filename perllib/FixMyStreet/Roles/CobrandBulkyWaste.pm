@@ -433,7 +433,7 @@ sub bulky_nice_cancellation_cutoff_time {
 sub _bulky_cancellation_cutoff_date {
     my ($self, $collection_date) = @_;
     my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-    my $days_before = $cutoff_time->{days_before} || 1;
+    my $days_before = $cutoff_time->{days_before} // 1;
     my $dt = $collection_date->clone->subtract( days => $days_before )->set(
         hour   => $cutoff_time->{hours},
         minute => $cutoff_time->{minutes},
