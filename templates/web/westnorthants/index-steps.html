@@ -1,0 +1,18 @@
+<h2>[% loc('How to report a problem') %]</h2>
+
+<ol class="big-numbers">
+    <li>[% question %]</li>
+    <li>[% loc('Locate the problem on a map of the area') %]</li>
+    <li>
+      Enter details of the problem.<br>
+      Please enter a single problem per enquiry.<br>
+      The first item described will be taken as the enquiry
+    </li>
+    <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
+</ol>
+
+<section class="full-width">
+[% INCLUDE "front/stats.html" %]
+[% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+</section>
+
