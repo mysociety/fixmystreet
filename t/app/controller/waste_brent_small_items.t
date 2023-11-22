@@ -454,7 +454,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collections' => sub {
-        # Fixed date still set to 5th July
+        # Fixed date still set to 25th June
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a small items collection as missed');
         $mech->get_ok('/waste/12345/report');
@@ -513,7 +513,34 @@ FixMyStreet::override_config {
         $mech->content_contains('A small items collection has been reported as missed');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
-        $echo->mock( 'GetEventsForObject', sub { [] } );
+        $report->external_id('GUID');
+        $report->update;
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            DueDate => {
+                DateTime => '2023-06-24T20:00:00Z',
+                OffsetMinutes => '0',
+            },
+            EventTypeId => 2964,
+            ResolvedDate => '',
+            ResolutionCodeId => '',
+            EventStateId => 18489,
+            Guid => 'GUID',
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a small items collection as missed', 'Open collection can be reported as collection overdue');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            DueDate => {
+                DateTime => '2023-06-25T20:00:00Z',
+                OffsetMinutes => '0',
+            },
+            EventTypeId => 2964,
+            ResolvedDate => '',
+            ResolutionCodeId => '',
+            EventStateId => 18489,
+            Guid => 'GUID',
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a small items collection as missed', 'Open collection can not be reported as collection still due');
     };
 };
 

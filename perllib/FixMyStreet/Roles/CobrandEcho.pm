@@ -125,7 +125,6 @@ sub _parse_events {
         # Only care about open requests/enquiries
         my $closed = $self->_closed_event($_);
         next if $type ne 'missed' && $type ne 'bulky' && $closed;
-        next if $type eq 'bulky' && !$closed;
 
         if ($type eq 'request') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
@@ -142,19 +141,36 @@ sub _parse_events {
         } elsif ($type eq 'missed') {
             $self->parse_event_missed($_, $closed, $events);
         } elsif ($type eq 'bulky') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $resolved_date = construct_bin_date($_->{ResolvedDate});
-            $events->{enquiry}->{$event_type} = {
-                date => $resolved_date,
-                report => $report,
-                resolution => $_->{ResolutionCodeId},
-                state => $_->{EventStateId},
+            if (!$closed) {
+                my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+                $events->{enquiry}->{$event_type} = {
+                    report => $report,
+                    date => construct_bin_date($_->{DueDate}),
+                    resolution => $_->{ResolutionCodeId},
+                    state => $_->{EventStateId},
+                };
+            } else {
+                my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+                my $resolved_date = construct_bin_date($_->{ResolvedDate});
+                $events->{enquiry}->{$event_type} = {
+                    date => $resolved_date,
+                    report => $report,
+                    resolution => $_->{ResolutionCodeId},
+                    state => $_->{EventStateId},
+                };
             };
         } else { # General enquiry of some sort
             $events->{enquiry}->{$event_type} = 1;
         }
     }
     return $events;
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $duration = $today-$collection_due_date;
+    return $duration->is_positive;
 }
 
 sub parse_event_missed {
@@ -632,6 +648,11 @@ sub bulky_check_missed_collection {
             }
         }
     }
+
+    if (!$self->_closed_event($event) && !$self->_bulky_collection_overdue($event)) {
+        $row->{report_locked_out} = 1;
+    }
+
     $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
     my $missed_events = $events->{missed}->{$service_id} || [];
