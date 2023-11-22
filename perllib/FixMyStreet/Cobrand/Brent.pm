@@ -373,13 +373,13 @@ sub should_skip_sending_update {
 }
 
 
-=head2 open311_extra_data_include
+=head2 open311_update_missing_data
 
 =over 4
 
 =cut
 
-sub open311_extra_data_include {
+sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
 =item * Adds NSGRef from WFS service as app doesn't include road layer for Symology
@@ -390,24 +390,10 @@ WFS service at the point we're sending the report over Open311.
 
 =cut
 
-    my $open311_only;
     if ($contact->email =~ /^Symology/) {
-
         if (!$row->get_extra_field_value('NSGRef')) {
             if (my $ref = $self->lookup_site_code($row, 'usrn')) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
-            }
-        }
-
-=item * Copies UnitID into the details field for the Drains and gullies category
-
-=cut
-
-        if ($contact->groups->[0] eq 'Drains and gullies') {
-            if (my $id = $row->get_extra_field_value('UnitID')) {
-                $self->{brent_original_detail} = $row->detail;
-                my $detail = $row->detail . "\n\nukey: $id";
-                $row->detail($detail);
             }
         }
 
@@ -424,19 +410,6 @@ Same as Symology above, but different attribute name.
                 $row->update_extra_field({ name => 'usrn', description => 'USRN', value => $ref });
             }
         }
-
-=item * Adds information for constructing the description on the open311 side.
-
-=cut
-
-    } elsif ($contact->email =~ /^ATAK/) {
-
-        push @$open311_only, { name => 'title', value => $row->title };
-        push @$open311_only, { name => 'report_url', value => $h->{url} };
-        push @$open311_only, { name => 'detail', value => $row->detail };
-        push @$open311_only, { name => 'group', value => $row->get_extra_metadata('group') || '' };
-
-
     }
 
 =item * Adds location name from WFS service for reports in ATAK groups, if missing.
@@ -453,6 +426,43 @@ Same as Symology above, but different attribute name.
         if (my $name = $self->lookup_location_name($row)) {
             $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
         }
+    }
+}
+
+=back
+
+=head2 open311_extra_data_include
+
+=over 4
+
+=cut
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    my $open311_only;
+
+=item * Copies UnitID into the details field for the Drains and gullies category
+
+=cut
+
+    if ($contact->email =~ /^Symology/) {
+        if ($contact->groups->[0] eq 'Drains and gullies') {
+            if (my $id = $row->get_extra_field_value('UnitID')) {
+                my $detail = $row->detail . "\n\nukey: $id";
+                $row->detail($detail);
+            }
+        }
+
+=item * Adds information for constructing the description on the open311 side.
+
+=cut
+
+    } elsif ($contact->email =~ /^ATAK/) {
+        push @$open311_only, { name => 'title', value => $row->title };
+        push @$open311_only, { name => 'report_url', value => $h->{url} };
+        push @$open311_only, { name => 'detail', value => $row->detail };
+        push @$open311_only, { name => 'group', value => $row->get_extra_metadata('group') || '' };
     }
 
 =item * The title field gets pushed to location fields in Echo/Symology, so include closest address
@@ -481,8 +491,6 @@ We use {closest_address}->summary as this is geocoder-agnostic.
 
 =back
 
-=cut
-
 =head2 open311_extra_data_exclude
 
 Doesn't send UnitID for Drains and gullies category as an extra
@@ -507,11 +515,10 @@ to put the UnitID in the detail field for sending
 
 sub open311_post_send {
     my ($self, $row) = @_;
-    if ($row->contact->email =~ /ATAK/ && $row->external_id) {
-        $row->state('investigating');
-    }
 
-    $row->detail($self->{brent_original_detail}) if $self->{brent_original_detail};
+    if ($row->contact->email =~ /ATAK/ && $row->external_id) {
+        $row->update({ state => 'investigating' });
+    }
 }
 
 =head2 lookup_location_name
@@ -783,9 +790,10 @@ around garden_cc_check_payment_status => sub {
             if ($resp->{paymentResult}->{status} eq 'Success') {
                 my $auth_details
                     = $resp->{paymentResult}{paymentDetails}{authDetails};
-                $p->set_extra_metadata( 'authCode', $auth_details->{authCode} );
-                $p->set_extra_metadata( 'continuousAuditNumber',
-                    $resp->{paymentResult}{paymentDetails}{payments}{paymentSummary}{continuousAuditNumber} );
+                $p->update_extra_metadata(
+                    authCode => $auth_details->{authCode},
+                    continuousAuditNumber => $resp->{paymentResult}{paymentDetails}{payments}{paymentSummary}{continuousAuditNumber},
+                );
                 $p->update_extra_field({ name => 'payment_method', value => 'csc' });
                 $p->update;
 

@@ -102,23 +102,30 @@ sub open311_extra_data_include {
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
     my $error = $sender->error;
-    if ($error =~ /Cannot renew this property, a new request is required/ && $row->title eq "Garden Subscription - Renew") {
-        # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
-        $row->title("Garden Subscription - New");
-        $row->update_extra_field({ name => "Request_Type", value => $self->waste_subscription_types->{New} });
-    }
-    if ($error =~ /Missed Collection event already open for the property/) {
-        $row->state('duplicate');
-    }
-
-    if ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
-        my $id = $1;
-        my $cfg = $self->feature('echo');
-        my $echo = Integrations::Echo->new(%$cfg);
-        my $event = $echo->GetEvent($id, 'Id');
-        $row->external_id($event->{Guid});
-        $sender->success(1);
-    }
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        if ($error =~ /Cannot renew this property, a new request is required/ && $row2->title eq "Garden Subscription - Renew") {
+            # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
+            $row2->title("Garden Subscription - New");
+            $row2->update_extra_field({ name => "Request_Type", value => $self->waste_subscription_types->{New} });
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Missed Collection event already open for the property/) {
+            $row2->state('duplicate');
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
+            my $id = $1;
+            my $cfg = $self->feature('echo');
+            my $echo = Integrations::Echo->new(%$cfg);
+            my $event = $echo->GetEvent($id, 'Id');
+            $row2->external_id($event->{Guid});
+            $sender->success(1);
+            $row2->update;
+            $row->discard_changes;
+        }
+    });
 }
 
 =item * No updates on waste reports

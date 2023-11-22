@@ -147,8 +147,8 @@ sub open311_config {
     $h->{account_id} = $id || '0';
 }
 
-sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # Reports made via the app probably won't have a USRN because we don't
     # display the road layer. Instead we'll look up the closest asset from the
@@ -168,8 +168,6 @@ sub open311_extra_data_include {
             $row->update_extra_field({ name => 'UPRN', value => $ref });
         }
     }
-
-    return undef;
 }
 
 sub lookup_site_code_config {

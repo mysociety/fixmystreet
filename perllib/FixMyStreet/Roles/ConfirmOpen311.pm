@@ -13,6 +13,20 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    # Reports made via FMS.com or the app probably won't have a USRN
+    # value because we don't display the adopted highways layer on those
+    # frontends. Instead we'll look up the closest asset from the WFS
+    # service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('site_code')) {
+        if (my $site_code = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'site_code', value => $site_code });
+        }
+    }
+}
+
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
@@ -24,16 +38,6 @@ sub open311_extra_data_include {
         { name => 'description',
           value => $row->detail },
     ];
-
-    # Reports made via FMS.com or the app probably won't have a USRN
-    # value because we don't display the adopted highways layer on those
-    # frontends. Instead we'll look up the closest asset from the WFS
-    # service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('site_code')) {
-        if (my $site_code = $self->lookup_site_code($row)) {
-            $row->update_extra_field({ name => 'site_code', value => $site_code });
-        }
-    }
 
     return $open311_only;
 }

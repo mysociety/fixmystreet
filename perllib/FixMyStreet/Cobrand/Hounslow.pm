@@ -101,7 +101,7 @@ sub open311_post_send {
     my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'Hounslow Highways' ] ] );
     $sender->send($row, $h);
     if ($sender->success) {
-        $row->set_extra_metadata('hounslow_email_sent', 1);
+        $row->update_extra_metadata(hounslow_email_sent => 1);
     }
 }
 
