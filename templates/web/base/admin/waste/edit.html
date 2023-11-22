@@ -50,11 +50,6 @@
     </div>
 
     <p>
-    <label for="waste_daily_slots">Available slots each day</label>
-    <input class="form-control" type=text name="daily_slots" id="waste_daily_slots"
-        value="[% daily_slots %]">
-
-    <p>
     <input type=checkbox name="per_item_costs" value=1 id="waste_per_item_costs"
         [% 'checked' IF per_item_costs %]>
     <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
@@ -78,6 +73,11 @@
     <label class="inline" for="waste_show_individual_notes">Add text box for extra notes on every item</label>
 
   [% IF c.cobrand.moniker == 'peterborough' %]
+    <p>
+    <label for="waste_daily_slots">Available slots each day</label>
+    <input class="form-control" type=text name="daily_slots" id="waste_daily_slots"
+        value="[% daily_slots %]">
+
     <p>
     <input type=checkbox name="free_mode" value="1" id="waste_free_mode"
         [% 'checked' IF free_mode %]>
