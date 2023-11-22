@@ -617,6 +617,7 @@ sub open311_extra_data_include {
                 $row->detail($detail);
             }
         }
+        push @$open311_only, { name => 'report_url', value => $h->{url} };
 
 =item * Adds information for constructing the description on the open311 side.
 
