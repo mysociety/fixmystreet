@@ -14,12 +14,17 @@ my $changeverboselevel;
 sub look_for_report {
     my ($opts) = @_;
 
+    my $db = FixMyStreet::DB->schema->storage;
     my $params = FixMyStreet::Script::Reports::construct_query($opts->debug);
-    my $unsent = FixMyStreet::DB->resultset('Problem')->search($params, {
-        for => \'UPDATE SKIP LOCKED',
-        rows => 1,
-        order_by => \'RANDOM()'
-    } )->single or return;
+    my $unsent = $db->txn_do(sub {
+        my $p = FixMyStreet::DB->resultset('Problem')->search($params, {
+            for => \'UPDATE SKIP LOCKED',
+            rows => 1,
+            order_by => \'RANDOM()'
+        } )->single;
+        $p->update({ send_state => 'processing' }) if $p;
+        return $p;
+    }) or return;
 
     print_log('debug', "Trying to send report " . $unsent->id);
     my $item = FixMyStreet::Queue::Item::Report->new(
@@ -33,6 +38,11 @@ sub look_for_report {
         $unsent->update_send_failed($_ || 'unknown error');
         print_log('info', '[', $unsent->id, "] Send failed: $_");
     };
+
+    $db->txn_do(sub {
+        my $p = FixMyStreet::DB->resultset('Problem')->search({ id => $unsent->id }, { for => \'UPDATE' } )->single;
+        $p->update({ send_state => 'unprocessed' }) if $p && $p->send_state eq 'processing';
+    });
 }
 
 sub look_for_update {
