@@ -153,7 +153,7 @@ sub open311_extra_data_exclude {
     my ($self, $row, $h) = @_;
     # We need to store this as Open311 pre_send needs to check it and it will
     # have been removed due to this function.
-    $row->set_extra_metadata(pcc_witness => $row->get_extra_field_value('pcc-witness'));
+    $self->{cache_pcc_witness} = $row->get_extra_field_value('pcc-witness');
     [ '^PCC-', '^emergency$', '^private_land$', '^extra_detail$' ]
 }
 
@@ -264,6 +264,7 @@ sub get_body_sender {
         if ( $emails->{flytipping} ) {
             my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
             $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
+            $self->{cache_flytipping_email} = 1; # This is available in post_report_sent
             return { method => 'Email', contact => $contact};
         }
     }
@@ -282,14 +283,14 @@ sub munge_sendreport_params {
 }
 
 sub _witnessed_general_flytipping {
-    my $row = shift;
-    my $witness = $row->get_extra_metadata('pcc_witness') || '';
+    my ($self, $row) = @_;
+    my $witness = $self->{cache_pcc_witness} || '';
     return ($row->category eq 'General fly tipping' && $witness eq 'yes');
 }
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
-    return 'SKIP' if _witnessed_general_flytipping($row);
+    return 'SKIP' if $self->_witnessed_general_flytipping($row);
 
     # This is a temporary addition to workaround an issue with the bulky goods
     # backend Peterborough are using.
@@ -297,10 +298,6 @@ sub open311_pre_send {
     # manner, we concatenate all relevant details into the report's title field,
     # which is displayed as a service request note in Bartec.
     if ($row->category eq 'Bulky collection') {
-        # We don't want to persist our changes to the DB, so keep a copy
-        # of the original title so it can be restored by open311_post_send.
-        $self->{pboro_original_title} = $row->get_extra_field_value("title");
-
         my $title = "Crew notes: " . ( $row->get_extra_field_value("CREW NOTES") || "" );
         $title .= "\n\nItems:\n";
 
@@ -318,15 +315,8 @@ sub open311_pre_send {
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
-    if ($row->category eq 'Bulky collection') {
-        # Restore problem's original title before it's stored to DB.
-        $row->update_extra_field({ name => "title", value => $self->{pboro_original_title} });
-    }
-
     # Check Open311 was successful
-    my $send_email = $row->external_id || _witnessed_general_flytipping($row);
-    # Unset here because check above used it
-    $row->unset_extra_metadata('pcc_witness');
+    my $send_email = $row->external_id || $self->_witnessed_general_flytipping($row);
     return unless $send_email;
 
     my $emails = $self->feature('open311_email');
@@ -347,8 +337,7 @@ sub suppress_report_sent_email {
 sub post_report_sent {
     my ($self, $problem) = @_;
 
-    if ( $problem->get_extra_metadata('flytipping_email') ) {
-        $problem->unset_extra_metadata('flytipping_email');
+    if ( $self->{cache_flytipping_email} ) {
         $self->_post_report_sent_close($problem, 'report/new/flytipping_text.html');
     }
 }

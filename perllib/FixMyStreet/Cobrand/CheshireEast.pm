@@ -121,19 +121,6 @@ sub enter_postcode_text {
     'Enter a postcode, or a road and place name';
 }
 
-around open311_extra_data_include => sub {
-    my ($orig, $self, $row, $h) = @_;
-    my $open311_only = $self->$orig($row, $h);
-
-    if (my $address = $row->nearest_address) {
-        push @$open311_only, (
-            { name => 'closest_address', value => $address }
-        );
-    }
-
-    return $open311_only
-};
-
 sub geocoder_munge_results {
     my ($self, $result) = @_;
     $result->{display_name} = '' unless $result->{display_name} =~ /Cheshire East/;
@@ -204,13 +191,12 @@ sub council_rss_alert_options {
 =head2 open311_extra_data_include
 
 For reports made by staff on behalf of another user, append the staff
-user's email & name to the report description.
+user's email & name to the report description, and include closest_address.
 
 =cut
+
 around open311_extra_data_include => sub {
     my ($orig, $self, $row, $h) = @_;
-
-    $h->{ce_original_detail} = $row->detail;
 
     my $contributed_suffix;
     if (my $contributed_by = $row->get_extra_metadata("contributed_by")) {
@@ -229,13 +215,13 @@ around open311_extra_data_include => sub {
         $row->detail($row->detail . $contributed_suffix);
     }
 
+    if (my $address = $row->nearest_address) {
+        push @$open311_only, (
+            { name => 'closest_address', value => $address }
+        );
+    }
+
     return $open311_only;
 };
-
-sub open311_post_send {
-    my ($self, $row, $h) = @_;
-
-    $row->detail($h->{ce_original_detail});
-}
 
 1;

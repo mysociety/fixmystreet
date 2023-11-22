@@ -118,21 +118,12 @@ sub open311_config {
     $params->{multi_photos} = 1;
 }
 
-sub open311_extra_data_include {
+sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    my $open311_only;
     my $feature = $self->lookup_site_code($row);
     my $extra = $row->get_extra_fields;
     if ($contact->email =~ /^Confirm/) {
-        push @$open311_only,
-            { name => 'report_url', description => 'Report URL',
-              value => $h->{url} },
-            { name => 'title', description => 'Title',
-              value => $row->title },
-            { name => 'description', description => 'Detail',
-              value => $row->detail };
-
         if (!$row->get_extra_field_value('site_code')) {
             if (my $ref = $feature->{properties}{NSG_REF}) {
                 $row->update_extra_field({ name => 'site_code', value => $ref, description => 'Site code' });
@@ -159,18 +150,27 @@ sub open311_extra_data_include {
     }
 
     if ($feature && $feature->{properties}{ADDRESS}) {
-        # Note subtle issue here - the first call to update_extra_field above
-        # updates the original extra (stored by SendReport/Open311 in
-        # original_extra and thus kept when it 'rolls back' after adding the
-        # open311-only entries), but it is changed at the end of that call, so
-        # a second call to update_extra_field will update extra but not the
-        # original_extra and thus will be lost and not available to
-        # open311_post_send. We'll use extra_metadata here anyway.
         my $address = $feature->{properties}{ADDRESS};
         $address =~ s/([\w']+)/\u\L$1/g;
         my $town = $feature->{properties}{TOWN};
         $town =~ s/([\w']+)/\u\L$1/g;
-        $row->set_extra_metadata(nsg => { name => $address, area => $town });
+        $self->{cache_nsg} = { name => $address, area => $town };
+    }
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    my $open311_only;
+
+    if ($contact->email =~ /^Confirm/) {
+        push @$open311_only,
+            { name => 'report_url', description => 'Report URL',
+              value => $h->{url} },
+            { name => 'title', description => 'Title',
+              value => $row->title },
+            { name => 'description', description => 'Detail',
+              value => $row->detail };
     }
 
     # Add private comments field
@@ -287,10 +287,9 @@ sub open311_post_send {
         $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
     }
 
-    if (my $nsg = $row->get_extra_metadata('nsg')) {
+    if (my $nsg = $self->{cache_nsg}) {
         $row->push_extra_fields({ name => 'NSGName', description => 'Street name', value => $nsg->{name} });
         $row->push_extra_fields({ name => 'NSGArea', description => 'Street area', value => $nsg->{area} });
-        $row->unset_extra_metadata('nsg');
     }
     $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
 

@@ -192,11 +192,25 @@ sub lookup_site_code_config {
     }
 }
 
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    return if $contact->email =~ /Jadu/;
+
+    # Reports made via the app probably won't have a NSGRef because we don't
+    # display the road layer. Instead we'll look up the closest asset from the
+    # WFS service at the point we're sending the report over Open311.
+    if (!$row->get_extra_field_value('NSGRef')) {
+        if (my $ref = $self->lookup_site_code($row, 'streetref1')) {
+            $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
+        }
+    }
+}
+
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
     if (my $id = $row->get_extra_field_value('UnitID')) {
-        $h->{cb_original_detail} = $row->detail;
         $row->detail($row->detail . "\n\nUnit ID: $id");
     }
 
@@ -225,15 +239,6 @@ sub open311_extra_data_include {
         return $open311_only;
     }
 
-    # Reports made via the app probably won't have a NSGRef because we don't
-    # display the road layer. Instead we'll look up the closest asset from the
-    # WFS service at the point we're sending the report over Open311.
-    if (!$row->get_extra_field_value('NSGRef')) {
-        if (my $ref = $self->lookup_site_code($row, 'streetref1')) {
-            $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
-        }
-    }
-
     if (my $cfg = $self->feature('area_code_mapping')) {;
         my @areas = split ',', $row->areas;
         my @matches = grep { $_ } map { $cfg->{$_} } @areas;
@@ -257,8 +262,6 @@ sub open311_post_send {
 
     # No post send needed for Jadu backed categories.
     return if $row->external_id && $row->external_id =~ /Jadu/;
-
-    $row->detail($h->{cb_original_detail}) if $h->{cb_original_detail};
 
     # Check Open311 was successful
     return unless $row->external_id;

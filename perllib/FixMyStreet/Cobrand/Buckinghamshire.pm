@@ -147,8 +147,7 @@ sub send_questionnaires {
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
 
-
-=head2 open311_extra_data_include
+=head2 open311_update_missing_data
 
 All reports sent to Alloy should have a parent asset they're associated with.
 This is indicated by the value in the asset_resource_id field. For certain
@@ -159,11 +158,8 @@ Alloy server and use that as the parent.
 
 =cut
 
-around open311_extra_data_include => sub {
-    my ($orig, $self) = (shift, shift);
-    my $open311_only = $self->$orig(@_);
-
-    my ($row, $h, $contact) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # If the report doesn't already have an asset, associate it with the
     # closest feature from the Alloy highways network layer.
@@ -174,10 +170,22 @@ around open311_extra_data_include => sub {
             $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
         }
     }
+}
 
-    # Reports in the "Apply for Access Protection Marking" category have some
-    # extra field values that we want to append to the report description
-    # before it's passed to Alloy
+=head2 open311_extra_data_include
+
+Reports in the "Apply for Access Protection Marking" category have some
+extra field values that we want to append to the report description
+before it's passed to Alloy.
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
+
     if (my $address = $row->get_extra_field_value('ADDRESS_POSTCODE')) {
         my $phone = $row->get_extra_field_value('TELEPHONE_NUMBER') || "";
         for (@$open311_only) {

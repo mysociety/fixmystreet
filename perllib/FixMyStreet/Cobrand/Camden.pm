@@ -72,7 +72,7 @@ sub lookup_site_code_config {
     }
 }
 
-sub open311_extra_data_include {
+sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
     # Reports made via the app probably won't have a NSGRef because we don't
@@ -83,8 +83,6 @@ sub open311_extra_data_include {
             $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
         }
     }
-
-    return [];
 }
 
 sub open311_config {

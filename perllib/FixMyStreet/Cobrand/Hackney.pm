@@ -233,6 +233,19 @@ sub munge_sendreport_params {
     }
 }
 
+# Bit of a hack, doing it here, but soon after this point the flag
+# from get_body_sender (above) will be erased by a re-fetch.
+around open311_config => sub {
+    my ($orig, $self, $row, $h, $open311, $contact) = @_;
+    $self->$orig($row, $h, $open311, $contact);
+
+    # Make sure contact 'email' set correctly for Open311
+    if (my $split_match = $row->get_extra_metadata('split_match')) {
+        my $code = $split_match->{$contact->email};
+        $contact->email($code) if $code;
+    }
+};
+
 =item * When sending via Open311, make sure closest address is included
 
 =cut
@@ -270,13 +283,6 @@ sub open311_extra_data_include {
               value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) };
     }
     push @$open311_only, { name => 'title', value => $title };
-
-    # Make sure contact 'email' set correctly for Open311
-    if (my $split_match = $row->get_extra_metadata('split_match')) {
-        $row->unset_extra_metadata('split_match');
-        my $code = $split_match->{$contact->email};
-        $contact->email($code) if $code;
-    }
 
     if (my $address = $row->nearest_address) {
         push @$open311_only, (

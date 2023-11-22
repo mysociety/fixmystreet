@@ -75,8 +75,8 @@ sub reopening_disallowed {
     return 1;
 }
 
-sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # Reports made via FMS.com or the app probably won't have a USRN
     # value because we don't access the USRN layer on those

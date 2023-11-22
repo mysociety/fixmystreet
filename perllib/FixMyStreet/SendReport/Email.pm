@@ -122,7 +122,7 @@ sub send {
         $params, $sender, $nomail, $cobrand, $row->lang);
 
     unless ($result) {
-        $row->set_extra_metadata('sent_to' => email_list($params->{To}));
+        $row->update_extra_metadata(sent_to => email_list($params->{To}));
         $self->success(1);
     } else {
         $self->error( 'Failed to send email' );

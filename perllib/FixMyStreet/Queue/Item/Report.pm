@@ -308,7 +308,7 @@ sub _post_send {
     if (@errors) {
         $self->report->update_send_failed( join( '|', @errors ) );
     } else {
-        $self->report->send_state('sent');
+        $self->report->update({ send_state => 'sent' });
     }
 
     my $send_confirmation_email = $self->cobrand_handler->report_sent_confirmation_email($self->report);
