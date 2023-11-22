@@ -7,6 +7,9 @@ use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use Catalyst::Test 'FixMyStreet::App';
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 use_ok 'FixMyStreet::Cobrand::CentralBedfordshire';
 
 my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');

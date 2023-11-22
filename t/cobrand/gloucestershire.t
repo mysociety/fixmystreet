@@ -1,6 +1,9 @@
 use FixMyStreet::TestMech;
 use Test::Deep;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech    = FixMyStreet::TestMech->new;
 my $cobrand = FixMyStreet::Cobrand::Gloucestershire->new;
 my $body    = $mech->create_body_ok(
