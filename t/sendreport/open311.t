@@ -173,7 +173,7 @@ test_overrides hackney =>
             { name => 'title', value => 'Problem' },
             { name => 'description', value => 'A big problem' },
             { name => 'category', value => 'ZZ' },
-            { name => 'group', value => undef },
+            { name => 'group', value => '' },
             { name => 'closest_address', value => '1 Test Street, Testville, TE57 1AB' },
         ),
     });
@@ -276,7 +276,7 @@ test_overrides fixmystreet =>
             %standard_open311_parameters,
         })),
         problem_extra => bag(
-            { name => 'group',       value => undef },
+            { name => 'group',       value => '' },
             { name => 'category',       value => 'ZZ' },
             { name => 'asset_resource_id',       value => 'Road ID' },
             { name => 'report_url',       value => undef },

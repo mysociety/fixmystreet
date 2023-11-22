@@ -248,7 +248,7 @@ sub open311_extra_data_include {
         { name => 'category',
           value => $row->category },
         { name => 'group',
-          value => $row->get_extra_metadata('group') },
+          value => $row->get_extra_metadata('group', '') },
     ];
 
     my $title = $row->title;
