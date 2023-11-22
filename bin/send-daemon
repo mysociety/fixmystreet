@@ -69,7 +69,7 @@ while (!$exit) {
         $SIG{USR1} = sub { FixMyStreet::Script::SendDaemon::changeverboselevel(); };
         while (!$exit) {
             $0 = "fmsd (running queue)";
-            $db->txn_do(sub { FixMyStreet::Script::SendDaemon::look_for_report($opts) });
+            FixMyStreet::Script::SendDaemon::look_for_report($opts);
             $db->txn_do(sub { FixMyStreet::Script::SendDaemon::look_for_update($opts) });
             $0 = "fmsd";
             sleep(5 + rand(10));
