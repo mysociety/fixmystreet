@@ -464,6 +464,12 @@ sub filter_premade_csv {
         $state_column = 'DBState';
     }
 
+    my $range = FixMyStreet::DateRange->new(
+        start_date => $self->start_date,
+        end_date => $self->end_date,
+        formatter => FixMyStreet::DB->schema->storage->datetime_parser,
+    );
+
     my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
     open my $fh, "<:encoding(utf8)", $self->premade_csv_filename;
     my $arr = $csv->getline($fh);
@@ -495,11 +501,11 @@ sub filter_premade_csv {
         my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
         if ($all_states) {
             # Has to use created, because unconfirmed ones won't have a confirmed timestamp
-            next if $row->{Created} lt $self->start_date;
-            next if $self->end_date && $row->{Created} ge $self->end_date;
+            next if $row->{Created} lt $range->start_formatted;
+            next if $range->end_formatted && $row->{Created} ge $range->end_formatted;
         } else {
-            next if $row->{Confirmed} lt $self->start_date;
-            next if $self->end_date && $row->{Confirmed} ge $self->end_date;
+            next if $row->{Confirmed} lt $range->start_formatted;
+            next if $range->end_formatted && $row->{Confirmed} ge $range->end_formatted;
         }
 
         if ($self->role_id) {
