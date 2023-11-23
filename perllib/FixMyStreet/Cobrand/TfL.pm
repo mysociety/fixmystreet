@@ -96,7 +96,8 @@ sub base_url_for_report {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    my $bodies = $self->feature('categories_restriction_bodies') || [ 'TfL', 'National Highways' ];
+    my $bodies = [ 'TfL', 'National Highways' ];
+    push @$bodies, @{$self->feature('categories_restriction_bodies') || []};
     $rs = $rs->search( { 'body.name' => $bodies } );
     return $rs unless $self->{c}->stash->{categories_for_point}; # Admin page
     return $rs->search( { category => { -not_in => $self->_tfl_no_resend_categories } } );
@@ -466,8 +467,10 @@ sub munge_red_route_categories {
         # and borough street cleaning/flytipping categories.
         my %cleaning_cats = map { $_ => 1 } @{ $self->_cleaning_categories };
         my %council_cats = map { $_ => 1 } @{ $self->_tfl_council_categories };
+        my %extra_bodies = map { $_ => 1 } @{ $self->feature('categories_restriction_bodies') || [] };
         @$contacts = grep {
             ( $_->body->name eq 'TfL' && !$council_cats{$_->category} )
+            || $extra_bodies{$_->body->name}
             || $cleaning_cats{$_->category}
             || @{ mySociety::ArrayUtils::intersection( $self->_cleaning_groups, $_->groups ) }
         } @$contacts;
