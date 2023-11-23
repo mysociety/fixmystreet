@@ -160,18 +160,17 @@ sub check_report_is_on_cobrand_asset {
 
     my $lat = $self->{c}->stash->{latitude};
     my $lon = $self->{c}->stash->{longitude};
-    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
 
     my $cfg = {
         url => "https://$host/mapserver/brent",
-        srsname => "urn:ogc:def:crs:EPSG::27700",
+        srsname => "urn:ogc:def:crs:EPSG::4326",
         typename => "BrentDiffs",
-        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$lon,$lat</gml:coordinates></gml:Point></Contains></Filter>",
         outputformat => 'GML3',
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y, 1);
+    my $features = $self->_fetch_features($cfg, -1, -1, 1);
 
     if ($$features[0]) {
         if ($council_area) {
@@ -249,7 +248,7 @@ sub munge_cobrand_asset_categories {
     );
 
     # in_area will be true if the point is within the administrative area of Brent
-    my $in_area = $self->{c}->stash->{all_areas} && scalar(%{$self->{c}->stash->{all_areas}}) == 1 && (values %{$self->{c}->stash->{all_areas}})[0]->{id} eq $self->council_area_id->[0];
+    my $in_area = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
     # cobrand will be true if the point is within an area of different responsibility from the norm
     my $cobrand = $self->check_report_is_on_cobrand_asset || '';
     return unless $cobrand;
@@ -1773,7 +1772,7 @@ sub _barnet_non_street {
 
 sub _camden_non_street {
     return [
-        'Abandoned vehicles',
+        'Abandoned Vehicles',
         'Dead animal',
         'Flyposting',
         'Public toilets',
