@@ -147,7 +147,7 @@ sub _parse_events {
                     report => $report,
                     date => construct_bin_date($_->{DueDate}),
                     resolution => $_->{ResolutionCodeId},
-                    state => $_->{EventStateId},
+                    state => 'open',
                 };
             } else {
                 my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
@@ -164,13 +164,6 @@ sub _parse_events {
         }
     }
     return $events;
-}
-
-sub _bulky_collection_overdue {
-    my $collection_due_date = $_[1]->{date};
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $duration = $today-$collection_due_date;
-    return $duration->is_positive;
 }
 
 sub parse_event_missed {
@@ -649,9 +642,8 @@ sub bulky_check_missed_collection {
         }
     }
 
-    if (!$self->_closed_event($event) && !$self->_bulky_collection_overdue($event)) {
-        $row->{report_locked_out} = 1;
-    }
+    # Open events are coming through and we only want to continue under specific circumstances with an open event
+    return unless (!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event, $row);
 
     $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
