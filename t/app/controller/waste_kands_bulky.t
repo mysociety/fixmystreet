@@ -414,6 +414,11 @@ FixMyStreet::override_config {
             is $sent_params->{items}[0]{reference}, 'customer-ref-bulky';
             is $sent_params->{items}[0]{lineId}, 'RBK-BULKY-' . $new_report->id . '-' . $new_report->name;
 
+            $mech->log_in_ok($new_report->user->email);
+            $mech->get_ok("/waste/12345");
+            $mech->content_lacks('Items to be collected');
+            $mech->log_out_ok;
+
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
             $mech->clear_emails_ok;

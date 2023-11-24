@@ -224,13 +224,19 @@ sub find_unconfirmed_bulky_collections {
 sub find_pending_bulky_collections {
     my ( $self, $uprn ) = @_;
 
-    return $self->problems->search({
+    my $rs = $self->problems->search({
         category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
         state => [ FixMyStreet::DB::Result::Problem->open_states ],
     }, {
         order_by => { -desc => 'id' }
     });
+    if ($self->bulky_send_before_payment) {
+        $rs = $rs->search({
+            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+        });
+    }
+    return $rs;
 }
 
 sub _bulky_collection_window {
