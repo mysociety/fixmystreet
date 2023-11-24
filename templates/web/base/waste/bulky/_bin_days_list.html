@@ -46,6 +46,27 @@
   [% END %]
 </dl>
 
+  [% FOR booking IN recent_bulky_collections %]
+    [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Collection date</dt>
+      <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Reference number</dt>
+      <dd class="govuk-summary-list__value">[% booking.id %]</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Items</dt>
+      <dd class="govuk-summary-list__value">
+        <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
+      </dd>
+    </div>
+    <div class="waste-services-launch-panel">
+        <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
+    </div>
+  [% END %]
+
   [% IF unconfirmed_bulky_collections %]
     <hr>
     <dl class="govuk-summary-list govuk-!-margin-bottom-0">

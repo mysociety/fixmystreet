@@ -457,6 +457,8 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collections' => sub {
+        my $report_id = $report->id;
+
         # Fixed date still set to 5th July
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a small items collection as missed');
@@ -498,6 +500,7 @@ FixMyStreet::override_config {
             EventStateId => 18491,
         } ] } );
         $mech->get_ok('/waste/12345');
+        $mech->content_like(qr{Reference number</dt>\s*<dd[^>]*>$report_id</dd>});
         $mech->content_contains('A missed collection cannot be reported', 'Not completed');
         $mech->content_contains('could not be completed');
         $mech->get_ok('/waste/12345/report');

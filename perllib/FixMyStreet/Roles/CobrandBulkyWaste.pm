@@ -231,12 +231,39 @@ sub find_pending_bulky_collections {
     }, {
         order_by => { -desc => 'id' }
     });
+
+    return wantarray ? $self->_since_last_week($rs) : $rs;
+}
+
+sub find_recent_bulky_collections {
+    my ( $self, $uprn ) = @_;
+
+    my $rs = $self->problems->search({
+        category => ['Bulky collection', 'Small items collection'],
+        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
+        state => [ FixMyStreet::DB::Result::Problem->closed_states, FixMyStreet::DB::Result::Problem->fixed_states ],
+    }, {
+        order_by => { -desc => 'id' }
+    });
+
+    return wantarray ? $self->_since_last_week($rs) : $rs;
+}
+
+sub _since_last_week {
+    my ($self, $rs) = @_;
+
+    # If we've already sent it, and we want a full list for display, we don't
+    # want to show ones without a reference
     if ($self->bulky_send_before_payment) {
         $rs = $rs->search({
             extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
         });
     }
-    return $rs;
+
+    my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( weeks => 1 );
+    my @all = $rs->all;
+    @all = grep { my $date = $self->collection_date($_); $date >= $dt } @all;
+    return @all;
 }
 
 sub _bulky_collection_window {
