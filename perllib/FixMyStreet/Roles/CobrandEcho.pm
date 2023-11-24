@@ -739,18 +739,19 @@ sub bulky_nice_item_list {
     my @fields;
     for my $item (@items) {
         if (my $value = $report->get_extra_metadata("item_$item")) {
+            my $display = $value;
             if (my $note = $report->get_extra_metadata("item_notes_$item")) {
-                $value .= " ($note)";
+                $display .= " ($note)";
             }
-            push @fields, $value;
+            push @fields, { item => $value, display => $display };
         }
     }
     my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
 
     return [
         map {
-            value => $_,
-            message => $items_extra->{$_}{message},
+            value => $_->{display},
+            message => $items_extra->{$_->{item}}{message},
         },
         @fields,
     ];
