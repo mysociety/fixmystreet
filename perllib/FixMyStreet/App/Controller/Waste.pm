@@ -630,8 +630,11 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     $c->detach( '/page_error_404_not_found', [] ) unless $property && $property->{id};
 
     if ($c->cobrand->can('bulky_enabled')) {
-        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn})->all;
+        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn});
         $c->stash->{pending_bulky_collections} = @pending ? \@pending : undef;
+
+        my @recent = $c->cobrand->find_recent_bulky_collections($property->{uprn});
+        $c->stash->{recent_bulky_collections} = @recent ? \@recent : undef;
 
         my $cfg = $c->cobrand->feature('waste_features');
         if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
