@@ -1328,17 +1328,6 @@ sub service_name_override {
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
 }
 
-around look_up_property => sub {
-    my ($orig, $self, $id) = @_;
-    my $data = $orig->($self, $id);
-
-    my @pending = $self->find_pending_bulky_collections($data->{uprn})->all;
-    $self->{c}->stash->{pending_bulky_collections}
-        = @pending ? \@pending : undef;
-
-    return $data;
-};
-
 sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());

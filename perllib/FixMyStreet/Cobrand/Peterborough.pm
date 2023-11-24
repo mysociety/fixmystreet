@@ -563,26 +563,11 @@ sub construct_bin_date {
 sub look_up_property {
     my $self = shift;
     my $id = shift;
-
     return unless $id;
 
     my ($pc, $uprn) = split ":", $id;
-
     my $premises = $self->_premises_for_postcode($pc);
-
     my %premises = map { $_->{uprn} => $_ } @$premises;
-
-    my $c = $self->{c};
-    my @pending = $self->find_pending_bulky_collections($uprn)->all;
-    $c->stash->{pending_bulky_collections}
-        = @pending ? \@pending : undef;
-
-    my $cfg = $self->feature('waste_features');
-    if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
-        my @unconfirmed = $self->find_unconfirmed_bulky_collections($uprn)->all;
-        $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
-    }
-
     return $premises{$uprn};
 }
 

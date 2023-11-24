@@ -629,6 +629,17 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property && $property->{id};
 
+    if ($c->cobrand->can('bulky_enabled')) {
+        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn})->all;
+        $c->stash->{pending_bulky_collections} = @pending ? \@pending : undef;
+
+        my $cfg = $c->cobrand->feature('waste_features');
+        if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
+            my @unconfirmed = $c->cobrand->find_unconfirmed_bulky_collections($property->{uprn})->all;
+            $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
+        }
+    }
+
     $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
     $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
 

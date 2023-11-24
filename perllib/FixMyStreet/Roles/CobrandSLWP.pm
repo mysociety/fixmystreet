@@ -207,10 +207,6 @@ around look_up_property => sub {
     my ($orig, $self, $id) = @_;
     my $data = $orig->($self, $id);
 
-    my @pending = $self->find_pending_bulky_collections($data->{uprn})->all;
-    $self->{c}->stash->{pending_bulky_collections}
-        = @pending ? \@pending : undef;
-
     my $cfg = $self->feature('echo');
     if ($cfg->{nlpg} && $data->{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));

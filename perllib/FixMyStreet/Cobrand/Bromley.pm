@@ -1000,17 +1000,6 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
-around look_up_property => sub {
-    my ($orig, $self, $id) = @_;
-    my $data = $orig->($self, $id);
-
-    my @pending = $self->find_pending_bulky_collections($data->{uprn})->all;
-    $self->{c}->stash->{pending_bulky_collections}
-        = @pending ? \@pending : undef;
-
-    return $data;
-};
-
 sub report_form_extras {
     ( { name => 'private_comments' } )
 }
