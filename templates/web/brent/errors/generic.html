@@ -1,4 +1,8 @@
-[% DEFAULT title = loc('Error') %]
+[% IF message == 'invalid id_token';
+    title = 'MyAccount login';
+ELSE;
+    DEFAULT title = 'Error';
+END %]
 [% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = title %]
 
 [% IF csrf_token ~%]

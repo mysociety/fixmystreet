@@ -1,4 +1,7 @@
 [% USE pounds = format('%.2f') %]
+
+[% PROCESS 'waste/bulky/_cancel_details.html' %]
+
 [% IF entitled_to_refund %]
 <h3>Refund</h3>
 <p class="govuk-!-margin-bottom-2">If you cancel this booking you will receive a refund of £[% pounds(cancelling_booking.get_extra_field_value('payment') / 100) %].</p>

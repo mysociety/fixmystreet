@@ -1,0 +1,24 @@
+[% SET item_list = cobrand.bulky_nice_item_list(cancelling_booking) ~%]
+<dl>
+    <dt>Reference</dt>
+    <dd>[% cancelling_booking.id %]</dd>
+
+    <dt>Date</dt>
+    <dd>[% cobrand.bulky_nice_collection_date(cancelling_booking) %]</dd>
+
+    <dt>Items to be collected</dt>
+    <dd>
+        <ul>
+          [% FOR item IN item_list %]
+            <li>
+                [% item.value %]
+              [% IF item.message %]
+                <ul>
+                    <li>[% item.message %]</li>
+                </ul>
+              [% END %]
+            </li>
+          [% END %]
+        </ul>
+    </dd>
+</dl>

@@ -490,6 +490,8 @@ FixMyStreet::override_config {
 
             subtest 'Refund info' => sub {
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
+                $mech->content_like(qr{<dt>Date</dt>\s*<dd>01 July</dd>});
+                $mech->content_contains('BBQ');
                 $mech->content_contains('If you cancel you will be refunded £30.00');
 
                 set_fixed_time($partial_refund_time);

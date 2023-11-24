@@ -305,13 +305,21 @@ FixMyStreet::override_config {
 
     subtest 'role filter works okay pre-generated' => sub {
         $problems[1]->set_extra_metadata(contributed_by => $counciluser->id);
+        $problems[1]->confirmed('2022-05-05T12:00:00');
         $problems[1]->update;
         $problems[2]->set_extra_metadata(contributed_by => $counciluser->id);
+        $problems[2]->confirmed('2022-05-05T12:00:00');
         $problems[2]->update;
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
-        $mech->get_ok('/dashboard?export=1&role=' . $role->id);
+        $mech->get_ok('/dashboard?export=1&start_date=2022-01-01&role=' . $role->id);
         my @rows = $mech->content_as_csv;
         is scalar @rows, 3, '1 (header) + 2 (reports) = 3 lines';
+        $mech->get_ok('/dashboard?export=1&start_date=2022-1-1&end_date=2022-12-31');
+        @rows = $mech->content_as_csv;
+        is scalar @rows, 3, 'Bad start date parsed okay, both results from 2022 returned';
+        $mech->get_ok('/dashboard?export=1&start_date=2022-01-01&end_date=2022-05-05');
+        @rows = $mech->content_as_csv;
+        is scalar @rows, 3, 'Exact end date parsed okay, both results from 2022 returned';
     };
 
     $oxon->update({
