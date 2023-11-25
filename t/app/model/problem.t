@@ -136,9 +136,15 @@ $problem->insert;
 my $tz_local = DateTime::TimeZone->new( name => 'local' );
 my $comment_time = DateTime->now->set_time_zone( $tz_local );
 
-my $body = FixMyStreet::DB->resultset('Body')->new({
+my $body = FixMyStreet::DB->resultset('Body')->create({
     name => 'Edinburgh City Council'
 });
+
+my $existing_user = FixMyStreet::DB->resultset('User')->create(
+    {   email => '123@example.com',
+        name  => 'User 123',
+    },
+);
 
 for my $test (
     {
@@ -169,6 +175,32 @@ for my $test (
         start_state => 'fixed - council',
         state => 'confirmed',
     },
+    {
+        desc    => 'assigned user who exists on FMS',
+        request => {
+            comment_time => $comment_time,
+            status       => 'open',
+            description  => 'Assigning a user',
+            extras       => {
+                assigned_user_name  => 'User 123',
+                assigned_user_email => '123@example.com',
+            },
+        },
+        state => 'confirmed',
+    },
+    {
+        desc    => 'assigned user who does not exist on FMS',
+        request => {
+            comment_time => $comment_time,
+            status       => 'open',
+            description  => 'Assigning a user',
+            extras       => {
+                assigned_user_name  => 'User 234',
+                assigned_user_email => '234@example.com',
+            },
+        },
+        state => 'confirmed',
+    },
 ) {
     subtest $test->{desc} => sub {
         # makes testing easier;
@@ -193,6 +225,31 @@ for my $test (
         ok $update, 'updated created';
         is $problem->state, $test->{state}, 'problem state';
         is $update->text, $test->{request}->{description}, 'update text';
+
+        if ( my $assigned = $test->{request}{extras} ) {
+            my $assigned_user = FixMyStreet::DB->resultset('User')
+                ->search( { email => $assigned->{assigned_user_email} } )
+                    ->first;
+
+            # Check certain fields set for new user
+            if ( $assigned->{assigned_user_email} ne $existing_user->email ) {
+                is $assigned_user->from_body->id, $body->id,
+                    'assigned user body';
+                is $assigned_user->email_verified, 1,
+                    'assigned user email verified';
+                is_deeply $assigned_user->body_permissions,
+                    [ { body_id => $body->id, permission => 'report_inspect' }
+                    ],
+                    'assigned user permissions';
+            }
+
+            is $assigned_user->name, $assigned->{assigned_user_name},
+                'assigned user name';
+
+            is $problem->shortlisted_user->email,
+                $assigned->{assigned_user_email},
+                'assigned user actually assigned to problem';
+        }
     };
 }
 
