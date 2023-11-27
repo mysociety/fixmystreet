@@ -1331,4 +1331,8 @@ sub suppress_report_sent_email {
     return 0;
 }
 
+sub bulky_location_photo_prompt {
+    'Help us by attaching a photo of where the items will be left for collection.';
+}
+
 1;
