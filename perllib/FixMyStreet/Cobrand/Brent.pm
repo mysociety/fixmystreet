@@ -591,6 +591,11 @@ sub open311_extra_data_include {
             }
         }
 
+=item * Sends report_url for Symology
+
+=cut
+        push @$open311_only, {name => 'report_url', description => 'Report URL', value => $h->{url} };
+
 =item * Adds information for constructing the description on the open311 side.
 
 =cut
