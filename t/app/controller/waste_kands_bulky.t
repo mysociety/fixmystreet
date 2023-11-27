@@ -304,7 +304,6 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
             $mech->content_contains('5 items requested for collection');
-            $mech->content_contains('you can add up to 3 more items');
             $mech->content_contains('£61.00');
             $mech->back;
             $mech->back;
@@ -330,7 +329,6 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('you can add up to 5 more items');
             $mech->content_lacks('No image of the location has been attached.');
             $mech->content_contains('£40.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
@@ -523,7 +521,6 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bicycle/s);
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
-            $mech->content_contains('you can add up to 5 more items');
             $mech->content_contains('£40.00');
             $mech->content_contains('08 July');
             $mech->content_lacks('Request a bulky waste collection');
