@@ -1600,7 +1600,9 @@ sub bulky_open_overdue {
 
 sub _bulky_collection_overdue {
     my $collection_due_date = $_[1]->{date};
+    $collection_due_date->set_hour('00')->set_minute('00')->set_second('00')->set_nanosecond('00');
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $today->set_hour('00')->set_minute('00')->set_second('00')->set_nanosecond('00');
     my $duration = $today-$collection_due_date;
     return $duration->is_positive;
 }

@@ -145,7 +145,7 @@ sub _parse_events {
                 my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
                 $events->{enquiry}->{$event_type} = {
                     report => $report,
-                    date => construct_bin_date($_->{DueDate}),
+                    date => construct_bin_date({ DateTime => $report->get_extra_field_value('Collection_Date')}),
                     resolution => $_->{ResolutionCodeId},
                     state => 'open',
                 };
