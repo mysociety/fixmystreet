@@ -424,6 +424,17 @@ p.form-error {
     .item-summary-table {
         thead {
             background-color: $white;
+            border-color: #ccc;
+        }
+        tbody {
+            tr {
+                border-color: #ccc;
+            }
+        }
+    }
+    @media (min-width: 48em) {
+        .item-summary-table {
+            width: 100%;
         }
     }
 }
