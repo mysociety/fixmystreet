@@ -275,7 +275,7 @@ sub waste_event_state_map {
             Rejected => 'closed',
         },
         Cancelled => {
-            Cancelled => 'closed',
+            Cancelled => 'cancelled',
         },
     };
 }
