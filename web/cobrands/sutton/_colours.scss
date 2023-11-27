@@ -53,6 +53,15 @@ $postcodeform-background: transparent;
 // the style guide uses 1024px 
 $container-max-width: 1100px;
 
+$dropzone-border-colour: $grey;
+$dropzone-button-text: $white;
+$dropzone-button-background: $green;
+$dropzone-button-border: $green;
+$dropzone-link-color--awakened: $grey;
+$dropzone-border-color--full: $red;
+$dropzone-background-color: $white;
+
+
 @mixin sutton-form-input($margin: 0.5em 0, $padding: 5px) {
     padding: $padding;
     margin: $margin;

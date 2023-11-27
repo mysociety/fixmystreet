@@ -39,7 +39,14 @@ $border-radius: 25px;
 //way to spacious for page with no much elements.
 $container-max-width: 1024px;
 
+$dropzone-border-colour: #999;
 $dropzone-button-text: $white;
+$dropzone-button-background: #00703c; // match govuk-success-colour;
+$dropzone-button-border: #00703c;
+$dropzone-link-color--awakened: #999;
+$dropzone-border-color--full: $red;
+$dropzone-background-color: $white;
+
 
 $front-main-container-background-desktop: $white;
 $postcodeform-background: transparent;
