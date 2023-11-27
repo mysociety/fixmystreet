@@ -127,7 +127,7 @@ has_field payment_method => (
     widget => 'RadioGroup',
     options => [
         { label => 'Debit or Credit Card', value => 'credit_card', data_hide => '#form-cheque_reference-row' },
-        { label => 'Telephone or Cheque Payment', value => 'cheque', data_show => '#form-cheque_reference-row' }
+        { label => 'Cheque payment', value => 'cheque', data_show => '#form-cheque_reference-row' }
     ],
 );
 

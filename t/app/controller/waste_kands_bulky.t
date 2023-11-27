@@ -725,7 +725,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('How do you want to pay');
         $mech->content_contains('Debit or Credit Card');
-        $mech->content_contains('Telephone or Cheque Payment');
+        $mech->content_contains('Cheque payment');
         $mech->content_contains('Payment reference');
         $mech->submit_form_ok({ with_fields => { tandc => 1, payment_method => 'cheque' } });
         $mech->content_contains('Payment reference field is required');
