@@ -35,11 +35,18 @@ sub send {
     my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
     $cobrand->call_hook(open311_config => $row, $h, \%open311_params, $contact);
 
-    # Try and fill in some ones that we've been asked for, but not asked the user for
-    my $extra = $row->get_extra_fields();
-    my ($include, $exclude) = $cobrand->call_hook(open311_extra_data => $row, $h, $contact);
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        $cobrand->call_hook(open311_update_missing_data => $row2, $h, $contact);
+        $row2->update;
+        $row->discard_changes;
+    });
 
-    my $original_extra = [ @$extra ];
+    # Try and fill in some ones that we've been asked for, but not asked the user for
+    my ($include, $exclude) = $cobrand->call_hook(open311_extra_data => $row, $h, $contact);
+    my $extra = $row->get_extra_fields();
+
     push @$extra, @$include if $include;
     if ($exclude) {
         $exclude = join('|', @$exclude);
@@ -77,11 +84,11 @@ sub send {
         $resp = $open311->send_service_request( $row, $h, $contact->email );
     }
 
-    # make sure we don't save extra changes from above
-    $row->set_extra_fields( @$original_extra );
+    # make sure we don't save any changes from above
+    $row->discard_changes;
 
     if ( $skip || $resp ) {
-        $row->external_id( $resp );
+        $row->update({ external_id => $resp });
         $self->success( 1 );
     } else {
         $self->error( "Failed to send over Open311\n" ) unless $self->error;

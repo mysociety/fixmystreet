@@ -66,12 +66,6 @@ sub example_places {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    for (FixMyStreet::Cobrand::Bexley->new->body, FixMyStreet::Cobrand::Greenwich->new->body) {
-        if ($_ && $_->{id}) {
-            $bodies->{$_->id} = $_;
-        };
-    }
-
     FixMyStreet::Cobrand::UKCouncils::munge_report_new_bodies($_[0], $_[1])
 }
 

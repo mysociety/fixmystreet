@@ -86,27 +86,21 @@ sub unset_extra_metadata {
 
 =head2 update_extra_metadata
 
-This calls set_extra_metadata, plus immediately updates the database with the
-new data (so update in the DBIx::Class sense, not like update_extra_field),
-using the PostgreSQL || operator, to not affect anything else in the column.
-If you are using this, you probably don't want to then call update and
-potentially overwrite other things in the extra column.
+This immediately updates the database with the new data (so update in the
+DBIx::Class sense, not like update_extra_field), using the PostgreSQL ||
+operator, to not affect anything else in the column. It then refetches the
+data from the database so as to be up-to-date. Other changes on the object
+will be saved, apart from any changes already made to extra.
 
 =cut
 
 sub update_extra_metadata {
     my ($self, %new) = @_;
 
-    $self->set_extra_metadata(%new);
-    my $db = $self->result_source->schema->storage;
-    my $table = $self->result_source->name;
-    $db->dbh_do(sub {
-        my ($storage, $dbh, $json, $id) = @_;
-        $dbh->do("UPDATE $table SET extra = extra || ? WHERE id=?", undef, $json, $id);
-    },
-        encode_json(\%new),
-        $self->id
-    );
+    $self->update({
+        extra => \[ "coalesce(extra, '{}') || ?", encode_json(\%new) ],
+    });
+    $self->discard_changes;
 }
 
 =head2 get_extra_metadata

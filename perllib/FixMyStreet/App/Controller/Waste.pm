@@ -282,26 +282,28 @@ sub confirm_subscription : Private {
 
     return unless $p->state eq 'unconfirmed' || $already_confirmed;
 
-    $p->update_extra_field( {
-            name => 'LastPayMethod',
-            description => 'LastPayMethod',
-            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-        },
-    );
-    $p->update_extra_field( {
-            name => 'PaymentCode',
-            description => 'PaymentCode',
-            value => $reference
-        }
-    );
     $c->stash->{no_reporter_alert} = 1 if
         $p->get_extra_metadata('contributed_as') &&
         $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
 
-    $p->set_extra_metadata('payment_reference', $reference) if $reference;
-    $p->confirm;
-    $c->forward( '/report/new/create_related_things', [ $p ] );
-    $p->update;
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
+        $p->update_extra_field( {
+            name => 'LastPayMethod',
+            description => 'LastPayMethod',
+            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+        });
+        $p->update_extra_field( {
+            name => 'PaymentCode',
+            description => 'PaymentCode',
+            value => $reference
+        });
+        $p->set_extra_metadata('payment_reference', $reference) if $reference;
+        $p->confirm;
+        $c->forward( '/report/new/create_related_things', [ $p ] );
+        $p->update;
+    });
 
     if ($already_confirmed) {
         $p->add_to_comments({
@@ -566,6 +568,18 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
 
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
+
+
+    # Some actions chained off /waste/property require user to be logged in.
+    # The redirect to /auth does not work if it follows the asynchronous
+    # property lookup, so force a redirect to /auth here.
+    if ((      $c->action eq 'waste/bulky/cancel'
+            || $c->action eq 'waste/bulky/cancel_small'
+        )
+        && !$c->user_exists
+    ) {
+        $c->detach('/auth/redirect');
+    }
 
     if ($id eq 'missing') {
         $c->stash->{template} = 'waste/missing.html';

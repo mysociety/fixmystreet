@@ -295,7 +295,7 @@ sub meta_line {
             # use this meta data in preference to the user's from_body setting
             # in case they are no longer with the body, or have changed body.
             if (my $body_id = $self->get_extra_metadata('is_body_user')) {
-                $body = FixMyStreet::App->model('DB::Body')->find({id => $body_id})->name;
+                $body = FixMyStreet::DB->resultset('Body')->find({id => $body_id})->name;
             } else {
                 $body = $self->user->body;
             }

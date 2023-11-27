@@ -9,8 +9,6 @@ sub council_area_id { return 2224; }
 sub open311_extra_data {
     my ($self, $row, $h, $contact) = @_;
 
-    $h->{es_original_detail} = $row->detail;
-
     my $fields = $contact->get_extra_fields;
     my $text = '';
     for my $field ( @$fields ) {
@@ -21,12 +19,6 @@ sub open311_extra_data {
     }
     $row->detail($row->detail . $text);
     return (undef, ['sect_label', 'road_name', 'area_name']);
-}
-
-sub open311_post_send {
-    my ($self, $row, $h) = @_;
-
-    $row->detail($h->{es_original_detail});
 }
 
 1;

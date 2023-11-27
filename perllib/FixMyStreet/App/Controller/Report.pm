@@ -418,13 +418,13 @@ sub inspect : Private {
     $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     if ($c->cobrand->body) {
-        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories(
+        my $priorities_by_category = $c->model('DB::ResponsePriority')->by_categories(
             $c->stash->{contacts},
             body_id => $c->cobrand->body->id,
             problem => $problem,
         );
         $c->stash->{priorities_by_category} = $priorities_by_category;
-        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories(
+        my $templates_by_category = $c->model('DB::ResponseTemplate')->by_categories(
             $c->stash->{contacts},
             body_id => $c->cobrand->body->id
         );

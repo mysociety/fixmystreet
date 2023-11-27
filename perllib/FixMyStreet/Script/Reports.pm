@@ -21,27 +21,31 @@ sub send {
     my $params = construct_query($debug);
     my $db = FixMyStreet::DB->schema->storage;
 
-    $db->txn_do(sub {
-        my $unsent = FixMyStreet::DB->resultset('Problem')->search($params, {
-            for => \'UPDATE SKIP LOCKED',
+    my $unsent = FixMyStreet::DB->resultset('Problem')->search($params);
+
+    $manager->log("starting to loop through unsent problem reports...");
+    my $unsent_count = 0;
+    while (my $row = $unsent->next) {
+        $row = $db->txn_do(sub {
+            my $p = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE SKIP LOCKED' })->single;
+            $p->update({ send_state => 'processing' }) if $p && $p->send_state eq 'unprocessed';
+        }) or next;
+        $unsent_count++;
+        my $item = FixMyStreet::Queue::Item::Report->new(
+            report => $row,
+            manager => $manager,
+            verbose => $verbose,
+            nomail => $nomail,
+        );
+        $item->process;
+        $db->txn_do(sub {
+            my $p = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' } )->single;
+            $p->update({ send_state => 'unprocessed' }) if $p && $p->send_state eq 'processing';
         });
+    }
 
-        $manager->log("starting to loop through unsent problem reports...");
-        my $unsent_count = 0;
-        while (my $row = $unsent->next) {
-            $unsent_count++;
-            my $item = FixMyStreet::Queue::Item::Report->new(
-                report => $row,
-                manager => $manager,
-                verbose => $verbose,
-                nomail => $nomail,
-            );
-            $item->process;
-        }
-
-        $manager->end_line($unsent_count);
-        $manager->end_summary_unconfirmed;
-    });
+    $manager->end_line($unsent_count);
+    $manager->end_summary_unconfirmed;
 }
 
 sub construct_query {

@@ -147,8 +147,7 @@ sub send_questionnaires {
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
 
-
-=head2 open311_extra_data_include
+=head2 open311_update_missing_data
 
 All reports sent to Alloy should have a parent asset they're associated with.
 This is indicated by the value in the asset_resource_id field. For certain
@@ -159,11 +158,8 @@ Alloy server and use that as the parent.
 
 =cut
 
-around open311_extra_data_include => sub {
-    my ($orig, $self) = (shift, shift);
-    my $open311_only = $self->$orig(@_);
-
-    my ($row, $h, $contact) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # If the report doesn't already have an asset, associate it with the
     # closest feature from the Alloy highways network layer.
@@ -174,6 +170,21 @@ around open311_extra_data_include => sub {
             $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
         }
     }
+}
+
+=head2 open311_extra_data_include
+
+Reports in the "Apply for Access Protection Marking" category have some
+extra field values that we want to append to the report description
+before it's passed to Alloy.
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
 
     if ($contact->email =~ /^Abavus/ && $h->{closest_address}) {
         push @$open311_only, {
@@ -181,9 +192,6 @@ around open311_extra_data_include => sub {
         $h->{closest_address} = '';
     }
 
-    # Reports in the "Apply for Access Protection Marking" category have some
-    # extra field values that we want to append to the report description
-    # before it's passed to Alloy
     if (my $address = $row->get_extra_field_value('ADDRESS_POSTCODE')) {
         my $phone = $row->get_extra_field_value('TELEPHONE_NUMBER') || "";
         for (@$open311_only) {
@@ -270,17 +278,7 @@ sub _add_claim_auto_response {
             };
 
             # Stop any alerts being sent out about this update as included here.
-            my @alerts = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $row->id,
-                confirmed => 1,
-            });
-            for my $alert (@alerts) {
-                my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create({
-                    alert_id  => $alert->id,
-                    parameter => $update->id,
-                });
-            }
+            $row->cancel_update_alert($update->id);
         }
     }
 }

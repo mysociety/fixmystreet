@@ -30,7 +30,7 @@ $body->set_extra_metadata(
             { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
             { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
             { bartec_id => '7', name => 'Games console', category => 'Small electrical items' },
-            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items' },
+            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items', message => 'Check the size' },
         ],
     },
 );
@@ -256,6 +256,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
             like $confirmation_email_txt, qr/- Small electricals: Other/, 'Includes item 3';
+            like $confirmation_email_txt, qr/- Check the size/, 'Includes item 3 message';
             unlike $confirmation_email_txt, qr/Total cost/, 'There is not total cost';
             like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: 01 July/, 'Includes collection date';

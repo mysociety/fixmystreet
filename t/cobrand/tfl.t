@@ -74,6 +74,13 @@ $mech->create_contact_ok(
     email => 'av-hackney@example.com',
 );
 
+my $bike = $mech->create_body_ok(2482, 'Bike provider');
+$mech->create_contact_ok(
+    body_id => $bike->id,
+    category => 'Abandoned bike or scooter',
+    email => 'bike@bike.example.com',
+);
+
 my $contact1 = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Bus stops',
@@ -856,6 +863,9 @@ FixMyStreet::override_config {
         do_not_reply_email => {
             tfl => 'fms-tfl-DO-NOT-REPLY@example.com',
         },
+        categories_restriction_bodies => {
+            tfl => [ 'Bike provider' ],
+        },
     },
 }, sub {
 
@@ -867,6 +877,7 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
             'Flooding',
@@ -885,6 +896,7 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
             'Flooding (Bromley)',
@@ -902,6 +914,7 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Bus stops',
             'Flooding',
             'Grit bins',
@@ -918,6 +931,7 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Bus stops',
             'Flooding',
             'Grit bins',
@@ -934,6 +948,7 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter',
             'Bus stops',
             'Flooding',
@@ -952,6 +967,7 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter',
             'Bus stops',
             'Flooding (Bromley)',

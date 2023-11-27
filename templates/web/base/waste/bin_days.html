@@ -144,46 +144,32 @@
   || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property)
 %]
   [% IF c.cobrand.moniker != 'peterborough' %]
-  <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Bulky Waste</h3>
+  <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">[%
+      IF c.cobrand.moniker == 'brent' %]Small items[% ELSE %]Bulky Waste[% END
+  %]</h3>
   <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter text-centered">
   [% ELSE %]
   <div class="govuk-grid-row waste-service-wrapper">
-  [% END %]
-    [% IF c.cobrand.moniker != 'peterborough' %]
-    <div class="govuk-grid-column-one-quarter text-centered">
-    [% ELSE %]
     <div class="govuk-grid-column-one-quarter">
-    [% END %]
+      <h3 id="bulky-waste" class="govuk-heading-m">Bulky Waste</h3>
+  [% END %]
       [% IF c.cobrand.moniker == 'brent' %]
-        <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Small items</h3>
         <img src="/i/waste-containers/electricals-batteries-textiles.png"
             srcset="/i/waste-containers/electricals-batteries-textiles.png 1x, /i/waste-containers/electricals-batteries-textiles@2x.png 2x"
             alt="" class="waste-service-image">
       [% ELSE %]
-        [% IF c.cobrand.moniker == 'peterborough' %]
-          <h3 id="bulky-waste" class="govuk-heading-m">Bulky Waste</h3>
-        [% END %]
         <img src="/cobrands/peterborough/images/bulky-waste.png" alt="" class="waste-service-image">
       [% END %]
     </div>
-    [% IF c.cobrand.moniker != 'peterborough' %]
     <div class="govuk-grid-column-three-quarters">
+      [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
       [% IF property.commercial_property %]
         [% PROCESS waste/_bulky_waste_message.html %]
       [% ELSE %]
         [% PROCESS 'waste/bulky/_bin_days_list.html' %]
       [% END %]
     </div>
-    [% ELSE %]
-      <div class="govuk-grid-column-three-quarters">
-        <hr>
-      [% IF property.commercial_property %]
-        [% PROCESS waste/_bulky_waste_message.html %]
-      [% ELSE %]
-        [% PROCESS 'waste/bulky/_bin_days_list.html' %]
-      [% END %]
-      </div>
-    [% END %]
   </div>
 [% END %]
 

@@ -143,7 +143,7 @@ sub open311_extra_data_include {
             { name => 'category',
             value => $row->category },
             { name => 'group',
-              value => $row->get_extra_metadata('group') },
+              value => $row->get_extra_metadata('group', '') },
         ];
         push @$extra, { name => 'staff_role', value => $roles } if $roles;
         return $extra;
@@ -165,18 +165,10 @@ sub open311_config_updates {
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
-    $self->{ox_original_detail} = $row->detail;
-
     if (my $fid = $row->get_extra_field_value('feature_id')) {
         my $text = "Asset Id: $fid\n\n" . $row->detail;
         $row->detail($text);
     }
-}
-
-sub open311_post_send {
-    my ($self, $row, $h) = @_;
-
-    $row->detail($self->{ox_original_detail});
 }
 
 sub open311_munge_update_params {

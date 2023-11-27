@@ -127,10 +127,12 @@ sub process_body {
     $db->txn_do(sub {
         my $comments = FixMyStreet::DB->resultset('Comment')->to_body($body)->search($params, {
             for => \'UPDATE SKIP LOCKED',
-            order_by => [ 'confirmed', 'id' ],
+            prefetch => 'problem',
+            order_by => [ 'me.confirmed', 'me.id' ],
         });
 
         while ( my $comment = $comments->next ) {
+            next unless $comment->problem->whensent;
             $self->process_update($body, $comment);
         }
     });
@@ -147,8 +149,6 @@ sub construct_query {
     my $params = {
         'me.send_state' => 'unprocessed',
         'me.state' => 'confirmed',
-        'me.confirmed' => { '!=' => undef },
-        'problem.whensent' => { '!=' => undef },
     };
     if (!$debug) {
         $params->{'-or'} = [
@@ -231,11 +231,12 @@ sub summary_failures {
     my $u = FixMyStreet::DB->resultset("Comment")
         ->to_body([ keys %$bodies ])
         ->search({ "me.send_fail_count" => { '>', 0 } })
-        ->search($params, { join => "problem" });
+        ->search($params, { prefetch => 'problem' });
 
     my $base_url = FixMyStreet->config('BASE_URL');
     my $sending_errors;
     while (my $row = $u->next) {
+        next unless $row->problem->whensent;
         my $url = $base_url . "/report/" . $row->problem_id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* $url, update " . $row->id . " failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
