@@ -65,11 +65,11 @@ sub ordinal {
 }
 
 sub construct_bin_date {
-    my $str = shift;
-    return unless $str;
-    my $offset = ($str->{OffsetMinutes} || 0) * 60;
+    my $hash_ref = shift;
+    return unless $hash_ref && $hash_ref->{DateTime};
+    my $offset = ($hash_ref->{OffsetMinutes} || 0) * 60;
     my $zone = DateTime::TimeZone->offset_as_string($offset);
-    my $date = DateTime::Format::W3CDTF->parse_datetime($str->{DateTime});
+    my $date = DateTime::Format::W3CDTF->parse_datetime($hash_ref->{DateTime});
     $date->set_time_zone($zone);
     return $date;
 }
