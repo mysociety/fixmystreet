@@ -274,10 +274,7 @@ has_field location_photo => (
         max_photos => 1,
     },
     build_label_method => sub {
-        my $self = shift;
-
-        return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
-        . 'Help us by attaching a photo of where the items will be left for collection.'
+        return shift->parent->{c}->cobrand->call_hook('bulky_location_photo_prompt');
     }
 );
 

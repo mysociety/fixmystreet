@@ -6,10 +6,16 @@
 [% PROCESS back %]
 [% PROCESS errors %]
 [% PROCESS title %]
-[% IF property %]
+[% IF property AND NOT (c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston') %]
   [% INCLUDE 'waste/_address_display.html' %]
 [% END %]
 
+[% IF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]
+    <p>Select the items that you need us to collect using the drop-down menu below.
+      You can book the collection of up to [% c.cobrand.wasteworks_config.items_per_collection_max | numwords %] items.</p>
+    <p>You can search for an item in the list by typing the first few letters.</p>
+    <p>You can also add an optional note against each item which can help ensure we pick up the right items.</p>
+[% ELSE %]
 <div class="govuk-warning-text due" style="max-width:550px">
   <div class="govuk-warning-text__img">
     <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
@@ -17,22 +23,14 @@
   <div class="govuk-warning-text__content">
     <span class="govuk-warning-text__assistive">Information</span>
     <p class="govuk-!-margin-bottom-1"><strong>Note</strong></p>
-    [% IF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]
-      <p>Select the items that you need us to collect using the drop-down menu below.
-      You can book the collection of up to [% c.cobrand.wasteworks_config.items_per_collection_max | numwords %] items.</p>
-      <p>You can search for an item in the list by typing the first few letters.</p>
-      <p>You can also
-        add an optional note against each item which can help ensure we pick up the right items.
-      </p>
-    [% ELSE %]
-      <p>If an item is not available for selection on this page, it is not eligible for collection.</p>
-    [% END %]
+    <p>If an item is not available for selection on this page, it is not eligible for collection.</p>
   [% IF c.cobrand.moniker == 'brent' %]
     <p>To see your options for coffee pod recycling please visit
         <a href="https://www.podback.org/recycle-checker">https://www.podback.org/recycle-checker</a>
   [% END %]
   </div>
 </div>
+[% END %]
 
 <div class="screen-reader-only govuk-warning-text due" style="max-width:550px">
   <div class="govuk-warning-text__img">
