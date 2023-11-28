@@ -228,6 +228,11 @@ sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
     my $data = renumber_items($form->saved_data, $c->cobrand->bulky_items_maximum);
 
+    if (!$c->cobrand->bulky_free_collection_available) {
+        # Either was picked in the form, or if not present will be card
+        $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+    }
+
     $c->cobrand->call_hook("waste_munge_bulky_data", $data);
 
     # Read extra details in loop

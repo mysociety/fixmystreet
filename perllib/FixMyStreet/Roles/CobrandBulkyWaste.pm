@@ -204,7 +204,6 @@ sub bulky_total_cost {
         } else {
             $c->stash->{payment} = $cfg->{base_price};
         }
-        $data->{"extra_payment_method"} = "credit_card";
     }
     return $c->stash->{payment};
 }
