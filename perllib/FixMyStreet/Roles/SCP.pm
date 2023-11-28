@@ -107,6 +107,41 @@ sub waste_cc_get_redirect_url {
     }
 }
 
+sub cc_check_payment_status {
+    my ($self, $scp_reference) = @_;
+
+    my $payment = Integrations::SCP->new(
+        config => $self->feature('payment_gateway')
+    );
+
+    my $resp = $payment->query({
+        scpReference => $scp_reference,
+    });
+
+    my $error;
+    my $auth_code;
+    my $can;
+    my $tx_id;
+
+    if ($resp->{transactionState} eq 'COMPLETE') {
+        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
+            my $auth_details
+                = $resp->{paymentResult}{paymentDetails}{authDetails};
+            $auth_code = $auth_details->{authCode};
+            $can = $auth_details->{continuousAuditNumber};
+            $tx_id = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
+        # It is not clear to me that it's possible to get to this with a redirect
+        } else {
+            $error = $resp->{paymentResult}->{status};
+        }
+    } else {
+        # again, I am not sure it's possible for this to ever happen
+        $error = $resp->{transactionState};
+    }
+
+    return ($error, $auth_code, $can, $tx_id);
+}
+
 sub garden_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
@@ -114,36 +149,19 @@ sub garden_cc_check_payment_status {
     my $scpReference = $p->get_extra_metadata('scpReference');
     $c->detach( '/page_error_404_not_found' ) unless $scpReference;
 
-    my $payment = Integrations::SCP->new(
-        config => $self->feature('payment_gateway')
-    );
-
-    my $resp = $payment->query({
-        scpReference => $scpReference,
-    });
-
-    if ($resp->{transactionState} eq 'COMPLETE') {
-        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
-            my $auth_details
-                = $resp->{paymentResult}{paymentDetails}{authDetails};
-            $p->update_extra_metadata(
-                authCode => $auth_details->{authCode},
-                continuousAuditNumber => $auth_details->{continuousAuditNumber},
-            );
-
-            # create sub in echo
-            my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
-            return $ref
-        # It is not clear to me that it's possible to get to this with a redirect
-        } else {
-            $c->stash->{error} = $resp->{paymentResult}->{status};
-            return undef;
-        }
-    } else {
-        # again, I am not sure it's possible for this to ever happen
-        $c->stash->{error} = $resp->{transactionState};
+    my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($scpReference);
+    if ($error) {
+        $c->stash->{error} = $error;
         return undef;
     }
+
+    $p->update_extra_metadata(
+        authCode => $auth_code,
+        continuousAuditNumber => $can,
+    );
+
+    # create sub in echo
+    return $tx_id;
 }
 
 1;
