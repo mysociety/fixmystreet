@@ -60,19 +60,24 @@ sub send_manifest: Private {
 
     $c->res->content_type('application/manifest+json');
 
-    my $start_url;
+    my $theme = $c->stash->{manifest_theme};
+
+    my $start_url = '/?pwa';
+    my $name = $theme->{name};
+    my $short_name = $theme->{short_name};
+
     if ($app eq 'ww') {
-       $start_url = '/waste?pwa';
-    } else {
-       $start_url = '/?pwa';
+        $start_url = '/waste?pwa';
+        $name = $theme->{wasteworks_name} if $theme->{wasteworks_name};
+        $short_name = $theme->{wasteworks_short_name} if $theme->{wasteworks_short_name};
     }
 
     my $data = {
-        name => $c->stash->{manifest_theme}->{name},
-        short_name => $c->stash->{manifest_theme}->{short_name},
-        background_color => $c->stash->{manifest_theme}->{background_colour},
-        theme_color => $c->stash->{manifest_theme}->{theme_colour},
-        icons => $c->stash->{manifest_theme}->{icons},
+        name => $name,
+        short_name => $short_name,
+        background_color => $theme->{background_colour},
+        theme_color => $theme->{theme_colour},
+        icons => $theme->{icons},
         lang => $c->stash->{lang_code},
         display => "minimal-ui",
         start_url => $start_url,
@@ -214,6 +219,8 @@ sub _find_manifest_theme : Private {
             theme_colour => $theme->theme_colour,
             name => $theme->name,
             short_name => $theme->short_name,
+            wasteworks_name => $theme->wasteworks_name,
+            wasteworks_short_name => $theme->wasteworks_short_name,
         };
 
         unless ($ignore_cache_and_defaults) {

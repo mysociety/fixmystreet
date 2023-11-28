@@ -16,8 +16,10 @@ has '+widget_name_space' => ( default => sub { ['FixMyStreet::App::Form::Widget'
 has '+widget_tags' => ( default => sub { { wrapper_tag => 'p' } } );
 has '+item_class' => ( default => 'ManifestTheme' );
 has_field 'cobrand' => ( type => 'Select', empty_select => 'Select a cobrand', required => 1 );
-has_field 'name' => ( required => 1 );
-has_field 'short_name' => ( required => 1 );
+has_field 'name' => ( required => 1, label => 'FixMyStreet name' );
+has_field 'short_name' => ( required => 1, label => 'FixMyStreet short name' );
+has_field 'wasteworks_name' => ( required => 0, default => '' );
+has_field 'wasteworks_short_name' => ( required => 0, default => '' );
 has_field 'background_colour' => ( required => 0 );
 has_field 'theme_colour' => ( required => 0 );
 has_field 'icon' => ( required => 0, type => 'Upload', label => "Add icon" );

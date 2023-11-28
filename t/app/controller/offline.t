@@ -24,36 +24,54 @@ FixMyStreet::override_config {
         }, 'correct icon';
     };
 
+    my $theme = FixMyStreet::DB->resultset('ManifestTheme')->create({
+        cobrand => "test",
+        name => "My Test Cobrand FMS",
+        short_name => "Test FMS",
+        background_colour => "#ff00ff",
+        theme_colour => "#ffffff",
+        wasteworks_name => "My Test Cobrand Waste",
+        wasteworks_short_name => "Test Waste",
+    });
+
     for my $test (
         {
             url => '/.well-known/manifest-fms.webmanifest',
             start_url => '/?pwa',
+            name => 'My Test Cobrand FMS',
+            short_name => 'Test FMS',
         },
         {
             url => '/.well-known/manifest-waste.webmanifest',
             start_url => '/waste?pwa',
+            name => 'My Test Cobrand Waste',
+            short_name => 'Test Waste',
         },
     ) {
-        subtest 'themed manifest' => sub {
+        subtest "checking webmanifest properties for $test->{url}" => sub {
             Memcached::delete("manifest_theme:test");
-            my $theme = FixMyStreet::DB->resultset('ManifestTheme')->create({
-                cobrand => "test",
-                name => "My Test Cobrand FMS",
-                short_name => "Test FMS",
-                background_colour => "#ff00ff",
-                theme_colour => "#ffffff",
-            });
 
             my $j = $mech->get_ok_json($test->{url});
-            is $j->{name}, 'My Test Cobrand FMS', 'correctly overridden name';
-            is $j->{short_name}, 'Test FMS', 'correctly overridden short_name';
+            is $j->{name}, $test->{name}, 'correctly overridden name';
+            is $j->{short_name}, $test->{short_name}, 'correctly overridden short name';
             is $j->{background_color}, '#ff00ff', 'correctly overridden background colour';
             is $j->{theme_color}, '#ffffff', 'correctly overridden theme colour';
             is $j->{start_url}, $test->{start_url}, 'correct start url';
-            $theme->delete;
         };
-        $theme_dir->remove_tree;
     }
+    $theme_dir->remove_tree;
+
+    subtest "defaults to FMS name is WW name isn't set" => sub {
+        Memcached::delete("manifest_theme:test");
+        $theme->update({ wasteworks_name => undef, wasteworks_short_name => undef });
+
+        my $j = $mech->get_ok_json('/.well-known/manifest-fms.webmanifest');
+        is $j->{name}, 'My Test Cobrand FMS', 'correct name';
+        is $j->{short_name}, 'Test FMS', 'correct short name';
+        $j = $mech->get_ok_json('/.well-known/manifest-waste.webmanifest');
+        is $j->{name}, 'My Test Cobrand FMS', 'correct name';
+        is $j->{short_name}, 'Test FMS', 'correct short name';
+    };
 };
 
 FixMyStreet::override_config {
