@@ -646,6 +646,10 @@ members of staff, not members of the public. This could be used for e.g.
 contact centre staff to leave reports in categories that you still want to be
 phoned in.
 
+Categories can be marked as a litter category for when the council is responsible
+for litter on parts of a Highways England road. This will mean the category
+will be included in the Highways England categories for any relevant stretch of road.
+
 You can set up as many or as few categories as you like, and each category can have its own email
 address attached to it, so for example, reports about potholes may go to one council email
 address, while reports about road signs go to another. More than one category may share the

@@ -465,6 +465,7 @@ FixMyStreet::override_config {
     my $he = $mech->create_body_ok(2227, 'National Highways');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
+    $mech->create_contact_ok(body_id => $hampshire->id, category => 'Messy roads', email => 'foo@bexley', extra => {litter_category_for_he => 1});
     $mech->create_contact_ok(body_id => $he->id, category => 'Slip Roads (NH)', email => 'litter@he', group => 'Litter');
     $mech->create_contact_ok(body_id => $he->id, category => 'Main Carriageway (NH)', email => 'litter@he', group => 'Litter');
     $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he');
@@ -526,8 +527,9 @@ FixMyStreet::override_config {
         my $j = $mech->get_ok_json("/report/new/ajax?w=1&longitude=-0.912160&latitude=51.015143&he_referral=1");
         my $tree = HTML::TreeBuilder->new_from_content($j->{category});
         my @elements = $tree->find('input');
-        is @elements, 1, 'Only one category in National Highways category';
-        is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping';
+        is @elements, 2, 'Two categories in National Highways category';
+        is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping - default litter category';
+        is $elements[1]->attr('value') eq 'Messy roads', 1, 'Subcategory is Messy roads - checkbox selected litter category';
     };
 
     subtest "check things redacted appropriately" => sub {
