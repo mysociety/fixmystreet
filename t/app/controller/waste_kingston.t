@@ -1435,12 +1435,12 @@ FixMyStreet::override_config {
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0);
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-        check_extra_data_post_confirm($report);
+        check_extra_data_post_confirm($report, LastPayMethod => 1);
         $report->delete; # Otherwise next test sees this as latest
     };
 
@@ -1510,12 +1510,12 @@ FixMyStreet::override_config {
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2);
+        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-        check_extra_data_post_confirm($report);
+        check_extra_data_post_confirm($report, LastPayMethod => 1);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
@@ -1607,12 +1607,12 @@ FixMyStreet::override_config {
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($report);
+        check_extra_data_pre_confirm($report, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-        check_extra_data_post_confirm($report);
+        check_extra_data_post_confirm($report, LastPayMethod => 1);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
@@ -1767,11 +1767,11 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-        check_extra_data_post_confirm($new_report);
+        check_extra_data_post_confirm($new_report, LastPayMethod => 1);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
@@ -1787,14 +1787,14 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2, payment_method => 'csc');
 
         $mech->get_ok('/dashboard?export=1');
         $mech->content_lacks("Garden Subscription\n\n");
         $mech->content_contains('"a user"');
         $mech->content_contains(1000000002);
         $mech->content_contains('a_user@example.net');
-        $mech->content_contains('credit_card,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('csc,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
         $mech->content_contains('"a user 2"');
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
@@ -1808,7 +1808,7 @@ FixMyStreet::override_config {
         $mech->content_contains('"a user"');
         $mech->content_contains(1000000002);
         $mech->content_contains('a_user@example.net');
-        $mech->content_contains('credit_card,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('csc,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
         $mech->content_contains('"a user 2"');
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
@@ -1993,9 +1993,13 @@ sub check_extra_data_pre_confirm {
 
 sub check_extra_data_post_confirm {
     my $report = shift;
+    my %params = (
+        LastPayMethod => 2,
+        @_
+    );
     $report->discard_changes;
     is $report->state, 'confirmed', 'report confirmed';
-    is $report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+    is $report->get_extra_field_value('LastPayMethod'), $params{LastPayMethod}, 'correct echo payment method field';
     is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 }
