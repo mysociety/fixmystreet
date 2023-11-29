@@ -715,6 +715,22 @@ ul.error {
     }
 }
 
+.js-filter-subcategory {
+    clear: left;
+    margin-left: 2em;
+}
+
+.js-filter-subcategory legend {
+    display: none;
+}
+
+.govuk-radios--small .govuk-radios__item.js-filter-disabled {
+    padding-left: 0;
+}
+.js-filter-disabled label:before, .js-filter-disabled label:after {
+    display: none;
+}
+
 .no-js .js-back {
   display: none;
 }

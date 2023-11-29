@@ -743,7 +743,7 @@ $.extend(fixmystreet.set_up, {
     }
   },
 
-  category_filtering: function() {
+  category_filtering: function(subsequent) {
     var category_row = document.getElementById('form_category_row');
     var category_fieldset = document.getElementById('form_category_fieldset');
     var category_filter = document.getElementById('category-filter');
@@ -753,9 +753,11 @@ $.extend(fixmystreet.set_up, {
     /* Make copy of subcats for direct display if matching filter */
     document.querySelectorAll('#form_subcategory_row fieldset').forEach(function(fieldset) {
         var copy = fieldset.cloneNode(true);
+        var group_id = copy.id.replace('subcategory_', '');
         copy.id = 'js-filter-' + copy.id;
         copy.classList.remove('js-subcategory');
         copy.classList.add('js-filter-subcategory');
+
         copy.addEventListener('change', function(evt) {
             // A subcategory has been picked in this copy. Update the actual entry
             var target = evt.target;
@@ -790,14 +792,19 @@ $.extend(fixmystreet.set_up, {
             input.classList.remove('required');
             label.htmlFor = 'js-filter-' + label.htmlFor;
         });
-        category_row.insertBefore(copy, null);
+
+        // Insert the copy just after the category option these are the subcategories for
+        var category_div = category_fieldset.querySelector('#category_' + group_id).parentNode;
+        category_fieldset.insertBefore(copy, category_div.nextSibling);
     });
 
     /* If category picked, make sure to uncheck all copy-of-subcategories */
-    category_fieldset.addEventListener("change", function() {
-        document.querySelectorAll('.js-filter-subcategory input').forEach(function(input) {
-            input.checked = false;
-        });
+    category_fieldset.addEventListener("change", function(e) {
+        if (e.target.name === 'category') {
+            document.querySelectorAll('.js-filter-subcategory input').forEach(function(input) {
+                input.checked = false;
+            });
+        }
     });
 
     /* Update when key lifted in search box */
@@ -813,12 +820,30 @@ $.extend(fixmystreet.set_up, {
             });
             var uf = new uFuzzy();
             var results = uf.search(haystack, this.value, 1);
+            var subcats_to_show = {};
             for (i = 0; i<items.length; i++) {
-                items[i].classList.toggle('hidden-category-filter', results[0] && results[0].indexOf(i) < 0);
+                var input = items[i].querySelector('input'),
+                    match = !(results[0] && results[0].indexOf(i) < 0),
+                    in_matching_subcat = subcats_to_show[input.name];
+                items[i].classList.toggle('hidden-category-filter', !(in_matching_subcat || match));
+                if (match && input.name !== 'category') {
+                    // A subcategory, make sure category item is shown, disabled. We've already passed it in the loop
+                    var group_id = input.name.replace('js-filter-category.', '');
+                    var category_div = category_row.querySelector('#category_' + group_id).parentNode; // div
+                    category_div.classList.remove('hidden-category-filter');
+                    category_div.classList.add('js-filter-disabled');
+                }
+                // If this is a category with subcategories, show every item in the subcategory
+                if (input.dataset.subcategory) {
+                    items[i].classList.toggle('js-filter-disabled', match);
+                    if (match) {
+                        subcats_to_show['js-filter-category.' + input.dataset.subcategory] = true;
+                    }
+                }
             }
-            // Show the fieldsets dependent on if any item in them is shown
+            // Show the fieldsets (their contents hidden/shown by the above)
             category_row.querySelectorAll('fieldset').forEach(function(fieldset) {
-                fieldset.classList.toggle('hidden-js', !fieldset.querySelector('.govuk-radios__item:not(.hidden-category-filter):not(.hidden-highways-choice)'));
+                fieldset.classList.remove('hidden-js');
             });
             /* If the filtering reduces the list to one, the web page becomes
              * so short that the bottom of the page moves down, underneath the
@@ -827,23 +852,25 @@ $.extend(fixmystreet.set_up, {
              * time soon. Introduce some padding so this does not happen. */
             category_row.style.paddingBottom = window.innerHeight + 'px';
         } else {
-            // Hide all the copied subcategories, show the main category list
-            category_fieldset.classList.remove('hidden-js');
+            // Hide all the copied subcategories
             document.querySelectorAll('.js-filter-subcategory').forEach(function(fieldset) {
                 fieldset.classList.add('hidden-js');
             });
             for (i = 0; i<items.length; i++) {
                 items[i].classList.remove('hidden-category-filter');
+                items[i].classList.remove('js-filter-disabled');
             }
             category_row.style.paddingBottom = null;
         }
     };
 
-    category_filter.addEventListener('keyup', filter_keyup);
-    category_filter.addEventListener('blur', function() {
-        category_row.style.paddingBottom = null;
-    });
-    filter_keyup.apply(category_filter);
+    if (!subsequent) {
+        category_filter.addEventListener('keyup', filter_keyup);
+        category_filter.addEventListener('blur', function() {
+            category_row.style.paddingBottom = null;
+        });
+        filter_keyup.apply(category_filter);
+    }
   },
 
   reapply_validation: function(rules) {
@@ -1786,7 +1813,7 @@ fixmystreet.fetch_reporting_data = function() {
         fixmystreet.reporting.topLevelPoke();
 
         fixmystreet.set_up.fancybox_images(); // In case e.g. top_message has pulled in a fancybox
-        fixmystreet.set_up.category_filtering();
+        fixmystreet.set_up.category_filtering(true);
 
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
