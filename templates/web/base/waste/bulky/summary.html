@@ -266,9 +266,9 @@ END;
         %]">Cancel this booking</a>
       </p>
     [% END %]
-    <p>
-      <a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a>
-    </p>
+
+    [% INCLUDE 'waste/_button_show_upcoming.html' %]
+
   [% ELSE %]
     <form class="waste" method="post" action="[%
       IF c.action == 'waste/bulky/amend';

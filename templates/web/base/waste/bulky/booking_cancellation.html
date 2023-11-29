@@ -21,14 +21,6 @@
   </div>
 </div>
 
-[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') %]
-  [% button_text = 'Return to property details' %]
-[% ELSE %]
-  [% button_text = 'Show upcoming bin days' %]
-[% END %]
-
-<p>
-  <a href="[% c.uri_for_action('waste/bin_days', [ property.id ]) %]" class="govuk-button">[% button_text %]</a>
-</p>
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]
