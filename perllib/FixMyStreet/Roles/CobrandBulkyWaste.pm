@@ -282,16 +282,7 @@ sub _bulky_collection_window {
 
         $start_date->add( days => 1 );
     } else {
-        $start_date = $tomorrow->clone;
-
-        # If now is past cutoff time, push start date one day later
-        my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-        my $days_before = $cutoff_time->{days_before} // 1;
-        my $cutoff_date_now = $now->clone->subtract( days => $days_before );
-        my $cutoff_date = $self->_bulky_cancellation_cutoff_date($now);
-        if ($cutoff_date_now >= $cutoff_date) {
-            $start_date->add( days => $days_before );
-        }
+        $start_date = $self->bulky_collection_window_start_date();
     }
 
     my $date_to
@@ -301,6 +292,30 @@ sub _bulky_collection_window {
         date_from => $start_date->strftime($fmt),
         date_to => $date_to->strftime($fmt),
     };
+}
+
+=head2 bulky_collection_window_start_date
+
+This should return the start date when looking for a collection window.
+It defaults to tomorrow, adjusted by the cancellation cut-off days (eg.
+if cancellation is by 7am the day before collection, the start date
+will be one day later than tomorrow after 7am).
+
+=cut
+
+sub bulky_collection_window_start_date {
+    my $self = shift;
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    # If now is past cutoff time, push start date one day later
+    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
+    my $days_before = $cutoff_time->{days_before} // 1;
+    my $cutoff_date_now = $now->clone->subtract( days => $days_before );
+    my $cutoff_date = $self->_bulky_cancellation_cutoff_date($now);
+    if ($cutoff_date_now >= $cutoff_date) {
+        $start_date->add( days => $days_before );
+    }
+    return $start_date;
 }
 
 sub bulky_can_view_collection {
