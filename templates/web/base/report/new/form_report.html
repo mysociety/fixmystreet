@@ -14,6 +14,8 @@
     [% INCLUDE public_councils_text %]
   [% END %]
 
+    [% TRY %][% INCLUDE 'report/new/_category_extra_top.html' %][% CATCH file %][% END %]
+
 [% IF c.cobrand.moniker == 'fixmystreet' %]
   <div class="hidden-nojs">
     <p>What would you like to report?
@@ -25,7 +27,6 @@
   </div>
 [% END %]
 
-    [% TRY %][% INCLUDE 'report/new/_category_extra_top.html' %][% CATCH file %][% END %]
     [% PROCESS "report/new/category_wrapper.html" %]
     [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
