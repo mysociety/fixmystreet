@@ -525,7 +525,7 @@ FixMyStreet::override_config {
             $mech->content_contains('08 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
-            $mech->content_contains('Show upcoming bin days');
+            $mech->content_contains('Return to property details');
             $mech->content_contains('Bob Marge', 'name shown');
             $mech->content_contains('44 07 111 111 111', 'phone shown');
 

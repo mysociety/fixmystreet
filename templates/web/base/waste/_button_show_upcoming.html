@@ -1,0 +1,11 @@
+[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') %]
+  [% button_text = 'Return to property details' %]
+[% ELSE %]
+  [% button_text = 'Show upcoming bin days' %]
+[% END %]
+
+<p>
+  [% # sometimes we have the property on the stash, sometimes it's just the report (e.g. token confirmation)
+     property_id = property.id OR report.get_extra_field_value('property_id') %]
+  <a href="[% c.uri_for_action('waste/bin_days', [ property_id ]) %]" class="govuk-button">[% button_text %]</a>
+</p>
