@@ -11,6 +11,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 use open ':std', ':encoding(UTF-8)';
 
+my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
 my $wnc = $mech->create_body_ok(164186, 'West Northamptonshire Council', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'westnorthants' });
 
@@ -21,6 +22,12 @@ my $wnc_contact = $mech->create_contact_ok(
     body_id => $wnc->id,
     category => 'Trees',
     email => 'trees-wnc@example.com',
+);
+
+my $nh_contact = $mech->create_contact_ok(
+    body_id => $nh->id,
+    category => 'Trees',
+    email => 'trees-nh@example.com',
 );
 
 $mech->create_contact_ok(
@@ -294,10 +301,11 @@ subtest 'check pin colour / reference shown' => sub {
     };
 };
 
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+    from_body => $wnc, password => 'password');
+$mech->log_in_ok( $staffuser->email );
+
 subtest 'Dashboard CSV extra columns' => sub {
-    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-        from_body => $wnc, password => 'password');
-    $mech->log_in_ok( $staffuser->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'westnorthants',
@@ -306,6 +314,62 @@ subtest 'Dashboard CSV extra columns' => sub {
     };
     $mech->content_contains('"Site Used","Reported As","External ID"');
     $mech->content_contains('westnorthants,,' . $report->external_id);
+};
+
+subtest 'Includes old Northamptonshire reports' => sub {
+
+    subtest 'Includes all Northamptonshire reports before April 2021' => sub {
+        my ($old_enough) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
+            cobrand => 'northamptonshire',
+            user => $user,
+            areas => ',164185,', # In North Northamptonshire.
+            created => '2021-03-31',
+        });
+        my ($too_recent) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
+            cobrand => 'northamptonshire',
+            user => $user,
+            areas => ',164185,', # In North Northamptonshire.
+            created => '2021-04-01',
+        });
+        my $rs = $cobrand->problems;
+        ok $rs->find($old_enough->id), "includes report out of boundary but before April 2021";
+        is $rs->find($too_recent->id), undef, "does not include report out of boundary after April 2021";
+    };
+
+    subtest 'Includes reports within boundary after April 2021' => sub {
+        my %areas_to_include = (
+            'south northants' => '2392',
+            'daventry' => '2394',
+            'northampton' => '2397',
+            'west northamptonshire' => '164186',
+        );
+        while (my ($area_name, $area_id) = each %areas_to_include) {
+            my ($r) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
+                cobrand => 'northamptonshire',
+                user => $user,
+                areas => ",$area_id,",
+                created => '2021-04-01',
+            });
+            ok $cobrand->problems->find($r->id), "includes $area_name report after April 2021";
+        }
+    };
+};
+
+subtest 'Staff have perms for northamptonshire highways reports' => sub {
+    $staffuser->user_body_permissions->create({ body => $wnc, permission_type => 'report_edit' });
+    my ($p) = $mech->create_problems_for_body(1, $nh->id, 'Northamptonshire Highways Problem', {
+        cobrand => 'northamptonshire',
+        user => $user,
+        created => '2021-03-31',
+    });
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['westnorthants', 'northamptonshire'],
+    }, sub {
+        $mech->host('westnorthants.fixmystreet.com');
+        $mech->log_in_ok( $staffuser->email );
+        $mech->get_ok('/admin/report_edit/' . $p->id);
+    };
 };
 
 done_testing();
