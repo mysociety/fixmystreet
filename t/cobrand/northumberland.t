@@ -17,6 +17,12 @@ my ($problem1, $problem2) = $mech->create_problems_for_body(2, $body->id, 'Test'
     anonymous => 't',
     extra => { contributed_by => $staffuser->id },
 });
+$problem2->update({ state => 'fixed - council' });
+my ($update) = $mech->create_comment_for_problem(
+    $problem2, $staffuser, 'Title', 'text', 0, 'confirmed', 'fixed',
+    { confirmed => $problem2->confirmed->add(days => 1, hours => 3, minutes => 37) }
+);
+
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
@@ -28,20 +34,20 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('Test User', 'name of anonymous user');
-        $mech->content_like(qr{counciluser\@example.com,"Role 1",$}, 'staff user, role, and unassigned');
+        $mech->content_like(qr{counciluser\@example.com,"Role 1",,"1 day, 3 hours, 37 minutes"$}, 'staff user, role, unassigned, and response time');
         $staffuser->add_to_planned_reports($problem1);
         $staffuser->add_to_planned_reports($problem2);
         $mech->get_ok('/dashboard?export=1');
         my $id1 = $problem1->id;
         my $id2 = $problem2->id;
         $mech->content_like(qr{/report/$id1,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
-        $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
+        $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User","1 day, 3 hours, 37 minutes"}, 'staff user, role, assigned to, and response time');
 
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('Test User', 'name of anonymous user');
         $mech->content_like(qr{/report/$id1,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
-        $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
+        $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User","1 day, 3 hours, 37 minutes"}, 'staff user, role, assigned to, and response time');
     };
 
     subtest 'Staff OOH shown on National Highways roads' => sub {
