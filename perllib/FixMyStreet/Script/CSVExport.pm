@@ -147,7 +147,7 @@ sub process_body {
             }
             process_comment($hashref, $obj);
             if (my $fn = $reporting->csv_extra_data) {
-                my $extra = $fn->($obj);
+                my $extra = $fn->($obj, $hashref);
                 $hashref = { %$hashref, %$extra };
             }
         }

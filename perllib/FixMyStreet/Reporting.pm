@@ -338,7 +338,7 @@ sub generate_csv {
         $hashref->{reported_as} = $obj->get_extra_metadata('contributed_as') || '';
 
         if (my $fn = $self->csv_extra_data) {
-            my $extra = $fn->($obj);
+            my $extra = $fn->($obj, $hashref);
             $hashref = { %$hashref, %$extra };
         }
 
