@@ -522,6 +522,9 @@ subtest 'check nearby lookup, default behaviour' => sub {
     $mech->content_contains('[51.754926,-1.256179,"yellow",' . $p->id . ',"Around page Test 1 for ' . $body->id . '","small",false]');
 };
 
+my $oxfordshire_cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Oxfordshire');
+$oxfordshire_cobrand->mock('defect_wfs_query', sub { return { features => [] }; });
+
 subtest 'check nearby lookup, cobrand custom distances' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'oxfordshire',
