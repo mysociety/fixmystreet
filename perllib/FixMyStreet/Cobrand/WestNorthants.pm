@@ -59,6 +59,50 @@ sub open311_extra_data_exclude { [ 'emergency' ] }
 
 sub admin_user_domain { 'westnorthants.gov.uk' }
 
+=item * Includes all Northamptonshire reports before April 2021 and ones after within the boundary.
+
+=cut
+
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    my $northamptonshire = FixMyStreet::Cobrand::Northamptonshire->new->body;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    $rs = $rs->search(
+        {
+            -or => [
+                FixMyStreet::DB::ResultSet::Problem->body_query($self->body),
+                -and => [
+                    FixMyStreet::DB::ResultSet::Problem->body_query($northamptonshire),
+                    -or => [
+                        "$table.created" => { '<'  => '2021-04-01' },
+                        areas => {
+                            'like' => [
+                                '%,2392,%', # South Northamptonshire.
+                                '%,2394,%', # Daventry.
+                                '%,2397,%', # Northampton.
+                                '%,164186,%', # West Northamptonshire.
+                            ],
+                        },
+                    ],
+                ],
+            ],
+        }
+    );
+    return $rs;
+}
+
+=item * Staff users have permissions on Northamptonshire reports.
+
+=cut
+
+sub permission_body_override {
+    my ($self, $body_ids) = @_;
+    my $northamptonshire_id = FixMyStreet::Cobrand::Northamptonshire->new->body->id;
+    my @out = map { $northamptonshire_id == $_ ? $self->body->id : $_} @$body_ids;
+    return \@out;
+}
+
 =item * Uses the OSM geocoder.
 
 =cut
