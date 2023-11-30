@@ -369,6 +369,7 @@ sub nearby : Path {
         latitude => $c->get_param('latitude'),
         longitude => $c->get_param('longitude'),
         categories => [ $c->get_param('filter_category') || () ],
+        group => $c->get_param('filter_group'),
         states => $states,
         bodies => $c->get_param('bodies'),
     };
