@@ -180,26 +180,6 @@ test_overrides hackney =>
 
 test_overrides fixmystreet =>
     {
-        body_name => 'West Berkshire',
-        body_cobrand => 'westberkshire',
-        area_id   => 2619,
-        row_data  => {
-            postcode => 'RG1 1AA',
-        },
-    },
-    superhashof({
-        handler => isa('FixMyStreet::Cobrand::WestBerkshire'),
-        'open311' => noclass(superhashof({
-            %standard_open311_parameters,
-            'endpoints' => {
-                'requests' => 'Requests',
-                'services' => 'Services',
-            },
-        })),
-    });
-
-test_overrides fixmystreet =>
-    {
         body_name => 'Cheshire East',
         body_cobrand => 'cheshireeast',
         area_id   => 21069,
@@ -307,7 +287,7 @@ sub test_overrides {
     subtest "$cobrand ($input->{body_name}) overrides" => sub {
 
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'westberkshire', 'greenwich', 'cheshireeast', 'hackney', 'shropshire', 'buckinghamshire'],
+            ALLOWED_COBRANDS => ['fixmystreet', 'oxfordshire', 'bromley', 'greenwich', 'cheshireeast', 'hackney', 'shropshire', 'buckinghamshire'],
         }, sub {
             #$db->txn_begin;
 
