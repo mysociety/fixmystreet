@@ -3,6 +3,7 @@ use base 'FixMyStreet::Cobrand::UK';
 
 use Moo;
 use JSON::MaybeXS;
+use List::Util qw(any);
 with 'FixMyStreet::Roles::BoroughEmails';
 
 use constant COUNCIL_ID_BROMLEY => 2482;
@@ -605,6 +606,32 @@ sub add_extra_area_types {
         'CPC',
     );
     return \@types;
+}
+
+=head2 fetch_area_children
+
+If we are looking at the All Reports page for one of the extra London (TfL)
+bodies (the bike providers), we want the children to be the London councils,
+not all the wards of London.
+
+=cut
+
+sub fetch_area_children {
+    my $self = shift;
+    my ($area_ids, $body, $all_generations) = @_;
+
+    my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
+    my $bodies = $features->{categories_restriction_bodies} || {};
+    $bodies = $bodies->{tfl} || [];
+    if ($body && any { $_ eq $body->name } @$bodies) {
+        my $areas = FixMyStreet::MapIt::call('areas', 'LBO');
+        foreach (keys %$areas) {
+            $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;
+        }
+        return $areas;
+    } else {
+        return $self->next::method(@_);
+    }
 }
 
 1;
