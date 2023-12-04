@@ -22,6 +22,11 @@ use Getopt::Long::Descriptive;
 use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
 
+use CronFns;
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+CronFns::language($site);
+
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['reports', 'fetch reports'],
