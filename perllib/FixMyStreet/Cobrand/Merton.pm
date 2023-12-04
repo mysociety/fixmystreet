@@ -115,4 +115,16 @@ sub report_age { '3 months' }
 
 sub abuse_reports_only { 1 }
 
+=head2 categories_restriction
+
+Hide TfL's River Piers categories on the Merton cobrand.
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
+}
+
 1;
