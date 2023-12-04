@@ -168,6 +168,15 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_lacks('Provide an update');
     };
+
+    subtest "check All Reports pages display councils correctly" => sub {
+        $mech->host('fixmystreet.com');
+        $mech->get_ok('/reports/National+Highways');
+        $mech->content_contains('Hackney'); # Mock has this returned
+        $mech->host('highwaysengland.example.org');
+        $mech->get_ok('/reports/National+Highways');
+        $mech->content_contains('Hackney');
+    };
 };
 
 subtest 'Dashboard CSV extra columns' => sub {

@@ -209,7 +209,8 @@ sub area_children {
     my @body_area_ids = $self->areas_practical;
     return unless @body_area_ids;
 
-    my $cobrand = $self->result_source->schema->cobrand;
+    my $cobrand = $self->get_cobrand_handler;
+    $cobrand ||= $self->result_source->schema->cobrand;
 
     return $cobrand->fetch_area_children(\@body_area_ids, $self, $all_generations);
 }

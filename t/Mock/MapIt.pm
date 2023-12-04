@@ -232,6 +232,9 @@ sub dispatch_request {
         if ($area eq '164186') {
             return $self->output({53296 => {parent_area => 164186, id => 53296, name => "Sulgrave", type => "CPC"}});
         }
+        if ($area eq '2457') { # Epsom Ewell
+            return $self->output({167337 => {parent_area => 2457, id => 167337, name => "Auriol", type => "DIW"}});
+        }
         if ($area eq '2487') { # Harrow
             return $self->output({165128 => {parent_area => 2487, id => 165128, name => "Belmont", type => "LBW"}});
         }
