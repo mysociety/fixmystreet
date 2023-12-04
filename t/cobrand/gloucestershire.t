@@ -211,10 +211,6 @@ FixMyStreet::override_config {
                     'No admin sidebar',
                 );
                 if ( $host eq 'gloucestershire' ) {
-                    $mech->content_contains(
-                        'This report is closed to updates.',
-                        'Correct message shown',
-                    );
                     $mech->content_lacks(
                         'make a new report in the same location',
                         'Lacks option to make a new report in same location',
@@ -242,10 +238,6 @@ FixMyStreet::override_config {
                     'No admin sidebar',
                 );
                 if ( $host eq 'gloucestershire' ) {
-                    $mech->content_contains(
-                        'This report is closed to updates.',
-                        'Correct message shown',
-                    );
                     $mech->content_lacks(
                         'make a new report in the same location',
                         'Lacks option to make a new report in same location',
@@ -264,10 +256,6 @@ FixMyStreet::override_config {
                     'No admin sidebar',
                 );
                 if ( $host eq 'gloucestershire' ) {
-                    $mech->content_contains(
-                        'This report is closed to updates.',
-                        'Correct message shown',
-                    );
                     $mech->content_lacks(
                         'make a new report in the same location',
                         'Lacks option to make a new report in same location',
@@ -296,12 +284,6 @@ FixMyStreet::override_config {
                     'form name="report_inspect_form" id="report_inspect_form"',
                     'No admin sidebar',
                 );
-                if ( $host eq 'gloucestershire' ) {
-                    $mech->content_lacks(
-                        'This report is closed to updates.',
-                        '"Closed to updates" message not shown',
-                    );
-                }
 
                 note 'Superuser';
                 $mech->log_in_ok( $superuser->email );
@@ -322,12 +304,6 @@ FixMyStreet::override_config {
                     'form name="report_inspect_form" id="report_inspect_form"',
                     'Shown admin sidebar',
                 );
-                if ( $host eq 'gloucestershire' ) {
-                    $mech->content_lacks(
-                        'This report is closed to updates.',
-                        '"Closed to updates" message not shown',
-                    );
-                }
             }
         };
 
@@ -356,10 +332,6 @@ FixMyStreet::override_config {
             );
             if ( $host eq 'gloucestershire' ) {
                 $mech->content_contains(
-                    'This report is closed to updates.',
-                    'Correct message shown',
-                );
-                $mech->content_contains(
                     'make a new report in the same location',
                     'Option to make a new report in same location',
                 );
@@ -385,12 +357,6 @@ FixMyStreet::override_config {
                 'form name="report_inspect_form" id="report_inspect_form"',
                 'No admin sidebar',
             );
-            if ( $host eq 'gloucestershire' ) {
-                $mech->content_lacks(
-                    'This report is closed to updates.',
-                    '"Closed to updates" message not shown',
-                );
-            }
 
             note 'Another standard user';
             $mech->log_in_ok( $standard_user_2->email );
@@ -404,10 +370,6 @@ FixMyStreet::override_config {
                 'No admin sidebar',
             );
             if ( $host eq 'gloucestershire' ) {
-                $mech->content_contains(
-                    'This report is closed to updates.',
-                    'Correct message shown',
-                );
                 $mech->content_contains(
                     'make a new report in the same location',
                     'Option to make a new report in same location',
@@ -430,10 +392,6 @@ FixMyStreet::override_config {
             );
             if ( $host eq 'gloucestershire' ) {
                 $mech->content_contains(
-                    'This report is closed to updates.',
-                    'Correct message shown',
-                );
-                $mech->content_contains(
                     'make a new report in the same location',
                     'Option to make a new report in same location',
                 );
@@ -451,10 +409,6 @@ FixMyStreet::override_config {
                 'Shown admin sidebar',
             );
             if ( $host eq 'gloucestershire' ) {
-                $mech->content_contains(
-                    'This report is closed to updates.',
-                    'Correct message shown',
-                );
                 $mech->content_contains(
                     'make a new report in the same location',
                     'Option to make a new report in same location',
