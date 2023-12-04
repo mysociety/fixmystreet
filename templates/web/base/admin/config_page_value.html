@@ -55,7 +55,24 @@
 [% CASE 'govuk_notify' %]
     Template ID: [% value.template_id %]
 [% CASE 'nearby_distances' %]
-    Inspectors: [% value.inspector %]m, Suggestions: [% value.suggestions %]m
+    Cobrand defaults:
+        <ul>
+            <li>
+                Inspectors: [% value.inspector %]m
+            </li>
+            <li>
+                Suggestions: [% IF value.suggestions.item('_fallback') %][% value.suggestions.item('_fallback') %][% ELSE  %][% value.suggestions %][% END %]m
+            </li>
+        </ul>
+    Custom per category:
+        <ul>
+            [% FOR k IN value.suggestions.keys.sort %]
+                [% NEXT IF k == '_fallback' %]
+                <li>
+                    [% k %]: [% value.suggestions.$k %]m
+                </li>
+            [% END %]
+        </ul>
 [% CASE 'oidc_login' %]
     Display name: [% value.display_name %]
 [% CASE 'throttle_username' %]

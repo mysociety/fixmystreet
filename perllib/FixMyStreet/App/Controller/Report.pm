@@ -683,14 +683,7 @@ sub _nearby_json :Private {
         # This is for the list template, this is a list on that page.
         $c->stash->{page} = 'report';
 
-        # distance in metres
-        my $dist;
-        if (my $mode = $c->get_param('mode')) {
-            $dist = $c->cobrand->nearby_distances->{$mode};
-        }
-        $dist ||= $c->get_param('distance') || '';
-        $dist = 1000 unless $dist =~ /^\d+$/;
-        $dist = 1000 if $dist > 1000;
+        my $dist = $self->_find_distance($c, $params);
         $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
 
         my $pin_size = $c->get_param('pin_size') || '';
@@ -725,6 +718,42 @@ sub _nearby_json :Private {
     }
 }
 
+# distance in metres
+#
+# A cobrand may optionally have configured:
+# a) distances for an individual (sub)category
+# b) distances for a group/parent category
+# c) distances by mode
+#
+# NOTE: Distances for category or group only apply for the 'suggestions' mode.
+sub _find_distance {
+    my ($self, $c, $params) = @_;
+
+    my $dist;
+    my $mode = $c->get_param('mode');
+    my $cobrand_distances = $c->cobrand->nearby_distances;
+
+    if ($mode) {
+        if ( $mode eq 'suggestions' && ref $cobrand_distances->{$mode} eq 'HASH' ) {
+            my $category = $params->{categories}[0];
+            my $group    = $params->{group};
+
+            $dist = $category && $cobrand_distances->{$mode}{$category}
+            ? $cobrand_distances->{$mode}{$category}
+            : $group && $cobrand_distances->{$mode}{$group}
+            ? $cobrand_distances->{$mode}{$group}
+            : $cobrand_distances->{$mode}{_fallback};
+        } else {
+            $dist = $cobrand_distances->{$mode};
+        }
+    }
+
+    $dist ||= $c->get_param('distance') || '';
+    $dist = 1000 unless $dist =~ /^\d+$/;
+    $dist = 1000 if $dist > 1000;
+
+    return $dist;
+}
 
 =head2 fetch_permissions
 
