@@ -429,16 +429,16 @@ sub ward_check : Private {
         s{_}{/}g;
     }
     # Could be from RSS area, or body...
-    my $parent_id;
+
+    my $qw;
     if ( $c->stash->{body} ) {
-        $parent_id = $c->stash->{body}->body_areas->first;
-        $c->detach( 'redirect_body' ) unless $parent_id;
-        $parent_id = $parent_id->area_id;
+        $qw = $c->stash->{body}->area_children;
+        $c->detach( 'redirect_body' ) unless $qw;
     } else {
-        $parent_id = $c->stash->{area}->{id};
+        my $parent_id = $c->stash->{area}->{id};
+        $qw = $c->cobrand->fetch_area_children($parent_id);
     }
 
-    my $qw = $c->cobrand->fetch_area_children($parent_id);
     $c->cobrand->call_hook('add_parish_wards' => $qw);
 
     $qw = [values %$qw];

@@ -425,4 +425,21 @@ subtest 'Dashboard wards contains North and West wards' => sub {
     $mech->content_contains('Sulgrave');
 };
 
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+    subtest 'All reports page working' => sub {
+        $mech->get_ok("/reports/Northamptonshire+Highways");
+        $mech->content_contains('Sulgrave');
+        $mech->content_contains('Weston');
+        $mech->get_ok("/reports/Northamptonshire+Highways/Weston+By+Welland");
+        $mech->content_lacks('Sulgrave');
+        $mech->content_contains('Weston');
+        $mech->get_ok("/reports/Northamptonshire+Highways/Sulgrave");
+        $mech->content_contains('Sulgrave');
+        $mech->content_lacks('Weston');
+    };
+};
+
 done_testing();

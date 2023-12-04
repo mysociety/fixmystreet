@@ -188,13 +188,18 @@ sub areas {
 Certain bodies will have associated areas for reasons such as out-of-area
 handling (edge cases, parks); whilst areas will return all areas in the
 database for a body, areas_practical should only return the areas you'd
-expect for the body (it currently does not).
+expect for the body.
 
 =cut
 
 sub areas_practical {
     my $self = shift;
     my @area_ids = sort keys %{$self->areas};
+
+    my $cobrand = $self->get_cobrand_handler;
+    $cobrand ||= $self->result_source->schema->cobrand;
+    $cobrand->call_hook(munge_body_areas_practical => $self, \@area_ids);
+
     return @area_ids;
 }
 
