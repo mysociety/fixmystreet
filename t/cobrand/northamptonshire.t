@@ -13,6 +13,12 @@ use open ':std', ':encoding(UTF-8)';
 
 my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'northamptonshire' });
+# Associate body with North Northamptonshire area
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 164185,
+    body_id => $nh->id,
+});
+
 my $wnc = $mech->create_body_ok(164186, 'West Northamptonshire Council');
 my $po = $mech->create_body_ok(164186, 'Northamptonshire Police');
 
@@ -404,13 +410,6 @@ subtest 'Old report cutoff' => sub {
     is $cobrand->should_skip_sending_update($update1), 1;
     is $cobrand->should_skip_sending_update($update2), 0;
 };
-
-# Associate body with North Northamptonshire area
-# (It's associated with West when it's created at the top of this file)
-FixMyStreet::DB->resultset('BodyArea')->find_or_create({
-    area_id => 164185,
-    body_id => $nh->id,
-});
 
 subtest 'Dashboard wards contains North and West wards' => sub {
     my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',

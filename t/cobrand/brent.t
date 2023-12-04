@@ -615,8 +615,10 @@ FixMyStreet::override_config {
                 };
             };
 
-            $mech->host("brent.fixmystreet.com");
-            undef $brent_mock; undef $camden_mock;
+    undef $brent_mock;
+    undef $camden_mock;
+
+    $mech->host("brent.fixmystreet.com");
 };
 
 package SOAP::Result;

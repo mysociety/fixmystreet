@@ -183,15 +183,30 @@ sub areas {
     return \%ids;
 }
 
+=head2 areas_practical
+
+Certain bodies will have associated areas for reasons such as out-of-area
+handling (edge cases, parks); whilst areas will return all areas in the
+database for a body, areas_practical should only return the areas you'd
+expect for the body (it currently does not).
+
+=cut
+
+sub areas_practical {
+    my $self = shift;
+    my @area_ids = sort keys %{$self->areas};
+    return @area_ids;
+}
+
 sub area_children {
     my ( $self, $all_generations ) = @_;
 
-    my @body_area_ids = map { $_->area_id } $self->body_areas->all;
+    my @body_area_ids = $self->areas_practical;
     return unless @body_area_ids;
 
     my $cobrand = $self->result_source->schema->cobrand;
 
-    return $cobrand->fetch_area_children(\@body_area_ids, $all_generations);
+    return $cobrand->fetch_area_children(\@body_area_ids, $self, $all_generations);
 }
 
 =head2 get_cobrand_handler
