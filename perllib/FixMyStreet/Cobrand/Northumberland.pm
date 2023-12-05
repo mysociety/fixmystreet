@@ -4,6 +4,9 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
+use DateTime::Format::W3CDTF;
+use Utils;
+
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
 
@@ -83,13 +86,26 @@ sub dashboard_export_problems_add_columns {
         staff_user => 'Staff User',
         staff_role => 'Staff Role',
         assigned_to => 'Assigned To',
+        response_time => 'Response Time',
     );
+
+    my $response_time = sub {
+        my $hashref = shift;
+        if (my $response = ($hashref->{fixed} || $hashref->{closed}) ) {
+            $response = DateTime::Format::W3CDTF->parse_datetime($response)->epoch;
+            my $confirmed = DateTime::Format::W3CDTF->parse_datetime($hashref->{confirmed})->epoch;
+            return Utils::prettify_duration($response - $confirmed, 'minute');
+        }
+        return '';
+    };
 
     if ($csv->dbi) {
         $csv->csv_extra_data(sub {
             my $report = shift;
+            my $hashref = shift;
             return {
                 user_name_display => $report->{name},
+                response_time => $response_time->($hashref),
             };
         });
         return; # Rest already covered
@@ -101,6 +117,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+        my $hashref = shift;
 
         my $by = $report->get_extra_metadata('contributed_by');
         my $staff_user = '';
@@ -110,11 +127,13 @@ sub dashboard_export_problems_add_columns {
             $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
             $staff_role = join(',', @{$userroles->{$by} || []});
         }
+
         return {
             user_name_display => $report->name,
             staff_user => $staff_user,
             staff_role => $staff_role,
             assigned_to => $problems_to_user->{$report->id} || '',
+            response_time => $response_time->($hashref),
         };
     });
 }
