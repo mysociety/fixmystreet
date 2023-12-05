@@ -1,0 +1,80 @@
+// Not much to override here, because the mobile map page is so simple already.
+// (No header, no nav, no sidebar. Just "Place pin on map" and reporting form.)
+
+.mobile-reporting-map {
+    .site-footer {
+        .container {
+            padding: 0 1em; // override `padding: 0` on `.mobile-reporting-map .container`
+        }
+    }
+}
+
+.form-control,
+.multi-select-button {
+    border-color: $color-cmc-blue;
+}
+
+#side-form,
+.authpage .content {
+    h1,
+    h2,
+    label {
+        font-weight: bold;
+        color: $color-cmc-blue;
+    }
+
+    p {
+        font-size: 0.9em;
+    }
+}
+
+// The "login" bit of the reporting form also appears on the `/auth` page.
+#side-form,
+.authpage .content {
+    .btn--social {
+        width: 100%;
+    }
+
+    .form-box {
+        margin: 0 0 1em 0;
+        padding: 0;
+        background-color: transparent;
+    }
+
+    #form_sign_in {
+        h5 {
+            color: $color-cmc-blue;
+        }
+
+        .form-box {
+            padding: 1em;
+            margin: 0 -1em 0.5em;
+            background-color: #edf6ff;
+        }
+    }
+}
+
+.change_location {
+    color: $color-cmc-red;
+    background-image: url(/cobrands/cuidomiciudad/images/cross-7px-7px.png);
+    background-position: $left 6px;
+    padding-#{$left}: 14px;
+}
+
+.description_tips {
+    .dont {
+        color: $color-cmc-red;
+
+        li {
+            background-image: url(/cobrands/cuidomiciudad/images/cross-7px-7px.png);
+        }
+    }
+}
+
+.item-list--reports__item--selected {
+    background: mix($base_bg, $color-cmc-yellow, 75%);
+
+    a:hover, a:focus, &.hovered a {
+        background: mix($base_bg, $color-cmc-yellow, 75%);
+    }
+}

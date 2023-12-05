@@ -1,0 +1,28 @@
+.nav-menu {
+    @include flex-container();
+    @include flex-wrap(wrap);
+    padding: 0.5em;
+
+    &, * {
+        @include box-sizing(border-box);
+    }
+
+    li {
+        width: 50%;
+        padding: 0.5em;
+        text-align: center;
+    }
+
+    a, span {
+        font-size: 1em; // down from 1.25em
+        background-color: transparent;
+        color: inherit;
+        border: 1px solid #fff;
+        border-radius: 0.2em;
+        padding: 0.5em;
+    }
+}
+
+#nav-link {
+    right: 0.5em; // up from 0em in base
+}

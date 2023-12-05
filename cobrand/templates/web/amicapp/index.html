@@ -1,0 +1,124 @@
+[% SET bodyclass = 'frontpage fullwidthpage' ~%]
+[% INCLUDE 'header.html', title = '' %]
+
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+[% END %]
+
+[% IF location_error %]
+    <p class="form-error">[% location_error %]</p>
+[% END %]
+
+</div>[%# close div.content %]
+</div>[%# close div.container %]
+
+[% IF NOT possible_location_matches AND NOT partial_token AND NOT location_error %]
+<div class="frontpage-hero" id="busca">
+    <div class="container">
+        <h1>Localiza tu problema, descríbelo, y lo hacemos llegar donde corresponde.</h1>
+        <a href="#como-funciona" class="btn">Cómo Funciona</a>
+    </div>
+</div>
+[% END %]
+
+<div class="frontpage-search">
+    <div class="container">
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
+            <label for="pc">Busca tu calle</label>
+            <div>
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]" required>
+                <input type="submit" value="[% loc('Go') %]" id="sub">
+            </div>
+
+            [% IF partial_token %]
+                <input type="hidden" name="partial" value="[% partial_token.token %]">
+            [% END %]
+
+            [% IF c.user_exists AND c.user.categories.size %]
+              <input type="hidden" name="filter_category" value="[% c.user.categories.join(",") | html %]">
+            [% END %]
+        </form>
+        <a href="[% c.uri_for('/around') %]" id="geolocate_link">&hellip; [% loc('localizar automáticamente') %]</a>
+    </div>
+</div>
+
+<div class="frontpage-types">
+    <div class="container">
+
+      [% IF possible_location_matches %]
+        <h2>[% loc('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') %]</h2>
+        <ul class="pc_alternatives">
+            [% FOREACH match IN possible_location_matches %]
+            <li><a href="/around?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %]">[% match.address | html %]</a></li>
+            [% END %]
+        </ul>
+
+      [% ELSIF partial_token %]
+        <p>
+            <img align="right" src="[% partial_report.photos.first.url_temp %]" hspace="5">
+            [% loc("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box above&nbsp;:") %]
+        </p>
+
+      [% ELSE %]
+        <h2>¿Qué tipo de problemas puedo reportar?</h2>
+        <div class="frontpage-types__row">
+            <div class="frontpage-types__col">
+                <img src="/cobrands/amicapp/images/home-construction.png" srcset="/cobrands/amicapp/images/home-construction.png 120w, /cobrands/amicapp/images/home-construction@2x.png 240w" width="120" height="120" alt="">
+                <h3>Construcciones <small>Ilegales</small></h3>
+            </div>
+            <div class="frontpage-types__col">
+                <img src="/cobrands/amicapp/images/home-trash.png" srcset="/cobrands/amicapp/images/home-trash.png 120w, /cobrands/amicapp/images/home-trash@2x.png 240w" width="120" height="120" alt="">
+                <h3>Basura</h3>
+            </div>
+            <div class="frontpage-types__col">
+                <img src="/cobrands/amicapp/images/home-spaces.png" srcset="/cobrands/amicapp/images/home-spaces.png 120w, /cobrands/amicapp/images/home-spaces@2x.png 240w" width="120" height="120" alt="">
+                <h3>Ocupación <small>Espacios Públicos</small></h3>
+            </div>
+            <div class="frontpage-types__col">
+                <img src="/cobrands/amicapp/images/home-signs.png" srcset="/cobrands/amicapp/images/home-signs.png 120w, /cobrands/amicapp/images/home-signs@2x.png 240w" width="120" height="120" alt="">
+                <h3>Letreros y Vallas <small>Ilegales</small></h3>
+            </div>
+            <div class="frontpage-types__col">
+                <img src="/cobrands/amicapp/images/home-greenery.png" srcset="/cobrands/amicapp/images/home-greenery.png 120w, /cobrands/amicapp/images/home-greenery@2x.png 240w" width="120" height="120" alt="">
+                <h3>Poda <small>de Áreas Verdes</small></h3>
+            </div>
+        </div>
+      [% END %]
+    </div>
+</div>
+
+<div class="frontpage-steps" id="como-funciona">
+    <div class="container">
+        <h2>¿Cómo reportar un problema?</h2>
+        <div class="frontpage-steps__row">
+            <div class="frontpage-steps__col">
+                <div>
+                    <img src="/cobrands/amicapp/images/home-report.png" srcset="/cobrands/amicapp/images/home-report.png 60w, /cobrands/amicapp/images/home-report@2x.png 120w" width="60" height="60" alt="">
+                    <p>Ubica el problema<br>en el mapa con<br>su dirección</p>
+                    <p>1</p>
+                </div>
+            </div>
+            <div class="frontpage-steps__col">
+                <div>
+                    <img src="/cobrands/amicapp/images/home-details.png" srcset="/cobrands/amicapp/images/home-details.png 60w, /cobrands/amicapp/images/home-details@2x.png 120w" width="60" height="60" alt="">
+                    <p>Agrega los detalles<br>del reporte y<br>regístrate</p>
+                    <p>2</p>
+                </div>
+            </div>
+            <div class="frontpage-steps__col">
+                <div>
+                    <img src="/cobrands/amicapp/images/home-send.png" srcset="/cobrands/amicapp/images/home-send.png 60w, /cobrands/amicapp/images/home-send@2x.png 120w" width="60" height="60" alt="">
+                    <p>Lo enviamos a donde<br>corresponde y le<br>damos seguimiento</p>
+                    <p>3</p>
+                </div>
+            </div>
+        </div>
+        <a href="#busca" class="btn">Haz Un Reporte</a>
+    </div>
+</div>
+
+[%# open two divs for footer to close %]
+<div class="hideme">
+<div>
+
+[% INCLUDE 'footer.html' %]

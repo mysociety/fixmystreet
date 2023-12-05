@@ -1,0 +1,49 @@
+// CMC has a blue body background with a skyline background image that fades
+// to blue at the bottom, giving the illusion of an infinite background.
+body {
+    background: $color-cmc-blue url(images/background.jpg) top center no-repeat;
+    background-size: 100%;
+    color: #fff;
+}
+
+// Because the body is blue, we need to make sure the content blocks have a
+// white background, to stand out.
+.content {
+    color: #333;
+    background-color: #fff;
+}
+
+#site-header {
+    // 4em padding-bottom leaves lots of space for nav item labels to wrap
+    // onto two lines, and still have clear space after the header.
+    padding: 1em 0 4em 0;
+}
+
+// Custom CMC logo - also horizontally centred, rather than left-aligned.
+#site-logo {
+    @include svg-background-image('images/logo-mobile');
+    background-size: 175px 40px;
+    background-position: 0 0;
+    left: 50%;
+    margin-left: (175px * 0.5 * -1);
+    width: 175px;
+    height: 40px;
+
+    // On wide screens, the logo gets bigger.
+    @media (min-width: $screen-lg-min) {
+        @include svg-background-image('images/logo');
+        background-size: 300px 75px;
+        margin-left: (300px * 0.5 * -1);
+        width: 300px;
+        height: 75px;
+    }
+}
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    // Match the height of #site-header (75px logo plus 5em padding).
+    top: 75px + (5 * 16px);
+}
+
+#main-nav {
+    height: auto;
+}

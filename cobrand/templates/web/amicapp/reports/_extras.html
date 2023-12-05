@@ -1,0 +1,10 @@
+[% FOR area IN body.first_area_children(c).values.sort('name') %]
+    <tr align="center" class="table-row__child_area">
+        <td class="title"><a href="[% body.url(c) %]/[% area.name | uri %]">[% area.name %]</a></td>
+        <td class="data">[% IF open.areas.${area.id}.new %]<a href="[% body.url(c) %]/[% area.name | uri %]?t=new">[% open.areas.${area.id}.new %]</a>[% ELSE %]0[% END %]</td>
+        <td class="data">[% IF open.areas.${area.id}.older %]<a href="[% body.url(c) %]/[% area.name | uri %]?t=older">[% open.areas.${area.id}.older %]</a>[% ELSE %]0[% END %]</td>
+        <td class="data">[% IF open.areas.${area.id}.unknown %]<a href="[% body.url(c) %]/[% area.name | uri %]?t=unknown">[% open.areas.${area.id}.unknown %]</a>[% ELSE %]0[% END %]</td>
+        <td class="data">[% IF fixed.areas.${area.id}.new %]<a href="[% body.url(c) %]/[% area.name | uri %]?t=fixed">[% fixed.areas.${area.id}.new %]</a>[% ELSE %]0[% END %]</td>
+        <td class="data">[% IF fixed.areas.${area.id}.old %]<a href="[% body.url(c) %]/[% area.name | uri %]?t=older_fixed">[% fixed.areas.${area.id}.old %]</a>[% ELSE %]0[% END %]</td>
+    </tr>
+[% END %]

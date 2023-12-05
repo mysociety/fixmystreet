@@ -48,7 +48,7 @@ DO_NOT_REPLY_EMAIL: 'help@127.0.0.1.xip.io'
 
 # Whether this is a development site or not. It will mean e.g. templates/
 # CSS modified times aren't cached
-STAGING_SITE: 1
+STAGING_SITE: 0
 # Developers may want a staging site to act differently from a live site.
 # Possible flags include:
 # - send_reports: Normally, a staging site will route all reports to the

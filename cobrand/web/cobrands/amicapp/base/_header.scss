@@ -1,0 +1,32 @@
+// CMC has a blue body background with a skyline background image that fades
+// to blue at the bottom, giving the illusion of an infinite background.
+body {
+    background: $color-cmc-blue url(images/background.jpg) top center no-repeat;
+    background-size: 100%;
+    color: #fff;
+}
+
+// Because the body is blue, we need to make sure the content blocks have a
+// white background, to stand out.
+.content {
+    color: #333;
+    background-color: #fff;
+}
+
+#site-header {
+    background: transparent;
+    padding: 0.5em 0;
+}
+
+// Custom CMC logo - also horizontally centred, rather than left-aligned.
+#site-logo {
+    @include svg-background-image('images/logo-mobile');
+    background-size: 175px 40px;
+    background-position: 0 0;
+    margin: 0 auto;
+}
+
+// Don't need the "report" button in the mobile header.
+#report-cta {
+    display: none;
+}

@@ -1,0 +1,91 @@
+.nav-wrapper {
+    // Nav items are centred, and can get wider than 960px,
+    // so just drop the max-width, we don't need it anyway.
+    .container {
+        max-width: none;
+    }
+}
+
+.nav-menu {
+    display: block; // unflexbox
+    padding: 0;
+    float: none;
+    width: 100%;
+    text-align: center;
+    margin-top: 1em;
+
+    li {
+        display: inline-block;
+        width: auto;
+        padding: 0;
+        float: none;
+        vertical-align: middle;
+    }
+
+    a, span {
+        display: inline-block;
+        border: none;
+        border-radius: 0;
+        color: inherit;
+        font-size: 1em;
+        line-height: 1.2em;
+        width: 7.5em;
+    }
+
+    a:hover {
+        background-color: transparent;
+        text-decoration: underline;
+    }
+}
+
+.nav-menu__account {
+    margin-right: 220px;
+}
+
+#main-nav {
+    float: none;
+}
+
+// On wide screens, the logo gets bigger and the nav items get icons.
+@media (min-width: $screen-lg-min) {
+    .nav-menu {
+        margin-top: 2em;
+
+        li {
+            vertical-align: top;
+        }
+
+        a, span {
+            padding-top: 50px; // make room for the icon
+            background-size: 40px 40px;
+            background-repeat: no-repeat;
+            background-position: 50% 0%;
+            width: 8.5em;
+        }
+
+        .nav-menu__report {
+            @include svg-background-image('images/nav-report');
+        }
+
+        .nav-menu__account {
+            @include svg-background-image('images/nav-account');
+            margin-right: 360px; // make room for the wider logo
+        }
+
+        .nav-menu__account--signed-in {
+            @include svg-background-image('images/nav-signed-in');
+        }
+
+        .nav-menu__reports {
+            @include svg-background-image('images/nav-reports');
+        }
+
+        .nav-menu__help {
+            @include svg-background-image('images/nav-help');
+        }
+
+        .nav-menu__shortlist {
+            @include svg-background-image('images/nav-shortlist');
+        }
+    }
+}

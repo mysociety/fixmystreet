@@ -1,0 +1,61 @@
+// We have to reset a lot of the custom styling applied in layout/_header.scss
+// and layout/_nav.scss, so that the logo and nav are no longer centred.
+body.mappage {
+    #site-header {
+        background: transparent; // let body background image show through
+        padding: 0.75em 0;
+        height: auto;
+
+        .container {
+            max-width: none;
+        }
+    }
+
+    #main-nav {
+        float: right;
+        margin-right: 0;
+    }
+
+    .nav-menu {
+        margin-top: 0;
+
+        a, span {
+            background-image: none;
+            width: auto;
+            padding: 1.25em 0.75em;
+        }
+
+        .nav-menu__account {
+            margin-right: 0; // remove gap that lets logo show through on normal pages
+        }
+    }
+
+    #site-logo {
+        @include svg-background-image('images/logo-mobile');
+        background-size: 175px 40px;
+        background-position: 0 0;
+        width: 175px;
+        height: 40px;
+
+        // Undo centering.
+        margin-left: 0;
+        left: auto;
+    }
+
+    .site-footer {
+        display: none;
+    }
+}
+
+.big-green-banner {
+    text-transform: none;
+    text-align: right;
+    font-weight: bold;
+    color: $color-cmc-blue;
+    padding-right: 4em; // 2em (44px) for arrow icon, plus 1em gutter either side
+
+    @include svg-background-image('images/click-map-arrow');
+    background-size: 66px 44px;
+    background-position: right center;
+    background-repeat: no-repeat;
+}

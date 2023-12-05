@@ -1,0 +1,80 @@
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="container">
+                [% INCLUDE "main_nav.html" hide_mysoc_link='yes please' %]
+            </div>
+        </div>
+    </div> <!-- .wrapper -->
+
+    <div class="site-footer">
+        <div class="container">
+            <h2 class="site-footer__logo">amicapp</h2>
+            <div class="site-footer__row">
+                <div class="site-footer__description">
+                    <p>
+                        amicapp es una plataforma colaborativa donde los ciudadanos cumplen un rol central en el cuidado de la ciudad. Es el canal más efectivo para poner un reporte en nuestra circunscripción para hacerlo llegar a las manos correspondientes para su solución. Es un espacio para que los ciudadanos puedan discutir y proponer soluciones a los problemas locales que nos afectan.
+                    </p>
+                </div>
+                <div class="site-footer__links">
+                  [%~ IF c.user_exists ~%]
+                    [%~ IF c.cobrand.admin_allow_user(c.user) OR c.user.has_body_permission_to('planned_reports') OR c.user.from_body ~%]
+                      <ul>
+                        [%~ IF c.cobrand.admin_allow_user(c.user) ~%]
+                          <li><a href="/admin">[% loc('Admin') %]</a></li>
+                        [%~ END ~%]
+                        [%~ IF c.user.has_body_permission_to('planned_reports') ~%]
+                          <li><a href="/my/planned">[% loc('Shortlist') %]</a></li>
+                        [%~ END ~%]
+                        [%~ IF c.user.from_body ~%]
+                          <li><a href="/dashboard">[% loc('Dashboard') %]</a></li>
+                        [%~ END ~%]
+                      </ul>
+                    [%~ END ~%]
+                  [%~ END ~%]
+                    <ul>
+                        <li><a href="/about/privacy">Términos de Servicio</a></li>
+                        <li><a href="/about/privacy">Privacidad</a></li>
+                        <li><a href="/faq">Preguntas Frecuentes</a></li>
+                    </ul>
+                    <ul>
+                        [%# <li><a href="#">RSS</a></li> %]
+                        <li><a href="/contact">Mail</a></li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <a href=">
+                                <img src="/cobrands/amicapp/images/itunes_store_logo.png" srcset="/cobrands/amicapp/images/itunes_store_logo.png 135w, /cobrands/amicapp/images/itunes_store_logo@2x.png 270w" width="135" height="40" alt="">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <img src="/cobrands/amicapp/images/google_play_logo.png" srcset="/cobrands/amicapp/images/google_play_logo.png 135w, /cobrands/amicapp/images/google_play_logo@2x.png 269w" width="135" height="40" alt="">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- <div class="site-footer__supporters">
+                <a href="http://www.adn.gob.do">
+                    <img src="/cobrands/amicapp/images/logo-adn.png" width="100" height="60" srcset="/cobrands/amicapp/images/logo-adn.png 100w, /cobrands/amicapp/images/logo-adn@2x.png 200w" alt="ADN">
+                </a>
+                <a href="https://www.usaid.gov">
+                    <img src="/cobrands/amicapp/images/logo-usaid.png" width="150" height="60" srcset="/cobrands/amicapp/images/logo-usaid.png 150w, /cobrands/amicapp/images/logo-usaid@2x.png 300w" alt="USAID">
+                </a>
+                <a href="http://www.bancomundial.org">
+                    <img src="/cobrands/amicapp/images/logo-worldbank.png" width="220" height="60" srcset="/cobrands/amicapp/images/logo-worldbank.png 220w, /cobrands/amicapp/images/logo-worldbank@2x.png 440w" alt="Banco Mundial">
+                </a>
+                <a href="https://www.mysociety.org">
+                    <img src="/cobrands/amicapp/images/logo-mysociety.png" width="150" height="60" srcset="/cobrands/amicapp/images/logo-mysociety.png 150w, /cobrands/amicapp/images/logo-mysociety@2x.png 300w" alt="mySociety">
+                </a>
+            </div> -->
+        </div>
+    </div>
+
+    [% INCLUDE 'common_footer_tags.html' %]
+
+</body>
+</html>

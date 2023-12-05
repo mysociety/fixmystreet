@@ -1,0 +1,206 @@
+// To get the nice effect where the homepage header "blends" into the nav
+// we need to prematurely close and then hide the normal .content element.
+// Resetting the padding to 0 effectively hides it, but means the offline
+// banner can still be shown. Because the .content no longer has any
+// padding, we need add it to the .top_banner instead.
+body.frontpage {
+    .container .content[role="main"] {
+        padding: 0;
+        background-color: transparent;
+        color: #fff;
+
+        .form-error {
+            padding: 1em;
+            margin: 2em 0;
+            border-radius: 0.25em;
+        }
+    }
+
+    .top_banner {
+        margin: 2em 0;
+        padding: 1em;
+
+        & > :last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.frontpage-hero,
+.frontpage-types,
+.frontpage-steps {
+    padding: 2em 0;
+    text-align: center;
+
+    .container > :first-child {
+        margin-top: 0;
+    }
+
+    .container > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+.frontpage-hero {
+    padding: 0 0 1em 0;
+
+    h1 {
+        margin: 0 auto 1em auto;
+        max-width: 21em;
+        font-size: 1.75em; // down from default 2em because it's so long!!
+        line-height: 1.2em;
+    }
+
+    .btn {
+        color: #fff;
+        border: 1px solid #fff;
+        padding: 0.5em 1em;
+        background: transparent;
+        font-weight: inherit;
+    }
+}
+
+.frontpage-search {
+    text-align: center;
+    margin-bottom: -3em;
+
+    &, * {
+        @include box-sizing(border-box);
+    }
+
+    form {
+        margin: 0 auto;
+        max-width: 25em;
+
+        & > div {
+            position: relative; // so we can position the submit button
+            margin-bottom: 0.5em;
+        }
+
+        // Margin to fill the space that `a#geolocate_link` will occupy once it's inserted.
+        // (&:last-child will be false once link is inserted after the form – clever!)
+        &:last-child {
+            margin-bottom: 2em;
+        }
+    }
+
+    input[type="text"] {
+        width: 100%;
+        max-width: none;
+        border: none;
+        background: #fff;
+        border-radius: 4px;
+        padding: 0.75em 1em;
+    }
+
+    input[type="submit"] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+        overflow: hidden;
+        width: 0;
+        padding: 0 0 0 50px;
+        border-radius: 4px;
+
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: none;
+
+        background-color: transparent;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: 30px 30px;
+        @include svg-background-image('images/home-search');
+    }
+}
+
+.frontpage-types {
+    background-color: $color-cmc-yellow;
+    color: $color-cmc-blue;
+
+    padding-top: 5em; // make room for the search box
+}
+
+.frontpage-types__row {
+    margin: 0 -1em;
+    text-align: center;
+
+    @include flex-container();
+    @include flex-wrap(wrap);
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.frontpage-types__col {
+    padding: 1em;
+    width: 150px;
+
+    h3 {
+        font-weight: bold;
+
+        small {
+            font-style: inherit;
+            font-weight: normal;
+            display: block;
+        }
+    }
+}
+
+.frontpage-steps {
+    background-color: #eee; // TODO: streetmap background image
+    color: $color-cmc-blue;
+
+    .btn {
+        background: $color-cmc-yellow;
+        border: none;
+    }
+}
+
+.frontpage-steps__row {
+    @extend .frontpage-types__row;
+    margin-bottom: 1em;
+}
+
+.frontpage-steps__col {
+    padding: 1em;
+
+    div {
+        display: table-cell;
+        vertical-align: middle;
+        width: 13em;
+        height: 13em;
+        border-radius: 50%;
+        background-color: #fff;
+    }
+
+    p {
+        margin: 0.5em 0 0 0;
+        line-height: 1.4em;
+    }
+
+    p + p {
+        font-size: 0.7em;
+    }
+}
+
+.pc_alternatives {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+
+    li {
+        list-style: inherit;
+    }
+
+    a {
+        display: block;
+        background-color: #fff;
+        padding: 0.5em 1em;
+        border-radius: 0.2em;
+        box-shadow: 0 1px 2px rgba(#000, 0.2);
+    }
+}

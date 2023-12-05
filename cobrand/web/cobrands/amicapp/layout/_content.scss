@@ -1,0 +1,10 @@
+.content {
+    margin: 0;
+}
+
+// No need for custom background and padding now that .content
+// has the white background we need.
+.table-cell > .container {
+    background-color: transparent;
+    padding: 0 1em;
+}

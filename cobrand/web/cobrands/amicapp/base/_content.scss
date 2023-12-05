@@ -1,0 +1,33 @@
+// The "main" container on the page (and not the ones
+// in #site-header, .nav-wrapper, or #site-footer).
+.table-cell > .container {
+    background-color: #fff;
+    padding: 1em;
+
+    // Frontpage doesn't need the "contained" look because the .container
+    // is zero-height by default and only ever contains alerts/errors which
+    // have their own padded / backgrounded wrapper elements.
+    body.frontpage & {
+        background: transparent;
+        padding: 0 1em;
+    }
+
+    // Don't need vertical padding above map on mobile mappage.
+    body.mappage & {
+        padding: 0 1em;
+    }
+
+    table.nicetable {
+        tr.a {
+            background: transparent;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f6f6f6;
+        };
+    }
+
+    tr.table-row__child_area .title {
+        padding-left: 1em;
+    }
+}

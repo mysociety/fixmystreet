@@ -1,0 +1,21 @@
+.site-footer__row {
+    & > * {
+        width: 50%;
+        float: left;
+    }
+
+    & > * + * {
+        margin-top: 0;
+    }
+}
+
+.site-footer__supporters {
+    text-align: justify;
+
+    // Hack to make the *real* child items fill the entire line
+    &:after {
+        content: "";
+        display: inline-block;
+        width: 100%;
+    }
+}
