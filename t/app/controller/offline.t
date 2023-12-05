@@ -93,7 +93,7 @@ subtest 'service worker' => sub {
 
 subtest 'offline fallback page' => sub {
     $mech->get_ok('/offline/fallback');
-    $mech->content_contains('Offline');
+    $mech->content_contains('currently offline');
     $mech->content_contains('offline_list');
 };
 

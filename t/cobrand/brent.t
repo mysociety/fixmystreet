@@ -95,10 +95,9 @@ my $brent = $mech->create_body_ok(2488, 'Brent Council', {
 });
 my $atak_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'ATAK', email => 'ATAK');
 
-FixMyStreet::DB->resultset('BodyArea')->find_or_create({
-    area_id => 2505, # Camden
-    body_id => $brent->id,
-});
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2505, body_id => $brent->id }); # Camden
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2487, body_id => $brent->id }); # Harrow
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2489, body_id => $brent->id }); # Barnet
 
 my $camden = $mech->create_body_ok(2505, 'Camden Borough Council', {},{cobrand => 'camden'});
 my $barnet = $mech->create_body_ok(2489, 'Barnet Borough Council');
@@ -615,8 +614,44 @@ FixMyStreet::override_config {
                 };
             };
 
-            $mech->host("brent.fixmystreet.com");
-            undef $brent_mock; undef $camden_mock;
+    undef $brent_mock;
+    undef $camden_mock;
+
+    subtest "All reports page for Brent works appropriately" => sub {
+        $mech->host("brent.fixmystreet.com");
+        $mech->get_ok("/reports");
+        $mech->content_contains('data-area="2488"');
+        $mech->content_contains('Alperton');
+        $mech->content_lacks('Belsize');
+    };
+
+    subtest "All reports page for Camden works appropriately" => sub {
+        $mech->host("camden.fixmystreet.com");
+        $mech->get_ok("/reports");
+        $mech->content_contains('data-area="2505"');
+        $mech->content_contains('Belsize');
+        $mech->content_lacks('Alperton');
+        $mech->get_ok("/reports/Camden/Belsize");
+        is $mech->uri->path, '/reports/Camden/Belsize';
+    };
+
+    subtest "All reports on .com works appropriately" => sub {
+        $mech->host("fixmystreet.com");
+        $mech->get_ok("/reports/Brent");
+        $mech->content_contains('data-area="2488"');
+        $mech->content_contains('Alperton');
+        $mech->content_lacks('Belsize');
+        $mech->get_ok("/reports/Camden");
+        $mech->content_contains('data-area="2505"');
+        $mech->content_contains('Belsize');
+        $mech->content_lacks('Alperton');
+        $mech->get_ok("/reports/Harrow");
+        $mech->content_contains('data-area="2487"');
+        $mech->content_contains('Belmont');
+        $mech->content_lacks('Alperton');
+    };
+
+    $mech->host("brent.fixmystreet.com");
 };
 
 package SOAP::Result;

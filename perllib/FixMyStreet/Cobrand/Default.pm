@@ -826,7 +826,7 @@ cobrand's area_types_children type.
 =cut
 
 sub fetch_area_children {
-    my ($self, $area_ids, $all_generations) = @_;
+    my ($self, $area_ids, $body, $all_generations) = @_;
 
     $area_ids = [ $area_ids ] unless ref $area_ids eq 'ARRAY';
 

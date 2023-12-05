@@ -75,6 +75,9 @@ subtest 'Reports page works with no reports', sub {
         MAP_TYPE => 'Bristol',
     }, sub {
         $mech->get_ok("/reports");
+        $mech->content_contains('Ashley');
+        $mech->content_lacks('Backwell');
+        $mech->content_lacks('Bitton');
     };
 };
 

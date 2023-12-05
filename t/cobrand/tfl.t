@@ -1176,7 +1176,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'fixmystreet', 'tfl' ],
+    ALLOWED_COBRANDS => [ 'tfl', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/'
 }, sub {
     foreach (qw(tfl.fixmystreet.com fixmystreet.com)) {
@@ -1249,5 +1249,27 @@ subtest 'check contact creation allows email from borough email addresses' => su
     $mech->content_lacks( 'Please enter a valid email' );
 
 }};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'tfl', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/'
+}, sub {
+    subtest "check All Reports pages display councils correctly" => sub {
+        $mech->host('tfl.fixmystreet.com');
+        $mech->get_ok('/reports/TfL');
+        $mech->content_contains('Bromley');
+        $mech->content_contains('Hounslow');
+        $mech->content_lacks('Auriol'); # 2457
+        $mech->content_lacks('Brownswood'); # 2508
+        $mech->content_contains('data-area="2482,2483,2508"'); # No 2457
+        $mech->host('fixmystreet.com');
+        $mech->get_ok('/reports/TfL');
+        $mech->content_contains('Bromley');
+        $mech->content_contains('Hounslow');
+        $mech->content_lacks('Auriol'); # 2457
+        $mech->content_lacks('Brownswood'); # 2508
+        $mech->content_contains('data-area="2482,2483,2508"'); # No 2457
+    };
+};
 
 done_testing();

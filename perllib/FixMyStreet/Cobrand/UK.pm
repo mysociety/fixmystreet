@@ -195,6 +195,22 @@ sub reports_body_check {
     return;
 }
 
+sub munge_body_areas_practical {
+    my ($self, $body, $area_ids) = @_;
+
+    if (@$area_ids == 4 && $area_ids->[1] == 2488) { # Brent
+        @$area_ids = (2488);
+    } elsif ($area_ids->[0] == 2487 && $area_ids->[1] == 2488) { # Harrow
+        @$area_ids = (2487);
+    } elsif ($area_ids->[0] == 2488 && $area_ids->[1] == 2489) { # Barnet
+        @$area_ids = (2489);
+    } elsif ($area_ids->[0] == 2488 && $area_ids->[1] == 2505) { # Camden
+        @$area_ids = (2505);
+    } elsif (@$area_ids == 3 && $area_ids->[0] == 2561) { # Bristol
+        @$area_ids = (2561);
+    }
+}
+
 sub council_rss_alert_options {
     my $self = shift;
     my $all_areas = shift;

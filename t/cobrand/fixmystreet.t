@@ -20,6 +20,8 @@ $resolver->mock('address', sub { $_[1] });
 my $body = $mech->create_body_ok( 2514, 'Birmingham', {}, { cobrand => 'birmingham' } );
 $mech->create_body_ok( 2482, 'Bromley', {}, { cobrand => 'bromley' });
 
+$mech->create_body_ok(2482, 'Bike provider');
+
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Traffic lights',
@@ -40,6 +42,11 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     TEST_DASHBOARD_DATA => $data,
     ALLOWED_COBRANDS => [ 'fixmystreet', 'birmingham' ],
+    COBRAND_FEATURES => {
+        categories_restriction_bodies => {
+            tfl => [ 'Bike provider' ],
+        }
+    },
 }, sub {
     ok $mech->host('www.fixmystreet.com');
 
@@ -120,6 +127,14 @@ FixMyStreet::override_config {
         $mech->log_out_ok();
         $mech->get_ok('/reports');
         $mech->content_lacks('Where we send Birmingham');
+    };
+
+    subtest 'Check All Reports page for bike bodies' => sub {
+        $mech->get_ok('/reports/Bike+provider');
+        $mech->content_contains('Bromley');
+        $mech->content_lacks('Trowbridge');
+        $mech->get_ok('/reports/Bike+provider/Bromley');
+        is $mech->uri->path, '/reports/Bike+provider/Bromley';
     };
 
     subtest 'check average fix time respects cobrand cut-off date and non-standard reports' => sub {
