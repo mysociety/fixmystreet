@@ -433,6 +433,10 @@ sub bin_services_for_address {
             my $schedules = _parse_schedules($task, 'task');
 
             next unless $schedules->{next} or $schedules->{last};
+
+            # Ignore retired diesel rounds
+            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != GARDEN_WASTE_SERVICE_ID;
+
             $schedules{$task_id} = $schedules;
             push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
             push @task_refs, $schedules->{last}{ref} if $schedules->{last};

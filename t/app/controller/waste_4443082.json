@@ -94,6 +94,41 @@
             "ScheduleDescription": "Every Friday"
           },
           {
+            "TaskTypeId": "2239",
+            "TaskIndicatorId": "33",
+            "TaskTypeName": "Collect Domestic Food - copy with no Next, old diesel",
+            "Id": "2005",
+            "ServiceTaskSchedules": {
+              "ServiceTaskSchedule": [
+                {
+                  "LastInstance": {
+                    "Ref": { "Value": { "anyType": [ "22244305", "8288" ] } },
+                    "OriginalScheduledDate": { "DateTime": "2022-09-08T23:00:00Z" },
+                    "CurrentScheduledDate": { "DateTime": "2022-09-09T05:00:00Z" },
+                    "CompletedDate": { "DateTime": "2022-09-09T05:42:38.93Z" }
+                  },
+                  "StartDate": { "DateTime": "2018-09-02T23:00:00Z" },
+                  "NextInstance": null,
+                  "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+                  "ScheduleDescription": null
+                }
+              ]
+            },
+            "Data": {
+              "ExtensibleDatum": [ {
+                "Value": "Paper Recycling 240L ",
+                "DatatypeName": "Recycling Containers",
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "19" },
+                    { "DatatypeName": "Quantity", "Value": "1" }
+                  ]
+                }
+              } ]
+            },
+            "ScheduleDescription": "Every Friday"
+          },
+          {
             "TaskIndicatorId": "33",
             "ServiceTaskSchedules": {
               "ServiceTaskSchedule": {
