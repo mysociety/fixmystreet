@@ -409,7 +409,9 @@ sub heatmap : Local : Args(0) {
     my $parameters = $c->forward( '/reports/load_problems_parameters');
 
     my $where = $parameters->{where};
+    # Filter includes order_by, rows, and a prefetch entry
     my $filter = $parameters->{filter};
+    # We don't need the rows, as we always want all reports
     delete $filter->{rows};
 
     $c->forward('heatmap_filters', [ $where ]);
@@ -423,6 +425,9 @@ sub heatmap : Local : Args(0) {
 
     if ($c->get_param('ajax')) {
         my @pins;
+        # We don't need any of the prefetched stuff now
+        delete $filter->{prefetch};
+        my $problems = $c->cobrand->problems->to_body($body)->search($where, $filter);
         while ( my $problem = $problems->next ) {
             push @pins, $problem->pin_data('reports');
         }
