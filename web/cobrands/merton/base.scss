@@ -47,7 +47,7 @@ input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__s
 a#geolocate_link,
 :not(.segmented-control--radio) > .btn {
     color: #ffffff !important;
-    background-color: #009578;
+    background-color: $merton-jade-j2;
     background-image: none;
     border-bottom: 2px solid $merton-dark-green;
     border-top-color: transparent;
@@ -96,7 +96,7 @@ input[type=tel],
 input[type=email],
 textarea,
 textarea.form-control {
-    border-bottom: 2px solid #1d9b80 !important;
+    border-bottom: 2px solid #078141 !important;
     border-radius: 0;
     box-shadow: none;
 }
@@ -127,8 +127,8 @@ a.skiplink:focus {
     display: block;
     overflow: hidden;
     white-space: nowrap;
-    padding-top: 70px;
-    width: 116px;
+    padding-top: 60px;
+    width: 220px;
     height: 0;
     background: $merton-lavender-l2 url(/cobrands/merton/images/merton-logo.png) center center no-repeat;
     background-size: contain;
@@ -140,7 +140,7 @@ a {
 
 #report-cta,
 html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.scss
-    background-color: #007F66 !important;
+    background-color: $link-color !important;
     color: white !important;
     border-bottom: 2px solid $merton-dark-green;
     border-radius: 0;
@@ -270,5 +270,10 @@ table.googlecookies {
     th, td {
         width: 1%;
     }
+}
+
+.form-box,
+.extra-category-questions {
+    background-color: #f4f4f4;
 }
 
