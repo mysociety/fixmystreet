@@ -1238,10 +1238,16 @@ sub cancel_bulky_collections_without_payment {
             created  => { '<'  => $cutoff_date },
             external_id => { '!=', undef },
             state => [ FixMyStreet::DB::Result::Problem->open_states ],
-            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
             -or => [
-                extra => undef,
-                -not => { extra => { '\?' => 'payment_reference' } }
+                extra => { '@>' => '{"payment_reference":"FAILED"}' },
+                -or => [
+                    extra => undef,
+                    -and => [
+                        -not => { extra => { '\?'=> 'payment_reference' } },
+                        # Only include bookings without a payment reference if not created by staff.
+                        -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
+                    ],
+                ],
             ],
         },
     );
@@ -1291,14 +1297,18 @@ sub cancel_bulky_collections_without_payment {
         }
 
         if ($params->{commit}) {
+            my $payment_ref = $report->get_extra_metadata('payment_reference');
+            my $reason = ($payment_ref && $payment_ref eq 'FAILED') ?
+                'Booking cancelled since payment was marked as failed' :
+                'Booking cancelled since payment was not made in time';
             $report->add_to_comments({
-                text => 'Booking cancelled since payment was not made in time',
+                text => $reason,
                 user_id => $self->body->comment_user_id,
                 extra => { bulky_cancellation => 1 },
             });
             $report->state('closed');
             $report->detail(
-                $report->detail . " | Cancelled since payment was not made in time"
+                $report->detail . " | " . $reason
             );
             $report->update;
         }

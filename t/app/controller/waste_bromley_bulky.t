@@ -687,6 +687,20 @@ FixMyStreet::override_config {
         is $cancellation_update->text, "Booking cancelled since payment was not made in time";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
         is $cancellation_update->user_id, $staff_user->id;
+
+        # 'FAILED' payment reference made by staff - cancelled.
+        $p->state('confirmed');
+        $p->comments->delete;
+        $p->set_extra_metadata('payment_reference', 'FAILED');
+        $p->set_extra_metadata( contributed_as => 'another_user' );
+        $p->update;
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
+        $p->discard_changes;
+        is $p->state, "closed";
+        $cancellation_update = $p->comments->first;
+        is $cancellation_update->text, "Booking cancelled since payment was marked as failed";
+        is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+        is $cancellation_update->user_id, $staff_user->id;
     }
 };
 
