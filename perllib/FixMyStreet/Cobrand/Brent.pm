@@ -53,6 +53,16 @@ sub council_area { return 'Brent'; }
 sub council_name { return 'Brent Council'; }
 sub council_url { return 'brent'; }
 
+my $BRENT_CONTAINERS = {
+    1 => 'Blue rubbish sack',
+    16 => 'General rubbish bin (grey bin)',
+    8 => 'Clear recycling sack',
+    6 => 'Recycling bin (blue bin)',
+    11 => 'Food waste caddy',
+    13 => 'Garden waste (green bin)',
+    46 => 'Paper and cardboard blue sack',
+};
+
 =head1 DESCRIPTION
 
 =cut
@@ -430,8 +440,22 @@ sub dashboard_export_problems_add_columns {
         return $values->{$field}{$v} || '';
     };
 
+    my $request_lookups = {
+        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
+        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
+        type => $BRENT_CONTAINERS,
+    };
+
     $csv->csv_extra_data(sub {
         my $report = shift;
+
+        my $id;
+        $id = $csv->_extra_field($report, 'Container_Request_Action') || '';
+        my $container_req_action = $request_lookups->{action}{$id} || $id;
+        $id = $csv->_extra_field($report, 'Container_Request_Container_Type') || '';
+        my $container_req_type = $request_lookups->{type}{$id} || $id;
+        $id = $csv->_extra_field($report, 'Container_Request_Reason') || '';
+        my $container_req_reason = $request_lookups->{reason}{$id} || $id;
 
         my $data = {
             location_name => $csv->_extra_field($report, 'location_name'),
@@ -458,9 +482,9 @@ sub dashboard_export_problems_add_columns {
             flytipping_statement => $flytipping_lookup->($report, 'Are_you_willing_to_be_a_WItness?_'),
             flytipping_quantity => $flytipping_lookup->($report, 'Flytip_Size'),
             flytipping_type => $flytipping_lookup->($report, 'Flytip_Type'),
-            container_req_action => $csv->_extra_field($report, 'Container_Request_Action'),
-            container_req_type => $csv->_extra_field($report, 'Container_Request_Container_Type'),
-            container_req_reason => $csv->_extra_field($report, 'Container_Request_Reason'),
+            container_req_action => $container_req_action,
+            container_req_type => $container_req_type,
+            container_req_reason => $container_req_reason,
             missed_collection_id => $csv->_extra_field($report, 'service_id'),
         };
 
@@ -1018,16 +1042,7 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-    $self->{c}->stash->{containers} = {
-        1 => 'Blue rubbish sack',
-        16 => 'General rubbish bin (grey bin)',
-        8 => 'Clear recycling sack',
-        6 => 'Recycling bin (blue bin)',
-        11 => 'Food waste caddy',
-        13 => 'Garden waste (green bin)',
-        46 => 'Paper and cardboard blue sack',
-    };
-
+    $self->{c}->stash->{containers} = $BRENT_CONTAINERS;
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
