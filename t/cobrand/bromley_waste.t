@@ -65,6 +65,33 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 });
 my $report = $reports[0];
 
+
+subtest 'check footer is powered by SocietyWorks' => sub {
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            waste => { bromley => 1 },
+        }
+    }, sub {
+        $mech->get_ok('/waste');
+        $mech->content_contains('href="https://www.societyworks.org/services/waste/">SocietyWorks', "Footer links to SocietyWorks when bulky waste not enabled");
+    };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            waste => { bromley => 1 },
+            waste_features => {
+                bromley => { bulky_enabled => 1 }
+            }
+        }
+    }, sub {
+        $mech->get_ok('/waste');
+        $mech->content_contains('href="https://www.societyworks.org/services/waste/">SocietyWorks', "Footer links to SocietyWorks when bulky waste enabled");
+    };
+};
+
 subtest 'test waste duplicate' => sub {
     my $sender = FixMyStreet::SendReport::Open311->new(
         bodies => [ $body ], body_config => { $body->id => $body },
