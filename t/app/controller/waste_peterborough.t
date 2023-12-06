@@ -26,6 +26,7 @@ my $user2 = $mech->create_user_ok('test2@example.net', name => 'Very Normal User
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+$staff->user_body_permissions->create({ body => $body, permission_type => 'planned_reports' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
@@ -69,6 +70,23 @@ FixMyStreet::override_config {
     },
 }, sub {
     my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+
+    subtest 'Footer is shown' => sub {
+        $mech->get_ok('/waste');
+        $mech->content_contains('https://www.societyworks.org/services/waste/">SocietyWorks')
+    };
+
+    subtest 'Shortlist link not on WasteWorks pages' => sub {
+        $mech->get_ok('/');
+        $mech->content_lacks('Shortlist</a>');
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/');
+        $mech->content_contains('Shortlist</a>');
+        $mech->get_ok('/waste');
+        $mech->content_lacks('Shortlist</a>');
+        $mech->log_out_ok;
+    };
+
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
