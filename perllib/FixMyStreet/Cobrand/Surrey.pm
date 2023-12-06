@@ -22,4 +22,6 @@ sub disambiguate_location {
     };
 }
 
+sub report_sent_confirmation_email { 'id' }
+
 1;
