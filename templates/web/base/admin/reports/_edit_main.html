@@ -75,7 +75,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]
 <br><small>[% loc('Cobrand data:') %] [% problem.cobrand_data OR '<em>' _ loc('None') _ '</em>' %]</small>
 </li>
-<li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+<li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire && problem.user.questionnaire_notify %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
 
 <li><label for="external_id">[% loc('External ID') %]:</label>
     <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">

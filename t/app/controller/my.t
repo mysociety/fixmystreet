@@ -102,6 +102,22 @@ subtest 'test setting of notification preferences' => sub {
         $mech->content_contains('id="update_notify_phone" value="phone" checked');
         $mech->content_lacks('id="alert_notify_email" value="email"');
         $mech->content_contains('id="alert_notify_none" value="none" checked');
+
+        # questionnaire_notify setting
+        $mech->content_contains('id="questionnaire_notify_yes" value="1" checked');
+        $mech->content_lacks('id="questionnaire_notify_no" value="0" checked');
+
+        $mech->submit_form_ok(
+            { with_fields => { questionnaire_notify => 0 } } );
+        $mech->get_ok('/my');
+        $mech->content_lacks('id="questionnaire_notify_yes" value="1" checked');
+        $mech->content_contains('id="questionnaire_notify_no" value="0" checked');
+
+        $mech->submit_form_ok(
+            { with_fields => { questionnaire_notify => 1 } } );
+        $mech->get_ok('/my');
+        $mech->content_contains('id="questionnaire_notify_yes" value="1" checked');
+        $mech->content_lacks('id="questionnaire_notify_no" value="0" checked');
     };
 };
 
