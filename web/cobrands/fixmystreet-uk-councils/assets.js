@@ -1380,6 +1380,10 @@ fixmystreet.assets.shropshire.streetlight_stylemap = new OpenLayers.StyleMap({
 
 fixmystreet.assets.shropshire.streetlight_found = function(asset) {
     var controller_fn = shropshire_light(asset) ? 'asset_found' : 'asset_not_found';
+    if (asset.attributes.OWNER) {
+        this.fixmystreet.no_asset_msg_id = '#sl-owner-' + asset.attributes.FEAT_LABEL + asset.attributes.OWNER.replace(/[^a-zA-Z0-9]/g, '');
+        this.fixmystreet.no_asset_message = fixmystreet.assets.shropshire.streetlight_asset_message(asset);
+    }
     fixmystreet.message_controller[controller_fn].call(this);
     fixmystreet.assets.named_select_action_found.call(this, asset);
 };
