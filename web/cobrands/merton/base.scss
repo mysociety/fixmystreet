@@ -140,7 +140,7 @@ a {
 
 #report-cta,
 html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.scss
-    background-color: #007F66 !important;
+    background-color: $link-color !important;
     color: white !important;
     border-bottom: 2px solid $merton-dark-green;
     border-radius: 0;
@@ -270,5 +270,10 @@ table.googlecookies {
     th, td {
         width: 1%;
     }
+}
+
+.form-box,
+.extra-category-questions {
+    background-color: #f4f4f4;
 }
 
