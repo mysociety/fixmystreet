@@ -100,7 +100,7 @@ sub send_questionnaires { 0 }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem( $p );
+    return 'grey' if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'yellow' if $p->is_in_progress;
     return 'red';
