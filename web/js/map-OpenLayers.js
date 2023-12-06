@@ -949,6 +949,11 @@ $.extend(fixmystreet.utils, {
         } else if (fixmystreet.page == 'new') {
             drag.activate();
         }
+
+        // Special heatmap check to not have a double pin load
+        if ($('input[name=heatmap]:checked').val() === 'Yes') {
+            fixmystreet.markers.setVisibility(false);
+        }
         fixmystreet.map.addLayer(fixmystreet.markers);
 
         if (fixmystreet.page == "report") {

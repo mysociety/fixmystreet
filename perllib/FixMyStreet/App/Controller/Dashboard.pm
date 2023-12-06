@@ -416,14 +416,14 @@ sub heatmap : Local : Args(0) {
 
     $c->forward('heatmap_filters', [ $where ]);
 
-    # Load the relevant stuff for the sidebar as well
-    my $problems = $c->cobrand->problems;
-    $problems = $problems->to_body($body);
-    $problems = $problems->search($where, $filter);
-
-    $c->forward('heatmap_sidebar', [ $problems, $where ]);
-
     if ($c->get_param('ajax')) {
+        # Load the relevant stuff for the sidebar as well
+        my $problems = $c->cobrand->problems;
+        $problems = $problems->to_body($body);
+        $problems = $problems->search($where, $filter);
+
+        $c->forward('heatmap_sidebar', [ $problems, $where ]);
+
         my @pins;
         # We don't need any of the prefetched stuff now
         delete $filter->{prefetch};
