@@ -287,7 +287,7 @@ sub owns_problem {
 # then show pins for the other council as grey
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if !$self->owns_problem( $p );
+    return 'grey' if $context ne 'reports' && !$self->owns_problem($p);
     return $self->next::method($p, $context);
 }
 

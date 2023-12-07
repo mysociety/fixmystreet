@@ -102,7 +102,7 @@ sub geocode_postcode {
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if !$self->owns_problem( $p );
+    return 'grey' if ($context ne 'reports' && !$self->owns_problem($p));
     return 'yellow';
 }
 
@@ -1294,6 +1294,49 @@ sub cancel_bulky_collections_without_payment {
     );
 
     while ( my $report = $rs->next ) {
+        my $scp_reference = $report->get_extra_metadata('scpReference');
+        if ($scp_reference) {
+
+            # Double check whether the payment was made.
+            my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($scp_reference);
+            if (!$error) {
+                if ($params->{verbose}) {
+                    printf(
+                        'Booking %s for report %d was found to be paid (reference %s).' .
+                        ' Updating with payment information and not cancelling.',
+                        $report->external_id,
+                        $report->id,
+                        $tx_id,
+                    );
+                }
+                if ($params->{commit}) {
+                    $report->update_extra_metadata(
+                        authCode => $auth_code,
+                        continuousAuditNumber => $can,
+                        payment_reference => $tx_id,
+                    );
+                    $report->set_extra_fields(
+                        {
+                            name => 'LastPayMethod',
+                            description => 'LastPayMethod',
+                            value => $self->bin_payment_types->{'csc'}
+                        },
+                        {
+                            name => 'PaymentCode',
+                            description => 'PaymentCode',
+                            value => $tx_id
+                        },
+                    );
+                    $report->update;
+                    $report->add_to_comments({
+                        text => "Payment confirmed, reference $tx_id",
+                        user => $report->user,
+                    });
+                }
+                next;
+            }
+        }
+
         if ($params->{commit}) {
             $report->add_to_comments({
                 text => 'Booking cancelled since payment was not made in time',

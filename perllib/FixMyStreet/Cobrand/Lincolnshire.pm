@@ -176,10 +176,9 @@ Lincolnshire uses the following pin colours:
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    my $ext_status = $p->get_extra_metadata('external_status_code');
 
     return 'grey'
-        if $p->state eq 'not responsible' || !$self->owns_problem($p);
+        if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
     return 'orange'
         if $p->state eq 'investigating' || $p->state eq 'for triage';
     return 'yellow'

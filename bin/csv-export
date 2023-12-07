@@ -60,10 +60,12 @@ my $user = FixMyStreet::DB->resultset("User")->find($opts->user) if $opts->user;
 my $body = FixMyStreet::DB->resultset("Body")->find($opts->body) if $opts->body;
 my $wards = $opts->wards ? [split',', $opts->wards] : [];
 
+my $category = $opts->category ? [split'::', $opts->category] : [];
+
 my $reporting = FixMyStreet::Reporting->new(
     type => $opts->type,
     user => $user,
-    category => $opts->category,
+    category => $category,
     state => $opts->state,
     role_id => $opts->role_id,
     wards => $wards,

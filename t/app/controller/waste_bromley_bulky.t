@@ -603,6 +603,31 @@ FixMyStreet::override_config {
         test_prices('£50.00', '£50.00');
     };
 
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        if ($sent_params->{scpReference} eq 'paid') {
+            return {
+                transactionState => 'COMPLETE',
+                paymentResult => {
+                    status => 'SUCCESS',
+                    paymentDetails => {
+                        authDetails => {
+                            authCode              => 112233,
+                            continuousAuditNumber => 123,
+                        },
+                        paymentHeader => {
+                            uniqueTranId => 54321
+                        }
+                    }
+                }
+            };
+        }
+        return {
+            transactionState => 'FAILED',
+        };
+    });
+
     subtest "Cancel booking when no payment within 30 minutes" => sub {
         my ( $p ) = $mech->create_problems_for_body(1, $body->id, "Bulky goods collection", {
             category => "Bulky collection",
@@ -612,6 +637,7 @@ FixMyStreet::override_config {
             cobrand => "bromley",
         });
         $p->set_extra_metadata('payment_reference', 'test');
+        $p->set_extra_metadata('scpReference', 'unpaid');
         $p->update;
 
         my $cobrand = $body->get_cobrand_handler;
@@ -634,14 +660,29 @@ FixMyStreet::override_config {
         is $p->state, "confirmed";
         is $p->comments->count, 0;
 
-        # No payment non-staff - cancelled.
+        # No payment non-staff but check shows was paid - not cancelled.
         $p->unset_extra_metadata('contributed_as');
+        $p->set_extra_metadata('scpReference', 'paid');
         $p->update;
-        $cobrand->cancel_bulky_collections_without_payment({ commit => 1});
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
+        $p->discard_changes;
+        is $p->state, "confirmed";
+        is $p->comments->count, 1;
+        is $p->get_extra_metadata('continuousAuditNumber'), 123;
+        is $p->get_extra_metadata('authCode'), 112233;
+        is $p->get_extra_metadata('payment_reference'), 54321;
+        is $p->get_extra_field_value('LastPayMethod'), $cobrand->bin_payment_types->{'csc'};
+        is $p->get_extra_field_value('PaymentCode'), 54321;
+        is $p->comments->first->text, "Payment confirmed, reference 54321";
+
+        # No payment non-staff and check confirms unpaid - cancelled.
+        $p->set_extra_metadata('scpReference', 'unpaid');
+        $p->unset_extra_metadata('payment_reference');
+        $p->comments->delete;
+        $p->update;
+        $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
         $p->discard_changes;
         is $p->state, "closed";
-        is $p->comments->count, 1;
-
         my $cancellation_update = $p->comments->first;
         is $cancellation_update->text, "Booking cancelled since payment was not made in time";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;

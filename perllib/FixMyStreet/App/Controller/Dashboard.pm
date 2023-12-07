@@ -126,8 +126,25 @@ sub index : Path : Args(0) {
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
+        my %group_names = map { $_->{name} => $_->{categories} } @{$c->stash->{category_groups}};
         # See if we've had anything from the body dropdowns
-        $c->stash->{category} = $c->get_param('category');
+        $c->stash->{category} = [ $c->get_param_list('category') ];
+        my @remove_from_display;
+
+        foreach (@{$c->stash->{category}}) {
+            next unless /^group-(.*)/;
+            for my $contact (@{$group_names{$1}}) {
+                push @{ $c->stash->{category} }, $contact->category;
+                push @remove_from_display, $contact->category;
+            }
+        }
+
+        my %display_categories = map { $_ => 1 } @{$c->stash->{category}};
+        delete $display_categories{$_} for (@remove_from_display);
+        $c->stash->{display_categories} = \%display_categories;
+
+        @{$c->stash->{category}} = grep { $_ !~ /^group-/} @{$c->stash->{category}};
+
         $c->stash->{ward} = [ $c->get_param_list('ward') ];
 
         if ($c->user_exists) {
@@ -187,7 +204,7 @@ sub construct_rs_filter : Private {
 
     my $reporting = FixMyStreet::Reporting->new(
         type => $updates ? 'updates' : 'problems',
-        category => $c->stash->{category},
+        category => $c->stash->{category} || [],
         state => $c->stash->{q_state},
         wards => $c->stash->{ward},
         body => $c->stash->{body} || undef,
@@ -392,20 +409,25 @@ sub heatmap : Local : Args(0) {
     my $parameters = $c->forward( '/reports/load_problems_parameters');
 
     my $where = $parameters->{where};
+    # Filter includes order_by, rows, and a prefetch entry
     my $filter = $parameters->{filter};
+    # We don't need the rows, as we always want all reports
     delete $filter->{rows};
 
     $c->forward('heatmap_filters', [ $where ]);
 
-    # Load the relevant stuff for the sidebar as well
-    my $problems = $c->cobrand->problems;
-    $problems = $problems->to_body($body);
-    $problems = $problems->search($where, $filter);
-
-    $c->forward('heatmap_sidebar', [ $problems, $where ]);
-
     if ($c->get_param('ajax')) {
+        # Load the relevant stuff for the sidebar as well
+        my $problems = $c->cobrand->problems;
+        $problems = $problems->to_body($body);
+        $problems = $problems->search($where, $filter);
+
+        $c->forward('heatmap_sidebar', [ $problems, $where ]);
+
         my @pins;
+        # We don't need any of the prefetched stuff now
+        delete $filter->{prefetch};
+        my $problems = $c->cobrand->problems->to_body($body)->search($where, $filter);
         while ( my $problem = $problems->next ) {
             push @pins, $problem->pin_data('reports');
         }
