@@ -127,6 +127,37 @@ sub open311_skip_report_fetch {
     return 1 if $problem->non_public;
 }
 
+=head2 open311_update_missing_data
+
+Unlike the ConfirmOpen311 role, we want to fetch a central asset ID here, not a
+site code.
+
+=cut
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    # In case the client hasn't given us a central asset ID, look up the
+    # closest asset from the WFS service at the point we're sending the report
+    if (!$row->get_extra_field_value('central_asset_id')) {
+        if (my $id = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'central_asset_id', value => $id });
+        }
+    }
+}
+
+sub lookup_site_code_config {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 200, # metres
+        url => "https://$host/mapserver/gloucestershire",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "WSF",
+        property => "CentralAssetId",
+        accept_feature => sub { 1 }
+    };
+}
+
 =head2 open311_extra_data_include
 
 Gloucestershire want report title to be in description field, along with
@@ -188,13 +219,6 @@ sub disambiguate_location {
             52.11256544152442, -1.6152019220946803,
         ],
     };
-}
-
-# TODO What else to add here?
-sub lookup_site_code_config {
-    {
-        buffer => 200, # metres
-    }
 }
 
 =head2 pin_colour
