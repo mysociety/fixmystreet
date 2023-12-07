@@ -5,7 +5,15 @@ Hello [% report.name %],
 [% IF report.category == 'Bulky collection' ~%]
 There was a problem taking payment for your [% report.title %].
 
+[% IF c.cobrand.moniker == 'peterborough' ~%]
 Please contact 01733 747474; if you feel you will have difficulty with the auto payment system please advise the call handler at the start of the call.
+[% ELSIF c.cobrand.moniker == 'bromley' ~%]
+Please contact the Customer Service Centre on 0300 303 8658 to try again.
+[% ELSIF c.cobrand.moniker == 'sutton' ~%]
+Please contact the Customer Service Centre on 020 8770 5000 to try again.
+[% ELSE ~%]
+Please contact the Customer Service Centre to try again.
+[%~ END %]
 
 [% IF waste_features.bulky_retry_bookings %]
 Provide the reference number [% report.id %] so you do not have to provide details of your collection again.
