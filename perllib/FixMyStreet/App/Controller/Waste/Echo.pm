@@ -86,6 +86,16 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
         my $p = $updates->find_problem($request);
         if ($p) {
             $c->forward('check_existing_update', [ $p, $request, $updates ]);
+
+            # If a bulky collection hasn't been paid, do not
+            # send alerts on any updates that come in
+            if ($p->category eq 'Bulky collection'
+                && $c->cobrand->bulky_send_before_payment
+                && !$p->get_extra_metadata('payment_reference')
+                && !$p->get_extra_metadata('chequeReference')) {
+                $updates->suppress_alerts(1);
+            }
+
             my $comment = $updates->process_update($request, $p);
             last;
         }

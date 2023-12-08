@@ -207,6 +207,7 @@ subtest 'updating of waste reports' => sub {
                     { CoreState => 'Pending', Name => 'Unallocated', Id => 15002 },
                     { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
                     { CoreState => 'Closed', Name => 'Completed', Id => 15004 },
+                    { CoreState => 'Closed', Name => 'Partially Completed', Id => 15005 },
                 ] } },
             });
         } else {
@@ -318,7 +319,38 @@ EOF
         $report->update_extra_field({ name => 'Collection_Date', value => '2023-09-26T00:00:00Z' });
         $report->set_extra_metadata( item_1 => 'Armchair' );
         $report->set_extra_metadata( item_2 => 'BBQ' );
-        $report->update({ category => 'Bulky collection', external_id => 'waste-with-image' });
+        $report->update({ category => 'Bulky collection', external_id => 'waste-15005-' });
+
+        $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>waste-15005-</Guid>
+        <EventTypeId>1636</EventTypeId>
+        <EventStateId>15005</EventStateId>
+        <ResolutionCodeId></ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 4, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'closed', 'A state change';
+
+        FixMyStreet::Script::Alerts::send_updates();
+        $mech->email_count_is(0); # No email, as no payment received
+
+        $report->set_extra_metadata( payment_reference => 'Pay123' );
+        $report->update({ external_id => 'waste-with-image' });
+
         $in = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
 <Envelope>
@@ -339,7 +371,7 @@ EOF
 </Envelope>
 EOF
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
-        is $report->comments->count, 4, 'A new update';
+        is $report->comments->count, 5, 'A new update';
         $report->discard_changes;
         is $report->state, 'fixed - council', 'A state change';
         my $update = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
