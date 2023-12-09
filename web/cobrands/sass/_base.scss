@@ -3144,11 +3144,11 @@ a#geolocate_link {
 
 // Offline reporting UI
 #front-main {
-  .js-continue-draft {
+  .draft-info-box {
     display:flex;
     justify-content:center;
   }
-  .js-continue-draft p {
+  .draft-info-box p {
     background-color: #ff3333;
     padding: 0.5em 1em;
   }

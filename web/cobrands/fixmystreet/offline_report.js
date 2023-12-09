@@ -351,7 +351,11 @@ fixmystreet.offlineReporting = (function() {
             $(document).on('click', '.js-continue-draft', function() {
                 var id = parseInt(this.parentNode.parentNode.getAttribute('data-id'), 10);
                 loadDraft(id).then(function(d) {
-                    location.href = "/report/new?restoreDraft=" + id + "&latitude=" + d.latitude + "&longitude=" + d.longitude;
+                    if (!d.longitude || !d.latitude) {
+                        location.href = "/?setDraftLocation=" + id + '&draftName=' + d.title;
+                    } else {
+                        location.href = "/report/new?restoreDraft=" + id + "&latitude=" + d.latitude + "&longitude=" + d.longitude;
+                    }
                 });
             });
             $(document).on('click', ".js-edit-draft", function() {

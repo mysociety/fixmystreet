@@ -20,6 +20,7 @@
         - Allow confirmation links to login user 30s within first use to prevent things like Outlook 'safelinks' breaking the UX.
         - Fixes default status report filter text on Your Account page. #4558
         - Don't zoom to bounds when searching for a postcode.
+        - Fix restoring a draft with no location.
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
