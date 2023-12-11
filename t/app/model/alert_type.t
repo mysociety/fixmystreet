@@ -441,7 +441,8 @@ subtest "check alerts from cobrand send main site url for alerts for different c
     }, sub {
         FixMyStreet::Script::Alerts::send_other();
 
-        my $body = $mech->get_text_body_from_email;
+        my $email = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($email);
 
         my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
         my $expected3 = FixMyStreet->config('BASE_URL') . '/report/' . $report_outside_district->id;
@@ -450,6 +451,10 @@ subtest "check alerts from cobrand send main site url for alerts for different c
         like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
         like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
         like $body, qr#$expected3#, 'report outside district report point to fixmystreet.com';
+
+        my $report_id = $report_to_council->id;
+        $body = $mech->get_html_body_from_email($email);
+        like $body, qr/Reference:&nbsp;$report_id/;
     };
 };
 

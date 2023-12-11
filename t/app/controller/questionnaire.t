@@ -59,6 +59,38 @@ foreach my $state (
 $report->update( { send_questionnaire => 1, state => 'confirmed' } );
 $report->questionnaires->delete;
 
+subtest "user's questionnaire_notify setting" => sub {
+    # Set to true by default
+    is $user->get_extra_metadata('questionnaire_notify'), undef,
+        'extra_metadata returns undef';
+    is $user->questionnaire_notify, 1, 'method returns true';
+
+    # Set to false and try to send
+    $user->set_extra_metadata( questionnaire_notify => 0 );
+    $user->update;
+    is $user->questionnaire_notify, 0, 'method returns false';
+    FixMyStreet::DB->resultset('Questionnaire')
+        ->send_questionnaires( { site => 'fixmystreet' } );
+    note 'questionnaire should not be sent';
+    $mech->email_count_is(0);
+    $report->discard_changes;
+    is $report->send_questionnaire, 0,
+        'report->send_questionnaire should have been set to 0';
+
+    # Set to true
+    $user->set_extra_metadata( questionnaire_notify => 1 );
+    $user->update;
+    is $user->questionnaire_notify, 1, 'method returns true';
+    FixMyStreet::DB->resultset('Questionnaire')
+        ->send_questionnaires( { site => 'fixmystreet' } );
+    note
+        'questionnaire should not be sent because report->send_questionnaire was set to 0 earlier';
+    $mech->email_count_is(0);
+
+    # Reset send_questionnaire to allow tests below to pass
+    $report->update( { send_questionnaire => 1 } );
+};
+
 # Call the questionaire sending function...
 FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires( {
     site => 'fixmystreet'

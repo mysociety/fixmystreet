@@ -243,6 +243,12 @@ sub alert_updates_by {
     return 'email';
 }
 
+# Whether user has opted to receive questionnaires.
+# Defaults to true if not set in extra metadata.
+sub questionnaire_notify {
+    return $_[0]->get_extra_metadata('questionnaire_notify') // 1;
+}
+
 sub latest_anonymity {
     my $self = shift;
     my $p = $self->problems->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;

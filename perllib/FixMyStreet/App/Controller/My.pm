@@ -382,10 +382,12 @@ sub notify_preference : Local : Args(0) {
 
     my $update_notify = $c->get_param('update_notify');
     my $alert_notify = $c->get_param('alert_notify');
+    my $questionnaire_notify = $c->get_param('questionnaire_notify');
 
     $c->user->set_extra_metadata(
         update_notify => $update_notify,
         alert_notify => $alert_notify,
+        questionnaire_notify => $questionnaire_notify,
     );
     $c->user->update;
     $c->res->redirect('/my');

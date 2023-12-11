@@ -9,6 +9,8 @@
         - Add geolocation button to centre map at user's location. #4671
         - WasteWorks PWA can now have a separate name from the FixMyStreet PWA.
         - Add code to enable category filtering box.
+        - Users can now opt out of questionnaires.
+        - Include reference in report list emails. #4760
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.

@@ -21,4 +21,15 @@ sub open311_extra_data {
     return (undef, ['sect_label', 'road_name', 'area_name']);
 }
 
+=head2 should_skip_sending_update
+
+We do not currently send updates.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $update ) = @_;
+    return 1;
+}
+
 1;
