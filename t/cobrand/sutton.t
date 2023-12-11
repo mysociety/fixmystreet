@@ -44,24 +44,17 @@ $mech->create_contact_ok(
     email => 'graffiti@example.org',
     send_method => 'Email',
 );
-$mech->create_contact_ok(
-    body => $body,
-    category => 'Report missed collection',
-    email => 'missed',
-    send_method => 'Open311',
-    endpoint => 'waste-endpoint',
-    extra => { type => 'waste' },
-    group => ['Waste'],
-);
-$mech->create_contact_ok(
-    body => $body,
-    category => 'Garden Subscription',
-    email => '1638',
-    send_method => 'Open311',
-    endpoint => 'waste-endpoint',
-    extra => { type => 'waste' },
-    group => ['Waste'],
-);
+foreach ([ missed => 'Report missed collection' ], [ 1638 => 'Garden Subscription' ], [ 1636 => 'Bulky collection' ]) {
+    $mech->create_contact_ok(
+        body => $body,
+        email => $_->[0],
+        category => $_->[1],
+        send_method => 'Open311',
+        endpoint => 'waste-endpoint',
+        extra => { type => 'waste' },
+        group => ['Waste'],
+    );
+}
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     latitude => 51.402096,
@@ -222,7 +215,7 @@ subtest 'updating of waste reports' => sub {
         cobrand_data => 'waste',
     });
     $reports[1]->update({ external_id => 'something-else' }); # To test loop
-    my $report = $reports[0];
+    $report = $reports[0];
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'sutton',
@@ -387,6 +380,38 @@ EOF
     };
 };
 
-
+# Report here is bulky, with a date
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'sutton',
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
+}, sub {
+    subtest 'test reservations expired by time it reaches Echo' => sub {
+        $report->update_extra_field({ name => 'GUID', value => 'guid' });
+        $report->update_extra_field({ name => 'property_id', value => 'prop' });
+        my $sender = FixMyStreet::SendReport::Open311->new(
+            bodies => [ $body ], body_config => { $body->id => $body },
+        );
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('CancelReservedSlotsForEvent', sub {
+            is $_[1], $report->get_extra_field_value('GUID');
+        });
+        $echo->mock('ReserveAvailableSlotsForEvent', sub {
+            [ {
+                StartDate => { OffsetMinutes => 0, DateTime => '2023-09-26T00:00:00Z' },
+                Expiry => { OffsetMinutes => 0, DateTime => '2023-09-27T00:00:00Z' },
+                Reference => 'NewRes',
+            } ];
+        });
+        Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Selected reservations expired</description></error></errors>', 500);
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+        $report->discard_changes;
+        is $report->get_extra_field_value('reservation'), 'NewRes';
+    };
+};
 
 done_testing();

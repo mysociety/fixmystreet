@@ -123,6 +123,10 @@ sub open311_post_send {
         $row->state('duplicate');
     }
 
+    if ($error =~ /Selected reservations expired/) {
+        $self->bulky_refetch_slots($row);
+    }
+
     if ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
         my $id = $1;
         my $cfg = $self->feature('echo');

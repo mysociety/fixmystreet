@@ -316,6 +316,9 @@ sub open311_post_send {
     if ($error =~ /Missed Collection event already open for the property/) {
         $row->state('duplicate');
     }
+    if ($error =~ /Selected reservations expired/) {
+        $self->bulky_refetch_slots($row);
+    }
 }
 
 sub open311_contact_meta_override {
