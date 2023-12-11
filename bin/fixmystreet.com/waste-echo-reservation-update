@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+#
+# Fallback manual script to be used if a report needs resending to Echo but
+# contains an expired task reservation, to fetch new data if possible
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
+
+my $id = shift @ARGV or die "Provide a report ID";
+my $p = FixMyStreet::DB->resultset("Problem")->find($id) or die "Could not find ID $id";
+my $cobrand = $p->get_cobrand_logged;
+$cobrand->bulky_refetch_slots($p, 1);

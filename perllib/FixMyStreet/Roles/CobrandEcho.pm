@@ -1,6 +1,6 @@
 package FixMyStreet::Roles::CobrandEcho;
 
-use strict;
+use v5.14;
 use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
@@ -607,6 +607,58 @@ sub clear_cached_lookups_bulky_slots {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     $echo->CancelReservedSlotsForEvent($guid);
+}
+
+sub bulky_refetch_slots {
+    my ($self, $row, $verbose) = @_;
+
+    my $property_id = $row->get_extra_field_value('property_id');
+    my $date = $self->collection_date($row);
+    my $guid = $row->get_extra_field_value('GUID');
+    my $window = $self->_bulky_collection_window();
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    my $service_id = $cfg->{bulky_service_id};
+    my $event_type_id = $cfg->{bulky_event_type_id};
+
+    if ($row->whensent || !$guid) {
+        if ($row->whensent) {
+            say "Already sent, creating new GUID and fetching new reservation and resending" if $verbose;
+        } else {
+            say "No GUID? Creating new GUID and fetching new reservation and sending" if $verbose;
+        }
+        require UUID::Tiny;
+        $guid = UUID::Tiny::create_uuid_as_string();
+        $row->update_extra_field({ name => 'GUID', value => $guid });
+        $row->state('confirmed');
+        $row->resend;
+    } else {
+        say "Not already sent, fetching new reservation and trying again" if $verbose;
+        say "Cancelling existing slots for $guid" if $verbose;
+        $echo->CancelReservedSlotsForEvent($guid);
+    }
+
+    say "Getting more slots for $property_id $guid" if $verbose;
+    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property_id, $guid, $window->{date_from}, $window->{date_to});
+
+    my $slot_found = 0;
+    foreach (@$slots) {
+        my $slot_date = construct_bin_date($_->{StartDate});
+        my $ref = $_->{Reference};
+        if ($slot_date->ymd eq $date->ymd) {
+            $slot_found = 1;
+            say "Updating reservation to slot $ref for $slot_date" if $verbose;
+            $row->update_extra_field({ name => 'reservation', value => $ref });
+        }
+    }
+    if ($slot_found) {
+        $row->send_fail_count(0); # Assuming it's been failing, for an instant retry
+        $row->update;
+    } else {
+        say "No replacement slot for $date could be found" if $verbose;
+    }
 }
 
 sub bulky_check_missed_collection {
