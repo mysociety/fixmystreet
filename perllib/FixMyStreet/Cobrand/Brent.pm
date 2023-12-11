@@ -443,7 +443,10 @@ sub dashboard_export_problems_add_columns {
     my $request_lookups = {
         action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
         reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
-        type => $BRENT_CONTAINERS,
+        type => {
+            %$BRENT_CONTAINERS,
+            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
+        },
     };
 
     $csv->csv_extra_data(sub {
