@@ -386,8 +386,9 @@ sub add_cancellation_report : Private {
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
 
     if ($c->cobrand->bulky_cancel_by_update) {
+        my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : "Booking cancelled by customer";
         $collection_report->add_to_comments({
-            text => 'Booking cancelled by customer',
+            text => $description,
             user => $collection_report->user,
             extra => { bulky_cancellation => 1 },
         });
@@ -409,8 +410,9 @@ sub process_bulky_cancellation : Private {
 
     # Mark original report as closed
     $collection_report->state('closed');
+    my $description = $c->stash->{non_user_cancel} ? "Cancelled" : "Cancelled at user request";
     $collection_report->detail(
-        $collection_report->detail . " | Cancelled at user request", );
+        $collection_report->detail . " | " . $description );
     $collection_report->update;
 
     $c->cobrand->call_hook('bulky_send_cancellation_confirmation' => $collection_report);

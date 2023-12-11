@@ -562,6 +562,12 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
     $report->update_extra_field({ name => 'payment_reference', value => 'FAILED' });
     $report->update;
 
+    if (($report->category eq 'Bulky collection' || $report->category eq 'Small items collection') && $c->cobrand->bulky_send_before_payment) {
+        $c->stash->{cancelling_booking} = $report;
+        $c->stash->{non_user_cancel} = 1;
+        $c->forward('bulky/process_bulky_cancellation');
+    }
+
     $c->stash->{template} = 'waste/garden/csc_payment_failed.html';
     $c->detach;
 }
