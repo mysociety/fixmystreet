@@ -32,6 +32,7 @@ has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 has upload_files => ( is => 'ro', isa => Bool, default => 0 );
+has upload_files_for_updates => ( is => 'ro', isa => Bool, default => 0 );
 has always_upload_photos => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
@@ -234,12 +235,29 @@ sub _populate_service_request_uploads {
         }
     }
 
-    if ( $self->always_upload_photos || ( $problem->photo && $problem->non_public ) ) {
+    %$uploads = (%$uploads, %{$self->_add_photos_to_upload($problem, $params)});
+
+    return $uploads;
+}
+
+sub _add_photos_to_upload {
+    my ($self, $obj, $params) = @_;
+
+    my $non_public;
+    if (ref $obj eq 'FixMyStreet::DB::Result::Problem') {
+        $non_public = $obj->non_public
+    } elsif (ref $obj eq 'FixMyStreet::DB::Result::Comment') {
+        $non_public = $obj->problem->non_public;
+    };
+
+    my $uploads = {};
+
+    if ( $self->always_upload_photos || ( $obj->photo && $non_public ) ) {
         # open311-adapter won't be able to download any photos if they're on
-        # a private report, so instead of sending the media_url parameter
+        # a private report or on a comment on a private report, so instead of sending the media_url parameter
         # send the actual photo content with the POST request.
         my $i = 0;
-        my $photoset = $problem->get_photoset;
+        my $photoset = $obj->get_photoset;
         for ( $photoset->all_ids ) {
             my $photo = $photoset->get_image_data( num => $i++, size => 'full' );
             $uploads->{"photo$i"} = [ undef, $_, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
@@ -249,6 +267,7 @@ sub _populate_service_request_uploads {
 
     return $uploads;
 }
+
 
 sub _generate_service_request_description {
     my $self = shift;
@@ -342,7 +361,13 @@ sub post_service_request_update {
 
     my $params = $self->_populate_service_request_update_params( $comment );
 
-    my $response = $self->_post( $self->endpoints->{update}, $params );
+    my $response;
+    if ($self->upload_files_for_updates && $comment->photo) {
+        my $uploads = $self->_add_photos_to_upload($comment, $params);
+        $response = $self->_post( $self->endpoints->{update}, $params, $uploads);
+    } else {
+        $response = $self->_post( $self->endpoints->{update}, $params);
+    }
 
     if ( $response ) {
         my $obj = $self->_get_xml_object( $response );
