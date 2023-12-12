@@ -12,6 +12,7 @@ sub open311_config {
 
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
+    $params->{upload_files_for_updates} = 1;
 }
 
 sub open311_extra_data_include {
