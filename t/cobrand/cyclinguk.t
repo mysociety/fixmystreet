@@ -72,7 +72,30 @@ subtest 'cyclinguk cobrand reports do appear on site' => sub {
     $mech->content_contains($problem->title);
 };
 
+$mech->log_in_ok($super->email);
+
+subtest 'cyclinguk dashboard shows correct report data' => sub {
+    $problem->update({ cobrand => 'fixmystreet'});
+    $mech->get_ok("/dashboard");
+    $mech->content_contains("0 opened, 0 closed, 0 fixed", ".com reports not shown in dashboard");
+
+    $problem->update({ cobrand => 'bathnes'});
+    $mech->get_ok("/dashboard");
+    $mech->content_contains("0 opened, 0 closed, 0 fixed", "council cobrand reports not shown in dashboard");
+
+    $problem->update({ cobrand => 'cyclinguk'});
+    $mech->get_ok("/dashboard");
+    $mech->content_contains("1 opened, 0 closed, 0 fixed", "cyclinguk cobrand reports are shown in dashboard");
 };
 
+subtest 'cyclinguk dashboard shows correct bodies' => sub {
+    $mech->get_ok("/dashboard");
+    $mech->content_contains("<option value=''>All</option>");
+    $mech->content_contains('<option value="' . $body->id . '">Bath and North East Somerset Council</option>');
+};
+
+$mech->log_out_ok;
+
+};
 
 done_testing();
