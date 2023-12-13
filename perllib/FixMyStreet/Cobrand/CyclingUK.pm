@@ -59,4 +59,32 @@ questions when making reports.
 
 sub allow_report_extra_fields { 1 }
 
+=item dashboard_extra_bodies
+
+Cycling UK dashboard should show all bodies that have received a report made
+via the cobrand.
+
+=cut
+
+sub dashboard_extra_bodies {
+    my ($self) = @_;
+
+    my @results = FixMyStreet::DB->resultset('Problem')->search({
+        cobrand => 'cyclinguk',
+    }, {
+        distinct => 1,
+        columns => { bodies_str => \"regexp_split_to_table(bodies_str, ',')" }
+    })->all;
+
+    my @bodies = map { $_->bodies_str } @results;
+
+    return FixMyStreet::DB->resultset('Body')->search(
+        { 'id' => { -in => \@bodies } },
+        { order_by => 'name' }
+    )->active->all;
+}
+
+sub dashboard_default_body {};
+
+
 1;

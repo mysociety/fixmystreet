@@ -91,6 +91,9 @@ sub check_page_allowed : Private {
                 $body = $found[0] if @found;
             }
         }
+        if ($body == $c->user->from_body and $c->cobrand->can('dashboard_default_body')) {
+            return $c->cobrand->call_hook('dashboard_default_body');
+        }
     } elsif ($c->action eq 'dashboard/heatmap' && $c->cobrand->feature('heatmap_dashboard_body')) {
         # Heatmap might be able to be seen by more people
         $body = $c->cobrand->call_hook('dashboard_body');
