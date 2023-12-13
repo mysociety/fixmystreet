@@ -19,6 +19,8 @@ sub path_to_web_templates {
     ];
 }
 
+sub privacy_policy_url { 'https://www.cyclinguk.org/privacy-policy' }
+
 =item problems_restriction
 
 This cobrand only shows reports made on it, not those from FMS.com or others.
