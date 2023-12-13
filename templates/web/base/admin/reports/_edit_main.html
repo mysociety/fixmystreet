@@ -64,6 +64,14 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
     <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
   [% END %]
 </li>
+[% IF NOT problem.whensent AND c.user.is_superuser %]
+<li class="sm"><label for="send_state">[% loc('Send state:') %]</label>
+  <select class="form-control" name="send_state"  id="send_state">
+      [% FOREACH state IN [ ['', '-- Change --'], ['processed', loc('Processed')], ['skipped', loc('Skipped')]] %]
+        <option [% 'selected ' IF state.0 == problem.send_state %] value="[% state.0 %]">[% state.1 %]</option>
+      [% END %]
+  </select></li>
+[% END %]
 [% IF c.user.is_superuser AND problem.send_fail_count > 0 %]
 <li class="sm">[% loc('Send Fail Count:') %] [% problem.send_fail_count %]</li>
 <li class="sm">[% loc('Last failure:') %] [% PROCESS format_time time=problem.send_fail_timestamp %]</li>

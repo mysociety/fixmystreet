@@ -330,6 +330,9 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         } else {
             $problem->unset_extra_metadata('closed_updates');
         }
+        if ($c->get_param('send_state') && ($c->get_param('send_state') ne $problem->send_state)) {
+            $problem->send_state($c->get_param('send_state'));
+        };
 
         $c->forward( '/admin/reports/edit_category', [ $problem, $problem->state ne $old_state ] );
         $c->forward('/admin/update_user', [ $problem ]);
