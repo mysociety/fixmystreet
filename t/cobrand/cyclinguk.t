@@ -15,8 +15,10 @@ my $contact = $mech->create_contact_ok(
     email => 'POTHOLE',
 );
 
-my $user = $mech->create_user_ok( 'bathnes@example.com' );
-my $staff = $mech->create_user_ok( 'staff@cyclinguk.org' );
+my $user = $mech->create_user_ok( 'bathnes@example.com', name => 'Public User 1' );
+my $user2 = $mech->create_user_ok( 'anotheruser@example.com', name => 'Public User 2' );
+my $staff = $mech->create_user_ok( 'staff@cyclinguk.org', name => 'Staff User 1' );
+my $staff2 = $mech->create_user_ok( 'staff@anotherexample.org', name => 'Staff User 2' );
 my $super = $mech->create_user_ok( 'super@example.com', name => 'Super User', is_superuser => 1 );
 
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
@@ -94,8 +96,55 @@ subtest 'cyclinguk dashboard shows correct bodies' => sub {
     $mech->content_contains('<option value="' . $body->id . '">Bath and North East Somerset Council</option>');
 };
 
-$mech->log_out_ok;
 
+subtest 'Admin users limited correctly' => sub {
+    $mech->get_ok("/admin/users/" . $staff->id);
+    $mech->content_contains($staff->name);
+
+    $mech->get_ok("/admin/users/" . $user->id);
+    $mech->content_contains($user->name);
+
+    $mech->get("/admin/users/" . $staff2->id);
+    is $mech->res->code, 404;
+    $mech->content_contains("Page Not Found");
+
+    $mech->get("/admin/users/" . $user2->id);
+    is $mech->res->code, 404;
+    $mech->content_contains("Page Not Found");
+
+    $staff2->update({ from_body => $cyclinguk });
+    $mech->get_ok("/admin/users/" . $staff2->id);
+    $mech->content_contains($staff2->name);
+
+    my ($problem2) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+        areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
+        user => $user2,
+    });
+    $mech->get("/admin/users/" . $user2->id);
+    is $mech->res->code, 404;
+    $mech->content_contains("Page Not Found");
+
+    # If the user made a report via this cobrand they should appear
+    $problem2->update({ cobrand => 'cyclinguk' });
+    $mech->get_ok("/admin/users/" . $user2->id);
+    $mech->content_contains($user2->name);
+
+    # if they've not made a problem report via this cobrand but have made an
+    # update on a report on this cobrand they'll appear
+    $problem2->update({ cobrand => 'fixmystreet' });
+    my ($problem3) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+        areas => ",2651,", category => 'Potholes', cobrand => 'cyclinguk',
+        user => $user,
+    });
+    $mech->get("/admin/users/" . $user2->id);
+    is $mech->res->code, 404;
+    $mech->content_contains("Page Not Found");
+    $mech->create_comment_for_problem($problem3, $user2, $user2->name, 'This is a test comment', 0, 'confirmed', 'confirmed');
+    $mech->get_ok("/admin/users/" . $user2->id);
+    $mech->content_contains($user2->name);
+};
+
+$mech->log_out_ok;
 };
 
 done_testing();
