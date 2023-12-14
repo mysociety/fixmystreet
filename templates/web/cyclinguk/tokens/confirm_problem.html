@@ -1,0 +1,34 @@
+[% pre_container_extra = BLOCK %]
+<div class="bg-cyclinguk">
+  <div class="confirmation-header">
+
+    <h1><a href="[% c.cobrand.relative_url_for_report( report ) %][% report.url %]">[% report.title %]</a></h1>
+    <h2 class="lead">[% loc('Thank you for reporting this issue!') %]</h2>
+    [% IF report.bodies_str %]
+      <p class="lead">[% loc('It’s on its way to the council right now.') %]</p>
+    [% END %]
+
+    [% TRY %][% INCLUDE 'tokens/_extras_confirm.html' %][% CATCH file %][% END %]
+
+    <p class="confirmation-again">
+      <a href="/report/new?latitude=[% report.latitude %]&amp;longitude=[% report.longitude %]" class="btn-primary">
+        [% loc('Report another problem here') %]
+      </a>
+    </p>
+
+  </div>
+</div>
+
+[% END %]
+
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation') %]
+
+[% INCLUDE
+  next_steps.html,
+  just_interacted = 1,
+  utm_content = 'problem confirmed',
+  share_url = c.cobrand.base_url_for_report(report) _ report.url,
+  twitter_comment = loc('I just reported a problem on @fixmystreet')
+%]
+
+[% INCLUDE 'footer.html' %]

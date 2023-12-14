@@ -1,0 +1,39 @@
+<div class="front-howto-wrapper">
+    <h2>[% loc('How to report a problem') %]</h2>
+
+    <ol class="big-numbers">
+        <li>[% question %]</li>
+        <li>[% loc('Locate the problem on a map of the area') %]</li>
+        <li>[% loc('Enter details of the problem') %]</li>
+        [% IF c.cobrand.is_council %]
+            <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
+        [% ELSIF c.cobrand.moniker == 'zurich' %]
+        [% ELSE %]
+            <li>[% loc('We send it to the council on your behalf') %]</li>
+        [% END %]
+    </ol>
+</div>
+
+
+<section class="full-width">
+[% INCLUDE "front/stats.html" %]
+<!--TODO CUK Include a "See all reports" link here-->
+[% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+</section class="full-width">
+
+<section class="border-wrapper is--black mob-only">
+    <a href="https://www.cycle-sos.co.uk/?utm_source=Cycling+UK&utm_medium=website&utm_campaign=Fill+that+hole" id="site-logo-sos" aria-label="In association with Cycle-SOS">
+        <img loading="lazy" src="/cobrands/cyclinguk/images/cycle-sos-logo.png" alt="In association with Cycle SOS">
+    </a>
+</section>
+
+<div class="border-wrapper is--purple">
+    <h3>Help fix our broken roads</h3>
+    <p>Potholes are more than a nuisance - they can be a serious danger to cyclists and others. In the UK, there’s an average of one road defect for every 110 metres of road.</p>
+
+    <h3>What can I do?</h3>
+    <p>Local councils have a duty to maintain the roads, but they can only fill a pothole if they know about it. If you want it repaired, you have to report it. Cycling UK set up Fill That Hole to help the public easily report potholes and road defects wherever you find them. We contact the right people to get the roads repaired. Councils are generally quick to respond – we know because you’ve told us. Report a pothole now.</p>
+
+    <h3>Is reporting potholes enough?</h3>
+    <p>No - years of serious underinvestment have crippled the UK's local roads network, which is why Cycling UK campaigns for proper funding to enable councils to bring their roads into a safe state of repair.</p>
+</div>
