@@ -1,0 +1,17 @@
+[% DEFAULT title = loc('Error') %]
+[% pre_container_extra = BLOCK %]
+    [% IF csrf_token ~%]
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    [% END ~%]
+
+    <div class="bg-cyclinguk">
+        <div class="confirmation-header confirmation-header--failure">
+            <h1>[% title %]</h1>
+            <p>[% message | safe %]</p>
+        </div>
+    </div>
+[% END %]
+
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = title %]
+
+[% INCLUDE 'footer.html' %]

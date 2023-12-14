@@ -1,0 +1,18 @@
+[% pre_container_extra = BLOCK %]
+  <div class="bg-cyclinguk">
+    <div class="confirmation-header confirmation-header--failure">
+      <h1>[% loc('Page Not Found') %]</h1>
+    [% IF error_msg %]
+      <p class="error">[% error_msg | html %]</p>
+    [% END %]
+  
+      <p>[% tprintf(loc("The requested URL '%s' was not found on this server"), c.req.uri) %]</p>
+    </div>
+  </div>
+[% END %]
+
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Page Not Found') %]
+
+[% TRY %][% INCLUDE 'next_steps.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'footer.html' %]
