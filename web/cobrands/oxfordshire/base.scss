@@ -268,42 +268,6 @@ textarea {
     background-color: #007258;
 }
 
-//Embed video not using fancybox
-.embed-responsive {
-    position: relative;
-    display: block;
-    padding: 0;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-
-    &::before {
-      display: block;
-      content: "";
-    }
-
-    .embed-responsive-item,
-    iframe,
-    embed,
-    object,
-    video {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
-    }
-}
-
-.embed-responsive-16by9 {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 */
-    height: 0;
-    margin-bottom: 40px;
-}
-
 // Video section with thumbnail (on the report page)
 .video-thumbnail-section {
     padding: 1em;
