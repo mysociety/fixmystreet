@@ -891,6 +891,9 @@ textarea.form-error {
 #front-recently h2 {
    margin-top:0;
 }
+#front-howto lite-youtube ~ h2 {
+    margin-top: 1.3333em;
+}
 
 .alerts__columns {
     @include clearfix;

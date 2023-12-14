@@ -67,14 +67,6 @@ has_page summary => (
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
     next => sub { $_[0]->{no_slots} ? 'choose_date_earlier' : 'done' },
-    update_field_list => sub {
-        my $form = shift;
-        my $c = $form->c;
-        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
-        return {
-            tandc => { option_label => $label }
-        };
-    },
     # Return to 'Choose date' page if slot has been taken in the meantime.
     # Otherwise, proceed to payment.
     pre_finished => sub {
@@ -227,7 +219,12 @@ has_field tandc => (
     type => 'Checkbox',
     required => 1,
     label => 'Terms and conditions',
-    option_label => '' # Generated in update_field_list of page summary
+    build_option_label_method => sub {
+        my $form = $_[0]->form;
+        my $c = $form->c;
+        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
+        return $label;
+    },
 );
 
 has_field location => (

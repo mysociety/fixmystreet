@@ -1,4 +1,4 @@
-[% 
+[%
     recent_photos = c.cobrand.recent_photos('front', 5);
 %]
 
@@ -11,6 +11,8 @@
             [% loc('Recently reported problems') %]
         [% END -%]
     </h2>
+
+    [% TRY %][% INCLUDE "front/pre-recent.html" %][% CATCH file %][% END %]
 
     <section class="full-width">
         <ul id="js-reports-list" class="item-list item-list--reports item-list--front-page">

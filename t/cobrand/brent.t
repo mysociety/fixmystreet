@@ -1344,9 +1344,9 @@ subtest 'Dashboard CSV pre-generation' => sub {
     my @problems = $mech->create_problems_for_body(3, $brent->id, 'Pregen problem', {
         areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
     $problems[0]->set_extra_fields(
-        {name => 'Container_Request_Action', value => 1},
-        {name => 'Container_Request_Container_Type', value => 1},
-        {name => 'Container_Request_Reason', value => 1},
+        {name => 'Container_Request_Action', value => '2::1'},
+        {name => 'Container_Request_Container_Type', value => '11::11'},
+        {name => 'Container_Request_Reason', value => '4::4'},
         {name => 'service_id', value => 1},
         {name => 'usrn', value => 1234},
         {name => 'uprn', value => 4321},
@@ -1369,7 +1369,7 @@ subtest 'Dashboard CSV pre-generation' => sub {
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Inspection date","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Overall Grade","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
     $mech->content_like(qr/Pregen problem Test 3.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
-    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,,,,,,,Deliver,"Blue rubbish sack",Missing,1/, "Bin request values added");
+    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,,,,,,,Collect\+Deliver,"Food waste caddy",Damaged,1/, "Bin request values added");
     $mech->content_like(qr/Pregen problem Test 2.*?,,Y,,,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
     $mech->content_like(qr/Pregen problem Test 1.*?,,,"Test Park","Test User",.*?,,,,Y,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added");
 

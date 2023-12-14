@@ -147,15 +147,7 @@ has_field bins_wanted => (
 );
 
 with 'FixMyStreet::App::Form::Waste::Billing';
-
-has_field tandc => (
-    type => 'Checkbox',
-    required => 1,
-    label => 'Terms and conditions',
-    option_label => FixMyStreet::Template::SafeString->new(
-        'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a>',
-    ),
-);
+with 'FixMyStreet::App::Form::Waste::GardenTandC';
 
 has_field continue_review => (
     type => 'Submit',

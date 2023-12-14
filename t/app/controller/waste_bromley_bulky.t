@@ -35,6 +35,7 @@ $body->set_extra_metadata(
 $body->update;
 
 my $staff_user = $mech->create_user_ok('bromley@example.org', name => 'Council User', from_body => $body);
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'can_pay_with_csc' });
 $body->update( { comment_user_id => $staff_user->id } );
 
 my $echo = Test::MockModule->new('Integrations::Echo');
@@ -687,7 +688,35 @@ FixMyStreet::override_config {
         is $cancellation_update->text, "Booking cancelled since payment was not made in time";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
         is $cancellation_update->user_id, $staff_user->id;
-    }
+
+        $p->comments->delete;
+        $p->delete;
+    };
+
+    subtest "Cancel booking when staff marks as payment failed" => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } });
+        $mech->submit_form_ok({ with_fields => { 'item_1' => 'BBQ' } });
+        $mech->submit_form_ok({ with_fields => {location => 'in the middle of the drive' } });
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $report = FixMyStreet::DB->resultset('Problem')->single();
+        is $report->state, "confirmed";
+        $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
+        $mech->content_contains('Payment Failed');
+        $report->discard_changes;
+        is $report->state, 'closed', "report cancelled after staff marked as payment failed";
+        my $cancellation_update = $report->comments->first;
+        is $cancellation_update->text, "Booking cancelled";
+        is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+        unlike $report->detail, qr/Cancelled at user request/;
+        like $report->detail, qr/Cancelled/;
+        $report->comments->delete;
+        $report->delete;
+    };
+
 };
 
 done_testing;

@@ -384,6 +384,7 @@ FixMyStreet::override_config {
             # the mech for the redirect
             my $mech2 = $mech->clone;
             $mech2->content_contains('Continue to payment', 'Waste features text_for_waste_payment not used for non-staff payment');
+            $mech2->content_contains('valid bin sticker', 'extra T&C text');
             $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
 
             is $mech2->res->previous->code, 302, 'payments issues a redirect';
