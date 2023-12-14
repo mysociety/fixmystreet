@@ -1,16 +1,8 @@
 @import "../sass/h5bp";
-@import "./_colours";
+@import "./_variables";
 @import "../sass/mixins";
 
 @import "../sass/base";
-
-#site-logo {
-    width: 337px;
-    height: 76px;
-    padding: 1em 0;
-    background: url(/cobrands/cyclinguk/images/logo.png) 0 50% no-repeat;
-    background-size: 337px 76px;
-}
 
 /* New report conditional questions */
 
@@ -24,4 +16,446 @@
             display: block;
         }
     }
+}
+
+// NAVBAR
+$site-logo-height: 76px;
+#site-logo {
+    width: 200px;
+    height: $site-logo-height;
+    padding: 1em 0;
+    background: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png') 0 50% no-repeat;
+    background-size: contain;
+}
+
+#nav-link {
+    right: 1rem;
+}
+
+#report-cta {
+    right: 5rem;
+}
+
+.nav-menu--main {
+    text-align: right;
+
+    span.report-a-problem-btn {
+        display: none;
+    }
+
+    li {
+        background: $white;
+    }
+
+    span {
+        font-size: 1rem;
+    }
+
+    a {
+        text-decoration: none;
+        font-size: 1rem;
+
+        &.btn-secondary {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        &.report-a-problem-btn {
+            display: inline-block;
+        }
+    }
+}
+
+#nav-link {
+    background-color: $primary;
+    border-radius: 50%;
+}
+
+//  BUTTONS
+.btn,
+.btn-primary, 
+.btn--primary, 
+.btn--secondary, 
+.btn--secondary,
+.postcode-form-box div input#sub,
+.nav-menu--main a.btn-primary,
+.nav-menu--main a.btn-secondary,
+a#geolocate_link,
+#report-cta,
+.nav-menu--main a.report-a-problem-btn  {
+    @include border-radius($button-border-radius);
+    text-transform: uppercase;
+    font-weight: 400;
+    line-height: 100%;
+    outline: none;
+    text-decoration: none;
+    -webkit-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+    -moz-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+    -o-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+    transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+}
+
+.btn, 
+.btn-primary, 
+.btn--primary, 
+.postcode-form-box div input#sub,
+#report-cta,
+.nav-menu--main a.report-a-problem-btn  {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+}
+
+.btn, 
+.btn--secondary, 
+.btn-secondary, 
+.nav-menu a.btn-secondary,
+a#geolocate_link {
+    @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+}
+
+// GENERAL COMPONENTS
+h1 {
+    font-size: 2.5rem;
+}
+
+.lead {
+    font-size: 2rem;
+    font-family: $body-font;
+}
+
+.heading-font-family {
+    font-family: $heading-font;
+}
+
+.cuk-social-media-icons {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+    justify-content: center;
+    align-items: center;
+
+    a {
+        border: 1px solid $white;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        text-decoration: none;
+        justify-content: center;
+        align-items: center;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        border-radius: 20px;
+
+        &:hover, &:focus {
+            color: $yellow;
+            border: 1px solid $yellow;
+        }
+
+        &.is--primary {
+            border-color: $primary;
+            color: $primary;
+
+            &:hover, &:focus {
+                border-color: $yellow;
+                color: $yellow;
+            }
+        }
+    }
+
+    h3 {
+        margin: 0;
+    }
+}
+
+.border-wrapper {
+    border: 0.5rem solid $black;
+    padding: 1rem;
+    margin: 3rem 0rem;
+
+    h3 {
+        font-family: $heading-font;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+
+    &.is--purple{
+        border-color: $purple;
+    }
+}
+
+.bg-cyclinguk {
+    background-color: $primary;
+    margin-bottom: 1.125rem;
+
+    .confirmation-header {
+        color: $white;
+        p {
+            color: $white;
+        }
+    }
+}
+
+.text-orange{
+    color: $yellow;
+}
+
+.cuk-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    .cuk-cards__item {
+        border-radius: 0.625rem;
+        overflow: hidden;
+        text-decoration: none;
+        color: $black;
+        text-align: center;
+
+        h3 {
+            margin: 0;
+            padding: 1rem;
+            background-color: $gray-200;
+            -webkit-transition: background-color 0.5s ease-out;
+            -moz-transition: background-color 0.5s ease-out;
+            -o-transition: background-color 0.5s ease-out;
+            transition: background-color 0.5s ease-out;
+        }
+
+        &:hover {
+            text-decoration: none;
+            h3 {
+                background-color: $gray-300;
+            }
+        }
+    }
+}
+
+// This component has media rules for mobile, tablet and desktop
+.cuk-cta {
+    margin-top: 3rem;
+    padding-bottom: 20rem;
+    position: relative;
+    background-image: url('/cobrands/cyclinguk/images/cta/cta-background.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    .cuk-cta__message {
+        padding: 1rem;
+        padding-bottom: 0;
+        position: relative;
+        z-index: 3;
+        color: $white;
+        text-align: center;
+        background-color: $primary;
+        .message__title {
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            background-color: $primary;
+            clip-path: ellipse(50% 18% at 50% 0%);
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+@media screen and (min-width: $max-mobile) {
+    // For tablets
+    .cuk-cta {
+        padding-bottom: 15rem;
+        .cuk-cta__message {
+            padding: 3rem;
+            padding-bottom: 0;
+            .message__title {
+                font-size: 3rem;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: $max-tablet) {
+    // For desktop
+    .cuk-cta {
+        padding-bottom: 0;
+        .cuk-cta__message {
+            max-width: 400px;
+            text-align: left;
+            padding-bottom: 3rem;
+
+            &::before {
+                right: 0;
+                bottom: 0;
+                clip-path: circle(50% at 0 50%);
+                transform: translateX(100%);
+            }
+        }
+    }
+}
+
+// FRONTPAGE
+body.frontpage {
+    #report-cta {
+        display: none;
+    }
+}
+
+#front-main {
+    #front-main-container {
+        text-align: center;
+        box-sizing: border-box; // Align with the logo borders
+    }
+}
+
+.postcode-form-box {
+    div {
+        border: none;
+        margin: 0 auto;
+
+        input#pc {
+            margin-right: 0.5rem;
+            background-color: $white;
+        }
+    }
+} 
+
+body:not(.admin) {
+    input[type="text"],
+    .postcode-form-box div input#pc {
+        border: 1px solid $gray-borders;
+        border-radius: $button-border-radius;
+        padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
+    }
+}
+
+#front_stats {
+    background-color: transparent;
+    border-top: 0.25em solid $yellow;
+}
+
+// MAPPAGE
+body.mappage {
+    .logos-wrapper {
+        justify-content: start;
+    }
+
+    #site-logo {
+        width: 200px;
+        height: 60px;
+        background-image: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png');
+        box-sizing: border-box;
+        background-size: contain;
+    }
+
+    #site-logo-sos {
+        display: none;
+    }
+}
+
+.big-green-banner {
+    color: $black;
+}
+
+.item-list--reports__item a {
+    text-decoration: none;
+}
+
+// REPORT PAGES
+.confirmation-header {
+    padding: 140px 1rem 2rem;
+    background-size: 80px;
+    background-position: center top 140px;
+    background-image: url('/cobrands/cyclinguk/images/icons/confirmation.png');
+
+    &.confirmation-header--inbox {
+        background-image: url('/cobrands/cyclinguk/images/icons/inbox-in-circle.png');
+    }
+
+    &.confirmation-header--failure {
+        background-image: url('/cobrands/cyclinguk/images/icons/error.png');
+    }
+
+    h1 {
+        a {
+            text-decoration: none;
+            &:hover, &:focus {
+                color: $yellow;
+            }
+        }
+    }
+}
+
+.content {
+    background: transparent;
+}
+
+
+
+// FOOTER
+.page-footer {
+    background-color: $blue;
+    color: $white;
+    padding-top: 2rem;
+    padding-bottom: 9rem;
+    text-align: center;
+
+    a {
+        color: $white;
+    }
+
+    .cuk-logo img, 
+    .cuk-fundraising-regulator-logo img {
+        width: 183px;
+        height: auto;
+        margin-bottom: 1.25rem;
+    }
+
+    .cuk-people {
+        margin-bottom: 1.25rem;
+        span {
+            color: $yellow;
+        }
+    }
+
+
+    .cuk-copyright-text {
+        text-transform: uppercase;
+        max-width: 950px;
+        margin-bottom: 1.25rem;
+    }
+
+    .cuk-footer-menu ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+        max-width: 950px;
+        padding: 0;
+        line-height: 0.75rem;
+        margin-left: 0;
+        margin-bottom: 1.25rem;
+        margin-top: 1.25rem;
+        justify-content: center;
+
+        li {
+            list-style-type: none;
+
+            a {
+                text-decoration: underline;
+                &:hover, &:focus {
+                    color: $yellow;
+                }
+            }
+        }
+    }
+
 }

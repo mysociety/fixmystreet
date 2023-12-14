@@ -1,9 +1,225 @@
-@import "_colours";
+@import "_variables";
 @import "../sass/layout";
 
-body.mappage #site-logo {
-    padding: 0;
-    height: 60px;
-    width: 265px;
-    background-size: 234px 53px;
+.big-green-banner {
+    background: $col_click_map inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
+    background-size: 43px 33px;
+}
+
+// Navigation bar of CyclingUK is 160px.
+$site-logo-height: 60px;
+$site-logo-padding: 32px;
+$total-navbar-height: $site-logo-height + $site-logo-padding * 2;
+body {
+    .logos-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        
+    }
+
+    #site-logo {
+        padding: 0;
+        height: $total-navbar-height;
+        width: 305px;
+        background-size: auto $site-logo-height;
+    }
+
+    #site-logo-sos {
+        position: relative;
+        z-index: 1;
+        width: 305px;
+        height: $total-navbar-height;
+
+        background: url(/cobrands/cyclinguk/images/cycle-sos-logo.png) 0 50% no-repeat;
+        background-size: auto $site-logo-height;
+    }
+}
+
+$subnav-height: 52px;
+#main-nav {
+    float: none;
+    min-height: $subnav-height;
+    margin-top:$total-navbar-height - 10px; // Put the main FMS navigation below the header 108px + $subnav-height = 160px.
+
+    .ie9 & > * {
+      #{$right}: auto;
+      #{$left}: 0;
+    }
+}
+
+// White "nav bar" with red border-top, below the logo
+#site-header {
+    &:after {
+        content: " ";
+        height: $subnav-height;
+        display: block;
+        background-color: white;
+    }
+}
+
+.nav-menu--main {
+    display: flex; // So the a.report-a-problem-btn is aligned with the rest.
+    flex-direction: row;
+    align-items: center;
+    margin: 0 auto;
+
+    a {
+        &.btn-secondary {
+            margin-top: 0;
+        }
+    }
+}
+
+.nav-menu--main a, .nav-menu--main span {
+    padding: $button-padding-top $button-padding-left;
+    line-height: 100%;
+    font-size: 1rem;
+    border: 1px solid transparent;
+    margin: 0 1rem;
+    
+    &:hover {
+        border-bottom: 1px solid $blue;
+        background-color: transparent;
+        color: $primary-b;
+    }
+}
+
+// GENERAL COMPONENTS
+h1 {
+    font-size: 3rem;
+}
+
+.cuk-cards {
+    flex-direction: row;
+    gap: 3rem;
+}
+
+// BUTTONS
+.nav-menu--main a.report-a-problem-btn  {
+    @include border-radius($button-border-radius);
+    text-transform: uppercase;
+    font-weight: 400;
+    line-height: 100%;
+    transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
+    outline: none;
+    text-decoration: none;
+    padding: 0.625rem .75rem;
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+    margin: 0;
+}
+
+// FRONTPAGE
+#front-main {
+    padding-bottom: 0;
+    #front-main-container {
+        margin-top: 100px;
+        padding: 2rem;
+    }
+}
+
+.frontpage .content {
+    padding: 2rem;
+}
+
+.front-howto-wrapper {
+    max-width: 424px;
+    margin: 0 auto;
+    h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+}
+
+#front_stats {
+    margin: 0 auto;
+    max-width: 550px;
+    border-top:0.25em solid $yellow;
+}
+
+.border-wrapper {
+    border-width: 1rem;
+    margin: 3rem auto;
+    .frontpage & {
+        margin: 3rem -2rem;
+    }
+}
+
+// MAPPAGE
+body.mappage {
+    #site-header {
+        background-color: $primary;
+    }
+
+    #site-logo {
+        padding: 0;
+        height: $mappage-header-height;
+        width: 265px;
+        background-size: auto 50px;
+        background-position: left 0 center;
+        background-image: url(/cobrands/cyclinguk/images/fill-that-hole-logo-white.png);
+    }
+
+    #site-logo-sos {
+        height: $mappage-header-height;
+
+        background: url(/cobrands/cyclinguk/images/cycle-sos-logo-white.png) 0 50% no-repeat;
+        background-size: auto 50px;
+        display: block;
+    }
+
+    .nav-menu--main {
+         li {
+            background-color: transparent;
+            a:not(.report-a-problem-btn):not(.btn-secondary) { 
+                color: $white;
+                border: none;
+                border-bottom: 1px solid transparent;
+                &:hover {
+                    border-color: $white;
+                }
+            }
+         }
+    }
+
+   #main-nav {
+        float: right;
+        margin-top: 0;
+        min-height: $mappage-header-height;
+    }
+}
+
+// EMAIL SENT
+.confirmation-header {
+    padding: 5rem 0 5rem 132px;
+    box-sizing: border-box;
+    background-size: 100px;
+    background-position: left 0 top 5rem;
+    max-width: $container-max-width;
+    width: 100%;
+    margin: 0 auto;
+}
+
+// ALERTPAGE
+body.alertpage {
+    .postcode-form-box div {
+        margin: 0;
+    }
+}
+
+#key-tools {
+    border-top: 0.25em solid $yellow;
+}
+
+// Footer
+.page-footer {
+    text-align: left;
+
+    .cuk-social-media-icons { 
+        justify-content: start;
+    }
+
+    .cuk-footer-menu ul {
+        justify-content: start;
+    }
 }
