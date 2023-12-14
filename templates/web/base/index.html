@@ -6,11 +6,20 @@
     <p class="form-error">[% error %]</p>
 [% END %]
 
-[% PROCESS 'front/pre-steps.html' %]
+[% PROCESS 'front/site-message.html' %]
+
+[% TRY %][% INCLUDE "front/pre-columns.html" %][% CATCH file %][% END %]
 
 <div class="tablewrapper">
     <div id="front-howto">
+      [% TRY %][% INCLUDE "front/pre-steps.html" %][% CATCH file %][% END %]
         [% INCLUDE 'index-steps.html' %]
+      [% TRY %][% INCLUDE "front/post-steps.html" %][% CATCH file %]
+        <section class="full-width">
+            [% INCLUDE "front/stats.html" %]
+            [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+        </section>
+      [% END %]
     </div>
 
     [% INCLUDE 'front/recent.html' %]
