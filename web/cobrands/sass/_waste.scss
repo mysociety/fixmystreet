@@ -298,6 +298,12 @@ input[type="submit"].waste-service-link {
   padding: 1.5em;
   flex-direction: column;
 
+  &.error {
+    color: $govuk-error-colour;
+    background: #fff;
+    border: solid 4px $govuk-error-colour;
+  }
+
   &__img {
     flex-basis: auto;
     align-self: center;

@@ -1,17 +1,22 @@
-[% USE date(format = c.cobrand.bin_day_format) %]
 [%
+USE date(format = c.cobrand.bin_day_format);
 IF c.cobrand.moniker == 'brent';
     SET index_url = c.uri_for_action('waste/bulky/index_small', [ property.id ]);
 ELSE;
     SET index_url = c.uri_for_action('waste/bulky/index', [ property.id ]);
 END;
-~%]
-[% USE pounds = format('%.2f'); ~%]
-[% PROCESS 'waste/header.html' %]
-[% PROCESS 'govuk/fields.html' ~%]
+SET user_details_main_column = 0;
+IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton';
+    SET user_details_main_column = 1;
+END;
+USE pounds = format('%.2f');
 
-[% PROCESS errors %]
-[% SET data = form.saved_data ~%]
+PROCESS 'waste/header.html';
+PROCESS 'govuk/fields.html';
+PROCESS errors;
+SET data = form.saved_data;
+
+~%]
 
 [% BLOCK change_answers_button %]
   [% UNLESS problem %]
@@ -40,21 +45,25 @@ END;
   [% UNLESS problem %]
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-warning-text due">
-          <div class="govuk-warning-text__img">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+          <div class="govuk-warning-text error">
+            <div class="govuk-warning-text__content">
+              Please carefully read all the details for your booking including the items as you
+              won't be able to amend the booking once you have paid for the service.
+            </div>
           </div>
-          <div class="govuk-warning-text__content">
+        [% ELSE %]
+          <div class="govuk-warning-text due">
+            <div class="govuk-warning-text__img">
+              <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            </div>
+            <div class="govuk-warning-text__content">
               <span class="govuk-warning-text__assistive">Warning</span>
-                [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
-                <p class="govuk-!-margin-bottom-0">Please carefully read all the details for your booking including the items as you
-                   won't be able to amend the booking once you have paid for the service.</p>
-                [% ELSE %]
-                <p class="govuk-!-margin-bottom-0">Please read carefully all the details for your booking. You won't be
-                  able to amend your details afterwards.</p>
-                [% END %]
+              <p class="govuk-!-margin-bottom-0">Please read carefully all the details for your booking. You won't be
+                able to amend your details afterwards.</p>
+            </div>
           </div>
-        </div>
+        [% END %]
       </div>
     </div>
   [% END %]
@@ -79,6 +88,12 @@ END;
           </div>
         [% END %]
       [% END %]
+
+      [% IF c.action != 'waste/bulky/amend' AND user_details_main_column %]
+        [% INCLUDE your_details %]
+        <hr>
+      [% END %]
+
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Property details</h3>
       </div>
@@ -231,20 +246,9 @@ END;
       <hr>
     </div>
 
-  [% IF c.action != 'waste/bulky/amend' %]
+  [% IF c.action != 'waste/bulky/amend' AND NOT user_details_main_column %]
     <div class="govuk-grid-column-one-third">
-      <div class="summary-section-header">
-        <h3 class="summary-section--heading">Your details</h3>
-        [% IF NOT data.continue_id %][% PROCESS change_answers_button goto='about_you' %][% END %]
-      </div>
-      <dl>
-        <dt>Name</dt>
-        <dd>[% data.name %]</dd>
-        <dt>Email</dt>
-        <dd>[% data.email %]</dd>
-        <dt>Phone</dt>
-        <dd>[% data.phone OR 'Not given' %]</dd>
-      </dl>
+      [% INCLUDE your_details %]
     </div>
   [% END %]
   </div>
@@ -285,3 +289,18 @@ END;
 
 </div>
 [% INCLUDE footer.html %]
+
+[% BLOCK your_details %]
+  <div class="summary-section-header">
+    <h3 class="summary-section--heading">Your details</h3>
+    [% IF NOT data.continue_id %][% PROCESS change_answers_button goto='about_you' %][% END %]
+  </div>
+  <dl>
+    <dt>Name</dt>
+    <dd>[% data.name %]</dd>
+    <dt>Email</dt>
+    <dd>[% data.email %]</dd>
+    <dt>Phone</dt>
+    <dd>[% data.phone OR 'Not given' %]</dd>
+  </dl>
+[% END %]
