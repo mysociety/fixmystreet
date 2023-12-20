@@ -72,7 +72,8 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
 
     my @bodies = ($body);
     if ($c->cobrand->moniker eq 'kingston') {
-        push @bodies, $c->cobrand->dashboard_extra_bodies;
+        my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
+        push @bodies, $sutton;
     }
 
     foreach my $b (@bodies) {

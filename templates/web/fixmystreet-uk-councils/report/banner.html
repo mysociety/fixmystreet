@@ -18,5 +18,5 @@
 [% END %]
 
 [% IF problem.is_in_progress %]
-    [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
+    [% INCLUDE banner, id = 'progress', text = prettify_state(problem.state) %]
 [% END %]

@@ -52,18 +52,6 @@ around problems_restriction => sub {
     return $rs;
 };
 
-sub problems_on_dashboard {
-    my ($self, $rs) = @_;
-
-    my $bodies = [ $self->body->id ];
-    my $extra = $self->dashboard_extra_bodies;
-    push @$bodies, $extra->id if $extra;
-    $rs = FixMyStreet::DB->resultset('Problem')->to_body($bodies)->search({
-        "me.cobrand_data" => 'waste',
-    });
-    return $rs;
-}
-
 =item * When a garden subscription is sent to Echo, we include payment details
 
 =cut
@@ -140,39 +128,6 @@ around updates_disallowed => sub {
 
     return $orig->($self, $problem);
 };
-
-=item * Allow both Kingston and Sutton users access to the cobrand admin
-
-=cut
-
-sub admin_allow_user {
-    my ( $self, $user ) = @_;
-    return 1 if $user->is_superuser;
-    return undef unless defined $user->from_body;
-    my $user_cobrand = $user->from_body->get_extra_metadata('cobrand', '');
-    return $user_cobrand =~ /kingston|sutton/;
-}
-
-# Let Kingston/Sutton staff users share permissions
-sub permission_body_override {
-    my ($self, $body_ids) = @_;
-
-    my $kingston = FixMyStreet::Cobrand::Kingston->new->body;
-    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
-    return unless $kingston && $sutton;
-
-    my @out = map {
-        if ($kingston->id == $_) {
-            ($_, $sutton->id);
-        } elsif ($sutton->id == $_) {
-            ($_, $kingston->id);
-        } else {
-            $_;
-        }
-    } @$body_ids;
-
-    return \@out;
-}
 
 sub state_groups_admin {
     [

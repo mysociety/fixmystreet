@@ -320,6 +320,8 @@ sub dashboard_export_problems_add_columns {
         user_email => 'User Email',
         user_phone => 'User Phone',
         area_name => 'Area name',
+        road_name => 'Road name',
+        sect_label => 'Section label',
         where_hear => 'How you found us',
     );
     for (my $i=1; $i<=5; $i++) {
@@ -330,16 +332,24 @@ sub dashboard_export_problems_add_columns {
         );
     }
 
+   my $initial_extra_data = sub {
+        my $report = shift;
+        my $fields = {
+            road_name => $csv->_extra_field($report, 'road_name'),
+            area_name => $csv->_extra_field($report, 'area_name'),
+            sect_label => $csv->_extra_field($report, 'sect_label'),
+            where_hear => $csv->_extra_metadata($report, 'where_hear'),
+        };
+        return $fields;
+    };
+
     if ($csv->dbi) {
         my $JSON = JSON::MaybeXS->new->allow_nonref;
         $csv->csv_extra_data(sub {
             my $report = shift;
 
-            my $fields = {
-                user_name_display => $report->{name},
-                area_name => $csv->_extra_field($report, 'area_name'),
-                where_hear => $csv->_extra_metadata($report, 'where_hear'),
-            };
+            my $fields = $initial_extra_data->($report);
+            $fields->{user_name_display} = $report->{name};
 
             my $i = $report->{comment_rn};
             if ($report->{comment_id} && $i <= 5) {
@@ -358,13 +368,10 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my $fields = {
-            user_name_display => $report->name,
-            user_email => $report->user->email || '',
-            user_phone => $report->user->phone || '',
-            area_name => $csv->_extra_field($report, 'area_name'),
-            where_hear => $csv->_extra_metadata($report, 'where_hear'),
-        };
+        my $fields = $initial_extra_data->($report);
+        $fields->{user_name_display} = $report->name;
+        $fields->{user_email} = $report->user->email || '';
+        $fields->{user_phone} = $report->user->phone || '';
 
         my $i = 1;
         my @updates = $report->comments->all;

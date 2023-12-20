@@ -8,7 +8,7 @@ my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, {cobrand => 'oxfordshire'});
 my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', from_body => $oxfordshire);
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
@@ -272,7 +272,7 @@ foreach my $test (
             non_public => undef,
             closed_updates => undef,
         },
-        changes     => {},
+        changes     => { send_state => '' },
         log_entries => [
             qw/resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
@@ -290,6 +290,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => undef,
             closed_updates => undef,
+            send_state => '',
         },
         changes     => {
             non_public => 'on',
@@ -311,6 +312,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => 'on',
             closed_updates => undef,
+            send_state => '',
         },
         changes => { closed_updates => 'on' },
         log_entries => [
@@ -329,6 +331,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => 'on',
             closed_updates => undef,
+            send_state => '',
         },
         expect_comment => 1,
         changes   => { state => 'investigating' },
@@ -349,6 +352,7 @@ foreach my $test (
             flagged    => 'on',
             non_public => 'on',
             closed_updates => undef,
+            send_state => '',
         },
         expect_comment => 1,
         expected_text => '*Category changed from ‘Other’ to ‘Potholes’*',
@@ -415,6 +419,7 @@ foreach my $test (
             $mech->content_contains("Subject: <ins style='background-color:#cfc'>Edited </ins>Repor<del style='background-color:#fcc'>t to Edi</del>") if $test->{changes}{title};
         }
 
+        delete $test->{changes}->{send_state}; # send_state can have a value of '' so may not correspond to the report
         is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'username' } keys %{ $test->{changes} };
 
         if ( $test->{user} ) {
@@ -491,6 +496,7 @@ subtest 'change email to new user' => sub {
         external_id => '13',
         external_body => '',
         external_team => '',
+        send_state => '',
     };
 
     is_deeply( $mech->visible_form_values(), $fields, 'initial form values' );
@@ -662,6 +668,42 @@ subtest "Test display of contributed_as data" => sub {
     $mech->get_ok("/admin/report_edit/$report_id");
     $mech->content_like(qr!Created By</strong>: <a[^>]*>Body User \(@{[ $user3->email ]}!);
     $mech->content_contains('Created Body</strong>: Oxfordshire County Council');
+};
+
+subtest "Test display and changing of send_status" => sub {
+
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_like(qr/label for="send_state"/, "Change status available for superuser");
+    $mech->content_unlike(qr/selected  value="processed"/, 'processed not selected in dropdown');
+    $mech->content_unlike(qr/selected  value="skipped"/, 'skipped not selected in dropdown');
+    for my $send_state (
+        qw/skipped processed/
+    ) {
+        $mech->submit_form_ok( { with_fields => { send_state => $send_state } } );
+        $mech->content_like(qr/selected  value="$send_state"/, $send_state . ' send_state selected for unsent report');
+        $report->discard_changes;
+        is $report->send_state, $send_state, 'Send state changed to ' . $send_state;
+    }
+    $report->mark_as_sent;
+    $report->update;
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_unlike(qr/label for="send_state"/, "Sent report doesn't allow changing sent status");
+
+    my ($ox_report2) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Another Oxfordshire report', {
+        category => 'Potholes',
+        areas => ',2237,2421,', # Cached used by categories_for_point...
+        latitude => 51.7549262252,
+        longitude => -1.25617899435,
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire'],
+    }, sub {
+        $user3->user_body_permissions->create({ body => $oxfordshire, permission_type => 'report_edit' });
+        $mech->log_in_ok($user3->email);
+        $mech->get_ok("/admin/report_edit/" . $ox_report2->id);
+        $mech->content_unlike(qr/label for="send_state"/, "Body user can't change send_state");
+    }
 };
 
 done_testing();

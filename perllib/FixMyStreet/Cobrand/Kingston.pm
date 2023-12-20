@@ -10,13 +10,7 @@ sub council_area_id { return 2480; }
 sub council_area { return 'Kingston'; }
 sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
-
-sub admin_user_domain { ('kingston.gov.uk', 'sutton.gov.uk') }
-
-sub dashboard_extra_bodies {
-    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
-    return $sutton;
-}
+sub admin_user_domain { 'kingston.gov.uk' }
 
 =head2 waste_on_the_day_criteria
 
