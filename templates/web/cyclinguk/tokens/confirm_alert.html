@@ -1,0 +1,33 @@
+[% pre_container_extra = BLOCK %]
+<div class="bg-cyclinguk">
+  <div class="confirmation-header">
+
+    [% SET alert_by = alert.user.alert_by(alert.alert_type.ref == 'new_updates', c.cobrand) %]
+      [% IF confirm_type == 'subscribe' || confirm_type == 'created' %]
+        [% IF alert_by != 'phone' %]
+            <h1>[% loc('Email alert created') %]</h1>
+            <p class="lead">[% loc('Why stop there? <a href="/alert">Set up more alerts</a> for free.') %]</p>
+        [% ELSE %]
+            <h1>[% loc('Text alert created') %]</h1>
+        [% END %]
+
+      [% ELSIF confirm_type == 'unsubscribe' %]
+        [% IF alert_by != 'phone' %]
+            <h1>[% loc('Email alert deleted') %]</h1>
+        [% ELSE %]
+            <h1>[% loc('Text alert deleted') %]</h1>
+        [% END %]
+        <p class="lead">[% loc('Inbox zero, here we come!') %]</p>
+
+      [% END %]
+
+  </div>
+</div>
+
+[% END %]
+
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title =>  loc('Local RSS feeds and email alerts') %]
+
+[% INCLUDE next_steps.html utm_content='email alert set up' %]
+
+[% INCLUDE 'footer.html' %]

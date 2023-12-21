@@ -1,0 +1,31 @@
+[% pre_container_extra = BLOCK %]
+<div class="bg-cyclinguk">
+  <div class="confirmation-header">
+
+    <h1><a href="[% problem_url %]">[% problem.title %]</a></h1>
+    <h2 class="lead">[% loc('Thank you for updating this issue!') %]</h2>
+
+  </div>
+</div>
+[% END %]
+
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation');
+
+DEFAULT problem = update.problem;
+IF update;
+    SET problem_url = update.url;
+ELSE;
+    SET problem_url = problem.url;
+END;
+
+%]
+
+[% INCLUDE
+  next_steps.html,
+  just_interacted = 1,
+  utm_content = 'update confirmed',
+  share_url = c.cobrand.base_url_for_report(problem) _ problem.url,
+  twitter_comment = loc('I just updated a problem on @fixmystreet')
+%]
+
+[% INCLUDE 'footer.html' %]
