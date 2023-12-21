@@ -191,6 +191,13 @@ h1 {
 .bg-cyclinguk {
     background-color: $primary;
     margin-bottom: 1.125rem;
+
+    .confirmation-header {
+        color: $white;
+        p {
+            color: $white;
+        }
+    }
 }
 
 .text-orange{
@@ -366,13 +373,8 @@ body.mappage {
 .confirmation-header {
     padding: 140px 1rem 2rem;
     background-size: 80px;
-    background-position: center top 3em;
+    background-position: center top 140px;
     background-image: url('/cobrands/cyclinguk/images/icons/confirmation.png');
-    color: $white;
-    background-color: $primary;
-    p {
-        color: $white;
-    }
 
     &.confirmation-header--inbox {
         background-image: url('/cobrands/cyclinguk/images/icons/inbox-in-circle.png');
