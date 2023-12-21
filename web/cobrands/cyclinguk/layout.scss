@@ -76,7 +76,7 @@ $subnav-height: 52px;
     line-height: 100%;
     font-size: 1rem;
     border: 1px solid transparent;
-    margin: 0 1rem;
+    margin: 0 0.2rem;
     
     &:hover {
         border-bottom: 1px solid $blue;
@@ -180,12 +180,27 @@ body.mappage {
                 }
             }
          }
+
+         a, span {
+            padding: $button-padding-top 0.3rem;
+         }
     }
 
    #main-nav {
         float: right;
         margin-top: 0;
         min-height: $mappage-header-height;
+    }
+
+    @media screen and (max-width: 1350px) {
+        #site-logo {
+            width: 200px;
+            background-size: auto 30px;
+        }
+
+        #site-logo-sos {
+            display: none;
+        }
     }
 }
 
