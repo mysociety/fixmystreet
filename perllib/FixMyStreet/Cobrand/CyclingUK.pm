@@ -125,5 +125,30 @@ sub dashboard_extra_bodies {
 
 sub dashboard_default_body {};
 
+=item get_body_sender
+
+Reports made on the Cycling UK staging site should never be sent anywhere,
+as we don't want to unexpectedly send Pro clients reports made as part of
+Cycling UK's testing.
+
+=cut
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    return { method => 'Blackhole' } if FixMyStreet->config('STAGING_SITE');
+
+    return $self->SUPER::get_body_sender($body, $problem);
+}
+
+sub get_body_handler_for_problem {
+    my ( $self, $problem ) = @_;
+
+    # want to force CyclingUK cobrand on staging so our get_body_sender is used
+    # and reports aren't sent anywhere.
+    return $self if FixMyStreet->config('STAGING_SITE');
+
+    return $self->SUPER::get_body_handler_for_problem($problem);
+}
 
 1;
