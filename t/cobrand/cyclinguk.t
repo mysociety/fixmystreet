@@ -144,6 +144,46 @@ subtest 'Admin users limited correctly' => sub {
     $mech->content_contains($user2->name);
 };
 
+subtest 'Dashboard CSV export' => sub {
+    $mech->create_problems_for_body(1, $body->id, 'Title', {
+        areas => ",2551,", category => 'Potholes', cobrand => 'cyclinguk',
+        user => $user, extra => {
+            _fields => [
+                # these should not be included in the CSV export as they're from the contact's fields
+                {
+                    name => "width",
+                    value => "10cm"
+                },
+                {
+                    name => "depth",
+                    value => "25cm"
+                },
+                {
+                    name => "CyclingUK_injury_suffered",
+                    value => "no",
+                },
+                {
+                    name => "CyclingUK_property_damage",
+                    value => "yes",
+                },
+                {
+                    name => "CyclingUK_transport_mode",
+                    value => "other",
+                },
+                {
+                    name => "CyclingUK_transport_other",
+                    value => "horse",
+                },
+            ]
+        }
+    });
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('"Injury suffered?","Property damage?","Mode of transport","Mode of transport (other)"');
+    $mech->content_contains(',no,yes,other,horse');
+    $mech->content_lacks('10cm');
+    $mech->content_lacks('25cm');
+};
+
 $mech->log_out_ok;
 };
 
