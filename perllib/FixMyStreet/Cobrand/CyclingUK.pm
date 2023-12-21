@@ -151,4 +151,32 @@ sub get_body_handler_for_problem {
     return $self->SUPER::get_body_handler_for_problem($problem);
 }
 
+=item dashboard_export_problems_add_columns
+
+Reports made on the Cycling UK site have some extra questions shown to the
+user - the answers to all of these are included in the CSV output.
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        injury_suffered => 'Injury suffered?',
+        property_damage => 'Property damage?',
+        transport_mode => 'Mode of transport',
+        transport_other => 'Mode of transport (other)',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        return {
+            injury_suffered => $csv->_extra_field($report, 'CyclingUK_injury_suffered') || '',
+            property_damage => $csv->_extra_field($report, 'CyclingUK_property_damage') || '',
+            transport_mode => $csv->_extra_field($report, 'CyclingUK_transport_mode') || '',
+            transport_other => $csv->_extra_field($report, 'CyclingUK_transport_other') || '',
+        };
+    });
+}
+
 1;
