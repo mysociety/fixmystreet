@@ -10,7 +10,7 @@
         [% ELSE %]
             <h1>[% loc('Text alert created') %]</h1>
         [% END %]
-    
+
       [% ELSIF confirm_type == 'unsubscribe' %]
         [% IF alert_by != 'phone' %]
             <h1>[% loc('Email alert deleted') %]</h1>
@@ -18,9 +18,9 @@
             <h1>[% loc('Text alert deleted') %]</h1>
         [% END %]
         <p class="lead">[% loc('Inbox zero, here we come!') %]</p>
-    
+
       [% END %]
-  
+
   </div>
 </div>
 
