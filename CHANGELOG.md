@@ -38,6 +38,7 @@
         - Mark non-Open311 updates as processed by daemon. #4552
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
+        - Convert all uploaded images to JPEGs.
 
 * v5.0 (10th May 2023)
     - Front end improvements:

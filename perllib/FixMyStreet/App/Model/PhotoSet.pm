@@ -155,11 +155,8 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     return ();
                 }
 
-                my %params;
-                # Brent has a quite-small file size limit, make sure we convert to JPEGs
-                if ($self->c->cobrand->moniker eq 'brent') {
-                    $params{magick} = 'JPEG';
-                }
+                # Convert all images to JPEGs
+                my %params = ( magick => 'JPEG' );
 
                 # we have an image we can use - save it to storage
                 $photo_blob = try {
