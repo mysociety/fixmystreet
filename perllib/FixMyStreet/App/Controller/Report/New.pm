@@ -330,7 +330,7 @@ sub by_category_ajax_data : Private {
     if ($extras or $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
         $body->{category_extra} = $c->render_fragment('report/new/category_extras.html');
         $body->{category_extra_json} = $c->forward('generate_category_extra_json');
-        $body->{extra_hidden} = 1 if $c->stash->{category_extras_hidden}->{$category};
+        $body->{extra_hidden} = 1 if $c->stash->{category_extras_hidden}->{$category} && !$c->stash->{report_extra_fields};
     }
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $body->{category_photo_required} = $c->stash->{category_photo_required}->{$category};
