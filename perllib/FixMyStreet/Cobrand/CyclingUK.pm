@@ -133,6 +133,15 @@ sub get_body_sender {
     return $self->SUPER::get_body_sender($body, $problem);
 }
 
+sub get_body_handler_for_problem {
+    my ( $self, $problem ) = @_;
+
+    # returning undef here forces get_body_sender above to be used.
+    return if FixMyStreet->config('STAGING_SITE');
+
+    return $self->SUPER::get_body_handler_for_problem($problem);
+}
+
 =item dashboard_export_problems_add_columns
 
 Reports made on the Cycling UK site have some extra questions shown to the
@@ -162,11 +171,14 @@ sub dashboard_export_problems_add_columns {
 }
 
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
+sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
 
-sub contact_email {
-    my $self = shift;
-    return $self->feature('contact_email');
-};
+=item disable_phone_number_entry
 
+Cycling UK cobrand does not ask for user's phone number when making their report.
+
+=cut
+
+sub disable_phone_number_entry { 1 }
 
 1;
