@@ -133,6 +133,15 @@ sub get_body_sender {
     return $self->SUPER::get_body_sender($body, $problem);
 }
 
+sub get_body_handler_for_problem {
+    my ( $self, $problem ) = @_;
+
+    # returning undef here forces get_body_sender above to be used.
+    return if FixMyStreet->config('STAGING_SITE');
+
+    return $self->SUPER::get_body_handler_for_problem($problem);
+}
+
 =item dashboard_export_problems_add_columns
 
 Reports made on the Cycling UK site have some extra questions shown to the
