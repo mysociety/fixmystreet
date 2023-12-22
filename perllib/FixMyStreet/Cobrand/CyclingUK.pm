@@ -136,8 +136,9 @@ sub get_body_sender {
 sub get_body_handler_for_problem {
     my ( $self, $problem ) = @_;
 
-    # returning undef here forces get_body_sender above to be used.
-    return if FixMyStreet->config('STAGING_SITE');
+    # want to force CyclingUK cobrand on staging so our get_body_sender is used
+    # and reports aren't sent anywhere.
+    return $self if FixMyStreet->config('STAGING_SITE');
 
     return $self->SUPER::get_body_handler_for_problem($problem);
 }
