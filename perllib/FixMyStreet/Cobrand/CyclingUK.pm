@@ -179,4 +179,12 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=item disable_phone_number_entry
+
+Cycling UK cobrand does not ask for user's phone number when making their report.
+
+=cut
+
+sub disable_phone_number_entry { 1 }
+
 1;

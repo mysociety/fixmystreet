@@ -2,6 +2,10 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 
@@ -185,6 +189,36 @@ subtest 'Dashboard CSV export' => sub {
 };
 
 $mech->log_out_ok;
+
+subtest 'New report user info fields' => sub {
+    $mech->log_in_ok( $user->email );
+    $mech->get_ok('/report/new?longitude=-2.364050&latitude=51.386269');
+    $mech->content_lacks("form_phone");
+    $mech->submit_form_ok(
+        {
+            button      => 'submit_register',
+            with_fields => {
+                title         => 'Test',
+                detail        => 'Detail',
+                photo1        => '',
+                first_name    => "First",
+                last_name    => "Last",
+                may_show_name => '0',
+                category      => 'Potholes',
+            }
+        },
+        'submit report form ok'
+    );
+    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    is $report->name, "First Last";
 };
+
+};
+
+# test that emails have correct branding
+
+# test that reporting form has marketing opt-in field and is stored correctly
+
+# test that CSV export has name/email/marketing fields
 
 done_testing();
