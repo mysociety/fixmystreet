@@ -171,4 +171,12 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
+
+sub contact_email {
+    my $self = shift;
+    return $self->feature('contact_email');
+};
+
+
 1;
