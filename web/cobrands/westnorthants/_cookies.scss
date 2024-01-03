@@ -1,0 +1,67 @@
+.wnc-cookie-banner {
+    background-color: #e5e7eb;
+    border-bottom: 1px solid #999999;
+    box-sizing: border-box;
+}
+.wnc-cookie-hidden {
+    display: none;
+}
+.wnc-cookie-show {
+    display: block;
+}
+.wnc-cookie-banner-container {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    max-width: 76rem;
+    width: 100%;
+    margin: 0 auto;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+.wnc-cookie-title {
+    font-weight: bold;
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+}
+.wnc-cookie-banner p {
+    margin: 0 0 1rem 0;
+    color: black;
+    font-size: 1rem;
+    line-height: 1.25rem;
+}
+.wnc-cookie-link {
+    color: #385889;
+    text-decoration: underline;
+}
+.wnc-cookie-link:hover {
+    text-decoration: dotted;
+    cursor: pointer;
+}
+.wnc-cookie-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    flex-wrap: wrap;
+}
+.wnc-cookie-button {
+    text-decoration: none;
+    color: white;
+    background-color: #385889;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin-right: 1rem;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+}
+.wnc-cookie-button:hover {
+    background-color: #0e335b;
+    cursor: pointer;
+}
+.wnc-cookie-button:focus,
+.wnc-cookie-button:active {
+    background-color: #e2ca76;
+    color: black;
+}
