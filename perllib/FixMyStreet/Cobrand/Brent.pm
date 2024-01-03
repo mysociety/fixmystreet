@@ -381,6 +381,13 @@ sub oidc_config {
     return $cfg;
 }
 
+=head2 Only show reports on map for last 3 months
+
+Brent only show 3 months of report history on the map rather than default 6 months
+
+=cut
+
+sub report_age { '3 months' }
 
 =head2 dashboard_export_problems_add_columns
 
