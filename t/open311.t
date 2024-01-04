@@ -10,6 +10,8 @@ use CGI::Simple;
 use HTTP::Response;
 use DateTime;
 use DateTime::Format::W3CDTF;
+use utf8;
+use Encode;
 
 use_ok( 'Open311' );
 
@@ -509,6 +511,42 @@ subtest 'check media url set' => sub {
         my $c = CGI::Simple->new( $results->{ req }->content );
         my $expected_path = '/c/' . $comment->id . '.0.full.jpeg';
         like $c->param('media_url'), qr/$expected_path/, 'image url included';
+    };
+};
+
+subtest 'check images sent directly when comment on private report' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+
+    my $image_path = path('t/app/controller/sample.jpg');
+    $image_path->copy( path( $UPLOAD_DIR, '0123456789012345678901234567890123456789.jpeg' ) );
+
+    my $comment = make_comment('fixmystreet');
+    $comment->photo("0123456789012345678901234567890123456789");
+
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        $problem->non_public(1);
+        my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { upload_files_for_updates => 1 } );
+
+        is $results->{ res }, 248, 'got update id';
+        my $found = 0;
+        foreach ($results->{ req }->parts) {
+            my $cd = $_->header('Content-Disposition');
+            if ($cd =~ /description/) {
+                is decode_utf8($_->content), 'this is a comment', 'Correct description';
+                $found++;
+            }
+            if ($cd =~ /jpeg/) {
+                is $_->header('Content-Type'), 'image/jpeg', 'Correct image content type';
+                $found++;
+            }
+        }
+        is $found, 2, 'Found all tested headers';
+        $problem->non_public(0);
     };
 };
 

@@ -63,7 +63,8 @@ sub credentials {
     # this is UTC
     my $ts = DateTime->now->format_cldr('yyyyMMddHHmmss');
 
-    my $ref = $args->{ref} . ':' . time;
+    # ref is set for payment, scpReference for query
+    my $ref = ($args->{ref} || $args->{scpReference}) . ':' . time;
     my $hmac = Digest::HMAC->new(MIME::Base64::decode($self->config->{hmac}), "Crypt::Digest::SHA256");
     $hmac->add(join('!', 'CapitaPortal', $self->config->{scpID}, $ref, $ts, 'Original', $self->config->{hmac_id}));
 
