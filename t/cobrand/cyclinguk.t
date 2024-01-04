@@ -211,13 +211,54 @@ subtest 'New report user info fields' => sub {
     );
     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     is $report->name, "First Last";
+    $mech->log_out_ok;
+
+    $mech->get_ok('/report/new?longitude=-2.364050&latitude=51.386269');
+    $mech->submit_form_ok(
+        {
+            button      => 'submit_register',
+            with_fields => {
+                username_register      => 'brandnew@example.org',
+                title         => 'Test',
+                detail        => 'Detail',
+                photo1        => '',
+                first_name    => "Brand",
+                last_name     => "New",
+                may_show_name => '0',
+                category      => 'Potholes',
+                marketing_opt_in => '1'
+            }
+        },
+        'submit report form ok'
+    );
+    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    is $report->name, "Brand New";
+    is $report->get_extra_field_value('CyclingUK_marketing_opt_in'), 'yes';
+
+    $mech->get_ok('/report/new?longitude=-2.364050&latitude=51.386269');
+    $mech->submit_form_ok(
+        {
+            button      => 'submit_register',
+            with_fields => {
+                username_register      => 'brandnew@example.org',
+                title         => 'Test',
+                detail        => 'Detail',
+                photo1        => '',
+                first_name    => "Brand",
+                last_name     => "New",
+                may_show_name => '0',
+                category      => 'Potholes',
+                marketing_opt_in => '0'
+            }
+        },
+        'submit report form ok'
+    );
+    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    is $report->name, "Brand New";
+    is $report->get_extra_field_value('CyclingUK_marketing_opt_in'), 'no';
 };
 
 };
-
-# test that emails have correct branding
-
-# test that reporting form has marketing opt-in field and is stored correctly
 
 # test that CSV export has name/email/marketing fields
 
