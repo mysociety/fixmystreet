@@ -1,16 +1,11 @@
 <div class="front-howto-wrapper">
     <h2>[% loc('How to report a problem') %]</h2>
-
+    <h3>You can report any danger to cycling, not just potholes</h3>
     <ol class="big-numbers">
         <li>[% question %]</li>
         <li>[% loc('Locate the problem on a map of the area') %]</li>
-        <li>[% loc('Enter details of the problem') %]</li>
-        [% IF c.cobrand.is_council %]
-            <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
-        [% ELSIF c.cobrand.moniker == 'zurich' %]
-        [% ELSE %]
-            <li>[% loc('We send it to the council on your behalf') %]</li>
-        [% END %]
+        <li>[% loc('Enter details of the problem (note that categories vary from council to council)') %]</li>
+        <li>[% loc('We send it to the council on your behalf') %]</li>
     </ol>
 </div>
 
