@@ -122,13 +122,16 @@ h1 {
     padding: 2rem;
 }
 
-.front-howto-wrapper {
-    max-width: 424px;
-    margin: 0 auto;
+#front-howto {
     h2 {
         text-align: center;
         margin-bottom: 1.5rem;
     }
+}
+
+.front-howto-wrapper {
+    max-width: 424px;
+    margin: 0 auto;
 }
 
 #front_stats {
