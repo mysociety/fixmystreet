@@ -203,4 +203,14 @@ Cycling UK cobrand does not ask for user's phone number when making their report
 
 sub disable_phone_number_entry { 1 }
 
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    my $opt_in = $self->{c}->get_param("marketing_opt_in") ? 'yes' : 'no';
+    $report->update_extra_field({ name => 'CyclingUK_marketing_opt_in', value => $opt_in });
+
+    return $self->SUPER::report_new_munge_before_insert($report);
+}
+
+
 1;
