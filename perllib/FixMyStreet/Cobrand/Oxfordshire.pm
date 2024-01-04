@@ -110,6 +110,7 @@ sub state_groups_inspect {
     [
         [ 'New', [ 'confirmed', 'investigating' ] ],
         [ 'Scheduled', [ 'action scheduled' ] ],
+        [ 'Pending', [ 'in progress' ] ],
         [ 'Fixed', [ 'fixed - council' ] ],
         [ 'Closed', [ 'not responsible', 'duplicate', 'unable to fix' ] ],
     ]
