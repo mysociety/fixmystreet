@@ -122,13 +122,21 @@ h1 {
     padding: 2rem;
 }
 
+#front-howto {
+    h2 {
+        text-align: center;
+    }
+    h3 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+        font-size: 1em;
+    }
+}
+
 .front-howto-wrapper {
     max-width: 424px;
     margin: 0 auto;
-    h2 {
-        text-align: center;
-        margin-bottom: 1.5rem;
-    }
 }
 
 #front_stats {
