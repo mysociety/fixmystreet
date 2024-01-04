@@ -19,6 +19,22 @@ sub path_to_web_templates {
     ];
 }
 
+=item path_to_email_templates
+
+Similarly, we want to ensure our custom email templates are used.
+
+=cut
+
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+    return [
+        FixMyStreet->path_to( 'templates', 'email', 'cyclinguk' ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
+        FixMyStreet->path_to( 'templates', 'email', 'default', $lang_code ),
+    ];
+}
+
+
 sub privacy_policy_url { 'https://www.cyclinguk.org/privacy-policy' }
 
 =item problems_restriction
