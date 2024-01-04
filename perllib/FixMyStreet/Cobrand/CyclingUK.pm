@@ -182,15 +182,34 @@ sub dashboard_export_problems_add_columns {
         property_damage => 'Property damage?',
         transport_mode => 'Mode of transport',
         transport_other => 'Mode of transport (other)',
+        first_name => 'First name',
+        last_name => 'Last name',
+        user_email => 'User Email',
+        marketing => 'Marketing opt-in?',
     );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+
+        my $name = $csv->dbi ? $report->{name} : $report->name;
+        my ($first, $last) = $name =~ /^(\S*)(?: (.*))?$/;
+
         return {
             injury_suffered => $csv->_extra_field($report, 'CyclingUK_injury_suffered') || '',
             property_damage => $csv->_extra_field($report, 'CyclingUK_property_damage') || '',
             transport_mode => $csv->_extra_field($report, 'CyclingUK_transport_mode') || '',
             transport_other => $csv->_extra_field($report, 'CyclingUK_transport_other') || '',
+            marketing => $csv->_extra_field($report, 'CyclingUK_marketing_opt_in') || '',
+            first_name => $first || '',
+            last_name => $last || '',
+            $csv->dbi ? () : (
+                user_email => $report->user->email || '',
+            )
         };
     });
 }
