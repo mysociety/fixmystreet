@@ -1283,6 +1283,47 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Quantity'), '1';
         is $report->get_extra_field_value('service_id'), '269';
     };
+    $echo->mock('GetServiceUnitsForObject' => sub {
+    return [
+        {
+            Id => 1004,
+            ServiceId => 317,
+            ServiceName => 'Garden waste collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 405,
+                TaskTypeId => 1689,
+                Data => { ExtensibleDatum => [ {
+                    DatatypeName => 'BRT - Paid Collection Container Quantity',
+                    Value => 1,
+                }, {
+                    DatatypeName => 'BRT - Paid Collection Container Type',
+                    Value => 1,
+                } ] },
+                ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                    ScheduleDescription => 'Monday every 4th week',
+                    Allocation => {
+                        RoundName => 'Monday ',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
+                    StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 567, 890 ] } },
+                    },
+                } ] },
+            } }
+        }, ]
+    });
+    subtest 'test variation in ScheduleDescription in winter months' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
+    }
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
