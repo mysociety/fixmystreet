@@ -1119,7 +1119,7 @@ sub bin_services_for_address {
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
 
         # Check calendar allocation
-        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
