@@ -1,0 +1,69 @@
+[% INCLUDE 'header.html', title = loc('Reporting app'), bodyclass = 'twothirdswidthpage' %]
+
+[% INCLUDE 'about/_sidebar.html' %]
+
+<h1>Fill That Hole app</h1>
+
+<p>The Fill That Hole service is powered by FixMyStreet Pro, which is a progressive web app (PWA). This means that you can save this website to your mobile’s home screen and use it just like an app. See below for instructions on how to do this on both iOS and Android devices.</p>
+
+<p>We chose to develop a PWA instead of a dedicated app because it gives you the choice to use this service on whatever device you want, and ensures that you always benefit from the same user experience, including having access to offline reporting functionality. It also means that we can introduce new features and updates more quickly, while also keeping maintenance costs low due to only having to support one codebase.</p>
+
+<h2>How to install [% site_name %] as an app</h2>
+
+<p>Unlike dedicated apps, you don’t download the [% site_name %] app from an app store. Instead, you simply need to load the website from a browser on your chosen device and save it to your home screen.</p>
+
+<p>The PWA’s design makes it feel like you’re using a ‘normal’ app, with its mobile friendly features, but you’re benefiting from using a web-based service that doesn’t require you to keep updating it.</p>
+
+<style>
+.web-app-install {
+    overflow: auto;
+}
+.web-app-install__scrshot {
+    float: right;
+    max-width: 25%;
+}
+.web-app-install__step {
+    display: block;
+    margin: 1em 2em;
+    max-width: 50%;
+}
+</style>
+
+<div class="web-app-install">
+<h3>iOS (Apple iPhones/iPads)</h3>
+<img alt="" class="web-app-install__scrshot" srcset="/cobrands/cyclinguk/web-app/small/iphone-[% c.cobrand.moniker %]_framed.png, /cobrands/cyclinguk/web-app/large/iphone-[% c.cobrand.moniker %]_framed.png 2x" src="/cobrands/cyclinguk/web-app/large/iphone-[% c.cobrand.moniker %]_framed.png">
+<ol>
+    <li>Load [% c.uri_for('/') %] on your mobile browser (if you have iOS version 16.3 or less, the installation will only work via Safari)</li>
+    <li>
+        Hit the save/share button
+        <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/iphone-share.jpeg">
+    </li>
+    <li>Select ‘add to home screen’
+        <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/iphone-a2hs.jpeg">
+    </li>
+    <li>Select ‘ok’/’add’
+        <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/iphone-add.png">
+    </li>
+    <li>Use [% site_name %] as an app</li>
+</ol>
+</div>
+
+<div class="web-app-install">
+<h3>Android</h3>
+<img alt="" class="web-app-install__scrshot" srcset="/cobrands/cyclinguk/web-app/small/android-[% c.cobrand.moniker %]_framed.png, /cobrands/cyclinguk/web-app/large/android-[% c.cobrand.moniker %]_framed.png 2x" src="/cobrands/cyclinguk/web-app/large/android-[% c.cobrand.moniker %]_framed.png">
+<ol>
+    <li>Load [% c.uri_for('/') %] on your mobile browser</li>
+    <li>Press the ‘three dots’ icon to open the browser menu
+        <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/android-dots.jpeg">
+    </li>
+    <li>Select ‘Install app’ or similar
+        <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/android-install-app.jpeg">
+    </li>
+    <li>Select ‘Add to home screen’ / ‘Install’ (varies by device)
+        <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/android-confirm.png">
+    </li>
+    <li>Use [% site_name %] as an app</li>
+</ol>
+</div>
+
+[% INCLUDE 'footer.html' %]
