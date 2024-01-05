@@ -28,30 +28,51 @@ sub nearby {
 
     FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c, 'problem');
 
-    $rs = $c->cobrand->problems_restriction($rs);
-
     # Add in any optional extra query parameters
     $params = { %$params, %{$args{extra}} } if $args{extra};
 
     my $attrs = {
-        prefetch => { problem => [] },
+        join => 'problem',
         bind => [ $args{latitude}, $args{longitude}, $args{distance} ],
         order_by => [ 'distance', { -desc => 'created' } ],
         rows => $args{limit},
     };
+
+    # Construct the query, but do not run it
+    my $rs_with_restriction = $c->cobrand->problems_restriction($rs);
+    my $query = $rs_with_restriction->search( $params, $attrs )->as_query;
+    $query = $$query;
+
+    # Replace the table lookup with it being looked up in a CTE first, as that's much quicker
+    my $sql = shift @$query;
+    $sql =~ s/problem_find_nearby\(\?,\?,\?\) "me"/"me"/;
+    $sql = "WITH me AS MATERIALIZED ( SELECT * FROM problem_find_nearby( ?, ?, ? ) ) $sql";
+
+    # Now perform the query to get the right problem IDs in the right order
+    my $storage = $rs->result_source->storage;
+    my (undef, $sth, undef) = $storage->dbh_do( _dbh_execute => $sql, $query);
+    my $result = $sth->fetchall_arrayref;
+
+    $attrs = {};
     if ($c->user_exists) {
         if ($c->user->from_body || $c->user->is_superuser) {
-            push @{$attrs->{prefetch}{problem}}, 'contact';
+            push @{$attrs->{prefetch}}, 'contact';
         }
         if ($c->user->has_body_permission_to('planned_reports')) {
-            push @{$attrs->{prefetch}{problem}}, 'user_planned_reports';
+            push @{$attrs->{prefetch}}, 'user_planned_reports';
         }
         if ($c->user->has_body_permission_to('report_edit_priority') || $c->user->has_body_permission_to('report_inspect')) {
-            push @{$attrs->{prefetch}{problem}}, 'response_priority';
+            push @{$attrs->{prefetch}}, 'response_priority';
         }
     }
 
-    my @problems = mySociety::Locale::in_gb_locale { $rs->search( $params, $attrs )->all };
+    # Now look up the full rows for the relevant IDs fetched
+    my @ids = map { $_->[0] } @$result;
+    my @problems = $c->cobrand->problems->search( { 'me.id' => \@ids }, $attrs )->all;
+
+    # And construct Nearby rows as that's what the callers are expecting
+    my %problems = map { $_->id => $_ } @problems;
+    @problems = map { $rs->new_result({ problem => $problems{$_->[0]}, distance => $_->[1] }) } @$result;
     return \@problems;
 }
 
