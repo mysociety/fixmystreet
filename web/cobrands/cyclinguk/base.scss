@@ -18,6 +18,17 @@
     }
 }
 
+label[for$="form_CyclingUK_injury_suffered"] {
+    span {
+        display: block;
+        font-weight: normal;
+        font-style: italic;
+        font-size: 0.9em;
+        padding-left: 1em;
+        line-height: 1em;
+    }
+}
+
 // NAVBAR
 $site-logo-height: 76px;
 #site-logo {
