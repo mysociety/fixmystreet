@@ -170,10 +170,30 @@ body.mappage {
 
     #site-logo-sos {
         height: $mappage-header-height;
-
         background: url(/cobrands/cyclinguk/images/cycle-sos-logo-white.png) 0 50% no-repeat;
         background-size: auto 50px;
         display: block;
+    }
+
+    @media screen and (max-width: 1360px) {
+        #site-logo {
+            height: $mappage-header-height;
+            width: 150px;
+            background-size: auto 30px;
+        }
+
+        #site-logo-sos {
+            height: $mappage-header-height;
+            background: url(/cobrands/cyclinguk/images/cycle-sos-logo-white.png) 0 50% no-repeat;
+            background-size: auto 30px;
+        }
+
+        .nav-menu__item--news,
+        .nav-menu__item--press,
+        .nav-menu__item--privacy,
+        a.report-a-problem-btn {
+            display: none !important;
+        }
     }
 
     .nav-menu--main {
@@ -198,17 +218,6 @@ body.mappage {
         float: right;
         margin-top: 0;
         min-height: $mappage-header-height;
-    }
-
-    @media screen and (max-width: 1350px) {
-        #site-logo {
-            width: 200px;
-            background-size: auto 30px;
-        }
-
-        #site-logo-sos {
-            display: none;
-        }
     }
 }
 
