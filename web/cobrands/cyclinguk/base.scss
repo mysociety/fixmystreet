@@ -395,6 +395,10 @@ body.mappage {
         background-image: url('/cobrands/cyclinguk/images/icons/error.png');
     }
 
+    &.confirmation-header--phone {
+        background-image: url('/cobrands/cyclinguk/images/icons/phone.png');
+    }
+
     h1 {
         a {
             text-decoration: none;
