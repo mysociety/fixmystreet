@@ -260,7 +260,7 @@ sub get_token : Private {
 sub set_oauth_token_data : Private {
     my ( $self, $c, $token_data ) = @_;
 
-    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri/) {
+    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri roles/) {
         $token_data->{$_} = $c->session->{oauth}{$_} if $c->session->{oauth}{$_};
     }
 }
@@ -335,7 +335,7 @@ sub process_login : Private {
         %{ $user->get_extra() },
         %{ $data->{extra} }
     }) if $data->{extra};
-
+    $c->cobrand->call_hook(roles_from_oidc => $user, $c->session->{oauth}{roles}) if $c->session->{oauth}{roles};
     $user->update_or_insert;
     $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 
