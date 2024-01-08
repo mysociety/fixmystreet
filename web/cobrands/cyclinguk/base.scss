@@ -440,6 +440,15 @@ body.mappage {
         margin-bottom: 1.25rem;
     }
 
+    .cuk-fundraising-regulator-logo {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
+    }
+
     .cuk-people {
         margin-bottom: 1.25rem;
         span {
