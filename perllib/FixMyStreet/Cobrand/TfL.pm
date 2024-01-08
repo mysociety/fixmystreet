@@ -185,6 +185,56 @@ sub around_nearby_filter {
     delete $params->{states};
 }
 
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = join(" ", $payload->{given_name}, $payload->{family_name});
+    my $email = $payload->{email};
+
+    return ($name, $email);
+}
+
+sub roles_from_oidc {
+    my ($self, $user, $roles) = @_;
+
+    $user->user_roles->delete;
+    $user->from_body($self->body->id);
+
+    return unless $roles && @$roles;
+
+    my %role_map = (
+        BasicEditorViewers => 'Streetcare - Basic Editor Viewers',
+        Contractor => 'Streetcare - Contractor',
+        AgentInspector => 'Streetcare - Agent Inspector',
+        Admin => 'Streetcare - Admin',
+        CustomerServices => 'Streetcare - Customer Services',
+    );
+
+    my @body_roles;
+    for ($user->from_body->roles->search(undef, { order_by => 'name' })->all) {
+        push @body_roles, {
+            id => $_->id,
+            name => $_->name,
+        }
+    }
+
+    for my $assign_role (@$roles) {
+        my ($body_role) = grep { $role_map{$assign_role} && $_->{name} eq $role_map{$assign_role} } @body_roles;
+
+        if ($body_role) {
+            $user->user_roles->find_or_create({
+                role_id => $body_role->{id},
+            });
+        }
+    }
+}
+
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
     my @open = grep { $_ !~ /^(planned|investigating|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;

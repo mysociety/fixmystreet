@@ -1620,6 +1620,8 @@ sub process_confirmation : Private {
                 %{ $problem->user->get_extra() },
                 %{ $data->{extra} }
             }) if $data->{extra};
+            $c->cobrand->call_hook(roles_from_oidc => $problem->user, $data->{roles});
+
             $problem->user->update;
 
             # Make sure extra oauth state is restored, if applicable
