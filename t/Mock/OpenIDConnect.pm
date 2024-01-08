@@ -31,6 +31,12 @@ has host => (
     default => '',
 );
 
+has roles => (
+    is => 'rw',
+    isa => ArrayRef,
+    lazy => 1
+);
+
 sub dispatch_request {
     my $self = shift;
 
@@ -78,6 +84,11 @@ sub dispatch_request {
             $payload->{givenName} = "Andy";
             $payload->{surname} = "Dwyer";
             $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc@example.org' if $self->returns_email;
+        } elsif ($self->cobrand eq 'tfl') {
+            $payload->{given_name} = "Andy";
+            $payload->{family_name} = "Dwyer";
+            $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc@tfl.org' if $self->returns_email;
+            $payload->{roles} = $self->roles;
         }
         my $signature = "dummy";
         my $id_token = join(".", (

@@ -343,7 +343,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # which is passed to Open311 with reports made by this user.
     my $extra = $c->cobrand->call_hook(oidc_user_extra => $id_token);
 
-    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra ]);
+    # TfL would like to set the user's roles when logging in through oidc
+    my $roles = $id_token->payload->{roles} || ();
+
+    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra, $roles ]);
 }
 
 # Just a wrapper around random_token to make mocking easier.
@@ -367,7 +370,7 @@ sub oauth_failure : Private {
 }
 
 sub oauth_success : Private {
-    my ($self, $c, $type, $uid, $name, $email, $extra) = @_;
+    my ($self, $c, $type, $uid, $name, $email, $extra, $roles) = @_;
 
     my $user;
     if ($email) {
@@ -400,6 +403,7 @@ sub oauth_success : Private {
                 %$extra
             });
         }
+        $c->cobrand->call_hook(roles_from_oidc => $user, $roles);
         $user->in_storage() ? $user->update : $user->insert;
     } else {
         # We've got an ID, but no email
@@ -419,6 +423,7 @@ sub oauth_success : Private {
                     %$extra
                 });
             }
+            $c->cobrand->call_hook(roles_from_oidc => $user, $roles);
             $user->update;
         } else {
             # No matching ID, store ID for use later
@@ -426,6 +431,7 @@ sub oauth_success : Private {
             $c->session->{oauth}{name} = $name if $name;
             $c->session->{oauth}{extra} = $extra;
             $c->stash->{oauth_need_email} = 1;
+            $c->session->{oauth}{roles} = $roles if $roles;
         }
     }
 
