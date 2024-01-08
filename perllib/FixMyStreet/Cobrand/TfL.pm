@@ -185,6 +185,26 @@ sub around_nearby_filter {
     delete $params->{states};
 }
 
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    # TODO: Remove this once we know which fields the name/email are in.
+    use Data::Dumper;
+    $self->{c}->log->info("TfL OIDC payload: " . Dumper($payload));
+
+    # Extract the user's name and email address from the payload.
+    my $name = $payload->{first_name};
+    my $email = $payload->{last_name};
+
+    return ($name, $email);
+}
+
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
     my @open = grep { $_ !~ /^(planned|investigating|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;
