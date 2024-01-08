@@ -3,12 +3,12 @@
 [%~ IF c.user_exists ~%]
     [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
 [%~ ELSE ~%]
-    [%~ INCLUDE navitem uri='/auth' label=loc('Sign in to Fill That Hole') ~%]
+    [%~ INCLUDE navitem uri='/auth' label=loc('Sign in') ~%]
 [%~ END ~%]
 
-[%~ INCLUDE navitem uri='https://www.cyclinguk.org/campaign/fill-hole' label=loc('News') ~%]
+[%~ INCLUDE navitem uri='https://www.cyclinguk.org/campaign/fill-hole' label=loc('News') liattrs='class="nav-menu__item--news"' ~%]
 
-[%~ INCLUDE navitem uri='https://www.cyclinguk.org/contact/press-and-media' label=loc('Press enquiries') ~%]
+[%~ INCLUDE navitem uri='https://www.cyclinguk.org/contact/press-and-media' label=loc('Press enquiries') liattrs='class="nav-menu__item--press"' ~%]
 
 <!--
 [%~ IF c.user_exists AND c.user.has_body_permission_to('planned_reports') ~%]
