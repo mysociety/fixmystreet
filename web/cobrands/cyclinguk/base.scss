@@ -6,6 +6,10 @@
 
 /* New report conditional questions */
 
+body {
+    color: $black;
+}
+
 @supports( #{"selector(:has(*))"} ) {
     input[name$="CyclingUK_transport_other"],
     label[for$="form_CyclingUK_transport_other"] {
