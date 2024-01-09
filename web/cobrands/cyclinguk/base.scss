@@ -152,6 +152,7 @@ h1 {
     align-items: center;
 
     a {
+        box-sizing: border-box;
         border: 1px solid $white;
         width: 40px;
         height: 40px;
@@ -159,9 +160,9 @@ h1 {
         text-decoration: none;
         justify-content: center;
         align-items: center;
-        -webkit-border-radius: 20px;
-        -moz-border-radius: 20px;
-        border-radius: 20px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
 
         &:hover, &:focus {
             color: $yellow;
@@ -443,7 +444,7 @@ body.mappage {
 .page-footer {
     background-color: $blue;
     color: $white;
-    padding-top: 2rem;
+    padding-top: 6rem;
     padding-bottom: 9rem;
     text-align: center;
 
