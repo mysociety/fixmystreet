@@ -363,6 +363,8 @@ body.frontpage {
 
 body:not(.admin) {
     input[type="text"],
+    input[type="email"],
+    input[type="password"],
     .postcode-form-box div input#pc {
         border: 1px solid $gray-borders;
         border-radius: $button-border-radius;
