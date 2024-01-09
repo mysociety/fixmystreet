@@ -367,6 +367,11 @@ body:not(.admin) {
         border: 1px solid $gray-borders;
         border-radius: $button-border-radius;
         padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
+        &:focus,
+        &:active {
+            outline: none;
+            border-color: $yellow;
+        }
     }
 }
 
