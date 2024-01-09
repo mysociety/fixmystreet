@@ -22,7 +22,7 @@ body {
         padding: 0;
         height: $total-navbar-height;
         width: 305px;
-        background-size: auto $site-logo-height;
+        background-size: auto 53px;
     }
 
     #site-logo-sos {
@@ -72,7 +72,7 @@ $subnav-height: 52px;
 }
 
 .nav-menu--main a, .nav-menu--main span {
-    padding: $button-padding-top $button-padding-left;
+    padding: $button-padding-top 0.5rem;
     line-height: 100%;
     font-size: 1rem;
     border: 1px solid transparent;
@@ -83,6 +83,11 @@ $subnav-height: 52px;
         background-color: transparent;
         color: $primary-b;
     }
+}
+
+.nav-menu--main span {
+    border-bottom: 1px solid $blue;
+    color: $primary_b;
 }
 
 // GENERAL COMPONENTS
@@ -104,7 +109,7 @@ h1 {
     transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
     outline: none;
     text-decoration: none;
-    padding: 0.625rem .75rem;
+    padding: 0.625rem $button-padding-left;
     @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
     margin: 0;
 }
@@ -122,14 +127,13 @@ h1 {
     padding: 2rem;
 }
 
-#front-howto {
+.front-howto-wrapper {
     h2 {
         text-align: center;
     }
     h3 {
         text-align: center;
         margin-bottom: 1.5rem;
-        font-style: italic;
         font-size: 1em;
     }
 }
@@ -151,6 +155,10 @@ h1 {
     .frontpage & {
         margin: 3rem -2rem;
     }
+
+    .cycling-sos-logo {
+        display: none;
+    }
 }
 
 // MAPPAGE
@@ -163,17 +171,25 @@ body.mappage {
         padding: 0;
         height: $mappage-header-height;
         width: 265px;
-        background-size: auto 50px;
+        background-size: auto 44px;
         background-position: left 0 center;
         background-image: url(/cobrands/cyclinguk/images/fill-that-hole-logo-white.png);
     }
 
     #site-logo-sos {
         height: $mappage-header-height;
-
         background: url(/cobrands/cyclinguk/images/cycle-sos-logo-white.png) 0 50% no-repeat;
         background-size: auto 50px;
         display: block;
+    }
+
+    @media screen and (max-width: 1360px) {
+        .nav-menu__item--news,
+        .nav-menu__item--press,
+        .nav-menu__item--privacy,
+        a.report-a-problem-btn {
+            display: none !important;
+        }
     }
 
     .nav-menu--main {
@@ -190,7 +206,11 @@ body.mappage {
          }
 
          a, span {
-            padding: $button-padding-top 0.3rem;
+            padding: $button-padding-top 0.75rem;
+         }
+
+        a.report-a-problem-btn {
+            padding: $button-padding-top $button-padding-left;
          }
     }
 
@@ -199,25 +219,14 @@ body.mappage {
         margin-top: 0;
         min-height: $mappage-header-height;
     }
-
-    @media screen and (max-width: 1350px) {
-        #site-logo {
-            width: 200px;
-            background-size: auto 30px;
-        }
-
-        #site-logo-sos {
-            display: none;
-        }
-    }
 }
 
 // EMAIL SENT
 .confirmation-header {
-    padding: 5rem 0 5rem 132px;
+    padding: 5rem 0 5rem 162px;
     box-sizing: border-box;
     background-size: 100px;
-    background-position: left 0 top 5rem;
+    background-position: left 2rem top 5rem;
     max-width: $container-max-width;
     width: 100%;
     margin: 0 auto;
@@ -244,5 +253,9 @@ body.alertpage {
 
     .cuk-footer-menu ul {
         justify-content: start;
+    }
+
+    .cuk-fundraising-regulator-logo {
+        justify-content: flex-start;
     }
 }

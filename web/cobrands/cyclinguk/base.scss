@@ -6,6 +6,10 @@
 
 /* New report conditional questions */
 
+body {
+    color: $black;
+}
+
 @supports( #{"selector(:has(*))"} ) {
     input[name$="CyclingUK_transport_other"],
     label[for$="form_CyclingUK_transport_other"] {
@@ -22,7 +26,6 @@ label[for$="form_CyclingUK_injury_suffered"] {
     span {
         display: block;
         font-weight: normal;
-        font-style: italic;
         font-size: 0.9em;
         padding-left: 1em;
         line-height: 1em;
@@ -104,6 +107,8 @@ a#geolocate_link,
     -moz-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
     -o-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
     transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+    padding-left: $button-padding-left;
+    padding-right: $button-padding-right;
 }
 
 .btn, 
@@ -146,6 +151,7 @@ h1 {
     align-items: center;
 
     a {
+        box-sizing: border-box;
         border: 1px solid $white;
         width: 40px;
         height: 40px;
@@ -153,9 +159,9 @@ h1 {
         text-decoration: none;
         justify-content: center;
         align-items: center;
-        -webkit-border-radius: 20px;
-        -moz-border-radius: 20px;
-        border-radius: 20px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
 
         &:hover, &:focus {
             color: $yellow;
@@ -197,6 +203,12 @@ h1 {
     &.is--purple{
         border-color: $purple;
     }
+
+    .cycling-sos-logo {
+        max-width: 280px;
+        margin-bottom: 1rem;
+        margin-top: 1.2rem;
+    }
 }
 
 .bg-cyclinguk {
@@ -228,7 +240,7 @@ h1 {
 
         h3 {
             margin: 0;
-            padding: 1rem;
+            padding: 1rem 2rem;
             background-color: $gray-200;
             -webkit-transition: background-color 0.5s ease-out;
             -moz-transition: background-color 0.5s ease-out;
@@ -250,7 +262,7 @@ h1 {
     margin-top: 3rem;
     padding-bottom: 20rem;
     position: relative;
-    background-image: url('/cobrands/cyclinguk/images/cta/cta-background.webp');
+    background-image: url('/cobrands/cyclinguk/images/cta/cta-background-mobile.webp');
     background-repeat: no-repeat;
     background-size: cover;
     .cuk-cta__message {
@@ -276,6 +288,12 @@ h1 {
             clip-path: ellipse(50% 18% at 50% 0%);
             width: 100%;
             height: 100%;
+            z-index: 2;
+        }
+
+        div {
+            position: relative;
+            z-index: 3;
         }
     }
 }
@@ -283,6 +301,7 @@ h1 {
 @media screen and (min-width: $max-mobile) {
     // For tablets
     .cuk-cta {
+        background-image: url('/cobrands/cyclinguk/images/cta/cta-background-tablet.webp');
         padding-bottom: 15rem;
         .cuk-cta__message {
             padding: 3rem;
@@ -298,6 +317,9 @@ h1 {
     // For desktop
     .cuk-cta {
         padding-bottom: 0;
+        background-image: url('/cobrands/cyclinguk/images/cta/cta-background-desktop.webp');
+        background-size: auto 100%;
+        background-position: right;
         .cuk-cta__message {
             max-width: 400px;
             text-align: left;
@@ -307,7 +329,7 @@ h1 {
                 right: 0;
                 bottom: 0;
                 clip-path: circle(50% at 0 50%);
-                transform: translateX(100%);
+                transform: translateX(75%);
             }
         }
     }
@@ -341,16 +363,35 @@ body.frontpage {
 
 body:not(.admin) {
     input[type="text"],
+    input[type="email"],
+    input[type="password"],
     .postcode-form-box div input#pc {
         border: 1px solid $gray-borders;
         border-radius: $button-border-radius;
         padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
+        &:focus,
+        &:active {
+            outline: none;
+            border-color: $yellow;
+        }
     }
 }
 
 #front_stats {
     background-color: transparent;
     border-top: 0.25em solid $yellow;
+
+    big {
+        font-family: $heading-font;
+    }
+
+    div {
+        font-size: 1rem;
+    }
+}
+
+ol.big-numbers>li:before {
+    font-family: $heading-font;
 }
 
 // MAPPAGE
@@ -384,7 +425,7 @@ body.mappage {
 .confirmation-header {
     padding: 140px 1rem 2rem;
     background-size: 80px;
-    background-position: center top 140px;
+    background-position: center top 50px;
     background-image: url('/cobrands/cyclinguk/images/icons/confirmation.png');
 
     &.confirmation-header--inbox {
@@ -393,6 +434,10 @@ body.mappage {
 
     &.confirmation-header--failure {
         background-image: url('/cobrands/cyclinguk/images/icons/error.png');
+    }
+
+    &.confirmation-header--phone {
+        background-image: url('/cobrands/cyclinguk/images/icons/phone.png');
     }
 
     h1 {
@@ -415,7 +460,7 @@ body.mappage {
 .page-footer {
     background-color: $blue;
     color: $white;
-    padding-top: 2rem;
+    padding-top: 6rem;
     padding-bottom: 9rem;
     text-align: center;
 
@@ -428,6 +473,15 @@ body.mappage {
         width: 183px;
         height: auto;
         margin-bottom: 1.25rem;
+    }
+
+    .cuk-fundraising-regulator-logo {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
     }
 
     .cuk-people {
