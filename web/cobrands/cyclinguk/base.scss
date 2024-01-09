@@ -262,7 +262,7 @@ h1 {
     margin-top: 3rem;
     padding-bottom: 20rem;
     position: relative;
-    background-image: url('/cobrands/cyclinguk/images/cta/cta-background.webp');
+    background-image: url('/cobrands/cyclinguk/images/cta/cta-background-mobile.webp');
     background-repeat: no-repeat;
     background-size: cover;
     .cuk-cta__message {
@@ -288,6 +288,12 @@ h1 {
             clip-path: ellipse(50% 18% at 50% 0%);
             width: 100%;
             height: 100%;
+            z-index: 2;
+        }
+
+        div {
+            position: relative;
+            z-index: 3;
         }
     }
 }
@@ -295,6 +301,7 @@ h1 {
 @media screen and (min-width: $max-mobile) {
     // For tablets
     .cuk-cta {
+        background-image: url('/cobrands/cyclinguk/images/cta/cta-background-tablet.webp');
         padding-bottom: 15rem;
         .cuk-cta__message {
             padding: 3rem;
@@ -310,6 +317,9 @@ h1 {
     // For desktop
     .cuk-cta {
         padding-bottom: 0;
+        background-image: url('/cobrands/cyclinguk/images/cta/cta-background-desktop.webp');
+        background-size: auto 100%;
+        background-position: right;
         .cuk-cta__message {
             max-width: 400px;
             text-align: left;
@@ -319,7 +329,7 @@ h1 {
                 right: 0;
                 bottom: 0;
                 clip-path: circle(50% at 0 50%);
-                transform: translateX(100%);
+                transform: translateX(75%);
             }
         }
     }
