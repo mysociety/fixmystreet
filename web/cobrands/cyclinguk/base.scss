@@ -104,6 +104,8 @@ a#geolocate_link,
     -moz-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
     -o-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
     transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+    padding-left: $button-padding-left;
+    padding-right: $button-padding-right;
 }
 
 .btn, 
