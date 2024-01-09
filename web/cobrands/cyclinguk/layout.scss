@@ -22,7 +22,7 @@ body {
         padding: 0;
         height: $total-navbar-height;
         width: 305px;
-        background-size: auto $site-logo-height;
+        background-size: auto 53px;
     }
 
     #site-logo-sos {
@@ -171,7 +171,7 @@ body.mappage {
         padding: 0;
         height: $mappage-header-height;
         width: 265px;
-        background-size: auto 50px;
+        background-size: auto 44px;
         background-position: left 0 center;
         background-image: url(/cobrands/cyclinguk/images/fill-that-hole-logo-white.png);
     }
@@ -184,18 +184,6 @@ body.mappage {
     }
 
     @media screen and (max-width: 1360px) {
-        #site-logo {
-            height: $mappage-header-height;
-            width: 150px;
-            background-size: auto 30px;
-        }
-
-        #site-logo-sos {
-            height: $mappage-header-height;
-            background: url(/cobrands/cyclinguk/images/cycle-sos-logo-white.png) 0 50% no-repeat;
-            background-size: auto 30px;
-        }
-
         .nav-menu__item--news,
         .nav-menu__item--press,
         .nav-menu__item--privacy,
