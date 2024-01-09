@@ -85,6 +85,11 @@ $subnav-height: 52px;
     }
 }
 
+.nav-menu--main span {
+    border-bottom: 1px solid $blue;
+    color: $primary_b;
+}
+
 // GENERAL COMPONENTS
 h1 {
     font-size: 3rem;
