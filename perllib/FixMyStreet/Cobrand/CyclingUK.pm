@@ -81,6 +81,14 @@ questions when making reports.
 
 sub allow_report_extra_fields { 1 }
 
+sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
+
+sub contact_email {
+    my $self = shift;
+    return $self->feature('contact_email');
+};
+
+
 sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
@@ -205,9 +213,6 @@ sub dashboard_export_problems_add_columns {
         };
     });
 }
-
-sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
-sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
 
 =item disable_phone_number_entry
 
