@@ -306,6 +306,8 @@ sub generate_summary_figures {
     # problems this month by state
     $c->stash->{"summary_$_"} = 0 for values %$state_map;
 
+    return if $c->cobrand->moniker eq 'fixmystreet'; # Not wanted on .com
+
     $c->stash->{summary_open} = $c->stash->{objects_rs}->count;
 
     my $params = $c->stash->{params};
