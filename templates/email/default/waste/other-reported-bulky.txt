@@ -1,12 +1,13 @@
-Subject: [%~ IF report.category == 'Small items collection' ~%]
-[%~ " Small items collection service - reference " _ report.id %]
-[%~ ELSE ~%]
-[%~ " Bulky waste collection service - reference ";
-  IF cobrand.moniker == 'kingston'; "RBK-";
-  ELSIF cobrand.moniker == 'sutton'; "LBS-";
-  END;
-%][% report.id %]
-[%~ END %]
+Subject: [%
+IF report.category == 'Small items collection';
+    " Small items collection service - reference " _ report.id;
+ELSIF cobrand.moniker == 'kingston';
+    "Your bulky waste collection - reference RBK-" _ report.id;
+ELSIF cobrand.moniker == 'sutton';
+    "Your bulky waste collection - reference LBS-" _ report.id;
+ELSE;
+    "Bulky waste collection service - reference " _ report.id;
+END %]
 
 [%
 USE pounds = format('%.2f');
@@ -21,8 +22,10 @@ Dear [% report.name %],
 
 [% report.detail %]
 
+[% IF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' ~%]
 Date booking made: [% report_date %]
 
+[% END ~%]
 Collection date: [% collection_date %]
 
 Items to be collected:
@@ -51,9 +54,7 @@ Please check the bulky waste collection page on the council’s website for info
     https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
 
 [% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
-Items must be accessible and clearly visible from the front of your house, placed as close to the pavement as possible (but not on it). Our collections crews will not enter your home or retrieve items from your back garden.
-If you live in a block of flats, you can place your items (on the morning of collection) in your communal bin store area. If the bin store has an access code you should have supplied that during the booking as we won't be able to collect otherwise.
-Items must be out for collection by [% cobrand.bulky_nice_collection_time %] on the collection day.
+[% INCLUDE 'waste/_bulky_extra_text.txt' %]
 
 [% END %]
 

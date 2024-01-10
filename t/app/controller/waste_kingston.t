@@ -722,7 +722,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
-        like $body, qr/reference number is RBK-$report_id/, 'email has ID in it';
+        like $body, qr/Reference: RBK-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
@@ -1485,7 +1485,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
-        like $body, qr/reference number is RBK-$report_id/, 'email has ID in it';
+        like $body, qr/Reference: RBK-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";

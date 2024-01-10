@@ -442,11 +442,10 @@ FixMyStreet::override_config {
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             my $today = $report->confirmed->strftime('%A %d %B %Y');
             my $id = $report->id;
-            is $catch_email->header('Subject'), "Bulky waste collection service - reference RBK-$id";
+            is $catch_email->header('Subject'), "Your bulky waste collection - reference RBK-$id";
             my $confirmation_email_txt = $mech->get_text_body_from_email($catch_email);
             my $confirmation_email_html = $mech->get_html_body_from_email($catch_email);
-            like $confirmation_email_txt, qr/Date booking made: $today/, 'Includes booking date';
-            like $confirmation_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
+            like $confirmation_email_txt, qr/Reference: RBK-$id/, 'Includes reference number';
             like $confirmation_email_txt, qr/Items to be collected:/, 'Includes header for items';
             like $confirmation_email_txt, qr/- BBQ/, 'Includes item 1';
             like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
@@ -456,9 +455,8 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date';
             like $confirmation_email_txt, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
-            like $confirmation_email_txt, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection';
-            like $confirmation_email_html, qr/Date booking made: $today/, 'Includes booking date (html mail)';
-            like $confirmation_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
+            like $confirmation_email_txt, qr/Make sure your items are out by 6:30am on collection day/, 'Includes information about collection';
+            like $confirmation_email_html, qr#Reference: <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
             like $confirmation_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
             like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
@@ -468,7 +466,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
             like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
-            like $confirmation_email_html, qr/Items must be out for collection by 6:30am on the collection day/, 'Includes information about collection (html mail)';
+            like $confirmation_email_html, qr/Make sure your items are out by 6:30am on collection day/, 'Includes information about collection (html mail)';
         };
 
         subtest 'Confirmation page' => sub {
@@ -566,21 +564,12 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $reminder_email_txt = $mech->get_text_body_from_email($email);
         my $reminder_email_html = $mech->get_html_body_from_email($email);
-        like $reminder_email_txt, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting';
-        like $reminder_email_txt, qr/The request's reference number is RBK-$id/, 'Includes reference number';
         like $reminder_email_txt, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address';
-        like $reminder_email_txt, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date';
-        like $reminder_email_txt, qr/- BBQ/, 'Includes item 1';
-        like $reminder_email_txt, qr/- Bicycle/, 'Includes item 2';
-        like $reminder_email_txt, qr/- Bath/, 'Includes item 3';
+        like $reminder_email_txt, qr/on Saturday 08 July 2023/, 'Includes collection date';
         like $reminder_email_txt, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
         like $reminder_email_html, qr/Thank you for booking a bulky waste collection with Kingston upon Thames Council/, 'Includes Kingston greeting (html mail)';
-        like $reminder_email_html, qr#The request's reference number is <strong>RBK-$id</strong>#, 'Includes reference number (html mail)';
         like $reminder_email_html, qr/Address: 2 Example Street, Kingston, KT1 1AA/, 'Includes collection address (html mail)';
-        like $reminder_email_html, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date (html mail)';
-        like $reminder_email_html, qr/BBQ/, 'Includes item 1 (html mail)';
-        like $reminder_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
-        like $reminder_email_html, qr/Bath/, 'Includes item 3 (html mail)';
+        like $reminder_email_html, qr/on Saturday 08 July 2023/, 'Includes collection date (html mail)';
         like $reminder_email_html, qr#http://kingston.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
         $mech->clear_emails_ok;
     };
@@ -889,7 +878,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->submit_form_ok({ with_fields => { payenet_code => '54321' } });
         my $email = $mech->get_email;
-        is $email->header('Subject') =~ /Bulky waste collection service - reference LBS/, 1, "Confirmation booking email sent after staff payment process";
+        like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
     }
 };
 

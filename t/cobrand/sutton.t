@@ -373,7 +373,7 @@ EOF
         FixMyStreet::Script::Alerts::send_updates();
         my $body = $mech->get_text_body_from_email;
         my $id = $report->id;
-        like $body, qr/reference number is LBS-$id/;
+        like $body, qr/Reference: LBS-$id/;
         like $body, qr/Armchair/;
         like $body, qr/26 September/;
         like $body, qr/Your collection has now been completed/;

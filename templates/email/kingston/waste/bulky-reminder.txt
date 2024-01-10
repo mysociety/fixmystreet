@@ -1,0 +1,34 @@
+Subject: Your bulky waste collection is [%
+IF cobrand.moniker == 'kingston'; SET ref_prefix = 'RBK-';
+ELSE; SET ref_prefix = 'LBS-';
+END;
+IF days == 3; "in 3 days";
+ELSIF days == 1; "tomorrow";
+END;
+%] - [% ref_prefix %][% report.id %]
+
+[% PROCESS 'waste/_bulky_data.html';
+
+property_id_uri = report.get_extra_field_value('property_id') | uri;
+cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
+
+~%]
+
+Dear [% report.name %],
+
+[% IF days == 3 %]
+Your bulky waste is due to be collected in 3 days on [% collection_date %].
+[% ELSIF days == 1 %]
+Your bulky waste is due to be collected tomorrow on [% collection_date %].
+[% END %]
+
+[% report.detail %]
+
+[% INCLUDE 'waste/_bulky_extra_text.txt' %]
+
+[% signature %]
+
+Cancel this booking: [% cancel_url %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

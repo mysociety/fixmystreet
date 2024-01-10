@@ -1,11 +1,7 @@
 Subject: [%~ IF report.category == 'Small items collection' ~%]
 [%~ " Small items collection reminder - reference " _ report.id %]
 [%~ ELSE ~%]
-[%~ " Bulky waste collection reminder - reference ";
-  IF cobrand.moniker == 'kingston'; "RBK-";
-  ELSIF cobrand.moniker == 'sutton'; "LBS-";
-  END;
-%][% report.id %]
+[%~ " Bulky waste collection reminder - reference " _ report.id %]
 [%~ END %]
 
 [%
@@ -50,9 +46,7 @@ If you wish to cancel your booking, please visit:
 [% IF days == 1 && cobrand.moniker == 'brent' %]
 You may still be able to cancel your booking.
 [% ELSIF days == 1 %]
-[% IF cobrand.moniker != 'kingston' && cobrand.moniker != 'sutton' %]
 You can still cancel your booking, but a refund is no longer available.
-[% END %]
 [% ELSE %]
     [% IF cobrand.moniker == 'peterborough' %]
         You can obtain a refund if you cancel by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.

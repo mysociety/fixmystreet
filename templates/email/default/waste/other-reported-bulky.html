@@ -8,6 +8,8 @@ email_columns = 2;
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
+property_id_uri = report.get_extra_field_value('property_id') | uri;
+cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
@@ -19,9 +21,11 @@ INCLUDE '_email_top.html';
 
     [% INCLUDE '_council_reference.html' problem=report %]
 
+  [% IF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' %]
     <p style="[% p_style %]">
           Date booking made: [% report_date %]
     </p>
+  [% END %]
 
   <p style="[% p_style %]">
     Collection date: [% collection_date %]
@@ -41,8 +45,8 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">
     [%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
       If you wish to cancel your booking, please call 01733 74 74 74.
-    [% ELSE %]
-      If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]">this link</a>.
+    [% ELSIF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' %]
+      If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.
     [% END %]
   </p>
 
@@ -53,20 +57,26 @@ INCLUDE '_email_top.html';
     This includes when and where to put your items out for collection, cancelling the service and obtaining a refund.
   </p>
 [% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
-  <p style="[% p_style %]">
-    Items must be accessible and clearly visible from the front of your house, placed as close to the pavement as possible (but not on it). Our collections crews will not enter your home or retrieve items from your back garden.
-    If you live in a block of flats, you can place your items (on the morning of collection) in your communal bin store area. If the bin store has an access code you should have supplied that during the booking as we won't be able to collect otherwise.
-    Items must be out for collection by [% cobrand.bulky_nice_collection_time %] on the collection day.
-  </p>
+  [% INCLUDE 'waste/_bulky_extra_text.html' %]
 [% END %]
 
-[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+[% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+  <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
+[% ELSIF cobrand.feature('waste_features').bulky_tandc_link %]
   <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
 [% END %]
 
   <p style="[% p_style %]">
-    Kind regards,<br>Waste Services Team
+    Kind regards,
+    <br>
+    [% IF cobrand.moniker == 'sutton' %]Neighbourhood Services[% ELSE %]Waste Services Team[% END %]
   </p>
+
+[% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+  <p style="[% p_style %]">
+    <a href="[% cancel_url %]">Cancel this booking</a>.
+  </p>
+[% END %]
 
   [% end_padded_box | safe %]
 </th>
