@@ -212,6 +212,11 @@ body.mappage {
         a.report-a-problem-btn {
             padding: $button-padding-top $button-padding-left;
          }
+
+        span {
+            border-bottom: 1px solid $white;
+            color: $white;
+        }
     }
 
    #main-nav {
