@@ -152,6 +152,10 @@ h1 {
     font-family: $heading-font;
 }
 
+.form-control {
+    box-shadow: none;
+}
+
 .cuk-social-media-icons {
     display: flex;
     flex-direction: row;
