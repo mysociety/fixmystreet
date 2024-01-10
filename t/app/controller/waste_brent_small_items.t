@@ -494,12 +494,12 @@ FixMyStreet::override_config {
         $echo->mock( 'GetEventsForObject', sub { [ {
             EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
-            ResolutionCodeId => 379,
+            ResolutionCodeId => 1146,
             EventStateId => 18491,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A missed collection cannot be reported', 'Not completed');
-        $mech->content_contains('could not be completed');
+        $mech->content_contains('H&amp;S - Vermin');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
