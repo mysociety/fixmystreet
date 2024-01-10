@@ -392,16 +392,21 @@ body:not(.admin) {
     }
 }
 
-#front_stats {
-    background-color: transparent;
-    border-top: 0.25em solid $yellow;
+.front-stats-wrapper {
+    text-align: center;
+    padding: 1rem;
 
-    big {
-        font-family: $heading-font;
-    }
-
-    div {
-        font-size: 1rem;
+    #front_stats {
+        background-color: transparent;
+        border-top: 0.25em solid $yellow;
+    
+        big {
+            font-family: $heading-font;
+        }
+    
+        div {
+            font-size: 1rem;
+        }
     }
 }
 
