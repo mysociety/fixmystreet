@@ -183,14 +183,14 @@ body.mappage {
         display: block;
     }
 
-    @media screen and (max-width: 1360px) {
-        .nav-menu__item--news,
-        .nav-menu__item--press,
-        .nav-menu__item--privacy,
-        a.report-a-problem-btn {
-            display: none !important;
-        }
+
+    .nav-menu__item--news,
+    .nav-menu__item--press,
+    .nav-menu__item--privacy,
+    a.report-a-problem-btn {
+        display: none !important;
     }
+
 
     .nav-menu--main {
          li {
