@@ -39,7 +39,7 @@ $site-logo-height: 76px;
     height: $site-logo-height;
     padding: 1em 0;
     background: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png') 0 50% no-repeat;
-    background-size: contain;
+    background-size: auto 36px;
 }
 
 #nav-link {
@@ -47,7 +47,10 @@ $site-logo-height: 76px;
 }
 
 #report-cta {
-    right: 5rem;
+    right: 4rem;
+    height: 36px;
+    box-sizing: border-box;
+    line-height: 23px;
 }
 
 .nav-menu--main {
@@ -78,11 +81,18 @@ $site-logo-height: 76px;
             display: inline-block;
         }
     }
+
+    a.report-a-problem-btn {
+        margin-bottom: 1rem;
+    }
 }
 
 #nav-link {
     background-color: $primary;
     border-radius: 50%;
+    padding-top: 36px;
+    width: 36px;
+    background-size: 18px;
 }
 
 //  BUTTONS
@@ -100,7 +110,7 @@ a#geolocate_link,
     @include border-radius($button-border-radius);
     text-transform: uppercase;
     font-weight: 400;
-    line-height: 100%;
+    // line-height: 100%;
     outline: none;
     text-decoration: none;
     -webkit-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
@@ -405,7 +415,7 @@ body.mappage {
         height: 60px;
         background-image: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png');
         box-sizing: border-box;
-        background-size: contain;
+        background-size: auto 36px;
     }
 
     #site-logo-sos {
