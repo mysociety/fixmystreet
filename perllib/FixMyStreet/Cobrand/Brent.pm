@@ -1509,7 +1509,7 @@ sub waste_munge_request_form_data {
 
 =item * Cheque payments are not an option
 
-=item * Renewals can happen within 28 days
+=item * Renewals can happen within 90 days so they are available from beginning of Jan
 
 =cut
 
@@ -1524,7 +1524,7 @@ sub garden_service_name { 'Garden waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
-sub garden_due_days { 28 }
+sub garden_due_days { 90 }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;
