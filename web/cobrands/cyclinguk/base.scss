@@ -22,16 +22,6 @@ body {
     }
 }
 
-label[for$="form_CyclingUK_injury_suffered"] {
-    span {
-        display: block;
-        font-weight: normal;
-        font-size: 0.9em;
-        padding-left: 1em;
-        line-height: 1em;
-    }
-}
-
 // NAVBAR
 $site-logo-height: 76px;
 #site-logo {
@@ -152,8 +142,40 @@ h1 {
     font-family: $heading-font;
 }
 
-.form-control {
+.form-control,
+select.form-control {
     box-shadow: none;
+}
+
+body:not(.admin) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select.form-control,
+    .postcode-form-box div input#pc {
+        border: 1px solid $gray-borders;
+        border-radius: $button-border-radius;
+        padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
+        &:focus,
+        &:active {
+            outline: none;
+            border-color: $yellow;
+        }
+    }
+
+    textarea {
+        border-radius: 5px;
+    }
+}
+
+label[for$="form_CyclingUK_injury_suffered"] {
+    span {
+        display: block;
+        font-weight: normal;
+        font-size: 0.9em;
+        line-height: 120%;
+    }
 }
 
 .cuk-social-media-icons {
@@ -372,22 +394,6 @@ body.frontpage {
         input#pc {
             margin-right: 0.5rem;
             background-color: $white;
-        }
-    }
-} 
-
-body:not(.admin) {
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    .postcode-form-box div input#pc {
-        border: 1px solid $gray-borders;
-        border-radius: $button-border-radius;
-        padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
-        &:focus,
-        &:active {
-            outline: none;
-            border-color: $yellow;
         }
     }
 }
