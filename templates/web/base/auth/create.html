@@ -9,6 +9,7 @@ END;
 
 INCLUDE 'header.html', bodyclass='authpage' %]
 
+[% TRY %][% INCLUDE 'auth/_create_title.html' %][% CATCH file %]
 <h1>
     [% title %]
   [% IF NOT expired_password %]
@@ -17,6 +18,7 @@ INCLUDE 'header.html', bodyclass='authpage' %]
     </small>
   [% END %]
 </h1>
+[% END %]
 
 [% IF forgotten %]
 <p>

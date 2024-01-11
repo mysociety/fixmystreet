@@ -15,7 +15,9 @@
         <div id="skipped-map">
 [% END %]
 
+[% TRY %][% INCLUDE 'my/_title.html' %][% CATCH file %]
 <h1>[% loc('Your account') %]</h1>
+[% END %]
 
 [% IF flash_message %]
 <p class="form-success">[% flash_message %]</p>
