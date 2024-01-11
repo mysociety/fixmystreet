@@ -17,6 +17,7 @@ Please contact the Customer Service Centre to try again.
 
 [% IF waste_features.bulky_retry_bookings %]
 Provide the reference number [% report.id %] so you do not have to provide details of your collection again.
+Please note this reference number is only valid for 72 hours and you may need to select a different collection day depending on demand.
 [% END %]
 [% ELSE ~%]
 There was a problem collecting payment for your [% report.title %]. Please

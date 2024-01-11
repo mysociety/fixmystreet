@@ -23,7 +23,10 @@ INCLUDE '_email_top.html';
     <p style="[% p_style %]">Please contact the Customer Service Centre to try again.</p>
     [% END %]
    [% IF waste_features.bulky_retry_bookings %]
-    <p style="[% p_style %]">Provide the reference number <strong>[% report.id %]</strong> so you do not have to provide details of your collection again.</p>
+    <p style="[% p_style %]">
+        Provide the reference number <strong>[% report.id %]</strong> so you do not have to provide details of your collection again.
+        Please note this reference number is only valid for 72 hours and you may need to select a different collection day depending on demand.
+    </p>
    [% END %]
   [% ELSE %]
     <p style="[% p_style %]">There was a problem taking payment for your [% report.title %]</p>
