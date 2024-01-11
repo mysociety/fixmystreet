@@ -1,11 +1,13 @@
 [% INCLUDE 'header.html', bodyclass='authpage', title = loc('Sign in or create an account') %]
 
+[% TRY %][% INCLUDE 'auth/_general_title.html' %][% CATCH file %]
 <h1>
     [% loc('Sign in') %]
     <small>
         [% tprintf(loc('or <a href="%s">create an account</a>'), '/auth/create') %]
     </small>
 </h1>
+[% END %]
 
 [% TRY %][% INCLUDE 'auth/_general_top.html' %][% CATCH file %][% END %]
 
