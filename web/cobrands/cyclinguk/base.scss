@@ -377,12 +377,21 @@ body.frontpage {
     #report-cta {
         display: none;
     }
+
+    .content {
+        max-width: 450px;
+        margin: 0 auto;
+    }
 }
 
 #front-main {
     #front-main-container {
         text-align: center;
         box-sizing: border-box; // Align with the logo borders
+        
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 0; // So it aligns with the .content below
     }
 }
 

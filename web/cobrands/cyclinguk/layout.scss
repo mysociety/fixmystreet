@@ -123,8 +123,11 @@ h1 {
     }
 }
 
-.frontpage .content {
-    padding: 2rem;
+body.frontpage {
+    .content {
+        padding: 2rem;
+        max-width: 100%;
+    }
 }
 
 .front-howto-wrapper {
