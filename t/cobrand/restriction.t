@@ -56,4 +56,197 @@ is($cobrand->updates->count, 1, 'One update in the right cobrand');
 my $nearby = $c->model('DB::Nearby')->nearby($c, distance => 5, ids => [], limit => 10, latitude => 0.003, longitude => 0.004);
 is(@$nearby, 1, 'One report close to the origin point');
 
+subtest 'testing report_age' => sub {
+    # Delete all previous reports
+    my @reports = FixMyStreet::DB->resultset('Problem')->all;
+    for my $r (@reports) {
+        $r->comments->delete;
+        $r->questionnaires->delete;
+        $r->delete;
+    }
+
+    my $around_map_body = FixMyStreet::DB->resultset('Body')
+        ->create( { name => 'Around Map Council' } );
+
+    # Set some problems
+    my @problem_params = (
+        {   title => 'open_less_month',
+            state => 'confirmed',
+            dt    => DateTime->now->subtract( days => 14 ),
+        },
+        {   title => 'open_more_month',
+            state => 'confirmed',
+            dt    => DateTime->now->subtract( months => 2 ),
+        },
+
+        {   title => 'closed_less_week',
+            state => 'not responsible',
+            dt    => DateTime->now->subtract( days => 6 ),
+        },
+        {   title => 'closed_more_week',
+            state => 'not responsible',
+            dt    => DateTime->now->subtract( weeks => 2 ),
+        },
+
+        {   title => 'fixed_less_day',
+            state => 'fixed - council',
+            dt    => DateTime->now->subtract( hours => 23 ),
+        },
+        {   title => 'fixed_more_day',
+            state => 'fixed - council',
+            dt    => DateTime->now->subtract( days => 2 ),
+        },
+
+        {   title      => 'open_less_month_non_public',
+            state      => 'confirmed',
+            non_public => 1,
+            dt         => DateTime->now->subtract( days => 14 ),
+        },
+        {   title      => 'open_more_month_non_public',
+            state      => 'confirmed',
+            non_public => 1,
+            dt         => DateTime->now->subtract( months => 2 ),
+        },
+    );
+    for (@problem_params) {
+        $mech->create_problems_for_body( 1, $around_map_body->id, $_->{title},
+            { %$_, cobrand => 'tester', latitude => 0, longitude => 0 },
+        );
+    }
+
+    # Defaults
+    my %search_params = (
+        distance  => 5,
+        latitude  => 0.003,
+        longitude => 0.004,
+    );
+    $c->stash->{report_age_field} = 'confirmed';
+
+    subtest 'scalar report_age' => sub {
+        my $got = $c->model('DB::Nearby')->nearby(
+            $c,
+            %search_params,
+            report_age => '1 weeks',
+        );
+
+        my @got_titles = sort map { $_->problem->title } @$got;
+        my @expected_titles = sort qw/
+            closed_less_week
+            fixed_less_day
+            fixed_more_day
+            /;
+        is_deeply \@got_titles, \@expected_titles;
+    };
+
+    subtest 'hashref report_age' => sub {
+        my $got = $c->model('DB::Nearby')->nearby(
+            $c,
+            %search_params,
+            report_age => {
+                open   => '1 months',
+                closed => '1 weeks',
+                fixed  => '1 days',
+            },
+        );
+
+        my @got_titles = sort map { $_->problem->title } @$got;
+        my @expected_titles = sort qw/
+            open_less_month
+            closed_less_week
+            fixed_less_day
+            /;
+        is_deeply \@got_titles, \@expected_titles;
+    };
+
+    subtest 'hashref report_age interacting with non_public_if_possible' => sub {
+        # Set a report_inspect user on $c
+        my $report_inspect_user = $mech->log_in_ok( 'report_inspect@example.com' );
+        $report_inspect_user->update({ from_body => $around_map_body });
+        $report_inspect_user->user_body_permissions->find_or_create({
+            body => $around_map_body,
+            permission_type => 'report_inspect',
+        });
+        $c->user($report_inspect_user);
+
+        subtest 'only_non_public = 1' => sub {
+            $c->stash->{only_non_public} = 1;
+
+            subtest 'without report_age' => sub {
+                my $got = $c->model('DB::Nearby')->nearby(
+                    $c,
+                    %search_params,
+                );
+
+                my @got_titles = sort map { $_->problem->title } @$got;
+                my @expected_titles = sort qw/
+                    open_less_month_non_public
+                    open_more_month_non_public
+                    /;
+                is_deeply \@got_titles, \@expected_titles;
+            };
+
+            subtest 'with report_age' => sub {
+                my $got = $c->model('DB::Nearby')->nearby(
+                    $c,
+                    %search_params,
+                    report_age => {
+                        open => '1 months',
+                    },
+                );
+
+                my @got_titles = sort map { $_->problem->title } @$got;
+                my @expected_titles = sort qw/
+                    open_less_month_non_public
+                    /;
+                is_deeply \@got_titles, \@expected_titles;
+            };
+        };
+
+        subtest 'only_non_public = 0' => sub {
+            $c->stash->{only_non_public} = 0;
+
+            subtest 'without report_age' => sub {
+                my $got = $c->model('DB::Nearby')->nearby(
+                    $c,
+                    %search_params,
+                );
+
+                my @got_titles = sort map { $_->problem->title } @$got;
+                my @expected_titles = sort qw/
+                    open_less_month_non_public
+                    open_more_month_non_public
+                    open_less_month
+                    open_more_month
+                    closed_less_week
+                    closed_more_week
+                    fixed_less_day
+                    fixed_more_day
+                    /;
+                is_deeply \@got_titles, \@expected_titles;
+            };
+
+            subtest 'with report_age' => sub {
+                my $got = $c->model('DB::Nearby')->nearby(
+                    $c,
+                    %search_params,
+                    report_age => {
+                        open => '1 months',
+                    },
+                );
+
+                my @got_titles = sort map { $_->problem->title } @$got;
+                my @expected_titles = sort qw/
+                    open_less_month_non_public
+                    open_less_month
+                    closed_less_week
+                    closed_more_week
+                    fixed_less_day
+                    fixed_more_day
+                    /;
+                is_deeply \@got_titles, \@expected_titles;
+            };
+        };
+    };
+};
+
 done_testing();

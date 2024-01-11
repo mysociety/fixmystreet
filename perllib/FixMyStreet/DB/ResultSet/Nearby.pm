@@ -23,8 +23,17 @@ sub nearby {
         if $args{ids};
     $params->{'problem.category'} = $args{categories} if $args{categories} && @{$args{categories}};
 
-    $params->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$args{report_age}'::interval" }
-        if $args{report_age};
+    my $report_age = $args{report_age};
+    if ( $report_age && ref $report_age eq 'HASH' ) {
+        push @{ $params->{-and} }, FixMyStreet::DB::ResultSet::Problem->report_age_subquery(
+            state_table      => 'problem',
+            report_age       => $report_age,
+            report_age_field => $c->stash->{report_age_field},
+        );
+    } elsif ($report_age) {
+        $params->{ $c->stash->{report_age_field} }
+            = { '>=', \"current_timestamp-'$report_age'::interval" };
+    }
 
     FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c, 'problem');
 
