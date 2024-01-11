@@ -34,6 +34,13 @@ sub abuse_reports_only { 1 }
 
 sub cut_off_date { '2023-05-03' }
 
+sub report_age {
+    return {
+        closed => '14 days',
+        fixed  => '14 days',
+    };
+}
+
 sub reopening_disallowed {
     my ($self, $problem) = @_;
 

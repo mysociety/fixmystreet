@@ -463,17 +463,10 @@ sub lookup_by_ref : Private {
 
     my $params = {};
     my $rs = $c->cobrand->problems;
+
     $rs->non_public_if_possible($params, $c);
-    if ($params->{"-or"}) {
-        $params = {
-            -and => [
-                -or => $criteria,
-                -or => $params->{"-or"},
-            ]
-        };
-    } else {
-        $params->{"-or"} = $criteria;
-    }
+    push @{ $params->{-and} }, { -or => $criteria };
+
     my $problems = $rs->search($params);
 
     my $count = try {

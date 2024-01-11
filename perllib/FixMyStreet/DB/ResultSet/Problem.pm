@@ -43,15 +43,19 @@ sub non_public_if_possible {
         } elsif ($c->user->has_body_permission_to('report_inspect') ||
                  $c->user->has_body_permission_to('report_mark_private')) {
             if ($only_non_public) {
-                $params->{'-and'} = [
-                    "$table.non_public" => 1,
-                    $rs->body_query($c->user->from_body->id),
-                ];
+                push @{ $params->{-and} }, {
+                    -and => [
+                        "$table.non_public" => 1,
+                        $rs->body_query($c->user->from_body->id),
+                    ]
+                };
             } else {
-                $params->{'-or'} = [
-                    "$table.non_public" => 0,
-                    $rs->body_query($c->user->from_body->id),
-                ];
+                push @{ $params->{-and} }, {
+                    -or => [
+                        "$table.non_public" => 0,
+                        $rs->body_query( $c->user->from_body->id ),
+                    ]
+                };
             }
         } else {
             $params->{"$table.non_public"} = 0;
@@ -233,8 +237,18 @@ sub around_map {
             longitude => { '>=', $p{min_lon}, '<', $p{max_lon} },
     };
 
-    $q->{$c->stash->{report_age_field}} = { '>=', \"current_timestamp-'$p{report_age}'::interval" } if
-        $p{report_age};
+    my $report_age = $p{report_age};
+    if ( $report_age && ref $report_age eq 'HASH' ) {
+        push @{ $q->{-and} }, __PACKAGE__->report_age_subquery(
+            state_table      => 'me',
+            report_age       => $report_age,
+            report_age_field => $c->stash->{report_age_field},
+        );
+    } elsif ($report_age) {
+        $q->{ $c->stash->{report_age_field} }
+            = { '>=', \"current_timestamp-'$report_age'::interval" };
+    }
+
     $q->{'me.category'} = $p{categories} if $p{categories} && @{$p{categories}};
 
     $rs->non_public_if_possible($q, $c);
@@ -246,6 +260,29 @@ sub around_map {
         $rs->search( $q, $attr )->include_comment_counts->page($p{page});
     };
     return $problems;
+}
+
+sub report_age_subquery {
+    my ( $self, %args ) = @_;
+
+    my @possible_states = (qw/open closed fixed/);
+    my $default_time = FixMyStreet::Cobrand::Default->report_age;
+    my $sub_q = [];
+
+    for my $state ( @possible_states ) {
+        my $time = $args{report_age}{$state} // $default_time;
+
+        # Call relevant function to get substates
+        my $call = "${state}_states";
+        my @substates = FixMyStreet::DB::Result::Problem->$call;
+
+        push @$sub_q, {
+            "$args{state_table}.state" => { '-in' => \@substates },
+            $args{report_age_field}    => { '>=' => \"current_timestamp-'$time'::interval" },
+        };
+    }
+
+    return { -or => $sub_q };
 }
 
 # Admin functions
