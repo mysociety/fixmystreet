@@ -17,15 +17,24 @@ package Integrations::Roles::ParallelAPI;
 use Moo::Role;
 use JSON::MaybeXS;
 use Parallel::ForkManager;
+use Path::Tiny;
 use Storable qw(retrieve_fd retrieve);
 use Time::HiRes;
-use Digest::MD5 qw(md5_hex);
 use Try::Tiny;
 use Fcntl qw(:flock);
 
+=head2 api_cache_for
+
+Set to the amount of time a cached file on disc will
+be used to serve a matching API request.
+
+=cut
+
+has api_cache_for => ( is => 'ro', default => 3600 );
+
 =head2 call_api
 
-  call_api($c, "bromley", "look_up_property:123", 0,
+  call_api($c, "bromley", 123, "look_up_property", 0,
     GetPointAddress => [ 123 ],
     GetServiceUnitsForObject => [ 123 ],
   )
@@ -43,17 +52,17 @@ have a please loading message and auto-reload).
 
 sub call_api {
     # Shifting because the remainder of @_ is passed along further down
-    my ($self, $c, $cobrand, $key, $background) = (shift, shift, shift, shift, shift);
+    my ($self, $c, $cobrand, $property_id, $key, $background) = (shift, shift, shift, shift, shift, shift);
 
     my $type = $self->backend_type;
-    $key = "$cobrand:$type:$key";
-    return $c->session->{$key} if !FixMyStreet->test_mode && $c->session->{$key};
-
     my $calls = encode_json(\@_);
 
-    my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
-    mkdir($outdir) unless -d $outdir;
-    my $tmp = $outdir . "/" . md5_hex("$key $calls");
+    my $outdir = path(FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR'));
+    foreach ($cobrand, $property_id) {
+        $outdir = $outdir->child($_);
+    }
+
+    my $tmp = $outdir->mkdir->child($key);
 
     my @cmd = (
         FixMyStreet->path_to('bin/fixmystreet.com/call-wasteworks-backend'),
@@ -73,7 +82,7 @@ sub call_api {
     if (FixMyStreet->test_mode || $self->sample_data) {
         $start_call = 0;
         $data = $self->_parallel_api_calls(@_);
-    } elsif (-e $tmp) {
+    } elsif (-e $tmp && time-(stat($tmp))[9] < $self->api_cache_for) {
         $start_call = 0;
         # if output file is already there, we can only open it if it's finished with
         try {
@@ -86,12 +95,11 @@ sub call_api {
             } finally {
                 flock($fd, LOCK_UN);
                 close($fd);
-                unlink $tmp; # don't want to inadvertently cache forever
             };
         };
     }
 
-    # Either the temp file wasn't there, or it had bad data
+    # Either the temp file wasn't there, or it was old or had bad data
     if ($start_call) {
         if ($background) {
             # wrap the $calls value in single quotes
@@ -104,14 +112,12 @@ sub call_api {
             # uncoverable statement
             system(@cmd);
             $data = retrieve($tmp);
-            unlink $tmp; # don't want to inadvertently cache forever
         }
     }
 
     if ($data) {
-        $c->session->{$key} = $data;
         my $time = Time::HiRes::time() - $start;
-        $c->log->info("[$cobrand] call_api $key took $time seconds");
+        $c->log->info("[$cobrand] call_api $property_id $key took $time seconds");
     } elsif ($background) {
         # Bail out here to show loading page
         $c->stash->{template} = 'waste/async_loading.html';

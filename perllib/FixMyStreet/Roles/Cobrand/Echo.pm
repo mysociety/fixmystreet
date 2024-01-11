@@ -4,6 +4,7 @@ use v5.14;
 use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
+use File::Path;
 use List::Util qw(min);
 use Moo::Role;
 use POSIX qw(floor);
@@ -57,7 +58,7 @@ sub look_up_property {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, $self->moniker,
-        "look_up_property:$id",
+        $id, "look_up_property",
         1,
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
@@ -144,7 +145,7 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, $self->moniker, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+    my $calls = $echo->call_api($self->{c}, $self->moniker, $property->{id}, 'bin_services_for_address', 1, @to_fetch);
 
     if ($self->can('bulky_enabled')) {
         $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
@@ -927,9 +928,11 @@ sub clear_cached_lookups_property {
     # Need to call this before clearing GUID
     $self->clear_cached_lookups_bulky_slots( $id, $skip_echo );
 
+    my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
+    $outdir .= "/" . $self->moniker . "/$id";
+    File::Path::remove_tree($outdir, { safe => 1, error => \my $error });
+
     foreach my $key (
-        $self->council_url . ":echo:look_up_property:$id",
-        $self->council_url . ":echo:bin_services_for_address:$id",
         $self->council_url . ":echo:bulky_event_guid:$id",
     ) {
         delete $self->{c}->session->{$key};

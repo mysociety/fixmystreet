@@ -19,6 +19,7 @@ use utf8;
 use strict;
 use warnings;
 use DateTime;
+use File::Path;
 use Integrations::Bartec;
 use List::Util qw(any);
 use Path::Tiny;
@@ -546,9 +547,9 @@ sub clear_cached_lookups_property {
     # might be prefixed with postcode if it's come straight from the URL
     $uprn =~ s/^.+\://g;
 
-    foreach ( qw/look_up_property bin_services_for_address/ ) {
-        delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
-    }
+    my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
+    $outdir .= "/" . $self->moniker . "/$uprn";
+    File::Path::remove_tree($outdir, { safe => 1, error => \my $error });
 
     $self->clear_cached_lookups_bulky_slots($uprn);
 }
@@ -703,7 +704,7 @@ sub bin_services_for_address {
     # of going to the /bulky page.
     my $async = $self->{c}->action eq 'waste/bin_days' && $self->{c}->req->method eq 'GET';
 
-    my $results = $bartec->call_api($self->{c}, 'peterborough', 'bin_services_for_address:' . $uprn, $async, @calls);
+    my $results = $bartec->call_api($self->{c}, 'peterborough', $uprn, 'bin_services_for_address', $async, @calls);
 
     my $jobs = $results->{"Jobs_Get $uprn"};
     my $schedules = $results->{"Features_Schedules_Get $uprn"};
