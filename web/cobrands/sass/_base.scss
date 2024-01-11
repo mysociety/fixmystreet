@@ -3287,5 +3287,4 @@ $site-message-border: 1px solid #525252 !default;
 @import "_search-help";
 @import "_page-with-sticky-content-bar";
 
-$govuk-focus-colour: $primary !default;
-@import "../../vendor/govuk-frontend/forms";
+@import "govuk-frontend/forms";
