@@ -15,8 +15,9 @@ my $minimum_charge = 500;
 
 my $user = $mech->create_user_ok('bob@example.org');
 
-my $body = $mech->create_body_ok( 2482, 'Bromley Council',
-    {}, { cobrand => 'bromley' } );
+my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
+    endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test',
+    }, { cobrand => 'bromley' } );
 $body->set_extra_metadata(
     wasteworks_config => {
         per_item_costs => 1,
@@ -144,7 +145,8 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
-    $echo->mock('ReserveAvailableSlotsForEvent', sub {
+
+    my $reserve_mock = sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
         is $service, 413;
         is $event_type, 2175;
@@ -166,7 +168,8 @@ FixMyStreet::override_config {
             Expiry => { DateTime => '2023-06-25T10:10:00Z' },
             Reference => 'reserve3==',
         },
-    ] });
+    ] };
+    $echo->mock('ReserveAvailableSlotsForEvent', $reserve_mock);
 
     my $sent_params;
     my $call_params;
@@ -428,7 +431,34 @@ FixMyStreet::override_config {
             $mech->content_lacks('Report a bulky waste collection as missed',
                 "Can't report missing when closed collection but after two working days");
         };
+    };
 
+    subtest 'Bulky goods collection, reservation expired' => sub {
+        $report->discard_changes;
+        $report->update({ whensent => undef });
+        $report->discard_changes;
+        my $sender = FixMyStreet::SendReport::Open311->new(
+            bodies => [ $body ], body_config => { $body->id => $body },
+        );
+        $echo->mock('ReserveAvailableSlotsForEvent', sub {
+            [ {
+                StartDate => { OffsetMinutes => 0, DateTime => '2023-07-01T00:00:00Z' },
+                Expiry => { OffsetMinutes => 0, DateTime => '2023-07-02T00:00:00Z' },
+                Reference => 'NewRes',
+            } ];
+        });
+        Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Selected reservations expired</description></error></errors>', 500);
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+        $report->discard_changes;
+        is $report->get_extra_field_value('reservation'), 'NewRes';
+        $echo->mock('ReserveAvailableSlotsForEvent', $reserve_mock);
+    };
+
+    subtest 'Bulky goods collection, cancelling' => sub {
         # Collection time: 2023-07-01T:07:00:00
         my $full_refund_time = '2023-06-30T05:59:59Z'; # 06:59:59 UK time
         my $partial_refund_time = '2023-07-01T05:59:59Z'; # 06:59:59 UK time

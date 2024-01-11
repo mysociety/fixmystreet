@@ -2,7 +2,7 @@
 @import "../sass/layout";
 
 .big-green-banner {
-    background: $col_click_map inline-image("../fixmystreet/images/chevron-black-#{$right}.svg") $right center no-repeat;
+    background: $col_click_map inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
     background-size: 43px 33px;
 }
 
@@ -123,8 +123,11 @@ h1 {
     }
 }
 
-.frontpage .content {
-    padding: 2rem;
+body.frontpage {
+    .content {
+        padding: 2rem;
+        max-width: 100%;
+    }
 }
 
 .front-howto-wrapper {
@@ -183,14 +186,19 @@ body.mappage {
         display: block;
     }
 
-    @media screen and (max-width: 1360px) {
-        .nav-menu__item--news,
-        .nav-menu__item--press,
-        .nav-menu__item--privacy,
+
+    .nav-menu__item--news,
+    .nav-menu__item--press,
+    .nav-menu__item--privacy {
+        display: none;
+    }
+
+    @media screen and (max-width: 1350px) {
         a.report-a-problem-btn {
             display: none !important;
         }
     }
+
 
     .nav-menu--main {
          li {
@@ -212,6 +220,11 @@ body.mappage {
         a.report-a-problem-btn {
             padding: $button-padding-top $button-padding-left;
          }
+
+        span {
+            border-bottom: 1px solid $white;
+            color: $white;
+        }
     }
 
    #main-nav {

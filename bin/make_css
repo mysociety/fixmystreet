@@ -106,6 +106,7 @@ sub compile {
     my $source_map_file = "$output_file.map";
 
     $sass->options->{source_map_file} = $source_map_file;
+    $sass->options->{include_paths} = [dirname($file), "web/vendor/"];
     my ($css, $stats) = $sass->compile_file($file);
     unless ($css) {
         warn "\033[31m" . $sass->last_error . "\033[0m";;

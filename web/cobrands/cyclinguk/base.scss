@@ -22,16 +22,6 @@ body {
     }
 }
 
-label[for$="form_CyclingUK_injury_suffered"] {
-    span {
-        display: block;
-        font-weight: normal;
-        font-size: 0.9em;
-        padding-left: 1em;
-        line-height: 1em;
-    }
-}
-
 // NAVBAR
 $site-logo-height: 76px;
 #site-logo {
@@ -39,7 +29,7 @@ $site-logo-height: 76px;
     height: $site-logo-height;
     padding: 1em 0;
     background: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png') 0 50% no-repeat;
-    background-size: contain;
+    background-size: auto 36px;
 }
 
 #nav-link {
@@ -47,7 +37,10 @@ $site-logo-height: 76px;
 }
 
 #report-cta {
-    right: 5rem;
+    right: 4rem;
+    height: 36px;
+    box-sizing: border-box;
+    line-height: 23px;
 }
 
 .nav-menu--main {
@@ -78,11 +71,18 @@ $site-logo-height: 76px;
             display: inline-block;
         }
     }
+
+    a.report-a-problem-btn {
+        margin-bottom: 1rem;
+    }
 }
 
 #nav-link {
     background-color: $primary;
     border-radius: 50%;
+    padding-top: 36px;
+    width: 36px;
+    background-size: 18px;
 }
 
 //  BUTTONS
@@ -100,7 +100,7 @@ a#geolocate_link,
     @include border-radius($button-border-radius);
     text-transform: uppercase;
     font-weight: 400;
-    line-height: 100%;
+    // line-height: 100%;
     outline: none;
     text-decoration: none;
     -webkit-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
@@ -109,6 +109,11 @@ a#geolocate_link,
     transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
     padding-left: $button-padding-left;
     padding-right: $button-padding-right;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
+    border: none !important; // Overrides mixin;
+    &:hover, &:focus {
+        box-shadow: none;
+    }
 }
 
 .btn, 
@@ -140,6 +145,42 @@ h1 {
 
 .heading-font-family {
     font-family: $heading-font;
+}
+
+.form-control,
+select.form-control {
+    box-shadow: none;
+}
+
+body:not(.admin) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select.form-control,
+    .postcode-form-box div input#pc {
+        border: 1px solid $gray-borders;
+        border-radius: $button-border-radius;
+        padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
+        &:focus,
+        &:active {
+            outline: none;
+            border-color: $yellow;
+        }
+    }
+
+    textarea {
+        border-radius: 5px;
+    }
+}
+
+label[for$="form_CyclingUK_injury_suffered"] {
+    span {
+        display: block;
+        font-weight: normal;
+        font-size: 0.9em;
+        line-height: 120%;
+    }
 }
 
 .cuk-social-media-icons {
@@ -208,6 +249,7 @@ h1 {
         max-width: 280px;
         margin-bottom: 1rem;
         margin-top: 1.2rem;
+        display: block;
     }
 }
 
@@ -340,12 +382,21 @@ body.frontpage {
     #report-cta {
         display: none;
     }
+
+    .content {
+        max-width: 450px;
+        margin: 0 auto;
+    }
 }
 
 #front-main {
     #front-main-container {
         text-align: center;
         box-sizing: border-box; // Align with the logo borders
+        
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 0; // So it aligns with the .content below
     }
 }
 
@@ -359,34 +410,23 @@ body.frontpage {
             background-color: $white;
         }
     }
-} 
-
-body:not(.admin) {
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    .postcode-form-box div input#pc {
-        border: 1px solid $gray-borders;
-        border-radius: $button-border-radius;
-        padding-left: 1rem; // This prevent the text to be too close the left border due to the border radious.
-        &:focus,
-        &:active {
-            outline: none;
-            border-color: $yellow;
-        }
-    }
 }
 
-#front_stats {
-    background-color: transparent;
-    border-top: 0.25em solid $yellow;
+.front-stats-wrapper {
+    text-align: center;
+    padding: 1rem;
 
-    big {
-        font-family: $heading-font;
-    }
-
-    div {
-        font-size: 1rem;
+    #front_stats {
+        background-color: transparent;
+        border-top: 0.25em solid $yellow;
+    
+        big {
+            font-family: $heading-font;
+        }
+    
+        div {
+            font-size: 1rem;
+        }
     }
 }
 
@@ -405,7 +445,7 @@ body.mappage {
         height: 60px;
         background-image: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png');
         box-sizing: border-box;
-        background-size: contain;
+        background-size: auto 36px;
     }
 
     #site-logo-sos {
@@ -415,6 +455,8 @@ body.mappage {
 
 .big-green-banner {
     color: $black;
+    font-weight: 400;
+    font-family: $body-font;
 }
 
 .item-list--reports__item a {

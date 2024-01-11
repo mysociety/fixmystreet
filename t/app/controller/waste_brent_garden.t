@@ -617,7 +617,7 @@ FixMyStreet::override_config {
     ) {
         subtest 'check modifying Green Garden Waste as staff' => sub {
             $mech->log_in_ok($staff_user->email);
-            set_fixed_time('2021-01-09T17:00:00Z'); # Before renewal is due so we can modify
+            set_fixed_time('2020-12-09T17:00:00Z'); # Before renewal is due so we can modify
             $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Modify your garden waste subscription');

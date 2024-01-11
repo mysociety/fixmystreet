@@ -353,6 +353,8 @@ sub dashboard_export_problems_add_columns {
         join => 'user',
     });
 
+    return if $csv->dbi; # Already covered
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
