@@ -219,7 +219,12 @@ sub email_inactive_users {
 
 sub interval {
     my $interval = shift;
-    my $s = "current_timestamp - '$interval months'::interval";
+    if ($interval =~ /^(\d+)m?$/) {
+        $interval = "$1 months";
+    } elsif ($interval =~ /^(\d+)d$/) {
+        $interval = "$1 days";
+    }
+    my $s = "current_timestamp - '$interval'::interval";
     return \$s;
 }
 
