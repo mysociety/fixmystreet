@@ -555,13 +555,7 @@ FixMyStreet::override_config {
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -604,13 +598,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -644,13 +632,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1182,13 +1164,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1235,13 +1211,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 

@@ -152,6 +152,23 @@ sub log_out_ok {
     $mech->not_logged_in_ok;
 }
 
+=head2 waste_submit_check
+
+Calls submit_form_ok, on a clone of itself, and runs a couple of checks.
+To be used when the submission will cause an external redirect which can
+confuse Test::WWW::Mechanize in terms of what hostname it thinks things are
+then on.
+
+=cut
+
+sub waste_submit_check {
+    my $mech = shift;
+    my $mech2 = $mech->clone;
+    $mech2->submit_form_ok(@_);
+    is $mech2->res->previous->code, 302, 'payments issues a redirect';
+    is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+}
+
 =head2 delete_user
 
     $mech->delete_user( $user );
