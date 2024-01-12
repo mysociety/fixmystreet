@@ -458,6 +458,7 @@ FixMyStreet::override_config {
 
     subtest 'Missed collections' => sub {
         my $report_id = $report->id;
+        $report->update({ external_id => 'a-guid' });
 
         # Fixed date still set to 5th July
         $mech->get_ok('/waste/12345');
@@ -465,6 +466,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-21T00:00:00Z' },
             ResolutionCodeId => 232,
@@ -475,6 +477,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
             ResolutionCodeId => 232,
@@ -494,6 +497,7 @@ FixMyStreet::override_config {
         is $report->title, 'Report missed small items / clinical';
 
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
             ResolutionCodeId => 379,
@@ -506,6 +510,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
             EventStateId => 18490,

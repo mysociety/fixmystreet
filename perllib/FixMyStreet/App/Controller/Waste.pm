@@ -942,9 +942,13 @@ sub construct_bin_report_form {
     # XXX Should we refactor bulky into the general service data (above)?
     # Plus side, gets the report missed stuff built in; minus side it
     # doesn't have any next/last collection stuff which is assumed
-    if ($c->stash->{bulky_missed}{report_allowed} && !$c->stash->{bulky_missed}{report_open}) {
-        my $service_id = $c->stash->{bulky_missed}{service_id};
-        my $service_name = $c->stash->{bulky_missed}{service_name};
+    my $allow_report_bulky = 0;
+    foreach (values %{ $c->stash->{bulky_missed} || {} }) {
+        $allow_report_bulky = $_ if $_->{report_allowed} && !$_->{report_open};
+    }
+    if ($allow_report_bulky) {
+        my $service_id = $allow_report_bulky->{service_id};
+        my $service_name = $allow_report_bulky->{service_name};
         push @$field_list, "service-$service_id" => {
             type => 'Checkbox',
             label => "$service_name collection",

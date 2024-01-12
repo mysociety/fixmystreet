@@ -639,12 +639,15 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collections' => sub {
+        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
+
         # Fixed date still set to 5th July
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a bulky waste collection as missed');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 1636,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
@@ -655,6 +658,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 1636,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
@@ -665,6 +669,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_contains('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 1636,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 379,
@@ -676,6 +681,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
             EventTypeId => 1636,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 100,

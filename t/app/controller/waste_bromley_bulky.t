@@ -414,11 +414,13 @@ FixMyStreet::override_config {
         };
 
         subtest 'Missed collections' => sub {
+            $report->update({ external_id => 'a-guid', state => 'fixed - council' });
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a bulky waste collection as missed',
                 "Can't report missing when no closed collection event");
             # Closed collection event.
             $echo->mock( 'GetEventsForObject', sub { [ {
+                Guid => 'a-guid',
                 EventTypeId => 2175,
                 ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             } ] } );
@@ -430,6 +432,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a bulky waste collection as missed',
                 "Can't report missing when closed collection but after two working days");
+            $report->update({ state => 'confirmed' });
         };
     };
 

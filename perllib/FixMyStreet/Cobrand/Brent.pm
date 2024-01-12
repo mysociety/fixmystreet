@@ -1284,7 +1284,9 @@ around bulky_check_missed_collection => sub {
     my ($orig, $self) = (shift, shift);
     $orig->($self, @_);
     if ($self->{c}->stash->{bulky_missed}) {
-        $self->{c}->stash->{bulky_missed}{service_name} = 'Small items';
+        foreach (values %{$self->{c}->stash->{bulky_missed}}) {
+            $_->{service_name} = 'Small items';
+        }
     }
 };
 

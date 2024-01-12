@@ -46,7 +46,7 @@
   [% END %]
 </dl>
 
-  [% FOR booking IN recent_bulky_collections %]
+  [% FOR booking IN recent_bulky_collections; booking_guid = booking.external_id; %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Collection date</dt>
@@ -64,7 +64,9 @@
     </div>
     <div class="waste-services-launch-panel">
         <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
+        [% PROCESS 'waste/_service_missed.html' unit=bulky_missed.$booking_guid no_default=1 %]
     </div>
+
   [% END %]
 
   [% IF unconfirmed_bulky_collections %]
@@ -137,5 +139,3 @@
     </form>
   [% END %]
 </div>
-
-[% PROCESS 'waste/_service_missed.html' unit=bulky_missed no_default=1 %]
