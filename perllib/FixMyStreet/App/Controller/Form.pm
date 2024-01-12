@@ -10,7 +10,16 @@ sub auto : Private {
     my ( $self, $c ) = @_;
     my $cobrand_check = $c->cobrand->feature( $self->feature );
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
-    $c->session->{form_unique_id} ||= mySociety::AuthToken::random_token();
+    my $form_unique_id = $c->request->cookie('form_unique_id');
+    if ($form_unique_id) {
+        $c->stash->{form_unique_id} = $form_unique_id->value;
+    } else {
+        $c->stash->{form_unique_id} = mySociety::AuthToken::random_token();
+        $c->response->cookies->{form_unique_id} = {
+            value => $c->stash->{form_unique_id},
+            expires => time() + 86400,
+        };
+    }
     return 1;
 }
 
@@ -41,7 +50,7 @@ sub load_form {
         previous_form => $previous_form,
         saved_data_encoded => $c->get_param('saved_data'),
         no_preload => 1,
-        unique_id_session => $c->session->{form_unique_id},
+        unique_id_session => $c->stash->{form_unique_id},
         unique_id_form => $c->get_param('unique_id'),
     );
 

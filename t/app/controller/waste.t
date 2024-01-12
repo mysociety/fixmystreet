@@ -229,8 +229,9 @@ FixMyStreet::override_config {
         $mech->content_contains( '<a href="/waste/12345">See your bin collections</a>' );
         $mech->content_lacks('12 A Street, XX1 1SZ');
 
+        # Setting host is not enough, specify the host in the first URL to prod $mech to update immediately
         $mech->host('www.fixmystreet.com');
-        $res = $mech->get('/report/' . $report->id);
+        $res = $mech->get('http://www.fixmystreet.com/report/' . $report->id);
         is $res->code, 404;
         $mech->log_in_ok($user->email);
         $res = $mech->get('/report/' . $report->id);
@@ -238,10 +239,11 @@ FixMyStreet::override_config {
         $mech->log_in_ok($staff_user->email);
         $res = $mech->get('/report/' . $report->id);
         is $res->code, 404;
-        $mech->host('bromley.fixmystreet.com');
     };
     subtest 'Request a new container' => sub {
-        $mech->get_ok('/waste/12345/request');
+        # Setting host is not enough, specify the host in the first URL to prod $mech to update immediately
+        $mech->host('bromley.fixmystreet.com');
+        $mech->get_ok('http://bromley.fixmystreet.com/waste/12345/request');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->content_contains('Please specify what you need');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
