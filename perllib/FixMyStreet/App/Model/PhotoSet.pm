@@ -306,7 +306,7 @@ sub cache {
     return if FixMyStreet->config('LOGIN_REQUIRED') || !$self->cacheable;
 
     my ($out, $type) = $self->_construct_path($num, $size) or return;
-    path(FixMyStreet->path_to('web', 'photo', 'c'))->mkpath;
+    path(FixMyStreet->path_to('web', 'photo', 'c'))->mkdir;
     $out->spew_raw($photo);
 }
 

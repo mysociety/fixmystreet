@@ -6418,19 +6418,21 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Path-Tiny-0.104
-    pathname: D/DA/DAGOLDEN/Path-Tiny-0.104.tar.gz
+  Path-Tiny-0.144
+    pathname: D/DA/DAGOLDEN/Path-Tiny-0.144.tar.gz
     provides:
-      Path::Tiny 0.104
-      Path::Tiny::Error 0.104
+      Path::Tiny 0.144
+      Path::Tiny::Error 0.144
     requirements:
       Carp 0
       Cwd 0
       Digest 1.03
       Digest::SHA 5.45
+      Encode 0
       Exporter 5.57
       ExtUtils::MakeMaker 6.17
       Fcntl 0
+      File::Compare 0
       File::Copy 0
       File::Glob 0
       File::Path 2.07
@@ -6438,11 +6440,11 @@ DISTRIBUTIONS
       File::Temp 0.19
       File::stat 0
       constant 0
-      if 0
       overload 0
       perl 5.008001
       strict 0
       warnings 0
+      warnings::register 0
   PerlIO-utf8_strict-0.007
     pathname: L/LE/LEONT/PerlIO-utf8_strict-0.007.tar.gz
     provides:

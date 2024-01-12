@@ -105,7 +105,7 @@ sub cache {
         # uncoverable branch false
         $js = decode_utf8($js) if !utf8::is_utf8($js);
         if ($js && (!$re || $js !~ $re) && !FixMyStreet->config('STAGING_SITE')) {
-            $cache_dir->mkpath; # uncoverable statement
+            $cache_dir->mkdir; # uncoverable statement
             # uncoverable statement
             $cache_file->spew_utf8($js);
         }

@@ -25,7 +25,7 @@ Creates UPLOAD_DIR and checks it's writeable.
 sub init {
     my $self = shift;
     my $cache_dir = $self->upload_dir;
-    $cache_dir->mkpath;
+    $cache_dir->mkdir;
     unless ( -d $cache_dir && -w $cache_dir ) {
         warn "\x1b[31mCan't find/write to photo cache directory '$cache_dir'\x1b[0m\n";
         return;

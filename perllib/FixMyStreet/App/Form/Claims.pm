@@ -1149,13 +1149,12 @@ sub file_upload {
     if ( $receipts ) {
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
         my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-        $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to());
-        $dir->mkpath;
+        $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to())->mkdir;
 
         FixMyStreet::PhotoStorage::base64_decode_upload($c, $receipts);
         my ($p, $n, $ext) = fileparse($receipts->filename, qr/\.[^.]*/);
         my $key = sha1_hex($receipts->slurp) . $ext;
-        my $out = path($dir, $key);
+        my $out = $dir->child($key);
         unless (copy($receipts->tempname, $out)) {
             $c->log->info('Couldn\'t copy temp file to destination: ' . $!);
             $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");

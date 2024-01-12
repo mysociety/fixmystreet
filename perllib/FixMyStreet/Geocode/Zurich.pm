@@ -111,7 +111,7 @@ sub string {
             return { error => 'The geocoder appears to be down.' };
         }
         $result = $result->result;
-        $cache_dir->mkpath;
+        $cache_dir->mkdir;
         store $result, $cache_file if $result && !FixMyStreet->config('STAGING_SITE');
     }
 

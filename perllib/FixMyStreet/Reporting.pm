@@ -359,9 +359,7 @@ sub cache_dir {
     my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
     $dir = path($dir, "dashboard_csv")->absolute(FixMyStreet->path_to());
     my $subdir = $self->user ? $self->user->id : 0;
-    $dir = $dir->child($subdir);
-    $dir->mkpath;
-    $dir;
+    $dir = $dir->child($subdir)->mkdir;
 }
 
 sub kick_off_process {
@@ -424,9 +422,7 @@ has premade_dir => ( is => 'ro', default => sub {
     my $self = shift;
     my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
     my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-    $dir = path($dir, "csv-export")->absolute(FixMyStreet->path_to());
-    $dir->mkpath;
-    $dir;
+    $dir = path($dir, "csv-export")->absolute(FixMyStreet->path_to())->mkdir;
 });
 
 sub premade_csv_filename {

@@ -166,7 +166,7 @@ requires 'Algorithm::Diff';
 # Modules used by CSS & watcher
 requires 'CSS::Sass';
 requires 'File::ChangeNotify', '0.31';
-requires 'Path::Tiny', '0.104';
+requires 'Path::Tiny', '0.144';
 requires 'File::Find::Rule';
 
 # Modules used for development

@@ -46,12 +46,11 @@ sub validate {
         }
 
         my $uri = '/theme/' . $cobrand;
-        my $theme_path = path(FixMyStreet->path_to('web' . $uri));
-        $theme_path->mkpath;
+        my $theme_path = path(FixMyStreet->path_to('web' . $uri))->mkdir;
         FixMyStreet::PhotoStorage::base64_decode_upload(undef, $upload);
         my ($p, $n, $ext) = fileparse($upload->filename, qr/\.[^.]*/);
         my $key = sha1_hex($upload->slurp) . $ext;
-        my $out = path($theme_path, $key);
+        my $out = $theme_path->child($key);
         unless (copy($upload->tempname, $out)) {
             $self->field('icon')->add_error( _("Sorry, we couldn't save your file(s), please try again.") );
             return;
