@@ -1253,6 +1253,7 @@ sub waste_munge_bulky_data {
     $data->{extra_Exact_Location} = $data->{location};
 
     my $first_date = $self->{c}->session->{first_date_returned};
+    $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
     my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
     $data->{'extra_First_Date_Returned_to_Customer'} = $first_date->strftime("%d/%m/%Y");
     $data->{'extra_Customer_Selected_Date_Beyond_SLA?'} = $dt > $first_date ? 1 : 0;

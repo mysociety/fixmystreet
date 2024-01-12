@@ -727,11 +727,11 @@ sub find_available_bulky_slots {
     my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
     $self->{c}->session->{first_date_returned} = undef;
     foreach (@$slots) {
-        my $date = construct_bin_date($_->{StartDate});
+        my $date = construct_bin_date($_->{StartDate})->datetime;
         push @available_slots, {
             date => $date,
             reference => $_->{Reference},
-            expiry => construct_bin_date($_->{Expiry}),
+            expiry => construct_bin_date($_->{Expiry})->datetime,
         };
         $self->{c}->session->{first_date_returned} //= $date;
     }
