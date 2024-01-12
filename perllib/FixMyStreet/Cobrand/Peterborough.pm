@@ -21,7 +21,9 @@ use warnings;
 use DateTime;
 use Integrations::Bartec;
 use List::Util qw(any);
+use Path::Tiny;
 use Sort::Key::Natural qw(natkeysort_inplace);
+use Storable qw(freeze thaw);
 use FixMyStreet::WorkingDays;
 use FixMyStreet::App::Form::Waste::Request::Peterborough;
 use Utils;
@@ -487,25 +489,31 @@ Functions specific to the waste product & Bartec integration.
 
 =cut
 
+sub _premises_for_postcode_cache_file {
+    my ($self, $pc) = @_;
+    my $key = "premises_for_postcode-$pc";
+    my $outdir = path(FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR'));
+    $outdir = $outdir->child($self->moniker);
+    my $tmp = $outdir->mkdir->child($key);
+    return $tmp;
+}
+
 sub _premises_for_postcode {
     my $self = shift;
     my $pc = shift;
     my $c = $self->{c};
+    my $cfg = $self->feature('bartec');
+    my $bartec = Integrations::Bartec->new(%$cfg);
 
-    my $key = "peterborough:bartec:premises_for_postcode:$pc";
+    my $tmp = $self->_premises_for_postcode_cache_file($pc);
 
-    unless ( $c->session->{$key} ) {
-        my $cfg = $self->feature('bartec');
-        my $bartec = Integrations::Bartec->new(%$cfg);
+    my $data;
+    if ($tmp->exists && time - $tmp->stat->mtime < $bartec->api_cache_for) {
+        $data = thaw($tmp->slurp_raw);
+    }
+    unless ($data) {
         my $response = $bartec->Premises_Get($pc);
-
-        if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
-            my $blocked = $cfg->{blocked_uprns} || [];
-            my %blocked = map { $_ => 1 } @$blocked;
-            @$response = grep { !$blocked{$_->{UPRN}} } @$response;
-        }
-
-        $c->session->{$key} = [ map { {
+        $data = [ map { {
             id => $pc . ":" . $_->{UPRN},
             uprn => $_->{UPRN},
             usrn => $_->{USRN},
@@ -513,15 +521,23 @@ sub _premises_for_postcode {
             latitude => $_->{Location}->{Metric}->{Latitude},
             longitude => $_->{Location}->{Metric}->{Longitude},
         } } @$response ];
+        $tmp->spew_raw(freeze($data));
     }
 
-    return $c->session->{$key};
+    if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
+        my $blocked = $cfg->{blocked_uprns} || [];
+        my %blocked = map { $_ => 1 } @$blocked;
+        @$data = grep { !$blocked{$_->{uprn}} } @$data;
+    }
+
+    return $data;
 }
 
 sub clear_cached_lookups_postcode {
     my ($self, $pc) = @_;
-    my $key = "peterborough:bartec:premises_for_postcode:$pc";
-    delete $self->{c}->session->{$key};
+
+    my $tmp = $self->_premises_for_postcode_cache_file($pc);
+    unlink $tmp;
 }
 
 sub clear_cached_lookups_property {
