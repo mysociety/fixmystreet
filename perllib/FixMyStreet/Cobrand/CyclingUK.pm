@@ -83,10 +83,20 @@ sub allow_report_extra_fields { 1 }
 
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 
+sub contact_name {
+    my $self = shift;
+    return $self->feature('contact_name') || $self->next::method();
+}
+
 sub contact_email {
     my $self = shift;
-    return $self->feature('contact_email');
-};
+    return $self->feature('contact_email') || $self->next::method();
+}
+
+sub do_not_reply_email {
+    my $self = shift;
+    return $self->feature('do_not_reply_email') || $self->next::method();
+}
 
 
 sub admin_allow_user {
