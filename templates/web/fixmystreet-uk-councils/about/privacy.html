@@ -490,18 +490,7 @@ this site
 [% END %]
 can use.
 
-<table class="nicetable">
-    <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Typical Content</th>
-        <th scope="col">Expires</th>
-    </tr>
-    <tr>
-        <td>fixmystreet_app_session</td>
-        <td nowrap>A random unique identifier</td>
-        <td>When browser is closed</td>
-    </tr>
-</table>
+[% INCLUDE 'about/_cookies.html' %]
 
 [% TRY %][% INCLUDE 'about/googlecookies.html' %][% CATCH file %][% END %]
 

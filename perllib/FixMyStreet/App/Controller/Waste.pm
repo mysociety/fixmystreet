@@ -256,6 +256,9 @@ sub pay_complete : Path('pay_complete') : Args(2) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
     my $p = $c->stash->{report};
 
+    # Make sure form unique ID cookie is removed
+    $c->response->cookies->{form_unique_id} = { value => '', expires => 0 };
+
     my $ref = $c->cobrand->garden_cc_check_payment_status($c, $p);
 
     if ( $ref ) {

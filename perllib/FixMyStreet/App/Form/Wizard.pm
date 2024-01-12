@@ -141,7 +141,8 @@ after 'validate_form' => sub {
                 $self->add_form_error('Something went wrong, please try again')
                     unless $self->has_form_errors;
             } else {
-                delete $self->c->session->{form_unique_id};
+                # Delete cookie
+                $self->c->response->cookies->{form_unique_id} = { value => '', expires => 0 };
             }
         }
     }
