@@ -619,6 +619,7 @@ FixMyStreet::override_config {
         $mech->get_ok($base_path);
         $mech->content_contains('Cancel booking');
         $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
+        $mech->content_contains('I acknowledge that the collection fee is non-refundable');
         $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
         $mech->content_contains('Your booking has been cancelled');
         $mech->follow_link_ok( { text => 'Return to property details' } );
