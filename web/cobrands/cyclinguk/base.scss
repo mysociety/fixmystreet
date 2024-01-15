@@ -567,6 +567,17 @@ body.mappage {
 
 }
 
+//Account page
+.my-account-buttons {
+    a {
+        background-color: transparent;
+    }
+}
+
+.segmented-control--radio input:checked+label {
+    color: $white !important; // Override !important rule on _base
+}
+
 // REPORTING FORM
 
 p.cyclinguk-marketing-opt-in {
