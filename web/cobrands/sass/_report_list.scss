@@ -145,6 +145,42 @@ input.bulk-assign {
 
 // GOVUK
 // The idea of ths sinzin variables is making more evident the relation between the sizes and positions more than actually allowing cobrands to change their sizes.
+
+.govuk-fieldset-wrapper {
+  padding: 1rem;
+
+  @media (min-width: 48em) {
+
+    .multi-select-filter-group {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .report-list-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 0;
+      flex-basis: 50%;
+    }
+
+    .multi-select-button, .govuk-select {
+      max-width: none;
+      min-width: auto;
+      width: 200px;
+      white-space: normal;
+    }
+  }
+}
+
+.govuk-multi-select {
+  .govuk-fieldset__legend {
+    padding: 0.5rem 0 0 0.5rem;
+  }
+}
+
 $govuk-small-input-size: 44px;
 $govuk-small-input-visible-size: 24px;
 
@@ -165,7 +201,7 @@ $govuk-small-input-visible-size: 24px;
 
 .govuk-multi-select__label {
   display: inline-block;
-  padding: 8px 0px 5px $govuk-small-input-size;
+  padding: 10px 0px 10px $govuk-small-input-size;
   cursor: pointer;
   touch-action: manipulation;
   font-size: 1.1875rem;
@@ -176,6 +212,35 @@ $govuk-small-input-visible-size: 24px;
   &:has(> input[type="radio"]:checked) {
     &::after {
       opacity: 1;
+    }
+  }
+
+  &:has(> input[type="checkbox"]){
+    &:after {
+      // Check icon
+      content: "";
+      box-sizing: border-box;
+      position: absolute;
+      top: $govuk-small-input-visible-size / 2;
+      left: $govuk-small-input-visible-size / 2;
+      clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+      border: solid 10px $govuk-input-border-color;
+      opacity: 0;
+    }
+  }
+
+  &:has(> input[type="radio"]){
+    &:after {
+      // Circle icon
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 14px;
+      height: 14px;
+      clip-path: circle(50%);
+      opacity: 0;
+      background-color: $govuk-input-border-color;
     }
   }
 
@@ -211,20 +276,20 @@ $govuk-small-input-visible-size: 24px;
   }
 }
 
-.govuk-multi-select--checkboxes {
-  .govuk-multi-select__label {
-    &:after {
-      content: "";
-      box-sizing: border-box;
-      position: absolute;
-      top: $govuk-small-input-visible-size / 2;
-      left: $govuk-small-input-visible-size / 2;
-      clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
-      border: solid 10px $govuk-input-border-color;
-      opacity: 0;
-    }
-  }
-}
+// .govuk-multi-select--checkboxes {
+//   .govuk-multi-select__label {
+//     &:after {
+//       content: "";
+//       box-sizing: border-box;
+//       position: absolute;
+//       top: $govuk-small-input-visible-size / 2;
+//       left: $govuk-small-input-visible-size / 2;
+//       clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+//       border: solid 10px $govuk-input-border-color;
+//       opacity: 0;
+//     }
+//   }
+// }
 
 .govuk-multi-select--radio, .multi-select-presets {
   .govuk-multi-select__label {

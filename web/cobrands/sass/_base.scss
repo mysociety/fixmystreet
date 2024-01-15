@@ -61,7 +61,6 @@ $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
 
 @import "_mixins";
-@import "_govuk";
 @import "_report_list";
 
 body {
@@ -3332,3 +3331,4 @@ $site-message-border: 1px solid #525252 !default;
 @import "_page-with-sticky-content-bar";
 
 @import "govuk-frontend/forms";
+@import "_govuk"; // Adds some overrides to the default GOVUK behaviour
