@@ -1387,6 +1387,15 @@ fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
     return out;
 };
 
+/* Thamesmead */
+
+fixmystreet.assets.thamesmead = {};
+fixmystreet.assets.thamesmead.streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': fixmystreet.assets.style_default,
+  'hover': fixmystreet.assets.style_default_hover,
+  'select': fixmystreet.assets.construct_named_select_style("${feature_id}")
+});
+
 /* Westminster */
 
 fixmystreet.assets.westminster = {};
