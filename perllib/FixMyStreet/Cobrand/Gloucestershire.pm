@@ -230,6 +230,8 @@ Green for anything completed or closed, yellow for the rest.
 sub pin_colour {
     my ( $self, $p ) = @_;
 
+    return 'defects' if $p->external_id && $p->external_id =~ /^JOB_/;
+
     return 'green' if $p->is_fixed || $p->is_closed;
 
     return 'yellow';
