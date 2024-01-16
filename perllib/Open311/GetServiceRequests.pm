@@ -100,8 +100,13 @@ sub create_problems {
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
-        ($latitude, $longitude) = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
-            if $self->convert_latlong;
+        # Body may have convert_latlong set to true if it gets *enquiries* from
+        # Confirm (these use easting/northing), but *jobs* from Confirm use
+        # lat & long, so conversion is not needed for them
+        ( $latitude, $longitude )
+            = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
+            if $self->convert_latlong
+            && $request_id !~ /^JOB_/;
 
         my $all_areas =
           FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude");
