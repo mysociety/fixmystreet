@@ -266,6 +266,17 @@ subtest 'Dashboard CSV export' => sub {
 
 $mech->log_out_ok;
 
+subtest 'Contact form' => sub {
+    $mech->get_ok('/contact');
+    $mech->submit_form_ok({ with_fields => {
+        em      => 'test@example.com',
+        name    => 'A name',
+        subject => 'A subject',
+        message => 'A message',
+    }});
+    $mech->content_contains("Thank you for your enquiry");
+};
+
 };
 
 done_testing();
