@@ -371,7 +371,6 @@ dl dt {
     padding-top: 30px;
     padding-bottom: 30px;
     @extend .container;
-    max-width: 1140px;
 
     .footer__column {
       flex-basis: 100%;
@@ -605,3 +604,5 @@ background-color: transparent;
         }
     }
 }
+
+@import "../fixmystreet-uk-councils/societyworks-footer";

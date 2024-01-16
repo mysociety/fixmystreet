@@ -242,4 +242,14 @@ sub report_new_munge_before_insert {
 }
 
 
+=item extra_contact_validation
+
+This is used on the FixMyStreet cobrand for an anti-spam question. We don't have
+that question on the CyclingUK cobrand so need to override this method otherwise
+the validation in FixMyStreet will prevent the form being submitted.
+
+=cut
+
+sub extra_contact_validation {}
+
 1;
