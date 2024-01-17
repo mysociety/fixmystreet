@@ -885,12 +885,10 @@ textarea.form-error {
 }
 
 .alerts__columns {
-    @include clearfix;
-    @include flex-container();
-    > div {
-        width: 50%;
-        margin: 0 2em;
-    }
+  display: grid;
+  // This tells the column to have a minimum size(23.75rem, around 380px), if it can't be then allows it to take the whole space available.
+  grid-template-columns: repeat(auto-fit, minmax(23.75rem, 1fr));
+  column-gap: 5rem;
 }
 
 .confirmation-header {

@@ -6,78 +6,94 @@
   <input type="hidden" name="latitude" value="[% latitude | html %]">
   <input type="hidden" name="longitude" value="[% longitude | html %]">
 
-<fieldset>
- <legend>
-  <h2>[% loc('Which problems do you want alerts about?') %]</h2>
- </legend>
+  <div class="govuk-form-group">
+    <fieldset>
+    <legend>
+      <h2 class="govuk-fieldset__legend govuk-fieldset__legend--m">[% loc('Which problems do you want alerts about?') %]</h2>
+    </legend>
 
-  [% INCLUDE 'errors.html' %]
+      [% INCLUDE 'errors.html' %]
 
-  [% IF reported_to_options %]
-    <p>
-        [% tprintf(loc('Reports near %s are sent to different councils, depending on the type of problem.'), name_of_location) %]
-    </p>
-    <p>
-        [% loc('You can choose to subscribe to all problems reported in an area, or reports based on their destination.') %]
-    </p>
-    <div class="alerts__columns">
-        <div>
-    <h3>[% loc('Problems in an area') %]</h3>
-  [% END %]
+    <div class="govuk-radios" data-module="govuk-radios">
 
-  <p id="rss_local">
-    <label class="label-containing-checkbox" for="[% rss_feed_id %]">
-      <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
-     [% IF c.cobrand.moniker == 'cheshireeast' %]
-      [% tprintf( 'Reported problems within %.1fkm of %s', population_radius, name_of_location ) %]
-     [% ELSE %]
-      [% tprintf( loc('Problems within %.1fkm of %s'), population_radius, name_of_location ) %]
-     [% END %]
-      [% loc('(covers roughly 200,000 people)') %]
-    </label>
-  </p>
+      [% IF reported_to_options %]
+        <p>
+            [% tprintf(loc('Reports near %s are sent to different councils, depending on the type of problem.'), name_of_location) %]
+        </p>
+        <p>
+            [% loc('You can choose to subscribe to all problems reported in an area, or reports based on their destination.') %]
+        </p>
+        <div class="alerts__columns">
+            <div>
+        <h3>[% loc('Problems in an area') %]</h3>
+      [% END %]
 
-  <p id="rss_local_alt">
-    <label class="inline" for="distance">[% loc('Or specify a different radius distance:') %]</label>
-    <input class="form-control" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="[% loc('Specify a radius in kilometers') %]"> km
-    <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local" id="rss-[% rss_feed_id %]">
-      <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed of nearby problems') %]" alt="[% loc('RSS feed') %]">
-    </a>
-  </p>
-
-  [% FOREACH option IN options %]
-    <p>
-      <a href="[% option.uri %]" class="alerts-rss-link" id="rss-[% option.id %]">
-        <img src="/i/feed.png" width="16" height="16" title="[% option.rss_text %]" alt="[% loc('RSS feed') %]">
-      </a>
-      <label class="label-containing-checkbox" for="[% option.id %]">
-        <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
-        [% option.text %]
-      </label>
-    </p>
-  [% END %]
-
-  [% IF reported_to_options %]
+      
+        <div class="govuk-radios__item" id="rss_local">
+          <input class="govuk-radios__input" type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
+          <label class="govuk-label govuk-radios__label" for="[% rss_feed_id %]">
+          [% IF c.cobrand.moniker == 'cheshireeast' %]
+            [% tprintf( 'Reported problems within %.1fkm of %s', population_radius, name_of_location ) %]
+          [% ELSE %]
+            [% tprintf( loc('Problems within %.1fkm of %s'), population_radius, name_of_location ) %]
+          [% END %]
+            [% loc('(covers roughly 200,000 people)') %]
+          </label>
         </div>
-        <div>
 
-    <h3>[% loc('Reports by destination') %]</h3>
+        <div class="alert-option-wrapper govuk-!-margin-bottom-4">
+          <div id="rss_local_alt" class="govuk-form-group">
+            <label class="govuk-label govuk-!-margin-bottom-2" for="distance">[% loc('Or specify a different radius distance:') %]</label>
+            <div class="govuk-input__wrapper">
+              <input class="govuk-input" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="[% loc('Specify a radius in kilometres') %]">
+              <div class="govuk-input__suffix" aria-hidden="true">Km</div>
+            </div>
+          </div>
 
-    [% FOREACH option IN reported_to_options %]
-      <p>
-        <a href="[% option.uri %]" class="alerts-rss-link" id="rss-[% option.id %]">
-          <img src="/i/feed.png" width="16" height="16" title="[% option.rss_text %]" alt="[% loc('RSS feed') %]">
-        </a>
-        <label class="label-containing-checkbox" for="[% option.id %]">
-          <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
-          [% option.text %]
-        </label>
-      </p>
-    [% END %]
+          <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local" id="rss-[% rss_feed_id %]">
+            <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed of nearby problems') %]" alt="[% loc('RSS feed') %]">
+          </a>
         </div>
-    </div>
-  [% END %]
-</fieldset>
+
+      [% FOREACH option IN options %]
+        <div class="alert-option-wrapper govuk-!-margin-bottom-4">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
+            <label class="govuk-label govuk-radios__label" for="[% option.id %]">
+              [% option.text %]
+            </label>
+          </div>
+          <a href="[% option.uri %]" class="alerts-rss-link" id="rss-[% option.id %]">
+            <img src="/i/feed.png" width="16" height="16" title="[% option.rss_text %]" alt="[% loc('RSS feed') %]">
+          </a>
+        </div>
+      [% END %]
+
+      [% IF reported_to_options %]
+            </div>
+            <div>
+
+        <h3>[% loc('Reports by destination') %]</h3>
+
+        [% FOREACH option IN reported_to_options %]
+          <div class="alert-option-wrapper govuk-!-margin-bottom-4">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
+              <label class="govuk-label govuk-radios__label" for="[% option.id %]">
+                [% option.text %]
+              </label>
+            </div>
+            <a href="[% option.uri %]" class="alerts-rss-link" id="rss-[% option.id %]">
+              <img src="/i/feed.png" width="16" height="16" title="[% option.rss_text %]" alt="[% loc('RSS feed') %]">
+            </a>
+          </div>
+        [% END %]
+            </div>
+        </div>
+      [% END %]
+      </div>
+    </fieldset>
+  </div>
 
   [% PROCESS 'auth/form_extra.html' %]
 

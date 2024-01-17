@@ -2996,7 +2996,7 @@ a#geolocate_link {
 
 #rss_local_alt {
   // Match .label-containing-checkbox
-  padding-#{$left}: 24px;
+  padding-#{$left}: 56px;
 
   // Close up space between this and #rss_local
   margin-top: -0.5em;
@@ -3005,6 +3005,13 @@ a#geolocate_link {
     width: 4em;
     display: inline-block;
   }
+}
+
+.alert-option-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .confirmation-header {
