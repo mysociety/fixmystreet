@@ -194,15 +194,44 @@ sub social_auth_enabled {
 sub user_from_oidc {
     my ($self, $payload) = @_;
 
-    # TODO: Remove this once we know which fields the name/email are in.
-    use Data::Dumper;
-    $self->{c}->log->info("TfL OIDC payload: " . Dumper($payload));
-
-    # Extract the user's name and email address from the payload.
-    my $name = $payload->{first_name};
-    my $email = $payload->{last_name};
+    my $name = join(" ", $payload->{given_name}, $payload->{family_name});
+    my $email = $payload->{email};
 
     return ($name, $email);
+}
+
+sub roles_from_oidc {
+    my ($self, $user, $roles) = @_;
+
+    $user->user_roles->delete;
+    $user->from_body($self->body->id);
+
+    return unless $roles && @$roles;
+
+    my %role_map = (
+        BasicEditorViewers => 'Streetcare - Basic Editor Viewers',
+        Contractor => 'Streetcare - Contractor',
+        AgentInspector => 'Streetcare - Agent Inspector',
+        Admin => 'Admin',
+    );
+
+    my @body_roles;
+    for ($user->from_body->roles->search(undef, { order_by => 'name' })->all) {
+        push @body_roles, {
+            id => $_->id,
+            name => $_->name,
+        }
+    }
+
+    for my $assign_role (@$roles) {
+        my ($body_role) = grep { $role_map{$assign_role} && $_->{name} eq $role_map{$assign_role} } @body_roles;
+
+        if ($body_role) {
+            $user->user_roles->find_or_create({
+                role_id => $body_role->{id},
+            });
+        }
+    }
 }
 
 sub state_groups_inspect {
