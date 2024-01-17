@@ -79,6 +79,21 @@ sub reopening_disallowed {
     return 1;
 }
 
+=item * Jobs from Confirm that are completed (marked as fixed or closed) are not displayed after 48 hours
+
+=cut
+
+sub report_age {
+    return {
+        closed => {
+            job => '48 hours',
+        },
+        fixed => {
+            job => '48 hours',
+        },
+    };
+}
+
 =item * We do not send questionnaires.
 
 =cut
