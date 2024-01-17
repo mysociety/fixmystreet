@@ -100,10 +100,12 @@
   <div class="alerts__cta-box">
     <h3>[% loc('Subscribe by email') %]</h3>
     [% UNLESS c.user_exists AND c.user.email_verified %]
-      <label for="rznvy">[% loc('Email address') %]</label>
-      <div class="form-txt-submit-box">
-        <input class="form-control" type="email" id="rznvy" name="rznvy" value="[% rznvy %]" autocomplete="email">
-        <input id="alert_email_button" class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="rznvy">[% loc('Email address') %]</label>
+        <div class="cta-box__input-wrapper">
+          <input class="govuk-input" type="email" id="rznvy" name="rznvy" value="[% rznvy %]" spellcheck="false" autocomplete="email">
+          <input id="alert_email_button" class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
+        </div>
       </div>
       <p>[% tprintf(loc('We won’t use your email for anything beyond sending you alerts within this area. You can find more information in our <a href="%s">privacy policy</a>.'), c.cobrand.privacy_policy_url) %]</p>
     [% ELSE %]

@@ -891,6 +891,11 @@ textarea.form-error {
   column-gap: 5rem;
 }
 
+.cta-box__input-wrapper {
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
 .confirmation-header {
     width: 25em;
     margin: 0 auto 1em;

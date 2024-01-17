@@ -2994,6 +2994,12 @@ a#geolocate_link {
   }
 }
 
+.cta-box__input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 #rss_local_alt {
   // Match .label-containing-checkbox
   padding-#{$left}: 56px;
