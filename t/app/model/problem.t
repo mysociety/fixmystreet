@@ -930,13 +930,16 @@ subtest 'around_map' => sub {
 
     # Set some problems
     my @problem_params = (
-        {   title => 'open_less_month',
-            state => 'confirmed',
-            dt    => DateTime->now->subtract( days => 14 ),
+        {   title       => 'open_less_month',
+            state       => 'confirmed',
+            external_id => 'open_less_month',
+            dt          => DateTime->now->subtract( days => 14 ),
         },
-        {   title => 'open_more_month',
-            state => 'confirmed',
-            dt    => DateTime->now->subtract( months => 2 ),
+        {
+            title       => 'open_more_month',
+            state       => 'confirmed',
+            external_id => 'open_more_month',
+            dt          => DateTime->now->subtract( months => 2 ),
         },
 
         {   title => 'closed_less_week',
@@ -1163,6 +1166,93 @@ subtest 'around_map' => sub {
                     /;
                 is_deeply \@got_titles, \@expected_titles;
             };
+        };
+    };
+
+    subtest 'report_age for (Confirm) jobs' => sub {
+        # Remove user so we're not hitting only_non_public logic
+        $c->user(undef);
+
+        # Add some JOB_* problems
+        @problem_params = (
+            {   title       => 'open_less_6_month_job',
+                state       => 'confirmed',
+                external_id => 'JOB_open_less_6_month_job',
+                dt          => DateTime->now->subtract( months => 4 ),
+            },
+            {
+                title       => 'open_more_6_month_job',
+                state       => 'confirmed',
+                external_id => 'JOB_open_more_6_month_job',
+                dt          => DateTime->now->subtract( months => 7 ),
+            },
+
+            {   title => 'fixed_less_hour_job',
+                state => 'fixed - council',
+                external_id => 'JOB_fixed_less_hour_job',
+                dt    => DateTime->now->subtract( minutes => 50 ),
+            },
+            {   title => 'fixed_more_hour_job',
+                state => 'fixed - council',
+                external_id => 'JOB_fixed_more_hour_job',
+                dt    => DateTime->now->subtract( minutes => 70 ),
+            },
+        );
+        for (@problem_params) {
+            $mech->create_problems_for_body( 1, $around_map_body->id,
+                $_->{title}, $_ );
+        }
+
+
+        subtest 'Simple hashref report_age' => sub {
+            my $got = $problem_rs->around_map(
+                $c,
+                %search_params,
+                report_age => {
+                    open  => '5 months',
+                    fixed => '1 hours',
+                },
+            );
+
+            my @got_titles = sort map { $_->title } $got->all;
+
+            my @expected_titles = sort qw/
+                open_less_6_month_job
+                open_more_month
+                open_less_month
+                fixed_less_hour_job
+                closed_less_week
+                closed_more_week
+                /;
+            is_deeply \@got_titles, \@expected_titles;
+        };
+
+        subtest 'Nested hashref report_age' => sub {
+            my $got = $problem_rs->around_map(
+                $c,
+                %search_params,
+                report_age => {
+                    open => {
+                        job     => '5 months',
+                        enquiry => '1 months',
+                    },
+                    fixed => {
+                        job => '1 hours',
+                    },
+                },
+            );
+
+            my @got_titles = sort map { $_->title } $got->all;
+            my @expected_titles = sort qw/
+                open_less_6_month_job
+                open_less_month
+                fixed_less_hour_job
+                fixed_less_day
+                fixed_more_day
+                closed_less_week
+                closed_more_week
+                /;
+            is_deeply \@got_titles, \@expected_titles;
         };
     };
 };
