@@ -24,16 +24,6 @@ body {
         width: 305px;
         background-size: auto 53px;
     }
-
-    #site-logo-sos {
-        position: relative;
-        z-index: 1;
-        width: 305px;
-        height: $total-navbar-height;
-
-        background: url(/cobrands/cyclinguk/images/cycle-sos-logo.png) 0 50% no-repeat;
-        background-size: auto $site-logo-height;
-    }
 }
 
 $subnav-height: 52px;
@@ -178,14 +168,6 @@ body.mappage {
         background-position: left 0 center;
         background-image: url(/cobrands/cyclinguk/images/fill-that-hole-logo-white.png);
     }
-
-    #site-logo-sos {
-        height: $mappage-header-height;
-        background: url(/cobrands/cyclinguk/images/cycle-sos-logo-white.png) 0 50% no-repeat;
-        background-size: auto 50px;
-        display: block;
-    }
-
 
     .nav-menu__item--news,
     .nav-menu__item--press,
