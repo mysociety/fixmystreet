@@ -210,11 +210,11 @@ sub dashboard_export_problems_add_columns {
         my ($first, $last) = $name =~ /^(\S*)(?: (.*))?$/;
 
         return {
-            injury_suffered => $csv->_extra_field($report, 'CyclingUK_injury_suffered') || '',
-            property_damage => $csv->_extra_field($report, 'CyclingUK_property_damage') || '',
-            transport_mode => $csv->_extra_field($report, 'CyclingUK_transport_mode') || '',
-            transport_other => $csv->_extra_field($report, 'CyclingUK_transport_other') || '',
-            marketing => $csv->_extra_field($report, 'CyclingUK_marketing_opt_in') || '',
+            injury_suffered => $csv->_extra_metadata($report, 'CyclingUK_injury_suffered') || '',
+            property_damage => $csv->_extra_metadata($report, 'CyclingUK_property_damage') || '',
+            transport_mode => $csv->_extra_metadata($report, 'CyclingUK_transport_mode') || '',
+            transport_other => $csv->_extra_metadata($report, 'CyclingUK_transport_other') || '',
+            marketing => $csv->_extra_metadata($report, 'CyclingUK_marketing_opt_in') || '',
             first_name => $first || '',
             last_name => $last || '',
             $csv->dbi ? () : (
@@ -237,6 +237,18 @@ sub report_new_munge_before_insert {
 
     my $opt_in = $self->{c}->get_param("marketing_opt_in") ? 'yes' : 'no';
     $report->update_extra_field({ name => 'CyclingUK_marketing_opt_in', value => $opt_in });
+
+    my @keys = ('injury_suffered', 'property_damage', 'transport_mode', 'transport_other', 'marketing_opt_in');
+    my %keys = map { "CyclingUK_" . $_ => 1 } @keys;
+    my @fields;
+    foreach (@{$report->get_extra_fields}) {
+        if ($keys{$_->{name}}) {
+            $report->set_extra_metadata($_->{name} => $_->{value});
+        } else {
+            push @fields, $_;
+        }
+    }
+    $report->set_extra_fields(@fields);
 
     return $self->SUPER::report_new_munge_before_insert($report);
 }

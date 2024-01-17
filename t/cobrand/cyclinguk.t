@@ -193,7 +193,7 @@ subtest 'New report user info fields' => sub {
     );
     $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     is $report->name, "Brand New";
-    is $report->get_extra_field_value('CyclingUK_marketing_opt_in'), 'yes';
+    is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'yes';
 
     $mech->get_ok('/report/new?longitude=-2.364050&latitude=51.386269');
     $mech->submit_form_ok(
@@ -215,7 +215,7 @@ subtest 'New report user info fields' => sub {
     );
     $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     is $report->name, "Brand New";
-    is $report->get_extra_field_value('CyclingUK_marketing_opt_in'), 'no';
+    is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'no';
 };
 
 subtest 'Dashboard CSV export' => sub {
@@ -234,27 +234,12 @@ subtest 'Dashboard CSV export' => sub {
                     name => "depth",
                     value => "25cm"
                 },
-                {
-                    name => "CyclingUK_injury_suffered",
-                    value => "no",
-                },
-                {
-                    name => "CyclingUK_property_damage",
-                    value => "yes",
-                },
-                {
-                    name => "CyclingUK_transport_mode",
-                    value => "other",
-                },
-                {
-                    name => "CyclingUK_transport_other",
-                    value => "horse",
-                },
-                {
-                    name => "CyclingUK_marketing_opt_in",
-                    value => "yes",
-                },
-            ]
+            ],
+            "CyclingUK_injury_suffered" => "no",
+            "CyclingUK_property_damage" => "yes",
+            "CyclingUK_transport_mode" => "other",
+            "CyclingUK_transport_other" => "horse",
+            "CyclingUK_marketing_opt_in" => "yes",
         }
     });
     $mech->get_ok('/dashboard?export=1');
