@@ -184,6 +184,7 @@ sub _handle_existing_contact {
     $self->_set_contact_group($contact) unless $protected;
     $self->_set_contact_non_public($contact);
     $self->_set_contact_as_waste($contact);
+    $self->_set_contact_inactive($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -220,6 +221,7 @@ sub _create_contact {
     $self->_set_contact_group($contact);
     $self->_set_contact_non_public($contact);
     $self->_set_contact_as_waste($contact);
+    $self->_set_contact_inactive($contact);
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
@@ -327,6 +329,19 @@ sub _set_contact_non_public {
         non_public => 1,
         %{ $self->_action_params("marked private") },
     }) if $keywords{private};
+}
+
+sub _set_contact_inactive {
+    my ($self, $contact) = @_;
+
+    # We never want to make an inactive category active
+    return if $contact->state eq 'inactive';
+
+    my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
+    $contact->update({
+        state => 'inactive',
+        %{ $self->_action_params('marked inactive') },
+    }) if $keywords{inactive};
 }
 
 sub _set_contact_as_waste {
