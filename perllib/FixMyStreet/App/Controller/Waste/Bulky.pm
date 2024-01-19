@@ -230,7 +230,11 @@ sub process_bulky_data : Private {
 
     if (!$c->cobrand->bulky_free_collection_available) {
         # Either was picked in the form, or if not present will be card
-        $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+        my $payment_method = $data->{payment_method} || 'credit_card';
+        $c->set_param('payment_method', $payment_method);
+        if ($payment_method eq 'credit_card' && $c->stash->{staff_payments_allowed} eq 'paye') {
+            $c->set_param('payment_method', 'csc');
+        }
     }
 
     $c->cobrand->call_hook("waste_munge_bulky_data", $data);
