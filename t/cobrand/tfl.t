@@ -512,6 +512,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->get_ok('/dashboard?export=1&category=Not+present');
     is scalar(split /\n/, $mech->encoded_content), 1;
     $mech->get_ok('/dashboard?export=1&category=Bus+stops');
+    $mech->content_like(qr/"Bus stops",(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d,){4}/, "Created, confirmed, acknowledged, and action scheduled in correct format");
     $mech->content_contains('Category,Subcategory');
     $mech->content_contains('Query,Borough');
     $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');

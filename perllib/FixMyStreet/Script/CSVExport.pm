@@ -173,6 +173,7 @@ sub generate_sql {
         # (Override timestamps to truncate to the second)
         "to_json(date_trunc('second', me.created))#>>'{}' as created",
         "to_json(date_trunc('second', me.confirmed))#>>'{}' as confirmed",
+        "to_json(date_trunc('second', me.whensent))#>>'{}' as whensent",
         # Fetch the relevant bits of comments we need for timestamps
         "comments.id as comment_id, comments.problem_state, to_json(date_trunc('second', comments.confirmed))#>>'{}' as comment_confirmed, comments.mark_fixed",
         # Older reports did not store the group on the report, so fetch it from contacts
