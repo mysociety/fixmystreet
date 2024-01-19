@@ -113,6 +113,7 @@ sub email_previewer : Path('/_dev/email') : Args(1) {
         while (my $u = $q->next) {
             my $fn = sub {
                 return FixMyStreet::App::Model::PhotoSet->new({
+                    object => $u,
                     db_data => $u->photo,
                 })->get_image_data( num => 0, size => 'fp' );
             };
