@@ -19,12 +19,19 @@ use Storable qw(store_fd);
 use Fcntl qw(:flock);
 use Integrations::Echo;
 use Integrations::Bartec;
+use Integrations::Whitespace;
 use FixMyStreet;
+
+my $integration_classes = {
+    echo => 'Integrations::Echo',
+    bartec => 'Integrations::Bartec',
+    whitespace => 'Integrations::Whitespace',
+};
 
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['cobrand=s', 'which cobrand configuration to use'],
-    ['backend=s', 'which backend type (echo/bartec)'],
+    ['backend=s', 'which backend type (' . join('|', sort keys %$integration_classes) . ')'],
     ['out=s', 'where to output data'],
     ['calls=s', 'JSON of what API calls to make'],
     ['help|h', "print usage message and exit" ],
@@ -37,7 +44,7 @@ $usage->die unless $opts->cobrand && $opts->calls && $opts->backend;
 my $features = FixMyStreet->config('COBRAND_FEATURES');
 my $cfg = $features->{$opts->backend}->{$opts->cobrand};
 
-my $class = $opts->backend eq 'echo' ? 'Integrations::Echo' : 'Integrations::Bartec';
+my $class = $integration_classes->{$opts->backend};
 my $integration = $class->new(%$cfg);
 
 my $fd;
