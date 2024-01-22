@@ -146,4 +146,26 @@ subtest 'Test TfL deletion of safety critical reports' => sub {
     }
 };
 
+subtest 'Test state/category/days deletion' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'peterborough'
+    }, sub {
+        for (my $d = 1; $d <= 10; $d+=1) {
+            my $t = DateTime->now->subtract(days => $d);
+            my ($problem) = $mech->create_problems_for_body(1, 2566, 'Title', {
+                dt => $t,
+                lastupdate => "$t",
+                category => $d % 3 ? 'Collection' : 'Pothole',
+                state => $d % 2 ? 'confirmed' : 'unconfirmed',
+                cobrand => 'peterborough',
+            });
+        }
+
+        my $in = FixMyStreet::Script::Inactive->new( cobrand => 'peterborough', delete => '3d', state => 'unconfirmed', category => 'Collection' );
+        $in->reports;
+        my $count = FixMyStreet::DB->resultset("Problem")->search({ cobrand => 'peterborough' })->count;
+        is $count, 7, 'Three match that are old enough, unconfirmed, and Collection (4, 8, 10)'
+    }
+};
+
 done_testing;
