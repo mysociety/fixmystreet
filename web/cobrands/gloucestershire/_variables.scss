@@ -120,7 +120,9 @@ $mobile-sticky-sidebar-button-menu-image: "menu-white";
   }
 }
 
-$front-main-color: #333;
+$front-main-color: $primary_b;
 $postcodeform-background: $gloucestershire_white;
-$front-main-color-desktop: #333;
+$front-main-color-desktop: $primary_b;
 $front-main-background-desktop: #fff;
+$postcodeform-color: $primary_b;
+$postcodeform-color-desktop: $primary_b;

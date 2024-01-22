@@ -21,7 +21,7 @@ $northumber_light_grey:#f3f3f5; // For bg
 $northumber_mid_grey:#d3d3d3; // For bg
 $northumber_dark_grey: #000c24;
 $northumber_black_heading: #333a41;
-$northumber_black: #000;
+$northumber_black: #212529;
 $northumber_yellow: #ffc107; // For alerts
 
 $primary: $northumber_primary;
@@ -104,6 +104,8 @@ $postcodeform-background-desktop: transparent;
 $front-main-color: $primary_b;
 $front-main-background: $northumber_light_grey;
 $postcodeform-background: transparent;
+$postcodeform-color: $primary_b;
+$postcodeform-color-desktop: $primary_b;
 
 $container-max-width: 80em;
 

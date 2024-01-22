@@ -26,7 +26,8 @@ $front-main-background-desktop: transparent !default;
 $front-main-container-background-desktop: transparent !default;
 // $postcodeform-background-desktop controls the background of the postcode-form-box. It excludes the h1 and h2 elements.
 $postcodeform-background-desktop: transparent !default;
-$form-hint-color-desktop: transparentize($front-main-color-desktop, 0.2) !default;
+$postcodeform-color-desktop: $primary_text !default;
+$form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
 
 //This variable controls the color of .content for the front-page
@@ -842,7 +843,7 @@ textarea.form-error {
 }
 
 .postcode-form-box {
-  color: $front-main-color-desktop;
+  color: $postcodeform-color-desktop;
   background: $postcodeform-background-desktop;
   @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
     padding: 1em;

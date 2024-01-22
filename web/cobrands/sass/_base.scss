@@ -50,8 +50,9 @@ $front-main-color: $primary_text !default;
 $front-main-background: none !default;
 // $postcodeform-background controls the background of the postcode-form-box. It excludes the h1 and h2 elements.
 $postcodeform-background: $primary !default;
+$postcodeform-color: $primary_text !default;
 $front-main-h2-color: transparentize($front-main-color, 0.1) !default;
-$form-hint-color: transparentize($front-main-color, 0.2) !default;
+$form-hint-color: transparentize($postcodeform-color, 0.2) !default;
 
 $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
@@ -2734,7 +2735,7 @@ label .muted {
 }
 
 .postcode-form-box {
-  color: $front-main-color;
+  color: $postcodeform-color;
   background: $postcodeform-background;
   @if not (($postcodeform-background == transparent) or ($postcodeform-background == none)) {
     padding: 1em;
