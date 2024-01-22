@@ -109,7 +109,7 @@ sub sign_in : Private {
     $c->logout();
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
-
+    $c->cobrand->call_hook('disable_login_for_email', $parsed->{username}) unless $c->stash->{oauth_need_email};
     $c->forward('throttle_username', [$parsed]);
 
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
@@ -192,6 +192,8 @@ sub email_sign_in : Private {
         $c->stash->{username_error} = $raw_email ? $email_checker->details : 'missing_email';
         return;
     }
+
+    $c->cobrand->call_hook('disable_login_for_email', $good_email) unless $c->get_param('oauth_need_email');
 
     my $password = $c->get_param('password_register');
     if ($password) {

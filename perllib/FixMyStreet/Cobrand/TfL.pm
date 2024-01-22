@@ -479,6 +479,16 @@ sub munge_reports_area_list {
 
 sub munge_report_new_contacts { }
 
+sub disable_login_for_email {
+    my ($self, $email) = @_;
+
+    my $staff_email = $self->admin_user_domain;
+
+    if ($email =~ /$staff_email$/) {
+        $self->{c}->detach('/page_error_403_access_denied', ['Please use the staff login option']);
+    }
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 

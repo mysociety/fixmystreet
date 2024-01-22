@@ -110,6 +110,7 @@ sub process_user : Private {
         $params{username} = $c->get_param('username_register');
     }
     $params{username} ||= '';
+    $c->cobrand->call_hook('disable_login_for_email', $params{username}) unless $c->get_param('oauth_need_email');
 
     my $anon_button = $c->cobrand->allow_anonymous_updates eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
