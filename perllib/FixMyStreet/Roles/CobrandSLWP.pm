@@ -171,7 +171,7 @@ sub state_groups_admin {
     [
         [ New => [ 'confirmed' ] ],
         [ Pending => [ 'investigating', 'action scheduled' ] ],
-        [ Closed => [ 'fixed - council', 'unable to fix', 'closed', 'duplicate' ] ],
+        [ Closed => [ 'fixed - council', 'unable to fix', 'closed', 'duplicate', 'cancelled' ] ],
         [ Hidden => [ 'unconfirmed', 'hidden', 'partial' ] ],
     ]
 }
