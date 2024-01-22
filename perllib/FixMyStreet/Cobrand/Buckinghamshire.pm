@@ -145,7 +145,7 @@ sub send_questionnaires {
     return 0;
 }
 
-sub open311_extra_data_exclude { [ 'road-placement' ] }
+sub open311_extra_data_exclude { [ 'road-placement', 'last_cleaned_date' ] }
 
 =head2 open311_update_missing_data
 
