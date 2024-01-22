@@ -968,7 +968,9 @@ sub duration_string {
     my $cobrand = $problem->result_source->schema->cobrand;
     my $body = $cobrand->call_hook( link_to_council_cobrand => $problem )
         || $problem->body(1);
-    return unless $problem->whensent;
+    return
+        unless $problem->whensent
+        && $problem->service ne 'Open311';
     my $s = sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
