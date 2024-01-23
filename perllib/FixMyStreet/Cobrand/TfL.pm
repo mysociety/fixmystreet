@@ -194,6 +194,10 @@ sub social_auth_enabled {
 sub user_from_oidc {
     my ($self, $payload) = @_;
 
+    # TODO: Remove this once we know which fields the name/email are in.
+    use Data::Dumper;
+    $self->{c}->log->info("TfL OIDC payload: " . Dumper($payload));
+
     my $name = join(" ", $payload->{given_name}, $payload->{family_name});
     my $email = $payload->{email};
 
@@ -203,6 +207,9 @@ sub user_from_oidc {
 sub roles_from_oidc {
     my ($self, $user, $roles) = @_;
 
+    $self->{c}->log->info("TfL user name: " . $user->name) if $user;
+    use Data::Dumper;
+    $self->{c}->log->info("TfL roles: " . Dumper($roles));
     $user->user_roles->delete;
     $user->from_body($self->body->id);
 
@@ -222,7 +229,7 @@ sub roles_from_oidc {
             name => $_->name,
         }
     }
-
+    $self->{c}->log->info("TfL body roles: " . Dumper(\@body_roles));
     for my $assign_role (@$roles) {
         my ($body_role) = grep { $role_map{$assign_role} && $_->{name} eq $role_map{$assign_role} } @body_roles;
 
