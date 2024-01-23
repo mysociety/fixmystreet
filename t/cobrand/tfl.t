@@ -31,6 +31,7 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
 });
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
+
 $staffuser->user_body_permissions->create({
     body => $body,
     permission_type => 'contribute_as_body',
@@ -260,6 +261,18 @@ FixMyStreet::override_config {
 
 $mech->host("tfl.fixmystreet.com");
 
+subtest "creating a user on TfL creates tfl_password extra_metadata" => sub {
+    for my $email ('test@tfl.gov.uk', 'test@elsewhere.org') {
+        $mech->get_ok('/auth/create');
+        $mech->submit_form_ok({ with_fields => { username => $email, password_register => 'xpasswordx'} });
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+        my $tfl_user = FixMyStreet::DB->resultset("User")->find({ email => $email});
+        ok $tfl_user->get_extra_metadata('tfl_password'), "TfL encrypted password created";
+        $mech->log_out_ok();
+    }
+};
+
 subtest "test report creation anonymously by button" => sub {
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
@@ -300,6 +313,40 @@ subtest "test report creation anonymously by button" => sub {
     is $alert, undef, "no alert created";
 
     $mech->not_logged_in_ok;
+};
+
+subtest "test users with tfl email not asked to update their FMS password" => sub {
+    my $tfl_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@tfl.gov.uk'});
+    $tfl_staff->set_extra_metadata('last_password_change',  DateTime->now->subtract(years => 2)->epoch);
+    $tfl_staff->update;
+    $mech->get_ok('/auth');
+    FixMyStreet->test_mode(0);
+    $mech->submit_form_ok(
+        { with_fields => { username => $tfl_staff->email, password_sign_in => 'xpasswordx' } },
+        "sign in using form"
+    );
+    FixMyStreet->test_mode(1);
+    $tfl_staff->set_extra_metadata('last_password_change', time());
+    $tfl_staff->update;
+    is $mech->uri->path, '/my', "logged in to My Account page";
+    $mech->content_lacks('Your password has expired, please create a new one below');
+};
+
+subtest "test users without tfl email asked to update their FMS password" => sub {
+    my $tfl_non_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@elsewhere.org'});
+    $tfl_non_staff->set_extra_metadata('last_password_change', DateTime->now->subtract(years => 2)->epoch);
+    $tfl_non_staff->update;
+    $mech->get_ok('/auth');
+    FixMyStreet->test_mode(0);
+    $mech->submit_form_ok(
+        { with_fields => { username => $tfl_non_staff->email, password_sign_in => 'xpasswordx' } },
+        "sign in using form"
+    );
+    FixMyStreet->test_mode(1);
+    $tfl_non_staff->set_extra_metadata('last_password_change', time());
+    $tfl_non_staff->update;
+    is $mech->uri->path, '/auth/expired', "logged in to create new password page";
+    $mech->content_contains('Your password has expired, please create a new one below');
 };
 
 subtest "test report creation anonymously for private categories" => sub {
