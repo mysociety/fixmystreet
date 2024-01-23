@@ -686,11 +686,21 @@ to put the UnitID in the detail field for sending
 =cut
 
 sub open311_post_send {
-    my ($self, $row) = @_;
+    my ($self, $row, $h, $sender) = @_;
 
     if ($row->contact->email =~ /ATAK/ && $row->external_id) {
         $row->update({ state => 'investigating' });
     }
+
+    my $error = $sender->error;
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        if ($error =~ /Selected reservations expired|Invalid reservation reference/) {
+            $self->bulky_refetch_slots($row2);
+            $row->discard_changes;
+        }
+    });
 }
 
 =head2 lookup_location_name
