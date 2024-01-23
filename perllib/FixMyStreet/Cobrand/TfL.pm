@@ -195,7 +195,7 @@ sub user_from_oidc {
     my ($self, $payload) = @_;
 
     my $name = join(" ", $payload->{given_name}, $payload->{family_name});
-    my $email = $payload->{email};
+    my $email = $payload->{email} ? lc($payload->{email}) : '';
 
     return ($name, $email);
 }
