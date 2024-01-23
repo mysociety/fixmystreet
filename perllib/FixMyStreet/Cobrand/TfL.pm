@@ -159,7 +159,14 @@ sub inactive_reports_filter {
 }
 
 sub password_expiry {
+    my ($self) = @_;
+
     return if FixMyStreet->test_mode;
+
+    my $email = $self->{c}->user->email;
+    my $domain_email = $self->admin_user_domain;
+    return if $email =~ /$domain_email$/;
+
     # uncoverable statement
     86400 * 365
 }
