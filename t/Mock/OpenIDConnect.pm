@@ -87,7 +87,7 @@ sub dispatch_request {
         } elsif ($self->cobrand eq 'tfl') {
             $payload->{given_name} = "Andy";
             $payload->{family_name} = "Dwyer";
-            $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc@tfl.org' if $self->returns_email;
+            $payload->{email} = 'Pkg-tappcontrollerauth_socialt-oidc@TFL.org' if $self->returns_email;
             $payload->{roles} = $self->roles;
         }
         my $signature = "dummy";
