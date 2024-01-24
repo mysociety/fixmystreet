@@ -58,10 +58,8 @@ Total: £[% pounds(total / 100) %]
 [% END %]
 
 [% IF type == 'new' OR type == 'renew' ~%]
-Your subscription will last until the end of March 2024 and starts after your first collection date.
+Your subscription will last until the end of March 2025 and starts after your first collection date.
 [% END %]
-
-For new subscribers, and existing subscribers who did not renew before the deadline (31st March 2023), it may take up to 14 working days for your first collection to take place.
 
 You can check your collection day online:
 https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work
