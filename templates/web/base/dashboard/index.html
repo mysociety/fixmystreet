@@ -154,7 +154,18 @@
         <th scope="col">[% loc('Total') %]</th>
       [% END %]
     </tr>
+  [% SET current_category = '' %]
   [% FOR k IN rows %][% k_safe = mark_safe(k) %]
+    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
+    [% SET current_category = category_to_group.$k_safe %]
+      <tr>
+        [% IF group_by == 'category+state' %]
+        <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
+        [% ELSE %]
+        <th colspan="2" scope="colgroup">[% category_to_group.$k_safe %]</th>
+        [% END %]
+      </tr>
+    [% END %]
     <tr>
       [% IF group_by == 'state' %]
         <th scope="row">[% prettify_state(k) %]</th>

@@ -93,6 +93,7 @@ my $categories = scraper {
     process "table[id=overview] > tr", 'rows[]' => scraper {
         process 'td', 'cols[]' => 'TEXT'
     },
+    process 'th[scope=colgroup]', 'top_level[]' => 'TEXT'
 };
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
@@ -166,7 +167,7 @@ FixMyStreet::override_config {
         $mech->content_contains('<option value="group-Road &amp; more"');
         is_deeply( $res->{cats}, $expected_cats, 'correct list of categories' );
         # Three missing as more than a month ago
-        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 7, 3, 0, 10, 1, 0, 0, 1, 11, 3, 4, 18);
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 7, 3, 0, 10, 2, 0, 4, 6, 1, 0, 0, 1, 11, 3, 4, 18);
     };
 
     subtest 'test filters' => sub {
@@ -174,40 +175,49 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { category => 'Litter' } });
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1);
         $mech->submit_form_ok({ with_fields => { category => '', state => 'fixed - council' } });
-        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4);
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4);
         $mech->submit_form_ok({ with_fields => { state => 'action scheduled' } });
-        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 7);
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7);
         my $start = DateTime->now->subtract(months => 3)->strftime('%Y-%m-%d');
         my $end = DateTime->now->subtract(months => 1)->strftime('%Y-%m-%d');
         $mech->submit_form_ok({ with_fields => { state => '', start_date => $start, end_date => $end } });
-        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3);
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3);
         $mech->get_ok("/dashboard?category=Litter&category=Potholes");
-        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 7);
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 3, 0, 4, 7);
         $mech->get_ok("/dashboard?category=Traffic+lights+%26+bells");
         $mech->content_contains("<option value='Traffic lights &amp; bells' selected>");
-        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 0, 10, 0, 0, 0, 0, 7, 3, 0, 10);
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 0, 10);
         $mech->get_ok("/dashboard?category=group-Road+%26+more");
         $mech->content_contains('<option value="group-Road &amp; more" selected>');
-        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 1, 0, 0, 1, 3, 0, 4, 7);
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 3, 0, 4, 7);
         $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Potholes");
-        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 1, 0, 0, 1, 3, 0, 4, 7);
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 3, 0, 4, 7);
         $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter");
-        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 1, 0, 0, 1, 4, 0, 4, 8);
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 4, 0, 4, 8);
     };
 
     subtest 'test grouping' => sub {
         $mech->get_ok("/dashboard?group_by=category");
-        test_table($mech->content, 1, 0, 6, 10, 1, 18);
+        my $top_level = test_table($mech->content, 1, 0, 10, 6, 1, 18);
+        is_deeply $top_level, ['Road & more'], 'Road group created';
         $mech->get_ok("/dashboard?group_by=state");
         test_table($mech->content, 4, 7, 4, 3, 18);
         $mech->get_ok("/dashboard?start_date=2000-01-01&group_by=month");
         test_table($mech->content, 0, 18, 18, 3, 0, 3, 3, 18, 21);
+        my $pothole = FixMyStreet::DB->resultset('Contact')->find_or_create({ category => 'Potholes'});
+        $pothole->set_extra_metadata(group => ['Road & more', 'Pavement']);
+        $pothole->update;
+        $mech->get_ok("/dashboard?group_by=category");
+        $top_level = test_table($mech->content, 1, 0, 10, 1, 6, 18);
+        is_deeply $top_level, ['Road & more', 'Multiple'], 'Road and Multiple groups created';
+        $pothole->set_extra_metadata(group => ['Road & more']);
+        $pothole->update;
     };
 
     subtest 'test roles' => sub {
         # All the fixed (Pothole) reports only
         $mech->get_ok("/dashboard?group_by=category&role=" . $role->id);
-        test_table($mech->content, 0, 0, 4, 0, 0, 4);
+        test_table($mech->content, 0, 0, 0, 4, 0, 4);
         $mech->get_ok("/dashboard?export=2&group_by=category&role=" . $role->id);
         $mech->content_contains('role-' . $role->id, "File link created with role");
     };
@@ -373,12 +383,14 @@ FixMyStreet::override_config {
 
 sub test_table {
     my ($content, @expected) = @_;
+
     my $res = $categories->scrape( $mech->content );
     my @actual;
     foreach my $row ( @{ $res->{rows} }[1 .. 11] ) {
         push @actual, @{$row->{cols}} if $row->{cols};
     }
     is_deeply \@actual, \@expected;
+    return $res->{top_level};
 }
 
 restore_time;

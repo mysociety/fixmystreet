@@ -9,6 +9,8 @@ use Path::Tiny;
 use Time::Piece;
 use FixMyStreet::DateRange;
 use FixMyStreet::Reporting;
+use List::Util qw(uniq);
+use List::MoreUtils qw(part);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -292,6 +294,26 @@ sub generate_grouped_data : Private {
             my $bm = $map{$b} // $map{$state_map->{$b}};
             $am <=> $bm;
         } @rows;
+    } elsif ($group_by eq 'category+state' || $group_by eq 'category') {
+        @rows = ();
+        my @sorting_categories;
+        my %category_to_group;
+        for my $group (@{$c->stash->{category_groups}}) {
+            for my $category (@{$group->{categories}}) {
+                push @sorting_categories, $category->category;
+                if (!$category_to_group{$category->category}) {
+                    $category_to_group{$category->category} = $group->{name};
+                } else {
+                    $category_to_group{$category->category} = 'Multiple';
+                }
+            }
+        };
+        my ($single_group, $multiple_groups) = part { $category_to_group{$_} eq 'Multiple'} @sorting_categories;
+        my @multiple = sort (uniq(@$multiple_groups));
+
+        push @rows, @$single_group if $single_group;
+        push @rows, @multiple if scalar @multiple;
+        $c->stash->{category_to_group} = \%category_to_group;
     } else {
         @rows = sort @rows;
     }
