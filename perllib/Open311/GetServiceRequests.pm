@@ -97,6 +97,7 @@ sub create_problems {
             next;
         }
         my $request_id = $request->{service_request_id};
+        my $is_confirm_job = $request_id =~ /^JOB_/;
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
@@ -106,7 +107,7 @@ sub create_problems {
         ( $latitude, $longitude )
             = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
             if $self->convert_latlong
-            && $request_id !~ /^JOB_/;
+            && !$is_confirm_job;
 
         my $all_areas =
           FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude");
@@ -152,8 +153,18 @@ sub create_problems {
         # Skip if this problem already exists (e.g. it may have originated from FMS and is being mirrored back!)
         next if $self->schema->resultset('Problem')->to_body($body)->search( $criteria )->count;
 
-        if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
-            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
+        # Skip this date check for Confirm jobs, otherwise we are likely to
+        # skip a bunch of valid jobs if calling the fetch script using
+        # explicit start and end values
+        if (   !$is_confirm_job
+            && $args->{start_date}
+            && $args->{end_date}
+            && (   $updated lt $args->{start_date}
+                || $updated gt $args->{end_date} )
+            )
+        {
+            warn
+                "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
                 . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
                 if $self->verbose >= 2;
             next;
