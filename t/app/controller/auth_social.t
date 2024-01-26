@@ -6,6 +6,7 @@ use JSON::MaybeXS;
 use t::Mock::Facebook;
 use t::Mock::Twitter;
 use t::Mock::OpenIDConnect;
+use t::Mock::Tilma;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -45,6 +46,9 @@ foreach ($body->id, $body2->id, $body3->id) {
 my $resolver = Test::MockModule->new('Email::Valid');
 my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
 $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
 
 for my $test (
     {
