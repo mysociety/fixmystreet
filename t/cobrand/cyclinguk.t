@@ -1,5 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Alerts;
+
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -24,6 +26,14 @@ my $user2 = $mech->create_user_ok( 'anotheruser@example.com', name => 'Public Us
 my $staff = $mech->create_user_ok( 'staff@cyclinguk.org', name => 'Staff User 1' );
 my $staff2 = $mech->create_user_ok( 'staff@anotherexample.org', name => 'Staff User 2' );
 my $super = $mech->create_user_ok( 'super@example.com', name => 'Super User', is_superuser => 1 );
+
+$staff->alerts->create({
+    alert_type => 'council_problems',
+    parameter => $body->id,
+    whensubscribed => \"current_timestamp - '1 hour'::interval",
+    cobrand => 'cyclinguk',
+    confirmed => 1,
+});
 
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
@@ -100,7 +110,7 @@ subtest 'cyclinguk dashboard shows correct bodies' => sub {
     $mech->content_contains('<option value="' . $body->id . '">Bath and North East Somerset Council</option>');
 };
 
-
+my ($problem2, $problem3);
 subtest 'Admin users limited correctly' => sub {
     $mech->get_ok("/admin/users/" . $staff->id);
     $mech->content_contains($staff->name);
@@ -120,7 +130,7 @@ subtest 'Admin users limited correctly' => sub {
     $mech->get_ok("/admin/users/" . $staff2->id);
     $mech->content_contains($staff2->name);
 
-    my ($problem2) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+    ($problem2) = $mech->create_problems_for_body(1, $body->id, 'Title', {
         areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
         user => $user2,
     });
@@ -136,7 +146,7 @@ subtest 'Admin users limited correctly' => sub {
     # if they've not made a problem report via this cobrand but have made an
     # update on a report on this cobrand they'll appear
     $problem2->update({ cobrand => 'fixmystreet' });
-    my ($problem3) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+    ($problem3) = $mech->create_problems_for_body(1, $body->id, 'Title', {
         areas => ",2651,", category => 'Potholes', cobrand => 'cyclinguk',
         user => $user,
     });
@@ -149,6 +159,14 @@ subtest 'Admin users limited correctly' => sub {
 };
 
 $mech->log_out_ok;
+
+subtest 'Test alerts working okay' => sub {
+    FixMyStreet::Script::Alerts::send_other();
+    my $text = $mech->get_text_body_from_email;
+    like $text, qr{report/@{[$problem->id]}};
+    unlike $text, qr{report/@{[$problem2->id]}};
+    like $text, qr{report/@{[$problem3->id]}};
+};
 
 subtest 'New report user info fields' => sub {
     $mech->log_in_ok( $user->email );

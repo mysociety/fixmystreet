@@ -103,6 +103,7 @@ sub send_alert_type {
         next unless FixMyStreet::DB::Result::Problem::visible_states()->{$row->{state}};
 
         next if $row->{alert_cobrand} ne 'tfl' && $row->{item_cobrand} eq 'tfl';
+        next if $row->{alert_cobrand} eq 'cyclinguk' && $row->{item_cobrand} ne 'cyclinguk';
 
         $schema->resultset('AlertSent')->create( {
             alert_id  => $row->{alert_id},
