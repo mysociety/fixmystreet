@@ -17,8 +17,10 @@
           <ul>
             <li>Find your bin collection days</li>
             <li>Report a missed bin collection</li>
+            [% IF c.cobrand.moniker != 'bexley' %]
             <li>Order new or additional bins</li>
             <li>Subscribe to garden waste collection service</li>
+            [% END %]
             [% IF c.cobrand.call_hook('bulky_enabled') && (c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston') %]
               <li>Book a bulky waste collection</li>
             [% END %]
