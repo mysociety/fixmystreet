@@ -231,7 +231,7 @@ sub _populate_service_request_uploads {
         my $files = $problem->get_extra_metadata('enquiry_files') || {};
         for my $key (keys %$files) {
             my $name = $files->{$key};
-            $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, $name ];
+            $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, encode('UTF-8', $name) ];
         }
     }
 

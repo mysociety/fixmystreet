@@ -179,7 +179,8 @@ FixMyStreet::override_config {
 
 my $sample_jpeg = path(__FILE__)->parent->child("sample.jpg");
 ok $sample_jpeg->exists, "sample image $sample_jpeg exists";
-my $sample_pdf = path(__FILE__)->parent->child("sample.pdf");
+my $sample_pdf = path(__FILE__)->parent->child("samplê.pdf");
+my $pdf_filename = encode_utf8($sample_pdf->basename);
 ok $sample_pdf->exists, "sample PDF $sample_pdf exists";
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
@@ -216,7 +217,7 @@ FixMyStreet::override_config {
             category => 'Other',
             detail => encode_utf8('This is a general enquiry‽'),
             photo1         => [ $sample_jpeg, undef, Content_Type => 'image/jpeg' ],
-            photo2         => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            photo2         => [ $sample_pdf, $pdf_filename, Content_Type => 'application/pdf' ],
             }
         );
         ok $mech->success, 'Made request with two files uploaded';
@@ -242,7 +243,7 @@ FixMyStreet::override_config {
         ok $pdf_file->exists, 'PDF uploaded to temp';
 
         is_deeply $problem->get_extra_metadata('enquiry_files'), {
-            $pdf_hash => 'sample.pdf'
+            $pdf_hash => 'samplê.pdf'
         }, 'enquiry file info stored OK';
     };
 
@@ -258,8 +259,8 @@ FixMyStreet::override_config {
                 is decode_utf8($_->content), 'This is a general enquiry‽', 'Correct description';
                 $found++;
             }
-            if ($cd =~ /sample.pdf/) {
-                is $cd, 'form-data; name="file_' . $pdf_hash . '"; filename="sample.pdf"', 'Correct PDF header';
+            if ($cd =~ /$pdf_filename/) {
+                is $cd, encode_utf8('form-data; name="file_' . $pdf_hash . '"; filename="samplê.pdf"'), 'Correct PDF header';
                 is $_->header('Content-Type'), 'application/pdf', 'Correct PDF content type';
                 $found++;
             }
