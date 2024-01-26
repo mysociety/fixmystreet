@@ -171,6 +171,7 @@ sub create_problems {
         my $title = $request->{title} || $cobrand && $cobrand->call_hook('open311_title_fetched_report', $request) || $request->{service_name} . ' problem';
         my $detail = $request->{description} || $title;
 
+        my $areas = ',' . join( ',', sort keys %$all_areas ) . ',';
         my $params = {
             user => $self->system_user,
             external_id => $request_id,
@@ -188,7 +189,7 @@ sub create_problems {
             used_map => 1,
             latitude => $latitude,
             longitude => $longitude,
-            areas => ',' . $body->id . ',',
+            areas => $areas,
             bodies_str => $body->id,
             send_method_used => 'Open311',
             category => $contact,
