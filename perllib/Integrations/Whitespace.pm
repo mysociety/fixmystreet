@@ -84,7 +84,12 @@ sub GetAddresses {
 
     my $res = $self->call('GetAddresses', getAddressInput => ixhash( Postcode => $postcode ));
 
-    return $res->{Addresses}->{Address};
+    my $addresses = $res->{Addresses}->{Address};
+    # Spec - Results can be returned as an array if more than one result is found.
+    # So presuming one address may not be an array
+    $addresses = [ $addresses ] if (ref($addresses) eq 'HASH');
+
+    return $addresses;
 }
 
 sub GetSiteCollections {
