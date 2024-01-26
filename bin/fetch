@@ -35,7 +35,7 @@ my ($opts, $usage) = describe_options(
     ['end|e:f', 'end time to use (hours before now), defaults to zero' ],
     ['body|b:s@', 'body name(s) to only fetch these bodies' ],
     ['exclude|e:s@', 'body name(s) to exclude from fetching' ],
-    ['verbose|v', 'more verbose output'],
+    ['verbose|v+', 'more verbose output', { default => 0 }],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;

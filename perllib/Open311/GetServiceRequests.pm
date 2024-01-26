@@ -110,7 +110,7 @@ sub create_problems {
         my @areas = grep { $all_areas->{$_->area_id} } $body->body_areas;
         unless (@areas) {
             warn "Not creating request id $request_id for @{[$body->name]} as outside body area"
-                if $self->verbose;
+                if $self->verbose >= 2;
             next;
         }
 
@@ -121,7 +121,7 @@ sub create_problems {
         };
         if ($@) {
             warn "Not creating problem $request_id for @{[$body->name]}, bad update time"
-                if $self->verbose;
+                if $self->verbose >= 2;
             next;
         }
         my $updated = DateTime::Format::W3CDTF->format_datetime(
@@ -150,7 +150,7 @@ sub create_problems {
         if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
             warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
                 . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
-                if $self->verbose;
+                if $self->verbose >= 2;
             next;
         }
 
