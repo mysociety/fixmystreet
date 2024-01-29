@@ -2,24 +2,24 @@
     [% PROCESS waste/_bulky_not_signed_user.html %]
 [% END %]
 
-<dl class="govuk-summary-list govuk-!-margin-bottom-0">
-
-  [% FOR booking IN pending_bulky_collections %]
+[% FOR booking IN pending_bulky_collections %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Next collection</dt>
-      <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
-    </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Reference number</dt>
-      <dd class="govuk-summary-list__value">[% booking.id %]</dd>
-    </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Items to be collected</dt>
-      <dd class="govuk-summary-list__value">
-        <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
-      </dd>
-    </div>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Next collection</dt>
+        <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reference number</dt>
+        <dd class="govuk-summary-list__value">[% booking.id %]</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Items to be collected</dt>
+        <dd class="govuk-summary-list__value">
+          <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
+        </dd>
+      </div>
+    </dl>
 
     <div class="waste-services-launch-panel">
         <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
@@ -38,43 +38,44 @@
 
   [% IF NOT booking AND c.user_exists %]
     <!-- #04 Should only display when: There is NO booking AND is a signed user -->
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Next collection</dt>
-      <dd class="govuk-summary-list__value"> None booked </dd>
-    </div>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Next collection</dt>
+        <dd class="govuk-summary-list__value"> None booked </dd>
+      </div>
+    </dl>
     <!-- END #04 -->
   [% END %]
-</dl>
 
   [% FOR booking IN recent_bulky_collections; booking_guid = booking.external_id; %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Collection date</dt>
-      <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
-    </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Reference number</dt>
-      <dd class="govuk-summary-list__value">[% booking.id %]</dd>
-    </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Items</dt>
-      <dd class="govuk-summary-list__value">
-        <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
-      </dd>
-    </div>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Collection date</dt>
+        <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reference number</dt>
+        <dd class="govuk-summary-list__value">[% booking.id %]</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Items</dt>
+        <dd class="govuk-summary-list__value">
+          <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
+        </dd>
+      </div>
+    </dl>
     <div class="waste-services-launch-panel">
         <a class="btn btn-primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
         [% PROCESS 'waste/_service_missed.html' unit=bulky_missed.$booking_guid no_default=1 %]
     </div>
-
   [% END %]
 
   [% IF unconfirmed_bulky_collections %]
     <hr>
-    <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-
-        <h2>Unconfirmed&nbsp;bookings</h2>
-      [% FOR booking IN unconfirmed_bulky_collections %]
+    <h2>Unconfirmed&nbsp;bookings</h2>
+    [% FOR booking IN unconfirmed_bulky_collections %]
+      <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Collection date</dt>
           <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
@@ -89,16 +90,15 @@
             <p class="govuk-!-margin-bottom-0">[% c.cobrand.bulky_nice_item_list(booking).size %]</p>
           </dd>
         </div>
-
-        <div class="waste-services-launch-panel">
-            <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/index', { continue_id => booking.id }) %]">Retry booking</a>
-        </div>
-      [% END %]
-    </dl>
+      </dl>
+      <div class="waste-services-launch-panel">
+        <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/index', { continue_id => booking.id }) %]">Retry booking</a>
+      </div>
+    [% END %]
   [% END %]
 
 [% IF c.cobrand.moniker != 'brent' %]
-<dl class="govuk-summary-list govuk-!-margin-bottom-0">
+<dl class="govuk-summary-list govuk-!-margin-bottom-3 govuk-!-padding-bottom-0">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Cost</dt>
     <dd class="govuk-summary-list__value">
