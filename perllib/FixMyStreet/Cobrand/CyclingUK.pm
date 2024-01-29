@@ -35,7 +35,7 @@ sub path_to_email_templates {
 }
 
 
-sub privacy_policy_url { 'https://www.cyclinguk.org/privacy-policy' }
+sub privacy_policy_url { 'https://www.cyclinguk.org/article/fill-hole-privacy-notice' }
 
 =item problems_restriction
 
