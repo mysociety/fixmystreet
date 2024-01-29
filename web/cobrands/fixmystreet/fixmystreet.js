@@ -1370,7 +1370,7 @@ $.extend(fixmystreet.set_up, {
         focusFirstVisibleInput();
     });
 
-    $('.js-new-report-sign-in-forgotten').on('click', function() {
+    $('.js-new-report-sign-in-forgotten').on('click', function(e) {
         e.preventDefault();
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
