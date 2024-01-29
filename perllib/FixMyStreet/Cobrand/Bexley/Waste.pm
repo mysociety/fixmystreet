@@ -60,6 +60,15 @@ sub bin_services_for_address {
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
+        my $next_dt = eval {
+            DateTime::Format::W3CDTF->parse_datetime(
+                $service->{NextCollectionDate} );
+        };
+        if ($@) {
+            warn $@;
+            next;
+        }
+
         my $from_dt = eval {
             DateTime::Format::W3CDTF->parse_datetime(
                 $service->{SiteServiceValidFrom} );
@@ -83,23 +92,28 @@ sub bin_services_for_address {
             next if $now_dt > $to_dt;
         }
 
-        push @site_services_filtered, $service;
-    }
-
-    my $services = [ map {
-        {
-            id => $_->{SiteServiceID},
-            service_id => $_->{SiteServiceID},
-            service_name => $_->{ServiceItemDescription},
-            next => {
-                date => $_->{NextCollectionDate},
-                ordinal => 'th', # TODO!
+        push @site_services_filtered, {
+            id           => $service->{SiteServiceID},
+            service_id   => $service->{SiteServiceID},
+            service_name => $service->{ServiceItemDescription},
+            next         => {
+                date    => $service->{NextCollectionDate},
+                ordinal => ordinal( $next_dt->day ),
                 changed => 0,
             },
-        }
-    } @site_services_filtered ];
+        };
+    }
 
-    return $services;
+    return \@site_services_filtered;
+}
+
+sub bin_day_format { '%A, %-d~~~ %B %Y' }
+
+# TODO This logic is copypasted across multiple files; get it into one place
+my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
+sub ordinal {
+    my $n = shift;
+    $irregulars{$n % 100} || $irregulars{$n % 10} || 'th';
 }
 
 1;
