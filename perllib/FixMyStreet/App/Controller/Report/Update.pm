@@ -163,6 +163,7 @@ sub process_user : Private {
         };
         unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the ‘No’ section of the form.');
+            $c->stash->{field_errors}->{password_js} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please select ‘Fill in your details manually’.');
             return 1;
         }
         my $user = $c->user->obj;
