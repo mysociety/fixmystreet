@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 
+use Test::MockModule;
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
 LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
@@ -407,6 +408,8 @@ subtest "TfL cobrand only shows TfL templates" => sub {
             anonymous_account => { tfl => 'anon' },
         },
     }, sub {
+        my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+        $tfl_mock->mock('password_expiry', sub {});
         $report->update({
             category => $tflcontact->category,
             bodies_str => $tfl->id,

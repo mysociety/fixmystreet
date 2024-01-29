@@ -4,6 +4,7 @@ use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
 use File::Temp 'tempdir';
+use Test::MockModule;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -337,12 +338,10 @@ subtest "test users without tfl email asked to update their FMS password" => sub
     $tfl_non_staff->set_extra_metadata('last_password_change', DateTime->now->subtract(years => 2)->epoch);
     $tfl_non_staff->update;
     $mech->get_ok('/auth');
-    FixMyStreet->test_mode(0);
     $mech->submit_form_ok(
         { with_fields => { username => $tfl_non_staff->email, password_sign_in => 'xpasswordx' } },
         "sign in using form"
     );
-    FixMyStreet->test_mode(1);
     $tfl_non_staff->set_extra_metadata('last_password_change', time());
     $tfl_non_staff->update;
     is $mech->uri->path, '/auth/expired', "logged in to create new password page";
@@ -435,6 +434,8 @@ subtest "test report creation anonymously by staff user" => sub {
 FixMyStreet::DB->resultset("Problem")->delete_all;
 
 subtest "test report creation and reference number" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->log_in_ok( $user->email );
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
@@ -474,6 +475,8 @@ subtest "test bus report creation outside London, .com" => sub {
 };
 
 subtest "test bus report creation outside London" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->get_ok('/report/new?latitude=51.345714&longitude=-0.227959');
     $mech->submit_form_ok(
         {
@@ -629,6 +632,8 @@ subtest 'Inspect form state choices' => sub {
 };
 
 subtest "change category, report resent to new location" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
     my $id = $report->id;
 
@@ -656,6 +661,8 @@ for my $test (
 ) {
     my ($postcode, $host, $category, $to, $name, $ref ) = @$test;
     subtest "test report is sent to $name on $host" => sub {
+        my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+        $tfl_mock->mock('password_expiry', sub {});
         $mech->host($host);
         $mech->log_in_ok( $user->email );
         $mech->get_ok('/around');
@@ -808,6 +815,8 @@ subtest 'check report age in general' => sub {
 };
 
 subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->log_in_ok($superuser->email);
 
     $mech->get_ok("/admin/users/" . $staffuser->id) or diag $mech->content;
@@ -854,6 +863,8 @@ subtest 'TLRN categories cannot be renamed' => sub {
 };
 
 subtest 'Bromley staff cannot access TfL admin' => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->log_in_ok( $bromleyuser->email );
     ok $mech->get('/admin');
     is $mech->res->code, 403, "got 403";
