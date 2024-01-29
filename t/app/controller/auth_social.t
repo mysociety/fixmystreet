@@ -15,6 +15,9 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+#my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+#$tfl_mock->mock('must_have_2fa', sub { 0 });
+
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body2 = $mech->create_body_ok(2508, 'Hackney Council');
 my $body3 = $mech->create_body_ok(2488, 'Brent Council', {}, { cobrand => 'brent' });
@@ -629,7 +632,7 @@ for my $setup (
                 }
             }
         },
-        email => $mech->uniquify_email('oidc@tfl.org'),
+        email => $mech->uniquify_email('oidc@tfl.gov.uk'),
         uid => "tfl:example_client_id:my_cool_user_id",
         mock => 't::Mock::OpenIDConnect',
         mock_hosts => ['oidc.example.org'],
