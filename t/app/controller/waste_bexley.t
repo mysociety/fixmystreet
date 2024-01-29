@@ -67,11 +67,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => 1 } } );
 
         $mech->content_contains('Service 1');
+        $mech->content_contains('Monday, 1st April 2024');
         $mech->content_lacks('Service 2');
         $mech->content_lacks('Service 3');
         $mech->content_lacks('Service 4');
         $mech->content_lacks('Service 5');
         $mech->content_contains('Service 6');
+        $mech->content_contains('Tuesday, 2nd April 2024');
+        $mech->content_lacks('Service 7');
     };
 };
 
@@ -168,7 +171,15 @@ sub _site_collections {
             SiteServiceID => 6,
             ServiceItemDescription => 'Service 6',
 
-            NextCollectionDate => '2024-04-01T00:00:00',
+            NextCollectionDate => '2024-04-02T00:00:00',
+            SiteServiceValidFrom => '2024-03-31T00:59:59',
+            SiteServiceValidTo => '0001-01-01T00:00:00',
+        },
+        {
+            SiteServiceID => 7,
+            ServiceItemDescription => 'Service 7',
+
+            NextCollectionDate => '20240-04-02T00:00:00',
             SiteServiceValidFrom => '2024-03-31T00:59:59',
             SiteServiceValidTo => '0001-01-01T00:00:00',
         },
