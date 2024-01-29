@@ -3,6 +3,9 @@ package FixMyStreet::Cobrand::Bexley::Waste;
 use Moo::Role;
 
 use Integrations::Whitespace;
+use DateTime;
+use DateTime::Format::W3CDTF;
+use FixMyStreet;
 use FixMyStreet::Template;
 use Sort::Key::Natural qw(natkeysort_inplace);
 
@@ -51,13 +54,42 @@ sub bin_services_for_address {
     };
 
     my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
+    my @site_services_filtered;
 
-    # TODO: Filter out services with SiteServiceValidTo in the past or SiteServiceValidFrom in the future
-    $site_services = [ grep { $_->{NextCollectionDate} } @$site_services ];
+    my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
+    for my $service (@$site_services) {
+        next if !$service->{NextCollectionDate};
+
+        my $from_dt = eval {
+            DateTime::Format::W3CDTF->parse_datetime(
+                $service->{SiteServiceValidFrom} );
+        };
+        if ($@) {
+            warn $@;
+            next;
+        }
+        next if $now_dt < $from_dt;
+
+        # 0001-01-01T00:00:00 seems to represent an undefined date
+        if ( $service->{SiteServiceValidTo} ne '0001-01-01T00:00:00' ) {
+            my $to_dt = eval {
+                DateTime::Format::W3CDTF->parse_datetime(
+                    $service->{SiteServiceValidTo} );
+            };
+            if ($@) {
+                warn $@;
+                next;
+            }
+            next if $now_dt > $to_dt;
+        }
+
+        push @site_services_filtered, $service;
+    }
 
     my $services = [ map {
         {
             id => $_->{SiteServiceID},
+            service_id => $_->{SiteServiceID},
             service_name => $_->{ServiceItemDescription},
             next => {
                 date => $_->{NextCollectionDate},
@@ -65,7 +97,7 @@ sub bin_services_for_address {
                 changed => 0,
             },
         }
-    } @$site_services ];
+    } @site_services_filtered ];
 
     return $services;
 }
