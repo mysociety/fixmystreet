@@ -8,6 +8,7 @@ my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
 my $sample_pdf = path(__FILE__)->parent->child("sample.pdf");
 ok $sample_pdf->exists, "sample file $sample_pdf exists";
+my $sample_blank = path(__FILE__)->parent(3)->child("fixtures", "blank.jpeg");
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -94,6 +95,10 @@ FixMyStreet::override_config {
             photos2 => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
         } }, "cause screen");
         $mech->submit_form_ok({ with_fields => { registration => 'rego!', mileage => '20',
+            v5 => [ $sample_blank ], v5_in_name => 'Yes', damage_claim => 'No', vat_reg => 'No',
+        } }, "bad v5 file");
+        $mech->content_contains('File is too small');
+        $mech->submit_form_ok({ with_fields => { registration => 'rego!', mileage => '20',
             v5 => [ $sample_pdf, undef, Content_Type => 'application/octet-stream', filename => 'v5.pdf' ],
             v5_in_name => 'Yes', insurer_address => 'insurer address', damage_claim => 'No', vat_reg => 'No',
         } }, "car details");
@@ -105,6 +110,9 @@ FixMyStreet::override_config {
             tyre_damage => 'Yes', tyre_mileage => 20,
         } }, "damage details");
         $mech->content_contains('Review');
+        $mech->submit_form_ok({ form_number => 13 }, "Back to about vehicle page");
+        $mech->submit_form_ok({ with_fields => { continue => 'Continue' } });
+        $mech->submit_form_ok({ with_fields => { continue => 'Continue' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Claim submitted');
 

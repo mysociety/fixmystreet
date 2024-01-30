@@ -17,6 +17,13 @@ has finished_action => ( is => 'ro' );
 
 has '+is_html5' => ( default => 1 );
 
+has upload_dir => ( is => 'ro', default => sub {
+    my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+    my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+    $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to())->mkdir;
+    return $dir;
+});
+
 before _process_page_array => sub {
     my ($self, $pages) = @_;
     foreach my $page (@$pages) {
@@ -1145,23 +1152,19 @@ sub file_upload {
     my $c = $form->{c};
     my $saved_data = $form->saved_data;
 
-    my $receipts = $c->req->upload($field);
-    if ( $receipts ) {
-        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-        $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to())->mkdir;
-
-        FixMyStreet::PhotoStorage::base64_decode_upload($c, $receipts);
-        my ($p, $n, $ext) = fileparse($receipts->filename, qr/\.[^.]*/);
-        my $key = sha1_hex($receipts->slurp) . $ext;
-        my $out = $dir->child($key);
-        unless (copy($receipts->tempname, $out)) {
+    my $upload = $c->req->upload($field);
+    if ( $upload ) {
+        FixMyStreet::PhotoStorage::base64_decode_upload($c, $upload);
+        my ($p, $n, $ext) = fileparse($upload->filename, qr/\.[^.]*/);
+        my $key = sha1_hex($upload->slurp) . $ext;
+        my $out = $form->upload_dir->child($key);
+        unless (copy($upload->tempname, $out)) {
             $c->log->info('Couldn\'t copy temp file to destination: ' . $!);
             $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
             return;
         }
         # Then store the file hashes along with the original filenames for display
-        $saved_data->{$field} = { files => $key, filenames => [ $receipts->raw_basename ] };
+        $saved_data->{$field} = { files => $key, filenames => [ $upload->raw_basename ] };
     }
 }
 
