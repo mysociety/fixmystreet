@@ -13,9 +13,9 @@ jobs:
         submodules: true
 
     - name: Setup node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 8.x
+        node-version: 12.x
 
     - name: Setup cache (carton)
       uses: actions/cache@v3
@@ -29,13 +29,13 @@ jobs:
         path: |
           ~/.npm
           node_modules
-        key: ubuntu-22-node-8-cypress-3.8.3-coverage
+        key: ubuntu-22-node-12-cypress-3.8.3-coverage
 
     - name: Install packages
       run: |
         sudo apt update
         sudo apt install -y gettext
-        npm install cypress@3.8.3 @cypress/code-coverage@3.9.4 codecov
+        npm install cypress@3.8.3 @cypress/code-coverage@3.9.4
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
         echo "$(npm bin)" >> $GITHUB_PATH
@@ -47,7 +47,18 @@ jobs:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
     - name: Upload code coverage results
-      run: codecov
+      if: success()
+      continue-on-error: true
+      uses: Wandalen/wretry.action@master
+      with:
+        action: codecov/codecov-action@v3
+        with: |
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+        attempt_limit: 5
+        attempt_delay: 10000
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 #    - name: Archive code coverage results
 #      uses: actions/upload-artifact@v2
