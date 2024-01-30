@@ -244,13 +244,6 @@ label[for$="form_CyclingUK_injury_suffered"] {
     &.is--purple{
         border-color: $purple;
     }
-
-    .cycling-sos-logo {
-        max-width: 280px;
-        margin-bottom: 1rem;
-        margin-top: 1.2rem;
-        display: block;
-    }
 }
 
 .bg-cyclinguk {
@@ -436,20 +429,12 @@ ol.big-numbers>li:before {
 
 // MAPPAGE
 body.mappage {
-    .logos-wrapper {
-        justify-content: start;
-    }
-
     #site-logo {
         width: 200px;
         height: 60px;
         background-image: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png');
         box-sizing: border-box;
         background-size: auto 36px;
-    }
-
-    #site-logo-sos {
-        display: none;
     }
 }
 
