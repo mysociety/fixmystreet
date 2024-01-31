@@ -77,3 +77,5 @@ jobs:
           fail_ci_if_error: true
         attempt_limit: 5
         attempt_delay: 10000
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
