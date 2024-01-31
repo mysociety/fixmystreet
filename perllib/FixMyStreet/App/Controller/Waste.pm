@@ -1610,7 +1610,7 @@ sub add_report : Private {
             $report->confirm;
             $report->update;
         }
-        $c->forward('/report/new/redirect_or_confirm_creation');
+        $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
 
     $c->user->update({ name => $original_name }) if $original_name;

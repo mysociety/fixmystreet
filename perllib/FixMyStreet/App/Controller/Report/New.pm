@@ -1888,8 +1888,10 @@ has been confirmed or email them a token if it has not been.
 =cut
 
 sub redirect_or_confirm_creation : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $no_redirect ) = @_;
     my $report = $c->stash->{report};
+
+    $no_redirect //= 0;
 
     # If confirmed send the user straight there.
     if ( $report->confirmed ) {
@@ -1912,9 +1914,12 @@ sub redirect_or_confirm_creation : Private {
             $c->log->info($report->user->id . ' is an inspector - redirecting straight to report page for ' . $report->id);
             $c->res->redirect( $report->url );
         } else {
-            $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
+            $c->log->info($report->user->id . ' was logged in, redirecting to confirmation page for ' . $report->id);
             $c->stash->{created_report} = 'loggedin';
             $c->stash->{template} = 'tokens/confirm_problem.html';
+            unless ($no_redirect) {
+                return $c->res->redirect($report->confirmation_url($c));
+            }
         }
         return 1;
     }
@@ -1931,11 +1936,15 @@ sub redirect_or_confirm_creation : Private {
 
     # otherwise email or text a confirm token to them.
     my $thing = 'email';
+    my $redirect;
     if ($report->user->email_verified) {
         $c->forward( 'send_problem_confirm_email' );
         # tell user that they've been sent an email
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
+        unless ($no_redirect) {
+            $redirect = $report->confirmation_url($c);
+        }
     } elsif ($report->user->phone_verified) {
         $c->forward( 'send_problem_confirm_text' );
         $thing = 'text';
@@ -1944,6 +1953,9 @@ sub redirect_or_confirm_creation : Private {
     }
     $c->stash->{sent_confirmation_message} = 1;
     $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
+    if ($redirect) {
+        return $c->res->redirect($redirect);
+    }
 }
 
 sub create_related_things : Private {

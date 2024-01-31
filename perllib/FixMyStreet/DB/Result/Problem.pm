@@ -266,6 +266,8 @@ use List::Util qw/any uniq/;
 use LWP::Simple qw($ua);
 use URI;
 use URI::QueryParam;
+use Digest::HMAC_SHA1 qw(hmac_sha1);
+use MIME::Base64;
 
 my $IM = eval {
     require Image::Magick;
@@ -640,6 +642,18 @@ sub view_url {
     my $self = shift;
     return $self->url unless $self->non_public;
     return "/R/" . $self->view_token->token;
+}
+
+=head2 confirmation_url
+
+Return a URL for this problem report that shows the confirmation page
+with the correct token in the URL parameter.
+
+=cut
+
+sub confirmation_url {
+    my ($self, $c) = @_;
+    return $c->uri_for_action( '/report/confirmation', [ $self->id ] ) . "?token=" . $self->confirmation_token;
 }
 
 =head2 is_hidden
@@ -1395,5 +1409,20 @@ sub cancel_update_alert {
         } );
     }
 };
+
+sub confirmation_token {
+    my $self = shift;
+
+    if (!$self->created) {
+        # Might be an old handle on the DB row, so reload it
+        $self = FixMyStreet::DB->resultset('Problem')->find({ id => $self->id });
+    }
+    my $time = $self->created->epoch;
+    my $hash = hmac_sha1("$time-" . $self->id, FixMyStreet::DB->resultset('Secret')->get);
+    $hash = encode_base64($hash, "");
+    $hash =~ s/\W//g; # don't want + / = in URL params
+    return $hash;
+}
+
 
 1;

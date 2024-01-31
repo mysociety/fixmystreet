@@ -211,6 +211,12 @@ $mech->create_contact_ok(
     category => 'Abandoned Santander Cycle',
     email => 'lonelybikes@example.net',
 );
+$mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Private Category',
+    email => 'privatereports@example.net',
+    non_public => 1,
+);
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
@@ -294,6 +300,41 @@ subtest "test report creation anonymously by button" => sub {
     is $alert, undef, "no alert created";
 
     $mech->not_logged_in_ok;
+};
+
+subtest "test report creation anonymously for private categories" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok(
+        {
+            button => 'report_anonymously',
+            with_fields => {
+                title => 'Anonymous Private Test Report',
+                detail => 'Test report details.',
+                category => 'Private Category',
+            }
+        },
+        "submit report anonymously"
+    );
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Anonymous Private Test Report'});
+    ok $report, "Found the report";
+    ok $report->non_public, "Report is marked as private";
+    is $report->state, 'confirmed', "report confirmed";
+
+
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id);
+    is $mech->uri->path, "/report/confirmation/" . $report->id;
+
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    $mech->get( '/report/' . $report->id );
+    is $mech->res->code, 403, "got 403";
+    $mech->content_contains('Sorry, you don’t have permission to do that');
+    $mech->content_lacks($report->title);
+
+    $report->delete;
 };
 
 subtest "test report creation anonymously by staff user" => sub {
@@ -885,6 +926,7 @@ for my $test (
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -903,6 +945,7 @@ for my $test (
             'Flooding (Bromley)',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -920,6 +963,7 @@ for my $test (
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -937,6 +981,7 @@ for my $test (
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -956,6 +1001,7 @@ for my $test (
             'Flytipping (Bromley)',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -974,6 +1020,7 @@ for my $test (
             'Flooding (Bromley)',
             'Flytipping (Bromley)',
             'Grit bins',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -990,6 +1037,7 @@ for my $test (
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'

@@ -41,6 +41,7 @@
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
         - Convert all uploaded images to JPEGs.
+        - Redirect after POST when creating reports. #4362
 
 * v5.0 (10th May 2023)
     - Front end improvements:

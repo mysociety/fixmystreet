@@ -1223,7 +1223,7 @@ subtest "test Hart" => sub {
             is $report->bodies_str, $body_ids{$test->{council}};
 
             if ( $test->{confirm} ) {
-                is $mech->uri->path, "/report/new";
+                is $mech->uri->path, "/report/confirmation/" . $report->id;
                 my $base = 'www.fixmystreet.com';
                 $base = '"' unless $test->{national};
                 $mech->content_contains("$base/report/" . $report->id, "links to correct site");
@@ -1282,6 +1282,66 @@ subtest "test Hart" => sub {
             $mech->delete_user($user);
         };
     }
+};
+
+subtest "report confirmation page" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my ($report, $report2) = $mech->create_problems_for_body(2, $body_ids{2226}, 'Title',{
+            category => 'Potholes', cobrand => 'fixmystreet',
+        });
+        $report->discard_changes;
+
+        my $token = $report->confirmation_token;
+
+        subtest "going to confirmation page with valid token works" => sub {
+            $mech->get_ok("/report/confirmation/" . $report->id . "?token=$token");
+            $mech->content_contains($report->title);
+            $mech->content_contains("Thank you for reporting this issue!");
+        };
+
+        subtest "going to confirmation page without token shows 404" => sub {
+            $mech->get("/report/confirmation/" . $report->id);
+            is $mech->res->code, 404, "got 404";
+            $mech->content_lacks($report->title);
+            $mech->content_lacks("Thank you for reporting this issue!");
+        };
+
+        subtest "going to this page with invalid token shows 404" => sub {
+            $mech->get("/report/confirmation/" . $report->id . "?token=blahblah");
+            is $mech->res->code, 404, "got 404";
+            $mech->content_lacks($report->title);
+            $mech->content_lacks("Thank you for reporting this issue!");
+        };
+
+        subtest "unconfirming the report and going to its confirmation page shows the 'check email' message" => sub {
+            $report->update({ confirmed => undef });
+            $mech->get_ok("/report/confirmation/" . $report->id . "?token=$token");
+            $mech->content_contains("Nearly done! Now check your email");
+            $mech->content_lacks($report->title);
+            $mech->content_lacks("Thank you for reporting this issue!");
+        };
+
+        subtest "going to another report page with this valid token shows 404" => sub {
+            $mech->get("/report/confirmation/" . $report2->id . "?token=$token");
+            is $mech->res->code, 404, "got 404";
+            $mech->content_lacks($report->title);
+            $mech->content_lacks("Thank you for reporting this issue!");
+        };
+
+        subtest "going to confirmation page now redirects to the report page" => sub {
+            # make report 10 minutes old and regenerate token
+            my $created = $report->created->subtract({ minutes => 10 });
+            $report->update({ created => $created, confirmed => $created });
+            $token = $report->confirmation_token;
+            $mech->get_ok("/report/confirmation/" . $report->id . "?token=$token");
+            is $mech->res->code, 200, "got 200";
+            is $mech->res->previous->code, 302, "got 302 for redirect";
+            is $mech->uri->path, '/report/' . $report->id, 'redirected to report page';
+        };
+    };
 };
 
 subtest "categories from deleted bodies shouldn't be visible for new reports" => sub {

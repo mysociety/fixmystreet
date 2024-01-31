@@ -660,6 +660,47 @@ sub map :Chained('id') :Args(0) {
     $c->res->body($image->{data});
 }
 
+sub confirmation : Path('confirmation') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    # First of all check that the report ID is valid
+    my $report = FixMyStreet::DB->resultset('Problem')->find( { id => $id } );
+    unless ( $report ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    # Now verify the token we've been given is correct
+    my $token_param = $c->get_param('token') || "";
+    unless ( $token_param eq $report->confirmation_token ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    # If the token is valid but expired then may as well be helpful and bounce
+    # the user to report page rather than 404.
+    # (NB the report may still be unconfirmed, but end result is the same - a 404)
+    my $cutoff = DateTime->now()->subtract( minutes => 3 );
+    my $timestamp = $report->confirmed || $report->created;
+    if ( $timestamp < $cutoff ) {
+        # there's a chance it's not available on this cobrand (e.g. made on Oxon
+        # cobrand but sent to district) so get the full URL where we're sure it
+        # can be viewed.
+        my $base = $c->cobrand->relative_url_for_report( $report );
+        return $c->res->redirect($base . $report->url);
+    }
+
+    # We're now confident the user is allowed to view this report so stick it on
+    # the stash and load up the correct template.
+    $c->stash->{problem} = $report;
+    if ( $report->confirmed ) {
+        $c->stash->{template} = 'tokens/confirm_problem.html';
+        $c->stash->{created_report} = "loggedin";
+        $c->stash->{report} = $c->stash->{problem};
+    } else {
+        $c->stash->{template} = 'email_sent.html';
+        $c->stash->{email_type} = 'problem';
+    }
+}
+
 
 sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
     my ($self, $c) = @_;

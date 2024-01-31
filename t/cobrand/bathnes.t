@@ -253,7 +253,7 @@ subtest 'report a problem link post-report is not location-specific' => sub {
             'submit report form ok'
         );
         $mech->content_like(qr/Your reference for this report is (\d+),/);
-        $mech->base_like(qr(/report/new$), 'expected redirect back to /report/new');
+        like $mech->uri->path, qr{/report/confirmation/(\d+)}, "ended up at the confirmation page";
 
         my $tree = HTML::TreeBuilder->new_from_content($mech->content());
         my $report_link = $tree->look_down(
