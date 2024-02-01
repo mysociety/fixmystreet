@@ -70,6 +70,9 @@ sub index : Path : Args(0) {
         }
     }
 
+    $c->stash->{edit_body_contacts} = 1
+        if grep { $_ eq 'body' } keys %{$c->stash->{allowed_pages}};
+
     my @unsent = $c->cobrand->problems->search( {
         send_state => ['unprocessed', 'acknowledged'],
         'me.state' => [ FixMyStreet::DB::Result::Problem::open_states() ],
