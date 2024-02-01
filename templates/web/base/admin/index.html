@@ -52,7 +52,7 @@
 </div>
 
 [% IF unsent_reports.size %]
-<h2>[% loc('Reports waiting to be sent') %]</h2>
+<h2>[% tprintf( nget(loc('%d report waiting to be sent'), loc('%d reports waiting to be sent'), unsent_reports.size), unsent_reports.size ) %]</h2>
 
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
