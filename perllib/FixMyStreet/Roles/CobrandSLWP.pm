@@ -1298,7 +1298,7 @@ sub waste_reconstruct_bulky_data {
 
     $saved_data->{name} = $p->name;
     $saved_data->{email} = $p->user->email;
-    $saved_data->{phone} = $p->get_extra_metadata('phone') || $p->user->phone;
+    $saved_data->{phone} = $p->phone_waste;
 
     return $saved_data;
 }

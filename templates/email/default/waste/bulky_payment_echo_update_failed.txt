@@ -28,6 +28,6 @@ Customer details:
 
     Email: [% report.user.email %]
 
-    Phone: [% report.user.phone %] [% # TODO Where is this? %]
+    Phone: [% report.phone_waste %]
 
 Collection instructions: [% report.get_extra_field_value('Exact_Location') %]
