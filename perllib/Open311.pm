@@ -158,7 +158,7 @@ sub _populate_service_request_params {
         last_name => $lastname,
     };
 
-    $params->{phone} = $problem->user->phone if $problem->user->phone;
+    $params->{phone} = $problem->phone_waste if $problem->phone_waste;
     $params->{email} = $problem->user->email if $problem->user->email;
 
     $params->{account_id} = $extra->{account_id} if defined $extra->{account_id};

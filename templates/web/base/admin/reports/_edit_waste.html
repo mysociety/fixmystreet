@@ -53,8 +53,8 @@
     <input type='text' readonly class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
 </li>
 
-[% IF problem.user.phone_display != problem.user.username %]
-<li>[% loc('Phone:') %] [% problem.user.phone_display OR loc('None') %]</li>
+[% IF problem.phone_waste != problem.user.username %]
+<li>[% loc('Phone:') %] [% problem.phone_waste OR loc('None') %]</li>
 [% END %]
 [% IF problem.user.email != problem.user.username %]
 <li>[% loc('Email:') %]

@@ -428,6 +428,19 @@ sub title_safe {
     return $self->title;
 }
 
+=head2 phone_waste
+
+The phone number for a waste report can be stored on the report, not the user,
+as those reports may be instantly confirmed and we can't trust the provided
+information. Returns that number if set, otherwise the user phone number.
+
+=cut
+
+sub phone_waste {
+    my $self = shift;
+    return $self->get_extra_metadata('phone') || $self->user->phone_display;
+}
+
 =head2 check_for_errors
 
     $error_hashref = $problem->check_for_errors();
