@@ -23,8 +23,10 @@
         </td>
         <td>[% problem.send_fail_count %]</td>
         <td title="[% problem.send_fail_reason.split('POST http').0 %]">
-            [% PROCESS format_time time=problem.send_fail_timestamp %]
-            <br><small>[% problem.time_ago('send_fail_timestamp') %] ago
+            [% IF problem.send_fail_timestamp %]
+                [% PROCESS format_time time=problem.send_fail_timestamp %]
+                <br><small>[% problem.time_ago('send_fail_timestamp') %] ago
+            [% END %]
         </td>
         <td>
             [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
