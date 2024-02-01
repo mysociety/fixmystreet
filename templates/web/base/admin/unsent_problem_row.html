@@ -22,7 +22,7 @@
             <br><small>[% PROCESS format_time time=problem.confirmed %]
         </td>
         <td>[% problem.send_fail_count %]</td>
-        <td title="[% problem.send_fail_reason.split('POST http').0 %]">
+        <td title="[% problem.send_fail_reason.split('POST http').0 | truncate(250, '…') %]">
             [% IF problem.send_fail_timestamp %]
                 [% PROCESS format_time time=problem.send_fail_timestamp %]
                 <br><small>[% problem.time_ago('send_fail_timestamp') %] ago
