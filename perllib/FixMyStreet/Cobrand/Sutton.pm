@@ -105,6 +105,7 @@ sub waste_cc_munge_form_details {
     } else {
         $pspid = $c->stash->{payment_details}->{pspid};
     }
+    $c->stash->{pspid} = $pspid;
 
     my $form_params = {
         'PSPID' => $pspid,
