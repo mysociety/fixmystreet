@@ -82,7 +82,7 @@ sub index : Path : Args(0) {
     },
     {
         '+columns' => ['user.email'],
-        prefetch => 'contact',
+        prefetch => [ 'contact', 'user_planned_reports' ],
         join => 'user',
         order_by => 'confirmed',
     } )->all;
