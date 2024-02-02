@@ -94,7 +94,7 @@ sub bin_services_for_address {
 
         push @site_services_filtered, {
             id           => $service->{SiteServiceID},
-            service_id   => $service->{SiteServiceID},
+            service_id   => $service->{ServiceItemName},
             service_name => $service->{ServiceItemDescription},
             next         => {
                 date    => $service->{NextCollectionDate},
@@ -105,6 +105,63 @@ sub bin_services_for_address {
     }
 
     return \@site_services_filtered;
+}
+
+sub image_for_unit {
+    my ( $self, $unit ) = @_;
+
+    my $images = {
+        'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
+        'FO-23'    => 'food-waste',                    # Food 23 ltr Caddy
+        'GA-140'   => 'garden-waste-brown-bin',        # Garden 140 ltr Bin
+        'GA-240'   => 'garden-waste-brown-bin',        # Garden 240 ltr Bin
+        'GL-1100'  => 'green-euro-bin',                # Glass 1100 ltr Bin
+        'GL-1280'  => 'green-euro-bin',                # Glass 1280 ltr Bin
+        'GL-55'    => 'recycle-black-box',             # Glass 55 ltr Box
+        'MDR-SACK' => 'recycle-bag',                   # Mixed Dry Recycling Sack
+        'PC-180'   => 'recycling-bin-blue-lid',        # Paper & card 180 ltr wheeled bin
+        'PC-55'    => 'blue-recycling-box',            # Paper & card 55 ltr box
+        'PA-1100'  => 'communal-blue-euro',            # Paper & Cardboard & Cardbaord 1100 ltr Bin
+        'PA-1280'  => 'communal-blue-euro',            # Paper & Cardboard 1280 ltr Bin
+        'PA-140'   => 'communal-blue-euro',            # Paper & Cardboard 140 ltr Bin
+        'PA-240'   => 'communal-blue-euro',            # Paper & Cardboard 240 ltr Bin
+        'PA-55'    => 'recycle-green-box',             # Paper & Cardboard 55 ltr Box
+        'PA-660'   => 'communal-blue-euro',            # Paper & Cardboard 660 ltr Bin
+        'PA-940'   => 'communal-blue-euro',            # Paper & Cardboard 940 ltr Bin
+        'PL-1100'  => 'plastics-wheeled-bin',          # Plastic 1100 ltr Bin
+        'PL-1280'  => 'plastics-wheeled-bin',          # Plastic 1280 ltr Bin
+        'PL-140'   => 'plastics-wheeled-bin',          # Plastic 140 ltr Bin
+        'PL-55'    => 'recycle-maroon-box',            # Plastic 55 ltr Box
+        'PL-660'   => 'plastics-wheeled-bin',          # Plastic 660 ltr Bin
+        'PL-940'   => 'plastics-wheeled-bin',          # Plastic 940 ltr Bin
+        'PG-1100'  => 'plastics-wheeled-bin',          # Plastics & glass 1100 ltr euro bin
+        'PG-1280'  => 'plastics-wheeled-bin',          # Plastics & glass 1280 ltr euro bin
+        'PG-240'   => 'recycling-bin-white-lid',       # Plastics & glass 240 ltr wheeled bin
+        'PG-360'   => 'plastics-wheeled-bin',          # Plastics & glass 360 ltr wheeled bin
+        'PG-55'    => 'white-recycling-box',           # Plastics & glass 55 ltr box
+        'PG-660'   => 'plastics-wheeled-bin',          # Plastics & glass 660 ltr euro bin
+        'PG-940'   => 'plastics-wheeled-bin',          # Plastics & glass 940 ltr chamberlain bin
+        'RES-1100' => 'non-recyclable-wheeled-bin',    # Residual 1100 ltr bin
+        'RES-1280' => 'non-recyclable-wheeled-bin',    # Residual 1280 ltr bin
+        'RES-140'  => 'non-recyclable-wheeled-bin',    # Residual 140 ltr bin
+        'RES-180'  => 'general-waste-green-bin',       # Residual 180 ltr bin
+        'RES-240'  => 'general-waste-green-bin',       # Residual 240 ltr bin
+        'RES-660'  => 'non-recyclable-wheeled-bin',    # Residual 660 ltr bin
+        'RES-720'  => 'non-recyclable-wheeled-bin',    # Residual 720 ltr bin
+        'RES-940'  => 'non-recyclable-wheeled-bin',    # Residual 940 ltr bin
+        'RES-CHAM' => 'non-recyclable-wheeled-bin',    # Residual Chamberlain
+        'RES-DBIN' => 'non-recyclable-wheeled-bin',    # Residual Dustbin
+        'RES-SACK' => 'black-non-recyclable-bag',      # Residual Sack
+    };
+
+    # TODO
+    # For PG-240 ('Plastics & glass 240 ltr wheeled bin')
+    # when at parent shell/communal property
+    # image should be plastics-wheeled-bin.png
+
+    my $service_id = $unit->{service_id};
+
+    return '/i/waste-containers/bexley/' . $images->{$service_id};
 }
 
 sub bin_day_format { '%A, %-d~~~ %B %Y' }
