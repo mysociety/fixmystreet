@@ -159,6 +159,17 @@ bromley:
     actions:
       found: fixmystreet.assets.bromley.found
       not_found: fixmystreet.assets.bromley.not_found
+  - wfs_feature: "National_Sports_Centre"
+    asset_type: 'area'
+    always_visible: true
+    road: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    all_categories: true
+    no_asset_message: "<p>This area is the responsibility of the National Sports Centre who oversee several of the access roads, the structure of the walkway and sports grounds as well as the associated lighting. They can be contacted directly via their website: <a href='https://www.better.org.uk/contactus'>https://www.better.org.uk/contactus</a></p>"
+    actions:
+      found: fixmystreet.assets.bromley.found
+      not_found: fixmystreet.assets.bromley.not_found
 buckinghamshire:
   - - name: 'default'
       http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"
