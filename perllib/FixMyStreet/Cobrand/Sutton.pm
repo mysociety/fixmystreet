@@ -87,8 +87,6 @@ sub image_for_unit {
 sub waste_cc_munge_form_details {
     my ($self, $c) = @_;
 
-    my $sha_passphrase = $self->feature('payment_gateway')->{sha_passphrase};
-
     $c->stash->{payment_amount} = $c->stash->{amount} * 100;
 
     my $url = $c->uri_for_action(
@@ -99,10 +97,12 @@ sub waste_cc_munge_form_details {
 
     $c->stash->{redirect_url} = $url;
 
-    my $pspid;
+    my ($pspid, $sha_passphrase);
     if ($c->stash->{report}->category eq 'Bulky collection') {
+        $sha_passphrase = $c->stash->{payment_details}->{sha_passphrase_bulky};
         $pspid = $c->stash->{payment_details}->{pspid_bulky};
     } else {
+        $sha_passphrase = $c->stash->{payment_details}->{sha_passphrase};
         $pspid = $c->stash->{payment_details}->{pspid};
     }
     $c->stash->{pspid} = $pspid;
@@ -146,7 +146,13 @@ sub garden_waste_generate_sig {
 sub garden_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
-    my $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase};
+    my $passphrase;
+    if ($p->category eq 'Bulky collection') {
+        $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase_bulky};
+    } else {
+        $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase};
+    }
+
     if ( $passphrase ) {
         my $sha = $c->get_param('SHASIGN');
 
