@@ -468,26 +468,10 @@ if (fixmystreet.cobrand == 'buckinghamshire' || fixmystreet.cobrand == 'fixmystr
 }
 
 fixmystreet.assets.buckinghamshire.drains_construct_selected_asset_message = function(asset) {
-    var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
-        return elem.fixmystreet.body == "Buckinghamshire Council" &&
-        elem.fixmystreet.http_options.format.featureType == 'junction_inspections';
-    });
-    var inspection;
-    if (junctionInspectionLayer[0]) {
-        inspection = junctionInspectionLayer[0].features.filter(function(elem) {
-            return elem.attributes.asset_id == asset.attributes.asset_id &&
-            bucks_format_date(elem.attributes.created) == bucks_format_date(asset.attributes.last_inspected);
-        });
+    if (!asset.attributes.last_cleaned_date) {
+        return '';
     }
-    var last_clean = '';
-    var message = ' ';
-    if (inspection && inspection[0]) {
-        if (asset.attributes.last_inspected && inspection[0].attributes.junction_cleaned === 'true') {
-            last_clean = bucks_format_date(asset.attributes.last_inspected);
-            message = 'This gulley was last cleaned on ' + last_clean;
-        }
-    }
-    return message;
+    return 'This gulley was last cleaned on ' + bucks_format_date(asset.attributes.last_cleaned_date);
 };
 
 fixmystreet.assets.buckinghamshire.street_found = function(layer, feature) {
