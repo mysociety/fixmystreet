@@ -574,6 +574,9 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $body = $mech->get_text_body_from_email($emails[1]);
+        # The report's created field isn't being populated according to set_fixed_time so checking against the field directly instead.
+        my $expected_renewal_end_year = $report->created->year + 1;
+        like $body, qr/Your subscription will last until the end of March $expected_renewal_end_year/;
         like $body, qr/Garden waste sack collection: 1/;
         like $body, qr/Total:.*?50.00/;
     };

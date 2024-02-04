@@ -22,6 +22,7 @@ END;
 
 IF type == 'renew';
     SET email_summary = "Thank you for renewing your subscription to Brent’s garden waste collection service.";
+    SET renew_year_end = report.created.year + 1;
 ELSIF type == 'cancel';
     SET email_summary = "You have cancelled your garden waste collection service.";
 ELSIF type == 'amend';
