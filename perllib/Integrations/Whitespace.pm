@@ -99,6 +99,10 @@ sub GetSiteCollections {
 
     my $site_services = $res->{SiteServices}->{SiteService};
 
+    # Single service may be returned as a naked hashref rather than
+    # contained in arrayref
+    $site_services = [ $site_services ] if ref $site_services ne 'ARRAY';
+
     return $site_services;
 }
 
