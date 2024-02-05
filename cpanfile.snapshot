@@ -1715,15 +1715,6 @@ DISTRIBUTIONS
       XSLoader 0.02
       parent 0
       perl 5.008001
-  Data-Compare-1.22
-    pathname: D/DC/DCANTRELL/Data-Compare-1.22.tar.gz
-    provides:
-      Data::Compare 1.22
-      Data::Compare::Plugins::Scalar::Properties 1
-    requirements:
-      ExtUtils::MakeMaker 0
-      File::Find::Rule 0.1
-      Scalar::Util 0
   Data-Dump-1.21
     pathname: G/GA/GAAS/Data-Dump-1.21.tar.gz
     provides:
@@ -2490,14 +2481,6 @@ DISTRIBUTIONS
       Scalar::Util 0
       Test::Most 0
       Time::Zone 0
-  Devel-Caller-2.06
-    pathname: R/RC/RCLAMP/Devel-Caller-2.06.tar.gz
-    provides:
-      Devel::Caller 2.06
-    requirements:
-      ExtUtils::MakeMaker 0
-      PadWalker 0.08
-      Test::More 0
   Devel-CheckOS-1.85
     pathname: D/DC/DCANTRELL/Devel-CheckOS-1.85.tar.gz
     provides:
@@ -5089,25 +5072,6 @@ DISTRIBUTIONS
       Moose::Util 0
       Try::Tiny 0
       warnings 0
-  MooseX-Params-Validate-0.18
-    pathname: D/DR/DROLSKY/MooseX-Params-Validate-0.18.tar.gz
-    provides:
-      MooseX::Params::Validate 0.18
-    requirements:
-      Carp 0
-      Devel::Caller 0
-      ExtUtils::MakeMaker 6.30
-      Moose 0.58
-      Moose::Role 0
-      Moose::Util::TypeConstraints 0
-      Params::Validate 0.88
-      Scalar::Util 0
-      Sub::Exporter 0
-      Test::Fatal 0
-      Test::More 0.88
-      overload 0
-      strict 0
-      warnings 0
   MooseX-Role-Parameterized-1.10
     pathname: E/ET/ETHER/MooseX-Role-Parameterized-1.10.tar.gz
     provides:
@@ -5156,15 +5120,6 @@ DISTRIBUTIONS
       aliased 0
       namespace::autoclean 0.12
       namespace::clean 0
-  MooseX-SemiAffordanceAccessor-0.09
-    pathname: D/DR/DROLSKY/MooseX-SemiAffordanceAccessor-0.09.tar.gz
-    provides:
-      MooseX::SemiAffordanceAccessor 0.09
-      MooseX::SemiAffordanceAccessor::Role::Attribute 0.09
-    requirements:
-      ExtUtils::MakeMaker 6.31
-      Moose 1.16
-      Test::More 0.88
   MooseX-StrictConstructor-0.21
     pathname: D/DR/DROLSKY/MooseX-StrictConstructor-0.21.tar.gz
     provides:
@@ -8976,61 +8931,6 @@ DISTRIBUTIONS
       utf8 0
       vars 0
       warnings 0
-  libwww-perl-6.05
-    pathname: G/GA/GAAS/libwww-perl-6.05.tar.gz
-    provides:
-      LWP 6.05
-      LWP::Authen::Basic undef
-      LWP::Authen::Digest undef
-      LWP::Authen::Ntlm 6.00
-      LWP::ConnCache 6.02
-      LWP::Debug undef
-      LWP::DebugFile undef
-      LWP::MemberMixin undef
-      LWP::Protocol 6.00
-      LWP::Protocol::GHTTP undef
-      LWP::Protocol::MyFTP undef
-      LWP::Protocol::cpan undef
-      LWP::Protocol::data undef
-      LWP::Protocol::file undef
-      LWP::Protocol::ftp undef
-      LWP::Protocol::gopher undef
-      LWP::Protocol::http undef
-      LWP::Protocol::http::Socket undef
-      LWP::Protocol::http::SocketMethods undef
-      LWP::Protocol::loopback undef
-      LWP::Protocol::mailto undef
-      LWP::Protocol::nntp undef
-      LWP::Protocol::nogo undef
-      LWP::RobotUA 6.03
-      LWP::Simple 6.00
-      LWP::UserAgent 6.05
-    requirements:
-      Digest::MD5 0
-      Encode 2.12
-      Encode::Locale 0
-      ExtUtils::MakeMaker 0
-      File::Listing 6
-      HTML::Entities 0
-      HTML::HeadParser 0
-      HTTP::Cookies 6
-      HTTP::Daemon 6
-      HTTP::Date 6
-      HTTP::Negotiate 6
-      HTTP::Request 6
-      HTTP::Request::Common 6
-      HTTP::Response 6
-      HTTP::Status 6
-      IO::Select 0
-      IO::Socket 0
-      LWP::MediaTypes 6
-      MIME::Base64 2.1
-      Net::FTP 2.58
-      Net::HTTP 6.04
-      URI 1.10
-      URI::Escape 0
-      WWW::RobotRules 6
-      perl 5.008001
   libwww-perl-6.61
     pathname: O/OA/OALDERS/libwww-perl-6.61.tar.gz
     provides:
