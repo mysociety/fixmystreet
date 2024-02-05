@@ -34,6 +34,7 @@
         - Return random unprocessed row to daemon.
         - A cobrand level text override for the details field label on new reports can now be configured.
         - Cobrands can provide per-category custom distances for duplicate lookup. #4746
+        - Add perl 5.38 support.
     - Performance improvements:
         - Reduce database queries on shortlist page.
         - Provide ResultSet fallback translation in lookup.

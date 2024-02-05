@@ -258,14 +258,18 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Carp-Assert-0.20
-    pathname: M/MS/MSCHWERN/Carp-Assert-0.20.tar.gz
+  Carp-Assert-0.22
+    pathname: Y/YV/YVES/Carp-Assert-0.22.tar.gz
     provides:
-      Carp::Assert 0.20
+      Carp::Assert 0.22
     requirements:
       Carp 0
+      Exporter 0
       ExtUtils::MakeMaker 0
-      Test::More 0.4
+      perl 5.006
+      strict 0
+      vars 0
+      warnings 0
   Carp-Assert-More-1.14
     pathname: P/PE/PETDANCE/Carp-Assert-More-1.14.tar.gz
     provides:
