@@ -169,7 +169,6 @@ DISTRIBUTIONS
       CGI::Simple::Util 1.113
     requirements:
       IO::Scalar 0
-      Module::Build 0.36
       Test::More 0
   CGI-Struct-1.21
     pathname: F/FU/FULLERMD/CGI-Struct-1.21.tar.gz
@@ -1298,7 +1297,7 @@ DISTRIBUTIONS
       DBD::SQLite::dr 1.37
     requirements:
       DBI 1.57
-      ExtUtils::MakeMaker 6.48
+      ExtUtils::MakeMaker 0
       File::Spec 0.82
       Test::Builder 0.86
       Test::More 0.47
@@ -1785,7 +1784,6 @@ DISTRIBUTIONS
       Data::Page 2.02
     requirements:
       Class::Accessor::Chained::Fast 0
-      Module::Build 0.35
       Test::Exception 0
       Test::More 0
   Data-Password-Common-0.004
@@ -1935,7 +1933,6 @@ DISTRIBUTIONS
     requirements:
       DateTime 0.17
       HTTP::Date 1.44
-      Module::Build 0.36
       Test::More 0.47
   DateTime-Format-ICal-0.09
     pathname: D/DR/DROLSKY/DateTime-Format-ICal-0.09.tar.gz
@@ -3176,7 +3173,7 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.36
       File::Spec 3.29
       Test::More 0.42
-      perl 5.00503
+      perl 5.005030
   File-ShareDir-1.104
     pathname: R/RE/REHSACK/File-ShareDir-1.104.tar.gz
     provides:
@@ -3213,6 +3210,7 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Fcntl 0
       POSIX 0
+      perl 5.004
   File-Which-1.22
     pathname: P/PL/PLICEASE/File-Which-1.22.tar.gz
     provides:
@@ -6272,7 +6270,7 @@ DISTRIBUTIONS
       File::Spec 0.80
       Scalar::Util 1.18
       Test::More 0.42
-      perl 5.00503
+      perl 5.005030
   Params-Validate-1.07
     pathname: D/DR/DROLSKY/Params-Validate-1.07.tar.gz
     provides:
@@ -6344,7 +6342,6 @@ DISTRIBUTIONS
       Parse::RecDescent::Token 1.967015
       Parse::RecDescent::UncondReject 1.967015
     requirements:
-      ExtUtils::MakeMaker 6.5702
       Test::More 0
       Text::Balanced 1.95
   Path-Class-0.31
@@ -6726,7 +6723,7 @@ DISTRIBUTIONS
       Regexp::Common::zip 2010010201
     requirements:
       ExtUtils::MakeMaker 0
-      perl 5.00473
+      perl 5.004730
       strict 0
       vars 0
   Role-Tiny-2.000005
@@ -7962,7 +7959,6 @@ DISTRIBUTIONS
       Exporter 0
       File::Temp 0
       IO::Handle 0
-      Module::Build 0.36
       Test::Builder 0
       Test::More 0
       Test::Tester 0.107
@@ -8113,7 +8109,6 @@ DISTRIBUTIONS
     provides:
       Text::Glob 0.09
     requirements:
-      Module::Build 0.36
       Test::More 0
   Text-MicroTemplate-0.24
     pathname: K/KA/KAZUHO/Text-MicroTemplate-0.24.tar.gz
@@ -8125,7 +8120,7 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.59
       File::Temp 0
       Test::More 0
-      perl 5.00800
+      perl 5.008000
   Text-SimpleTable-2.03
     pathname: M/MR/MRAMBERG/Text-SimpleTable-2.03.tar.gz
     provides:
@@ -8133,6 +8128,7 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+      perl 5.008001
   Text-Unidecode-0.04
     pathname: S/SB/SBURKE/Text-Unidecode-0.04.tar.gz
     provides:
@@ -8677,7 +8673,7 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       LWP 0
-      perl 5.00405
+      perl 5.004050
   XML-RSS-1.49
     pathname: S/SH/SHLOMIF/XML-RSS-1.49.tar.gz
     provides:
