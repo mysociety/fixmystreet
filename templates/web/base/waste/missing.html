@@ -13,6 +13,9 @@
     <li>It’s a brand new address and hasn’t had collections arranged yet
     <li>It’s outside of our area, you can find your council who is responsible for your bins on
         <a target="_blank" href="https://www.gov.uk/rubbish-collection-day">GOV.UK</a>
+    [% IF c.cobrand.moniker == 'brent' %]
+    <li>It’s listed as “under construction” as it hasn’t been signed off by Building Control</li>
+    [% END %]
 </ul>
 
 <h2 class="govuk-heading-m">What you can do now</h2>
@@ -29,6 +32,8 @@
     <li>Call or email our customer service team on 01733 74 74 74 or
         <a href="mailto:ask&#64;peterborough.gov.uk">ask&#64;peterborough.gov.uk</a>
         who will be pleased to assist you
+  [% ELSIF c.cobrand.moniker == 'brent' %]
+      <li>Contact our Building Control Team to check whether works have been signed off:&nbsp;<a href="mailto:planandbuild&#64;brent.gov.uk">planandbuild&#64;brent.gov.uk</a></li>
   [% END %]
 </ul>
 
