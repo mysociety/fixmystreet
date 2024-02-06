@@ -109,19 +109,22 @@ p.form-error {
             color: $color-he-grey-2;
         }
     }
-}
 
-#front-main-container {
-    max-width: 100% !important;
-
-    .front-blurb {
-        color:$white;
-        max-width: 28em;
-        opacity: 0.85;
-        background: transparentize($color-he-black, $amount: 0.5);
-        padding: 1em;
-        border-radius: 4px;
-        margin: 0 -1em;
+    #front-main-container {
+        max-width: 100% !important;
+        // Both padding and margin avoid the horizontal overflowing of this element.
+        padding: 0;
+        margin: 0;
+    
+        .front-blurb {
+            color:$white;
+            max-width: 28em;
+            opacity: 0.85;
+            background: transparentize($color-he-black, $amount: 0.5);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 0 -1em;
+        }
     }
 }
 
