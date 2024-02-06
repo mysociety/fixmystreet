@@ -2,6 +2,7 @@
 @import "./_colours";
 @import "../sass/mixins";
 @import "../sass/base";
+@import "../sass/waste";
 
 div.form-error, p.form-error { // TODO Add to more, make a variable.
     background-color: $red;
