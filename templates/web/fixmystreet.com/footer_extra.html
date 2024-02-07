@@ -33,15 +33,17 @@
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>
                         <li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
                             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                     </ul>
                     <ul>
                         <li><a href="/pro/">FixMyStreet Pro</a></li>
                         <li><[% IF c.req.uri.path == '/about/posters' %]span[% ELSE %]a href="/about/posters"[% END
                             %]>[% loc("FixMyStreet Goodies") %]</[% c.req.uri.path == '/posters' ? 'span' : 'a' %]></li>
+                        <li><[% IF c.req.uri.path == '/about/press' %]span[% ELSE %]a href="/about/press"[% END
+                            %]>[% loc("Press") %]</[% c.req.uri.path == '/about/press' ? 'span' : 'a' %]></li>
                         <li><[% IF c.req.uri.path == '/contact' %]span[% ELSE %]a href="/contact"[% END
                             %]>[% loc("Contact") %]</[% c.req.uri.path == '/contact' ? 'span' : 'a' %]></li>
-                        <li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                         <li><[% IF c.req.uri.path == '/about/privacy' %]span[% ELSE %]a href="/about/privacy"[% END
                             %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
                     </ul>
