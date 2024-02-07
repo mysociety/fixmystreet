@@ -84,10 +84,7 @@ sub GetAddresses {
 
     my $res = $self->call('GetAddresses', getAddressInput => ixhash( Postcode => $postcode ));
 
-    my $addresses = $res->{Addresses}->{Address};
-    # Spec - Results can be returned as an array if more than one result is found.
-    # So presuming one address may not be an array
-    $addresses = [ $addresses ] if (ref($addresses) eq 'HASH');
+    my $addresses = force_arrayref($res->{Addresses}, 'Address');
 
     return $addresses;
 }
@@ -97,11 +94,7 @@ sub GetSiteCollections {
 
     my $res = $self->call('GetSiteCollections', siteserviceInput => ixhash( Uprn => $uprn ));
 
-    my $site_services = $res->{SiteServices}->{SiteService};
-
-    # Single service may be returned as a naked hashref rather than
-    # contained in arrayref
-    $site_services = [ $site_services ] if ref $site_services ne 'ARRAY';
+    my $site_services = force_arrayref($res->{SiteServices}, 'SiteService');
 
     return $site_services;
 }
@@ -159,10 +152,7 @@ sub GetStreets {
 
     my $res = $self->call('GetStreets', getStreetInput => ixhash( streetName => '', townName => '', postcode => $postcode ));
 
-    my $streets = $res->{StreetArray}->{Street};
-
-    # Ensure $streets is an arrayref (it can sometimes be a hashref)
-    $streets = [ $streets ] if (ref($streets) eq 'HASH');
+    my $streets = force_arrayref($res->{StreetArray}, 'Street');
 
     return $streets;
 }
