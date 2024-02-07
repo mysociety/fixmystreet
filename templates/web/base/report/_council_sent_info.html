@@ -22,7 +22,7 @@
             [%- tprintf('Report ref:&nbsp;%s', problem.id) %].
         [%- ELSIF c.cobrand.moniker == 'tfl' %]
             [%- tprintf('TfL ref:&nbsp;FMS%s', problem.id) %].
-        [%- ELSIF c.cobrand.moniker == 'northamptonshire' OR c.cobrand.moniker == 'westnorthants' %]
+        [%- ELSIF c.cobrand.moniker == 'northamptonshire' OR c.cobrand.moniker == 'westnorthants' OR c.cobrand.moniker == 'northnorthants'%]
             [%- IF NOT c.cobrand.is_defect(problem) %]
                 [% tprintf(loc('ref:&nbsp;%s'), problem.id) %].
             [%- END -%]
