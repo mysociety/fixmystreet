@@ -79,8 +79,8 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         open311_email => {
             buckinghamshire => {
-                flytipping => 'flytipping@example.com',
-                flood => 'floods@example.org',
+                Flytipping => [ 'flytipping@example.com', 'TfB' ],
+                'Blocked drain' => [ 'floods@example.org', 'Flood Management' ],
             }
         },
         geocoder_reverse => {

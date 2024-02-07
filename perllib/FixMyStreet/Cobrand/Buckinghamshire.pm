@@ -227,14 +227,10 @@ sub open311_post_send {
 
     # For certain categories, send an email also
     my $emails = $self->feature('open311_email');
-    my $addresses = {
-        'Flytipping' => [ email_list($emails->{flytipping}, "TfB") ],
-        'Blocked drain' => [ email_list($emails->{flood}, "Flood Management") ],
-        'Ditch issue' => [ email_list($emails->{flood}, "Flood Management") ],
-        'Flooded subway' => [ email_list($emails->{flood}, "Flood Management") ],
-    };
-    my $dest = $addresses->{$row->category};
+    my $group = $row->get_extra_metadata('group') || '';
+    my $dest = $emails->{$row->category} || $emails->{$group};
     return unless $dest;
+    $dest = [ email_list($dest->[0], $dest->[1] || 'FixMyStreet') ];
 
     my $sender = FixMyStreet::SendReport::Email->new( to => $dest );
     $sender->send($row, $h);
