@@ -12,11 +12,19 @@
         <td>
             [% PROCESS value_or_nbsp value=problem.category_display %]
             [%- IF edit_body_contacts -%]
-              [% FOR body IN problem.bodies.values %]
-                <br><a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ] ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>
-              [% END %]
+                [% IF problem.whensent %]
+                    <br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %]
+                    [%- send_fail_bodies = problem.send_fail_bodies -%]
+                    [%- IF send_fail_bodies.size %]
+                        <br>[% loc('Failed bodies:') %]&nbsp;[% send_fail_bodies.join(', ') %]
+                    [% END -%]
+                [% ELSE -%]
+                    [% FOR body IN problem.bodies.values %]
+                    <br><a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ] ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>
+                    [% END %]
+                [% END -%]
             [%- ELSE -%]
-                <br>[%- PROCESS value_or_nbsp value=problem.bodies_str -%]
+            <br>[%- PROCESS value_or_nbsp value=problem.bodies_str -%]
             [%- END -%]
         </td>
         <td>
