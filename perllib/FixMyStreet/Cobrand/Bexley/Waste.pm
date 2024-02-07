@@ -104,7 +104,20 @@ sub bin_services_for_address {
         };
     }
 
+    @site_services_filtered = $self->service_sort(@site_services_filtered);
+
     return \@site_services_filtered;
+}
+
+# Bexley want services to be ordered by next collection date.
+# Sub-order by service name for consistent display.
+sub service_sort {
+    my ( $self, @services ) = @_;
+
+    return sort {
+            $a->{next}{date} cmp $b->{next}{date}
+        ||  $a->{service_name} cmp $b->{service_name}
+    } @services;
 }
 
 sub image_for_unit {

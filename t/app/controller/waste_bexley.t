@@ -1,5 +1,7 @@
 use utf8;
+use Test::Deep;
 use Test::MockModule;
+use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
 
@@ -67,14 +69,53 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => 1 } } );
 
         $mech->content_contains('Service 1');
-        $mech->content_contains('Monday, 1st April 2024');
+        $mech->content_contains('Tuesday, 30th April 2024');
         $mech->content_lacks('Service 2');
         $mech->content_lacks('Service 3');
         $mech->content_lacks('Service 4');
         $mech->content_lacks('Service 5');
         $mech->content_contains('Service 6');
-        $mech->content_contains('Tuesday, 2nd April 2024');
+        $mech->content_contains('Wednesday, 1st May 2024');
         $mech->content_lacks('Service 7');
+        $mech->content_contains('Service 8');
+        $mech->content_contains('Monday, 1st April 2024');
+        $mech->content_contains('Another service (9)');
+        $mech->content_contains('Monday, 1st April 2024');
+
+        subtest 'service_sort sorts correctly' => sub {
+            my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+            $cobrand->{c} = Test::MockObject->new;
+            $cobrand->{c}->mock( stash => sub { {} } );
+
+            my @sorted = $cobrand->service_sort(
+                @{ $cobrand->bin_services_for_address( {} ) } );
+            my %defaults = (
+                service_id => ignore(),
+                next => {
+                    changed => 0,
+                    ordinal => ignore(),
+                    date => ignore(),
+                },
+            );
+            cmp_deeply \@sorted, [
+                {   id           => 9,
+                    service_name => 'Another service (9)',
+                    %defaults,
+                },
+                {   id           => 8,
+                    service_name => 'Service 8',
+                    %defaults,
+                },
+                {   id           => 1,
+                    service_name => 'Service 1',
+                    %defaults,
+                },
+                {   id           => 6,
+                    service_name => 'Service 6',
+                    %defaults,
+                },
+            ];
+        };
     };
 };
 
@@ -131,7 +172,7 @@ sub _site_collections {
             SiteServiceID => 1,
             ServiceItemDescription => 'Service 1',
 
-            NextCollectionDate => '2024-04-01T00:00:00',
+            NextCollectionDate => '2024-04-30T00:00:00',
             SiteServiceValidFrom => '2024-03-31T00:59:59',
             SiteServiceValidTo => '2024-03-31T03:00:00',
         },
@@ -171,7 +212,7 @@ sub _site_collections {
             SiteServiceID => 6,
             ServiceItemDescription => 'Service 6',
 
-            NextCollectionDate => '2024-04-02T00:00:00',
+            NextCollectionDate => '2024-05-01T00:00:00',
             SiteServiceValidFrom => '2024-03-31T00:59:59',
             SiteServiceValidTo => '0001-01-01T00:00:00',
         },
@@ -180,6 +221,22 @@ sub _site_collections {
             ServiceItemDescription => 'Service 7',
 
             NextCollectionDate => '20240-04-02T00:00:00',
+            SiteServiceValidFrom => '2024-03-31T00:59:59',
+            SiteServiceValidTo => '0001-01-01T00:00:00',
+        },
+        {
+            SiteServiceID => 8,
+            ServiceItemDescription => 'Service 8',
+
+            NextCollectionDate => '2024-04-01T00:00:00',
+            SiteServiceValidFrom => '2024-03-31T00:59:59',
+            SiteServiceValidTo => '0001-01-01T00:00:00',
+        },
+        {
+            SiteServiceID => 9,
+            ServiceItemDescription => 'Another service (9)',
+
+            NextCollectionDate => '2024-04-01T00:00:00',
             SiteServiceValidFrom => '2024-03-31T00:59:59',
             SiteServiceValidTo => '0001-01-01T00:00:00',
         },
