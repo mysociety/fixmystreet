@@ -5,7 +5,9 @@
         <a href="[% uri %]" class="admin-offsite-link">[% problem.id %]</a>
         [%- ELSE %]
         [%- problem.id %]
-        [%- END -%]</td>
+        [%- END -%]
+        [%~ IF problem.cobrand_data %]<br><small>[% problem.cobrand_data %]</small>[%~ END ~%]
+        </td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
         <td>
             [% PROCESS value_or_nbsp value=problem.category_display %]
