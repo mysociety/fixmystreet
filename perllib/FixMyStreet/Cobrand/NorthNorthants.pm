@@ -34,7 +34,7 @@ sub council_name { return 'North Northamptonshire Council'; }
 sub council_url { return 'northnorthants'; }
 
 sub privacy_policy_url {
-    'https://www.northnorthants.gov.uk/service-privacy-notices/street-doctor-privacy-policy'
+    'https://www.northnorthants.gov.uk/service-privacy-notices/street-doctor-privacy-notice'
 }
 
 sub enter_postcode_text { 'Enter a North Northamptonshire postcode, street name and area, or check an existing report number' }
