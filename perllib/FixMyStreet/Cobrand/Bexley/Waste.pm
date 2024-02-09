@@ -115,6 +115,7 @@ sub image_for_unit {
         'FO-23'    => 'food-waste',                    # Food 23 ltr Caddy
         'GA-140'   => 'garden-waste-brown-bin',        # Garden 140 ltr Bin
         'GA-240'   => 'garden-waste-brown-bin',        # Garden 240 ltr Bin
+        'GL-660'   => 'green-euro-bin',                # Glass 660 ltr Bin
         'GL-1100'  => 'green-euro-bin',                # Glass 1100 ltr Bin
         'GL-1280'  => 'green-euro-bin',                # Glass 1280 ltr Bin
         'GL-55'    => 'recycle-black-box',             # Glass 55 ltr Box
