@@ -43,6 +43,11 @@ var fixmystreet = fixmystreet || {};
             if (bool[key]) {
                 val = !!val;
             }
+            // On mobile we need to force the "new report" pin (id 0) to not be draggable
+            // as it interferes with the crosshair pinpointing mechanism.
+            if (key === "draggable" && $("html").hasClass("mobile") && arr[3] == 0) {
+                val = false;
+            }
             arr.push(val);
         });
         fixmystreet.pins.push(arr);
