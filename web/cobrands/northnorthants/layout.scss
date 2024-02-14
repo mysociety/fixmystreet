@@ -2,7 +2,7 @@
 @import "../sass/layout";
 
 body {
-  font-size: 1.2em;
+  font-size: 1.1875em;
 }
 
 a.platform-logo {
@@ -15,42 +15,34 @@ a.platform-logo {
 }
 
 .nav-menu {
-  a, span {
-    padding: 0.25em 0.75em;
-    margin:0.5em 0;
+  a, span, a.report-a-problem-btn {
     font-size: 1em;
-    @include border-radius(3px);
-  }
-
-  a.report-a-problem-btn {
-    @include border-radius(3px);
+    @include border-radius($button-border-radius);
   }
 
   span {
     color:$primary_b;
   }
-
-  a {
-    &:focus {
-      background: $focus-bg-top;
-      color: $focus-text;
-      outline: none;
-    }
-    &:visited {
-      &:hover {
-        color: $primary_text;
-      }
-    }
-  }
 }
 
 // FRONTPAGE
 #front-main {
-  padding: 3em 1em;
+  padding: 5.625rem 1em;
+  max-width: 1680px;
+  margin: 0 auto;
 }
 
 #front_stats {
   border-color: $primary_b;
+}
+
+.postcode-form-box {
+  overflow: visible; // Allows the focus effect of input#id to be visible
+}
+
+// MAP PAGE
+.big-green-banner {
+  font-size: 1.2rem;
 }
 
 //FOOOTER
@@ -63,6 +55,15 @@ a.platform-logo {
 
   ul {
     &.list-links {
+      flex-direction: row;
+      margin-bottom: 40px;
+
+      a {
+        padding: 10px 5px;
+      }
+    }
+
+    &.list-social-links {
       margin-bottom: 15px;
     }
   }
