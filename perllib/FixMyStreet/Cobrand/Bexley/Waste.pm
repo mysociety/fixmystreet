@@ -118,10 +118,11 @@ sub bin_services_for_address {
         }
 
         push @site_services_filtered, {
-            id           => $service->{SiteServiceID},
-            service_id   => $service->{ServiceItemName},
-            service_name => $service->{ServiceItemDescription},
-            next         => {
+            id             => $service->{SiteServiceID},
+            service_id     => $service->{ServiceItemName},
+            service_name   => $service->{ServiceItemDescription},
+            round_schedule => $service->{RoundSchedule},
+            next           => {
                 date    => $service->{NextCollectionDate},
                 ordinal => ordinal( $next_dt->day ),
                 changed => 0,
@@ -143,6 +144,52 @@ sub service_sort {
             $a->{next}{date} cmp $b->{next}{date}
         ||  $a->{service_name} cmp $b->{service_name}
     } @services;
+}
+
+sub bin_future_collections {
+    my $self = shift;
+
+    my $services = $self->{c}->stash->{service_data};
+    return [] unless $services;
+
+    # There may be more than one service associated with a round
+    my %srv_for_round;
+    for (@$services) {
+        push @{ $srv_for_round{ $_->{round_schedule} } }, $_;
+    }
+
+    my $year = 1900 + (localtime)[5];
+    my $rounds =
+        $self->whitespace->GetCollectionByUprnAndDatePlus(
+            $self->{c}->stash->{property}{uprn},
+            "$year-01-01T00:00:00",
+            "$year-12-31T23:59:59",
+        );
+    return [] unless $rounds;
+
+    # Dates need to be converted from 'dd/mm/yyyy hh:mm:ss' format
+    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %T' );
+
+    my @events;
+    for my $rnd ( @$rounds ) {
+        # Concatenate Round and Schedule, try to match against services
+        my $srv = $srv_for_round{
+            $rnd->{Round} . ' ' . $rnd->{Schedule}
+        };
+        next unless $srv;
+
+        my $dt = $parser->parse_datetime( $rnd->{Date} );
+
+        for (@$srv) {
+            push @events, {
+                date    => $dt,
+                desc    => '',
+                summary => $_->{service_name},
+            };
+        }
+    }
+
+    return \@events;
 }
 
 sub image_for_unit {

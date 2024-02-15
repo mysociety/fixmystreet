@@ -77,6 +77,7 @@ FixMyStreet::override_config {
         }
     );
     $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
+    $whitespace_mock->mock( 'GetCollectionByUprnAndDatePlus', &_collection_by_uprn_date );
 
     subtest 'Correct services are shown for address' => sub {
         $mech->submit_form_ok( { with_fields => { address => 1 } } );
@@ -93,7 +94,8 @@ FixMyStreet::override_config {
                 }
             );
             my %defaults = (
-                service_id => ignore(),
+                service_id     => ignore(),
+                round_schedule => ignore(),
                 next => {
                     changed => 0,
                     ordinal => ignore(),
@@ -146,6 +148,32 @@ FixMyStreet::override_config {
         $mech->content_contains('Another service (9)');
         $mech->content_contains('Monday, 1st April 2024');
     }
+
+    subtest 'Checking calendar' => sub {
+        $mech->follow_link_ok(
+            { text => 'Add to your calendar (.ics file)' } );
+        $mech->content_contains('BEGIN:VCALENDAR');
+        my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
+        shift @events; # Header
+        my $i = 0;
+        for (@events) {
+            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Service 8/;
+            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Another service \(9\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Service 1/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Service 6/;
+
+            $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Service 8/;
+            $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Another service \(9\)/;
+
+            $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Service 8/;
+            $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Another service \(9\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Service 1/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Service 6/;
+        }
+        my $expected_num = 10;
+        is @events, $expected_num, "$expected_num events in calendar";
+        is $i, 10, 'Correct events in the calendar';
+    };
 };
 
 done_testing;
@@ -302,4 +330,46 @@ sub _site_collections {
             },
         ],
     };
+}
+
+sub _collection_by_uprn_date {
+    return [
+        {   Date     => '01/04/2024 00:00:00',
+            Round    => 'RND-8-9',
+            Schedule => 'Mon',
+            Service  => 'Services 8 & 9 Collection',
+        },
+        {   Date     => '02/04/2024 00:00:00',
+            Round    => 'RND-1',
+            Schedule => 'Tue Wk 1',
+            Service  => 'Service 1 Collection',
+        },
+        {   Date     => '03/04/2024 00:00:00',
+            Round    => 'RND-6',
+            Schedule => 'Wed Wk 2',
+            Service  => 'Service 6 Collection',
+        },
+
+        {   Date     => '08/04/2024 00:00:00',
+            Round    => 'RND-8-9',
+            Schedule => 'Mon',
+            Service  => 'Services 8 & 9 Collection',
+        },
+
+        {   Date     => '15/04/2024 00:00:00',
+            Round    => 'RND-8-9',
+            Schedule => 'Mon',
+            Service  => 'Services 8 & 9 Collection',
+        },
+        {   Date     => '16/04/2024 00:00:00',
+            Round    => 'RND-1',
+            Schedule => 'Tue Wk 1',
+            Service  => 'Service 1 Collection',
+        },
+        {   Date     => '17/04/2024 00:00:00',
+            Round    => 'RND-6',
+            Schedule => 'Wed Wk 2',
+            Service  => 'Service 6 Collection',
+        },
+    ];
 }

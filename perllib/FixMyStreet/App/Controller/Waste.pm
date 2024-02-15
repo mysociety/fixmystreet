@@ -733,7 +733,7 @@ sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {
             description => $_->{desc},
             dtstamp => $stamp,
             dtstart => [ $_->{date}->ymd(''), { value => 'DATE' } ],
-            dtend => [ $_->{date}->add(days=>1)->ymd(''), { value => 'DATE' } ],
+            dtend => [ $_->{date}->clone->add(days=>1)->ymd(''), { value => 'DATE' } ],
         );
         $calendar->add_entry($event);
     }

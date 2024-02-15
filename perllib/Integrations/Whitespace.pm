@@ -132,12 +132,13 @@ sub GetSiteWorksheets {
     return $res;
 }
 
-sub GetCollectionByUprnAndDate {
-    my ($self, $uprn, $date) = @_;
+sub GetCollectionByUprnAndDatePlus {
+    my ($self, $uprn, $date_from, $date_to) = @_;
 
-    my $res = $self->call('GetCollectionByUprnAndDate', getCollectionByUprnAndDateInput => ixhash( Uprn => $uprn, NextCollectionFromDate => $date ));
+    my $res = $self->call('GetCollectionByUprnAndDatePlus', getCollectionByUprnAndDatePlusInput => ixhash( Uprn => $uprn, NextCollectionFromDate => $date_from, NextCollectionToDate => $date_to ));
 
-    return $res->{Collections}->{Collection};
+    # TODO Need to force arrayref?
+    return $res->{Collections}{Collection};
 }
 
 sub GetInCabLogsByUsrn {
