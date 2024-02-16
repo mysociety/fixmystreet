@@ -57,6 +57,7 @@ sub look_up_property {
         address => FixMyStreet::Template::title($site->{Site}->{SiteShortAddress}),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
+        has_children => $site->{NumChildren} ? 1 : 0,
 
         %parent_property,
     };
@@ -147,6 +148,11 @@ sub service_sort {
 sub image_for_unit {
     my ( $self, $unit ) = @_;
 
+    my $property = $self->{c}->stash->{property};
+
+    my $is_communal
+        = $property->{has_children} || $property->{parent_property};
+
     my $images = {
         'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
         'FO-23'    => 'food-waste',                    # Food 23 ltr Caddy
@@ -174,7 +180,6 @@ sub image_for_unit {
         'PL-940'   => 'plastics-wheeled-bin',          # Plastic 940 ltr Bin
         'PG-1100'  => 'plastics-wheeled-bin',          # Plastics & glass 1100 ltr euro bin
         'PG-1280'  => 'plastics-wheeled-bin',          # Plastics & glass 1280 ltr euro bin
-        'PG-240'   => 'recycling-bin-white-lid',       # Plastics & glass 240 ltr wheeled bin
         'PG-360'   => 'plastics-wheeled-bin',          # Plastics & glass 360 ltr wheeled bin
         'PG-55'    => 'white-recycling-box',           # Plastics & glass 55 ltr box
         'PG-660'   => 'plastics-wheeled-bin',          # Plastics & glass 660 ltr euro bin
@@ -183,19 +188,26 @@ sub image_for_unit {
         'RES-1280' => 'non-recyclable-wheeled-bin',    # Residual 1280 ltr bin
         'RES-140'  => 'non-recyclable-wheeled-bin',    # Residual 140 ltr bin
         'RES-180'  => 'general-waste-green-bin',       # Residual 180 ltr bin
-        'RES-240'  => 'general-waste-green-bin',       # Residual 240 ltr bin
         'RES-660'  => 'non-recyclable-wheeled-bin',    # Residual 660 ltr bin
         'RES-720'  => 'non-recyclable-wheeled-bin',    # Residual 720 ltr bin
         'RES-940'  => 'non-recyclable-wheeled-bin',    # Residual 940 ltr bin
         'RES-CHAM' => 'non-recyclable-wheeled-bin',    # Residual Chamberlain
         'RES-DBIN' => 'non-recyclable-wheeled-bin',    # Residual Dustbin
         'RES-SACK' => 'black-non-recyclable-bag',      # Residual Sack
-    };
 
-    # TODO
-    # For PG-240 ('Plastics & glass 240 ltr wheeled bin')
-    # when at parent shell/communal property
-    # image should be plastics-wheeled-bin.png
+        # Plastics & glass 240 ltr wheeled bin
+        'PG-240' => (
+            $is_communal
+            ? 'plastics-wheeled-bin'
+            : 'recycling-bin-white-lid'
+        ),
+        # Residual 240 ltr bin
+        'RES-240'  => (
+            $is_communal
+            ? 'non-recyclable-wheeled-bin'
+            : 'general-waste-green-bin'
+        ),
+    };
 
     my $service_id = $unit->{service_id};
 
