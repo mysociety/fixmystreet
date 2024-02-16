@@ -36,12 +36,29 @@ sub look_up_property {
 
     my $site = $self->whitespace->GetSiteInfo($id);
 
+    # $site has a {Site}{SiteParentID} but this is NOT an AccountSiteID;
+    # we need to call GetAccountSiteID for that
+    my %parent_property;
+    if ( my $parent_id = $site->{Site}{SiteParentID} ) {
+        my $parent_data = $self->whitespace->GetAccountSiteID($parent_id);
+        %parent_property = (
+            parent_property => {
+                id => $parent_data->{AccountSiteID},
+                # NOTE 'AccountSiteUPRN' returned from GetSiteInfo,      but
+                #      'AccountSiteUprn' returned from GetAccountSiteID
+                uprn => $parent_data->{AccountSiteUprn},
+            }
+        );
+    }
+
     return {
         id => $site->{AccountSiteID},
         uprn => $site->{AccountSiteUPRN},
         address => FixMyStreet::Template::title($site->{Site}->{SiteShortAddress}),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
+
+        %parent_property,
     };
 }
 
@@ -54,6 +71,13 @@ sub bin_services_for_address {
     };
 
     my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
+
+    # Get parent property services if no services found
+    $site_services = $self->whitespace->GetSiteCollections(
+        $property->{parent_property}{uprn} )
+        if !@{ $site_services // [] }
+        && $property->{parent_property};
+
     my @site_services_filtered;
 
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );

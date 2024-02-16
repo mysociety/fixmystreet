@@ -62,25 +62,26 @@ FixMyStreet::override_config {
       $mech->content_contains('<option value="1">1, The Avenue, DA1 3NP</option>');
   };
 
-    $whitespace_mock->mock('GetSiteInfo', &_site_info );
-    $whitespace_mock->mock('GetSiteCollections', &_site_collections );
+    $whitespace_mock->mock(
+        'GetSiteInfo',
+        sub {
+            my ( $self, $account_site_id ) = @_;
+            return _site_info()->{$account_site_id};
+        }
+    );
+    $whitespace_mock->mock(
+        'GetSiteCollections',
+        sub {
+            my ( $self, $uprn ) = @_;
+            return _site_collections()->{$uprn};
+        }
+    );
+    $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
 
     subtest 'Correct services are shown for address' => sub {
         $mech->submit_form_ok( { with_fields => { address => 1 } } );
 
-        $mech->content_contains('Service 1');
-        $mech->content_contains('Tuesday, 30th April 2024');
-        $mech->content_lacks('Service 2');
-        $mech->content_lacks('Service 3');
-        $mech->content_lacks('Service 4');
-        $mech->content_lacks('Service 5');
-        $mech->content_contains('Service 6');
-        $mech->content_contains('Wednesday, 1st May 2024');
-        $mech->content_lacks('Service 7');
-        $mech->content_contains('Service 8');
-        $mech->content_contains('Monday, 1st April 2024');
-        $mech->content_contains('Another service (9)');
-        $mech->content_contains('Monday, 1st April 2024');
+        test_services($mech);
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -88,7 +89,9 @@ FixMyStreet::override_config {
             $cobrand->{c}->mock( stash => sub { {} } );
 
             my @sorted = $cobrand->service_sort(
-                @{ $cobrand->bin_services_for_address( {} ) } );
+                @{  $cobrand->bin_services_for_address( { uprn => 10001 } )
+                }
+            );
             my %defaults = (
                 service_id => ignore(),
                 next => {
@@ -117,6 +120,32 @@ FixMyStreet::override_config {
             ];
         };
     };
+
+    subtest 'Parent services shown for child' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
+        $mech->submit_form_ok( { with_fields => { address => 2 } } );
+
+        test_services($mech);
+    };
+
+    sub test_services {
+        my $mech = shift;
+
+        $mech->content_contains('Service 1');
+        $mech->content_contains('Tuesday, 30th April 2024');
+        $mech->content_lacks('Service 2');
+        $mech->content_lacks('Service 3');
+        $mech->content_lacks('Service 4');
+        $mech->content_lacks('Service 5');
+        $mech->content_contains('Service 6');
+        $mech->content_contains('Wednesday, 1st May 2024');
+        $mech->content_lacks('Service 7');
+        $mech->content_contains('Service 8');
+        $mech->content_contains('Monday, 1st April 2024');
+        $mech->content_contains('Another service (9)');
+        $mech->content_contains('Monday, 1st April 2024');
+    }
 };
 
 done_testing;
@@ -156,89 +185,121 @@ sub _addresses_for_postcode {
 
 sub _site_info {
     return {
-        AccountSiteID   => 1,
-        AccountSiteUPRN => 10001,
-        Site            => {
-            SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
-            SiteLatitude     => 51,
-            SiteLongitude    => -0.1,
+        1 => {
+            AccountSiteID   => 1,
+            AccountSiteUPRN => 10001,
+            Site            => {
+                SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
+                SiteLatitude     => 51,
+                SiteLongitude    => -0.1,
+            },
+        },
+        2 => {
+            AccountSiteID   => 2,
+            AccountSiteUPRN => 10002,
+            Site            => {
+                SiteShortAddress => ', 2, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51,
+                SiteLongitude    => -0.1,
+                SiteParentID     => 101,
+            },
         },
     };
 }
 
+sub _account_site_id {
+    return {
+        AccountSiteID   => 1,
+        AccountSiteUprn => 10001,
+    };
+}
+
 sub _site_collections {
-    return [
-        {
-            SiteServiceID => 1,
-            ServiceItemDescription => 'Service 1',
+    return {
+        10002 => undef,
 
-            NextCollectionDate => '2024-04-30T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '2024-03-31T03:00:00',
-        },
-        {
-            SiteServiceID => 2,
-            ServiceItemDescription => 'Service 2',
+        10001 => [
+            {   SiteServiceID          => 1,
+                ServiceItemDescription => 'Service 1',
 
-            NextCollectionDate => undef,
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '2024-03-31T03:00:00',
-        },
-        {
-            SiteServiceID => 3,
-            ServiceItemDescription => 'Service 3',
+                NextCollectionDate   => '2024-04-30T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
 
-            # No NextCollectionDate
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '2024-03-31T03:00:00',
-        },
-        {
-            SiteServiceID => 4,
-            ServiceItemDescription => 'Service 4',
+                RoundSchedule => 'RND-1 Tue Wk 1',
+            },
+            {   SiteServiceID          => 2,
+                ServiceItemDescription => 'Service 2',
 
-            NextCollectionDate => '2024-04-01T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T03:00:00', # Future
-            SiteServiceValidTo => '2024-03-31T04:00:00',
-        },
-        {
-            SiteServiceID => 5,
-            ServiceItemDescription => 'Service 5',
+                NextCollectionDate   => undef,
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
 
-            NextCollectionDate => '2024-04-01T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T00:00:00',
-            SiteServiceValidTo => '2024-03-31T00:59:59', # Past
-        },
-        {
-            SiteServiceID => 6,
-            ServiceItemDescription => 'Service 6',
+                RoundSchedule => 'N/A',
+            },
+            {   SiteServiceID          => 3,
+                ServiceItemDescription => 'Service 3',
 
-            NextCollectionDate => '2024-05-01T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '0001-01-01T00:00:00',
-        },
-        {
-            SiteServiceID => 7,
-            ServiceItemDescription => 'Service 7',
+                # No NextCollectionDate
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
 
-            NextCollectionDate => '20240-04-02T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '0001-01-01T00:00:00',
-        },
-        {
-            SiteServiceID => 8,
-            ServiceItemDescription => 'Service 8',
+                RoundSchedule => 'N/A',
+            },
+            {   SiteServiceID          => 4,
+                ServiceItemDescription => 'Service 4',
 
-            NextCollectionDate => '2024-04-01T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '0001-01-01T00:00:00',
-        },
-        {
-            SiteServiceID => 9,
-            ServiceItemDescription => 'Another service (9)',
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T03:00:00',    # Future
+                SiteServiceValidTo   => '2024-03-31T04:00:00',
 
-            NextCollectionDate => '2024-04-01T00:00:00',
-            SiteServiceValidFrom => '2024-03-31T00:59:59',
-            SiteServiceValidTo => '0001-01-01T00:00:00',
-        },
-    ];
+                RoundSchedule => 'N/A',
+            },
+            {   SiteServiceID          => 5,
+                ServiceItemDescription => 'Service 5',
+
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:00:00',
+                SiteServiceValidTo   => '2024-03-31T00:59:59',    # Past
+
+                RoundSchedule => 'N/A',
+            },
+            {   SiteServiceID          => 6,
+                ServiceItemDescription => 'Service 6',
+
+                NextCollectionDate   => '2024-05-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                RoundSchedule => 'RND-6 Wed Wk 2',
+            },
+            {   SiteServiceID          => 7,
+                ServiceItemDescription => 'Service 7',
+
+                NextCollectionDate   => '20240-04-02T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                RoundSchedule => 'N/A',
+            },
+            {   SiteServiceID          => 8,
+                ServiceItemDescription => 'Service 8',
+
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                RoundSchedule => 'RND-8-9 Mon',
+            },
+            {   SiteServiceID          => 9,
+                ServiceItemDescription => 'Another service (9)',
+
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                RoundSchedule => 'RND-8-9 Mon',
+            },
+        ],
+    };
 }

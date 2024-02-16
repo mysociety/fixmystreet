@@ -100,11 +100,20 @@ sub GetSiteCollections {
 }
 
 sub GetSiteInfo {
-    my ($self, $site_id) = @_;
+    my ( $self, $account_site_id ) = @_;
 
-    my $res = $self->call('GetSiteInfo', siteInfoInput => ixhash( AccountSiteId => $site_id ));
+    my $res = $self->call('GetSiteInfo', siteInfoInput => ixhash( AccountSiteId => $account_site_id ));
 
     return $res->{Site};
+}
+
+sub GetAccountSiteID {
+    my ( $self, $site_id ) = @_;
+
+    my $res = $self->call( 'GetAccountSiteId',
+        siteInput => ixhash( SiteId => $site_id ) );
+
+    return $res;
 }
 
 sub GetSiteServiceItemRoundSchedules {
