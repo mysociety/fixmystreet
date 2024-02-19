@@ -118,6 +118,19 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, City of Peterborough, East of England, England//;
 }
 
+=head2 (around) open311_update_missing_data
+
+If we have a UPRN (a waste report), we do not need to look up the site code.
+This hooks around the default from Roles::ConfirmOpen311.
+
+=cut
+
+around open311_update_missing_data => sub {
+    my ($orig, $self, $row, $h, $contact) = @_;
+    return if $row->get_extra_field_value('uprn');
+    return $self->$orig($row, $h, $contact);
+};
+
 around open311_extra_data_include => sub {
     my ($orig, $self, $row, $h) = @_;
 

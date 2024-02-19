@@ -21,6 +21,9 @@ $mock->mock('_fetch_features', sub {
         # adopted roads
         } elsif ( $x == 552721 && $args->{url} =~ m{7/query} ) {
             return [ { geometry => { type => 'Point' } } ];
+        } elsif ( $x == 551973 && $args->{url} =~ m{7/query} ) {
+            # site_code lookup test
+            return [ { geometry => { type => 'Polygon', coordinates => [ [ [ 551975, 298244 ], [ 551975, 298244 ] ] ] }, properties => { USRN => "ROAD" } } ];
         }
         return [];
     }
@@ -59,7 +62,7 @@ subtest 'open311 request handling', sub {
                 { description => 'Tree code', code => 'colour', required => 'True', automated => 'hidden_field' },
             ] },
         );
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Trees', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough' });
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Trees', latitude => 52.5609, longitude => 0.2405, cobrand => 'peterborough' });
         $p->push_extra_fields({ name => 'emergency', value => 'no'});
         $p->push_extra_fields({ name => 'private_land', value => 'no'});
         $p->push_extra_fields({ name => 'PCC-light', value => 'whatever'});
@@ -82,6 +85,7 @@ subtest 'open311 request handling', sub {
         is $c->param('attribute[private_land]'), undef, 'no private_land param sent';
         is $c->param('attribute[PCC-light]'), undef, 'no pcc- param sent';
         is $c->param('attribute[tree_code]'), 'tree-42', 'tree_code param sent';
+        is $c->param('attribute[site_code]'), 'ROAD', 'site_code found';
     };
 };
 

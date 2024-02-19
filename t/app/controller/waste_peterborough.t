@@ -9,7 +9,7 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
-$mock->mock('_fetch_features', sub { [] });
+$mock->mock('_fetch_features', sub { ok 0, 'This should not be called by waste'; });
 
 my $mech = FixMyStreet::TestMech->new;
 
