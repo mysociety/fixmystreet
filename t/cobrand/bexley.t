@@ -386,15 +386,15 @@ FixMyStreet::override_config {
         $mech->content_contains('Report ref:&nbsp;' . $report->id);
     };
 
-    subtest 'phishing warning is shown for new reports' => sub {
+    subtest 'phishing warning is removed for new reports' => sub {
         $mech->log_out_ok;
         $mech->get_ok('/report/new?longitude=0.15356&latitude=51.45556&category=Lamp+post');
-        $mech->content_contains('if asked for personal information, please do not respond');
+        $mech->content_lacks('if asked for personal information, please do not respond');
     };
 
-    subtest 'phishing warning is shown on report pages' => sub {
+    subtest 'phishing warning is removed on report pages' => sub {
         $mech->get_ok('/report/' . $report->id);
-        $mech->content_contains('if asked for personal information, please do not respond');
+        $mech->content_lacks('if asked for personal information, please do not respond');
     };
 
     subtest "test ID in update email" => sub {
