@@ -103,20 +103,20 @@ FixMyStreet::override_config {
                 },
             );
             cmp_deeply \@sorted, [
-                {   id           => 9,
-                    service_name => 'Another service (9)',
+                {   id           => 8,
+                    service_name => 'Blue Recycling Box',
                     %defaults,
                 },
-                {   id           => 8,
-                    service_name => 'Service 8',
+                {   id           => 9,
+                    service_name => 'Green Recycling Box',
                     %defaults,
                 },
                 {   id           => 1,
-                    service_name => 'Service 1',
+                    service_name => 'Communal Food Bin',
                     %defaults,
                 },
                 {   id           => 6,
-                    service_name => 'Service 6',
+                    service_name => 'Clear Sack(s)',
                     %defaults,
                 },
             ];
@@ -134,18 +134,18 @@ FixMyStreet::override_config {
     sub test_services {
         my $mech = shift;
 
-        $mech->content_contains('Service 1');
+        $mech->content_contains('Communal Food Bin');
         $mech->content_contains('Tuesday, 30th April 2024');
-        $mech->content_lacks('Service 2');
-        $mech->content_lacks('Service 3');
-        $mech->content_lacks('Service 4');
-        $mech->content_lacks('Service 5');
-        $mech->content_contains('Service 6');
+        $mech->content_lacks('Brown Caddy');
+        $mech->content_lacks('Brown Wheelie Bin');
+        $mech->content_lacks('Green Recycling Bin');
+        $mech->content_lacks('Black Recycling Box');
+        $mech->content_contains('Clear Sack(s)');
         $mech->content_contains('Wednesday, 1st May 2024');
-        $mech->content_lacks('Service 7');
-        $mech->content_contains('Service 8');
+        $mech->content_lacks('Blue Lidded Wheelie Bin');
+        $mech->content_contains('Blue Recycling Box');
         $mech->content_contains('Monday, 1st April 2024');
-        $mech->content_contains('Another service (9)');
+        $mech->content_contains('Green Recycling Box');
         $mech->content_contains('Monday, 1st April 2024');
     }
 
@@ -157,18 +157,18 @@ FixMyStreet::override_config {
         shift @events; # Header
         my $i = 0;
         for (@events) {
-            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Service 8/;
-            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Another service \(9\)/;
-            $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Service 1/;
-            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Service 6/;
+            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Clear Sack\(s\)/;
 
-            $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Service 8/;
-            $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Another service \(9\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Green Recycling Box/;
 
-            $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Service 8/;
-            $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Another service \(9\)/;
-            $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Service 1/;
-            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Service 6/;
+            $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Green Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Communal Food Bin/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Clear Sack\(s\)/;
         }
         my $expected_num = 10;
         is @events, $expected_num, "$expected_num events in calendar";
@@ -249,6 +249,7 @@ sub _site_collections {
         10001 => [
             {   SiteServiceID          => 1,
                 ServiceItemDescription => 'Service 1',
+                ServiceItemName => 'FO-140', # Communal Food Bin
 
                 NextCollectionDate   => '2024-04-30T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
@@ -258,6 +259,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 2,
                 ServiceItemDescription => 'Service 2',
+                ServiceItemName => 'FO-23', # Brown Caddy
 
                 NextCollectionDate   => undef,
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
@@ -267,6 +269,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 3,
                 ServiceItemDescription => 'Service 3',
+                ServiceItemName => 'GA-140', # Brown Wheelie Bin
 
                 # No NextCollectionDate
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
@@ -276,6 +279,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 4,
                 ServiceItemDescription => 'Service 4',
+                ServiceItemName => 'GL-1100', # Green Recycling Bin
 
                 NextCollectionDate   => '2024-04-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T03:00:00',    # Future
@@ -285,6 +289,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 5,
                 ServiceItemDescription => 'Service 5',
+                ServiceItemName => 'GL-55', # Black Recycling Box
 
                 NextCollectionDate   => '2024-04-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:00:00',
@@ -294,6 +299,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 6,
                 ServiceItemDescription => 'Service 6',
+                ServiceItemName => 'MDR-SACK', # Clear Sack(s)
 
                 NextCollectionDate   => '2024-05-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
@@ -303,6 +309,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 7,
                 ServiceItemDescription => 'Service 7',
+                ServiceItemName => 'PC-180', # Blue Lidded Wheelie Bin
 
                 NextCollectionDate   => '20240-04-02T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
@@ -312,6 +319,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 8,
                 ServiceItemDescription => 'Service 8',
+                ServiceItemName => 'PC-55', # Blue Recycling Box
 
                 NextCollectionDate   => '2024-04-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
@@ -321,6 +329,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 9,
                 ServiceItemDescription => 'Another service (9)',
+                ServiceItemName => 'PA-55', # Green Recycling Box
 
                 NextCollectionDate   => '2024-04-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',

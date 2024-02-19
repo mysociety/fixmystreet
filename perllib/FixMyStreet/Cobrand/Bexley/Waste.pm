@@ -67,10 +67,6 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-    $self->{c}->stash->{containers} = {
-        # TODO
-    };
-
     my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
 
     # Get parent property services if no services found
@@ -117,10 +113,12 @@ sub bin_services_for_address {
             next if $now_dt > $to_dt;
         }
 
+        my $containers = $self->_containers($property);
+
         push @site_services_filtered, {
             id             => $service->{SiteServiceID},
             service_id     => $service->{ServiceItemName},
-            service_name   => $service->{ServiceItemDescription},
+            service_name   => $containers->{ $service->{ServiceItemName} },
             round_schedule => $service->{RoundSchedule},
             next           => {
                 date    => $service->{NextCollectionDate},
@@ -268,6 +266,61 @@ my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 =
 sub ordinal {
     my $n = shift;
     $irregulars{$n % 100} || $irregulars{$n % 10} || 'th';
+}
+
+sub _containers {
+    my ( $self, $property ) = @_;
+
+    my $is_communal
+        = $property->{has_children} || $property->{parent_property};
+
+    return {
+        'FO-140'   => 'Communal Food Bin',
+        'FO-23'    => 'Brown Caddy',
+        'GA-140'   => 'Brown Wheelie Bin',
+        'GA-240'   => 'Brown Wheelie Bin',
+        'GL-1100'  => 'Green Recycling Bin',
+        'GL-1280'  => 'Green Recycling Bin',
+        'GL-55'    => 'Black Recycling Box',
+        'MDR-SACK' => 'Clear Sack(s)',
+        'PC-180'   => 'Blue Lidded Wheelie Bin',
+        'PC-55'    => 'Blue Recycling Box',
+        'PA-1100'  => 'Blue Recycling Bin',
+        'PA-1280'  => 'Blue Recycling Bin',
+        'PA-140'   => 'Blue Recycling Bin',
+        'PA-240'   => 'Blue Recycling Bin',
+        'PA-55'    => 'Green Recycling Box',
+        'PA-660'   => 'Blue Recycling Bin',
+        'PA-940'   => 'Blue Recycling Bin',
+        'PL-1100'  => 'White / Silver Recycling Bin',
+        'PL-1280'  => 'White / Silver Recycling Bin',
+        'PL-140'   => 'White / Silver Recycling Bin',
+        'PL-55'    => 'Maroon Recycling Box',
+        'PL-660'   => 'White / Silver Recycling Bin',
+        'PL-940'   => 'White / Silver Recycling Bin',
+        'PG-1100'  => 'White / Silver Recycling Bin',
+        'PG-1280'  => 'White / Silver Recycling Bin',
+        'PG-240' => ( $is_communal
+            ? 'White / Silver Recycling Bin'
+            : 'White Lidded Wheelie Bin' ),
+        'PG-360'   => 'White / Silver Recycling Bin',
+        'PG-55'    => 'White Recycling Box',
+        'PG-660'   => 'White / Silver Recycling Bin',
+        'PG-940'   => 'White / Silver Recycling Bin',
+        'RES-1100' => 'Communal Refuse Bin(s)',
+        'RES-1280' => 'Communal Refuse Bin(s)',
+        'RES-140'  => 'Communal Refuse Bin(s)',
+        'RES-180'  => 'Green Wheelie Bin',
+        'RES-240' => ( $is_communal
+            ? 'Communal Refuse Bin(s)'
+            : 'Green Wheelie bin' ),
+        'RES-660'  => 'Communal Refuse Bin(s)',
+        'RES-720'  => 'Communal Refuse Bin(s)',
+        'RES-940'  => 'Communal Refuse Bin(s)',
+        'RES-CHAM' => 'Communal Refuse Bin(s)',
+        'RES-DBIN' => 'Communal Refuse Bin(s)',
+        'RES-SACK' => 'Green Wheelie Bin',
+    };
 }
 
 1;
