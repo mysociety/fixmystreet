@@ -975,7 +975,10 @@ FixMyStreet::override_config {
             'wednesday-B2' => 'https://example.org/media/16420712/wednesdayweek2.pdf'
         } },
         ggw_calendar_links => { brent => {
-            'monday-2' => 'https://example.org/media/16420712/mondayweek2'
+            'monday-2' => [ {
+                href => 'https://example.org/media/16420712/mondayweek2',
+                text => 'Download PDF garden waste calendar',
+            } ]
         } },
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
