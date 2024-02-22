@@ -78,7 +78,22 @@ FixMyStreet::override_config {
         }
     );
     $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
-    $whitespace_mock->mock( 'GetCollectionByUprnAndDatePlus', &_collection_by_uprn_date );
+    $whitespace_mock->mock( 'GetCollectionByUprnAndDate',
+        &_collection_by_uprn_date );
+    $whitespace_mock->mock( 'GetCollectionByUprnAndDatePlus',
+        &_collection_by_uprn_date_plus );
+    $whitespace_mock->mock( 'GetSiteWorksheets', &_site_worksheets );
+    $whitespace_mock->mock(
+        'GetWorksheetDetailServiceItems',
+        sub {
+            my ( $self, $worksheet_id ) = @_;
+            return _worksheet_detail_service_items()->{$worksheet_id};
+        }
+    );
+    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+        my ( $self, $uprn ) = @_;
+        return _in_cab_logs()->{$uprn};
+    });
 
     subtest 'Correct services are shown for address' => sub {
         $mech->submit_form_ok( { with_fields => { address => 1 } } );
@@ -95,29 +110,55 @@ FixMyStreet::override_config {
                 }
             );
             my %defaults = (
-                service_id     => ignore(),
-                round_schedule => ignore(),
                 next => {
                     changed => 0,
                     ordinal => ignore(),
                     date => ignore(),
                 },
+                last => {
+                    ordinal => ignore(),
+                    date => ignore(),
+                },
             );
             cmp_deeply \@sorted, [
-                {   id           => 8,
-                    service_name => 'Blue Recycling Box',
+                {   id             => 8,
+                    service_id     => 'PC-55',
+                    service_name   => 'Blue Recycling Box',
+                    round_schedule => 'RND-8-9 Mon',
+                    round          => 'RND-8-9',
+                    report_allowed => 0,
+                    report_open    => 1,
+                    report_locked_out => 0,
                     %defaults,
                 },
-                {   id           => 9,
-                    service_name => 'Green Recycling Box',
+                {   id             => 9,
+                    service_id     => 'PA-55',
+                    service_name   => 'Green Recycling Box',
+                    round_schedule => 'RND-8-9 Mon',
+                    round          => 'RND-8-9',
+                    report_allowed => 0,
+                    report_open    => 1,
+                    report_locked_out => 0,
                     %defaults,
                 },
-                {   id           => 1,
-                    service_name => 'Communal Food Bin',
+                {   id             => 1,
+                    service_id     => 'FO-140',
+                    service_name   => 'Communal Food Bin',
+                    round_schedule => 'RND-1 Tue Wk 1',
+                    round          => 'RND-1',
+                    report_allowed => 0,
+                    report_open    => 0,
+                    report_locked_out => 1,
                     %defaults,
                 },
-                {   id           => 6,
-                    service_name => 'Clear Sack(s)',
+                {   id             => 6,
+                    service_id     => 'MDR-SACK',
+                    service_name   => 'Clear Sack(s)',
+                    round_schedule => 'RND-6 Wed Wk 2',
+                    round          => 'RND-6',
+                    report_allowed => 1,
+                    report_open    => 0,
+                    report_locked_out => 0,
                     %defaults,
                 },
             ];
@@ -342,7 +383,7 @@ sub _site_collections {
                 ServiceItemDescription => 'Service 7',
                 ServiceItemName => 'PC-180', # Blue Lidded Wheelie Bin
 
-                NextCollectionDate   => '20240-04-02T00:00:00',
+                NextCollectionDate   => undef,
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
@@ -398,6 +439,32 @@ sub _site_collections {
 
 sub _collection_by_uprn_date {
     return [
+        {   Date     => '24/03/2024 00:00:00',
+            Round    => 'RND-1',
+            Schedule => 'Tue Wk 1',
+            Service  => 'Service 1 Collection',
+        },
+        # 3 working days before Sun 31st March = Wed 27th March
+        {   Date     => '27/03/2024 00:00:00',
+            Round    => 'RND-6',
+            Schedule => 'Wed Wk 2',
+            Service  => 'Service 6 Collection',
+        },
+        {   Date     => '28/03/2024 00:00:00',
+            Round    => 'RND-8-9',
+            Schedule => 'Mon',
+            Service  => 'Services 8 & 9 Collection',
+        },
+        {   Date     => '31/03/2024 00:00:00',
+            Round    => 'RND-1',
+            Schedule => 'Tue Wk 1',
+            Service  => 'Service 1 Collection',
+        },
+    ];
+}
+
+sub _collection_by_uprn_date_plus {
+    return [
         {   Date     => '01/04/2024 00:00:00',
             Round    => 'RND-8-9',
             Schedule => 'Mon',
@@ -436,4 +503,55 @@ sub _collection_by_uprn_date {
             Service  => 'Service 6 Collection',
         },
     ];
+}
+
+sub _site_worksheets {
+    return [
+        {   WorksheetID         => 1,
+            WorksheetStatusName => 'Complete',
+            WorksheetSubject    => 'Missed Collection Plastics & Glass',
+        },
+        {   WorksheetID         => 2,
+            WorksheetStatusName => 'Open',
+            WorksheetSubject    => 'Hotspot Location',
+        },
+        {   WorksheetID         => 3,
+            WorksheetStatusName => 'Open',
+            WorksheetSubject    => 'Missed Collection Plastics & Glass',
+        },
+        {   WorksheetID         => 4,
+            WorksheetStatusName => 'Open',
+            WorksheetSubject    => 'Missed Collection Paper',
+        },
+    ];
+}
+
+sub _worksheet_detail_service_items {
+    return {
+        2 => [ { ServiceItemName => 'FO-140' } ],
+        3 => [],
+        4 => [
+            { ServiceItemName => 'PC-55' },
+            { ServiceItemName => 'PA-55' },
+        ],
+    };
+}
+
+sub _in_cab_logs {
+    {
+        10001 => [
+            {
+                Reason => 'Food - Not Out',
+                RoundCode => 'RND-1',
+                LogDate => '2024-03-28T06:10:09.417',
+                Uprn => '10001',
+            },
+            {
+                Reason => 'N/A',
+                RoundCode => 'RND-6',
+                LogDate => '2024-03-28T06:10:09.417',
+                Uprn => '',
+            },
+        ],
+    }
 }

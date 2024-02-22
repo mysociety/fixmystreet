@@ -125,11 +125,42 @@ sub GetSiteServiceItemRoundSchedules {
 }
 
 sub GetSiteWorksheets {
-    my ($self, $uprn) = @_;
+    my ( $self, $uprn ) = @_;
 
-    my $res = $self->call('GetSiteWorksheets', worksheetInput => ixhash( Uprn => $uprn ));
+    my $res = $self->call( 'GetSiteWorksheets',
+        worksheetInput => ixhash( Uprn => $uprn ) );
 
-    return $res;
+    my $worksheets = force_arrayref( $res->{Worksheets}, 'Worksheet' );
+
+    return $worksheets;
+}
+
+# Needed to get ServiceItemIDs
+sub GetWorksheetDetailServiceItems {
+    my ( $self, $worksheet_id ) = @_;
+
+    my $res = $self->call( 'GetWorksheetDetailServiceItems',
+        worksheetDetailServiceItemsInput =>
+            ixhash( WorksheetId => $worksheet_id ) );
+
+    my $items = force_arrayref( $res->{Worksheetserviceitems},
+        'WorksheetServiceItem' );
+
+    return $items;
+}
+
+sub GetCollectionByUprnAndDate {
+    my ( $self, $uprn, $date_from ) = @_;
+
+    my $res = $self->call(
+        'GetCollectionByUprnAndDate',
+        getCollectionByUprnAndDateInput => ixhash(
+            Uprn                   => $uprn,
+            NextCollectionFromDate => $date_from,
+        ),
+    );
+
+    return force_arrayref( $res->{Collections}, 'Collection' );
 }
 
 sub GetCollectionByUprnAndDatePlus {
@@ -137,8 +168,7 @@ sub GetCollectionByUprnAndDatePlus {
 
     my $res = $self->call('GetCollectionByUprnAndDatePlus', getCollectionByUprnAndDatePlusInput => ixhash( Uprn => $uprn, NextCollectionFromDate => $date_from, NextCollectionToDate => $date_to ));
 
-    # TODO Need to force arrayref?
-    return $res->{Collections}{Collection};
+    return force_arrayref($res->{Collections}, 'Collection');
 }
 
 sub GetInCabLogsByUsrn {
@@ -146,7 +176,9 @@ sub GetInCabLogsByUsrn {
 
     my $res = $self->call('GetInCabLogs', inCabLogInput => ixhash( Usrn => $usrn, LogFromDate => $log_from_date, LogTypeID => [] ));
 
-    return $res->{InCabLogs}->{InCabLogs};
+    my $logs = force_arrayref( $res->{InCabLogs}, 'InCabLogs' );
+
+    return $logs;
 }
 
 sub GetInCabLogsByUprn {
@@ -154,7 +186,9 @@ sub GetInCabLogsByUprn {
 
     my $res = $self->call('GetInCabLogs', inCabLogInput => ixhash( Uprn => $uprn, LogFromDate => $log_from_date, LogTypeID => [] ));
 
-    return $res->{InCabLogs}->{InCabLogs};
+    my $logs = force_arrayref( $res->{InCabLogs}, 'InCabLogs' );
+
+    return $logs;
 }
 
 sub GetStreets {
@@ -166,7 +200,6 @@ sub GetStreets {
 
     return $streets;
 }
-
 
 sub GetSiteIncidents {
     my ($self, $uprn) = @_;
