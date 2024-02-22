@@ -888,10 +888,22 @@ sub waste_munge_report_data {
 
     my $c = $self->{c};
 
+    my $booking_report;
+    if ($c->get_param('original_booking_id')) {
+        $booking_report = FixMyStreet::DB->resultset("Problem")->find({ id => $c->get_param('original_booking_id') });
+    };
     my $address = $c->stash->{property}->{address};
+    my $cfg = $self->feature('echo');
     my $service = $c->stash->{services}{$id}{service_name};
+    if ($id == $cfg->{bulky_service_id}) {
+        $service = 'bulky collection';
+    }
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
+    if ($booking_report) {
+        $c->set_param('Exact_Location', $booking_report->get_extra_field_value('Exact_Location'));
+        $c->set_param('Original_Event_ID', $booking_report->external_id);
+    }
     $c->set_param('service_id', $id);
 }
 

@@ -19,6 +19,16 @@ my $body_user = $mech->create_user_ok('body@example.org');
 my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
     { comment_user => $body_user }, { cobrand => 'kingston' } );
 
+my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report missed collection', email => 'missed@example.org' ), group => ['Waste'], extra => { type => 'waste' });
+  $contact->set_extra_fields(
+        { code => 'uprn', required => 1, automated => 'hidden_field' },
+        { code => 'property_id', required => 1, automated => 'hidden_field' },
+        { code => 'service_id', required => 0, automated => 'hidden_field' },
+        { code => 'Exact_Location', required => 0, automated => 'hidden_field' },
+        { code => 'Original_Event_ID', required => 0, automated => 'hidden_field' },
+    );
+$contact->update;
+
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 
 my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council', {}, { cobrand => 'sutton' } );
@@ -667,8 +677,17 @@ FixMyStreet::override_config {
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a bulky waste collection as missed', 'In time, normal completion');
-        $mech->get_ok('/waste/12345/report');
+        $mech->submit_form_ok({ form_number => 1 }, "Follow link for reporting a missed bulky collection");
         $mech->content_contains('Bulky waste collection');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ form_number => 3 });
+
+        my $missed = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $missed->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
+        is $missed->title, 'Report missed bulky collection';
+        is $missed->get_extra_field_value('Original_Event_ID'), 'a-guid';
+
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 1636,

@@ -10,7 +10,7 @@
   </span>
 [% ELSIF unit.report_allowed %]
   [% any_report_allowed = 1 %]
-  <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
+  <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %][% '?original_booking_id=' _ original_booking IF original_booking %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="service-[% unit.service_id %]" value="1">
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
