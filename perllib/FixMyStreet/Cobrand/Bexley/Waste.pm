@@ -75,9 +75,23 @@ sub bin_services_for_address {
         if !@{ $site_services // [] }
         && $property->{parent_property};
 
+    # TODO Call these in parallel
+    $property->{missed_collection_reports}
+        = $self->_missed_collection_reports($property);
+    $property->{recent_collections} = $self->_recent_collections($property);
+    my ($property_logs, $street_logs) = $self->_in_cab_logs($property);
+
+    $property->{red_tags} = $property_logs;
+    $property->{service_updates} = $street_logs;
+    my %round_exceptions = map { $_->{round} => 1 } @$property_logs;
+    $property->{round_exceptions} = \%round_exceptions;
+
+    # Set certain things outside of services loop
+    my $containers = $self->_containers($property);
+    my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
+
     my @site_services_filtered;
 
-    my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
@@ -120,22 +134,177 @@ sub bin_services_for_address {
             my $links = $self->{c}->cobrand->feature('waste_calendar_links');
             $self->{c}->stash->{calendar_link} = $links->{$id};
         }
-        push @site_services_filtered, {
+        my ($round) = split / /, $service->{RoundSchedule};
+
+        my $filtered_service = {
             id             => $service->{SiteServiceID},
             service_id     => $service->{ServiceItemName},
             service_name   => $containers->{ $service->{ServiceItemName} },
             round_schedule => $service->{RoundSchedule},
+            round          => $round,
             next           => {
                 date    => $service->{NextCollectionDate},
                 ordinal => ordinal( $next_dt->day ),
                 changed => 0,
             },
         };
+
+        # Get the last collection date from recent collections
+        my $last_dt = $property->{recent_collections}{ $service->{RoundSchedule} };
+
+        if ($last_dt) {
+            $filtered_service->{last} = {
+                date    => $last_dt,
+                ordinal => ordinal( $last_dt->day ),
+            };
+        }
+
+        $filtered_service->{report_open}
+            = $property->{missed_collection_reports}{ $filtered_service->{service_id} } ? 1 : 0;
+
+        $filtered_service->{report_allowed}
+            = $self->can_report_missed( $property, $filtered_service );
+
+        $filtered_service->{report_locked_out}
+            = $property->{round_exceptions}{ $filtered_service->{round} } ? 1 : 0;
+
+        push @site_services_filtered, $filtered_service;
     }
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
 
     return \@site_services_filtered;
+}
+
+# Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.) that have
+# open missed collection reports against them on the given property
+sub _missed_collection_reports {
+    my ( $self, $property ) = @_;
+
+    # If property has parent, use that instead
+    my $uprn
+        = $property->{parent_property}
+        ? $property->{parent_property}{uprn}
+        : $property->{uprn};
+
+    my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+
+    my %missed_collection_reports;
+    for my $ws (@$worksheets) {
+        if (   $ws->{WorksheetStatusName} eq 'Open'
+            && $ws->{WorksheetSubject} =~ /^Missed/ )
+        {
+            for ( @{  $self->whitespace->GetWorksheetDetailServiceItems(
+                        $ws->{WorksheetID} ) } )
+            {
+                $missed_collection_reports{ $_->{ServiceItemName} } = 1;
+            }
+        }
+    }
+
+    return \%missed_collection_reports;
+}
+
+# Returns a hash of recent collections, mapping Round + Schedule to collection
+# date
+sub _recent_collections {
+    my ( $self, $property ) = @_;
+
+    # Get collections for the last 21 days
+    my $dt_today = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+    my $dt_from = $dt_today->clone->subtract( days => 21 );
+
+    # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
+    # an end date, but Bexley's live API does not seem to support it. So we
+    # have to filter out future dates below.
+    my $collections = $self->whitespace->GetCollectionByUprnAndDate(
+        $property->{uprn},
+        $dt_from->stringify,
+    );
+
+    # Collection dates are in 'dd/mm/yyyy hh:mm:ss' format.
+    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %T' );
+    my %recent_collections;
+    for (@$collections) {
+        my $dt = $parser->parse_datetime( $_->{Date} );
+
+        # Today's collections may not have happened yet, and we don't want any future collections.
+        next if $dt->truncate( to => 'day' ) >= $dt_today;
+
+        # Concatenate Round and Schedule, to be matched against a service's
+        # RoundSchedule later
+        my $round_schedule = $_->{Round} . ' ' . $_->{Schedule};
+
+        # Check for existing date and use the most recent
+        if ( my $existing = $recent_collections{ $round_schedule } ) {
+            $dt = $dt > $existing ? $dt : $existing;
+        }
+
+        $recent_collections{ $round_schedule } = $dt;
+    }
+
+    return \%recent_collections;
+}
+
+# Returns a hashref of recent in-cab logs for the property, split by USRN and
+# UPRN
+sub _in_cab_logs {
+    my ( $self, $property ) = @_;
+
+    # Logs are recorded against parent properties, not children
+    $property = $property->{parent_property} if $property->{parent_property};
+
+    my $dt_from = $self->_subtract_working_days(3);
+    my $cab_logs = $self->whitespace->GetInCabLogsByUprn(
+        $property->{uprn},
+        $dt_from->stringify,
+    );
+
+    my @property_logs;
+    my @street_logs;
+
+    return ( \@property_logs, \@street_logs ) unless $cab_logs;
+
+    for (@$cab_logs) {
+        next if !$_->{Reason} || $_->{Reason} eq 'N/A'; # Skip non-exceptional logs
+
+        my $logdate = DateTime::Format::Strptime->new( pattern => '%Y-%m-%dT%H:%M:%S' )->parse_datetime( $_->{LogDate} );
+
+        if ( $_->{Uprn} ) {
+            push @property_logs, {
+                uprn   => $_->{Uprn},
+                round  => $_->{RoundCode},
+                reason => $_->{Reason},
+                date   => $logdate,
+                ordinal => ordinal( $logdate->day ),
+            };
+        } else {
+            push @street_logs, {
+                round  => $_->{RoundCode},
+                reason => $_->{Reason},
+                date   => $logdate,
+                ordinal => ordinal( $logdate->day ),
+            };
+        }
+    }
+
+    return ( \@property_logs, \@street_logs );
+}
+
+sub can_report_missed {
+    my ( $self, $property, $service ) = @_;
+
+    # Cannot make a report if there is already an open one for this service
+    return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
+
+    # Need to be within 3 working days of the last collection
+    my $last_dt = $property->{recent_collections}{ $service->{round_schedule} };
+    return 0 unless $last_dt && $self->within_working_days($last_dt, 3);
+
+    # Can't make a report if an exception has been logged for the service's round
+    return 0 if $property->{round_exceptions}{ $service->{round} };
+
+    return 1;
 }
 
 # Bexley want services to be ordered by next collection date.
@@ -326,6 +495,44 @@ sub _containers {
         'RES-DBIN' => 'Communal Refuse Bin(s)',
         'RES-SACK' => 'Green Wheelie Bin',
     };
+}
+
+# Weekends and bank holidays are not counted as working days
+sub _subtract_working_days {
+    my ( $self, $day_count, $dt ) = @_;
+
+    # Default to today
+    $dt = DateTime->today( time_zone => FixMyStreet->local_time_zone )
+        unless $dt;
+
+    my $wd = FixMyStreet::WorkingDays->new(
+        public_holidays => FixMyStreet::Cobrand::UK::public_holidays() );
+
+    return $wd->sub_days( $dt, $day_count );
+}
+
+sub within_working_days {
+    my ($self, $dt, $days, $future) = @_;
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    $dt = $wd->add_days($dt, $days)->ymd;
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    if ( $future ) {
+        return $today ge $dt;
+    } else {
+        return $today le $dt;
+    }
+}
+
+sub waste_munge_report_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+    my $service = $c->stash->{services}{$id}{service_name};
+    $data->{title} = "Report missed $service";
+    $data->{detail} = "$data->{title}\n\n$address";
+    $c->set_param('service_id', $id);
 }
 
 1;
