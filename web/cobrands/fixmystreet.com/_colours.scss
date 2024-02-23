@@ -1,5 +1,7 @@
 /* COLOURS */
 
+$container-max-width: 66em;
+
 $primary: #FFD000;
 $primary_b: #F3B11E; // For the box around the front page postcode form only
 $primary_text: #222;
@@ -25,3 +27,5 @@ $layout_front_stats_color: #222;
 $nicetable-stripe-background: #f3f3f3;
 
 $high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi';
+
+$front-main-background-desktop: $primary url(/cobrands/fixmystreet.com/images/tile-y.jpg);

@@ -1,4 +1,4 @@
-[%~ IF bodyclass == 'waste' ~%]
+[%~ IF bodyclass.match('waste') ~%]
   [%~ INCLUDE navitem uri='/waste/' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
 [%~ ELSE ~%]
   [% INCLUDE 'navigation/_report.html' %]
@@ -10,7 +10,7 @@
     [%~ INCLUDE navitem uri='/auth' label=loc('Sign in') ~%]
 [%~ END ~%]
 
-[%~ IF bodyclass != 'waste' ~%]
+[%~ IF NOT bodyclass.match('waste') ~%]
   [%~ IF c.user_exists AND c.user.has_body_permission_to('planned_reports') ~%]
       [%~ INCLUDE navitem always_url=1 uri='/my/planned' label=loc('Shortlist') ~%]
   [%~ END ~%]

@@ -73,6 +73,27 @@ sub index : Path : Args(0) {
         $c->detach('redirect_to_id', [ $id ]);
     }
 
+    if (my $id = $c->get_param('continue_id')) {
+        $c->stash->{continue_id} = $id;
+        if (my $p = $c->cobrand->problems->search({ state => 'unconfirmed' })->find($id)) {
+            if ($c->stash->{is_staff} && $c->stash->{waste_features}{bulky_retry_bookings}) {
+                my $property_id = $p->get_extra_field_value('property_id');
+                my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
+                $saved_data->{continue_id} = $id;
+                my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
+                $saved_data = $saved_data_field->deflate_json($saved_data);
+                $c->set_param(saved_data => $saved_data);
+                $c->set_param('goto', 'summary');
+                $c->go('/waste/bulky/index', [ $property_id ], []);
+            }
+        }
+        $c->stash->{form} = {
+            errors => 1,
+            all_form_errors => [ 'That booking reference could not be found' ],
+        };
+        return;
+    }
+
     $c->cobrand->call_hook( clear_cached_lookups_postcode => $c->get_param('postcode') )
         if $c->get_param('postcode');
 
@@ -115,6 +136,7 @@ sub redirect_to_id : Private {
     $uri .= '/report' if $type eq 'report';
     $uri .= '/garden_check' if $type eq 'garden';
     $uri .= '/bulky' if $type eq 'bulky';
+    $uri .= '/small_items' if $type eq 'small_items';
     $c->res->redirect($uri);
     $c->detach;
 }
@@ -130,12 +152,6 @@ sub check_payment_redirect_id : Private {
 
     $c->detach( '/page_error_404_not_found' )
         unless $p && $p->get_extra_metadata('redirect_id') eq $token;
-
-    if ( $p->state ne 'unconfirmed' ) {
-        $c->stash->{error} = 'Already confirmed';
-        $c->stash->{template} = 'waste/pay_error.html';
-        $c->detach;
-    }
 
     $c->stash->{report} = $p;
 }
@@ -184,6 +200,13 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
+    # If it's using the same flow as users, but is staff, mark as CSC payment
+    if ( $c->stash->{staff_payments_allowed} eq 'cnp' ) {
+        my $p = $c->stash->{report};
+        $p->update_extra_field({ name => 'payment_method', value => 'csc' });
+        $p->update;
+    }
+
     if ( $c->cobrand->can('waste_cc_get_redirect_url') ) {
         my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
@@ -199,7 +222,7 @@ sub pay : Path('pay') : Args(0) {
         }
     } else {
         $c->forward('populate_cc_details');
-        $c->cobrand->call_hook('garden_waste_cc_munge_form_details' => $c);
+        $c->cobrand->call_hook('waste_cc_munge_form_details' => $c);
         $c->stash->{template} = 'waste/cc.html';
         $c->detach;
     }
@@ -217,11 +240,6 @@ sub pay_cancel : Local : Args(2) {
 
     my $p = $c->stash->{report};
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
-    $saved_data->{name} = $p->name;
-    $saved_data->{email} = $p->user->email;
-    $saved_data->{phone} = $p->user->phone;
-    $saved_data->{resident} = 'Yes';
-
     my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
     $saved_data = $saved_data_field->deflate_json($saved_data);
     $c->set_param(saved_data => $saved_data);
@@ -252,38 +270,69 @@ sub pay_complete : Path('pay_complete') : Args(2) {
 
 sub confirm_subscription : Private {
     my ($self, $c, $reference) = @_;
-
     my $p = $c->stash->{report};
-    $p->update_extra_field( {
-            name => 'LastPayMethod',
-            description => 'LastPayMethod',
-            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-        },
-    );
-    $p->update_extra_field( {
-            name => 'PaymentCode',
-            description => 'PaymentCode',
-            value => $reference
-        }
-    );
-    $c->stash->{no_reporter_alert} = 1 if
-        $p->get_extra_metadata('contributed_as') &&
-        $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
 
-    $p->set_extra_metadata('payment_reference', $reference) if $reference;
-    $p->confirm;
-    $c->forward( '/report/new/create_related_things', [ $p ] );
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
-    $p->update;
-    if ($p->category eq 'Bulky collection') {
+
+    my $already_confirmed;
+    if ($p->category eq 'Bulky collection' || $p->category eq 'Small items collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
+        $already_confirmed = $c->cobrand->bulky_send_before_payment;
     } else {
         $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
     }
+
     # Set an override template, so that the form processing can finish (to e.g.
     # clear the session unique ID) and have the form code load this template
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
+
+    return unless $p->state eq 'unconfirmed' || $already_confirmed;
+
+    if ($c->cobrand->suppress_report_sent_email($p)) {
+        # Send bulky confirmation email after report confirmation (see
+        # the suppress_report_sent_email in CobrandSLWP.pm)
+        $p->send_logged_email({ %{$c->stash} }, 0, $c->cobrand);
+    }
+
+    $c->stash->{no_reporter_alert} = 1 if
+        $p->get_extra_metadata('contributed_as') &&
+        $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
+
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
+        $p->update_extra_field( {
+            name => 'LastPayMethod',
+            description => 'LastPayMethod',
+            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+        });
+        $p->update_extra_field( {
+            name => 'PaymentCode',
+            description => 'PaymentCode',
+            value => $reference
+        });
+        $p->set_extra_metadata('payment_reference', $reference) if $reference;
+        $p->confirm;
+        $c->forward( '/report/new/create_related_things', [ $p ] );
+        $p->update;
+    });
+
+    if ($already_confirmed) {
+        my $payment = $p->get_extra_field_value('payment');
+        $payment = sprintf( '%.2f', $payment / 100 );
+        my $reference_text = 'reference ';
+        if (!$reference) {
+            $reference_text .= $p->get_extra_metadata('chequeReference') . ' (phone/cheque)';
+        } else {
+            $reference_text .= $reference;
+        }
+        my $comment = $p->add_to_comments({
+            text => "Payment confirmed, $reference_text, amount £$payment",
+            user => $c->cobrand->body->comment_user || $p->user,
+        });
+        $p->cancel_update_alert($comment->id);
+    }
 }
 
 sub cancel_subscription : Private {
@@ -303,7 +352,7 @@ sub populate_payment_details : Private {
 
     my $address = $c->stash->{property}{address};
 
-    my @parts = split ',', $address;
+    my @parts = split /\s*,\s*/, $address;
 
     my $name = $c->stash->{report}->name;
     my ($first, $last) = split /\s/, $name, 2;
@@ -319,7 +368,12 @@ sub populate_payment_details : Private {
 
     my $payment_details = $c->cobrand->feature('payment_gateway');
     $c->stash->{payment_details} = $payment_details;
-    $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
+
+    if ($c->cobrand->moniker eq 'sutton' && $p->category eq 'Bulky collection') {
+        $c->stash->{reference} = $p->id . substr(mySociety::AuthToken::random_token(), 0, 8);
+    } else {
+        $c->stash->{reference} = substr($c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn}, 0, 18);
+    }
     $c->stash->{lookup} = $reference;
 }
 
@@ -535,12 +589,30 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
     $report->update_extra_field({ name => 'payment_reference', value => 'FAILED' });
     $report->update;
 
+    if (($report->category eq 'Bulky collection' || $report->category eq 'Small items collection') && $c->cobrand->bulky_send_before_payment) {
+        $c->stash->{cancelling_booking} = $report;
+        $c->stash->{non_user_cancel} = 1;
+        $c->forward('bulky/process_bulky_cancellation');
+    }
+
     $c->stash->{template} = 'waste/garden/csc_payment_failed.html';
     $c->detach;
 }
 
 sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
+
+
+    # Some actions chained off /waste/property require user to be logged in.
+    # The redirect to /auth does not work if it follows the asynchronous
+    # property lookup, so force a redirect to /auth here.
+    if ((      $c->action eq 'waste/bulky/cancel'
+            || $c->action eq 'waste/bulky/cancel_small'
+        )
+        && !$c->user_exists
+    ) {
+        $c->detach('/auth/redirect');
+    }
 
     if ($id eq 'missing') {
         $c->stash->{template} = 'waste/missing.html';
@@ -549,13 +621,34 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    # clear this every time they visit this page to stop stale content.
-    if ( $c->req->path =~ m#^waste/[:\w %]+$#i ) {
+    # clear this every time they visit this page to stop stale content,
+    # unless this load has happened whilst waiting for async Echo/Bartec API
+    # calls to complete.
+    # HTMX used for partial refreshes, sends a hx-request header
+    my $loading = ($c->req->{headers}->{'hx-request'} || "") eq "true";
+    # non-JS page loads include a page_loading=1 request param
+    $loading ||= $c->get_param('page_loading');
+
+    if ( $c->req->path =~ m#^waste/[:\w %]+$#i && !$loading) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );
     }
 
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property && $property->{id};
+
+    if ($c->cobrand->can('bulky_enabled')) {
+        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn});
+        $c->stash->{pending_bulky_collections} = @pending ? \@pending : undef;
+
+        my @recent = $c->cobrand->find_recent_bulky_collections($property->{uprn});
+        $c->stash->{recent_bulky_collections} = @recent ? \@recent : undef;
+
+        my $cfg = $c->cobrand->feature('waste_features');
+        if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
+            my @unconfirmed = $c->cobrand->find_unconfirmed_bulky_collections($property->{uprn})->all;
+            $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
+        }
+    }
 
     $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
     $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
@@ -576,11 +669,6 @@ sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my $staff = $c->user_exists && ($c->user->is_superuser || $c->user->from_body);
 
     my $cfg = $c->cobrand->feature('waste_features');
-
-    # Bulky goods has a new design for the bin days page
-    if ($c->cobrand->call_hook('bulky_enabled')) {
-        $c->stash->{template} = 'waste/bin_days_bulky.html';
-    }
 
     return if $staff || (!$cfg->{max_requests_per_day} && !$cfg->{max_properties_per_day});
 
@@ -645,7 +733,7 @@ sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {
             description => $_->{desc},
             dtstamp => $stamp,
             dtstart => [ $_->{date}->ymd(''), { value => 'DATE' } ],
-            dtend => [ $_->{date}->add(days=>1)->ymd(''), { value => 'DATE' } ],
+            dtend => [ $_->{date}->clone->add(days=>1)->ymd(''), { value => 'DATE' } ],
         );
         $calendar->add_entry($event);
     }
@@ -851,6 +939,23 @@ sub construct_bin_report_form {
         };
     }
 
+    # XXX Should we refactor bulky into the general service data (above)?
+    # Plus side, gets the report missed stuff built in; minus side it
+    # doesn't have any next/last collection stuff which is assumed
+    my $allow_report_bulky = 0;
+    foreach (values %{ $c->stash->{bulky_missed} || {} }) {
+        $allow_report_bulky = $_ if $_->{report_allowed} && !$_->{report_open};
+    }
+    if ($allow_report_bulky) {
+        my $service_id = $allow_report_bulky->{service_id};
+        my $service_name = $allow_report_bulky->{service_name};
+        push @$field_list, "service-$service_id" => {
+            type => 'Checkbox',
+            label => "$service_name collection",
+            option_label => "$service_name collection",
+        };
+    }
+
     $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
 
     return $field_list;
@@ -862,12 +967,14 @@ sub report : Chained('property') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     $c->stash->{first_page} = 'report';
+    my $next = $c->cobrand->call_hook('waste_report_form_first_next') || 'about_you';
+
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
     $c->stash->{page_list} = [
         report => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Select your missed collection',
-            next => 'about_you',
+            next => $next,
         },
     ];
     $c->stash->{field_list} = $field_list;
@@ -1470,7 +1577,8 @@ sub add_report : Private {
     # So ignore keys that end with 'fileid'.
     # XXX Should fix this so there isn't duplicate data across different keys.
     my @bulky_photo_data;
-    for (grep { /^(item|location)_photo(_\d+)?$/ } keys %$data) {
+    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
+    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
         push @bulky_photo_data, $data->{$_} if $data->{$_};
     }
     $c->stash->{bulky_photo_data} = \@bulky_photo_data;
@@ -1478,34 +1586,41 @@ sub add_report : Private {
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
 
+    my $report = $c->stash->{report};
+
     # store photos
     foreach (grep { /^(item|location)_photo/ } keys %$data) {
         next unless $data->{$_};
         my $k = $_;
         $k =~ s/^(.+)_fileid$/$1/;
-        $c->stash->{report}->set_extra_metadata($k => $data->{$_});
+        $report->set_extra_metadata($k => $data->{$_});
     }
-    $c->stash->{report}->update;
+
+    $report->set_extra_metadata(property_address => $c->stash->{property}{address});
+    $report->set_extra_metadata(phone => $c->stash->{phone});
+    $c->cobrand->call_hook('save_item_names_to_report' => $data);
+    $report->update;
 
     # we don't want to confirm reports that are for things that require a payment because
     # we need to get the payment to confirm them.
     if ( $no_confirm ) {
-        my $report = $c->stash->{report};
         $report->state('unconfirmed');
         $report->confirmed(undef);
         $report->update;
     } else {
-        if ($c->cobrand->call_hook('waste_never_confirm_reports')) {
-            my $report = $c->stash->{report};
+        if ($c->cobrand->call_hook('waste_auto_confirm_report', $report)) {
             $report->confirm;
             $report->update;
         }
-        $c->forward('/report/new/redirect_or_confirm_creation');
+        $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
 
     $c->user->update({ name => $original_name }) if $original_name;
 
-    $c->cobrand->call_hook( clear_cached_lookups_property => $c->stash->{property}{id} );
+    $c->cobrand->call_hook(
+        clear_cached_lookups_property => $c->stash->{property}{id},
+        'skip_echo', # We do not want to remove/cancel anything in Echo just before payment
+    );
 
     return 1;
 }

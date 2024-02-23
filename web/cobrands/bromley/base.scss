@@ -81,28 +81,13 @@ h1#reports_heading {
 }
 
 #front-main {
+  h1 {
+    color: $primary_text;
+  }
   margin: 0;
   padding: 1.5em 1em;
-  background: $bromley_green;
   margin-bottom: 2em;
-
-  h1 {
-    color: #fff;
-  }
-
-  #postcodeForm {
-    background-color: $bromley_green;
-
-    div input#pc {
-      border: 1px solid #616365;
-    }
-
-    .form-hint {
-      color: mix($primary, $primary_text, 30%);
-    }
-  }
 }
-
 
 ol.big-numbers>li:before {
   color: $bromley_green;

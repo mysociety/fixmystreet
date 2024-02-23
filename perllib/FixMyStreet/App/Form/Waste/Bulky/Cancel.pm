@@ -21,9 +21,16 @@ has_page done => (
 
 has_field confirm => (
     type => 'Checkbox',
-    option_label => 'I confirm I wish to cancel my bulky collection',
     required => 1,
     label => "Confirm",
+    build_option_label_method => sub {
+        my $cobrand = $_[0]->form->{c}->cobrand;
+        my $text = 'I confirm I wish to cancel my bulky collection';
+        if ($cobrand->moniker eq 'kingston' || $cobrand->moniker eq 'sutton') {
+            $text = 'I acknowledge that the collection fee is non-refundable and would like to cancel my bulky collection';
+        }
+        return $text;
+    },
 );
 
 has_field submit => (

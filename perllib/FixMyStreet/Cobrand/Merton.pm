@@ -54,13 +54,11 @@ sub get_geocoder { 'OSM' }
 
 sub admin_user_domain { 'merton.gov.uk' }
 
-sub allow_anonymous_reports { 'button' }
-
 # Merton requested something other than @merton.gov.uk due to their CRM misattributing reports to staff.
 sub anonymous_domain { 'anonymous-fms.merton.gov.uk' }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
@@ -77,8 +75,8 @@ sub reopening_disallowed {
     return 1;
 }
 
-sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # Reports made via FMS.com or the app probably won't have a USRN
     # value because we don't access the USRN layer on those
@@ -116,5 +114,17 @@ sub cut_off_date { '2021-12-13' } # Merton cobrand go-live
 sub report_age { '3 months' }
 
 sub abuse_reports_only { 1 }
+
+=head2 categories_restriction
+
+Hide TfL's River Piers categories on the Merton cobrand.
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
+}
 
 1;

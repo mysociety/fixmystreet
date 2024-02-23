@@ -1,0 +1,17 @@
+[%
+IF forgotten;
+    title = loc('Forgot password');
+ELSIF expired_password;
+    title = loc('Password expired');
+ELSE;
+    title = "Create a Fill That Hole account";
+END %]
+
+<h1>
+    [% title %]
+</h1>
+[% IF NOT expired_password %]
+<p>
+    [% tprintf(loc('Or <a href="%s">sign in</a>'), '/auth') %]
+</p>
+[% END %]

@@ -1,19 +1,33 @@
+[% RETURN IF c.cobrand.body_disallows_state_change(problem) %]
+
 [% IF (problem.is_fixed OR problem.is_closed) AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
 
     [% RETURN IF c.cobrand.reopening_disallowed(problem) ~%]
 
-    <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF (update.mark_open || c.req.params.reopen) %]>
-    [% IF problem.is_closed %]
-      <label class="inline" for="form_reopen">[% loc('This problem is still ongoing') %]</label>
-    [% ELSE %]
-      <label class="inline" for="form_reopen">[% loc('This problem has not been fixed') %]</label>
-    [% END %]
+    <div class="govuk-form-group">
+      <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF (update.mark_open || c.req.params.reopen) %]>
+          [% IF problem.is_closed %]
+            <label class="govuk-label govuk-checkboxes__label" for="form_reopen">[% loc('This problem is still ongoing') %]</label>
+          [% ELSE %]
+            <label class="govuk-label govuk-checkboxes__label" for="form_reopen">[% loc('This problem has not been fixed') %]</label>
+          [% END %]
+        </div>
+      </div>
+    </div>
 
 [% ELSIF !problem.is_fixed AND has_fixed_state %]
 
-    <div class="checkbox-group">
-        <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
-        <label class="inline" for="form_fixed">[% loc('This problem has been fixed') %]</label>
+    <div class="govuk-form-group">
+      <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
+          <label for="form_fixed" class="govuk-label govuk-checkboxes__label">
+            [% loc('This problem has been fixed') %]
+          </label>
+        </div>
+      </div>
     </div>
 
 [% END %]

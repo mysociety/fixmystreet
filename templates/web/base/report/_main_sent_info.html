@@ -1,4 +1,4 @@
-[% IF problem.bodies_str %]
+[% IF problem.bodies_str AND problem.send_state != 'skipped' %]
     [% INCLUDE 'report/_council_sent_info.html' %]
 [% ELSE %]
     <p class="council_sent_info">[% loc('Not reported to council') %]</p>

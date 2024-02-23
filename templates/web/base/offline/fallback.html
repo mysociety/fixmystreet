@@ -1,10 +1,10 @@
 [% SET bodyclass = "fullwidthpage offlinepage" ~%]
 [% INCLUDE 'header.html' %]
 
-<h1>[% loc('Offline') %]</h1>
+<h1>[% loc('You are currently offline') %]</h1>
 
 <p>
-    [% loc('You are currently offline. You can still make draft reports below, to finish and submit when you have signal again.') %]
+    [% loc('It looks like you’re not connected to the internet right now. Don’t worry, you can start a report below, save it as a draft and finish it when you’re connected to the internet again. You can create multiple draft reports if you need to report more than one problem.') %]
 </p>
 
 <ul class="item-list item-list--reports" id="offline_list"></ul>
@@ -31,8 +31,8 @@
 </div>
 
 <div id="offline_form">
-    <h2>[% loc('New offline draft report') %]</h2>
-    <p>[% loc('Anything you enter here is automatically saved for finishing and submitting when you’re back online.') %]</p>
+    <h2>[% loc('Start a new offline report') %]</h2>
+    <p>[% loc('Fill in the form below to start your report and click ‘save draft’ when you’re done. For peace of mind, any information you provide here will also be saved automatically. When you’re connected to the internet again, come back to finish and submit it.') %]</p>
     <form id="offline_report">
         <input name=id type=hidden />
         <input name=latitude type=hidden />

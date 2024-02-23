@@ -1,6 +1,10 @@
-<input type="submit" [% attr | safe %] value="[%
+<input type="submit" id="sub" value="[%
     IF c.cobrand.moniker == 'cheshireeast';
         'Search for location';
+    ELSIF c.cobrand.moniker == 'oxfordshire';
+        'Find';
+    ELSIF c.cobrand.moniker == 'cyclinguk';
+        'Search';
     ELSE;
         loc('Go');
     END %]">

@@ -65,6 +65,33 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 });
 my $report = $reports[0];
 
+
+subtest 'check footer is powered by SocietyWorks' => sub {
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            waste => { bromley => 1 },
+        }
+    }, sub {
+        $mech->get_ok('/waste');
+        $mech->content_contains('href="https://www.societyworks.org/services/waste/">SocietyWorks', "Footer links to SocietyWorks when bulky waste not enabled");
+    };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            waste => { bromley => 1 },
+            waste_features => {
+                bromley => { bulky_enabled => 1 }
+            }
+        }
+    }, sub {
+        $mech->get_ok('/waste');
+        $mech->content_contains('href="https://www.societyworks.org/services/waste/">SocietyWorks', "Footer links to SocietyWorks when bulky waste enabled");
+    };
+};
+
 subtest 'test waste duplicate' => sub {
     my $sender = FixMyStreet::SendReport::Open311->new(
         bodies => [ $body ], body_config => { $body->id => $body },
@@ -216,7 +243,8 @@ FixMyStreet::override_config {
         set_fixed_time('2020-05-21T12:00:00Z'); # After sample container mix
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Mixed Recycling.*?Last collection<\/dt>\s*<dd[^>]*>\s*Wednesday, 20th May\s+\(this collection was adjusted/s);
-        $mech->content_contains('A missed collection cannot be reported, please see the last collection status above.');
+        $mech->content_contains('A missed collection cannot be reported;');
+        $mech->content_contains('please see the last collection status above.');
         $mech->content_lacks('Report a mixed recycling ');
         restore_time();
     };
@@ -1474,6 +1502,38 @@ subtest 'check direct debit reconcilliation' => sub {
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed on second run";
 
+    warnings_are {
+        $c->waste_reconcile_direct_debits({ reference => $hidden_ref });
+    } [
+        "\n",
+        "looking at payment $hidden_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription (1)\n",
+        "extra query is {payerReference: $hidden_ref\n",
+        "is a new/ad hoc\n",
+        "looking at potential match " . $hidden->id . "\n",
+        "potential match is a dd payment\n",
+        "potential match type is 1\n",
+        "found matching report " . $hidden->id . " with state hidden\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "done looking at payment $hidden_ref\n",
+    ], "warns if given reference";
+
+    $hidden->update({ state => 'fixed - council' });
+    warnings_are {
+        $c->waste_reconcile_direct_debits({ reference => $hidden_ref, force_renewal => 1 });
+    } [
+        "\n",
+        "looking at payment $hidden_ref\n",
+        "payment date: 16/03/2021\n",
+        "category: Garden Subscription (1)\n",
+        "Overriding type 1 to renew\n",
+        "extra query is {payerReference: $hidden_ref\n",
+        "is a renewal\n",
+        "looking at potential match " . $hidden->id . " with state fixed - council\n",
+        "is a matching new report\n",
+        "no matching service to renew for $hidden_ref\n",
+    ], "gets past the first stage if forced renewal";
 };
 
 };

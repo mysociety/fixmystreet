@@ -59,6 +59,30 @@ sub new_report_title_field_hint {
 
 sub report_sent_confirmation_email { 'external_id' }
 
+=item * We don't send report sent emails for Jadu backed contacts.
+
+=cut
+
+sub suppress_report_sent_email {
+    my ($self, $report) = @_;
+    foreach my $contact ($report->contacts) {
+        return 1 if $contact->email =~ /Jadu/;
+    }
+    return 0;
+}
+
+=item * We don't send report author alerts for Jadu backed contacts.
+
+=cut
+
+sub suppress_reporter_alerts {
+    my ($self, $report) = @_;
+    foreach my $contact ($report->contacts) {
+        return 1 if $contact->email =~ /Jadu/;
+    }
+    return 0;
+}
+
 =item * We do not send questionnaires.
 
 =cut
@@ -70,6 +94,32 @@ sub send_questionnaires { 0 }
 =back
 
 =cut
+
+=head2 pin_colour
+
+Central Bedfordshire uses the following pin colours:
+
+=over 4
+
+=item * grey: 'not responsible'
+
+=item * green: fixed or closed
+
+=item * red: confirmed
+
+=item * yellow: any other open state (e.g. 'action scheduled' or 'in progress')
+
+=back
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->state eq 'not responsible';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'yellow';
+}
 
 sub disambiguate_location {
     my $self    = shift;
@@ -87,6 +137,14 @@ sub disambiguate_location {
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+    $params->{multi_photos} = 1;
+    if ($contact->email =~ /Jadu/) {
+        $params->{upload_files} = 1;
+    }
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -95,6 +153,20 @@ sub open311_munge_update_params {
 
     my $contact = $comment->problem->contact;
     $params->{service_code} = $contact->email;
+}
+
+=head2 should_skip_sending_update
+
+Do not try and send updates to the Jadu backend.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $code = $update->problem->contact->email;
+    return 1 if $code =~ /^Jadu/;
+    return 0;
 }
 
 sub lookup_site_code_config {
@@ -120,13 +192,10 @@ sub lookup_site_code_config {
     }
 }
 
-sub open311_extra_data_include {
+sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    if (my $id = $row->get_extra_field_value('UnitID')) {
-        $h->{cb_original_detail} = $row->detail;
-        $row->detail($row->detail . "\n\nUnit ID: $id");
-    }
+    return if $contact->email =~ /Jadu/;
 
     # Reports made via the app probably won't have a NSGRef because we don't
     # display the road layer. Instead we'll look up the closest asset from the
@@ -135,6 +204,14 @@ sub open311_extra_data_include {
         if (my $ref = $self->lookup_site_code($row, 'streetref1')) {
             $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
         }
+    }
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    if (my $id = $row->get_extra_field_value('UnitID')) {
+        $row->detail($row->detail . "\n\nUnit ID: $id");
     }
 
     my $open311_only = [
@@ -145,6 +222,22 @@ sub open311_extra_data_include {
         { name => 'report_url',
           value => $h->{url} },
     ];
+
+    if ($contact->email =~ /Jadu/) {
+        my $contributed_by = $row->get_extra_metadata('contributed_by');
+
+        my $reported_by_staff;
+        if ($contributed_by) {
+            $reported_by_staff = 'Yes';
+            if (my $staff_user = $self->users->find({ id => $contributed_by })) {
+                push @$open311_only, { name => 'staff_reporter', value => $staff_user->name };
+            }
+        } else {
+            $reported_by_staff = 'No';
+        }
+        push @$open311_only, { name => 'reported_by_staff', value => $reported_by_staff };
+        return $open311_only;
+    }
 
     if (my $cfg = $self->feature('area_code_mapping')) {;
         my @areas = split ',', $row->areas;
@@ -167,7 +260,8 @@ sub open311_extra_data_exclude {
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
-    $row->detail($h->{cb_original_detail}) if $h->{cb_original_detail};
+    # No post send needed for Jadu backed categories.
+    return if $row->external_id && $row->external_id =~ /Jadu/;
 
     # Check Open311 was successful
     return unless $row->external_id;
@@ -189,6 +283,8 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         external_id => 'CRNo',
     );
+
+    return if $csv->dbi; # Already covered
 
     $csv->csv_extra_data(sub {
         my $report = shift;

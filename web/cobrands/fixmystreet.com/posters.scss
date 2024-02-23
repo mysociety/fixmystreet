@@ -2,27 +2,6 @@
 @import "../sass/mixins";
 
 body.goodies {
-  .content {
-    .sticky-sidebar {
-      background-color: mix($primary, #fff, 20%);
-      padding: 1em;
-      margin: 0 -1em;
-
-      li:last-child {
-        margin-bottom: 0;
-      }
-
-      a {
-        color: mix($primary, #000, 40%);
-      }
-    }
-
-    h2 {
-      padding-top: 1em;
-      border-top: 1px solid mix($primary, #eee, 20%);
-    }
-  }
-
   .pack-preview {
     float: $right;
     margin: flip(0 0 1em 1em, 0 1em 1em 0);
@@ -109,31 +88,6 @@ body.goodies {
 
 @media only screen and (min-width: 48em) {
     body.goodies {
-      .container .content {
-        // overloaded selector to match default .content styling
-        width: auto;
-        padding: flip(1.5em 2em 1.5em 16em, 1.5em 16em 1.5em 2em);
-
-        & > :last-child {
-          margin-bottom: 0;
-        }
-      }
-
-      .content {
-        .sticky-sidebar {
-          #{$left}: 0;
-          top: 0;
-          bottom: 0;
-          z-index: 1;
-          width: 15em;
-          padding: 0;
-
-          aside {
-            background-color: inherit;
-          }
-        }
-      }
-
       .badge-code {
         max-width: 18em;
 

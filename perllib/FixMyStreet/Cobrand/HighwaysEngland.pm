@@ -243,6 +243,12 @@ sub national_highways_cleaning_groups {
         } @$contacts;
     } else {
         @$contacts = grep {
+            # Mark any council street cleaning categories we can find,
+            # so they'll still appear if "on the NH road" is picked
+            my @groups = @{$_->groups};
+            if ( $cleaning_cats{$_->category_display} || grep { $cleaning_cats{$_} } @groups ) {
+                $_->set_extra_metadata(nh_council_cleaning => 1);
+            }
             $_->body->name ne 'National Highways'
             || ( $_->category_display !~ /Flytipping/ && $_->groups->[0] ne 'Litter' )
         } @$contacts;
@@ -314,6 +320,8 @@ sub dashboard_export_problems_add_columns {
         user_email => 'User Email',
         user_phone => 'User Phone',
         area_name => 'Area name',
+        road_name => 'Road name',
+        sect_label => 'Section label',
         where_hear => 'How you found us',
     );
     for (my $i=1; $i<=5; $i++) {
@@ -324,22 +332,51 @@ sub dashboard_export_problems_add_columns {
         );
     }
 
+   my $initial_extra_data = sub {
+        my $report = shift;
+        my $fields = {
+            road_name => $csv->_extra_field($report, 'road_name'),
+            area_name => $csv->_extra_field($report, 'area_name'),
+            sect_label => $csv->_extra_field($report, 'sect_label'),
+            where_hear => $csv->_extra_metadata($report, 'where_hear'),
+        };
+        return $fields;
+    };
+
+    if ($csv->dbi) {
+        my $JSON = JSON::MaybeXS->new->allow_nonref;
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+
+            my $fields = $initial_extra_data->($report);
+            $fields->{user_name_display} = $report->{name};
+
+            my $i = $report->{comment_rn};
+            if ($report->{comment_id} && $i <= 5) {
+                $fields->{"update_text_$i"} = $report->{comment_text};
+                $fields->{"update_date_$i"} = $report->{comment_confirmed};
+                my $extra = $JSON->decode($report->{comment_extra} || '{}');
+                my $staff = $extra->{contributed_by} || $extra->{is_body_user} || $extra->{is_superuser};
+                $fields->{"update_name_$i"} = $staff ? $report->{comment_name} : 'public';
+            }
+
+            return $fields;
+        });
+        return;
+    }
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my $fields = {
-            user_name_display => $report->name,
-            user_email => $report->user->email || '',
-            user_phone => $report->user->phone || '',
-            area_name => $report->get_extra_field_value('area_name'),
-            where_hear => $report->get_extra_metadata('where_hear'),
-        };
+        my $fields = $initial_extra_data->($report);
+        $fields->{user_name_display} = $report->name;
+        $fields->{user_email} = $report->user->email || '';
+        $fields->{user_phone} = $report->user->phone || '';
 
         my $i = 1;
         my @updates = $report->comments->all;
         @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
         for my $update (@updates) {
-            next unless $update->state eq 'confirmed';
             last if $i > 5;
             $fields->{"update_text_$i"} = $update->text;
             $fields->{"update_date_$i"} = $update->confirmed;
@@ -354,81 +391,52 @@ sub dashboard_export_problems_add_columns {
 
 # select distinct category from contacts where category ilike '%litter%' or category ilike '%clean%' or category ilike '%fly%tip%';
 # search to find categories in all contacts and then manually edited
-sub _cleaning_categories { [
-    'Accumulated Litter',
-    'Cleanliness Issue',
-    'Cleanliness Sub Standard',
-    'Cleansing',
-    'Excessive or dangerous littering',
-    'Fly Tipping on a road, footway, verge or open space',
-    'Fly Tipping',
-    'Fly tipping',
-    'Fly-Tipping',
-    'Fly-tipping',
-    'Flytipping and dumped rubbish',
-    'Flytipping',
-    'Flytipping/flyposting',
-    'General (Cleanliness)',
-    'General Litter / Rubbish Collection',
-    'General fly tipping',
-    'Hazardous fly tipping',
-    'Litter On Road/Street Cleaning',
-    'Litter and Bins',
-    'Litter in Parks & Open spaces',
-    'Litter in the street',
-    'Litter removal',
-    'Litter',
-    'Littering',
-    'Littering and cleanliness',
-    'Rubbish or fly tipping on the roads',
-    'Street Cleaning',
-    'Street Cleansing',
-    'Street cleaning and litter',
-    'Street cleaning',
-    'Street cleansing',
-    'Sweeping & Cleansing Hazard',
+sub _cleaning_categories {
+    my @litter_rs = FixMyStreet::DB->resultset('Contact')->not_deleted->search( { extra => { '@>' => '{"litter_category_for_he":1}' } } )->all;
+    my @checked_litter_categories = map { $_->category } @litter_rs;
+    my @default_litter_categories = (
+        'Accumulated Litter',
+        'Cleanliness Issue',
+        'Cleanliness Sub Standard',
+        'Cleansing',
+        'Excessive or dangerous littering',
+        'Fly Tipping on a road, footway, verge or open space',
+        'Fly Tipping',
+        'Fly tipping',
+        'Fly-Tipping',
+        'Fly-tipping',
+        'Flytipping and dumped rubbish',
+        'Flytipping',
+        'Flytipping/flyposting',
+        'General (Cleanliness)',
+        'General Litter / Rubbish Collection',
+        'General fly tipping',
+        'Hazardous fly tipping',
+        'Litter On Road/Street Cleaning',
+        'Litter and Bins',
+        'Litter in Parks & Open spaces',
+        'Litter in the street',
+        'Litter removal',
+        'Litter',
+        'Littering',
+        'Littering and cleanliness',
+        'Rubbish or fly tipping on the roads',
+        'Street Cleaning',
+        'Street Cleansing',
+        'Street cleaning and litter',
+        'Street cleaning',
+        'Street cleansing',
+        'Sweeping & Cleansing Hazard',
 
-    # Northumberland's litter categories
-    'Damaged Litter Bin (Litter)',
-    'Full Litter Bin (Litter)',
-    'Littering (Litter)',
-    'Other (Litter)',
-
-    #Bench/cycle rack/litter bin/planter,
-    #Bus Station Cleaning - Floor,
-    #Bus Station Cleaning - General,
-    #Bus Station Cleaning - Toilets,
-    #Bus Station Cleaning - Windows,
-    #Car Park Cleansing,
-    #Damage Public Litter Bin,
-    #Damage to litter bin,
-    #Dog and litter bins,
-    #Fly Tipping on a public right of way,
-    #Fly tipping - Enforcement Request,
-    #Flytipping (TfL),
-    #'Flytipping (off-road)',
-    #'Litter bin damaged',
-    #'Litter bin full',
-    #'Litter bin',
-    #Litter Bin Overflowing,
-    #Litter Bin on a verge or open space,
-    #Litter Bin overflow in Parks & Open spaces,
-    #Litter Bin overflow,
-    #Litter Bin,
-    #Litter Bins Full/Damaged/Missing,
-    #Litter Bins,
-    #Litter bins,
-    #Litter or flytipping in a woodland,
-    #Overflowing Litter Bin / Dog Bin,
-    #Overflowing Street Litter Bin,
-    #Overflowing litter bin,
-    #Pavement cleaning,
-    #Planter not Clean and Tidy,
-    #River Piers - Cleaning,
-    #Shelter needs cleaning (hazardous waste),
-    #Shelter needs cleaning (not including litter),
-    #Street Cleaning Enquiry,
-] }
+        # Northumberland's litter categories
+        'Damaged Litter Bin (Litter)',
+        'Full Litter Bin (Litter)',
+        'Littering (Litter)',
+        'Other (Litter)',
+    );
+    push(@default_litter_categories, @checked_litter_categories);
+    return \@default_litter_categories;
+ }
 
 sub admin_contact_validate_category {
     my ( $self, $category ) = @_;

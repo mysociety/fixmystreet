@@ -21,14 +21,14 @@ sub options_payment_method {
         shift @options;
     }
     if ($form->{c}->cobrand->waste_cheque_payments) {
-        push @options, { label => 'Cheque', value => 'cheque', data_show => '#form-cheque_reference-row' };
+        push @options, { label => 'Telephone or Cheque Payment', value => 'cheque', data_show => '#form-cheque_reference-row' };
     }
     return @options;
 }
 
 has_field cheque_reference => (
     type => 'Text',
-    label => 'Cheque reference',
+    label => 'Payment reference',
     required_when => { payment_method => 'cheque' },
 );
 

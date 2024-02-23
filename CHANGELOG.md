@@ -5,19 +5,45 @@
         - Include requirements for redeeming the link in the email change confirmation mail. #4422
         - Use email field type for username if SMS authentication not enabled. #4455
         - Text overrides for new report fields can be configured to apply when it is known the report will go to a particular cobrand. #4466, #4516
+        - Improve handling cache expiry for front page statistics.
+        - Add geolocation button to centre map at user's location. #4671
+        - WasteWorks PWA can now have a separate name from the FixMyStreet PWA.
+        - Users can now opt out of questionnaires.
+        - Include reference in report list emails. #4760
+        - Add support for different '/around' map display times for open/closed/fixed reports
+        - Add code to enable category filtering box.
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.
         - Fix link to edit category with apostrophe in category name.
+        - Fallback extra field in submit email should be `name`, not `code`.
+        - Allow confirmation links to login user 30s within first use to prevent things like Outlook 'safelinks' breaking the UX.
+        - Fixes default status report filter text on Your Account page. #4558
+        - Don't zoom to bounds when searching for a postcode.
+        - Fix restoring a draft with no location.
     - Admin improvements:
         - Rename emergency message to site message.
+        - Added a category control for overriding the text of the new report details field.
+        - Added support for 'multivaluelist' extra category questions using checkboxes.
+        - Added support for 'datetime' extra category questions using a datetime picker.
+        - Added option to make a phone number required for a category.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
         - Auto-spot a default favicon.ico.
         - Add `send_state` column to reports. #4048
+        - Return random unprocessed row to daemon.
+        - A cobrand level text override for the details field label on new reports can now be configured.
+        - Cobrands can provide per-category custom distances for duplicate lookup. #4746
+        - Add perl 5.38 support.
+    - Performance improvements:
+        - Reduce database queries on shortlist page.
+        - Provide ResultSet fallback translation in lookup.
+        - Mark non-Open311 updates as processed by daemon. #4552
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
+        - Convert all uploaded images to JPEGs.
+        - Redirect after POST when creating reports. #4362
 
 * v5.0 (10th May 2023)
     - Front end improvements:

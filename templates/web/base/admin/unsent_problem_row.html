@@ -1,0 +1,47 @@
+[%- FOR problem IN problems %]
+    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' OR problem.send_state == 'acknowledged' %]>
+        <td class="record-id">[%- IF problem.is_visible -%]
+        [%- uri = c.uri_for_email( '/report', problem.id ) %]
+        <a href="[% uri %]" class="admin-offsite-link">[% problem.id %]</a>
+        [%- ELSE %]
+        [%- problem.id %]
+        [%- END -%]
+        [%~ IF problem.cobrand_data %]<br><small>[% problem.cobrand_data %]</small>[%~ END ~%]
+        </td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
+        <td>
+            [% PROCESS value_or_nbsp value=problem.category_display %]
+            [%- IF edit_body_contacts -%]
+                [% IF problem.whensent %]
+                    <br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %]
+                    [%- send_fail_bodies = problem.send_fail_bodies -%]
+                    [%- IF send_fail_bodies.size %]
+                        <br>[% loc('Failed bodies:') %]&nbsp;[% send_fail_bodies.join(', ') %]
+                    [% END -%]
+                [% ELSE -%]
+                    [% FOR body IN problem.bodies.values %]
+                    <br><a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ] ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>
+                    [% END %]
+                [% END -%]
+            [%- ELSE -%]
+            <br>[%- PROCESS value_or_nbsp value=problem.bodies_str -%]
+            [%- END -%]
+        </td>
+        <td>
+            [% problem.time_ago %]
+            <br><small>[% PROCESS format_time time=problem.confirmed %]
+        </td>
+        <td>[% problem.send_fail_count %]</td>
+        <td title="[% problem.send_fail_reason.split('POST http').0 | truncate(250, '…') %]">
+            [% IF problem.send_fail_timestamp %]
+                [% PROCESS format_time time=problem.send_fail_timestamp %]
+                <br><small>[% problem.time_ago('send_fail_timestamp') %] ago
+            [% END %]
+        </td>
+        <td>
+            [% IF c.user.has_permission_to('report_edit', problem.bodies_str_ids) %]
+                <a href="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]">[% loc('Edit') %]</a>
+            [% END %]
+        </td>
+    </tr>
+[%- END -%]

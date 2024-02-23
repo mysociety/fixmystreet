@@ -89,47 +89,7 @@ p.form-error {
 
 #front-main {
     margin: 0;
-    
-    background: $color-he-grey-2;
-
-    #postcodeForm {
-        background: transparent;
-        padding: 1em;
-        padding-bottom: 2em;
-        margin: 1em auto;
-        color: inherit;
-        font-family: inherit;
-        max-width: 60em;
-
-        div {
-            border: none;
-            background: transparent;
-
-            input#pc {
-                background: #fff;
-                border-radius: 4em;
-                margin-right: 0.5em;
-                padding: 0.5em 1.5em;
-                border: 2px solid $color-he-grey-3;
-
-                &:focus {
-                    border-color: $black;
-                    box-shadow: 0 0 0 4px $color-he-yellow;
-                }
-            }
-
-            input#sub {
-                border-radius: 4em;
-                background: $color-he-blue;
-                font-weight: bold;
-                padding: 0.5em 1em;
-
-                &:hover, &:focus {
-                    background: darken($color-he-blue, 10%);
-                }
-            }
-        }
-    }
+    padding: 0;
 
     .form-hint {
         max-width: 32em;
@@ -149,19 +109,57 @@ p.form-error {
             color: $color-he-grey-2;
         }
     }
+
+    #front-main-container {
+        max-width: 100% !important;
+        // Both padding and margin avoid the horizontal overflowing of this element.
+        padding: 0;
+        margin: 0;
+    
+        .front-blurb {
+            color:$white;
+            max-width: 28em;
+            opacity: 0.85;
+            background: transparentize($color-he-black, $amount: 0.5);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 0 -1em;
+        }
+    }
 }
 
-#front-main-container {
-    max-width: 100% !important;
+.postcode-form-box {
+    margin: 1em auto;
+    font-family: inherit;
+    max-width: 60em;
 
-    .front-blurb {
-        color:$white;
-        max-width: 28em;
-        opacity: 0.85;
-        background: transparentize($color-he-black, $amount: 0.5);
-        padding: 1em;
-        border-radius: 4px;
-        margin: 0 -1em;
+    div {
+        border: none;
+        background: transparent;
+
+        input#pc {
+            background: #fff;
+            border-radius: 4em;
+            margin-right: 0.5em;
+            padding: 0.5em 1.5em;
+            border: 2px solid $color-he-grey-3;
+
+            &:focus {
+                border-color: $black;
+                box-shadow: 0 0 0 4px $color-he-yellow;
+            }
+        }
+
+        input#sub {
+            border-radius: 4em;
+            background: $color-he-blue;
+            font-weight: bold;
+            padding: 0.5em 1em;
+
+            &:hover, &:focus {
+                background: darken($color-he-blue, 10%);
+            }
+        }
     }
 }
 
@@ -183,10 +181,12 @@ p.form-error {
     padding: 1.5em 1.5em;
     border-radius: 0.25em;
     background: #f9e4ae;
+    color: $black;
 
     h2 {
         font-weight: bold;
         margin-top: 0;
+        color: $black !important;
     }
 
     div {

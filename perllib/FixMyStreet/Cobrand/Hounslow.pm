@@ -48,7 +48,7 @@ sub get_geocoder {
 }
 
 sub new_report_title_field_label {
-    "Summarise the problem and location";
+    "Location of the problem";
 }
 
 sub on_map_default_status { 'open' }
@@ -69,15 +69,10 @@ sub categories_restriction {
     # Email categories with a devolved send_method, so can identify Open311
     # categories as those which have a blank send_method.
     return $rs->search({
-        'body.name' => [ 'Hounslow Borough Council', 'National Highways' ],
-        -or => [
-            'me.send_method' => undef,
-            'me.send_method' => q[],
-            'me.category' => { -in => [
-                'Pavement Overcrowding',
-                'Streetspace Suggestions and Feedback',
-            ] },
-        ],
+        'me.category' => {
+            -not_in => [ 'Car parking', 'Public toilets' ],
+            -not_like => 'River Piers%'
+        }
     });
 }
 
@@ -101,15 +96,15 @@ sub open311_post_send {
     my $sender = FixMyStreet::SendReport::Email->new( to => [ [ $e, 'Hounslow Highways' ] ] );
     $sender->send($row, $h);
     if ($sender->success) {
-        $row->set_extra_metadata('hounslow_email_sent', 1);
+        $row->update_extra_metadata(hounslow_email_sent => 1);
     }
 }
 
 around 'open311_config' => sub {
-    my ($orig, $self, $row, $h, $params) = @_;
+    my ($orig, $self, $row, $h, $params, $contact) = @_;
 
     $params->{upload_files} = 1;
-    $self->$orig($row, $h, $params);
+    $self->$orig($row, $h, $params, $contact);
 };
 
 sub open311_munge_update_params {

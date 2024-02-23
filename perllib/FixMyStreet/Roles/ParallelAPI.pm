@@ -36,7 +36,8 @@ calls to be made (as methods on the integration object) and their arguments as
 an array ref.
 
 It returns either the data (if not sent to background, or if the data is now
-available) or nothing if it's started off a background process.
+available) or detaches immediately to show the current template (which should
+have a please loading message and auto-reload).
 
 =cut
 
@@ -111,6 +112,12 @@ sub call_api {
         $c->session->{$key} = $data;
         my $time = Time::HiRes::time() - $start;
         $c->log->info("[$cobrand] call_api $key took $time seconds");
+    } elsif ($background) {
+        # Bail out here to show loading page
+        $c->stash->{template} = 'waste/async_loading.html';
+        $c->stash->{data_loading} = 1;
+        $c->stash->{page_refresh} = 2;
+        $c->detach;
     }
     return $data;
 }

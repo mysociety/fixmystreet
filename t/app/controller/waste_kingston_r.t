@@ -256,8 +256,8 @@ FixMyStreet::override_config {
     subtest 'Request recycling bin replacement, no additional' => sub {
         my $clone = dclone($bin_data);
         # Change 16/3 to 12/1
-        $clone->[0]->{ServiceTasks}{ServiceTask}[2]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = "12";
-        $clone->[0]->{ServiceTasks}{ServiceTask}[2]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[1]{Value} = "1";
+        $clone->[0]->{ServiceTasks}{ServiceTask}[3]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = "12";
+        $clone->[0]->{ServiceTasks}{ServiceTask}[3]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[1]{Value} = "1";
         $e->mock('GetServiceUnitsForObject', sub { $clone });
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 12 } });
@@ -443,6 +443,11 @@ sub shared_echo_mocks {
     $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     $e->mock('GetEventsForObject', sub { [] });
     $e->mock('GetTasks', sub { [] });
+    $e->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
+
     return $e;
 }
 

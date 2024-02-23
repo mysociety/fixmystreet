@@ -14,6 +14,10 @@
         }
 
         var category = $("#report_inspect_form [name=category]").val() || fixmystreet.reporting.selectedCategory().category;
+
+        // We check group also, in case that is provided in the config instead of subcat
+        var group = fixmystreet.reporting.selectedCategory().group;
+
         if (!category) {
             return;
         }
@@ -21,6 +25,7 @@
         var nearby_url;
         var url_params = {
             filter_category: category,
+            filter_group: group,
             latitude: $('input[name="latitude"]').val(),
             longitude: $('input[name="longitude"]').val()
         };

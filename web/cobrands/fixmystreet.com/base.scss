@@ -64,9 +64,9 @@ svg|g.site-logo__svg {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  #{$right}: 8.5em;
+  #{$right}: 9em;
 
-  font-size: 0.9em;
+  font-size: 0.8em;
   line-height: 1em;
   color: $nav_colour;
   padding: 0.4em;
@@ -80,86 +80,8 @@ svg|g.site-logo__svg {
 }
 
 body.frontpage {
-  $fms-logo-width: 160px;
-  $fms-logo-height: 35px;
-  $mysociety-badge-width: (190px * 0.4);
-  $mysociety-badge-height: (234px * 0.4);
-
-  #site-logo {
-      text-indent: 0;
-      background: none;
-      width: $fms-logo-width;
-      margin-left: 65px; // Not enought space to be the badge width
-      z-index: 1;
-      svg {
-        width:  $fms-logo-width;
-        height:  $fms-logo-height;
-      }
-  }
-
-  .site-logo__fallback {
-    width: $fms-logo-width;
-    height: 0;
-    padding-top: 60px;
-    overflow: hidden;
-    background-position: 0 50%;
-    background-repeat: no-repeat;
-    background-size: $fms-logo-width  $fms-logo-height;
-    @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
-}
-
   #mysociety-badge {
-      position: absolute;
-      top: -$header-top-border-width;
-      margin-left:-0.75em; // The badge has a dropshadow, this makes it look like is align with the .container
-      width: $mysociety-badge-width;
-      height: $mysociety-badge-height;
-      z-index: 2;
-      svg {
-        width: 100%;
-        height: auto;
-        &:nth-child(2) {
-          display: none; // Hides the desktop version
-        }
-      }
-  }
-
-  #front-main {
-    margin-top: 2em;
-  }
-}
-
-#postcodeForm .form-hint {
-    color: $primary_text;
-}
-
-.survey-cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: left;
-  gap: 15px;
-  padding: 1.8em;
-  margin: 0 -1em;
-  background: $primary;
-
-  .survey-cta__content {
-    max-width: 550px;
-
-    .content__preheading {
-      margin-bottom: 10px;
-      color: #555555; // Instead of #666666 that won't pass the contrast test against yellow background
-      font-weight: bold;
-    }
-
-    .content__heading {
-      margin-top: 0;
-      font-weight: bold;
-    }
-  }
-
-  .survey-cta__img {
-    max-width: 175px;
+    display: none;
   }
 }
 
@@ -392,33 +314,74 @@ html.lazyload .js-lazyload {
   @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
 }
 
-.fms-pro-promo {
-    margin: 0 -1em;
+.fms-footer-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 
-    h2 {
-        margin-top: 0;
+  .fms-footer-cta__item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    flex-basis: 100%;
+    background-color: $primary;
+    padding: 1.5rem 1rem;
+
+    :last-child {
+      margin-bottom: 0;
     }
 
-    .lead {
-        font-weight: bold;
+    .item__heading {
+      margin-top: 0;
+      background-repeat: no-repeat;
+      background-position: left center;
+      padding-left: 2.5rem;
+      background-size: 2rem;
+      // Gets rid of styling for pages like contact
+      padding-top: 0;
+      border-top: none;
     }
 
-    p:last-child {
-        margin-bottom: 0;
+    &.is__citizen {
+      .item__heading {
+        background-image: url('/cobrands/fixmystreet.com/images/residents-icon.svg'), none;
+      }
     }
+
+    &.is__council {
+      .item__heading {
+        background-image: url('/cobrands/fixmystreet.com/images/council-icon.svg'), none;
+      }
+    }
+
+    &.is__developer {
+      .item__heading {
+        background-image: url('/cobrands/fixmystreet.com/images/developers-icon.svg'), none;
+      }
+    }
+  }
 }
 
-.fms-pro-promo__pro,
-.fms-pro-promo__stats {
-    padding: 1.5em 1em;
+// Gets rid of the homepage styling for pages like contact
+body.twothirdswidthpage .content {
+  footer {
+    background: none;
+    margin: 0;
+  }
 }
 
-.fms-pro-promo__pro {
-    background: $primary;
-}
+.footer-marketing {
+  background-color: #222;
+  color: #ccc;
+  padding: 2em 1em;
+  margin: 0 -1em;
+  margin-top: 0;
 
-.fms-pro-promo__stats {
-    border-bottom: 0.25em solid $primary;
+  a {
+      color: white;
+  }
 }
 
 .healthcheck-unit {
@@ -540,5 +503,19 @@ html.lazyload .js-lazyload {
 
     & > :last-child {
         margin-bottom: 0;
+    }
+}
+
+/* New report conditional questions */
+
+@supports( #{"selector(:has(*))"} ) {
+    #form_southwark_dead_animal_location,
+    label[for="form_southwark_dead_animal_location"] {
+        .extra-category-questions & {
+            display: none;
+        }
+        .extra-category-questions:has(#form_southwark_dead_animal_council_tenant option[value="no"]:checked) & {
+            display: block;
+        }
     }
 }

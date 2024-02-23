@@ -40,7 +40,7 @@ sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff))$
     my $photo = $photoset->get_image_data(size => $size, default => $c->cobrand->default_photo_resize);
 
     if (!FixMyStreet->config('LOGIN_REQUIRED')) {
-        path(FixMyStreet->path_to('web', 'photo'))->mkpath;
+        path(FixMyStreet->path_to('web', 'photo'))->mkdir;
         my $out = FixMyStreet->path_to('web', $c->req->path);
         path($out)->spew_raw($photo->{data});
     }

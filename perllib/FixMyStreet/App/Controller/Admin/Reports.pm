@@ -53,6 +53,8 @@ sub index : Path {
 
     my $problems = $c->cobrand->problems;
 
+    $c->stash->{assignees} = $c->cobrand->call_hook('get_list_of_report_assignees' => $problems);
+
     if (my $search = $c->get_param('search')) {
         $search = $self->trim($search);
 
@@ -152,7 +154,11 @@ sub index : Path {
             $c->stash->{updates} = [ $updates->all ];
             $c->stash->{updates_pager} = $updates->pager;
         }
-
+    } elsif (my $assignee = $c->get_param('assignee')) {
+        my $problems = $c->cobrand->call_hook('filter_problems_by_assignee' => $problems, $assignee, $order, $p_page);
+        $c->stash->{selected_assignee} = $assignee;
+        $c->stash->{problems} = [ $problems->all ] if $problems;
+        $c->stash->{problems_pager} = $problems->pager if $problems;
     } else {
 
         $problems = $problems->search(
@@ -246,7 +252,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         }
 
         for my $key ( keys %$extra ) {
-            next if $key eq 'whensent_previous';
+            next if $key =~ /^(whensent_previous|rdi_processed|gender|variant|CyclingUK)/;
             push @fields, { name => $key, val => $extra->{$key} };
         }
 
@@ -330,6 +336,9 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         } else {
             $problem->unset_extra_metadata('closed_updates');
         }
+        if ($c->get_param('send_state') && ($c->get_param('send_state') ne $problem->send_state)) {
+            $problem->send_state($c->get_param('send_state'));
+        };
 
         $c->forward( '/admin/reports/edit_category', [ $problem, $problem->state ne $old_state ] );
         $c->forward('/admin/update_user', [ $problem ]);

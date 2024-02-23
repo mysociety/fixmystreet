@@ -10,10 +10,12 @@ package FixMyStreet::Roles::CobrandSLWP;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
 
 use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
+use MIME::Base64;
 use FixMyStreet::WorkingDays;
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -52,16 +54,14 @@ around problems_restriction => sub {
     return $rs;
 };
 
-sub problems_on_dashboard {
-    my ($self, $rs) = @_;
+=item * We can send multiple photos through to Echo, directly
 
-    my $bodies = [ $self->body->id ];
-    my $extra = $self->dashboard_extra_bodies;
-    push @$bodies, $extra->id if $extra;
-    $rs = FixMyStreet::DB->resultset('Problem')->to_body($bodies)->search({
-        "me.cobrand_data" => 'waste',
-    });
-    return $rs;
+=cut
+
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
 }
 
 =item * When a garden subscription is sent to Echo, we include payment details
@@ -102,23 +102,56 @@ sub open311_extra_data_include {
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
     my $error = $sender->error;
-    if ($error =~ /Cannot renew this property, a new request is required/ && $row->title eq "Garden Subscription - Renew") {
-        # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
-        $row->title("Garden Subscription - New");
-        $row->update_extra_field({ name => "Request_Type", value => $self->waste_subscription_types->{New} });
-    }
-    if ($error =~ /Missed Collection event already open for the property/) {
-        $row->state('duplicate');
-    }
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        if ($error =~ /Cannot renew this property, a new request is required/ && $row2->title eq "Garden Subscription - Renew") {
+            # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
+            $row2->title("Garden Subscription - New");
+            $row2->update_extra_field({ name => "Request_Type", value => $self->waste_subscription_types->{New} });
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Missed Collection event already open for the property/) {
+            $row2->state('duplicate');
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Selected reservations expired|Invalid reservation reference/) {
+            $self->bulky_refetch_slots($row2);
+            $row->discard_changes;
+        } elsif ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
+            my $id = $1;
+            my $cfg = $self->feature('echo');
+            my $echo = Integrations::Echo->new(%$cfg);
+            my $event = $echo->GetEvent($id, 'Id');
+            $row2->external_id($event->{Guid});
+            $sender->success(1);
+            $row2->update;
+            $row->discard_changes;
+        }
+    });
+}
 
-    if ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
-        my $id = $1;
-        my $cfg = $self->feature('echo');
-        my $echo = Integrations::Echo->new(%$cfg);
-        my $event = $echo->GetEvent($id, 'Id');
-        $row->external_id($event->{Guid});
-        $sender->success(1);
+=item * Look for completion photos on updates
+
+=cut
+
+sub open311_waste_update_extra {
+    my ($self, $cfg, $event) = @_;
+
+    # Could have got here with a full event (pull) or subset (push)
+    if (!$event->{Data}) {
+        $event = $cfg->{echo}->GetEvent($event->{Guid});
     }
+    my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+    my @media;
+    foreach (@$data) {
+        if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
+            my $value = decode_base64($_->{Value});
+            my $type = FixMyStreet::PhotoStorage->detect_type($value);
+            push @media, "data:image/$type,$value";
+        }
+    }
+    return @media ? ( media_url => \@media ) : ();
 }
 
 =item * No updates on waste reports
@@ -134,44 +167,11 @@ around updates_disallowed => sub {
     return $orig->($self, $problem);
 };
 
-=item * Allow both Kingston and Sutton users access to the cobrand admin
-
-=cut
-
-sub admin_allow_user {
-    my ( $self, $user ) = @_;
-    return 1 if $user->is_superuser;
-    return undef unless defined $user->from_body;
-    my $user_cobrand = $user->from_body->get_extra_metadata('cobrand', '');
-    return $user_cobrand =~ /kingston|sutton/;
-}
-
-# Let Kingston/Sutton staff users share permissions
-sub permission_body_override {
-    my ($self, $body_ids) = @_;
-
-    my $kingston = FixMyStreet::Cobrand::Kingston->new->body;
-    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
-    return unless $kingston && $sutton;
-
-    my @out = map {
-        if ($kingston->id == $_) {
-            ($_, $sutton->id);
-        } elsif ($sutton->id == $_) {
-            ($_, $kingston->id);
-        } else {
-            $_;
-        }
-    } @$body_ids;
-
-    return \@out;
-}
-
 sub state_groups_admin {
     [
         [ New => [ 'confirmed' ] ],
         [ Pending => [ 'investigating', 'action scheduled' ] ],
-        [ Closed => [ 'fixed - council', 'unable to fix', 'closed', 'duplicate' ] ],
+        [ Closed => [ 'fixed - council', 'unable to fix', 'closed', 'duplicate', 'cancelled' ] ],
         [ Hidden => [ 'unconfirmed', 'hidden', 'partial' ] ],
     ]
 }
@@ -197,21 +197,16 @@ sub available_permissions {
             template_edit => _("Add/edit response templates"),
             emergency_message_edit => _("Add/edit site message"),
         },
+        Waste => {
+            wasteworks_config => "Can edit WasteWorks configuration",
+        },
     };
-}
-
-sub clear_cached_lookups_property {
-    my ($self, $id) = @_;
-
-    my $key = $self->council_url . ":echo:look_up_property:$id";
-    delete $self->{c}->session->{$key};
-    $key = $self->council_url . ":echo:bin_services_for_address:$id";
-    delete $self->{c}->session->{$key};
 }
 
 around look_up_property => sub {
     my ($orig, $self, $id) = @_;
     my $data = $orig->($self, $id);
+
     my $cfg = $self->feature('echo');
     if ($cfg->{nlpg} && $data->{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
@@ -224,7 +219,7 @@ around look_up_property => sub {
     return $data;
 };
 
-sub waste_never_confirm_reports { 1 }
+sub waste_auto_confirm_report { 1 }
 
 sub waste_staff_choose_payment_method { 1 }
 sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
@@ -243,6 +238,9 @@ sub waste_event_state_map {
             'Not Completed' => 'unable to fix',
             'Partially Completed' => 'closed',
             Rejected => 'closed',
+        },
+        Cancelled => {
+            Cancelled => 'cancelled',
         },
     };
 }
@@ -336,8 +334,6 @@ sub bin_services_for_address {
     my $property = shift;
 
     my %shared = (
-            23 => 'Food waste bin (kitchen)',
-            24 => 'Food waste bin (outdoor)',
             6 => 'Refuse Red Stripe Bag',
             18 => 'Recycling Blue Stripe Bag',
             21 => 'Paper & Card Reusable Bag',
@@ -360,14 +356,16 @@ sub bin_services_for_address {
     if ($self->moniker eq 'sutton') {
         $self->{c}->stash->{containers} = {
             %shared,
-            1 => 'Brown rubbish bin (140L)',
-            2 => 'Brown rubbish bin (240L)',
-            3 => 'Brown rubbish bin (360L)',
+            1 => 'Brown Rubbish Wheelie Bin (140L)',
+            2 => 'Brown Rubbish Wheelie Bin (240L)',
+            3 => 'Brown Rubbish Wheelie Bin (360L)',
             35 => 'Rubbish bin (180L)',
-            16 => 'Green recycling box',
-            19 => 'Green paper and cardboard bin',
-            26 => 'Garden waste bin',
-            27 => 'Garden waste bin',
+            16 => 'Mixed Recycling Green Box (55L)',
+            19 => 'Paper and Cardboard Green Wheelie Bin (240L)',
+            23 => 'Small Kitchen Food Waste Caddy (7L)',
+            24 => 'Large Outdoor Food Waste Caddy (23L)',
+            26 => 'Garden Waste Wheelie Bin (240L)',
+            27 => 'Garden Waste Wheelie Bin (140L)',
             28 => 'Garden waste sacks',
         };
     } elsif ($self->moniker eq 'kingston') {
@@ -382,6 +380,8 @@ sub bin_services_for_address {
             16 => 'Green recycling box (55L)',
             19 => 'Blue lid paper and cardboard bin (240L)',
             20 => 'Blue lid paper and cardboard bin (360L)',
+            23 => 'Food waste bin (kitchen)',
+            24 => 'Food waste bin (outdoor)',
             36 => 'Blue lid paper and cardboard bin (180L)',
             26 => 'Garden waste bin (240L)',
             27 => 'Garden waste bin (140L)',
@@ -415,9 +415,34 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # Bulky collection event
+    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
+        $self->bulky_check_missed_collection($events, {
+            # Partially completed
+            12399 => {
+                507 => 'Not all items presented',
+                380 => 'Some items too heavy',
+            },
+            # Completed
+            12400 => {
+                606 => 'More items presented than booked',
+            },
+            # Not Completed
+            12401 => {
+                460 => 'Nothing out',
+                379 => 'Item not as described',
+                100 => 'No access',
+                212 => 'Too heavy',
+                473 => 'Damage on site',
+                234 => 'Hazardous waste',
+            },
+        });
+    }
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
+    $property->{has_no_services} = scalar @$result == 0;
     foreach (@$result) {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
@@ -428,11 +453,17 @@ sub bin_services_for_address {
 
             if ($service_id == 2242) { # Collect Domestic Refuse Bag
                 $self->{c}->stash->{slwp_garden_sacks} = 1;
+            } elsif ($service_id == 2238) { # Collect Domestic Refuse Bin
+                $property->{domestic_refuse_bin} = 1;
             }
 
             my $schedules = _parse_schedules($task, 'task');
 
             next unless $schedules->{next} or $schedules->{last};
+
+            # Ignore retired diesel rounds
+            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != GARDEN_WASTE_SERVICE_ID;
+
             $schedules{$task_id} = $schedules;
             push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
             push @task_refs, $schedules->{last}{ref} if $schedules->{last};
@@ -442,7 +473,9 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, $self->council_url, 'bin_services_for_address:' . $property->{id}, 0, @to_fetch);
+    my $calls = $echo->call_api($self->{c}, $self->council_url, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+
+    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
 
     my @out;
     my %task_ref_to_row;
@@ -570,87 +603,58 @@ sub bin_services_for_address {
     return \@out;
 }
 
-sub _closed_event {
-    my $event = shift;
-    return 1 if $event->{ResolvedDate};
-#    return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock TODO Check this
-    return 0;
-}
+sub missed_event_types { {
+    1635 => 'request',
+    1566 => 'missed',
+    1568 => 'missed',
+    1571 => 'missed',
+    1636 => 'bulky',
+} }
 
-sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
-    my $events;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $type = 'enquiry';
-        $type = 'request' if $event_type == 1635;
-        $type = 'missed' if $event_type == 1566 || $event_type == 1568;
+sub parse_event_missed {
+    my ($self, $echo_event, $closed, $events) = @_;
+    my $report = $self->problems->search({ external_id => $echo_event->{Guid} })->first;
+    my $event = {
+        closed => $closed,
+        date => construct_bin_date($echo_event->{EventDate}),
+    };
+    $event->{report} = $report if $report;
 
-        # Only care about open requests/enquiries
-        my $closed = _closed_event($_);
-        next if $type ne 'missed' && $closed;
-
-        if ($type eq 'request') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        my $container = $_->{Value};
-                        $events->{request}->{$container} = $report ? { report => $report } : 1;
-                    }
-                }
-            }
-        } elsif ($type eq 'missed') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $event = {
-                closed => $closed,
-                date => construct_bin_date($_->{EventDate}),
-            };
-            $event->{report} = $report if $report;
-
-            my $service_id = $_->{ServiceId};
-            if ($service_id == 405) {
-                push @{$events->{missed}->{2238}}, $event;
-                push @{$events->{missed}->{2242}}, $event;
-                push @{$events->{missed}->{3576}}, $event;
-            } elsif ($service_id == 406) {
-                push @{$events->{missed}->{2243}}, $event;
-            } elsif ($service_id == 409) {
-                push @{$events->{missed}->{2247}}, $event;
-            } elsif ($service_id == 420) { # TODO Will food events come in as this?
+    my $service_id = $echo_event->{ServiceId};
+    if ($service_id == 405) {
+        push @{$events->{missed}->{2238}}, $event;
+        push @{$events->{missed}->{2242}}, $event;
+        push @{$events->{missed}->{3576}}, $event;
+    } elsif ($service_id == 406) {
+        push @{$events->{missed}->{2243}}, $event;
+    } elsif ($service_id == 409) {
+        push @{$events->{missed}->{2247}}, $event;
+    } elsif ($service_id == 420) { # TODO Will food events come in as this?
+        push @{$events->{missed}->{2239}}, $event;
+        push @{$events->{missed}->{2248}}, $event;
+    } elsif ($service_id == 413) {
+        push @{$events->{missed}->{413}}, $event;
+    } elsif ($service_id == 408 || $service_id == 410) {
+        my $data = Integrations::Echo::force_arrayref($echo_event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
+                push @{$events->{missed}->{2240}}, $event;
+                push @{$events->{missed}->{2249}}, $event;
+                push @{$events->{missed}->{2632}}, $event;
+            } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
+                push @{$events->{missed}->{2241}}, $event;
+                push @{$events->{missed}->{2246}}, $event;
+                push @{$events->{missed}->{2250}}, $event;
+                push @{$events->{missed}->{3571}}, $event;
+            } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
                 push @{$events->{missed}->{2239}}, $event;
                 push @{$events->{missed}->{2248}}, $event;
-            } elsif ($service_id == 408 || $service_id == 410) {
-                my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-                foreach (@$data) {
-                    if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
-                        push @{$events->{missed}->{2240}}, $event;
-                        push @{$events->{missed}->{2249}}, $event;
-                        push @{$events->{missed}->{2632}}, $event;
-                    } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
-                        push @{$events->{missed}->{2241}}, $event;
-                        push @{$events->{missed}->{2246}}, $event;
-                        push @{$events->{missed}->{2250}}, $event;
-                        push @{$events->{missed}->{3571}}, $event;
-                    } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
-                        push @{$events->{missed}->{2239}}, $event;
-                        push @{$events->{missed}->{2248}}, $event;
-                    }
-                }
-            } else {
-                push @{$events->{missed}->{$service_id}}, $event;
             }
-        } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
         }
+    } else {
+        push @{$events->{missed}->{$service_id}}, $event;
     }
-    return $events;
 }
-
-sub bin_day_format { '%A, %-d~~~ %B' }
 
 =head2 within_working_days
 
@@ -790,6 +794,24 @@ sub waste_munge_request_form_fields {
     );
 }
 
+=head2 waste_report_form_first_next
+
+After picking a service, we jump straight to the about you page unless it's
+bulky, where we ask for more information.
+
+=cut
+
+sub waste_report_form_first_next {
+    my $self = shift;
+    my $cfg = $self->feature('echo');
+    my $bulky_service_id = $cfg->{bulky_service_id};
+    return sub {
+        my $data = shift;
+        return 'notes' if $data->{"service-$bulky_service_id"};
+        return 'about_you';
+    };
+}
+
 =head2 waste_request_form_first_next
 
 After picking a container, we jump straight to the about you page if they've
@@ -884,10 +906,23 @@ sub waste_munge_report_data {
 
     my $c = $self->{c};
 
+    my $booking_report;
+    if ($c->get_param('original_booking_id')) {
+        $booking_report = FixMyStreet::DB->resultset("Problem")->find({ id => $c->get_param('original_booking_id') });
+    };
     my $address = $c->stash->{property}->{address};
+    my $cfg = $self->feature('echo');
     my $service = $c->stash->{services}{$id}{service_name};
+    if ($id == $cfg->{bulky_service_id}) {
+        $service = 'bulky collection';
+    }
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
+    if ($booking_report) {
+        $c->set_param('Exact_Location', $booking_report->get_extra_field_value('Exact_Location'));
+        $c->set_param('Original_Event_ID', $booking_report->external_id);
+    }
+    $c->set_param('Notes', $data->{extra_detail}) if $data->{extra_detail};
     $c->set_param('service_id', $id);
 }
 
@@ -925,22 +960,37 @@ sub garden_waste_new_bin_admin_fee {
     return $cost;
 }
 
+=head2 waste_cc_payment_line_item_ref
+
+This is only used by Kingston (which uses the SCP role) to provide the
+reference for the credit card payment. It differs for bulky waste.
+
+=cut
+
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return $self->_waste_cc_line_item_ref($p, "GW Sub");
+    if ($p->category eq 'Bulky collection') {
+        return $self->_waste_cc_line_item_ref($p, "BULKY", "");
+    } else {
+        return $self->_waste_cc_line_item_ref($p, "GGW", "GW Sub");
+    }
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
     my ($self, $p) = @_;
-    return $self->_waste_cc_line_item_ref($p, "GW admin charge");
+    return $self->_waste_cc_line_item_ref($p, "GGW", "GW admin charge");
 }
 
 sub _waste_cc_line_item_ref {
-    my ($self, $p, $str) = @_;
-    my $id = $self->waste_payment_ref_council_code . '-GGW-' . $p->id;
-    my $len = 50 - length($id) - length($str) - 2;
+    my ($self, $p, $type, $str) = @_;
+    my $id = $self->waste_payment_ref_council_code . "-$type-" . $p->id;
+    my $len = 50 - length($id) - 1;
+    if ($str) {
+        $str = "-$str";
+        $len -= length($str);
+    }
     my $name = substr($p->name, 0, $len);
-    return "$id-$name-$str";
+    return "$id-$name$str";
 }
 
 sub waste_cc_payment_sale_ref {
@@ -1111,20 +1161,30 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my @fields = @{ $report->get_extra_fields() };
-        my %fields = map { $_->{name} => $_->{value} } @fields;
+        my %fields;
+        if ($csv->dbi) {
+            %fields = %{$report->{extra}{_field_value} || {}};
+        } else {
+            my @fields = @{ $report->get_extra_fields() };
+            %fields = map { $_->{name} => $_->{value} } @fields;
+        }
 
-        my $detail = $report->detail;
+        my $detail = $csv->dbi ? $report->{detail} : $report->detail;
         $detail =~ s/^.*?\n\n//; # Remove waste category
 
         return {
             detail => $detail,
             uprn => $fields{uprn},
-            user_name_display => $report->name,
-            user_email => $report->user->email || '',
-            user_phone => $report->user->phone || '',
+            $csv->dbi ? (
+                user_name_display => $report->{name},
+                payment_reference => $fields{PaymentCode} || $report->{extra}{chequeReference} || '',
+            ) : (
+                user_name_display => $report->name,
+                user_email => $report->user->email || '',
+                user_phone => $report->user->phone || '',
+                payment_reference => $fields{PaymentCode} || $report->get_extra_metadata('chequeReference') || '',
+            ),
             payment_method => $fields{payment_method} || '',
-            payment_reference => $fields{PaymentCode} || $report->get_extra_metadata('chequeReference') || '',
             payment => $fields{payment},
             pro_rata => $fields{pro_rata},
             admin_fee => $fields{admin_fee},
@@ -1135,6 +1195,164 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 Bulky waste collection
 
+SLWP looks 8 weeks ahead for collection dates, and cancels by sending an
+update, not a new report. It sends the event to the backend before collecting
+payment, and does not refund on cancellations. It has a hard-coded list of
+property types allowed to book collections.
+
+=cut
+
+sub bulky_collection_window_days { 56 }
+
+sub bulky_cancel_by_update { 1 }
+sub bulky_send_before_payment { 1 }
+sub bulky_show_location_field_mandatory { 1 }
+
+sub bulky_can_refund { 0 }
+sub _bulky_refund_cutoff_date { }
+
+=head2 bulky_collection_window_start_date
+
+K&S have an 11pm cut-off for looking to book next day collections.
+
+=cut
+
+sub bulky_collection_window_start_date {
+    my $self = shift;
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    # If past 11pm, push start date one day later
+    if ($now->hour >= 23) {
+        $start_date->add( days => 1 );
+    }
+    return $start_date;
+}
+
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+
+    return if $property->{has_no_services};
+    my $cfg = $self->feature('echo');
+
+    my $type = $property->{type_id} || 0;
+    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
+    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
+    return $self->bulky_enabled && $valid_type && $domestic_farm;
+}
+
+sub collection_date {
+    my ($self, $p) = @_;
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+}
+
+sub bulky_free_collection_available { 0 }
+
+sub bulky_hide_later_dates { 1 }
+
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
+=head2 Sending to Echo
+
+We use the reserved slot GUID and reference,
+and the provided date/location information.
+Items are sent through with their notes as individual entries
+
+=cut
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_reservation} = $ref;
+
+    $data->{title} = "Bulky goods collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
+    $data->{extra_Collection_Date} = $date;
+    $data->{extra_Exact_Location} = $data->{location};
+
+    my $first_date = $self->{c}->session->{first_date_returned};
+    $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
+    my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
+    $data->{'extra_First_Date_Returned_to_Customer'} = $first_date->strftime("%d/%m/%Y");
+    $data->{'extra_Customer_Selected_Date_Beyond_SLA?'} = $dt > $first_date ? 1 : 0;
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+
+    my @notes;
+    my @ids;
+    my @photos;
+
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @notes, $data->{"item_notes_$_"} || '';
+            push @ids, $items{$item};
+            push @photos, $data->{"item_photos_$_"} || '';
+        };
+    }
+    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
+    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
+    $data->{extra_Image} = join("::", @photos);
+    $self->bulky_total_cost($data);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
+    };
+
+    my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
+    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_notes_$id"} = $notes[$id-1];
+        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
+    }
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+
+    return $saved_data;
+}
+
+=head2 suppress_report_sent_email
+
+For Bulky Waste reports, we want to send the email after payment has been confirmed, so we
+suppress the email here.
+
+=cut
+
+sub suppress_report_sent_email {
+    my ($self, $report) = @_;
+
+    if ($report->cobrand_data eq 'waste' && $report->category eq 'Bulky collection') {
+        return 1;
+    }
+
+    return 0;
+}
+
+sub bulky_location_photo_prompt {
+    'Help us by attaching a photo of where the items will be left for collection.';
+}
 
 1;

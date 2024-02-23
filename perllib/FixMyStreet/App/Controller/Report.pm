@@ -82,7 +82,8 @@ Display a report.
 sub display :PathPart('') :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
-    if ($c->stash->{problem}->cobrand_data eq 'waste' && $c->stash->{problem}->category eq 'Bulky collection' ) {
+    my $problem = $c->stash->{problem};
+    if ($problem->cobrand_data eq 'waste' && ($problem->category eq 'Bulky collection' || $problem->category eq 'Small items collection')) {
         $c->detach('/waste/bulky/view');
     }
 
@@ -417,13 +418,13 @@ sub inspect : Private {
     $c->stash->{report_meta} = { map { 'x' . $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
     if ($c->cobrand->body) {
-        my $priorities_by_category = FixMyStreet::App->model('DB::ResponsePriority')->by_categories(
+        my $priorities_by_category = $c->model('DB::ResponsePriority')->by_categories(
             $c->stash->{contacts},
             body_id => $c->cobrand->body->id,
             problem => $problem,
         );
         $c->stash->{priorities_by_category} = $priorities_by_category;
-        my $templates_by_category = FixMyStreet::App->model('DB::ResponseTemplate')->by_categories(
+        my $templates_by_category = $c->model('DB::ResponseTemplate')->by_categories(
             $c->stash->{contacts},
             body_id => $c->cobrand->body->id
         );
@@ -659,6 +660,47 @@ sub map :Chained('id') :Args(0) {
     $c->res->body($image->{data});
 }
 
+sub confirmation : Path('confirmation') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    # First of all check that the report ID is valid
+    my $report = FixMyStreet::DB->resultset('Problem')->find( { id => $id } );
+    unless ( $report ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    # Now verify the token we've been given is correct
+    my $token_param = $c->get_param('token') || "";
+    unless ( $token_param eq $report->confirmation_token ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    # If the token is valid but expired then may as well be helpful and bounce
+    # the user to report page rather than 404.
+    # (NB the report may still be unconfirmed, but end result is the same - a 404)
+    my $cutoff = DateTime->now()->subtract( minutes => 3 );
+    my $timestamp = $report->confirmed || $report->created;
+    if ( $timestamp < $cutoff ) {
+        # there's a chance it's not available on this cobrand (e.g. made on Oxon
+        # cobrand but sent to district) so get the full URL where we're sure it
+        # can be viewed.
+        my $base = $c->cobrand->relative_url_for_report( $report );
+        return $c->res->redirect($base . $report->url);
+    }
+
+    # We're now confident the user is allowed to view this report so stick it on
+    # the stash and load up the correct template.
+    $c->stash->{problem} = $report;
+    if ( $report->confirmed ) {
+        $c->stash->{template} = 'tokens/confirm_problem.html';
+        $c->stash->{created_report} = "loggedin";
+        $c->stash->{report} = $c->stash->{problem};
+    } else {
+        $c->stash->{template} = 'email_sent.html';
+        $c->stash->{email_type} = 'problem';
+    }
+}
+
 
 sub nearby_json :PathPart('nearby.json') :Chained('id') :Args(0) {
     my ($self, $c) = @_;
@@ -682,14 +724,7 @@ sub _nearby_json :Private {
         # This is for the list template, this is a list on that page.
         $c->stash->{page} = 'report';
 
-        # distance in metres
-        my $dist;
-        if (my $mode = $c->get_param('mode')) {
-            $dist = $c->cobrand->nearby_distances->{$mode};
-        }
-        $dist ||= $c->get_param('distance') || '';
-        $dist = 1000 unless $dist =~ /^\d+$/;
-        $dist = 1000 if $dist > 1000;
+        my $dist = $self->_find_distance($c, $params);
         $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
 
         my $pin_size = $c->get_param('pin_size') || '';
@@ -724,6 +759,42 @@ sub _nearby_json :Private {
     }
 }
 
+# distance in metres
+#
+# A cobrand may optionally have configured:
+# a) distances for an individual (sub)category
+# b) distances for a group/parent category
+# c) distances by mode
+#
+# NOTE: Distances for category or group only apply for the 'suggestions' mode.
+sub _find_distance {
+    my ($self, $c, $params) = @_;
+
+    my $dist;
+    my $mode = $c->get_param('mode');
+    my $cobrand_distances = $c->cobrand->nearby_distances;
+
+    if ($mode) {
+        if ( $mode eq 'suggestions' && ref $cobrand_distances->{$mode} eq 'HASH' ) {
+            my $category = $params->{categories}[0];
+            my $group    = $params->{group};
+
+            $dist = $category && $cobrand_distances->{$mode}{$category}
+            ? $cobrand_distances->{$mode}{$category}
+            : $group && $cobrand_distances->{$mode}{$group}
+            ? $cobrand_distances->{$mode}{$group}
+            : $cobrand_distances->{$mode}{_fallback};
+        } else {
+            $dist = $cobrand_distances->{$mode};
+        }
+    }
+
+    $dist ||= $c->get_param('distance') || '';
+    $dist = 1000 unless $dist =~ /^\d+$/;
+    $dist = 1000 if $dist > 1000;
+
+    return $dist;
+}
 
 =head2 fetch_permissions
 

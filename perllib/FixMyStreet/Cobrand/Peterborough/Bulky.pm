@@ -12,10 +12,9 @@ Functions specific to Peterborough bulky waste collections.
 
 package FixMyStreet::Cobrand::Peterborough::Bulky;
 use Moo::Role;
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
 
 use utf8;
-use strict;
-use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
 use FixMyStreet;
@@ -62,8 +61,6 @@ sub bulky_cancellation_cutoff_time {
 
 =item * Bulky collections start at 6:45 each (working) day
 
-=back
-
 =cut
 
 sub bulky_collection_time {
@@ -72,77 +69,19 @@ sub bulky_collection_time {
     }
 }
 
-sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
-sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
+=item * Bulky collections can be amended up to 2pm before the day of collection
+
+=back
+
+=cut
+
+sub bulky_amendment_cutoff_time {
+    my $time = $_[0]->wasteworks_config->{amendment_cutoff_time} || "14:00";
+    my ($hours, $minutes) = split /:/, $time;
+    return { hours => $hours, minutes => $minutes };
+}
+
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
-
-sub bulky_items_extra {
-    my $self = shift;
-
-    my $per_item = $self->bulky_per_item_costs;
-
-    my $json = JSON::MaybeXS->new;
-    my %hash;
-    for my $item ( @{ $self->bulky_items_master_list } ) {
-        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
-        $hash{ $item->{name} }{price} = $item->{price} if $item->{price} && $per_item;
-        $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
-        $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
-    }
-    return \%hash;
-}
-
-sub bulky_per_item_costs {
-    my $self = shift;
-    my $cfg  = $self->body->get_extra_metadata( 'wasteworks_config', {} );
-    return $cfg->{per_item_costs};
-}
-
-# Should only be a single open collection for a given property, but in case
-# there isn't, return the most recent
-sub find_pending_bulky_collection {
-    my ( $self, $property ) = @_;
-
-    return FixMyStreet::DB->resultset('Problem')->to_body( $self->body )
-        ->find(
-        {   category => 'Bulky collection',
-            extra    => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $property->{uprn} } ] }) },
-            state =>
-                { '=', [ FixMyStreet::DB::Result::Problem->open_states ] },
-        },
-        { order_by => { -desc => 'id' } },
-        );
-}
-
-sub bulky_can_view_collection {
-    my ( $self, $p ) = @_;
-
-    my $c = $self->{c};
-
-    # logged out users can't see anything
-    return unless $p && $c->user_exists;
-
-    # superusers and staff can see it
-    # XXX do we want a permission for this?
-    return 1 if $c->user->is_superuser || $c->user->belongs_to_body($self->body->id);
-
-    # otherwise only the person who booked the collection can view
-    return $c->user->id == $p->user_id;
-}
-
-sub bulky_can_view_cancellation {
-    my ( $self, $p ) = @_;
-
-    my $c = $self->{c};
-
-    return unless $p && $c->user_exists;
-
-    # Staff only
-    # XXX do we want a permission for this?
-    return 1
-        if $c->user->is_superuser
-        || $c->user->belongs_to_body( $self->body->id );
-}
 
 # XXX
 # Error handling
@@ -151,17 +90,18 @@ sub bulky_can_view_cancellation {
 # Check which bulky collections are pending, open
 sub find_available_bulky_slots {
     my ( $self, $property, $last_earlier_date_str ) = @_;
+    my $c = $self->{c};
 
     my $key
         = 'peterborough:bartec:available_bulky_slots:'
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{uprn};
-    return $self->{c}->session->{$key} if $self->{c}->session->{$key};
+    return $c->session->{$key} if $c->session->{$key};
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
 
-    my $window = _bulky_collection_window($last_earlier_date_str);
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
     if ( $window->{error} ) {
         # XXX Handle error gracefully
         die $window->{error};
@@ -173,6 +113,7 @@ sub find_available_bulky_slots {
     );
 
     my @available_slots;
+    my %seen_dates;
 
     my $last_workpack_date;
     for my $workpack (@$workpacks) {
@@ -210,12 +151,13 @@ sub find_available_bulky_slots {
         next if $workpack->{WorkPackDate} eq ( $last_workpack_date // '' );
 
         # Only include if max jobs not already reached
-        push @available_slots => {
-            workpack_id => $workpack->{id},
-            date        => $workpack->{WorkPackDate},
-            }
-            if $self->check_bulky_slot_available( $workpack->{WorkPackDate},
-            $bartec );
+        if ($self->check_bulky_slot_available($workpack->{WorkPackDate}, bartec => $bartec)) {
+            push @available_slots, {
+                workpack_id => $workpack->{id},
+                date        => $workpack->{WorkPackDate},
+            };
+            $seen_dates{$workpack->{WorkPackDate}} = 1;
+        }
 
         $last_workpack_date = $workpack->{WorkPackDate};
 
@@ -227,13 +169,25 @@ sub find_available_bulky_slots {
             && @available_slots == max_bulky_collection_dates();
     }
 
-    $self->{c}->session->{$key} = \@available_slots;
+    if (my $amend = $c->stash->{amending_booking}) {
+        my $date = $amend->get_extra_field_value('DATE');
+        if (!$seen_dates{$date}) {
+            unshift @available_slots, { date => $date };
+        }
+    }
+
+    $c->session->{$key} = \@available_slots;
 
     return \@available_slots;
 }
 
+sub collection_date {
+    my ($self, $p) = @_;
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('DATE'));
+}
+
 sub _bulky_date_to_dt {
-    my $date = shift;
+    my ($self, $date) = @_;
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
     my $dt = $parser->parse_datetime($date);
     return $dt ? $dt->truncate( to => 'day' ) : undef;
@@ -241,7 +195,9 @@ sub _bulky_date_to_dt {
 
 # Checks if there is a slot available for a given date
 sub check_bulky_slot_available {
-    my ( $self, $date, $bartec ) = @_;
+    my ( $self, $date, %args ) = @_;
+
+    my $bartec = $args{bartec};
 
     unless ($bartec) {
         $bartec = $self->feature('bartec');
@@ -249,7 +205,7 @@ sub check_bulky_slot_available {
     }
 
     my $suffix_date_parser = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
-    my $workpack_dt = _bulky_date_to_dt($date);
+    my $workpack_dt = $self->_bulky_date_to_dt($date);
     next unless $workpack_dt;
 
     my $date_from = $workpack_dt->clone->strftime('%FT%T');
@@ -287,59 +243,6 @@ sub check_bulky_slot_available {
     return $total_collection_slots < $self->bulky_daily_slots;
 }
 
-sub _bulky_collection_window {
-    my $last_earlier_date_str = shift;
-    my $fmt = '%F';
-
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $tomorrow = $now->clone->truncate( to => 'day' )->add( days => 1 );
-
-    my $start_date;
-    if ($last_earlier_date_str) {
-        $start_date
-            = DateTime::Format::Strptime->new( pattern => $fmt )
-            ->parse_datetime($last_earlier_date_str);
-
-        return { error => 'Invalid date provided' } unless $start_date;
-
-        $start_date->add( days => 1 );
-    } else {
-        $start_date = $tomorrow->clone;
-
-        # If now is past cutoff time, push start date one day later
-        my $cutoff_time = bulky_cancellation_cutoff_time();
-        if ((      $now->hour == $cutoff_time->{hours}
-                && $now->minute >= $cutoff_time->{minutes}
-            )
-            || $now->hour > $cutoff_time->{hours}
-        ){
-            $start_date->add( days => 1 );
-        }
-    }
-
-    my $date_to
-        = $tomorrow->clone->add( days => bulky_collection_window_days() );
-
-    return {
-        date_from => $start_date->strftime($fmt),
-        date_to => $date_to->strftime($fmt),
-    };
-}
-
-# Returns whether a collection can be cancelled, irrespective of logged-in
-# user or lack thereof
-sub bulky_collection_can_be_cancelled {
-    # There is an $ignore_external_id option because we display some
-    # cancellation messaging without needing a report in Bartec
-    my ( $self, $collection, $ignore_external_id ) = @_;
-
-    return
-           $collection
-        && $collection->is_open
-        && ( $collection->external_id || $ignore_external_id )
-        && $self->within_bulky_cancel_window($collection);
-}
-
 sub bulky_cancellation_report {
     my ( $self, $collection ) = @_;
 
@@ -349,90 +252,48 @@ sub bulky_cancellation_report {
 
     # A cancelled collection will have a corresponding cancellation report
     # linked via external_id / ORIGINAL_SR_NUMBER
-    return FixMyStreet::DB->resultset('Problem')->find(
-        {   extra => {
-                '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] })
-            },
+    return $self->problems->find({
+        category => 'Bulky cancel',
+        extra => {
+            '@>' => encode_json({ _fields => [ { name => 'ORIGINAL_SR_NUMBER', value => $original_sr_number } ] })
         },
-    );
+    });
 }
 
-sub bulky_can_refund {
-    my $self = shift;
+sub bulky_can_refund_collection {
+    my ($self, $p) = @_;
     my $c    = $self->{c};
 
     # Skip refund eligibility check for bulky goods soft launch; just
     # assume if a collection can be cancelled, it can be refunded
     # (see https://3.basecamp.com/4020879/buckets/26662378/todos/5870058641)
-    return $self->within_bulky_cancel_window
+    return $self->within_bulky_cancel_window($p)
         if $self->bulky_enabled_staff_only;
 
-    return $c->stash->{property}{pending_bulky_collection}
-        ->get_extra_field_value('CHARGEABLE') ne 'FREE'
-        && $self->within_bulky_refund_window;
+    return $p->get_extra_field_value('CHARGEABLE') ne 'FREE'
+        && $self->within_bulky_refund_window($p);
 }
 
 # A cancellation made less than 24 hours before the collection is scheduled to
 # begin is not entitled to a refund.
-sub within_bulky_refund_window {
-    my $self = shift;
-    my $c    = $self->{c};
-
-    my $open_collection = $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $open_collection;
-
-    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-
-    my $collection_date_str = $open_collection->get_extra_field_value('DATE');
-    my $collection_dt       = _bulky_date_to_dt($collection_date_str);
-
-    return $self->_check_within_bulky_refund_window( $now_dt,
-        $collection_dt );
-}
-
-sub _check_within_bulky_refund_window {
-    my ( undef, $now_dt, $collection_dt ) = @_;
-
-    my $collection_time = bulky_collection_time();
+sub _bulky_refund_cutoff_date {
+    my ($self, $collection_dt) = @_;
+    my $collection_time = $self->bulky_collection_time();
     my $cutoff_dt       = $collection_dt->clone->set(
         hour   => $collection_time->{hours},
         minute => $collection_time->{minutes},
     )->subtract( days => 1 );
-
-    return $now_dt <= $cutoff_dt;
+    return $cutoff_dt;
 }
 
-sub within_bulky_cancel_window {
-    my ( $self, $collection ) = @_;
-
-    my $c = $self->{c};
-    $collection //= $c->stash->{property}{pending_bulky_collection};
-    return 0 unless $collection;
-
-    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-
-    my $collection_date = $collection->get_extra_field_value('DATE');
-    return _check_within_bulky_cancel_window( $now_dt,
-        $collection_date );
-}
-
-sub _check_within_bulky_cancel_window {
-    my ( $now_dt, $collection_date ) = @_;
-    my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_date);
-    return $now_dt < $cutoff_dt;
-}
-
-sub _bulky_cancellation_cutoff_date {
-    my $collection_date = shift;
-    my $dt = _bulky_date_to_dt($collection_date);
-
-    my $cutoff_time = bulky_cancellation_cutoff_time();
-    $dt->subtract( days => 1 )->set(
+sub _bulky_amendment_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_amendment_cutoff_time();
+    my $cutoff_dt = $collection_date->clone->set(
         hour   => $cutoff_time->{hours},
         minute => $cutoff_time->{minutes},
-    );
-
-    return $dt;
+    )->subtract( days => 1 );
+    return $cutoff_dt;
 }
 
 sub waste_munge_bulky_data {
@@ -471,22 +332,38 @@ sub waste_reconstruct_bulky_data {
         $saved_data->{"item_photo_" . ($id+0)} = $p->get_extra_metadata("item_photo_" . ($id+0));
     }
 
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+    $saved_data->{resident} = 'Yes';
+
     return $saved_data;
+}
+
+sub waste_munge_bulky_amend {
+    my ($self, $p, $data) = @_;
+    $p->update_extra_field({ name => 'DATE', value => $data->{chosen_date} });
+    $p->update_extra_field({ name => 'CREW NOTES', value => $data->{location} });
+
+    my $max = $self->{c}->cobrand->bulky_items_maximum;
+    for (1..$max) {
+        my $two = sprintf("%02d", $_);
+        $p->update_extra_field({ name => "ITEM_$two", value => $data->{"item_$_"} || '' });
+    }
 }
 
 sub waste_munge_bulky_cancellation_data {
     my ( $self, $data ) = @_;
 
     my $c = $self->{c};
-    my $collection_report = $c->stash->{property}{pending_bulky_collection};
+    my $collection_report = $c->stash->{cancelling_booking} || $c->stash->{amending_booking};
+    my $original_sr_number = $collection_report->external_id =~ s/Bartec-//r;
 
     $data->{title}    = 'Bulky goods cancellation';
     $data->{category} = 'Bulky cancel';
-    $data->{detail} .= " | Original report ID: " . $collection_report->id;
+    $data->{detail} .= " | Original report ID: $original_sr_number (WasteWorks " . $collection_report->id . ")";
 
     $c->set_param( 'COMMENTS', 'Cancellation at user request' );
-
-    my $original_sr_number = $collection_report->external_id =~ s/Bartec-//r;
     $c->set_param( 'ORIGINAL_SR_NUMBER', $original_sr_number );
 }
 
@@ -502,83 +379,13 @@ sub bulky_free_collection_available {
     return $cfg->{free_mode} && $free_collection_available;
 }
 
-# For displaying before user books collection. In the case of individually
-# priced items, we cannot know what the total cost will be, so we return the
-# lowest cost.
-sub bulky_minimum_cost {
-    my $self = shift;
-
-    my $cfg = $self->wasteworks_config;
-
-    if ( $cfg->{per_item_costs} ) {
-        # Get the item with the lowest cost
-        my @sorted = sort { $a <=> $b }
-            map { $_->{price} } @{ $self->bulky_items_master_list };
-
-        return $sorted[0] // 0;
-    } else {
-        return $cfg->{base_price} // 0;
-    }
-}
-
-sub bulky_total_cost {
-    my ($self, $data) = @_;
-    my $c = $self->{c};
-
-    if ($self->bulky_free_collection_available) {
-        $data->{extra_CHARGEABLE} = 'FREE';
-        $c->stash->{payment} = 0;
-    } else {
-        $data->{extra_CHARGEABLE} = 'CHARGED';
-
-        my $cfg = $self->wasteworks_config;
-        if ($cfg->{per_item_costs}) {
-            my %prices = map { $_->{name} => $_->{price} } @{ $self->bulky_items_master_list };
-            my $total = 0;
-            for (1..5) {
-                my $item = $data->{"item_$_"} or next;
-                $total += $prices{$item};
-            }
-            $c->stash->{payment} = $total;
-        } else {
-            $c->stash->{payment} = $cfg->{base_price};
-        }
-        $data->{"extra_payment_method"} = "credit_card";
-    }
-    return $c->stash->{payment};
-}
-
 sub bulky_allowed_property {
     my ($self, $property) = @_;
-    return 1 if $property->{show_bulky_waste} && !$property->{commercial_property};
-}
 
-sub bulky_enabled {
-    my $self = shift;
-
-    # $self->{c} is undefined if this cobrand was instantiated by
-    # get_cobrand_handler instead of being the current active cobrand
-    # for this request.
-    my $c = $self->{c} || FixMyStreet::DB->schema->cobrand->{c};
-
-    my $cfg = $self->feature('waste_features') || {};
-
-    if ($self->bulky_enabled_staff_only) {
-        return $c->user_exists && (
-            $c->user->is_superuser
-            || ( $c->user->from_body && $c->user->from_body->name eq $self->council_name)
-        );
-    } else {
-        return $cfg->{bulky_enabled};
-    }
-}
-
-sub bulky_enabled_staff_only {
-    my $self = shift;
-
-    my $cfg = $self->feature('waste_features') || {};
-
-    return $cfg->{bulky_enabled} && $cfg->{bulky_enabled} eq 'staff';
+    return
+           $self->bulky_enabled
+        && $property->{has_black_bin}
+        && !$property->{commercial_property};
 }
 
 sub bulky_available_feature_types {
@@ -599,32 +406,6 @@ sub bulky_available_feature_types {
     return { map { $_->{ID} => $_->{Name} } @types };
 }
 
-sub bulky_nice_collection_date {
-    my ($self, $date) = @_;
-    my $dt = _bulky_date_to_dt($date);
-    return $dt->strftime('%d %B');
-}
-
-sub bulky_nice_cancellation_cutoff_time {
-    my $time = bulky_cancellation_cutoff_time();
-    $time = DateTime->now->set(hour => $time->{hours}, minute => $time->{minutes})->strftime('%I:%M%P');
-    $time =~ s/^0|:00//g;
-    return $time;
-}
-
-sub bulky_nice_cancellation_cutoff_date {
-    my ( undef, $collection_date ) = @_;
-    my $cutoff_dt = _bulky_cancellation_cutoff_date($collection_date);
-    return $cutoff_dt->strftime('%H:%M on %d %B %Y');
-}
-
-sub bulky_nice_collection_time {
-    my $time = bulky_collection_time();
-    $time = DateTime->now->set(hour => $time->{hours}, minute => $time->{minutes})->strftime('%I:%M%P');
-    $time =~ s/^0|:00//g;
-    return $time;
-}
-
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
 
@@ -641,99 +422,13 @@ sub bulky_nice_item_list {
     ];
 }
 
-sub bulky_reminders {
-    my ($self, $params) = @_;
-
-    # Can't see an easy way to find these apart from loop through them all.
-    # Is only daily.
-    my $collections = FixMyStreet::DB->resultset('Problem')->search({
-        category => 'Bulky collection',
-        state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
-    });
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
-    while (my $report = $collections->next) {
-        my $r1 = $report->get_extra_metadata('reminder_1');
-        my $r3 = $report->get_extra_metadata('reminder_3');
-        next if $r1; # No reminders left to do
-
-        my $date = $report->get_extra_field_value('DATE');
-
-        # Shouldn't happen, but better to be safe.
-        next unless $date;
-
-        my $dt = _bulky_date_to_dt($date);
-
-        # If booking has been cancelled (or somehow the collection date has
-        # already passed) then mark this report as done so we don't see it
-        # again tomorrow.
-        my $cancelled = $self->bulky_cancellation_report($report);
-        if ( $cancelled || $dt < $now) {
-            $report->set_extra_metadata(reminder_1 => 1);
-            $report->set_extra_metadata(reminder_3 => 1);
-            $report->update;
-            next;
-        }
-
-        my $d1 = $dt->clone->subtract(days => 1);
-        my $d3 = $dt->clone->subtract(days => 3);
-
-        my $h = {
-            report => $report,
-            cobrand => $self,
-        };
-
-        if (!$r3 && $now >= $d3 && $now < $d1) {
-            $h->{days} = 3;
-            $self->_bulky_send_reminder_email($report, $h, $params);
-            $report->set_extra_metadata(reminder_3 => 1);
-            $report->update;
-        } elsif ($now >= $d1 && $now < $dt) {
-            $h->{days} = 1;
-            $self->_bulky_send_reminder_email($report, $h, $params);
-            $report->set_extra_metadata(reminder_1 => 1);
-            $report->update;
-        }
-    }
-}
-
-sub _bulky_send_reminder_email {
-    my ($self, $report, $h, $params) = @_;
-
-    my $token = FixMyStreet::DB->resultset('Token')->new({
-        scope => 'email_sign_in',
-        data  => {
-            # This should be the view your collections page, most likely
-            r => $report->url,
-        }
-    });
-    $h->{url} = "/M/" . $token->token;
-
-    my $result = FixMyStreet::Email::send_cron(
-        FixMyStreet::DB->schema,
-        'waste/bulky-reminder.txt',
-        $h,
-        { To => [ [ $report->user->email, $report->name ] ] },
-        undef,
-        $params->{nomail},
-        $self,
-        $report->lang,
-    );
-    unless ($result) {
-        print "  ...success\n" if $params->{verbose};
-        $token->insert();
-    } else {
-        print " ...failed\n" if $params->{verbose};
-    }
-}
-
 sub unset_free_bulky_used {
     my $self = shift;
 
     my $c = $self->{c};
 
     return
-        unless $c->stash->{property}{pending_bulky_collection}
+        unless $c->stash->{cancelling_booking}
         ->get_extra_field_value('CHARGEABLE') eq 'FREE';
 
     my $bartec = $self->feature('bartec');

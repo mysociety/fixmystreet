@@ -95,24 +95,17 @@ a#geolocate_link {
 }
 
 /* FRONTPAGE */
-#front-main {
-    background-color: $front_main_bg;
-    margin: 0;
-    padding: 1em;
-    #postcodeForm {
-        background-color: $front_main_bg;
-        color: $primary_b;
-        div {
-            input#sub {
-                border: $button-border-width solid $button-primary-text;
-                font-family: $body-font;
-                font-weight: 600;
-                background-color: $button-primary-text;
+.postcode-form-box {
+    div {
+        input#sub {
+            border: $button-border-width solid $button-primary-text;
+            font-family: $body-font;
+            font-weight: 600;
+            background-color: $button-primary-text;
 
-                &:hover {
-                    background-color: $primary_text;
-                    color: $button-primary-text;
-                }
+            &:hover {
+                background-color: $primary_text;
+                color: $button-primary-text;
             }
         }
     }

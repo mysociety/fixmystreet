@@ -134,7 +134,7 @@ a {
 }
 
 // Green button not the same as .green-btn
-#front-main #postcodeForm div input#sub {
+.postcode-form-box div input#sub {
   @include button-variant($bg-top: $primary, $bg-bottom: $primary, $border: $primary, $text: $primary_text, $hover-bg-bottom: $primary_b, $hover-bg-top: $primary_b, $hover-border: $primary_text, $hover-text: $primary_text);
 }
 

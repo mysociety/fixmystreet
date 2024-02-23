@@ -15,6 +15,21 @@ $link-hover-text-decoration: underline !default;
 $primary_link_decoration: underline !default;
 $primary_link_hover_decoration: $primary_link_decoration !default;
 
+$button-primary-bg-top: #222 !default;
+$button-primary-bg-bottom: $button-primary-bg-top !default;
+$button-primary-border: darken($button-primary-bg-top, 50%) !default;
+$button-primary-text: #fff !default;
+
+$button-primary-hover-bg-top: mix($button-primary-bg-top, #fff, 80%) !default;
+$button-primary-hover-bg-bottom: mix($button-primary-bg-bottom, #fff, 80%) !default;
+$button-primary-hover-border: darken($button-primary-border, 100%) !default;
+$button-primary-hover-text: #fff !default;
+
+$button-primary-focus-bg-top: #ffe100 !default;
+$button-primary-focus-bg-bottom: #ffe100 !default;
+$button-primary-focus-border: $button-primary-border !default;
+$button-primary-focus-text: #222 !default;
+
 $pagination_background: #f6f6f6 !default;
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
@@ -27,6 +42,17 @@ $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
 $container-max-width: 60em !default;
+
+// None of the form variables control the desktop styling. For that refer to _layout.scss
+// $front-main-color controls the colours of all elements inside #front-main and .postcode-form-box element.
+$front-main-color: $primary_text !default;
+// $front-main-background controls the background of the #front-main element. This is a full width element.
+$front-main-background: none !default;
+// $postcodeform-background controls the background of the postcode-form-box. It excludes the h1 and h2 elements.
+$postcodeform-background: $primary !default;
+$postcodeform-color: $primary_text !default;
+$front-main-h2-color: transparentize($front-main-color, 0.1) !default;
+$form-hint-color: transparentize($postcodeform-color, 0.2) !default;
 
 $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
@@ -123,6 +149,11 @@ ol li {
   list-style: decimal;
 }
 
+.bulky-intro-pricing {
+  list-style: none;
+  margin-bottom: 0em;
+}
+
 // lets you have a traditional ol but with nicely styled numbers
 // for older browsers it just falls back to the normal ol
 ol.big-numbers {
@@ -158,9 +189,20 @@ dl {
     font-weight: bold;
   }
   dd {
-    font-weight: 1em;
+    font-size: 1em;
     line-height: 1.5em;
     margin: 0 0 1em;
+  }
+
+  .twothirdswidthpage & {
+    dt {
+      font-size: 1.125em;
+      margin-bottom: 0.5em;
+    }
+
+    dd {
+      margin: 0 0 1.2em;
+    }
   }
 }
 
@@ -669,6 +711,32 @@ ul.error {
   visibility: visible;
 }
 
+.category-filter-box {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    margin: 1em 0;
+    label {
+        margin: 0;
+    }
+}
+
+.js-filter-subcategory {
+    clear: left;
+    margin-left: 2em;
+}
+
+.js-filter-subcategory legend {
+    display: none;
+}
+
+.govuk-radios--small .govuk-radios__item.js-filter-disabled {
+    padding-left: 0;
+}
+.js-filter-disabled label:before, .js-filter-disabled label:after {
+    display: none;
+}
+
 .no-js .js-back {
   display: none;
 }
@@ -1030,7 +1098,7 @@ footer {
 .btn-primary,
 .green-btn,
 .btn--primary {
-  @include button-variant(#9fde23, #7fb900, #5b9700, #fff, #9fde23, #7fb900, #5b9700, #fff);
+  @include button-variant($button-primary-bg-top, $button-primary-bg-bottom, $button-primary-border, $button-primary-text, $button-primary-hover-bg-top, $button-primary-hover-bg-bottom, $button-primary-hover-border, $button-primary-hover-text,$button-primary-focus-bg-bottom,$button-primary-focus-bg-top, $button-primary-focus-border, $button-primary-focus-text);
 }
 
 .btn-danger,
@@ -1248,7 +1316,7 @@ input.final-submit {
 
   a {
     @include clearfix;
-    padding: flip(0 0 0 1em, 0 1em 0 0);
+    padding: 0 1em;
 
     @media print {
       padding: 0;
@@ -1267,10 +1335,6 @@ input.final-submit {
     display: block;
     padding: 0.25em 0;
   }
-}
-
-body.frontpage .item-list--reports__item a {
-  padding: 0 1em 0 1em;
 }
 
 .item-list__item__metadata {
@@ -1485,7 +1549,7 @@ body.frontpage .item-list--reports__item a {
   font-weight: bold;
   padding: 0.2em 0.5em;
   vertical-align: -0.1em;
-  background: #888;
+  background: #666;
   color: #fff;
   border-radius: 0.3em;
   margin-#{$right}: 0.1em;
@@ -1493,7 +1557,7 @@ body.frontpage .item-list--reports__item a {
 
 .item-list__item--empty {
   background: none;
-  color: #777;
+  color: #666;
 
   p {
     margin: 0;
@@ -2049,6 +2113,14 @@ html.js #map .noscript {
   .map-pins-toggle {
     @include svg-background-image("/cobrands/fixmystreet/images/hide-pins-link");
   }
+
+  .js-recentre-map {
+    @include svg-background-image("/cobrands/fixmystreet/images/geolocate-link-icon");
+
+    &.loading {
+      @include svg-background-image("/cobrands/fixmystreet/images/geolocate-link-loading");
+    }
+  }
 }
 
 %sub-map-link-icon {
@@ -2405,8 +2477,8 @@ label .muted {
 
 .form-hint {
   display: block;
-  color: #666;
   margin-bottom: 0.5em;
+  color: #666;
 
   // Reduce space between labels and their form-hints
   label + & {
@@ -2619,60 +2691,40 @@ label .muted {
   visibility: hidden;
 }
 
+.hidden-highways-choice, .hidden-category-filter {
+  display: none !important;
+  visibility: hidden;
+}
+
 /* Front page */
 #front-main {
-  margin: 1em;
+  margin: 1em 0;
+  background: $front-main-background;
+  color: $front-main-color;
+  @if not (($front-main-background == transparent) or ($front-main-background == none)) {
+    padding: 1em;
+    margin-top: 0;
+  }
+  @if not (($front-main-background == transparent) or ($front-main-background == none)) {
+      #front-main-container {
+      margin:0 -1em;
+    }
+  }
+  #front-main-container {
+    padding:0 1em;
+  }
   h2 {
     font-style: italic;
     font-family: $meta-font;
     font-size: 1.1875em;
-    color: #4d4d4d;
+    color: $front-main-h2-color;
+  }
+  .form-hint {
+    margin-bottom: 0.5em;
+    color: $form-hint-color;
   }
   p {
     margin: 0.5em 0 0;
-  }
-  #postcodeForm {
-    margin: 0 -1em;
-    padding: 1em;
-    color: $primary_text;
-    background: $primary;
-    font-family: $meta-font;
-    label {
-      margin: 0;
-    }
-    .form-hint {
-      margin-bottom: 0.5em;
-    }
-    div {
-      @include flex-container;
-      @include flex-wrap(wrap);
-      width: 100%;
-      background: #fff;
-      border: 1px solid $primary_b;
-      input#pc {
-        @include flex(86 0 auto);
-        width: 50%;
-        border: none;
-        background: none;
-        line-height: 1.5em;
-      }
-      input#sub {
-        border: none;
-        padding: 0.5em;
-        @include flex(14 0 auto);
-        background: #000;
-        color: #fff;
-        @include border-radius(0);
-        &:hover,
-        &:focus {
-          background: #333;
-        }
-      }
-    }
-
-    ul {
-      margin-top: 2em;
-    }
   }
   a {
     text-decoration: $primary_link_decoration;
@@ -2682,6 +2734,51 @@ label .muted {
   }
 }
 
+.postcode-form-box {
+  color: $postcodeform-color;
+  background: $postcodeform-background;
+  @if not (($postcodeform-background == transparent) or ($postcodeform-background == none)) {
+    padding: 1em;
+    margin: 0 -1em;
+  } @else {
+    padding: 0;
+    margin: 1em 0
+  }
+  font-family: $meta-font;
+  label {
+    margin-top: 0;
+  }
+  div {
+    @include flex-container;
+    @include flex-wrap(wrap);
+    width: 100%;
+    background: #fff;
+    border: 1px solid $primary_b;
+    input#pc {
+      @include flex(86 0 auto);
+      width: 50%;
+      border: none;
+      background: none;
+      line-height: 1.5em;
+    }
+    input#sub {
+      border: none;
+      padding: 0.5em;
+      @include flex(14 0 auto);
+      background: #000;
+      color: #fff;
+      @include border-radius(0);
+      &:hover,
+      &:focus {
+        background: #333;
+      }
+    }
+  }
+
+  ul {
+    margin-top: 2em;
+  }
+}
 
 
 
@@ -3047,11 +3144,11 @@ a#geolocate_link {
 
 // Offline reporting UI
 #front-main {
-  .js-continue-draft {
+  .draft-info-box {
     display:flex;
     justify-content:center;
   }
-  .js-continue-draft p {
+  .draft-info-box p {
     background-color: #ff3333;
     padding: 0.5em 1em;
   }
@@ -3225,6 +3322,6 @@ $site-message-border: 1px solid #525252 !default;
 @import "_dashboard";
 @import "_top-banner";
 @import "_search-help";
+@import "_page-with-sticky-content-bar";
 
-$govuk-focus-colour: $primary !default;
-@import "../../vendor/govuk-frontend/radios";
+@import "govuk-frontend/forms";

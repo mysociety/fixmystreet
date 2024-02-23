@@ -81,7 +81,7 @@ sub handle_uploads : Private {
     my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
     my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
     $dir = path($dir, "enquiry_files")->absolute(FixMyStreet->path_to());
-    $dir->mkpath;
+    $dir->mkdir;
 
     my $files = $c->session->{enquiry_files} || {};
     foreach ($c->req->upload) {

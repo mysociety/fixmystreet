@@ -2,6 +2,8 @@
 @import "./_colours";
 @import "../sass/mixins";
 @import "../sass/base";
+@import "../sass/waste";
+@import "../fixmystreet-uk-councils/societyworks-footer";
 
 div.form-error, p.form-error { // TODO Add to more, make a variable.
     background-color: $red;
@@ -100,8 +102,4 @@ ol.big-numbers > li:before {
     padding: 1em 0;
     background: url(/cobrands/bexley/images/logo.png) 0 50% no-repeat;
     background-size: 150px 60px;
-}
-
-#postcodeForm .form-hint {
-//    color: $white;
 }

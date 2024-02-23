@@ -32,6 +32,7 @@ has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 has upload_files => ( is => 'ro', isa => Bool, default => 0 );
+has upload_files_for_updates => ( is => 'ro', isa => Bool, default => 0 );
 has always_upload_photos => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
@@ -157,7 +158,7 @@ sub _populate_service_request_params {
         last_name => $lastname,
     };
 
-    $params->{phone} = $problem->user->phone if $problem->user->phone;
+    $params->{phone} = $problem->phone_waste if $problem->phone_waste;
     $params->{email} = $problem->user->email if $problem->user->email;
 
     $params->{account_id} = $extra->{account_id} if defined $extra->{account_id};
@@ -230,16 +231,33 @@ sub _populate_service_request_uploads {
         my $files = $problem->get_extra_metadata('enquiry_files') || {};
         for my $key (keys %$files) {
             my $name = $files->{$key};
-            $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, $name ];
+            $uploads->{"file_$key"} = [ path($dir, $key)->canonpath, encode('UTF-8', $name) ];
         }
     }
 
-    if ( $self->always_upload_photos || ( $problem->photo && $problem->non_public ) ) {
+    %$uploads = (%$uploads, %{$self->_add_photos_to_upload($problem, $params)});
+
+    return $uploads;
+}
+
+sub _add_photos_to_upload {
+    my ($self, $obj, $params) = @_;
+
+    my $non_public;
+    if (ref $obj eq 'FixMyStreet::DB::Result::Problem') {
+        $non_public = $obj->non_public
+    } elsif (ref $obj eq 'FixMyStreet::DB::Result::Comment') {
+        $non_public = $obj->problem->non_public;
+    };
+
+    my $uploads = {};
+
+    if ( $self->always_upload_photos || ( $obj->photo && $non_public ) ) {
         # open311-adapter won't be able to download any photos if they're on
-        # a private report, so instead of sending the media_url parameter
+        # a private report or on a comment on a private report, so instead of sending the media_url parameter
         # send the actual photo content with the POST request.
         my $i = 0;
-        my $photoset = $problem->get_photoset;
+        my $photoset = $obj->get_photoset;
         for ( $photoset->all_ids ) {
             my $photo = $photoset->get_image_data( num => $i++, size => 'full' );
             $uploads->{"photo$i"} = [ undef, $_, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
@@ -249,6 +267,7 @@ sub _populate_service_request_uploads {
 
     return $uploads;
 }
+
 
 sub _generate_service_request_description {
     my $self = shift;
@@ -260,7 +279,11 @@ sub _generate_service_request_description {
         $description .= "detail: " . $problem->detail . "\n\n";
         $description .= "url: " . $extra->{url} . "\n\n";
         $description .= "Submitted via FixMyStreet\n";
-        $description = "title: " . $problem->title . "\n\n$description";
+        if ($problem->cobrand eq 'brent') {
+            $description = "location of problem: " . $problem->title . "\n\n$description";
+        } else {
+            $description = "title: " . $problem->title . "\n\n$description";
+        }
     } elsif ($problem->cobrand eq 'fixamingata') {
         $description .= "Titel: " . $problem->title . "\n\n";
         $description .= "Beskrivning: " . $problem->detail . "\n\n";
@@ -338,7 +361,13 @@ sub post_service_request_update {
 
     my $params = $self->_populate_service_request_update_params( $comment );
 
-    my $response = $self->_post( $self->endpoints->{update}, $params );
+    my $response;
+    if ($self->upload_files_for_updates && $comment->photo) {
+        my $uploads = $self->_add_photos_to_upload($comment, $params);
+        $response = $self->_post( $self->endpoints->{update}, $params, $uploads);
+    } else {
+        $response = $self->_post( $self->endpoints->{update}, $params);
+    }
 
     if ( $response ) {
         my $obj = $self->_get_xml_object( $response );
@@ -365,11 +394,24 @@ sub post_service_request_update {
 sub add_media {
     my ($self, $url, $object) = @_;
 
-    my $ua = LWP::UserAgent->new;
-    my $res = $ua->get($url);
-    if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
+    $url = [ $url ] unless ref $url;
+
+    my @photos;
+    foreach (@$url) {
+        if ($_ =~ /^data:/) {
+            my @parts = split ',', $_, 2;
+            push @photos, $parts[1];
+        } else {
+            my $ua = LWP::UserAgent->new;
+            my $res = $ua->get($_);
+            if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
+                push @photos, $res->decoded_content;
+            }
+        }
+    }
+    if (@photos) {
         my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-            data_items => [ $res->decoded_content ],
+            data_items => \@photos,
         });
         $object->photo($photoset->data);
     }
@@ -423,6 +465,8 @@ sub _populate_service_request_update_params {
             $status = 'NO_FURTHER_ACTION';
         } elsif ( $state eq 'internal referral' ) {
             $status = 'INTERNAL_REFERRAL';
+        } elsif ( $state eq 'for triage' ) {
+            $status = 'FOR_TRIAGE';
         } elsif ( $state eq 'closed' ) {
             $status = 'CLOSED';
         } elsif ($comment->mark_open && $self->mark_reopen) {
@@ -458,8 +502,13 @@ sub _populate_service_request_update_params {
     if ( $comment->photo ) {
         my $cobrand = $comment->get_cobrand_logged;
         my $email_base_url = $cobrand->base_url($comment->cobrand_data);
-        my $url = $email_base_url . $comment->photos->[0]->{url_full};
-        $params->{media_url} = $url;
+        if ($self->multi_photos) {
+            my @all_images = map { $email_base_url . $_->{url_full} } @{ $comment->photos };
+            $params->{media_url} = \@all_images;
+        } else {
+            my $url = $email_base_url . $comment->photos->[0]->{url_full};
+            $params->{media_url} = $url;
+        }
     }
 
     # The following will only set by UK in Bromley/Bromley cobrands
@@ -533,21 +582,25 @@ sub _request {
                 # HTTP::Request::Common needs to be constructed slightly
                 # differently if there are files to upload.
 
-                my @media_urls = ();
                 # HTTP::Request::Common treats an arrayref as a filespec,
-                # so we need to rejig the media_url parameter so it doesn't
-                # get confused...
+                # so we need to flatten these into repeated field names with different
+                # values so it doesn't get confused...
                 # https://stackoverflow.com/questions/50705344/perl-httprequestcommon-post-file-and-array
-                if ($self->multi_photos) {
-                    my $media_urls = $params->{media_url};
-                    @media_urls = map { ( media_url => $_ ) } @$media_urls;
-                    delete $params->{media_url};
+                my @flattened_params;
+                while (my ($key, $value) = each %$params) {
+                    if (ref $value eq 'ARRAY') {
+                        foreach my $element (@$value) {
+                            push @flattened_params, ( $key => $element );
+                        }
+                        delete $params->{$key};
+                    }
                 }
+
                 $params = {
                     Content_Type => 'form-data',
                     Content => [
                         %$params,
-                        @media_urls,
+                        @flattened_params,
                         %$uploads
                     ]
                 };

@@ -138,7 +138,7 @@ of private photos, so we set those two parameter flags.
 =cut
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
@@ -154,6 +154,12 @@ around open311_extra_data_include => sub {
     my ($orig, $self, $row, $h) = @_;
 
     my $open311_only = $self->$orig($row, $h);
+
+    my $contributed_by = $row->get_extra_metadata('contributed_by');
+    my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
+    if ($contributing_user) {
+        push @$open311_only, { name => 'contributed_by', value => 1 };
+    }
 
     if (!$row->used_map) {
         for (@$open311_only) {
@@ -186,8 +192,9 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
+        my $non_public = $csv->dbi ? $report->{non_public} : $report->non_public;
         return {
-            private_report => $report->non_public ? 'Yes' : 'No'
+            private_report => $non_public ? 'Yes' : 'No'
         };
     });
 }

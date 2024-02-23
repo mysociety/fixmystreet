@@ -124,8 +124,6 @@ a,
 
 #front-main {
     #postcodeForm {
-        background: transparent;
-
         div {
             border: none;
             background: transparent;
@@ -235,22 +233,6 @@ p.form-error {
 .btn,
 .green-btn {
     @include kingston-button-primary();
-}
-
-body.twothirdswidthpage .content .sticky-sidebar {
-    aside {
-        margin: 1em 0 2em 0;
-    }
-
-    ul {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 -0.5em;
-    }
-
-    li {
-        margin: 0 0.5em;
-    }
 }
 
 // As per Kingston Website style guide
@@ -436,6 +418,26 @@ body.twothirdswidthpage .content .sticky-sidebar {
 
     #front-main + div{
         display: none;
+    }
+}
+
+
+.bulky__summary {
+    .item-summary-table {
+        thead {
+            background-color: $white;
+            border-color: #ccc;
+        }
+        tbody {
+            tr {
+                border-color: #ccc;
+            }
+        }
+    }
+    @media (min-width: 48em) {
+        .item-summary-table {
+            width: 100%;
+        }
     }
 }
 

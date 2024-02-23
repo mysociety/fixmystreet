@@ -266,6 +266,8 @@ use List::Util qw/any uniq/;
 use LWP::Simple qw($ua);
 use URI;
 use URI::QueryParam;
+use Digest::HMAC_SHA1 qw(hmac_sha1);
+use MIME::Base64;
 
 my $IM = eval {
     require Image::Magick;
@@ -426,6 +428,19 @@ sub title_safe {
     return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'submitted';
     return sprintf("%s problem", $self->category) if $self->cobrand eq 'tfl' && $self->result_source->schema->cobrand->moniker ne 'tfl';
     return $self->title;
+}
+
+=head2 phone_waste
+
+The phone number for a waste report can be stored on the report, not the user,
+as those reports may be instantly confirmed and we can't trust the provided
+information. Returns that number if set, otherwise the user phone number.
+
+=cut
+
+sub phone_waste {
+    my $self = shift;
+    return $self->get_extra_metadata('phone') || $self->user->phone_display;
 }
 
 =head2 check_for_errors
@@ -589,7 +604,7 @@ sub tokenised_url {
         $params{login_type} = 'phone';
     }
 
-    my $token = FixMyStreet::App->model('DB::Token')->create(
+    my $token = FixMyStreet::DB->resultset('Token')->create(
         {
             scope => 'email_sign_in',
             data  => {
@@ -627,6 +642,18 @@ sub view_url {
     my $self = shift;
     return $self->url unless $self->non_public;
     return "/R/" . $self->view_token->token;
+}
+
+=head2 confirmation_url
+
+Return a URL for this problem report that shows the confirmation page
+with the correct token in the URL parameter.
+
+=cut
+
+sub confirmation_url {
+    my ($self, $c) = @_;
+    return $c->uri_for_action( '/report/confirmation', [ $self->id ] ) . "?token=" . $self->confirmation_token;
 }
 
 =head2 is_hidden
@@ -941,7 +968,9 @@ sub duration_string {
     my $cobrand = $problem->result_source->schema->cobrand;
     my $body = $cobrand->call_hook( link_to_council_cobrand => $problem )
         || $problem->body(1);
-    return unless $problem->whensent;
+    return
+        unless $problem->whensent
+        && $problem->service ne 'Open311';
     my $s = sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
@@ -1063,6 +1092,7 @@ sub send_fail_bodies {
 sub mark_as_sent {
     my $self = shift;
     $self->whensent( \'current_timestamp' );
+    $self->send_state('sent');
     $self->send_fail_body_ids( [] );
 }
 
@@ -1350,5 +1380,51 @@ has comment_count => (
         $self->comments->count;
     },
 );
+
+=item cancel_update_alert
+
+Takes a comment id as a mandatory argument and will suppress
+alerts being sent out for that comment when
+FixMyStreet::Script::Alerts::send_updates is run.
+
+Optionally adding user_id argument will restrict the suppression
+to only alerts for that user ID.
+
+=cut
+
+sub cancel_update_alert {
+    my ($self, $comment_id, $user_id) = @_;
+
+    my $cfg = {
+        alert_type => 'new_updates',
+        parameter  => $self->id,
+        confirmed  => 1,
+    };
+    $cfg->{user_id} = $user_id if $user_id;
+
+    my @alerts = FixMyStreet::DB->resultset('Alert')->search( $cfg );
+
+    for my $alert (@alerts) {
+        FixMyStreet::DB->resultset('AlertSent')->find_or_create( {
+            alert_id  => $alert->id,
+            parameter => $comment_id,
+        } );
+    }
+};
+
+sub confirmation_token {
+    my $self = shift;
+
+    if (!$self->created) {
+        # Might be an old handle on the DB row, so reload it
+        $self = FixMyStreet::DB->resultset('Problem')->find({ id => $self->id });
+    }
+    my $time = $self->created->epoch;
+    my $hash = hmac_sha1("$time-" . $self->id, FixMyStreet::DB->resultset('Secret')->get);
+    $hash = encode_base64($hash, "");
+    $hash =~ s/\W//g; # don't want + / = in URL params
+    return $hash;
+}
+
 
 1;

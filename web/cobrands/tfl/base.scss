@@ -110,35 +110,33 @@ input.form-error, textarea.form-error {
 
 /* Homepage */
 #front-main {
-    background-color: transparent;
-    #postcodeForm {
-        color: $johnston-black;
-        margin-top: 1em;
-        background-color: transparent;
-        label {
-            font-family: $bold-font;
-        }
-        div {
-            display: block;
-            border: 0;
-            input#sub {
-                @include tflbutton;
-                flex: unset;
-                margin-top: 1em;
-            }
-            input#pc {
-                width: 100%;
-                flex: unset;
-                @include tflfield;
-            }
-        } 
-    }
     h2 {
         font-style: normal;
         font-family: $body-font;
-        font-size: 1.625em;
         max-width: 29em;
     }
+}
+
+.postcode-form-box {
+    margin-top: 1em;
+
+    label {
+        font-family: $bold-font;
+    }
+    div {
+        display: block;
+        border: 0;
+        input#sub {
+            @include tflbutton;
+            flex: unset;
+            margin-top: 1em;
+        }
+        input#pc {
+            width: 100%;
+            flex: unset;
+            @include tflfield;
+        }
+    } 
 }
 
 a#geolocate_link {

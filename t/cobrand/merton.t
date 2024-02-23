@@ -21,7 +21,8 @@ my $merton = $mech->create_body_ok(2500, 'Merton Council', {
 });
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
 for my $contact ( @cats ) {
-    $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org");
+    $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org",
+        extra => { anonymous_allowed => 1 });
 }
 
 my $hackney = $mech->create_body_ok(2508, 'Hackney Council', {}, { cobrand => 'hackney' });
@@ -48,7 +49,7 @@ my ($problem2) = $mech->create_problems_for_body(1, $hackney->id, 'Title', {
 
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'merton' ],
+    ALLOWED_COBRANDS => [ 'merton', 'tfl' ],
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
         anonymous_account => {
@@ -56,6 +57,7 @@ FixMyStreet::override_config {
         },
     },
 }, sub {
+    ok $mech->host('merton.fixmystreet.com'), 'set host';
 
     subtest 'cobrand homepage displays council name' => sub {
         $mech->get_ok('/');
@@ -80,6 +82,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok( { with_fields => { category => 'Litter', } }, "submit category" );
         $mech->submit_form_ok(
             {
                 button => 'report_anonymously',
@@ -115,6 +118,17 @@ FixMyStreet::override_config {
         is $alert, undef, "no alert created";
 
         $mech->not_logged_in_ok;
+    };
+
+    subtest "hides the TfL River Piers category" => sub {
+        my $tfl = $mech->create_body_ok(2500, 'TfL');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers - Cleaning', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers Damage doors and glass', email => 'tfl@example.org');
+
+        my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.400975&longitude=-0.19655');
+        my $categories = [sort keys %{$json->{by_category}}];
+        is_deeply $categories, ['Litter', 'Other', 'Potholes', 'Traffic lights'], "Merton doesn't have any River Piers categories";
     };
 };
 
@@ -207,6 +221,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'SM4 5DX', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+        $mech->submit_form_ok( { with_fields => { category => 'Litter', } }, "submit category");
         $mech->submit_form_ok(
             {
                 button => 'report_anonymously',

@@ -23,14 +23,22 @@ sub waste_cc_get_redirect_url {
     my $admin_fee = $p->get_extra_field_value('admin_fee');
 
     my $redirect_id = mySociety::AuthToken::random_token();
-    $p->set_extra_metadata('redirect_id', $redirect_id);
-    $p->update;
+    $p->update_extra_metadata(redirect_id => $redirect_id);
+
+    my $fund_code = $payment->config->{scp_fund_code};
+    my $customer_ref = $payment->config->{customer_ref};
 
     my $backUrl;
     if ($back eq 'bulky') {
         # Need to pass through property ID as not sure how to work it out once we're back
         my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
-        $backUrl = $c->uri_for('pay_cancel', $p->id, $redirect_id ) . '?property_id=' . $id;
+        $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
+        if (my $bulky_fund_code = $payment->config->{bulky_scp_fund_code}) {
+            $fund_code = $bulky_fund_code;
+        }
+        if (my $bulky_customer_ref = $payment->config->{bulky_customer_ref}) {
+            $customer_ref = $bulky_customer_ref;
+        }
     } else {
         $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
     }
@@ -40,7 +48,7 @@ sub waste_cc_get_redirect_url {
 
     my @items = ({
         amount => $amount,
-        reference => $payment->config->{customer_ref},
+        reference => $customer_ref,
         description => $p->title,
         lineId => $self->waste_cc_payment_line_item_ref($p),
     });
@@ -53,7 +61,7 @@ sub waste_cc_get_redirect_url {
         };
     }
     my $result = $payment->pay({
-        returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
+        returnUrl => $c->uri_for_action('/waste/pay_complete', [ $p->id, $redirect_id ] ) . '',
         backUrl => $backUrl,
         ref => $self->waste_cc_payment_sale_ref($p),
         request_id => $p->id,
@@ -67,6 +75,7 @@ sub waste_cc_get_redirect_url {
         postcode => pop @parts,
         items => \@items,
         staff => $c->stash->{staff_payments_allowed} eq 'cnp',
+        fund_code => $fund_code,
     });
 
     if ( $result ) {
@@ -83,10 +92,8 @@ sub waste_cc_get_redirect_url {
         if ( $result->{transactionState} eq 'IN_PROGRESS' &&
              $result->{invokeResult}->{status} eq 'SUCCESS' ) {
 
-             $p->set_extra_metadata('scpReference', $result->{scpReference});
-             $p->update;
+             $p->update_extra_metadata(scpReference => $result->{scpReference});
 
-             # need to save scpReference against request here
              my $redirect = $result->{invokeResult}->{redirectUrl};
              return $redirect;
          } else {
@@ -100,6 +107,41 @@ sub waste_cc_get_redirect_url {
     }
 }
 
+sub cc_check_payment_status {
+    my ($self, $scp_reference) = @_;
+
+    my $payment = Integrations::SCP->new(
+        config => $self->feature('payment_gateway')
+    );
+
+    my $resp = $payment->query({
+        scpReference => $scp_reference,
+    });
+
+    my $error;
+    my $auth_code;
+    my $can;
+    my $tx_id;
+
+    if ($resp->{transactionState} eq 'COMPLETE') {
+        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
+            my $auth_details
+                = $resp->{paymentResult}{paymentDetails}{authDetails};
+            $auth_code = $auth_details->{authCode};
+            $can = $auth_details->{continuousAuditNumber};
+            $tx_id = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
+        # It is not clear to me that it's possible to get to this with a redirect
+        } else {
+            $error = $resp->{paymentResult}->{status};
+        }
+    } else {
+        # again, I am not sure it's possible for this to ever happen
+        $error = $resp->{transactionState};
+    }
+
+    return ($error, $auth_code, $can, $tx_id);
+}
+
 sub garden_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
@@ -107,36 +149,19 @@ sub garden_cc_check_payment_status {
     my $scpReference = $p->get_extra_metadata('scpReference');
     $c->detach( '/page_error_404_not_found' ) unless $scpReference;
 
-    my $payment = Integrations::SCP->new(
-        config => $self->feature('payment_gateway')
-    );
-
-    my $resp = $payment->query({
-        scpReference => $scpReference,
-    });
-
-    if ($resp->{transactionState} eq 'COMPLETE') {
-        if ($resp->{paymentResult}->{status} eq 'SUCCESS') {
-            my $auth_details
-                = $resp->{paymentResult}{paymentDetails}{authDetails};
-            $p->set_extra_metadata( 'authCode', $auth_details->{authCode} );
-            $p->set_extra_metadata( 'continuousAuditNumber',
-                $auth_details->{continuousAuditNumber} );
-            $p->update;
-
-            # create sub in echo
-            my $ref = $resp->{paymentResult}->{paymentDetails}->{paymentHeader}->{uniqueTranId};
-            return $ref
-        # It is not clear to me that it's possible to get to this with a redirect
-        } else {
-            $c->stash->{error} = $resp->{paymentResult}->{status};
-            return undef;
-        }
-    } else {
-        # again, I am not sure it's possible for this to ever happen
-        $c->stash->{error} = $resp->{transactionState};
+    my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($scpReference);
+    if ($error) {
+        $c->stash->{error} = $error;
         return undef;
     }
+
+    $p->update_extra_metadata(
+        authCode => $auth_code,
+        continuousAuditNumber => $can,
+    );
+
+    # create sub in echo
+    return $tx_id;
 }
 
 1;

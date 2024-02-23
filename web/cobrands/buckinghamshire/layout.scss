@@ -77,14 +77,7 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     }
 }
 
-// Put FAQ side nav at correct vertical position
-body.twothirdswidthpage .content .sticky-sidebar aside {
-    top: 14.5em;
-}
-
 #front-main {
-    background-color: white;
-    color: $bucks_charcoal;
     padding-top: 40px;
     padding-bottom: 0;
 
@@ -97,10 +90,11 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
       line-height: 1.25em;
       max-width: 640px;
     }
+}
 
-    .form-hint {
-      color: $g1;
-    }
+#front_stats {
+    border-top: none;
+    padding: 1em 0;
 }
 
 body.mappage {

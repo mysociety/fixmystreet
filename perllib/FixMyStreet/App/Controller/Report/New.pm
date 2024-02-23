@@ -247,8 +247,9 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             name => $body->name,
             cobrand_name => $body->cobrand_name,
         };
-        $lookups->{hints}{$category}->{title} ||= $_->get_extra_metadata('title_hint');
-        $lookups->{hints}{$category}->{detail} ||= $_->get_extra_metadata('detail_hint');
+        $lookups->{overrides}{$category}->{title_hint} ||= $_->get_extra_metadata('title_hint');
+        $lookups->{overrides}{$category}->{detail_label} ||= $_->get_extra_metadata('detail_label');
+        $lookups->{overrides}{$category}->{detail_hint} ||= $_->get_extra_metadata('detail_hint');
         # Copy of Default's lookup using cobrand's body check (to save DB lookups)
         $lookups->{anonymous_allowed}{$category} = $cobrand_body && $cobrand_body->id == $_->body_id && $_->get_extra_metadata('anonymous_allowed') ? 'button': '';
     }
@@ -329,11 +330,12 @@ sub by_category_ajax_data : Private {
     if ($extras or $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
         $body->{category_extra} = $c->render_fragment('report/new/category_extras.html');
         $body->{category_extra_json} = $c->forward('generate_category_extra_json');
-        $body->{extra_hidden} = 1 if $c->stash->{category_extras_hidden}->{$category};
+        $body->{extra_hidden} = 1 if $c->stash->{category_extras_hidden}->{$category} && !$c->stash->{report_extra_fields};
     }
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $body->{category_photo_required} = $c->stash->{category_photo_required}->{$category};
     }
+    $body->{phone_required} = $c->stash->{category_phone_required}->{$category} if $c->stash->{category_phone_required}->{$category};
 
     # councils_text.html must be rendered if it differs from the default output,
     # which currently means for unresponsive and non_public categories.
@@ -352,31 +354,36 @@ sub by_category_ajax_data : Private {
     }
 
     my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{name}} if @$bodies == 1;
-    my $category_overrides = $lookups->{hints}{$category};
+    my $category_overrides = $lookups->{overrides}{$category};
 
     my $title_label_override = $cobrand_overrides->{title_label};
     # prefer category specific overrides if present.
-    my $title_hint_override = $category_overrides->{title} || $cobrand_overrides->{title_hint};
-    my $detail_hint_override = $category_overrides->{detail} || $cobrand_overrides->{detail_hint};
+    my $title_hint_override = $category_overrides->{title_hint} || $cobrand_overrides->{title_hint};
+    my $detail_label_override = $category_overrides->{detail_label} || $cobrand_overrides->{detail_label};
+    my $detail_hint_override = $category_overrides->{detail_hint} || $cobrand_overrides->{detail_hint};
 
     $body->{title_label} = $title_label_override if $title_label_override;
     $body->{title_hint} = $title_hint_override if $title_hint_override;
+    $body->{detail_label} = $detail_label_override if $detail_label_override;
     $body->{detail_hint} = $detail_hint_override if $detail_hint_override;
 
     return $body;
 }
 
-sub form_field_hints {
+sub form_field_overrides {
     my @contacts = @_;
     my $title_hint;
+    my $detail_label;
     my $detail_hint;
     foreach (@contacts) {
         $title_hint ||= $_->get_extra_metadata('title_hint');
+        $detail_label ||= $_->get_extra_metadata('detail_label');
         $detail_hint ||= $_->get_extra_metadata('detail_hint');
     }
     return {
-        title => $title_hint,
-        detail => $detail_hint,
+        title_hint => $title_hint,
+        detail_hint => $detail_hint,
+        detail_label => $detail_label,
     };
 }
 
@@ -786,6 +793,8 @@ sub setup_categories_and_bodies : Private {
       ();    # categories for which the reports are not public
     my %category_photo_required =
       (); # whether a category requires a photo to be uploaded.
+    my %category_phone_required =
+      (); # whether a category requires a phone number to be provided.
     my %cobrand_field_overrides_by_body = ();
     $c->stash->{unresponsive} = {};
 
@@ -830,6 +839,7 @@ sub setup_categories_and_bodies : Private {
         }
 
         $category_photo_required{$contact->category} = $contact->get_extra_metadata('photo_required') ? 1 : 0;
+        $category_phone_required{$contact->category} = $contact->get_extra_metadata('phone_required') ? 1 : 0;
 
         $non_public_categories{ $contact->category } = 1 if $contact->non_public;
 
@@ -868,11 +878,13 @@ sub setup_categories_and_bodies : Private {
 
         my $title_label = $cobrand_for_body->new_report_title_field_label;
         my $title_hint = $cobrand_for_body->new_report_title_field_hint;
+        my $detail_label = $cobrand_for_body->new_report_detail_field_label;
         my $detail_hint = $cobrand_for_body->new_report_detail_field_hint;
 
         my %overrides;
         $overrides{title_label} = $title_label if $title_label;
         $overrides{title_hint} = $title_hint if $title_hint;
+        $overrides{detail_label} = $detail_label if $detail_label;
         $overrides{detail_hint} = $detail_hint if $detail_hint;
         $cobrand_field_overrides_by_body{$body->name} = \%overrides;
     }
@@ -890,6 +902,7 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_extras_notices}  = \%category_extras_notices;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{category_photo_required}  = \%category_photo_required;
+    $c->stash->{category_phone_required}  = \%category_phone_required;
     $c->stash->{extra_name_info} = $all_areas->{+COUNCIL_ID_BROMLEY} ? 1 : 0;
     $c->stash->{cobrand_field_overrides_by_body} = \%cobrand_field_overrides_by_body;
 
@@ -1045,6 +1058,7 @@ sub process_user : Private {
         };
         unless ( $c->forward( '/auth/sign_in', [ $params{username} ] ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the ‘No’ section of the form.');
+            $c->stash->{field_errors}->{password_js} = _('There was a problem with your login information. If you cannot remember your password, or do not have one, please select ‘Fill in your details manually’.');
             return 1;
         }
         my $user = $c->user->obj;
@@ -1109,6 +1123,7 @@ sub process_report : Private {
         'non_public',
       );
     $params{category} = $c->stash->{category};
+    $params{group} = $c->stash->{group};
 
 
     # If this report is being made by the wrapped PWA then the platform
@@ -1178,6 +1193,7 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
+    $report->set_extra_metadata(group => $params{group}) if $params{group};
     $c->cobrand->call_hook(report_new_munge_category => $report);
     $report->subcategory( $params{subcategory} );
 
@@ -1328,10 +1344,18 @@ sub set_report_extras : Private {
                     $c->stash->{field_errors}->{ 'x' . $field->{code} } = _('This information is required');
                 }
             }
+
+            my $value;
+            if (($field->{datatype} || '') eq 'multivaluelist') {
+                $value = [ $c->get_param_list($param_prefix . $field->{code}) ];
+            } else {
+                $value = $c->get_param($param_prefix . $field->{code}) // '';
+            }
+
             push @extra, {
                 name => $field->{code},
                 description => $field->{description},
-                value => $c->get_param($param_prefix . $field->{code}) // '',
+                value => $value,
             };
         }
     }
@@ -1502,6 +1526,9 @@ sub process_confirmation : Private {
     my ( $self, $c ) = @_;
 
     my $data = $c->stash->{token_data};
+    my $token_redeem_cooldown_seconds = $c->stash->{token_redeem_cooldown_seconds};
+    my $token = $c->stash->{token_object};
+
     $c->stash->{template} = $data->{template} || 'tokens/confirm_problem.html';
 
     unless ($c->stash->{report}) {
@@ -1543,55 +1570,68 @@ sub process_confirmation : Private {
         return 1;
     }
 
-    if ($problem->state ne 'unconfirmed') {
+    if ($problem->state ne 'unconfirmed' && (!$token_redeem_cooldown_seconds ||
+        (!$token->redeemed || $token->redeemed < time() - $token_redeem_cooldown_seconds))) {
+
+        # Don't log the user in on the confirmation link unless it was redeemed within
+        # some specified cooldown period.
+
         my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         $c->res->redirect($report_uri);
         return;
     }
 
-    # We have an unconfirmed problem(s)
-    my @problems = ($problem);
-    if (my $grouped_ids = $problem->get_extra_metadata('grouped_ids')) {
-        foreach my $id (@$grouped_ids) {
-            my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
-            push @problems, $problem;
+    if ($problem->state eq 'unconfirmed') {
+        # We have an unconfirmed problem(s)
+        my @problems = ($problem);
+        if (my $grouped_ids = $problem->get_extra_metadata('grouped_ids')) {
+            foreach my $id (@$grouped_ids) {
+                my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
+                push @problems, $problem;
+            }
         }
-    }
-    foreach my $problem (@problems) {
-        $problem->confirm;
-        $problem->update({ lastupdate => \'current_timestamp' });
+        foreach my $problem (@problems) {
+            $problem->confirm;
+            $problem->update({ lastupdate => \'current_timestamp' });
 
-        # Subscribe problem reporter to email updates
-        $c->forward( '/report/new/create_related_things', [ $problem ] );
-    }
-
-    # log the problem creation user in to the site
-    if ( $data->{name} || $data->{password} ) {
-        if (!$problem->user->email_verified) {
-            $problem->user->email( $data->{email} ) if $data->{email};
-        } elsif (!$problem->user->phone_verified) {
-            $problem->user->phone( $data->{phone} ) if $data->{phone};
+            # Subscribe problem reporter to email updates
+            $c->forward( '/report/new/create_related_things', [ $problem ] );
         }
-        $problem->user->password( $data->{password}, 1 ) if $data->{password};
-        for (qw(name title facebook_id twitter_id)) {
-            $problem->user->$_( $data->{$_} ) if $data->{$_};
+
+        if ($token_redeem_cooldown_seconds) {
+            # Mark when the token was redeemed if there is a cooldown set so
+            # we can track if new uses are within the window.
+            $token->mark_redeemed(time());
         }
-        $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
-        $problem->user->extra({
-            %{ $problem->user->get_extra() },
-            %{ $data->{extra} }
-        }) if $data->{extra};
 
-        $problem->user->update;
+        # update user details
+        if ( $data->{name} || $data->{password} ) {
+            if (!$problem->user->email_verified) {
+                $problem->user->email( $data->{email} ) if $data->{email};
+            } elsif (!$problem->user->phone_verified) {
+                $problem->user->phone( $data->{phone} ) if $data->{phone};
+            }
+            $problem->user->password( $data->{password}, 1 ) if $data->{password};
+            for (qw(name title facebook_id twitter_id)) {
+                $problem->user->$_( $data->{$_} ) if $data->{$_};
+            }
+            $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
+            $problem->user->extra({
+                %{ $problem->user->get_extra() },
+                %{ $data->{extra} }
+            }) if $data->{extra};
+            $problem->user->update;
 
-        # Make sure extra oauth state is restored, if applicable
-        foreach (qw/logout_redirect_uri change_password_uri/) {
-            if ($data->{$_}) {
-                $c->session->{oauth} ||= ();
-                $c->session->{oauth}{$_} = $data->{$_};
+            # Make sure extra oauth state is restored, if applicable
+            foreach (qw/logout_redirect_uri change_password_uri/) {
+                if ($data->{$_}) {
+                    $c->session->{oauth} ||= ();
+                    $c->session->{oauth}{$_} = $data->{$_};
+                }
             }
         }
     }
+    # log the problem creation user in to the site
     if ($problem->user->email_verified) {
         $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );
     } elsif ($problem->user->phone_verified) {
@@ -1768,7 +1808,7 @@ sub check_for_category : Private {
         # Group is either an actual group, or a category that wasn't in a group
         my $group = $c->get_param('category') || $c->get_param('filter_group') || '';
         if (any { $_->{name} && $group eq $_->{name} } @{$c->stash->{category_groups}}) {
-            $c->stash->{filter_group} = $group;
+            $c->stash->{group} = $c->stash->{filter_group} = $group;
             (my $group_id = $group) =~ s/[^a-zA-Z]+//g;
             my $cat_param = "category.$group_id";
             $category = $c->get_param($cat_param);
@@ -1827,9 +1867,10 @@ sub check_for_category : Private {
         }
     }
 
-    my $hints = form_field_hints(@contacts);
-    $c->stash->{contact_title_hint} = $hints->{title};
-    $c->stash->{contact_detail_hint} = $hints->{detail};
+    my $overrides = form_field_overrides(@contacts);
+    $c->stash->{contact_title_hint} = $overrides->{title_hint};
+    $c->stash->{contact_detail_label} = $overrides->{detail_label};
+    $c->stash->{contact_detail_hint} = $overrides->{detail_hint};
 
     if ($c->get_param('submit_category_part_only') || $c->stash->{disable_form_message}) {
         # If we've clicked the first-part category button (no-JS only probably),
@@ -1847,8 +1888,10 @@ has been confirmed or email them a token if it has not been.
 =cut
 
 sub redirect_or_confirm_creation : Private {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $no_redirect ) = @_;
     my $report = $c->stash->{report};
+
+    $no_redirect //= 0;
 
     # If confirmed send the user straight there.
     if ( $report->confirmed ) {
@@ -1856,7 +1899,8 @@ sub redirect_or_confirm_creation : Private {
         $c->forward( 'create_related_things', [ $report ] );
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
-            && !$c->cobrand->report_sent_confirmation_email($report)) {
+            && !$c->cobrand->report_sent_confirmation_email($report)
+            && !$c->cobrand->suppress_report_sent_email($report)) {
                 $c->send_email( 'other-reported.txt', {
                     to => [ [ $report->user->email, $report->name ] ],
                 } );
@@ -1870,9 +1914,12 @@ sub redirect_or_confirm_creation : Private {
             $c->log->info($report->user->id . ' is an inspector - redirecting straight to report page for ' . $report->id);
             $c->res->redirect( $report->url );
         } else {
-            $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
+            $c->log->info($report->user->id . ' was logged in, redirecting to confirmation page for ' . $report->id);
             $c->stash->{created_report} = 'loggedin';
             $c->stash->{template} = 'tokens/confirm_problem.html';
+            unless ($no_redirect) {
+                return $c->res->redirect($report->confirmation_url($c));
+            }
         }
         return 1;
     }
@@ -1889,11 +1936,15 @@ sub redirect_or_confirm_creation : Private {
 
     # otherwise email or text a confirm token to them.
     my $thing = 'email';
+    my $redirect;
     if ($report->user->email_verified) {
         $c->forward( 'send_problem_confirm_email' );
         # tell user that they've been sent an email
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
+        unless ($no_redirect) {
+            $redirect = $report->confirmation_url($c);
+        }
     } elsif ($report->user->phone_verified) {
         $c->forward( 'send_problem_confirm_text' );
         $thing = 'text';
@@ -1902,6 +1953,9 @@ sub redirect_or_confirm_creation : Private {
     }
     $c->stash->{sent_confirmation_message} = 1;
     $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
+    if ($redirect) {
+        return $c->res->redirect($redirect);
+    }
 }
 
 sub create_related_things : Private {
@@ -1935,7 +1989,7 @@ sub create_related_things : Private {
 
     # And now the reporter alert
     return if $c->stash->{no_reporter_alert};
-    return if $c->cobrand->call_hook('suppress_reporter_alerts');
+    return if $c->cobrand->call_hook('suppress_reporter_alerts', $problem);
 
     my $alert = $c->model('DB::Alert')->find_or_create( {
         user         => $problem->user,
@@ -2003,6 +2057,7 @@ sub generate_category_extra_json : Private {
         if (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
             foreach my $opt (@{$_->{values}}) {
                 if ($opt->{disable}) {
+                    $opt->{disable} = "1";
                     my $message = $opt->{disable_message} || $_->{datatype_description};
                     $data{datatype_description} = $message;
                 }

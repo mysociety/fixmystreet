@@ -150,6 +150,13 @@ sub escape_js {
 my %version_hash;
 sub version {
     my ( $self, $c, $file, $url ) = @_;
+
+    if ($file eq '/js/asset_layers.js') {
+        return _version_asset($c);
+    } elsif ($file eq '/js/translation_strings.js') {
+        return _version_translation($c);
+    }
+
     $url ||= $file;
     _version_get_details($file);
     if ($version_hash{$file} && $file =~ /\.js$/) {
@@ -185,6 +192,41 @@ sub _version_get_details {
         digest => substr($digest || '', 0, 12),
         mtime => $mtime || 0,
     };
+}
+
+sub _version_asset {
+    my $c = shift;
+    my $moniker = $c->cobrand->moniker;
+    my $digest = '';
+    foreach ("../templates/web/base/js/asset_layers.html", "../conf/general.yml") {
+        _version_get_details($_);
+        $digest .= $version_hash{$_}{digest};
+    }
+    my $url = "/js/asset_layers.js";
+    my ($name, $path, $suffix) = fileparse($url, qr/\.css/, qr/\.js/);
+    my $compiled = "/static$path$name.$moniker.$digest$suffix";
+    if (-e FixMyStreet->path_to('web', $compiled)) {
+        return "$compiled";
+    }
+    return "$url?$digest";
+}
+
+sub _version_translation {
+    my $c = shift;
+    my $lang = $c->stash->{lang_code};
+    my $digest = '';
+    foreach ("../templates/web/base/js/translation_strings.html", "../locale/$ENV{LANG}/LC_MESSAGES/FixMyStreet.po") {
+        _version_get_details($_);
+        $digest .= $version_hash{$_}{digest};
+        last if $lang eq 'en-gb'; # No locale file
+    }
+    my $url = "/js/translation_strings.$lang.js";
+    my ($name, $path, $suffix) = fileparse($url, qr/\.css/, qr/\.js/);
+    my $compiled = "/static$path$name.$digest$suffix";
+    if (-e FixMyStreet->path_to('web', $compiled)) {
+        return "$compiled";
+    }
+    return "$url?$digest";
 }
 
 sub decode {

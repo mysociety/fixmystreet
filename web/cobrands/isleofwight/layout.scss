@@ -2,10 +2,6 @@
 
 @import "../sass/layout";
 
-body.twothirdswidthpage .content .sticky-sidebar aside {
-    top: 10em;
-}
-
 #site-logo {
     width: 282px;
     height: 76px;
@@ -26,7 +22,6 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
 }
 
 #front-main {
-    background: $blue;
     padding-top: 3em;
     padding-bottom: 3em;
 }

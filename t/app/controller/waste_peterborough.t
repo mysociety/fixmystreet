@@ -9,7 +9,7 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
-$mock->mock('_fetch_features', sub { [] });
+$mock->mock('_fetch_features', sub { ok 0, 'This should not be called by waste'; });
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -26,6 +26,7 @@ my $user2 = $mech->create_user_ok('test2@example.net', name => 'Very Normal User
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+$staff->user_body_permissions->create({ body => $body, permission_type => 'planned_reports' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
@@ -69,6 +70,23 @@ FixMyStreet::override_config {
     },
 }, sub {
     my ($b, $jobs_fsd_get) = shared_bartec_mocks();
+
+    subtest 'Footer is shown' => sub {
+        $mech->get_ok('/waste');
+        $mech->content_contains('https://www.societyworks.org/services/waste/">SocietyWorks')
+    };
+
+    subtest 'Shortlist link not on WasteWorks pages' => sub {
+        $mech->get_ok('/');
+        $mech->content_lacks('Shortlist</a>');
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/');
+        $mech->content_contains('Shortlist</a>');
+        $mech->get_ok('/waste');
+        $mech->content_lacks('Shortlist</a>');
+        $mech->log_out_ok;
+    };
+
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
@@ -85,10 +103,10 @@ FixMyStreet::override_config {
         $mech->content_contains('Every two weeks');
         $mech->content_contains('Thursday, 5th August 2021');
         $mech->content_contains('Report a recycling bin collection as missed');
-        set_fixed_time('2021-08-06T10:00:00Z');
+        set_fixed_time('2021-08-06T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('Report a recycling bin collection as missed');
-        set_fixed_time('2021-08-06T14:00:00Z');
+        set_fixed_time('2021-08-06T18:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_lacks('Report a recycling bin collection as missed');
     };
@@ -261,7 +279,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
         $mech->submit_form_ok({ with_fields => { 'container-425' => 1 }});
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'cracked' }});
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'lost_stolen' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Request sent');
@@ -270,25 +288,9 @@ FixMyStreet::override_config {
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
-    };
-    subtest 'Report a cracked bin raises a bin delivery request' => sub {
-        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
-        $mech->submit_form_ok({ with_fields => { 'service-420' => 1 } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->content_contains('The bin is cracked', "Cracked category found");
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Damaged bin reported');
-        $mech->content_contains('Please leave your bin accessible');
-        $mech->content_contains('Show upcoming bin days');
-        $mech->content_contains('/waste/PE1%203NA:100090215480"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Cracked bin\n\nPlease remove cracked bin.";
-        is $report->category, 'Green 240L bin';
-        is $report->title, 'Request new 240L Green';
     };
     subtest 'Staff-only request reason shown correctly' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/request');
@@ -455,13 +457,6 @@ FixMyStreet::override_config {
         $b->mock('Premises_Attributes_Get', sub { [] });
     };
     subtest 'Report broken bin, already reported' => sub {
-        $b->mock('ServiceRequests_Get', sub { [
-            { ServiceType => { ID => 419 }, ServiceStatus => { Status => "OPEN" } },
-        ] });
-        $mech->get_ok('/waste/PE1 3NA:100090215480/problem');
-        $mech->content_like(qr/name="service-419" value="1"\s+disabled/);
-        $mech->content_like(qr/name="service-538" value="1"\s+disabled/);
-        $mech->content_like(qr/name="service-541" value="1"\s+disabled/);
         $b->mock('ServiceRequests_Get', sub { [
             { ServiceType => { ID => 538 }, ServiceStatus => { Status => "OPEN" } },
         ] });
@@ -797,10 +792,14 @@ FixMyStreet::override_config {
             $mech->content_contains("Updated!");
             $body->discard_changes;
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
+                show_location_page => 'noshow',
+                show_individual_notes => 0,
+                band1_max => '',
+                band1_price => '',
                 daily_slots => 50,
                 free_mode => 0, # not checked
                 food_bags_disabled => 0, # not checked
-                base_price => 1234, per_item_costs => 1, items_per_collection_max => 7 };
+                base_price => 1234, per_item_costs => 1, per_item_min_collection_price => '', items_per_collection_max => 7 };
         };
     };
 };

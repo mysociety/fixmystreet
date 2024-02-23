@@ -10,7 +10,7 @@
 [% END %]
 
 [% IF problem.is_open AND date.now - problem.lastupdate.epoch > 8 * 7 * 24 * 60 * 60 %]
-    [% INCLUDE banner, id = 'unknown', text = loc('Unknown') %]
+    [% INCLUDE banner, id = 'unknown', text = loc('Status unknown') %]
 [% ELSIF problem.is_in_progress %]
     [% INCLUDE banner, id = 'progress', text = prettify_state(problem.state) %]
 [% END %]

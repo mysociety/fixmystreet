@@ -123,7 +123,7 @@ if ($opt->test_fixtures) {
     my $params = {
         name => 'National Highways',
         area_id => 2608,
-        categories => ['Fallen sign (NH)', 'Driver on phone (NH)', 'Litter (NH)']
+        categories => ['Fallen sign (NH)', 'Driver on phone (NH)', 'Flytipping (NH)']
     };
     $bodies->{HE} = FixMyStreet::DB::Factory::Body->find_or_create($params);
     $bodies->{HE}->set_extra_metadata(cobrand => 'highwaysengland');
@@ -141,14 +141,16 @@ if ($opt->test_fixtures) {
         { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council', cobrand => 'hounslow' },
         { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council', cobrand => 'hackney' },
         { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council', cobrand => 'isleofwight' },
-        { area_id => 2232, categories => ['Damaged/missing cats eye'], name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
+        { area_id => 2232, categories => ['Damaged/missing cats eye', 'Grass cutting'], name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
+        { area_id => 2385, categories => ['Grass cutting'], name => 'Lincoln City Council' },
         { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council', cobrand => 'peterborough' },
         { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks', 'Other (TfL)' ], name => 'TfL', cobrand => 'tfl' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
         { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council', cobrand => 'shropshire' },
         { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council', cobrand => 'merton' },
-        { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping'], name => 'Brent Council', cobrand => 'brent' },
+        { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping', 'Dog fouling'], name => 'Brent Council', cobrand => 'brent' },
+        { area_id => 2535, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights'], name => 'Sandwell Borough Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         if ($_->{cobrand}) {
@@ -470,6 +472,7 @@ if ($opt->test_fixtures) {
         required => 'true',
         disable_form => 'false',
     });
+    $child_cat->set_extra_metadata(anonymous_allowed => 1);
     $child_cat->update;
 
     FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2457 });

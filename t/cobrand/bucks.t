@@ -1,6 +1,9 @@
 use Test::MockModule;
+use CGI::Simple;
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
+use File::Temp 'tempdir';
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
@@ -38,6 +41,7 @@ $contact->set_extra_fields({
     ],
 });
 $contact->update;
+$mech->create_contact_ok(body_id => $body->id, category => 'Abandoned vehicles', email => 'Abavus-ABANDONED_17821_C');
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POT");
 $mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', email => "DRA");
 $mech->create_contact_ok(body_id => $body->id, category => 'Car Parks', email => "car\@chiltern", send_method => 'Email');
@@ -67,16 +71,23 @@ $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Flypost
 $contact->set_extra_metadata(prefer_if_multiple => 1);
 $contact->update;
 
+$mech->create_contact_ok(body_id => $parish->id, category => 'Street lighting', email => 'streetlight@example.org', send_method => 'Email', state => 'staff');
+
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'buckinghamshire', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         open311_email => {
             buckinghamshire => {
-                flytipping => 'flytipping@example.com',
-                flood => 'floods@example.org',
+                Flytipping => [ 'flytipping@example.com', 'TfB' ],
+                'Blocked drain' => [ 'floods@example.org', 'Flood Management' ],
             }
+        },
+        geocoder_reverse => {
+            buckinghamshire => 'OSPlaces',
         },
         borough_email_addresses => {
             buckinghamshire => {
@@ -220,7 +231,7 @@ subtest 'Flytipping not on a road going to HE does not get recategorised' => sub
             'road-placement' => 'off-road',
         }
     }, "submit details");
-    $mech->content_contains('We don&rsquo;t handle this type of problem');
+    $mech->content_contains('From the information you have given, we have passed this report on to:');
     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping", 'Report was not recategorised';
@@ -600,6 +611,36 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
     };
 };
 
+subtest 'sending of updates and address' => sub {
+    FixMyStreet::Script::Reports::send(); # Clear out any left above
+    my ($report1) = $mech->create_problems_for_body(1, $body->id, 'Title update', {
+        cobrand => 'buckinghamshire',
+        category => 'Abandoned vehicles' });
+
+    my $geocode = Test::MockModule->new('FixMyStreet::Geocode::OSPlaces');
+    $geocode->mock(reverse_geocode => sub { { LPI => {
+        "ADDRESS" => "STUDIO 1, 29, BUCKINGHAM ROAD, LONDON, BRENT, NW10 4RP",
+        "SAO_TEXT" => "STUDIO 1",
+        "PAO_START_NUMBER" => "29",
+        "STREET_DESCRIPTION" => "BUCKINGHAM ROAD",
+        "TOWN_NAME" => "LONDON",
+        "ADMINISTRATIVE_AREA" => "BRENT",
+        "POSTCODE_LOCATOR" => "NW10 4RP",
+    } } });
+    FixMyStreet::Script::Reports::send();
+    my $req = Open311->test_req_used;
+    my $c = CGI::Simple->new($req->content);
+    is $c->param('attribute[closest_address]'), "Studio 1\r\n29 Buckingham Road\r\n\r\nLondon\r\nNW10 4RP";
+
+    my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Title update', {
+        cobrand => 'buckinghamshire',
+        category => 'Potholes' });
+    my $update1 = $mech->create_comment_for_problem($report1, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
+    my $update2 = $mech->create_comment_for_problem($report2, $counciluser, 'Staff User', 'Text', 't', 'confirmed', undef);
+    is $cobrand->should_skip_sending_update($update1), 0;
+    is $cobrand->should_skip_sending_update($update2), 1;
+};
+
 subtest 'body filter on dashboard' => sub {
     $mech->get_ok('/dashboard');
     $mech->content_contains('<h1>' . $body->name . '</h1>', 'defaults to Bucks');
@@ -642,7 +683,7 @@ subtest 'phone number field only appears for staff' => sub {
     $mech->content_lacks("Phone number (optional)");
     $mech->log_in_ok($counciluser->email);
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
-    $mech->content_contains("Phone number (optional)");
+    $mech->content_contains("Phone number");
     $mech->log_out_ok;
 };
 
@@ -714,6 +755,73 @@ subtest 'Check template setting' => sub {
         is $mech->uri->path, '/admin/templates/' . $body->id, 'redirected';
         is $body->response_templates->count, 2, "Duplicate response template was added";
     };
+};
+
+subtest "Backend response sends report on to parish" => sub {
+    FixMyStreet::Script::Alerts::send_updates();
+    $mech->clear_emails_ok;
+
+    my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
+    my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Street light', {
+        external_id => 'SL123', areas => ',163793,53822,'
+    });
+    my $id = $problem->id;
+    my $alert = FixMyStreet::DB->resultset('Alert')->create({
+        alert_type => 'new_updates',
+        parameter  => $id,
+        confirmed  => 1,
+        user_id    => $problem->user->id,
+        whensubscribed => $dt,
+        cobrand => 'buckinghamshire',
+    });
+    my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
+        body => $body,
+        state => '',
+        external_status_code => 713,
+        title => 'Parish lighting',
+        text => 'Thanks, we have forwarded to the parish council',
+        auto_response => 1,
+    });
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>638344</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>open</status>
+    UPDATED_DATETIME
+    <external_status_code>713</external_status_code>
+    </request_update>
+    </service_requests_updates>
+    };
+    my $updated_datetime = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
+    $requests_xml =~ s/UPDATED_DATETIME/$updated_datetime/;
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $counciluser,
+        current_open311 => $o,
+        current_body => $body,
+    );;
+    $update->process_body;
+
+    is $problem->comments->count, 1, 'comment count';
+    $problem->discard_changes;
+
+    my $c = FixMyStreet::DB->resultset('Comment')->search( { external_id => 638344 } )->first;
+    ok $c, 'comment exists';
+    is $c->state, 'confirmed', 'comment state correct';
+    is $c->send_state, 'processed', 'marked as processed so not resent';
+    is $problem->state, 'confirmed', 'correct problem state';
+    is $problem->bodies_str, $parish->id, 'resent to parish';
+    is $problem->external_id, undef, 'external ID removed';
+    is $problem->category, 'Street lighting', 'category updated';
+    FixMyStreet::Script::Alerts::send_updates();
+    my $text = $mech->get_text_body_from_email;
+    like $text, qr/report's reference number is $id/;
+    like $text, qr/we have forwarded to the parish council/;
+    like $text, qr/For any further enquiries.*streetlight\@example\.org/;
 };
 
 };

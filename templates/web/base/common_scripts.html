@@ -6,7 +6,7 @@ USE Math;
 scripts = [];
 
 scripts.push(
-    start _ "/js/translation_strings." _ lang_code _ ".js?" _ Math.int( date.now / 3600 ),
+    version("/js/translation_strings.js"), # Specially treated in the function
 );
 
 IF bodyclass.match('frontpage');
@@ -35,6 +35,7 @@ ELSE;
         version('/vendor/jquery-3.6.0.min.js'),
         version('/vendor/jquery.multi-select.min.js'),
         version('/vendor/jquery.validate.min.js'),
+        version('/vendor/jquery.validate.additional-methods.require-from-group.min.js'),
         version('/vendor/idb-keyval-iife.min.js'),
         version('/js/offline_draft.js'),
         version('/cobrands/fixmystreet/offline_report.js'),
@@ -77,6 +78,7 @@ IF bodyclass.match('mappage');
         version('/cobrands/fixmystreet/map.js'),
         version('/vendor/dropzone.min.js'),
         version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js'),
+        version('/vendor/uFuzzy.iife.min.js'),
         version('/js/fancybox.js'),
         version('/js/loading-attribute-polyfill.js'),
     );

@@ -22,9 +22,15 @@ use warnings;
 
 =cut
 
-sub council_area_id { return 2561; }
+sub council_area_id {
+    [
+        2561,  # Bristol City Council
+        2642,  # North Somerset Council
+        2608,  # South Gloucestershire Council
+    ]
+}
 sub council_area { return 'Bristol'; }
-sub council_name { return 'Bristol County Council'; }
+sub council_name { return 'Bristol City Council'; }
 sub council_url { return 'bristol'; }
 
 =item * Bristol use the OS Maps API at all zoom levels.
@@ -124,9 +130,15 @@ a fallback if one not provided).
 =cut
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{always_send_email} = 1;
+    $params->{multi_photos} = 1;
+}
+
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{multi_photos} = 1;
 }
 
 =head2 open311_contact_meta_override
@@ -160,6 +172,73 @@ sub post_report_sent {
     if ($problem->category eq ROADWORKS_CATEGORY) {
         $self->_post_report_sent_close($problem, 'report/new/roadworks_text.html');
     }
+}
+
+=head2 munge_overlapping_asset_bodies
+
+Bristol take responsibility for some parks that are in North Somerset and South Gloucestershire.
+
+To make this work, the Bristol body is setup to cover North Somerset and South Gloucestershire
+as well as Bristol. Then method decides which body or bodies to use based on the passed in bodies
+and whether the report is in a park.
+
+=cut
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    my $all_areas = $self->{c}->stash->{all_areas};
+
+    if (grep ($self->council_area_id->[0] == $_, keys %$all_areas)) {
+        # We are in the Bristol area so carry on as normal
+        return;
+    } elsif ($self->check_report_is_on_cobrand_asset) {
+        # We are not in a Bristol area but the report is in a park that Bristol is responsible for,
+        # so only show Bristol categories.
+        %$bodies = map { $_->id => $_ } grep { $_->name eq $self->council_name } values %$bodies;
+    } else {
+        # We are not in a Bristol area and the report is not in a park that Bristol is responsible for,
+        # so only show other categories.
+        %$bodies = map { $_->id => $_ } grep { $_->name ne $self->council_name } values %$bodies;
+    }
+}
+
+sub check_report_is_on_cobrand_asset {
+    my ($self) = @_;
+
+    # We're only interested in these two parks that lie partially outside of Bristol.
+    my @relevant_parks_site_codes = (
+        'ASHTCOES', # Ashton Court Estate
+        'STOKPAES', # Stoke Park Estate
+    );
+
+    my $park = $self->_park_for_point(
+        $self->{c}->stash->{latitude},
+        $self->{c}->stash->{longitude}
+    );
+    return 0 unless $park;
+
+    return grep { $_ eq $park->{site_code} } @relevant_parks_site_codes;
+}
+
+sub _park_for_point {
+    my ( $self, $lat, $lon ) = @_;
+
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
+
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $cfg = {
+        url => "https://$host/mapserver/bristol",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "parks",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        outputformat => 'GML3',
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y, 1);
+    my $park = $features->[0];
+
+    return { site_code => $park->{"ms:parks"}->{"ms:SITE_CODE"} } if $park;
 }
 
 1;

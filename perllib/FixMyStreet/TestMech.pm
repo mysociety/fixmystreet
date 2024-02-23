@@ -152,6 +152,23 @@ sub log_out_ok {
     $mech->not_logged_in_ok;
 }
 
+=head2 waste_submit_check
+
+Calls submit_form_ok, on a clone of itself, and runs a couple of checks.
+To be used when the submission will cause an external redirect which can
+confuse Test::WWW::Mechanize in terms of what hostname it thinks things are
+then on.
+
+=cut
+
+sub waste_submit_check {
+    my $mech = shift;
+    my $mech2 = $mech->clone;
+    $mech2->submit_form_ok(@_);
+    is $mech2->res->previous->code, 302, 'payments issues a redirect';
+    is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+}
+
 =head2 delete_user
 
     $mech->delete_user( $user );
@@ -255,8 +272,8 @@ sub get_email_envelope {
     return $emails[0];
 }
 
-sub get_text_body_from_email {
-    my ($mech, $email, $obj) = @_;
+sub _get_body_from_email {
+    my ($type, $mech, $email, $obj) = @_;
     unless ($email) {
         $email = $mech->get_email;
         $mech->clear_emails_ok;
@@ -266,30 +283,15 @@ sub get_text_body_from_email {
     $email->walk_parts(sub {
         my $part = shift;
         return if $part->subparts;
-        return if $part->content_type !~ m{text/plain};
+        return if $part->content_type !~ m{text/$type};
         $body = $obj ? $part : $part->body_str;
-        ok $body, "Found text body";
+        ok $body, "Found $type body";
     });
     return $body;
 }
 
-sub get_html_body_from_email {
-    my ($mech, $email, $obj) = @_;
-    unless ($email) {
-        $email = $mech->get_email;
-        $mech->clear_emails_ok;
-    }
-
-    my $body;
-    $email->walk_parts(sub {
-        my $part = shift;
-        return if $part->subparts;
-        return if $part->content_type !~ m{text/html};
-        $body = $obj ? $part : $part->body_str;
-        ok $body, "Found HTML body";
-    });
-    return $body;
-}
+sub get_text_body_from_email { _get_body_from_email('plain', @_) }
+sub get_html_body_from_email { _get_body_from_email('html', @_) }
 
 sub get_link_from_email {
     my ($mech, $email, $multiple, $mismatch) = @_;
@@ -575,7 +577,7 @@ sub visible_form_values {
       grep { !$_->disabled }
       $form->inputs;
 
-    my @visible_field_names = map { $_->name } @visible_fields;
+    my @visible_field_names = map { $_->name || () } @visible_fields;
 
     my %params = map { $_ => $form->value($_) } @visible_field_names;
 
@@ -732,7 +734,7 @@ sub create_comment_for_problem {
     $params->{mark_fixed} = $problem_state && FixMyStreet::DB::Result::Problem->fixed_states()->{$problem_state} ? 1 : 0;
     $params->{confirmed} = \'current_timestamp' unless $params->{confirmed} || $state eq 'unconfirmed';
 
-    FixMyStreet::App->model('DB::Comment')->create($params);
+    FixMyStreet::DB->resultset('Comment')->create($params);
 }
 
 sub encoded_content {

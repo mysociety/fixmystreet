@@ -423,9 +423,12 @@ $.extend(fixmystreet.set_up, {
             return this.optional(element) || value != ''; }, translation_strings.category );
         jQuery.validator.addMethod('js-password-validate', function(value, element) {
             return !value || value.length >= fixmystreet.password_minimum_length;
-        }, translation_strings.password_register.short);
+        }, translation_strings.password_register.short.replace(/%d/, fixmystreet.password_minimum_length));
         jQuery.validator.addMethod('notEmail', function(value, element) {
             return this.optional(element) || !/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@(?:\S{1,63})$/.test( value ); }, translation_strings.title );
+        jQuery.validator.addMethod('in-the-past', function(value, element) {
+            return this.optional(element) || new Date(value) <= new Date(); }, translation_strings.in_the_past );
+        jQuery.validator.addClassRules('at-least-one-group', { require_from_group: [1, ".at-least-one-group"] });
     }
 
     var submitted = false;
@@ -446,6 +449,16 @@ $.extend(fixmystreet.set_up, {
         errorElement: 'div',
         errorClass: 'form-error',
         errorPlacement: function( error, element ) {
+            if (element.hasClass('group-error-propagate')) {
+                var groupParent = element.parents('.group-error-propagate-end');
+                if (groupParent) {
+                    var target = groupParent.find('.group-error-place-after');
+                    if (target) {
+                        target.after(error);
+                        return;
+                    }
+                }
+            }
             var typ = element.attr('type');
             if (typ == 'radio' || typ == 'checkbox') {
                 element.parent().before( error );
@@ -576,8 +589,11 @@ $.extend(fixmystreet.set_up, {
 
         if (!$.isEmptyObject(data)) {
             fixmystreet.bodies = data.bodies || [];
+            fixmystreet.selected_category_data = data;
+
         } else {
             fixmystreet.bodies = fixmystreet.reporting_data.bodies || [];
+            fixmystreet.selected_category_data = {};
         }
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
@@ -622,9 +638,17 @@ $.extend(fixmystreet.set_up, {
             $('.js-show-if-anonymous').addClass('hidden-js');
             $('.js-reporting-page--include-if-anonymous').addClass('js-reporting-page--skip');
         }
+        if (data.phone_required) {
+            $("#form_phone").prop('required', true);
+            $("#js-optional-phone").hide();
+        } else {
+            $("#form_phone").prop('required', false);
+            $("#js-optional-phone").show();
+        }
 
         text_update('#title-label', data.title_label);
         text_update('#title-hint', data.title_hint);
+        text_update('#detail-label', data.detail_label);
         text_update('#detail-hint', data.detail_hint);
 
         if (fixmystreet.message_controller && data.disable_form && data.disable_form.questions) {
@@ -651,6 +675,26 @@ $.extend(fixmystreet.set_up, {
             if ( typeof body_validation_rules !== 'undefined' && body_validation_rules[body] ) {
                 var rules = body_validation_rules[body];
                 fixmystreet.set_up.reapply_validation(rules);
+            }
+        });
+
+        // unhide hidden elements
+        $.each(fixmystreet.hidden_elements, function(index, element) {
+            element.show();
+        });
+        fixmystreet.hidden_elements = [];
+
+        // apply hide element rules
+        $.each(fixmystreet.bodies, function(index, body) {
+            if ( typeof hide_element_rules !== 'undefined' && hide_element_rules[body] && hide_element_rules[body][category] ) {
+                var selectors = hide_element_rules[body][category];
+                $(selectors.join(',')).each(function () {
+                    if ($(this).css('display') === 'none') {
+                        return;
+                    }
+                    $(this).hide();
+                    fixmystreet.hidden_elements.push($(this));
+                });
             }
         });
 
@@ -696,6 +740,136 @@ $.extend(fixmystreet.set_up, {
     // function again, due to it calling change() on the category if set.
     if (!fixmystreet.reporting_data && fixmystreet.page === 'new' && !$('body').hasClass('formflow')) {
         fixmystreet.fetch_reporting_data();
+    }
+  },
+
+  category_filtering: function(subsequent) {
+    var category_row = document.getElementById('form_category_row');
+    var category_fieldset = document.getElementById('form_category_fieldset');
+    var category_filter = document.getElementById('category-filter');
+    if (!category_row || !category_fieldset || !category_filter) {
+        return;
+    }
+    /* Make copy of subcats for direct display if matching filter */
+    document.querySelectorAll('#form_subcategory_row fieldset').forEach(function(fieldset) {
+        var copy = fieldset.cloneNode(true);
+        var group_id = copy.id.replace('subcategory_', '');
+        copy.id = 'js-filter-' + copy.id;
+        copy.classList.remove('js-subcategory');
+        copy.classList.add('js-filter-subcategory');
+
+        copy.addEventListener('change', function(evt) {
+            // A subcategory has been picked in this copy. Update the actual entry
+            var target = evt.target;
+            var actual_id = target.id.replace('js-filter-', '');
+            var group_id = target.name.replace('js-filter-category\.', '');
+            var actual = document.getElementById(actual_id);
+
+            // Remove any other selected things
+            category_row.querySelectorAll("input").forEach(function(input) {
+                if (input !== target) {
+                    input.checked = false;
+                }
+            });
+
+            // Select the right category
+            category_fieldset.querySelector('#category_' + group_id).checked = true;
+            // Select the right subcategory
+            actual.checked = true;
+            // Mark the subcategory page as skippable
+            document.querySelector('.js-reporting-page--subcategory').classList.add('js-reporting-page--skip');
+            // Trigger a change event on the choice
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent('change', true, false);
+            actual.dispatchEvent(event);
+        });
+        // Update all the items to have unique IDs
+        copy.querySelectorAll('.govuk-radios__item').forEach(function(item) {
+            var input = item.querySelector('input');
+            var label = item.querySelector('label');
+            input.id = 'js-filter-' + input.id;
+            input.name = 'js-filter-' + input.name;
+            input.classList.remove('required');
+            label.htmlFor = 'js-filter-' + label.htmlFor;
+        });
+
+        // Insert the copy just after the category option these are the subcategories for
+        var category_div = category_fieldset.querySelector('#category_' + group_id).parentNode;
+        category_fieldset.insertBefore(copy, category_div.nextSibling);
+    });
+
+    /* If category picked, make sure to uncheck all copy-of-subcategories */
+    category_fieldset.addEventListener("change", function(e) {
+        if (e.target.name === 'category') {
+            document.querySelectorAll('.js-filter-subcategory input').forEach(function(input) {
+                input.checked = false;
+            });
+        }
+    });
+
+    /* Update when key lifted in search box */
+    var filter_keyup = function() {
+        var items = category_row.querySelectorAll(".govuk-radios__item");
+        var i;
+        if (this.value) {
+            var haystack = [];
+            items.forEach(function(item) {
+                item.querySelector('input').checked = false;
+                var txt = item.textContent;
+                haystack.push(txt);
+            });
+            var uf = new uFuzzy();
+            var results = uf.search(haystack, this.value, 1);
+            var subcats_to_show = {};
+            for (i = 0; i<items.length; i++) {
+                var input = items[i].querySelector('input'),
+                    match = !(results[0] && results[0].indexOf(i) < 0),
+                    in_matching_subcat = subcats_to_show[input.name];
+                items[i].classList.toggle('hidden-category-filter', !(in_matching_subcat || match));
+                if (match && input.name !== 'category') {
+                    // A subcategory, make sure category item is shown, disabled. We've already passed it in the loop
+                    var group_id = input.name.replace('js-filter-category.', '');
+                    var category_div = category_row.querySelector('#category_' + group_id).parentNode; // div
+                    category_div.classList.remove('hidden-category-filter');
+                    category_div.classList.add('js-filter-disabled');
+                }
+                // If this is a category with subcategories, show every item in the subcategory
+                if (input.dataset.subcategory) {
+                    items[i].classList.toggle('js-filter-disabled', match);
+                    if (match) {
+                        subcats_to_show['js-filter-category.' + input.dataset.subcategory] = true;
+                    }
+                }
+            }
+            // Show the fieldsets (their contents hidden/shown by the above)
+            category_row.querySelectorAll('fieldset').forEach(function(fieldset) {
+                fieldset.classList.remove('hidden-js');
+            });
+            /* If the filtering reduces the list to one, the web page becomes
+             * so short that the bottom of the page moves down, underneath the
+             * on-screen keyboard and your input box disappears. This feels like
+             * a bug in the web browser but I doubt it is going to be fixed any
+             * time soon. Introduce some padding so this does not happen. */
+            category_row.style.paddingBottom = window.innerHeight + 'px';
+        } else {
+            // Hide all the copied subcategories
+            document.querySelectorAll('.js-filter-subcategory').forEach(function(fieldset) {
+                fieldset.classList.add('hidden-js');
+            });
+            for (i = 0; i<items.length; i++) {
+                items[i].classList.remove('hidden-category-filter');
+                items[i].classList.remove('js-filter-disabled');
+            }
+            category_row.style.paddingBottom = null;
+        }
+    };
+
+    if (!subsequent) {
+        category_filter.addEventListener('keyup', filter_keyup);
+        category_filter.addEventListener('blur', function() {
+            category_row.style.paddingBottom = null;
+        });
+        filter_keyup.apply(category_filter);
     }
   },
 
@@ -797,6 +971,7 @@ $.extend(fixmystreet.set_up, {
         if ($("html").hasClass("mobile")) {
             default_message = translation_strings.upload_default_message_mobile;
         }
+        var prevFile;
         var photodrop = new Dropzone($dropzone[0], {
             url: '/photo/upload',
             paramName: 'photo',
@@ -822,6 +997,9 @@ $.extend(fixmystreet.set_up, {
             },
             init: function() {
               this.on("addedfile", function(file) {
+                if (max_photos == 1 && prevFile) {
+                    this.removeFile(prevFile);
+                }
                 $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
               });
               this.on("queuecomplete", function() {
@@ -839,6 +1017,9 @@ $.extend(fixmystreet.set_up, {
                     l = ids.push(id);
                 newstr = ids.join(',');
                 $upload_fileids.val(newstr);
+                if (max_photos == 1) {
+                    prevFile = file;
+                }
               });
               this.on("error", function(file, errorMessage, xhrResponse) {
               });
@@ -847,6 +1028,9 @@ $.extend(fixmystreet.set_up, {
                 var ids = $upload_fileids.val().split(','),
                     newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
                 $upload_fileids.val(newstr);
+                if (max_photos == 1) {
+                    prevFile = null;
+                }
               });
               this.on("maxfilesexceeded", function(file) {
                 this.removeFile(file);
@@ -877,7 +1061,7 @@ $.extend(fixmystreet.set_up, {
             if (!f) {
                 return;
             }
-            var mockFile = { name: f, server_id: f, dataURL: '/photo/temp.' + f };
+            var mockFile = { name: f, server_id: f, dataURL: '/photo/temp.' + f, status: Dropzone.SUCCESS, accepted: true };
             photodrop.emit("addedfile", mockFile);
             photodrop.createThumbnailFromUrl(mockFile,
                 photodrop.options.thumbnailWidth, photodrop.options.thumbnailHeight,
@@ -885,7 +1069,9 @@ $.extend(fixmystreet.set_up, {
                     photodrop.emit('thumbnail', mockFile, thumbnail);
                 });
             photodrop.emit("complete", mockFile);
-            photodrop.options.maxFiles -= 1;
+            photodrop.files.push(mockFile);
+            photodrop._updateMaxFilesReachedClass();
+            prevFile = mockFile;
         });
       });
     });
@@ -1184,7 +1370,7 @@ $.extend(fixmystreet.set_up, {
         focusFirstVisibleInput();
     });
 
-    $('.js-new-report-sign-in-forgotten').on('click', function() {
+    $('.js-new-report-sign-in-forgotten').on('click', function(e) {
         e.preventDefault();
         $('.js-new-report-sign-in-shown').addClass('hidden-js');
         $('.js-new-report-sign-in-hidden').removeClass('hidden-js');
@@ -1271,14 +1457,26 @@ $.extend(fixmystreet.set_up, {
 
   reporting_required_phone_email: function() {
     var fem = $('#form_email');
+    var fem_optional = $('#js-optional-email-update-method-triggered');
     var fph = $('#form_phone');
+    var fph_optional = $('#js-optional-phone-update-method-triggered');
+
     $('#update_method_email').on('change', function() {
       fem.prop('required', true);
-      fph.prop('required', false);
+      fem_optional.addClass('hidden-js');
+      if (!fixmystreet.selected_category_data.phone_required) {
+          fph.prop('required', false);
+          fph_optional.removeClass('hidden-js');
+      } else {
+          fph.prop('required', true);
+          fph_optional.addClass('hidden-js');
+      }
     });
     $('#update_method_phone').on('change', function() {
-      fem.prop('required', false);
       fph.prop('required', true);
+      fph_optional.addClass('hidden-js');
+      fem.prop('required', false);
+      fem_optional.removeClass('hidden-js');
     });
   },
 
@@ -1417,6 +1615,12 @@ $.extend(fixmystreet.set_up, {
               }
           }
       });
+  },
+
+  mobile_content_navigation_bar: function() {
+    $("#mobile-sticky-sidebar-button").click(function () {
+        $(".sticky-sidebar").toggle(300);
+    });
   }
 
 });
@@ -1609,6 +1813,7 @@ fixmystreet.fetch_reporting_data = function() {
         fixmystreet.reporting.topLevelPoke();
 
         fixmystreet.set_up.fancybox_images(); // In case e.g. top_message has pulled in a fancybox
+        fixmystreet.set_up.category_filtering(true);
 
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands

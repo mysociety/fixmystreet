@@ -1,0 +1,49 @@
+[%
+
+PROCESS 'waste/_bulky_data.html';
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+property_id_uri = report.get_extra_field_value('property_id') | uri;
+cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+
+  <p style="[% p_style %]">Dear [% report.name %],</p>
+
+  <p style="[% p_style %]">
+    [% IF days == 3 %]
+    Your bulky waste is due to be collected
+    <strong>in 3 days</strong> on [% collection_date %].
+    [% ELSIF days == 1 %]
+    Your bulky waste is due to be collected
+    <strong>tomorrow</strong> on [% collection_date %].
+    [% END %]
+  </p>
+
+  [% INCLUDE 'waste/_bulky_extra_text.html' %]
+
+  <p style="[% p_style %]">
+    Kind regards,
+    <br>
+    [% IF cobrand.moniker == 'sutton' %]Neighbourhood Services[% ELSE %]Waste Services Team[% END %]
+  </p>
+
+  <p style="[% p_style %]">
+    <a href="[% cancel_url %]">Cancel this booking</a>.
+  </p>
+
+  [% end_padded_box | safe %]
+</th>
+
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

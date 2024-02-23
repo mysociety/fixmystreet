@@ -4,16 +4,19 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use utf8;
+use DateTime;
 use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
+use FixMyStreet::DB;
 use Moo;
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::CobrandPay360';
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }
@@ -99,7 +102,7 @@ sub geocode_postcode {
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if !$self->owns_problem( $p );
+    return 'grey' if ($context||'') ne 'reports' && !$self->owns_problem($p);
     return 'yellow';
 }
 
@@ -142,7 +145,7 @@ sub tweak_all_reports_map {
 }
 
 sub title_list {
-    return ["MR", "MISS", "MRS", "MS", "DR"];
+    return ["MR", "MISS", "MRS", "MS", "DR", 'PCSO', 'PC', 'N/A'];
 }
 
 sub waste_check_staff_payment_permissions {
@@ -167,7 +170,12 @@ sub available_permissions {
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
+
+    if ($contact->category eq 'Bulky collection') {
+        $params->{multi_photos} = 1;
+        $params->{upload_files} = 1;
+    }
 
     $params->{always_send_latlong} = 0;
     $params->{send_notpinpointed} = 1;
@@ -248,8 +256,6 @@ sub open311_pre_send {
 
     $self->_include_user_title_in_extra($row);
 
-    $self->{bromley_original_detail} = $row->detail;
-
     my $private_comments = $row->get_extra_metadata('private_comments');
     if ($private_comments) {
         my $text = $row->detail . "\n\nPrivate comments: $private_comments";
@@ -262,7 +268,7 @@ sub _include_user_title_in_extra {
 
     my $extra = $row->extra || {};
     unless ( $extra->{title} ) {
-        $extra->{title} = $row->user->title;
+        $extra->{title} = $row->user->title || 'n/a';
         $row->extra( $extra );
     }
 }
@@ -298,16 +304,25 @@ sub open311_munge_update_params {
 
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
-    $row->detail($self->{bromley_original_detail});
     my $error = $sender->error;
-    if ($error =~ /Cannot renew this property, a new request is required/ && $row->title eq "Garden Subscription - Renew") {
-        # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
-        $row->title("Garden Subscription - New");
-        $row->update_extra_field({ name => "Subscription_Type", value => $self->waste_subscription_types->{New} });
-    }
-    if ($error =~ /Missed Collection event already open for the property/) {
-        $row->state('duplicate');
-    }
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        if ($error =~ /Cannot renew this property, a new request is required/ && $row2->title eq "Garden Subscription - Renew") {
+            # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
+            $row2->title("Garden Subscription - New");
+            $row2->update_extra_field({ name => "Subscription_Type", value => $self->waste_subscription_types->{New} });
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Missed Collection event already open for the property/) {
+            $row2->state('duplicate');
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Selected reservations expired|Invalid reservation reference/) {
+            $self->bulky_refetch_slots($row2);
+            $row->discard_changes;
+        }
+    });
 }
 
 sub open311_contact_meta_override {
@@ -359,12 +374,19 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 should_skip_sending_update
+
+Do not send updates to the backend if they were made by a staff user and
+don't have any text (public or private).
+
+=cut
+
 sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $private_comments = $update->get_extra_metadata('private_comments');
-
-    return $update->user->from_body && !$update->text && !$private_comments;
+    my $has_text = $update->text || $private_comments;
+    return $update->user->from_body && !$has_text;
 }
 
 sub munge_report_new_category_list {
@@ -390,15 +412,6 @@ sub updates_disallowed {
     return 'waste' if $problem->cobrand_data eq 'waste';
 
     return $self->next::method(@_);
-}
-
-sub clear_cached_lookups_property {
-    my ($self, $id) = @_;
-
-    my $key = "bromley:echo:look_up_property:$id";
-    delete $self->{c}->session->{$key};
-    $key = "bromley:echo:bin_services_for_address:$id";
-    delete $self->{c}->session->{$key};
 }
 
 sub image_for_unit {
@@ -533,6 +546,8 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
+    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
+
     $self->{c}->stash->{containers} = {
         1 => 'Green Box (Plastic)',
         3 => 'Wheeled Bin (Plastic)',
@@ -583,11 +598,30 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    my $waste_cfg = $self->feature('waste_features');
+    if ($waste_cfg && $waste_cfg->{bulky_missed}) {
+        # Bulky collection event. No blocks on reporting a missed collection based on the
+        # state and resolution code.
+        $self->bulky_check_missed_collection($events, {});
+    }
+
+    # If we have a service ID for trade properties, consider a property domestic
+    # unless we see it.
+    my $trade_service_id;
+    if ($waste_cfg) {
+        if ($trade_service_id = $waste_cfg->{bulky_trade_service_id}) {
+            $property->{pricing_property_type} = 'Domestic';
+        }
+    }
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
     my %expired;
     foreach (@$result) {
+        if (defined($trade_service_id) && $_->{ServiceId} eq $trade_service_id) {
+            $property->{pricing_property_type} = 'Trade';
+        }
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
@@ -601,7 +635,7 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'bromley', 'bin_services_for_address:' . $property->{id}, 0, @to_fetch);
+    my $calls = $echo->call_api($self->{c}, 'bromley', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
 
     my @out;
     my %task_ref_to_row;
@@ -624,10 +658,12 @@ sub bin_services_for_address {
         my $garden = 0;
         my $garden_bins;
         my $garden_cost = 0;
-        my $garden_due = $self->waste_sub_due($schedules->{end_date});
-        my $garden_overdue = $expired{$_->{Id}};
+        my $garden_due;
+        my $garden_overdue;
         if ($service_name eq 'Garden Waste') {
             $garden = 1;
+            $garden_due = $self->waste_sub_due($schedules->{end_date});
+            $garden_overdue = $expired{$_->{Id}};
             foreach (@$data) {
                 next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
                 my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
@@ -702,57 +738,25 @@ sub assisted_collection {
 }
 
 sub _closed_event {
-    my $event = shift;
+    my ($self, $event) = @_;
     return 1 if $event->{ResolvedDate};
     return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
     return 0;
 }
 
-sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
-    my $events;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $type = 'enquiry';
-        $type = 'request' if $event_type == 2104;
-        $type = 'missed' if 2095 <= $event_type && $event_type <= 2103;
-
-        # Only care about open requests/enquiries
-        my $closed = _closed_event($_);
-        next if $type ne 'missed' && $closed;
-
-        if ($type eq 'request') {
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            my $container;
-            DATA: foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        $container = $_->{Value};
-                        last DATA;
-                    }
-                }
-            }
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            $events->{request}->{$container} = $report ? { report => $report } : 1;
-        } elsif ($type eq 'missed') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $service_id = $_->{ServiceId};
-            my $data = {
-                closed => $closed,
-                date => construct_bin_date($_->{EventDate}),
-            };
-            $data->{report} = $report if $report;
-            push @{$events->{missed}->{$service_id}}, $data;
-        } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
-        }
-    }
-    return $events;
-}
-
-sub bin_day_format { '%A, %-d~~~ %B' }
+sub missed_event_types { {
+    2095 => 'missed',
+    2096 => 'missed',
+    2097 => 'missed',
+    2098 => 'missed',
+    2099 => 'missed',
+    2100 => 'missed',
+    2101 => 'missed',
+    2102 => 'missed',
+    2103 => 'missed',
+    2104 => 'request',
+    2175 => 'bulky',
+} }
 
 =over
 
@@ -939,7 +943,8 @@ sub waste_payment_ref_council_code { "LBB" }
 
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->get_extra_field_value('uprn') unless $p->category eq 'Bulky collection';
+    return $p->id;
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
@@ -973,6 +978,8 @@ sub dashboard_export_problems_add_columns {
         staff_role => 'Staff Role',
     );
 
+    return if $csv->dbi; # All covered already
+
     my $user_lookup = $self->csv_staff_users;
     my $userroles = $self->csv_staff_roles($user_lookup);
 
@@ -995,6 +1002,301 @@ sub dashboard_export_problems_add_columns {
 
 sub report_form_extras {
     ( { name => 'private_comments' } )
+}
+
+=head2 Bulky waste collection
+
+Bromley has bulky waste collections starting at 7:00. It looks 4 weeks ahead
+for collection dates, and sends the event to the backend before collecting
+payment. Cancellations are done by update.
+
+=cut
+
+sub bulky_collection_time { { hours => 7, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 7, minutes => 0, days_before => 0 } }
+sub bulky_collection_window_days { 28 }
+sub bulky_cancel_by_update { 1 }
+sub bulky_free_collection_available { 0 }
+sub bulky_hide_later_dates { 1 }
+sub bulky_send_before_payment { 1 }
+sub bulky_location_text_prompt {
+  "Please provide the exact location where the items will be left ".
+  "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.)." .
+  " Please note items can't be collected inside the property."
+}
+
+sub bulky_minimum_charge { $_[0]->wasteworks_config->{per_item_min_collection_price} }
+
+sub bulky_booking_paid {
+    my ($self, $collection) = @_;
+    return $collection->get_extra_metadata('payment_reference');
+}
+
+sub bulky_can_refund_collection {
+    my ($self, $collection) = @_;
+    return 0 if !$self->bulky_booking_paid($collection);
+    return 0 if !$self->within_bulky_cancel_window($collection);
+    return $self->bulky_refund_amount($collection) > 0;
+}
+
+sub bulky_send_cancellation_confirmation {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-confirm-cancellation.txt',
+        {   to => [
+                [ $collection_report->user->email, $collection_report->name ]
+            ],
+
+            wasteworks_id => $collection_report->id,
+            paid => $self->bulky_booking_paid($collection_report),
+            refund_amount => $self->bulky_refund_amount($collection_report),
+            collection_date => $self->bulky_nice_collection_date($collection_report),
+        },
+    );
+}
+
+sub bulky_refund_collection {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-refund-request.txt',
+        {   to => [
+                [ $c->cobrand->bulky_contact_email, $c->cobrand->council_name ]
+            ],
+
+            wasteworks_id => $collection_report->id,
+            payment_amount => $collection_report->get_extra_field_value('payment'),
+            refund_amount => $self->bulky_refund_amount($collection_report),
+            payment_method =>
+                $collection_report->get_extra_field_value('payment_method'),
+            payment_code =>
+                $collection_report->get_extra_field_value('PaymentCode'),
+            auth_code =>
+                $collection_report->get_extra_metadata('authCode'),
+            continuous_audit_number =>
+                $collection_report->get_extra_metadata('continuousAuditNumber'),
+            payment_date       => $collection_report->created,
+            scp_response       =>
+                $collection_report->get_extra_metadata('scpReference'),
+            detail  => $collection_report->detail,
+            resident_name => $collection_report->name,
+            resident_email => $collection_report->user->email,
+        },
+    );
+}
+
+sub bulky_refund_would_be_partial {
+    my ($self, $collection) = @_;
+    my $d = $self->collection_date($collection);
+    my $t = $self->_bulky_cancellation_cutoff_date($d);
+    return $t->subtract( days => 1 ) <= DateTime->now;
+}
+
+sub bulky_refund_amount {
+    my ($self, $collection) = @_;
+    my $charged = $collection->get_extra_field_value('payment');
+    if ($self->bulky_refund_would_be_partial($collection)) {
+        my $refund_amount = $charged - $self->bulky_minimum_charge;
+        if ($refund_amount < 0) {
+            return 0;
+        }
+        return $refund_amount;
+    }
+    return $charged;
+}
+
+sub bulky_cancel_no_payment_minutes {
+    my $self = shift;
+    $self->feature('waste_features')->{bulky_cancel_no_payment_minutes};
+}
+
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+    return $self->bulky_enabled;
+}
+
+sub collection_date {
+    my ($self, $p) = @_;
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+}
+
+sub _bulky_refund_cutoff_date { }
+
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_reservation} = $ref;
+
+    $data->{title} = "Bulky goods collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
+    $data->{extra_Collection_Date} = $date;
+    $data->{extra_Exact_Location} = $data->{location};
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+
+    my @ids;
+    my @item_names;
+    my @item_quantity_codes;
+    my @photos;
+
+    if ($data->{location_photo}) {
+        push @photos, $data->{location_photo};
+    }
+
+    my $cfg = $self->feature('waste_features');
+    my $quantity_1_code = $cfg->{bulky_quantity_1_code};
+
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @item_names, $item;
+            push @ids, $items{$item};
+            push @item_quantity_codes, $quantity_1_code;
+            push @photos, $data->{"item_photo_$_"} || '';
+        };
+    }
+    $data->{extra_Image} = join("::", @photos);
+    $data->{extra_Bulky_Collection_Details_Item} = join("::", @ids);
+    $data->{extra_Bulky_Collection_Details_Qty} = join("::", @item_quantity_codes);
+    $data->{extra_Bulky_Collection_Details_Description} = join("::", @item_names);
+
+    $self->bulky_total_cost($data);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
+    };
+
+    my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
+    }
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+
+    return $saved_data;
+}
+
+sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
+
+sub bulky_contact_email {
+    my $self = shift;
+    return $self->feature('bulky_contact_email');
+}
+
+sub cancel_bulky_collections_without_payment {
+    my ($self, $params) = @_;
+
+    # Allow 30 minutes for payment before cancelling the booking.
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $cutoff_date = $dtf->format_datetime( DateTime->now->subtract( minutes => $self->bulky_cancel_no_payment_minutes ) );
+
+    my $rs = $self->problems->search(
+        {   category => 'Bulky collection',
+            created  => { '<'  => $cutoff_date },
+            external_id => { '!=', undef },
+            state => [ FixMyStreet::DB::Result::Problem->open_states ],
+            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
+            -or => [
+                extra => undef,
+                -not => { extra => { '\?' => 'payment_reference' } }
+            ],
+        },
+    );
+
+    while ( my $report = $rs->next ) {
+        my $scp_reference = $report->get_extra_metadata('scpReference');
+        if ($scp_reference) {
+
+            # Double check whether the payment was made.
+            my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($scp_reference);
+            if (!$error) {
+                if ($params->{verbose}) {
+                    printf(
+                        'Booking %s for report %d was found to be paid (reference %s).' .
+                        ' Updating with payment information and not cancelling.',
+                        $report->external_id,
+                        $report->id,
+                        $tx_id,
+                    );
+                }
+                if ($params->{commit}) {
+                    $report->update_extra_metadata(
+                        authCode => $auth_code,
+                        continuousAuditNumber => $can,
+                        payment_reference => $tx_id,
+                    );
+                    $report->set_extra_fields(
+                        {
+                            name => 'LastPayMethod',
+                            description => 'LastPayMethod',
+                            value => $self->bin_payment_types->{'csc'}
+                        },
+                        {
+                            name => 'PaymentCode',
+                            description => 'PaymentCode',
+                            value => $tx_id
+                        },
+                    );
+                    $report->update;
+                    $report->add_to_comments({
+                        text => "Payment confirmed, reference $tx_id",
+                        user => $report->user,
+                    });
+                }
+                next;
+            }
+        }
+
+        if ($params->{commit}) {
+            $report->add_to_comments({
+                text => 'Booking cancelled since payment was not made in time',
+                user_id => $self->body->comment_user_id,
+                extra => { bulky_cancellation => 1 },
+            });
+            $report->state('closed');
+            $report->detail(
+                $report->detail . " | Cancelled since payment was not made in time"
+            );
+            $report->update;
+        }
+        if ($params->{verbose}) {
+            printf(
+                'Cancelled booking %s for report %d.',
+                $report->external_id,
+                $report->id,
+            );
+        }
+    }
+}
+
+sub waste_auto_confirm_report {
+    my ($self, $report) = @_;
+    return $report->category eq 'Bulky collection';
 }
 
 1;

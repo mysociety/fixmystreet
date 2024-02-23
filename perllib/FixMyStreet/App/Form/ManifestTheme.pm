@@ -16,8 +16,10 @@ has '+widget_name_space' => ( default => sub { ['FixMyStreet::App::Form::Widget'
 has '+widget_tags' => ( default => sub { { wrapper_tag => 'p' } } );
 has '+item_class' => ( default => 'ManifestTheme' );
 has_field 'cobrand' => ( type => 'Select', empty_select => 'Select a cobrand', required => 1 );
-has_field 'name' => ( required => 1 );
-has_field 'short_name' => ( required => 1 );
+has_field 'name' => ( required => 1, label => 'FixMyStreet name' );
+has_field 'short_name' => ( required => 1, label => 'FixMyStreet short name' );
+has_field 'wasteworks_name' => ( required => 0, default => '' );
+has_field 'wasteworks_short_name' => ( required => 0, default => '' );
 has_field 'background_colour' => ( required => 0 );
 has_field 'theme_colour' => ( required => 0 );
 has_field 'icon' => ( required => 0, type => 'Upload', label => "Add icon" );
@@ -44,12 +46,11 @@ sub validate {
         }
 
         my $uri = '/theme/' . $cobrand;
-        my $theme_path = path(FixMyStreet->path_to('web' . $uri));
-        $theme_path->mkpath;
+        my $theme_path = path(FixMyStreet->path_to('web' . $uri))->mkdir;
         FixMyStreet::PhotoStorage::base64_decode_upload(undef, $upload);
         my ($p, $n, $ext) = fileparse($upload->filename, qr/\.[^.]*/);
         my $key = sha1_hex($upload->slurp) . $ext;
-        my $out = path($theme_path, $key);
+        my $out = $theme_path->child($key);
         unless (copy($upload->tempname, $out)) {
             $self->field('icon')->add_error( _("Sorry, we couldn't save your file(s), please try again.") );
             return;

@@ -128,29 +128,23 @@ $mappage-navbar-height: 64px;
 }
 
 #front-main {
-    margin: 0 auto;
-    margin-top: 75px;
-    padding: 0 1em;
-    max-width: $container-max-width;
-    background: transparent;
+    margin-top: 3em;
 
-    #front-main-container {
-        max-width: none;
-        background: #fff;
-        padding: 4%;
-
-        h1 {
-            color: $primary;
-        }
+    h1 {
+        color: #009baa;
     }
-
-    #postcodeForm {
-        overflow: visible;
+    #front-main-container {
+        box-sizing: border-box;
+        padding: 2em;
     }
 }
 
+.postcode-form-box {
+    overflow: visible;
+}
+
 .content {
-    padding: 4%;
+    padding: 2em !important;
     color: $primary_b;
 }
 
@@ -165,16 +159,4 @@ textarea.form-error {
 
 .peabody-footer {
     margin-top: 4em;
-}
-
-body.twothirdswidthpage .content .sticky-sidebar {
-    position: static;
-
-    aside {
-        position: static;
-        background: transparent;
-        padding: 0;
-        width: auto;
-        margin: 0 0 2em 0;
-    }
 }

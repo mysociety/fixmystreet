@@ -1,0 +1,68 @@
+Subject: [%
+IF report.category == 'Small items collection';
+    " Small items collection service - reference " _ report.id;
+ELSIF cobrand.moniker == 'kingston';
+    "Your bulky waste collection - reference RBK-" _ report.id;
+ELSIF cobrand.moniker == 'sutton';
+    "Your bulky waste collection - reference LBS-" _ report.id;
+ELSE;
+    "Bulky waste collection service - reference " _ report.id;
+END %]
+
+[%
+USE pounds = format('%.2f');
+PROCESS 'waste/_bulky_data.html';
+~%]
+
+Dear [% report.name %],
+
+[% email_summary %]
+
+[% INCLUDE '_council_reference.txt' problem=report %]
+
+[% report.detail %]
+
+[% IF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' ~%]
+Date booking made: [% report_date %]
+
+[% END ~%]
+Collection date: [% collection_date %]
+
+Items to be collected:
+[% INCLUDE 'waste/_bulky_list.txt' %]
+
+[% IF payment ~%]
+Total cost: £[% pounds(payment / 100) %]
+
+[% END ~%]
+
+[%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
+
+If you wish to cancel your booking, please call 01733 74 74 74.
+
+[% ELSE %]
+
+If you wish to cancel your booking, please visit:
+
+    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]
+
+[% END ~%]
+
+[% IF cobrand.moniker == 'peterborough' %]
+Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service and obtaining a refund:
+
+    https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
+
+[% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+[% INCLUDE 'waste/_bulky_extra_text.txt' %]
+
+[% END %]
+
+[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
+[% END %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

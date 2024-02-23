@@ -25,8 +25,8 @@
                 [% IF error == 'bad_email' %]<strong>[% END ~%]
                 [% loc('Ending in .gov.uk, or other official council domain') %]
                 [% IF error == 'bad_email' %]–
-                [%  SET form_name_uri = form_name | uri;
-                    SET email_uri = email | uri;
+                [%  form_name_uri = form_name | uri;
+                    email_uri = email | uri;
                 tprintf(loc('please <a href="%s">contact us</a> if we did not recognise your email'), "/contact?name=" _ form_name _ "&amp;em=" _ email) %]</strong>[% END ~%]
             </p>
         </div>

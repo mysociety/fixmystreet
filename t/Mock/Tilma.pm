@@ -2,6 +2,7 @@ package t::Mock::Tilma;
 
 use JSON::MaybeXS;
 use Web::Simple;
+use mySociety::Locale;
 
 has json => (
     is => 'lazy',
@@ -170,10 +171,6 @@ sub dispatch_request {
         } else {
             return [ 200, [ 'Content-Type' => 'application/xml' ], [ $thamesmead_asset_not_found ] ];
         }
-    },
-
-    sub (GET + /lsoa_to_decile.php + ?*) {
-        return [ 200, [ 'Content-Type' => 'application/json' ], [ '{"UK_IMD_E_pop_decile": 6}' ] ];
     }
 }
 

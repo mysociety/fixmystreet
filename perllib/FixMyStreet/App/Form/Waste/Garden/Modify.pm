@@ -165,14 +165,7 @@ has_field apply_discount => (
     option_label => 'Check box if customer is entitled to a discount',
 );
 
-has_field tandc => (
-    type => 'Checkbox',
-    required => 1,
-    label => 'Terms and conditions',
-    option_label => FixMyStreet::Template::SafeString->new(
-        'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a>',
-    ),
-);
+with 'FixMyStreet::App::Form::Waste::GardenTandC';
 
 has_field continue => (
     type => 'Submit',

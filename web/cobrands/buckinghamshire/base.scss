@@ -97,18 +97,19 @@ dl dt {
     font-size: 1.75em;
   }
 
-  #postcodeForm {
-    margin: 1em 0 0 0;
-    padding: 0;
-    color: $bucks_charcoal;
-    background: #fff;
-
-    div input#sub {
-      @include bucks-button();
-      box-shadow: 0;
-    }
+    #postcodeForm {
+      margin: 1em 0 0 0;
+      padding: 0;
   }
 }
+
+.postcode-form-box div {
+  input#sub {
+    @include bucks-button();
+    box-shadow: none;
+  }
+}
+
 
 .btn-primary, .green-btn, .btn--primary {
   background: none;

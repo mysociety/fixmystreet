@@ -111,14 +111,23 @@ fixmystreet.assets.banes.lighting_asset_details = function() {
            "description: " + a.unitdescription;
 };
 
-fixmystreet.assets.banes.road_not_found = function(layer) {
-    var cat = fixmystreet.reporting.selectedCategory().category;
-    var asset_item = layer.fixmystreet.cat_map[cat];
-    if (asset_item) {
-        layer.fixmystreet.asset_item = asset_item;
-        fixmystreet.message_controller.road_not_found(layer);
-    } else {
+var banes_on_road;
+
+fixmystreet.assets.banes.road_actions = {
+    found: function(layer) {
         fixmystreet.message_controller.road_found(layer);
+        banes_on_road = true;
+    },
+    not_found: function(layer) {
+        var cat = fixmystreet.reporting.selectedCategory().category;
+        var asset_item = layer.fixmystreet.cat_map[cat];
+        if (asset_item) {
+            layer.fixmystreet.asset_item = asset_item;
+            fixmystreet.message_controller.road_not_found(layer);
+        } else {
+            fixmystreet.message_controller.road_found(layer);
+        }
+        banes_on_road = false;
     }
 };
 
@@ -138,7 +147,7 @@ var curo_categories = [
 
 fixmystreet.assets.banes.curo_found = function(layer) {
     var category = fixmystreet.reporting.selectedCategory().category;
-    if (curo_categories.indexOf(category) === -1) {
+    if (curo_categories.indexOf(category) === -1 || banes_on_road) {
         fixmystreet.message_controller.road_found(layer);
         return;
     }
@@ -196,75 +205,22 @@ fixmystreet.assets.brent.construct_asset_name = function(id) {
 };
 
 fixmystreet.assets.brent.found = function(layer) {
-    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    fixmystreet.message_controller.road_found(layer);
 };
 
 fixmystreet.assets.brent.not_found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+fixmystreet.assets.brent.road_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
 };
 
-fixmystreet.assets.brent.no_asset_message_defaults = {
-    'Parks_and_Open_Spaces' : '#js-brent-park-services',
-    'Highways' : '#js-brent-road-services'
-};
-
-var brent_parkRoadIsFound = {
-    park: false,
-    road: false,
-    isParkorRoad: function() { return this.park || this.road; }
-};
-
-fixmystreet.assets.brent.found_filter = function(layer) {
-    if (fixmystreet.reporting.selectedCategory().category === 'Grass verges / shrub beds - littering' ||
-    fixmystreet.reporting.selectedCategory().category === 'Grass verge / shrub beds - maintenance issue') {
-        var other_layer_name;
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
-            brent_parkRoadIsFound.park = true;
-            other_layer_name = 'Highways';
-        }
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
-            brent_parkRoadIsFound.road = true;
-            other_layer_name = 'Parks_and_Open_Spaces';
-        }
-        /* Find the other layer involved and mark that as found as well - this
-         * is in case it had already been called as not_found and set up the
-         * map page for repositioning the pin, we need that gone */
-        var other_layer = fixmystreet.assets.layers.filter(function(elem) {
-            return test_layer_typename(elem.fixmystreet, 'Brent Council', other_layer_name);
-        })[0];
-        fixmystreet.message_controller.road_found(other_layer);
-    }
-    fixmystreet.message_controller.road_found(layer);
-};
-
-fixmystreet.assets.brent.not_found_filter = function(layer) {
-    var selected = fixmystreet.reporting.selectedCategory();
-    if (selected.category === 'Grass verges / shrub beds - littering' ||
-    selected.category === 'Grass verge / shrub beds - maintenance issue') {
-        layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Parks_and_Open_Spaces') {
-            brent_parkRoadIsFound.park = false;
-        }
-        if (layer.fixmystreet.http_options.params.TYPENAME === 'Highways') {
-            brent_parkRoadIsFound.road = false;
-        }
-        if (brent_parkRoadIsFound.isParkorRoad()) {
-            fixmystreet.message_controller.road_found(layer);
-        } else {
-            fixmystreet.message_controller.road_not_found(layer);
-        }
-    } else {
-        // Need to clear parks/highways message as may still be there
-        // if we have changed category while it was in place
-        layer.fixmystreet.no_asset_msg_id = '#js-brent-parks-and-highways';
+fixmystreet.assets.brent.road_not_found = function(layer) {
+    if (brent_on_red_route()) {
         fixmystreet.message_controller.road_found(layer);
-        layer.fixmystreet.no_asset_msg_id = fixmystreet.assets.brent.no_asset_message_defaults[layer.fixmystreet.http_options.params.TYPENAME];
-
-        if (brent_on_red_route()) {
-            fixmystreet.message_controller.road_found(layer);
-        } else {
-            fixmystreet.message_controller.road_not_found(layer);
-        }
+    } else {
+        fixmystreet.message_controller.road_not_found(layer);
     }
 };
 
@@ -276,6 +232,29 @@ function brent_on_red_route() {
     red_routes = red_routes[0];
     return !!red_routes.selected_feature;
 }
+
+fixmystreet.assets.brent.cemetery_actions = {
+    found: function(layer) {
+        var currentCategory = fixmystreet.reporting.selectedCategory().category;
+        if (!fixmystreet.reporting_data || currentCategory === '') {
+            // Skip checks until category has been selected.
+            fixmystreet.message_controller.road_found(layer);
+            return;
+        }
+        var category = fixmystreet.reporting_data.by_category[currentCategory];
+
+        // If this category is non-TfL then disable reporting.
+        if (category.bodies.indexOf('TfL') === -1) {
+            // Need to pass a criterion function to force the not found message to be shown.
+            fixmystreet.message_controller.road_not_found(layer, function() { return true; });
+        } else {
+            fixmystreet.message_controller.road_found(layer);
+        }
+    },
+    not_found: function(layer) {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
 
 /* Bristol */
 
@@ -308,6 +287,14 @@ fixmystreet.assets.bromley.prow_stylemap = new OpenLayers.StyleMap({
         strokeWidth: 6
     })
 });
+
+fixmystreet.assets.bromley.found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+fixmystreet.assets.bromley.not_found = function(layer) {
+    fixmystreet.message_controller.road_found(layer);
+};
 
 /* Buckinghamshire */
 
@@ -481,26 +468,10 @@ if (fixmystreet.cobrand == 'buckinghamshire' || fixmystreet.cobrand == 'fixmystr
 }
 
 fixmystreet.assets.buckinghamshire.drains_construct_selected_asset_message = function(asset) {
-    var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
-        return elem.fixmystreet.body == "Buckinghamshire Council" &&
-        elem.fixmystreet.http_options.format.featureType == 'junction_inspections';
-    });
-    var inspection;
-    if (junctionInspectionLayer[0]) {
-        inspection = junctionInspectionLayer[0].features.filter(function(elem) {
-            return elem.attributes.asset_id == asset.attributes.asset_id &&
-            bucks_format_date(elem.attributes.created) == bucks_format_date(asset.attributes.last_inspected);
-        });
+    if (!asset.attributes.last_cleaned_date) {
+        return '';
     }
-    var last_clean = '';
-    var message = ' ';
-    if (inspection && inspection[0]) {
-        if (asset.attributes.last_inspected && inspection[0].attributes.junction_cleaned === 'true') {
-            last_clean = bucks_format_date(asset.attributes.last_inspected);
-            message = 'This gulley was last cleaned on ' + last_clean;
-        }
-    }
-    return message;
+    return 'This gulley was last cleaned on ' + bucks_format_date(asset.attributes.last_cleaned_date);
 };
 
 fixmystreet.assets.buckinghamshire.street_found = function(layer, feature) {
@@ -626,15 +597,17 @@ var centralbeds_types = [
     "Fw",
 ];
 
-function cb_likely_trees_report() {
+function cb_should_not_require_road() {
     // Ensure the user can select anywhere on the map if they want to
-    // make a report in the "Trees" category. This means we don't show the
-    // "not found" message if no category/group has yet been selected
-    // or if only the group containing the "Trees" category has been
+    // make a report in the "Trees" or "Fly Tipping" categories.
+    // This means we don't show the "not found" message if no category/group has yet been selected
+    // or if one of the groups containing either the "Trees" or "Fly Tipping" categories has been
     // selected.
     var selected = fixmystreet.reporting.selectedCategory();
     return selected.category === "Trees" ||
             (selected.group === "Grass, Trees, Verges and Weeds" && !selected.category) ||
+            selected.category === "Fly Tipping" ||
+            (selected.group === "Flytipping, Bins and Graffiti" && !selected.category) ||
             (!selected.group && !selected.category);
 }
 
@@ -665,7 +638,7 @@ fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
         if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
             return true;
         }
-        if (cb_likely_trees_report()) {
+        if (cb_should_not_require_road()) {
             cb_show_non_stopper_message();
             return true;
         }
@@ -674,7 +647,7 @@ fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
 };
 fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
     cb_hide_non_stopper_message();
-    if (cb_likely_trees_report()) {
+    if (cb_should_not_require_road()) {
         fixmystreet.message_controller.road_found(layer);
     } else {
         fixmystreet.message_controller.road_not_found(layer);
@@ -758,6 +731,19 @@ fixmystreet.assets.eastsussex.construct_selected_asset_message = function(asset)
         return message;
     }
 };
+
+/* Gloucestershire */
+
+fixmystreet.assets.gloucestershire = {};
+
+fixmystreet.assets.gloucestershire.street_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fill: false,
+        strokeColor: "navy",
+        strokeOpacity: 0.5,
+        strokeWidth: 8
+    })
+});
 
 /* Hounslow */
 
@@ -869,6 +855,112 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
         fontWeight: 'bold'
     })
 });
+
+fixmystreet.assets.lincolnshire.grass_found = function(layer) {
+    var data = layer.selected_feature.attributes;
+    var parish_regex = new RegExp(/Contact Parish/);
+    /* If it is handled by LCC and has cut dates provided,
+    add an extra notice to the reporting form showing the cut dates */
+    if (data.Cut_By === 'LCC' && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
+        var $div = $(".js-reporting-page.js-lincs-grass-notice");
+        if ($div.length) {
+            $div.removeClass('js-reporting-page--skip');
+        } else {
+            var msg = "<div class='box-warning js-lincs-grass-notice'>" +
+                        "<h1>Grass cutting schedule</h1>" +
+                        "<p>The grass in this area is scheduled to be cut between <strong>" +
+                        lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] +
+                        "</strong>. If that answers your query, there is no need to finish the report. " +
+                        "Otherwise, please continue.</p>" +
+                        "</div>";
+            $div = $(msg);
+            fixmystreet.pageController.addNextPage('lincs_grass', $div);
+        }
+        fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+    }
+    /* If handled by a district council (LCDC or SKDC) that says contact them,
+    send the report to that relevant district council in their Grass Cutting category.
+    If handled by LCC (or a district council) but with “Contact LCC” (or similar) as the cut date,
+    do nothing and allow reporting to proceed to LCC’s Grass Cutting category.*/
+    else if (data.Cut_By === 'DIS') {
+        var district_council = {
+            'LCDC': 'Lincoln City Council',
+            'SKDC': 'South Kesteven District Council'
+        };
+        var lcc_regex = new RegExp(/Contact LCC/);
+        if (district_council[data.Authority] && !lcc_regex.test(data.Cut_1)) {
+            fixmystreet.body_overrides.only_send(district_council[data.Authority]);
+        } else {
+            fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+        }
+    }
+    /* If handled by a parish (with a cut date of “Contact Parish Council” or “Contact Parish to Add”)
+    prevent reporting and display a message informing the user which parish council handles the area */
+    else if (data.Cut_By === 'PAR' && parish_regex.test(data.Cut_1)) {
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
+        layer.fixmystreet.no_asset_msg_id = '#js-lincs-parish-grass';
+        var text = $('#js-lincs-parish-grass').html();
+        new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
+        $('#js-lincs-parish-grass').html(new_text);
+    }
+    /* If handled by “CP Media Sponsorship”, display a message informing the user how to contact them? */
+    else if (data.Cut_By === 'CPM') {
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-media-grass');
+        layer.fixmystreet.no_asset_msg_id = '#js-lincs-media-grass';
+    }
+
+    function lincs_has_dates(cut_info) {
+        if (cut_info[0].match(/Contact /) && cut_info[0] === cut_info[1] && cut_info[1] === cut_info[2]) {
+            return [];
+        } else {
+            var dates = [];
+            for (var i=0; i < cut_info.length; i++) {
+                var date_returned = check_date(cut_info[i]);
+                if (date_returned) {
+                    dates.push(date_returned);
+                }
+            }
+            return dates;
+        }
+
+        function check_date(date) {
+            var months = {
+                January: '0',
+                February: '1',
+                March: '2',
+                April: '3',
+                May: '4',
+                June: '5',
+                July: '6',
+                August: '7',
+                September: '8',
+                October: '9',
+                November: '10',
+                December: '11',
+            };
+
+            var dates = date.split(" - ");
+            if (dates.length === 2) {
+                var now = new Date();
+                var end_date_components = dates[1].split(' ');
+                var end_date = new Date(now.getFullYear(), months[end_date_components[1]], end_date_components[0], '23', '59', '59');
+                if (end_date < now) {
+                    return 0;
+                } else {
+                    return date;
+                }
+            } else {
+                return 0;
+            }
+        }
+    }
+};
+
+fixmystreet.assets.lincolnshire.grass_not_found = function(layer) {
+    // road_found to remove any stopper messages
+    fixmystreet.message_controller.road_found(layer);
+    fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+};
 
 /* Merton */
 
@@ -1378,6 +1470,10 @@ fixmystreet.assets.shropshire.streetlight_stylemap = new OpenLayers.StyleMap({
 
 fixmystreet.assets.shropshire.streetlight_found = function(asset) {
     var controller_fn = shropshire_light(asset) ? 'asset_found' : 'asset_not_found';
+    if (asset.attributes.OWNER) {
+        this.fixmystreet.no_asset_msg_id = '#sl-owner-' + asset.attributes.FEAT_LABEL + asset.attributes.OWNER.replace(/[^a-zA-Z0-9]/g, '');
+        this.fixmystreet.no_asset_message = fixmystreet.assets.shropshire.streetlight_asset_message(asset);
+    }
     fixmystreet.message_controller[controller_fn].call(this);
     fixmystreet.assets.named_select_action_found.call(this, asset);
 };
@@ -1396,6 +1492,15 @@ fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
     }
     return out;
 };
+
+/* Thamesmead */
+
+fixmystreet.assets.thamesmead = {};
+fixmystreet.assets.thamesmead.streetlight_stylemap = new OpenLayers.StyleMap({
+  'default': fixmystreet.assets.style_default,
+  'hover': fixmystreet.assets.style_default_hover,
+  'select': fixmystreet.assets.construct_named_select_style("${feature_id}")
+});
 
 /* Westminster */
 

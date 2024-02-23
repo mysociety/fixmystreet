@@ -140,15 +140,15 @@ sub oidc_user_extra {
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     my $id = $row->user->get_extra_metadata('westminster_account_id');
     # Westminster require 0 as the account ID if there's no MyWestminster ID.
     $h->{account_id} = $id || '0';
 }
 
-sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # Reports made via the app probably won't have a USRN because we don't
     # display the road layer. Instead we'll look up the closest asset from the
@@ -168,8 +168,6 @@ sub open311_extra_data_include {
             $row->update_extra_field({ name => 'UPRN', value => $ref });
         }
     }
-
-    return undef;
 }
 
 sub lookup_site_code_config {
@@ -211,20 +209,17 @@ sub _fetch_features_url {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    # Westminster don't want TfL or email categories on their cobrand.
-    # Categories covering the council area have a mixture of Open311 and Email
+    # Westminster don't want email categories on their cobrand.
+    # Categories covering the body have a mixture of Open311 and Email
     # send methods. We've set up the Email categories with a devolved
     # send_method, so can identify Open311 categories as those which have a
-    # blank send_method.
-    # XXX This still shows "These will be sent to TfL or Westminster City Council"
-    # on /report/new before a category is selected...
+    # blank send_method; the TfL categories also all have a blank send method.
     return $rs->search( {
-            'body.name' => 'Westminster City Council',
             -or => [
                 'me.send_method' => undef, # Open311 categories
                 'me.send_method' => '', # Open311 categories that have been edited in the admin
             ]
-        }, { join => 'body' });
+        });
 }
 
 sub updates_restriction {

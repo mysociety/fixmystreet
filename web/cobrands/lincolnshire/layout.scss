@@ -9,10 +9,6 @@
     color: $primary_text;
 }
 
-#front-main {
-    background-color: $front_main_background;
-}
-
 #main-nav {
     float: none;
     // Put the main FMS navigation below the site header
@@ -24,7 +20,10 @@
       }
 }
 
-  
+#front-main #front-main-container {
+    padding: 2em 0;
+}
+
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 
     // White "nav bar" with red border-top, below the logo
@@ -58,11 +57,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     // Stop the 'report a problem' button being red on non-map pages
     .nav-menu--main a.report-a-problem-btn {
         background-color: transparent;
-    }
-
-    // Put FAQ side nav at correct vertical position
-    .content .sticky-sidebar aside {
-        top: 12.5em;
     }
 }
 

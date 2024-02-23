@@ -45,15 +45,11 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     background-color: white;
     padding-top: 40px;
 
-    #postcodeForm {
-      margin-top: 0;
-    }
-
     h1 {
       font-size: 3em;
     }
 
-    h1 + p {
+    h1 + h2 {
       font-size: 1.75em;
       line-height: 1.25em;
       max-width: 640px;
@@ -86,11 +82,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   // Stop the 'report a problem' button being red on non-map pages
   .nav-menu--main a.report-a-problem-btn {
     background-color: transparent;
-  }
-
-  // Put FAQ side nav at correct vertical position
-  .content .sticky-sidebar aside {
-    top: 12.5em;
   }
 }
 

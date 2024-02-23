@@ -16,6 +16,8 @@ has delete => ( is => 'ro' );
 has email => ( is => 'ro' );
 has verbose => ( is => 'ro' );
 has dry_run => ( is => 'ro' );
+has category => ( is => 'ro' );
+has state => ( is => 'ro' );
 
 has cobrand => (
     is => 'ro',
@@ -68,15 +70,13 @@ sub reports {
 sub close_updates {
     my $self = shift;
 
-    my $problems = FixMyStreet::DB->resultset("Problem")->search({
-        lastupdate => { '<', interval($self->close) },
-        state => [ FixMyStreet::DB::Result::Problem->closed_states(), FixMyStreet::DB::Result::Problem->fixed_states() ],
+    my $problems = $self->_relevant_reports($self->close, 0);
+    $problems = $problems->search({
         -or => [
             extra => undef,
             -not => { extra => { '\?' => 'closed_updates' } }
         ],
     });
-    $problems = $problems->search({ cobrand => $self->cobrand->moniker }) if $self->cobrand;
 
     while (my $problem = $problems->next) {
         say "Closing updates on problem #" . $problem->id if $self->verbose;
@@ -87,19 +87,17 @@ sub close_updates {
 }
 
 sub _relevant_reports {
-    my ($self, $time) = @_;
+    my ($self, $time, $include_hidden) = @_;
     my $problems = FixMyStreet::DB->resultset("Problem")->search({
         lastupdate => { '<', interval($time) },
-        state => [
+        state => $self->state ? $self->state : [
             FixMyStreet::DB::Result::Problem->closed_states(),
             FixMyStreet::DB::Result::Problem->fixed_states(),
-            FixMyStreet::DB::Result::Problem->hidden_states(),
+            $include_hidden ? FixMyStreet::DB::Result::Problem->hidden_states() : (),
         ],
+        $self->category ? (category => $self->category) : (),
+        $self->cobrand ? (cobrand => $self->cobrand->moniker) : (),
     });
-    if ($self->cobrand) {
-        $problems = $problems->search({ cobrand => $self->cobrand->moniker });
-        $problems = $self->cobrand->call_hook(inactive_reports_filter => $time, $problems) || $problems;
-    }
     return $problems;
 }
 
@@ -107,7 +105,7 @@ sub anonymize_reports {
     my $self = shift;
 
     # Need to look though them all each time, in case any new updates/alerts
-    my $problems = $self->_relevant_reports($self->anonymize);
+    my $problems = $self->_relevant_reports($self->anonymize, 1);
 
     while (my $problem = $problems->next) {
         say "Anonymizing problem #" . $problem->id if $self->verbose;
@@ -143,7 +141,10 @@ sub anonymize_reports {
 sub delete_reports {
     my $self = shift;
 
-    my $problems = $self->_relevant_reports($self->delete);
+    my $problems = $self->_relevant_reports($self->delete, 1);
+    if ($self->cobrand) {
+        $problems = $self->cobrand->call_hook(inactive_reports_filter => $self->delete, $problems) || $problems;
+    }
 
     while (my $problem = $problems->next) {
         say "Deleting associated data of problem #" . $problem->id if $self->verbose;
@@ -219,7 +220,12 @@ sub email_inactive_users {
 
 sub interval {
     my $interval = shift;
-    my $s = "current_timestamp - '$interval months'::interval";
+    if ($interval =~ /^(\d+)m?$/) {
+        $interval = "$1 months";
+    } elsif ($interval =~ /^(\d+)d$/) {
+        $interval = "$1 days";
+    }
+    my $s = "current_timestamp - '$interval'::interval";
     return \$s;
 }
 

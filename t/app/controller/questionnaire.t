@@ -2,10 +2,6 @@ use DateTime;
 
 use FixMyStreet::TestMech;
 
-use t::Mock::Tilma;
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
-
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
@@ -32,7 +28,7 @@ my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
         whensent           => $sent_time,
         lang               => 'en-gb',
         service            => '',
-        cobrand            => 'fixmystreet',
+        cobrand            => '',
         cobrand_data       => '',
         send_questionnaire => 1,
         latitude           => '55.951963',
@@ -62,6 +58,38 @@ foreach my $state (
 }
 $report->update( { send_questionnaire => 1, state => 'confirmed' } );
 $report->questionnaires->delete;
+
+subtest "user's questionnaire_notify setting" => sub {
+    # Set to true by default
+    is $user->get_extra_metadata('questionnaire_notify'), undef,
+        'extra_metadata returns undef';
+    is $user->questionnaire_notify, 1, 'method returns true';
+
+    # Set to false and try to send
+    $user->set_extra_metadata( questionnaire_notify => 0 );
+    $user->update;
+    is $user->questionnaire_notify, 0, 'method returns false';
+    FixMyStreet::DB->resultset('Questionnaire')
+        ->send_questionnaires( { site => 'fixmystreet' } );
+    note 'questionnaire should not be sent';
+    $mech->email_count_is(0);
+    $report->discard_changes;
+    is $report->send_questionnaire, 0,
+        'report->send_questionnaire should have been set to 0';
+
+    # Set to true
+    $user->set_extra_metadata( questionnaire_notify => 1 );
+    $user->update;
+    is $user->questionnaire_notify, 1, 'method returns true';
+    FixMyStreet::DB->resultset('Questionnaire')
+        ->send_questionnaires( { site => 'fixmystreet' } );
+    note
+        'questionnaire should not be sent because report->send_questionnaire was set to 0 earlier';
+    $mech->email_count_is(0);
+
+    # Reset send_questionnaire to allow tests below to pass
+    $report->update( { send_questionnaire => 1 } );
+};
 
 # Call the questionaire sending function...
 FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires( {
@@ -469,10 +497,6 @@ FixMyStreet::override_config {
     $mech->title_like( qr/Questionnaire/ );
     $mech->content_contains( 'Has this problem been fixed?' );
     $mech->content_lacks( 'ever reported' );
-
-    $mech->submit_form_ok({ with_fields => { been_fixed => 'Unknown', another => 'No' } });
-    $mech->content_contains('Can you spare 5 minutes for a survey about FixMyStreet?');
-    $mech->content_contains('ever_reported=&amp;been_fixed=Unknown&amp;category=Street+lighting&amp;num_reports_by_user=1&amp;imd_decile=6&amp;cobrand=fixmystreet');
 
     $token = FixMyStreet::DB->resultset("Token")->find( { scope => 'questionnaire', token => $token } );
     ok $token, 'found token for questionnaire';

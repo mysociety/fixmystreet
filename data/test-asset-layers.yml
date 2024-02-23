@@ -51,39 +51,81 @@ brent:
     geometryName: 'msGeometry'
     srsName: "EPSG:3857"
     body: "Brent Council"
-  - wfs_feature: "Housing"
-    asset_type: 'area'
-    stylemap: 'fixmystreet.assets.stylemap_invisible'
-    nearest_radius: '0.1'
-    always_visible: 1
-    non_interactive: 1
-    no_asset_msg_id: '#js-brent-tenant-services'
-    road: 1
-    actions:
-      found: "fixmystreet.assets.brent.found"
-      not_found: "fixmystreet.assets.brent.not_found"
   - wfs_feature: "Highways"
     asset_type: 'area'
     stylemap: 'fixmystreet.assets.stylemap_invisible'
     nearest_radius: '0.1'
     non_interactive: 1
-    asset_category: [ 'Fly-tipping', 'Pavement damage', 'Grass verges / shrub beds - littering' ]
-    no_asset_msg_id: '#js-brent-road-services'
+    asset_category: [ 'Fly-tipping', 'Pavement damage' ]
+    no_asset_message: 'The current category selected is only for reporting this type of problem on the public highway. If the problem is within a park or open space or a council estate please go back and choose ‘Council estate grounds maintenance’ or ‘Parks and open spaces’.'
     road: 1
     actions:
-     found: "fixmystreet.assets.brent.found_filter"
-     not_found: "fixmystreet.assets.brent.not_found_filter"
-  - wfs_feature: "Parks_and_Open_Spaces"
+      found: fixmystreet.assets.brent.road_found
+      not_found: fixmystreet.assets.brent.road_not_found
+  - wfs_feature: Housing
+    asset_item: estate
+    asset_type: area
+    asset_group: Council estates grounds maintenance
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select a housing estate from the map</strong></p><p>This type of issue can only be reported within housing estates that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 1
+    disable_pin_snapping: true
+  - wfs_feature: Parks_and_Open_Spaces
+    asset_item: park
+    asset_type: area
+    asset_group: Parks and open spaces
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select a park from the map</strong></p><p>This type of issue can only be reported within parks and green spaces that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 1
+    disable_pin_snapping: true
+  - wfs_feature: Allotments
+    asset_item: allotment
+    asset_type: area
+    asset_group: Allotments
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select an allotment from the map</strong></p><p>This type of issue can only be reported within allotments that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 1
+    disable_pin_snapping: true
+  - wfs_feature: Highway_Verges
+    asset_item: verge or flower bed
+    asset_type: area
+    asset_group: Roadside verges and flower beds
+    usrn:
+      attribute: site_name
+      field: location_name
+    no_asset_message: '<p><strong>Please select a verge or flower bed from the map</strong></p><p>This type of issue can only be reported within verges or flower beds that are maintained by Brent Council. These areas are marked in yellow on the map.</p>'
+    road: true
+    actions:
+      found: fixmystreet.assets.brent.found
+      not_found: fixmystreet.assets.brent.not_found
+    nearest_radius: 5
+    disable_pin_snapping: true
+  - wfs_feature: 'queens_park'
     asset_type: 'area'
-    stylemap: 'fixmystreet.assets.stylemap_invisible'
-    nearest_radius: '0.1'
-    non_interactive: 1
-    asset_category: [ 'Grass verges / shrub beds - littering' ]
-    no_asset_msg_id: '#js-brent-park-services'
-    road: 1
-    actions:
-     found: "fixmystreet.assets.brent.found_filter"
-     not_found: "fixmystreet.assets.brent.not_found_filter"
+    always_visible: true
+    road: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    no_asset_message: '<p>Queens Park is maintained by the City of London, not Brent Council.<p>'
+    actions: fixmystreet.assets.brent.cemetery_actions
 bromley:
   - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bromley_wfs"
     asset_type: 'spot'
@@ -106,6 +148,28 @@ bromley:
     usrn:
       attribute: 'PROW_REFER'
       field: 'prow_reference'
+  - wfs_feature: "Crystal_Palace_Park"
+    asset_type: 'area'
+    always_visible: true
+    road: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    all_categories: true
+    no_asset_message: "<p>The Management of Crystal Palace Park has transferred to the Crystal Palace Park Trust who are now responsible for the day-to-day management and maintenance of the park, as well as any community or commercial events and concession agreements within the park. Their website can be found at: <a href='https://www.crystalpalaceparktrust.org/'>https://www.crystalpalaceparktrust.org</a> where any issues or queries regarding the park can be submitted.</p>"
+    actions:
+      found: fixmystreet.assets.bromley.found
+      not_found: fixmystreet.assets.bromley.not_found
+  - wfs_feature: "National_Sports_Centre"
+    asset_type: 'area'
+    always_visible: true
+    road: true
+    non_interactive: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    all_categories: true
+    no_asset_message: "<p>This area is the responsibility of the National Sports Centre who oversee several of the access roads, the structure of the walkway and sports grounds as well as the associated lighting. They can be contacted directly via their website: <a href='https://www.better.org.uk/contactus'>https://www.better.org.uk/contactus</a></p>"
+    actions:
+      found: fixmystreet.assets.bromley.found
+      not_found: fixmystreet.assets.bromley.not_found
 buckinghamshire:
   - - name: 'default'
       http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"
@@ -152,7 +216,7 @@ buckinghamshire:
       found: fixmystreet.assets.buckinghamshire.speed_found
       not_found: fixmystreet.assets.buckinghamshire.speed_not_found
     no_asset_msg_id: '#js-not-a-road'
-    asset_category: ["Grass cutting", "Hedge problem", "Dirty signs"]
+    asset_category: ["Grass cutting", "Hedge problem", "Dirty signs", "Unauthorised signs"]
     non_interactive: true
     road: true
     asset_item: 'road'
@@ -171,6 +235,14 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+  - wfs_feature: "LCC_Verges"
+    asset_category: "Grass cutting"
+    asset_type: area
+    road: true
+    non_interactive: true
+    actions:
+      found: fixmystreet.assets.lincolnshire.grass_found
+      not_found: fixmystreet.assets.lincolnshire.grass_not_found
 northamptonshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/northamptonshire"
     geometryName: 'msGeometry'

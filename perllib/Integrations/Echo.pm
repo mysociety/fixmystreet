@@ -5,8 +5,10 @@ use strict;
 use warnings;
 with 'FixMyStreet::Roles::SOAPIntegration';
 with 'FixMyStreet::Roles::ParallelAPI';
+with 'FixMyStreet::Roles::Syslog';
 
 use DateTime;
+use DateTime::Format::Strptime;
 use File::Temp;
 use FixMyStreet;
 
@@ -17,6 +19,18 @@ has password => ( is => 'ro' );
 has url => ( is => 'ro' );
 
 has sample_data => ( is => 'ro', default => 0 );
+
+has log_ident => (
+    is => 'ro',
+    default => sub {
+        my $feature = 'echo';
+        my $features = FixMyStreet->config('COBRAND_FEATURES');
+        return unless $features && ref $features eq 'HASH';
+        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+        my $f = $features->{$feature}->{_fallback};
+        return $f->{log_ident};
+    }
+);
 
 has endpoint => (
     is => 'lazy',
@@ -447,6 +461,41 @@ sub GetEventsForObject {
         ),
     );
     return force_arrayref($res, 'Event');
+}
+
+sub ReserveAvailableSlotsForEvent {
+    my ($self, $service, $event_type, $property, $guid, $from, $to) = @_;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d');
+    $from = $parser->parse_datetime($from);
+    $to = $parser->parse_datetime($to);
+
+    my @req = ('ReserveAvailableSlotsForEvent',
+        event => ixhash(
+            Guid => $guid,
+            EventObjects => { EventObject => ixhash(
+                EventObjectType => 'Source',
+                ObjectRef => _id_ref($property, 'PointAddress'),
+            ) },
+            EventTypeId => $event_type,
+            ServiceId => $service,
+        ),
+        parameters => ixhash(
+            From => dt_to_hash($from),
+            To => dt_to_hash($to),
+        ),
+    );
+    $self->log(\@req);
+    my $res = $self->call(@req);
+    return [] unless ref $res eq 'HASH';
+
+    $self->log($res);
+    return force_arrayref($res->{ReservedTaskInfo}{ReservedSlots}, 'ReservedSlot');
+}
+
+sub CancelReservedSlotsForEvent {
+    my ($self, $guid) = @_;
+    $self->call('CancelReservedSlotsForEvent', eventGuid => $guid);
 }
 
 sub dt_to_hash {

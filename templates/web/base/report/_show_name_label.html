@@ -1,4 +1,8 @@
-<div class="checkbox-group">
-    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
-    <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+<div class="govuk-form-group">
+    <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
+            <label class="govuk-label govuk-checkboxes__label" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+        </div>
+    </div>
 </div>

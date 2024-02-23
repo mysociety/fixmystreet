@@ -1,0 +1,7 @@
+[% FOR item IN item_list %]
+    - [% item.value %]
+[% IF item.message %]
+        - [% item.message %]
+[% END %]
+[% END %]
+

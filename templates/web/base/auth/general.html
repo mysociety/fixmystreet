@@ -1,11 +1,13 @@
 [% INCLUDE 'header.html', bodyclass='authpage', title = loc('Sign in or create an account') %]
 
+[% TRY %][% INCLUDE 'auth/_general_title.html' %][% CATCH file %]
 <h1>
     [% loc('Sign in') %]
     <small>
         [% tprintf(loc('or <a href="%s">create an account</a>'), '/auth/create') %]
     </small>
 </h1>
+[% END %]
 
 [% TRY %][% INCLUDE 'auth/_general_top.html' %][% CATCH file %][% END %]
 
@@ -29,10 +31,11 @@
         </button>
       </div>
     [% END %]
-    [% IF c.cobrand.feature('oidc_login') %]
+    [% oidc_config = c.cobrand.call_hook('oidc_config') OR c.cobrand.feature('oidc_login') %]
+    [% IF oidc_config %]
       <div class="form-box">
         <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
-            [% tprintf(loc('Login with %s'), c.cobrand.feature('oidc_login').display_name) %]
+            [% tprintf(loc('Login with %s'), oidc_config.display_name) %]
         </button>
       </div>
     [% END %]

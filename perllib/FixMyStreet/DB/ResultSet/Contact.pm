@@ -59,7 +59,7 @@ sub translated {
     my $rs = shift;
     my $schema = $rs->result_source->schema;
     $rs->search(undef, {
-        '+columns' => { 'msgstr' => 'translations.msgstr' },
+        '+columns' => { 'msgstr' => \"COALESCE(translations.msgstr, me.category)" },
         join => 'translations',
         bind => [ 'category', $schema->lang, 'contact' ],
     });

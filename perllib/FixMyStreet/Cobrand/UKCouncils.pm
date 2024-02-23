@@ -38,6 +38,7 @@ sub path_to_email_templates {
     my $paths = [
         FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code ),
         FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet-uk-councils' ),
         FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
     ];
     return $paths;
@@ -171,15 +172,41 @@ sub area_check {
 
     my $councils = $params->{all_areas};
 
-    # The majority of cobrands only cover a single area, but e.g. Northamptonshire
-    # covers multiple so we need to handle that situation.
-    my $council_area_ids = $self->council_area_id;
-    $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
-    foreach (@$council_area_ids) {
-        return 1 if defined $councils->{$_};
-    }
+    return 1 if $self->responsible_for_areas($councils);
 
     return ( 0, $self->area_check_error_message($params, $context) );
+}
+
+=head2 responsible_for_areas
+
+Tests to see if the cobrand is responsible for a location. This is done through
+checking if it has the area set in council_area_id and also checking if the
+coverage is limited only to an overlapping asset by testing the hook
+report_is_on_cobrand_asset
+
+=cut
+
+sub responsible_for_areas {
+    my ($self, $councils) = @_;
+
+    if ($self->can('check_report_is_on_cobrand_asset')) {
+        # This will need changing for two tier councils
+        if (grep ($self->council_area_id->[0] == $_, keys %$councils)) {
+            return 1;
+        } else {
+            return $self->check_report_is_on_cobrand_asset($self->council_area);
+        }
+    } else {
+        # The majority of cobrands only cover a single area, but e.g. Northamptonshire
+        # covers multiple so we need to handle that situation.
+        my $council_area_ids = $self->council_area_id;
+        $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+        foreach (@$council_area_ids) {
+            return 1 if defined $councils->{$_};
+        }
+
+        return 0;
+    }
 }
 
 sub area_check_error_message {
@@ -260,7 +287,7 @@ sub owns_problem {
 # then show pins for the other council as grey
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if !$self->owns_problem( $p );
+    return 'grey' if $context ne 'reports' && !$self->owns_problem($p);
     return $self->next::method($p, $context);
 }
 
@@ -314,6 +341,11 @@ sub available_permissions {
     $perms->{Problems}->{contribute_as_body} = "Create reports/updates as " . $self->council_name;
     $perms->{Problems}->{view_body_contribute_details} = "See user detail for reports created as " . $self->council_name;
     $perms->{Users}->{user_assign_areas} = "Assign users to areas in " . $self->council_name;
+
+    my $features = $self->feature('waste_features') || {};
+    if ( $features->{admin_config_enabled} ) {
+        $perms->{Waste}->{wasteworks_config} = "Can edit WasteWorks configuration";
+    }
 
     return $perms;
 }
@@ -381,6 +413,8 @@ sub munge_report_new_bodies {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
     }
+
+    $self->call_hook(munge_overlapping_asset_bodies => $bodies);
 }
 
 sub munge_report_new_contacts {
@@ -418,6 +452,9 @@ sub munge_report_new_contacts {
         my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
         $nh->national_highways_cleaning_groups($contacts);
     }
+
+    $self->call_hook(munge_cobrand_asset_categories => $contacts);
+
 }
 
 =item wasteworks_config
@@ -670,6 +707,18 @@ sub csv_staff_roles {
         push @{$userroles{$user_id}}, $role;
     }
     return \%userroles;
+}
+
+sub csv_active_planned_reports {
+    my ($self) = @_;
+
+    my %reports_to_user;
+    my @cobrand_users = FixMyStreet::DB->resultset('User')->search({ from_body => $self->body->id});
+
+    for my $user (@cobrand_users) {
+        map { $reports_to_user{$_->report_id} = $user->name } @{$user->active_user_planned_reports};
+    }
+    return \%reports_to_user;
 }
 
 sub nearby_distances {

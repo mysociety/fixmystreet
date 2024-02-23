@@ -8,10 +8,11 @@ FixMyStreet::Roles::Open311Alloy - role for adding various Open311 things specif
 =cut
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
+    $params->{upload_files_for_updates} = 1;
 }
 
 sub open311_extra_data_include {
@@ -26,6 +27,8 @@ sub open311_extra_data_include {
           value => $row->detail },
         { name => 'category',
           value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group', '') },
     ];
 
     return $open311_only;

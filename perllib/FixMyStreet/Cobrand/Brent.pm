@@ -11,12 +11,20 @@ Brent is a London borough using FMS and WasteWorks
 package FixMyStreet::Cobrand::Brent;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use Moo;
+
+# We use the functionality of bulky waste, though it's called small items
+with 'FixMyStreet::Roles::CobrandBulkyWaste';
+
 use strict;
 use warnings;
 use Moo;
 use DateTime;
 use DateTime::Format::Strptime;
 use Try::Tiny;
+use LWP::Simple;
+use URI;
+use JSON::MaybeXS;
 
 =head1 INTEGRATIONS
 
@@ -37,11 +45,23 @@ with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Roles::CobrandEcho';
 with 'FixMyStreet::Roles::SCP';
+use Integrations::Paye;
 
-sub council_area_id { return 2488; }
+# Brent covers some of the areas around it so that it can handle near-boundary reports
+sub council_area_id { return [2488, 2505, 2489, 2487]; } # 2505 Camden, 2489 Barnet, 2487 Harrow
 sub council_area { return 'Brent'; }
 sub council_name { return 'Brent Council'; }
 sub council_url { return 'brent'; }
+
+my $BRENT_CONTAINERS = {
+    1 => 'Blue rubbish sack',
+    16 => 'General rubbish bin (grey bin)',
+    8 => 'Clear recycling sack',
+    6 => 'Recycling bin (blue bin)',
+    11 => 'Food waste caddy',
+    13 => 'Garden waste (green bin)',
+    46 => 'Paper and cardboard blue sack',
+};
 
 =head1 DESCRIPTION
 
@@ -127,6 +147,8 @@ sub disambiguate_location { {
 
 =item * Filters down search results to be the street name and the postcode only
 
+=back
+
 =cut
 
 sub geocoder_munge_results {
@@ -135,7 +157,140 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Brent, London, Greater London, England//;
 }
 
-=back
+=head2 check_report_is_on_cobrand_asset
+
+If the location is covered by an area of differing responsibility (e.g. Brent
+in Camden, or Camden in Brent), return true (either 1 if an area name is
+provided, or the name of the area if not).
+
+=cut
+
+sub check_report_is_on_cobrand_asset {
+    my ($self, $council_area) = shift @_;
+
+    my $lat = $self->{c}->stash->{latitude};
+    my $lon = $self->{c}->stash->{longitude};
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+
+    my $cfg = {
+        url => "https://$host/mapserver/brent",
+        srsname => "urn:ogc:def:crs:EPSG::4326",
+        typename => "BrentDiffs",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$lon,$lat</gml:coordinates></gml:Point></Contains></Filter>",
+        outputformat => 'GML3',
+    };
+
+    my $features = $self->_fetch_features($cfg, -1, -1, 1);
+
+    if ($$features[0]) {
+        if ($council_area) {
+            if ($$features[0]->{'ms:BrentDiffs'}->{'ms:name'} eq $council_area) {
+                return 1;
+            }
+        } else {
+            return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
+        }
+    }
+}
+
+=head2 munge_overlapping_asset_bodies
+
+Alters the list of available bodies for the location,
+depending on calculated responsibility. After this function,
+the bodies list will be the relevant bodies for the point,
+though categories may need to be altered later on.
+
+=cut
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    # in_area will be true if the point is within the administrative area of Brent
+    my $in_area = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset;
+
+    if ($in_area) {
+        # In the area of Brent...
+        if (!$cobrand || $cobrand eq 'Brent') {
+            # ...Brent's responsibility - remove the other bodies covering the Brent area
+            %$bodies = map { $_->id => $_ } grep {
+                $_->name ne 'Camden Borough Council' &&
+                $_->name ne 'Barnet Borough Council' &&
+                $_->name ne 'Harrow Borough Council'
+                } values %$bodies;
+        } else {
+            # ...someone else's responsibility, take out the ones definitely not responsible
+            my %cobrands = (Harrow => 'Harrow Borough Council', Camden => 'Camden Borough Council', Barnet => 'Barnet Borough Council');
+            my $selected = $cobrands{$cobrand};
+            %$bodies = map { $_->id => $_ } grep {
+                $_->name eq $selected || $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+            } values %$bodies;
+        }
+    } else {
+        # Not in the area of Brent...
+        if (!$cobrand || $cobrand ne 'Brent') {
+            # ...not Brent's responsibility - remove Brent
+            %$bodies = map { $_->id => $_ } grep {
+                $_->name ne 'Brent Council'
+                } values %$bodies;
+        } else {
+            # ...Brent's responsibility - leave (both) bodies alone
+        }
+    }
+}
+
+=head2 munge_cobrand_asset_categories
+
+If we're in an overlapping area, we want to take the street categories
+of one body, and the non-street categories of the other.
+
+=cut
+
+sub munge_cobrand_asset_categories {
+    my ($self, $contacts) = @_;
+
+    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %non_street = (
+        'Barnet' => { map { $_ => 1 } @{ $self->_barnet_non_street } },
+        'Camden' => { map { $_ => 1 } @{ $self->_camden_non_street } },
+        'Harrow' => { map { $_ => 1 } @{ $self->_harrow_non_street } },
+    );
+
+    # in_area will be true if the point is within the administrative area of Brent
+    my $in_area = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset || '';
+    return unless $cobrand;
+
+    my $brent_body = $self->body->id;
+    if (!$in_area && $cobrand eq 'Brent') {
+        # Outside the area of Brent, but Brent's responsibility
+        my $area;
+        if (grep {$_->{name} eq 'Camden Borough Council'} values %{$self->{c}->stash->{all_areas}}){
+            $area = 'Camden';
+        } elsif (grep {$_->{name} eq 'Harrow Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
+            $area = 'Harrow';
+        }  elsif (grep {$_->{name} eq 'Barnet Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
+            $area = 'Barnet';
+        };
+        my $other_body = $bodies{$area . " Borough Council"};
+
+        # Remove the non-street contacts of Brent
+        @$contacts = grep { !($_->email !~ /^Symology/ && $_->body_id == $brent_body) } @$contacts;
+        # Remove the street contacts of the other
+        @$contacts = grep { !(!$non_street{$area}{$_->category} && $_->body_id == $other_body->id) } @$contacts
+            if $other_body;
+    } elsif ($in_area && $cobrand ne 'Brent') {
+        # Inside the area of Brent, but not Brent's responsibility
+        my $other_body = $bodies{$cobrand . " Borough Council"};
+        # Remove the street contacts of Brent
+        @$contacts = grep { !($_->email =~ /^Symology/ && $_->body_id == $brent_body) } @$contacts;
+        # Remove the non-street contacts of the other
+        @$contacts = grep { !($non_street{$cobrand}{$_->category} && $_->body_id == $other_body->id) } @$contacts
+            if $other_body;
+    }
+}
 
 =head2 pin_colour
 
@@ -173,7 +328,7 @@ sub categories_restriction {
     return $rs->search( { 'me.category' => { '-not_like' => 'River Piers%' } } );
 }
 
-=head2 social_auth_enabled and user_from_oidc
+=head2 social_auth_enabled, user_from_oidc, and oidc_config
 
 =over 4
 
@@ -206,6 +361,150 @@ sub user_from_oidc {
 
 =cut
 
+=item * Brent FMS and WasteWorks have separate OIDC configurations
+
+This code figures out the correct OIDC config based on the hostname used
+for the request.
+
+=cut
+
+sub oidc_config {
+    my $self = shift;
+
+    my $cfg = $self->{c}->cobrand->feature('oidc_login');
+    my $host = $self->{c}->req->uri->host;
+
+    if ($cfg->{hosts} && $cfg->{hosts}->{$host}) {
+        return $cfg->{hosts}->{$host};
+    }
+
+    return $cfg;
+}
+
+=head2 Only show reports on map for last 3 months
+
+Brent only show 3 months of report history on the map rather than default 6 months
+
+=cut
+
+sub report_age { '3 months' }
+
+=head2 dashboard_export_problems_add_columns
+
+Brent have various additional columns for extra report data.
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        (
+            street_name => 'Street Name',
+            location_name => 'Location Name',
+            name => 'Created By',
+            user_email => 'Email',
+            usrn => 'USRN',
+            uprn => 'UPRN',
+            external_id => 'External ID',
+            image_included => 'Does the report have an image?',
+
+            InspectionDate => "Inspection date",
+            GradeLitter => "Grade for Litter",
+            GradeDetritus => "Grade for Detritus",
+            GradeGraffiti => "Grade for Graffiti",
+            GradeFlyPosting => "Grade for Fly-posting",
+            GradeWeeds => "Grade for Weeds",
+            GradeOverall => "Overall Grade",
+
+            flytipping_did_you_see => 'Did you see the fly-tipping take place',
+            flytipping_statement => "If 'Yes', are you willing to provide a statement?",
+            flytipping_quantity => 'How much waste is there',
+            flytipping_type => 'Type of waste',
+
+            container_req_action => 'Container Request Action',
+            container_req_type => 'Container Request Container Type',
+            container_req_reason => 'Container Request Reason',
+
+            missed_collection_id => 'Service ID',
+            map { "item_" . $_ => "Small Item $_" } (1..11)
+        )
+    );
+
+    my $values;
+    if (my $flytipping = $self->body->contacts->search({ category => 'Fly-tipping' })->first) {
+        foreach my $field (@{$flytipping->get_extra_fields}) {
+            next unless @{$field->{values} || []};
+            foreach (@{$field->{values}}) {
+                $values->{$field->{code}}{$_->{key}} = $_->{name};
+            }
+        }
+    }
+
+    my $flytipping_lookup = sub {
+        my ($report, $field) = @_;
+        my $v = $csv->_extra_field($report, $field) // return '';
+        return $values->{$field}{$v} || '';
+    };
+
+    my $request_lookups = {
+        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
+        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
+        type => {
+            %$BRENT_CONTAINERS,
+            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
+        },
+    };
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $id;
+        $id = $csv->_extra_field($report, 'Container_Request_Action') || '';
+        my $container_req_action = $request_lookups->{action}{$id} || $id;
+        $id = $csv->_extra_field($report, 'Container_Request_Container_Type') || '';
+        my $container_req_type = $request_lookups->{type}{$id} || $id;
+        $id = $csv->_extra_field($report, 'Container_Request_Reason') || '';
+        my $container_req_reason = $request_lookups->{reason}{$id} || $id;
+
+        my $data = {
+            location_name => $csv->_extra_field($report, 'location_name'),
+            $csv->dbi ? (
+                street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
+                image_included => $report->{photo} ? 'Y' : 'N',
+            ) : (
+                street_name => $report->nearest_address_parts->{street},
+                name => $report->name || '',
+                user_email => $report->user->email || '',
+                image_included => $report->photo ? 'Y' : 'N',
+                external_id => $report->external_id || '',
+            ),
+            usrn => $csv->_extra_field($report, 'usrn'),
+            uprn => $csv->_extra_field($report, 'uprn'),
+            InspectionDate => $csv->_extra_field($report, 'InspectionDate'),
+            GradeLitter => $csv->_extra_field($report, 'GradeLitter'),
+            GradeDetritus => $csv->_extra_field($report, 'GradeDetritus'),
+            GradeGraffiti => $csv->_extra_field($report, 'GradeGraffiti'),
+            GradeFlyPosting =>$csv->_extra_field($report, 'GradeFlyPosting'),
+            GradeWeeds => $csv->_extra_field($report, 'GradeWeeds'),
+            GradeOverall => $csv->_extra_field($report, 'GradeOverall'),
+            flytipping_did_you_see => $flytipping_lookup->($report, 'Did_you_see_the_Flytip_take_place?_'),
+            flytipping_statement => $flytipping_lookup->($report, 'Are_you_willing_to_be_a_WItness?_'),
+            flytipping_quantity => $flytipping_lookup->($report, 'Flytip_Size'),
+            flytipping_type => $flytipping_lookup->($report, 'Flytip_Type'),
+            container_req_action => $container_req_action,
+            container_req_type => $container_req_type,
+            container_req_reason => $container_req_reason,
+            missed_collection_id => $csv->_extra_field($report, 'service_id'),
+        };
+
+        my $extra = $csv->_extra_metadata($report);
+        %$data = (%$data, map {$_ => $extra->{$_} || ''} grep { $_ =~ /^(item_\d+)$/ } keys %$extra);
+
+        return $data;
+    });
+}
+
 =head2 open311_config
 
 Sends all photo urls in the Open311 data
@@ -213,8 +512,9 @@ Sends all photo urls in the Open311 data
 =cut
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
 }
 
 =head2 open311_munge_update_params
@@ -229,13 +529,28 @@ sub open311_munge_update_params {
     $params->{service_request_id_ext} = $comment->problem->id;
 }
 
-=head2 open311_extra_data_include
+=head2 should_skip_sending_update
+
+Do not try and send updates to the ATAK backend.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $code = $update->problem->contact->email;
+    return 1 if $code =~ /^ATAK/;
+    return 0;
+}
+
+
+=head2 open311_update_missing_data
 
 =over 4
 
 =cut
 
-sub open311_extra_data_include {
+sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
 =item * Adds NSGRef from WFS service as app doesn't include road layer for Symology
@@ -246,24 +561,10 @@ WFS service at the point we're sending the report over Open311.
 
 =cut
 
-    my $open311_only;
     if ($contact->email =~ /^Symology/) {
-
         if (!$row->get_extra_field_value('NSGRef')) {
             if (my $ref = $self->lookup_site_code($row, 'usrn')) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
-            }
-        }
-
-=item * Copies UnitID into the details field for the Drains and gullies category
-
-=cut
-
-        if ($contact->groups->[0] eq 'Drains and gullies') {
-            if (my $id = $row->get_extra_field_value('UnitID')) {
-                $self->{brent_original_detail} = $row->detail;
-                my $detail = $row->detail . "\n\nukey: $id";
-                $row->detail($detail);
             }
         }
 
@@ -282,23 +583,85 @@ Same as Symology above, but different attribute name.
         }
     }
 
-    # The title field gets pushed to location fields in Echo/Symology, so include closest address
-    my $title = $row->title;
-    if ($h->{closest_address}) {
-        if (my $addr = $h->{closest_address}{name} || $h->{closest_address}{display_name} || '') {
-            $addr =~ s/, England, United Kingdom$//;
-            $title .= "; Nearest calculated address = $addr";
+=item * Adds location name from WFS service for reports in ATAK groups, if missing.
+
+=cut
+
+    my @atak_groups = keys %{$self->group_to_layer};
+    my $group = $row->get_extra_metadata('group');
+    my $group_is_atak = $group && grep { $_ eq $group } @atak_groups;
+    my $contact_location_name_field = $contact->get_extra_field(code => 'location_name');
+    my $row_location_name = $row->get_extra_field_value('location_name');
+
+    if ($group_is_atak && $contact_location_name_field && !$row_location_name) {
+        if (my $name = $self->lookup_location_name($row)) {
+            $row->update_extra_field({ name => 'location_name', description => 'Location name', value => $name });
         }
     }
-    push @$open311_only, { name => 'title', value => $title };
-    push @$open311_only, { name => 'description', value => $row->detail };
+}
+
+=back
+
+=head2 open311_extra_data_include
+
+=over 4
+
+=cut
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    my $open311_only;
+
+=item * Copies UnitID into the details field for the Drains and gullies category
+
+=cut
+
+    if ($contact->email =~ /^Symology/) {
+        if ($contact->groups->[0] eq 'Drains and gullies') {
+            if (my $id = $row->get_extra_field_value('UnitID')) {
+                my $detail = $row->detail . "\n\nukey: $id";
+                $row->detail($detail);
+            }
+        }
+        push @$open311_only, { name => 'report_url', value => $h->{url} };
+
+=item * Adds information for constructing the description on the open311 side.
+
+=cut
+
+    } elsif ($contact->email =~ /^ATAK/) {
+        push @$open311_only, { name => 'title', value => $row->title };
+        push @$open311_only, { name => 'report_url', value => $h->{url} };
+        push @$open311_only, { name => 'detail', value => $row->detail };
+        push @$open311_only, { name => 'group', value => $row->get_extra_metadata('group') || '' };
+    }
+
+=item * The title field gets pushed to location fields in Echo/Symology, so include closest address
+
+We use {closest_address}->summary as this is geocoder-agnostic.
+
+=cut
+
+    if ($contact->email =~ /^Echo/ || $contact->email =~ /^Symology/) {
+        my $title = $row->title;
+        if ( $h->{closest_address} ) {
+            my $addr = $h->{closest_address}->summary;
+
+            $addr =~ s/, England//;
+            $addr =~ s/, United Kingdom$//;
+
+            $title .= '; Nearest calculated address = ' . $addr;
+        }
+
+        push @$open311_only, { name => 'title', value => $title };
+        push @$open311_only, { name => 'description', value => $row->detail };
+    }
 
     return $open311_only;
 }
 
 =back
-
-=cut
 
 =head2 open311_extra_data_exclude
 
@@ -323,8 +686,144 @@ to put the UnitID in the detail field for sending
 =cut
 
 sub open311_post_send {
-    my ($self, $row) = @_;
-    $row->detail($self->{brent_original_detail}) if $self->{brent_original_detail};
+    my ($self, $row, $h, $sender) = @_;
+
+    if ($row->contact->email =~ /ATAK/ && $row->external_id) {
+        $row->update({ state => 'investigating' });
+    }
+
+    my $error = $sender->error;
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        if ($error =~ /Selected reservations expired|Invalid reservation reference/) {
+            $self->bulky_refetch_slots($row2);
+            $row->discard_changes;
+        }
+    });
+}
+
+=head2 lookup_location_name
+
+Looks up the location name from the WFS service
+
+=cut
+
+sub lookup_location_name {
+    my ($self, $report) = @_;
+
+    my $locations = $self->_atak_wfs_query($report);
+
+    # Match the first element like <ms:site_name>King Edward VII Park, Wembley</ms:site_name> and return the value
+    if ($locations && $locations =~ /<ms:site_name>(.+?)<\/ms:site_name>/) {
+        return $1;
+    }
+}
+
+=head2 report_validation
+
+Ensure ATAK reports are in ATAK-owned areas
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $self->body->id,
+        category => $report->category,
+    });
+
+    if ($contact && $contact->email =~ /^ATAK/) {
+        my $locations = $self->_atak_wfs_query($report);
+
+        if (index($locations, '<gml:featureMember>') == -1) {
+            # Location not found
+            $errors->{category} = 'Please select a location in a Brent maintained area';
+        }
+    }
+
+    return $errors;
+}
+
+sub _atak_wfs_query {
+    my ($self, $report) = @_;
+
+    my $group = $report->get_extra_metadata('group');
+    return unless $group;
+
+    my $asset_layer = $self->_group_to_asset_layer($group);
+    return unless $asset_layer;
+
+    my $uri = URI->new('https://tilma.mysociety.org/mapserver/brent');
+    $uri->query_form(
+        REQUEST => "GetFeature",
+        SERVICE => "WFS",
+        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
+        TYPENAME => $asset_layer,
+        VERSION => "1.1.0",
+        properties => 'site_name',
+    );
+
+    try {
+        return $self->_get($self->_wfs_uri($report, $uri));
+    } catch {
+        # Ignore WFS errors.
+        return '';
+    };
+}
+
+has group_to_layer => (
+    is => 'ro',
+    default => sub {
+        return {
+            'Parks and open spaces' => 'Parks_and_Open_Spaces',
+            'Allotments' => 'Allotments',
+            'Council estates grounds maintenance' => 'Housing',
+            'Roadside verges and flower beds' => 'Highway_Verges',
+        };
+    },
+);
+
+sub _group_to_asset_layer {
+    my ($self, $group) = @_;
+
+    return $self->group_to_layer->{$group};
+}
+
+sub _wfs_uri {
+    my ($self, $report, $base_uri) = @_;
+
+    # This fn may be called before cobrand has been set in the
+    # reporting flow and local_coords needs it to be set
+    $report->cobrand('brent') if !$report->cobrand;
+
+    my ($x, $y) = $report->local_coords;
+    my $buffer = 50; # metres
+    my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
+
+    my $filter = "
+    <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
+        <ogc:BBOX>
+            <ogc:PropertyName>Shape</ogc:PropertyName>
+            <gml:Envelope xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:27700'>
+                <gml:lowerCorner>$w $s</gml:lowerCorner>
+                <gml:upperCorner>$e $n</gml:upperCorner>
+            </gml:Envelope>
+        </ogc:BBOX>
+    </ogc:Filter>";
+    $filter =~ s/\n\s+//g;
+
+    $filter = URI::Escape::uri_escape_utf8($filter);
+
+    return "$base_uri&filter=$filter";
+}
+
+# Wrapper around LWP::Simple::get to make mocking in tests easier.
+sub _get {
+    my ($self, $uri) = @_;
+
+    return get($uri);
 }
 
 =head2 prevent_questionnaire_updating_status
@@ -359,19 +858,153 @@ sub admin_templates_external_status_code_hook {
     return $code;
 }
 
+=head2 Staff payments
+
+If a staff member is making a payment, then instead of using SCP, we redirect
+to Paye. We also need to check the completed payment against the same source.
+
+=cut
+
+around waste_cc_get_redirect_url => sub {
+    my ($orig, $self, $c, $back) = @_;
+
+    if ($c->stash->{is_staff}) {
+        my $payment = Integrations::Paye->new({
+            config => $self->feature('payment_gateway')
+        });
+
+        my $p = $c->stash->{report};
+        my $uprn = $p->get_extra_field_value('uprn');
+
+        my $amount = $p->get_extra_field_value( 'pro_rata' );
+        unless ($amount) {
+            $amount = $p->get_extra_field_value( 'payment' );
+        }
+        my $admin_fee = $p->get_extra_field_value('admin_fee');
+
+        my $redirect_id = mySociety::AuthToken::random_token();
+        $p->set_extra_metadata('redirect_id', $redirect_id);
+        $p->update;
+
+        my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
+        my $address = $c->stash->{property}{address};
+        my @parts = split ',', $address;
+
+        my @items = ({
+            amount => $amount,
+            reference => $payment->config->{customer_ref},
+            description => $p->title,
+            lineId => $self->waste_cc_payment_line_item_ref($p),
+        });
+        if ($admin_fee) {
+            push @items, {
+                amount => $admin_fee,
+                reference => $payment->config->{customer_ref_admin_fee},
+                description => 'Admin fee',
+                lineId => $self->waste_cc_payment_admin_fee_line_item_ref($p),
+            };
+        }
+        my $result = $payment->pay({
+            returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
+            backUrl => $backUrl,
+            ref => $self->waste_cc_payment_sale_ref($p),
+            request_id => $p->id,
+            description => $p->title,
+            name => $p->name,
+            email => $p->user->email,
+            uprn => $uprn,
+            address1 => shift @parts,
+            address2 => shift @parts,
+            country => 'UK',
+            postcode => pop @parts,
+            items => \@items,
+            staff => $c->stash->{staff_payments_allowed} eq 'cnp',
+        });
+
+        if ( $result ) {
+            $c->stash->{xml} = $result;
+
+            # GET back
+            # requestId - should match above
+            # apnReference - transaction Ref, used later for query
+            # transactionState - InProgress
+            # invokeResult/status - Success/...
+            # invokeResult/redirectUrl - what is says
+            # invokeResult/errorDetails - what it says
+            if ( $result->{transactionState} eq 'InProgress' &&
+                 $result->{invokeResult}->{status} eq 'Success' ) {
+
+                 $p->set_extra_metadata('apnReference', $result->{apnReference});
+                 $p->update;
+
+                 my $redirect = $result->{invokeResult}->{redirectUrl};
+                 $redirect .= "?apnReference=$result->{apnReference}";
+                 return $redirect;
+             } else {
+                 # XXX - should this do more?
+                my $error = $result->{invokeResult}->{status};
+                $c->stash->{error} = $error;
+                return undef;
+             }
+         } else {
+            return undef;
+        }
+        return;
+    }
+
+    return $self->$orig($c, $back);
+};
+
+around garden_cc_check_payment_status => sub {
+    my ($orig, $self, $c, $p) = @_;
+
+    if (my $apn = $p->get_extra_metadata('apnReference')) {
+        my $payment = Integrations::Paye->new({
+            config => $self->feature('payment_gateway')
+        });
+
+        my $resp = $payment->query({
+            request_id => $p->id,
+            apnReference => $apn,
+        });
+
+        if ($resp->{transactionState} eq 'Complete') {
+            if ($resp->{paymentResult}->{status} eq 'Success') {
+                my $auth_details
+                    = $resp->{paymentResult}{paymentDetails}{authDetails};
+                $p->update_extra_metadata(
+                    authCode => $auth_details->{authCode},
+                    continuousAuditNumber => $resp->{paymentResult}{paymentDetails}{payments}{paymentSummary}{continuousAuditNumber},
+                );
+                $p->update_extra_field({ name => 'payment_method', value => 'csc' });
+                $p->update;
+
+                my $ref = $auth_details->{uniqueAuthId};
+                return $ref;
+            } else {
+                $c->stash->{error} = $resp->{paymentResult}->{status};
+                return undef;
+            }
+        } else {
+            $c->stash->{error} = $resp->{transactionState};
+            return undef;
+        }
+    }
+
+    return $self->$orig($c, $p);
+};
+
 =head2 waste_check_staff_payment_permissions
 
-Staff can make payments via entering a PAYE code.
+Staff can make payments via a PAYE endpoint.
 
 =cut
 
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
-
     return unless $c->stash->{is_staff};
-
-    $c->stash->{staff_payments_allowed} = 'paye';
+    $c->stash->{staff_payments_allowed} = 'paye-api';
 }
 
 =head2 waste_event_state_map
@@ -430,15 +1063,7 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-    $self->{c}->stash->{containers} = {
-        1 => 'Blue rubbish sack',
-        16 => 'General rubbish bin (grey bin)',
-        8 => 'Clear recycling sack',
-        6 => 'Recycling bin (blue bin)',
-        11 => 'Food waste caddy',
-        13 => 'Garden waste (green bin)',
-    };
-
+    $self->{c}->stash->{containers} = $BRENT_CONTAINERS;
     $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = (
@@ -447,6 +1072,7 @@ sub bin_services_for_address {
         269 => [ 8 ],
         316 => [ 11 ],
         317 => [ 13 ],
+        807 => [ 46 ],
     );
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
     my %quantity_max = (
@@ -455,6 +1081,7 @@ sub bin_services_for_address {
         269 => 1,
         316 => 1,
         317 => 5,
+        807 => 1,
     );
 
     $self->{c}->stash->{quantity_max} = \%quantity_max;
@@ -474,13 +1101,26 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # Small items collection event
+    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
+        $self->bulky_check_missed_collection($events, {
+            # Not Completed
+            18491 => {
+                all => 'the collection could not be completed',
+            },
+        });
+    }
+
     my @to_fetch;
     my %schedules;
     my @task_refs;
     my %expired;
+    my $calendar_save = {};
     foreach (@$result) {
         my $servicetask = $self->_get_current_service_task($_) or next;
         my $schedules = _parse_schedules($servicetask);
+        # Brent has two overlapping schedules for food
+        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316 || $_->{ServiceId} == 263;
         $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
@@ -489,18 +1129,26 @@ sub bin_services_for_address {
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
 
         # Check calendar allocation
-        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317) && $schedules->{description} =~ /every other/ && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
             my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
-            my $id = sprintf("%s-%s", $day, $week);
             my $links;
-            if ($_->{ServiceId} == 262) {
-                $links = $self->{c}->cobrand->feature('waste_calendar_links');
-                $self->{c}->stash->{calendar_link} = $links->{$id};
+            if ($_->{ServiceId} == 262 || $_->{ServiceId} == 807) {
+                if ($week) {
+                    $calendar_save->{number} = $week;
+                } elsif (($week) = $allocation->{RoundGroupName} =~ /WK(\w)/) {
+                    $calendar_save->{letter} = $week;
+                };
+                if ($calendar_save->{letter} && $calendar_save->{number}) {
+                    my $id = sprintf("%s-%s%s", $day, $calendar_save->{letter}, $calendar_save->{number});
+                    $links = $self->{c}->cobrand->feature('waste_calendar_links');
+                    $self->{c}->stash->{calendar_link} = $links->{$id};
+                }
             } elsif ($_->{ServiceId} == 317) {
-                $links = $self->{c}->cobrand->feature('ggw_calendar_links');
+                my $id = sprintf("%s-%s", $day, $week);
+                my $links = $self->{c}->cobrand->feature('ggw_calendar_links');
                 $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
             }
         }
@@ -510,7 +1158,9 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 0, @to_fetch);
+    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+
+    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
 
     my @out;
     my %task_ref_to_row;
@@ -531,16 +1181,26 @@ sub bin_services_for_address {
 
         my $garden = 0;
         my $garden_bins;
+        my $garden_sacks;
         my $garden_cost = 0;
-        my $garden_due = $self->waste_sub_due($schedules->{end_date});
-        my $garden_overdue = $expired{$_->{Id}};
+        my $garden_due;
+        my $garden_overdue;
         if ($service_name eq 'Garden waste') {
             $garden = 1;
+            $garden_due = $self->waste_sub_due($schedules->{end_date});
+            $garden_overdue = $expired{$_->{Id}};
             my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
             foreach (@$data) {
                 if ( $_->{DatatypeName} eq 'BRT - Paid Collection Container Quantity' ) {
                     $garden_bins = $_->{Value};
-                    $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                    # $_->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
+                    # until it gets to 9 when it corresponds to sacks
+                    if ($garden_bins == '9') {
+                        $garden_sacks = 1;
+                        $garden_cost = $self->garden_waste_sacks_cost_pa($garden_bins) / 100;
+                    } else {
+                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                    }
                 }
             }
             $request_max = $garden_bins;
@@ -556,6 +1216,7 @@ sub bin_services_for_address {
             service_name => $service_name,
             garden_waste => $garden,
             garden_bins => $garden_bins,
+            garden_sacks => $garden_sacks,
             garden_cost => $garden_cost,
             garden_due => $garden_due,
             garden_overdue => $garden_overdue,
@@ -623,55 +1284,21 @@ sub waste_subscription_types {
     };
 }
 
-sub _closed_event {
-    my $event = shift;
-    return 1 if $event->{ResolvedDate};
-    return 0;
-}
+sub missed_event_types { {
+    2936 => 'request',
+    2891 => 'missed',
+    2964 => 'bulky',
+} }
 
-sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
-    my $events;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $type = 'enquiry';
-        $type = 'request' if $event_type == 1062;
-        $type = 'missed' if $event_type == 918;
-
-        # Only care about open requests/enquiries
-        my $closed = _closed_event($_);
-        next if $type ne 'missed' && $closed;
-
-        if ($type eq 'request') {
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            my $container;
-            DATA: foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        $container = $_->{Value};
-                        last DATA;
-                    }
-                }
-            }
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            $events->{request}->{$container} = $report ? { report => $report } : 1;
-        } elsif ($type eq 'missed') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $service_id = $_->{ServiceId};
-            my $data = {
-                closed => $closed,
-                date => construct_bin_date($_->{EventDate}),
-            };
-            $data->{report} = $report if $report;
-            push @{$events->{missed}->{$service_id}}, $data;
-        } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
+around bulky_check_missed_collection => sub {
+    my ($orig, $self) = (shift, shift);
+    $orig->($self, @_);
+    if ($self->{c}->stash->{bulky_missed}) {
+        foreach (values %{$self->{c}->stash->{bulky_missed}}) {
+            $_->{service_name} = 'Small items';
         }
     }
-    return $events;
-}
+};
 
 sub image_for_unit {
     my ($self, $unit) = @_;
@@ -688,11 +1315,11 @@ sub image_for_unit {
         271 => "$base/bin-brown",
         267 => "$base/sack-black",
         269 => "$base/sack-clear",
+        807 => "$base/bag-blue",
+        bulky => "$base/electricals-batteries-textiles",
     };
     return $images->{$service_id};
 }
-
-sub bin_day_format { '%A, %-d~~~ %B' }
 
 sub service_name_override {
     my ($self, $service) = @_;
@@ -707,18 +1334,10 @@ sub service_name_override {
         271 => 'Communal food waste',
         267 => 'Rubbish (black sacks)',
         269 => 'Recycling (clear sacks)',
+        807 => 'Paper and cardboard (blue sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
-}
-
-sub clear_cached_lookups_property {
-    my ($self, $id) = @_;
-
-    my $key = "brent:echo:look_up_property:$id";
-    delete $self->{c}->session->{$key};
-    $key = "brent:echo:bin_services_for_address:$id";
-    delete $self->{c}->session->{$key};
 }
 
 sub within_working_days {
@@ -740,6 +1359,13 @@ sub waste_munge_report_data {
 
     my $address = $c->stash->{property}->{address};
     my $service = $c->stash->{services}{$id}{service_name};
+
+    my $cfg = $self->feature('echo');
+    my $service_id_missed = $cfg->{bulky_service_id_missed};
+    if (!$service && $id == $service_id_missed) {
+        $service = 'small items / clinical';
+    }
+
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
@@ -849,6 +1475,7 @@ sub waste_munge_request_data {
         8 => 269,
         11 => 316,
         13 => 317,
+        46 => 807,
     );
     $c->set_param('service_id', $service_id{$id});
 }
@@ -884,11 +1511,11 @@ sub waste_munge_request_form_data {
 
 =item * Cheque payments are not an option
 
-=item * Renewals can happen within 28 days
+=item * Renewals can happen within 90 days so they are available from beginning of Jan
 
 =cut
 
-sub waste_never_confirm_reports { 1 }
+sub waste_auto_confirm_report { 1 }
 sub waste_staff_choose_payment_method { 0 }
 sub waste_cheque_payments { 0 }
 
@@ -899,7 +1526,7 @@ sub garden_service_name { 'Garden waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
-sub garden_due_days { 28 }
+sub garden_due_days { 90 }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;
@@ -1080,6 +1707,129 @@ sub waste_get_pro_rata_cost {
     my $self = shift;
 
     return $self->feature('payment_gateway')->{ggw_cost};
+}
+
+sub bulky_collection_time { { hours => 7, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }
+sub bulky_cancel_by_update { 1 }
+sub bulky_collection_window_days { 28 }
+sub bulky_can_refund { 0 }
+sub bulky_free_collection_available { 0 }
+sub bulky_hide_later_dates { 1 }
+
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+    return $self->bulky_enabled;
+}
+
+sub collection_date {
+    my ($self, $p) = @_;
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+}
+
+sub _bulky_refund_cutoff_date { }
+
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_reservation} = $ref;
+
+    $data->{title} = "Small items collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Small items collection";
+    $data->{extra_Collection_Date} = $date;
+    $data->{extra_Exact_Location} = $data->{location};
+
+    my (%types);
+    my $max = $self->bulky_items_maximum;
+    my $other_item = 'Small electricals: Other item under 30x30x30 cm';
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            if ($item eq $other_item) {
+                $item .= ' (' . ($data->{"item_notes_$_"} || '') . ')';
+            }
+            $types{$item}++;
+            if ($item eq 'Tied bag of domestic batteries (min 10 - max 100)') {
+                $data->{extra_Batteries} = 1;
+            } elsif ($item eq 'Podback Bag') {
+                $data->{extra_Coffee_Pods} = 1;
+            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)') {
+                $data->{extra_Paint} = 1;
+            } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
+                $data->{extra_Textiles} = 1;
+            } else {
+                $data->{extra_Small_WEEE} = 1;
+            }
+        };
+    }
+    $data->{extra_Notes} = "Collection date: " . $self->bulky_nice_collection_date($date) . "\n";
+    $data->{extra_Notes} .= join("\n", map { "$types{$_} x $_" } sort keys %types);
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "location" => $p->get_extra_field_value('Exact_Location'),
+        "location_photo" => $p->get_extra_metadata("location_photo"),
+    };
+
+    my @fields = grep { /^item_\d/ } keys %{$p->get_extra_metadata};
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+        $saved_data->{"item_notes_$id"} = $p->get_extra_metadata("item_notes_$id");
+    }
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+
+    return $saved_data;
+}
+
+sub _barnet_non_street {
+    return [
+        'Abandoned vehicles',
+        'Graffiti',
+        'Dog fouling',
+        'Overhanging foliage',
+    ]
+};
+
+sub _camden_non_street {
+    return [
+        'Abandoned Vehicles',
+        'Dead animal',
+        'Flyposting',
+        'Public toilets',
+        'Recycling & rubbish (Missed bin)',
+        'Dott e-bike / e-scooter',
+        'Human Forest e-bike',
+        'Lime e-bike / e-scooter',
+        'Tier e-bike / e-scooter',
+    ]
+}
+
+sub _harrow_non_street {
+    return [
+        'Abandoned vehicles',
+        'Car parking',
+        'Graffiti',
+    ]
 }
 
 1;

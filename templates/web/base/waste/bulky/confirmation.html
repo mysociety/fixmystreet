@@ -1,35 +1,60 @@
+[%
+IF report.category == 'Bulky collection';
+    title = 'Bulky collection booking confirmed';
+ELSIF report.category == 'Small items collection';
+    title = 'Small items collection booking confirmed';
+ELSE;
+    title = 'Enquiry has been submitted';
+END;
+
+IF cobrand.moniker == 'sutton';
+    report_id = 'LBS-' _ report.id;
+ELSIF cobrand.moniker == 'kingston';
+    report_id = 'RBK-' _ report.id;
+ELSE;
+    report_id = report.id;
+END ~%]
+
 [% PROCESS 'waste/header.html' %]
 
-<div class="govuk-warning-text whole-page govuk-!-margin-bottom-9">
-    <div class="govuk-warning-text__img govuk-!-margin-bottom-5">
-       <span class="govuk-warning-text__icon success" aria-hidden="true">&#x2714;</span>
-    </div>
-    <div class="govuk-warning-text__content">
-        <span class="govuk-warning-text__assistive">Important information</span>
-        <h3 class="govuk-heading-l govuk-warning-text__heading">Collection booked</h3>
-        <dl>
-            <dt><strong>Booking reference number</strong></dt>
-            <dd class="govuk-!-margin-bottom-4">[% report.id %]</dd>
-            <dt><strong>Date of collection</strong></dt>
-            <dd class="govuk-!-margin-bottom-6">
-                <p class="govuk-!-margin-bottom-1">[% cobrand.bulky_nice_collection_date(report.get_extra_field_value('DATE')) %]</p>
-                <small style="max-width: 350px; display:block;">
-                    Item collection starts from [% cobrand.bulky_nice_collection_time %].
-                    Please have your items ready and dismantled if required.
-                </small>
-            </dd>
-          [% IF reference %]
-            <dt><strong>Payment reference</strong></dt>
-            <dd class="govuk-!-margin-bottom-4">[% reference %]</dd>
-          [% END %]
-        </dl>
-        [% message %]
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">
+      [% title %]
+  </h1>
+  <div class="govuk-panel__body">
+    [% IF c.cobrand.moniker == 'brent' %]
+      <p>Subject to the terms and conditions, our contractor will collect the items you have booked on [% cobrand.bulky_nice_collection_date(report) %].
+      <p>Please ensure your items are out for collection by [% cobrand.bulky_nice_collection_time %], clearly labelled in the exact location specified.
       [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
-        <p class="govuk-!-margin-bottom-2">We have sent you an email confirming this booking.</p>
-        <p>Can’t find our email? <strong>Check your spam folder.</strong></p>
+        <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
       [% END %]
-        <a href="[% c.uri_for_action('waste/bin_days', [ report.get_extra_field_value('property_id') ]) %]" class="btn btn-primary">Go back home</a>
-    </div>
+      <p>If you need to contact us about your booking please use the reference number:&nbsp;[% report_id %]</p>
+    [% ELSE %]
+      <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
+      <p>Item collection starts from [% cobrand.bulky_nice_collection_time %].&nbsp;
+        [%~ IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ~%]
+        Please have your items ready for collection.
+        [%~ ELSE ~%]
+        Please have your items ready and dismantled if required.
+        [%~ END ~%]
+      </p>
+      [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+      <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
+      [% END %]
+      [% IF c.cobrand.moniker == 'bromley' %]
+          <p>Your reference number is reference:&nbsp;[% report_id %]</p>
+      [% ELSE %]
+          <p>If you need to contact us about your application please use the application reference:&nbsp;[% report_id %]</p>
+      [% END %]
+      [% IF reference %]
+        <p>
+            Card payment reference: [% reference %]
+        </p>
+      [% END %]
+    [% END %]
+  </div>
 </div>
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]

@@ -79,6 +79,11 @@ $search-help-header-font-weight: normal;
 $search-help-header-font-size-desktop: 1.25em;
 $search-help-margin-desktop: -1em -1em 0 -1em;
 
+$postcodeform-color: $primary_b;
+$postcodeform-color-desktop: $primary_b;
+$form-hint-color: $primary_b;
+$form-hint-color-desktop: $primary_b;
+
 $dropzone-border-colour: $link-color;
 $dropzone-button-text: $white;
 $dropzone-button-background: $link-color;
@@ -122,3 +127,15 @@ $btn-secondary-border-color-hover: $gray-2;
 // Footer
 $footer-background-colour: $gray-1;
 $footer-colour: $primary_text;
+
+$front-main-color: $primary_b;
+$postcodeform-background:transparent;
+$front-main-background: transparent inline-image("../brent/images/logo-pattern-bolder_gray.svg") right center no-repeat;
+$front-main-color-desktop:$primary_b;
+$front-main-container-background-desktop: transparent;
+$front-main-background-desktop: transparent inline-image("../brent/images/logo-pattern-bolder_gray.svg") left -150px center no-repeat;
+$content-background-desktop: $base_bg;
+
+//Sticky navbar
+$mobile-sticky-sidebar-button-bg: $blue-2;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";

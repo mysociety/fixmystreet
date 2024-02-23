@@ -47,9 +47,20 @@ $mappage-header-height: 70px;
 $body-font: "proxima-nova","Helvetica","Arial",sans-serif;
 $border-radius: 0px;
 
+$postcodeform-background: transparent;
+
 // The original website uses a width of 1100px, however
 // the style guide uses 1024px 
 $container-max-width: 1100px;
+
+$dropzone-border-colour: $grey;
+$dropzone-button-text: $white;
+$dropzone-button-background: $green;
+$dropzone-button-border: $green;
+$dropzone-link-color--awakened: $grey;
+$dropzone-border-color--full: $red;
+$dropzone-background-color: $white;
+
 
 @mixin sutton-form-input($margin: 0.5em 0, $padding: 5px) {
     padding: $padding;
@@ -74,8 +85,8 @@ $container-max-width: 1100px;
 
     // lbs-button--tertiary class on Sutton website
     border: 2px solid $border-color;
-    color: $color;
-    background: $background-color;
+    color: $color !important;
+    background: $background-color !important;
     border-radius: $border-radius;
     padding: 0.5em;
 
@@ -84,13 +95,13 @@ $container-max-width: 1100px;
 
     // Make sure a.govuk-button elements with have visible text
     &:link, &:visited {
-        color: $color;
-        background: $background-color;
+        color: $color !important;
+        background: $background-color !important;
     }
 
     &:hover {
-        background: $color;
-        color: $background-color;
+        background: $color !important;
+        color: $background-color !important;
         text-decoration: none;
     }
 

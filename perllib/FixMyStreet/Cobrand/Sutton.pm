@@ -9,13 +9,7 @@ sub council_area_id { return 2498; }
 sub council_area { return 'Sutton'; }
 sub council_name { return 'Sutton Council'; }
 sub council_url { return 'sutton'; }
-
-sub admin_user_domain { ('kingston.gov.uk', 'sutton.gov.uk') }
-
-sub dashboard_extra_bodies {
-    my $kingston = FixMyStreet::Cobrand::Kingston->new->body;
-    return $kingston;
-}
+sub admin_user_domain { 'sutton.gov.uk' }
 
 =head2 waste_on_the_day_criteria
 
@@ -67,6 +61,9 @@ sub image_for_unit {
         return "$base/caddy-brown-large" if $container == 24;
     }
     my $service_id = $unit->{service_id};
+    if ($service_id eq 'bulky') {
+        return "$base/bulky-black";
+    }
     if ($service_id == 2243 && $unit->{schedule} =~ /fortnight/i) {
         # Communal fortnightly is a wheelie bin, not a large bin
         return "$base/bin-brown";
@@ -87,23 +84,31 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
-sub garden_waste_cc_munge_form_details {
+sub waste_cc_munge_form_details {
     my ($self, $c) = @_;
-
-    my $sha_passphrase = $self->feature('payment_gateway')->{sha_passphrase};
 
     $c->stash->{payment_amount} = $c->stash->{amount} * 100;
 
-    my $url = $c->uri_for(
-        'pay_complete',
-        $c->stash->{report}->id,
-        $c->stash->{report}->get_extra_metadata('redirect_id')
-    );
+    my $url = $c->uri_for_action(
+        '/waste/pay_complete', [
+            $c->stash->{report}->id,
+            $c->stash->{report}->get_extra_metadata('redirect_id')
+        ]);
 
     $c->stash->{redirect_url} = $url;
 
+    my ($pspid, $sha_passphrase);
+    if ($c->stash->{report}->category eq 'Bulky collection') {
+        $sha_passphrase = $c->stash->{payment_details}->{sha_passphrase_bulky};
+        $pspid = $c->stash->{payment_details}->{pspid_bulky};
+    } else {
+        $sha_passphrase = $c->stash->{payment_details}->{sha_passphrase};
+        $pspid = $c->stash->{payment_details}->{pspid};
+    }
+    $c->stash->{pspid} = $pspid;
+
     my $form_params = {
-        'PSPID' => $c->stash->{payment_details}->{pspid},
+        'PSPID' => $pspid,
         'ORDERID' => $c->stash->{reference},
         'AMOUNT' => $c->stash->{payment_amount},
         'CURRENCY' => 'GBP',
@@ -141,7 +146,13 @@ sub garden_waste_generate_sig {
 sub garden_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
-    my $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase};
+    my $passphrase;
+    if ($p->category eq 'Bulky collection') {
+        $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase_bulky};
+    } else {
+        $passphrase = $self->feature('payment_gateway')->{sha_out_passphrase};
+    }
+
     if ( $passphrase ) {
         my $sha = $c->get_param('SHASIGN');
 
@@ -168,5 +179,14 @@ sub garden_cc_check_payment_status {
         return undef;
     }
 }
+
+=head2 Bulky waste collection
+
+Sutton starts collections at 6am, and lets you cancel up until 6am.
+
+=cut
+
+sub bulky_collection_time { { hours => 6, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
 
 1;

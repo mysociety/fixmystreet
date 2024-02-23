@@ -20,7 +20,6 @@
 
 #front-main {
     padding: 3em 1em;
-    background: #ffffff;
 
     #postcodeForm {
         overflow: visible;
@@ -32,7 +31,7 @@
 }
 
 body.mappage {
-    $merton-header-height: 110px;
+    $merton-header-height: 100px;
     $merton-nav-height: 60px;
 
     #site-header,
@@ -47,27 +46,5 @@ body.mappage {
 
     .nav-wrapper {
         background-color: $merton-jade-j3;
-    }
-}
-
-body.twothirdswidthpage .content {
-
-    background: #ffffff;
-
-    aside {
-        background-color: #ffffff;
-    }
-
-    .sticky-sidebar {
-        left: 43em; // up from 42em now we have a wider container
-        top: 0; // full height of .content, so aside can move vertically
-        bottom: 0;
-    }
-
-    aside,
-    .sticky-sidebar aside {
-        position: static; // fallback
-        position: sticky;
-        top: 0;
     }
 }

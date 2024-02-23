@@ -8,16 +8,21 @@
             question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
         %]
 
-        <div class="hidden js-continue-draft">
+        <div class="hidden js-continue-draft draft-info-box">
             <p>You have a draft report made while offline:<br>
             <a href="#" class="btn continue-draft-btn">Continue draft report</a>
         </div>
-        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="js-geolocate">
+        <div class="hidden js-setting-location-for-draft draft-info-box">
+            <p>To continue draft<span class="js-draft-name"></span> enter its location.<br>
+            <a href="/" class="btn">Cancel</a>
+        </div>
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
             <div>
-                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint">
-                [% INCLUDE 'around/_postcode_submit_button.html' attr='id="sub"' %]
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint"
+                [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %]>
+                [% INCLUDE 'around/_postcode_submit_button.html' %]
             </div>
 
             [% IF partial_token %]

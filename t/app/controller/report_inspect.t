@@ -162,8 +162,9 @@ FixMyStreet::override_config {
             }
 
             $mech->get_ok("/");
-            ok $mech->find_link( text => 'All reports', url => $test->{good_link} );
-            ok !$mech->find_link( text => 'All reports', url => $test->{bad_link} );
+            my ($nav) = $mech->content =~ m{<ul class="nav-menu nav-menu--main">(.*?)</ul>}s;
+            like $nav, qr/$test->{good_link}/;
+            unlike $nav, qr/$test->{bad_link}/;
 
             $user->update( { from_body => $oxon } ) if $test->{unset_from_body};
         };

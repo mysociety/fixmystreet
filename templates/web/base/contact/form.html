@@ -61,35 +61,43 @@
 
   [% INCLUDE 'contact/who.html' %]
 
-  <label for="form_name">[% loc('Your name') %]</label>
-  [% IF field_errors.name %]
-     <div class="form-error">[% field_errors.name %]</div>
-  [% END %]
-  <input type="text" class="form-control required" name="name" id="form_name" value="[% form_name | html %]" size="30">
-
-  <label for="form_email">[% loc('Your email') %]</label>
-  [% IF field_errors.em %]
-     <div class="form-error">[% field_errors.em %]</div>
-  [% END %]
-  <input type="text" class="form-control required email" name="em" id="form_email" value="[% em | html %]" size="30">
-
-  <div class="form-group">
-    <label for="form_phone">[% loc('Your phone number') %]</label>
-    <span class="required-text required-text--optional">[% loc('optional') %]</span>
-    <input type="text" class="form-control extra.phone" name="extra.phone" id="form_phone" value="" size="30">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="form_name">[% loc('Your name') %]</label>
+    [% IF field_errors.name %]
+        <div class="form-error">[% field_errors.name %]</div>
+    [% END %]
+    <input type="text" class="govuk-input required" name="name" id="form_name" value="[% form_name | html %]" size="30">
   </div>
 
-  <label for="form_subject">[% loc('Subject') %]</label>
-  [% IF field_errors.subject %]
-     <div class="form-error">[% field_errors.subject %]</div>
-  [% END %]
-  <input type="text" class="form-control required" name="subject" id="form_subject" value="[% subject | html %]" size="30">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="form_email">[% loc('Your email') %]</label>
+    [% IF field_errors.em %]
+       <div class="form-error">[% field_errors.em %]</div>
+    [% END %]
+    <input type="text" class="govuk-input required email" name="em" id="form_email" value="[% em | html %]" size="30">
+  </div>
 
-  <label for="form_message">[% loc('Message') %]</label>
-  [% IF field_errors.message %]
-     <div class="form-error">[% field_errors.message %]</div>
-  [% END %]
-  <textarea class="form-control required" name="message" id="form_message" rows="7" cols="50">[% message | html %]</textarea>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="form_phone">[% loc('Your phone number') %]</label>
+    <span class="required-text required-text--optional">[% loc('optional') %]</span>
+    <input type="text" class="govuk-input extra.phone" name="extra.phone" id="form_phone" value="" size="30">
+  </div>
+
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="form_subject">[% loc('Subject') %]</label>
+    [% IF field_errors.subject %]
+       <div class="form-error">[% field_errors.subject %]</div>
+    [% END %]
+    <input type="text" class="govuk-input required" name="subject" id="form_subject" value="[% subject | html %]" size="30">
+  </div>
+
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="form_message">[% loc('Message') %]</label>
+    [% IF field_errors.message %]
+       <div class="form-error">[% field_errors.message %]</div>
+    [% END %]
+    <textarea class="govuk-textarea required" name="message" id="form_message" rows="7" cols="50">[% message | html %]</textarea>
+  </div>
 
   [% IF NOT problem AND NOT update %]
   <p>[% loc('If you are contacting us about a specific report or update please include a link to the report in the message.') %]</p>

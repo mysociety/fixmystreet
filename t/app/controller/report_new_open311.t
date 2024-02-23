@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use Test::LongString;
+use JSON::MaybeXS;
 use Web::Scraper;
 
 # disable info logs for this test run
@@ -431,6 +432,21 @@ subtest "Category extras includes form disabling string" => sub {
                     },
                 ],
             };
+
+            # The old mobile app has a === comparison for disable with the string "1"
+            my $J = JSON::MaybeXS->new->allow_nonref->utf8;
+            $output = $json->{by_category} ? $json->{by_category}{Pothole}{category_extra_json}[3] : $json->{category_extra_json}[3];
+            is_deeply $output, {
+                datatype_description => 'Please please ring',
+                code => 'dangerous',
+                required => 'false',
+                values => [
+                    { 'name' => 'Yes', 'key' => 'yes', 'disable' => "1" },
+                    { 'name' => 'No', 'key' => 'no' },
+                ],
+                description => 'Is it dangerous?'
+            };
+            is $J->encode($output->{values}[0]{disable}), '"1"';
         }
 
         # Test new non-JS form disabling flow

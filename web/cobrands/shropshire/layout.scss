@@ -101,26 +101,21 @@ body {
 }
 
 #front-main {
-    margin: 0 auto;
-    margin-top: 20px;
-    padding: 0 1em;
-    max-width: $container-max-width;
-    background: transparent;
+    margin-top: 4px;
 
     #front-main-container {
-        max-width: none;
-        background: #fff;
-        padding: 4%;
+        box-sizing: border-box;
+        padding: 2em;
         border-radius: 7px;
-    }
-
-    #postcodeForm {
-        overflow: visible;
     }
 }
 
-.content {
-    padding: 4%;
+.postcode-form-box {
+    overflow: visible;
+}
+
+.frontpage .content {
+    padding: 2em;
     border-radius: 7px;
 }
 
@@ -139,18 +134,6 @@ textarea.form-error {
 
 body.mappage #site-header {
     height: $mappage-header-height - 3px;
-}
-
-body.twothirdswidthpage .content .sticky-sidebar {
-    position: static;
-
-    aside {
-        position: static;
-        background: transparent;
-        padding: 0;
-        width: auto;
-        margin: 0 0 2em 0;
-    }
 }
 
 .shropshire-footer {

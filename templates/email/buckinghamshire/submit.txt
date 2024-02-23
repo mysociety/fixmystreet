@@ -28,14 +28,10 @@ Category: [% report.category %]
 
 Subject: [% report.title %]
 
-[%- IF report.category == 'Claim' %]
-Confirm reference: [% report.external_id %]
-[% END -%]
-
 Details: [% report.detail %]
 
 [% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description OR field.code %]: [% field.value %]
+[% field.description OR field.name %]: [% field.value %]
 
 [% END %][% END ~%]
 

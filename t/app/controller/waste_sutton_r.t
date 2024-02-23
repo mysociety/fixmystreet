@@ -102,7 +102,7 @@ FixMyStreet::override_config {
         $e->mock('GetTasks', sub { [] });
     };
     subtest 'Request a new bin' => sub {
-        $mech->get_ok('/waste/12345/request');
+        $mech->follow_link_ok( { text => 'Request a replacement bin, box or caddy' } );
 		# 19 (1), 24 (1), 16 (1), 1 (1)
         # missing, new_build, more
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
@@ -115,7 +115,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged";
         is $report->category, 'Request new container';
-        is $report->title, 'Request new Green paper and cardboard bin';
+        is $report->title, 'Request new Paper and Cardboard Green Wheelie Bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
         like $email, qr/please allow up to 20 working days/;
@@ -131,17 +131,9 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Missing";
-        is $report->title, 'Request new Green recycling box';
+        is $report->title, 'Request new Mixed Recycling Green Box (55L)';
     };
-    subtest 'Request bins from front page' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->submit_form_ok({ form_number => 7 });
-        $mech->content_contains('name="container-choice" value="1"');
-        $mech->content_contains('Green paper and cardboard bin');
-        $mech->content_contains('Green recycling box');
-        $mech->content_contains('Food waste bin (outdoor)');
-        $mech->content_contains('Brown rubbish bin');
-    };
+
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/12345/report');
 		$mech->content_contains('Food waste');
@@ -161,7 +153,7 @@ FixMyStreet::override_config {
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a mixed recycling collection as missed');
-        $mech->content_contains('Request a mixed recycling container');
+        $mech->content_lacks('Request a mixed recycling container');
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
@@ -211,7 +203,7 @@ FixMyStreet::override_config {
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A mixed recycling collection has been reported as missed');
-        $mech->content_contains('Request a mixed recycling container');
+        $mech->content_lacks('Request a mixed recycling container');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 1566,
@@ -248,6 +240,13 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-choice" value="18"');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
+    subtest 'Fetching property without services give Sutton specific error' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { [] });
+        $mech->get_ok('/waste/12345/');
+        $mech->content_contains('Oh no! Something has gone wrong');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
@@ -288,24 +287,6 @@ FixMyStreet::override_config {
     };
 };
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => ['kingston', 'sutton'],
-    MAPIT_URL => 'http://mapit.uk/',
-}, sub {
-    subtest 'Kingston staff can see Sutton admin' => sub {
-        $mech->host('sutton.example.org');
-        $mech->log_in_ok($staff->email);
-        $mech->get_ok('/admin/reports');
-        $mech->follow_link_ok({ text => "Edit" });
-    };
-    subtest 'Kingston staff can see Sutton data on their dashboard' => sub {
-        $mech->host('kingston.example.org');
-        $mech->get_ok('/dashboard?body=' . $body->id);
-        $mech->content_like(qr{<th scope="row">Total</th>\s*<td>4</td>});
-        $mech->submit_form_ok;
-    };
-};
-
 sub shared_echo_mocks {
     my $e = Test::MockModule->new('Integrations::Echo');
     $e->mock('GetPointAddress', sub {
@@ -321,6 +302,10 @@ sub shared_echo_mocks {
     $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     $e->mock('GetEventsForObject', sub { [] });
     $e->mock('GetTasks', sub { [] });
+    $e->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
     return $e;
 }
 

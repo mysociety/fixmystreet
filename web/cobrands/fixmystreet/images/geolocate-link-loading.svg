@@ -1,0 +1,17 @@
+<svg class="geolocate-link__loading" width="36" height="36" viewBox="-10 -10 36 36" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                 transform:  rotate(360deg);
+            }
+        }
+        .spin {
+            animation: 1.5s linear infinite spin;
+            transform-origin: 8px 8px;
+        }
+    </style>
+    <g class="spin" fill="#FFF" fill-rule="nonzero"><path d="M16 8a8 8 0 11-8-8v2a6 6 0 106 6z"></path><circle cx="8" cy="1" r="1"></circle><circle cx="15" cy="8" r="1"></circle></g>
+</svg>

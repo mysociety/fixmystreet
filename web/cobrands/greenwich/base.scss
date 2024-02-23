@@ -60,31 +60,17 @@ body.alertpage {
     }
 }
 
-body.twothirdswidthpage {
-    .sticky-sidebar {
-        .plain-list {
-            padding: 10px 0 0 0;
-        }
-    }
-}
-
-.item-list--reports__item,
-#front-main #postcodeForm {
+.item-list--reports__item {
     background-color: $greenwich_light_grey;
 }
 
-#front-main #postcodeForm {
+.postcode-form-box {
     margin-top: 1em;
     div {
         input#sub {
             background: $greenwich_red;
         }
     }
-}
-
-label[for="pc"] {
-    color: $greenwich_red;
-    text-align: left;
 }
 
 #front_stats {

@@ -10,13 +10,7 @@ sub council_area_id { return 2480; }
 sub council_area { return 'Kingston'; }
 sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
-
-sub admin_user_domain { ('kingston.gov.uk', 'sutton.gov.uk') }
-
-sub dashboard_extra_bodies {
-    my $sutton = FixMyStreet::Cobrand::Sutton->new->body;
-    return $sutton;
-}
+sub admin_user_domain { 'kingston.gov.uk' }
 
 =head2 waste_on_the_day_criteria
 
@@ -60,6 +54,10 @@ sub image_for_unit {
         return "";
     }
 
+    if ($unit->{service_id} eq 'bulky') {
+        return "$base/bulky-black";
+    }
+
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
     return "$base/bin-green" if $containers{12} && $self->{c}->stash->{container_recycling_bin};
@@ -81,5 +79,14 @@ sub image_for_unit {
     };
     return $images->{$service_id};
 }
+
+=head2 Bulky waste collection
+
+Kingston starts collections at 6:30am, and lets you cancel up until then.
+
+=cut
+
+sub bulky_collection_time { { hours => 6, minutes => 30 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30, days_before => 0 } }
 
 1;

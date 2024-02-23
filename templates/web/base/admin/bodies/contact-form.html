@@ -79,6 +79,11 @@
         Default is “[% form_title_placeholder %]”
     </p>
     <input type="text" class="form-control" id="title-hint" aria-describedby="title-hint-hint" name="title_hint" size="30" value="[% contact.get_extra_metadata('title_hint') %]">
+    <label for="detail-label">[% loc('Details label') %]</label>
+    <p class="form-hint" id="detail-label-hint">
+        Default is “[% form_detail_label %]”
+    </p>
+    <input type="text" class="form-control" id="detail-label" aria-describedby="detail-label-hint" name="detail_label" size="30" value="[% contact.get_extra_metadata('detail_label') %]">
     <label for="detail-hint">[% loc('Details hint text') %]</label>
     <p class="form-hint" id="detail-hint-hint">
         Default is “[% form_detail_placeholder %]”
@@ -144,6 +149,17 @@
       <input type="checkbox" name="prefer_if_multiple" value="1" id="prefer_if_multiple" [% ' checked' IF contact.extra.prefer_if_multiple %]>
       <label for="prefer_if_multiple">[% loc('Prefer this contact if multiple bodies have the same contact') %]</label>
       <span class='form-hint'>[% loc('Use this if there is a chance that multiple bodies covering the same area that have the same contacts and you want to just send reports to one, rather than multiple bodies') %]</span>
+    </p>
+
+    <p class="form-check">
+      <input type="checkbox" name="phone_required" value="1" id="phone_required" [% ' checked' IF contact.extra.phone_required %]>
+      <label for="phone_required">[% loc('Require a phone number to be provided') %]</label>
+    </p>
+
+    <p class="form-check">
+      <input type="checkbox" name="litter_category_for_he" value="1" id="litter_category_for_he" [% ' checked' IF contact.extra.litter_category_for_he %]>
+      <label for="litter_category_for_he">[% loc('Is a litter category for the purposes of receiving reports on National Highways roads') %]</label>
+      <span class='form-hint'>[% loc('Use this if a category should be considered a litter category where a council is responsible for litter on a section of Highways England road') %]</span>
     </p>
 
   [% IF body.can_be_devolved %]

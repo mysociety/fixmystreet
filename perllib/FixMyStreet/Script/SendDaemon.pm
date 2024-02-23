@@ -14,11 +14,17 @@ my $changeverboselevel;
 sub look_for_report {
     my ($opts) = @_;
 
+    my $db = FixMyStreet::DB->schema->storage;
     my $params = FixMyStreet::Script::Reports::construct_query($opts->debug);
-    my $unsent = FixMyStreet::DB->resultset('Problem')->search($params, {
-        for => \'UPDATE SKIP LOCKED',
-        rows => 1,
-    } )->single or return;
+    my $unsent = $db->txn_do(sub {
+        my $p = FixMyStreet::DB->resultset('Problem')->search($params, {
+            for => \'UPDATE SKIP LOCKED',
+            rows => 1,
+            order_by => \'RANDOM()'
+        } )->single;
+        $p->update({ send_state => 'processing' }) if $p;
+        return $p;
+    }) or return;
 
     print_log('debug', "Trying to send report " . $unsent->id);
     my $item = FixMyStreet::Queue::Item::Report->new(
@@ -32,6 +38,11 @@ sub look_for_report {
         $unsent->update_send_failed($_ || 'unknown error');
         print_log('info', '[', $unsent->id, "] Send failed: $_");
     };
+
+    $db->txn_do(sub {
+        my $p = FixMyStreet::DB->resultset('Problem')->search({ id => $unsent->id }, { for => \'UPDATE' } )->single;
+        $p->update({ send_state => 'unprocessed' }) if $p && $p->send_state eq 'processing';
+    });
 }
 
 sub look_for_update {
@@ -44,16 +55,28 @@ sub look_for_update {
     my $bodies = $updates->fetch_bodies;
     my $params = $updates->construct_query($opts->debug);
     my $comment = FixMyStreet::DB->resultset('Comment')
-        ->to_body([ keys %$bodies ])
-        ->search($params, { for => \'UPDATE SKIP LOCKED', rows => 1 })
-        ->single or return;
+        ->search($params, {
+            for => \'UPDATE SKIP LOCKED',
+            rows => 1,
+            order_by => \'RANDOM()'
+        })->single or return;
 
-    print_log('debug', "Trying to send update " . $comment->id);
-
-    my ($body) = grep { $bodies->{$_} } @{$comment->problem->bodies_str_ids};
-    $body = $bodies->{$body};
-
-    $updates->process_update($body, $comment);
+    my $problem = $comment->problem;
+    my ($body) = grep { $bodies->{$_} } @{$problem->bodies_str_ids};
+    if (!$body) {
+        $comment->update({ send_state => 'processed' });
+        print_log('debug', '[', $comment->id, '] marking as processed due to non matching bodies_str');
+    } elsif (!$problem->whensent && !$problem->is_open) {
+        $comment->update({ send_state => 'processed' });
+        print_log('debug', '[', $comment->id, '] marking as processed due to unsent problem, non-open problem state');
+    } elsif (!$problem->whensent) {
+        # Might just not be sent yet
+    } else {
+        # Okay to send!
+        $body = $bodies->{$body};
+        print_log('debug', "Trying to send update " . $comment->id);
+        $updates->process_update($body, $comment);
+    }
 }
 
 sub setverboselevel { $verbose = shift || 0; }

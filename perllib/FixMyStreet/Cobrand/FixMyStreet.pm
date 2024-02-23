@@ -2,9 +2,8 @@ package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
 
 use Moo;
-use LWP::Simple;
 use JSON::MaybeXS;
-use Try::Tiny;
+use List::Util qw(any);
 with 'FixMyStreet::Roles::BoroughEmails';
 
 use constant COUNCIL_ID_BROMLEY => 2482;
@@ -201,6 +200,16 @@ sub munge_report_new_bodies {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
     }
+
+    if ( $bodies{'Bristol City Council'} ) {
+        my $bristol = FixMyStreet::Cobrand::Bristol->new({ c => $self->{c} });
+        $bristol->munge_overlapping_asset_bodies($bodies);
+    }
+
+    if ( $bodies{'Brent Council'} ) {
+        my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
+        $brent->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 sub munge_report_new_contacts {
@@ -235,6 +244,11 @@ sub munge_report_new_contacts {
         my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
         $nh->national_highways_cleaning_groups($contacts);
     }
+
+    if ( $bodies{'Brent Council'} ) {
+        my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
+        $brent->munge_cobrand_asset_categories($contacts);
+    }
 }
 
 sub munge_unmixed_category_groups {
@@ -263,7 +277,7 @@ sub title_list {
     my $areas = shift;
     my $first_area = ( values %$areas )[0];
 
-    return ["MR", "MISS", "MRS", "MS", "DR"] if $first_area->{id} eq COUNCIL_ID_BROMLEY;
+    return ["MR", "MISS", "MRS", "MS", "DR", "PCSO", "PC", "N/A"] if $first_area->{id} eq COUNCIL_ID_BROMLEY;
     return undef;
 }
 
@@ -426,6 +440,12 @@ sub updates_disallowed {
     return $self->_updates_disallowed_check($type, $problem, $body_user);
 }
 
+=head2 body_disallows_state_change
+
+Determines whether state change is disallowed across the board.
+
+=cut
+
 sub body_disallows_state_change {
     my $self = shift;
     my ($problem) = @_;
@@ -571,6 +591,7 @@ sub reopening_disallowed {
     return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Southwark Council");
     return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
     return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Northumberland County Council");
+    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Gloucestershire County Council");
     return $self->next::method($problem);
 }
 
@@ -587,39 +608,30 @@ sub add_extra_area_types {
     return \@types;
 }
 
-sub user_survey_information {
+=head2 fetch_area_children
+
+If we are looking at the All Reports page for one of the extra London (TfL)
+bodies (the bike providers), we want the children to be the London councils,
+not all the wards of London.
+
+=cut
+
+sub fetch_area_children {
     my $self = shift;
-    my $c = $self->{c};
+    my ($area_ids, $body, $all_generations) = @_;
 
-    my $q = $c->stash->{questionnaire};
-    my $p = $q->problem;
-
-    my $count = FixMyStreet::DB->resultset("Problem")->search({ user_id => $p->user_id })->count;
-    my $by_user = do {
-        if ($count > 100) { '101+' }
-        elsif ($count > 50) { '51-100' }
-        elsif ($count > 20) { '21-50' }
-        elsif ($count > 10) { '11-20' }
-        elsif ($count > 5) { '6-10' }
-        elsif ($count > 1) { '2-5' }
-        else { '1' }
-    };
-
-    my $imd = get('https://tilma.mysociety.org/lsoa_to_decile.php?lat=' . $p->latitude . '&lon=' . $p->longitude);
-    $imd = try {
-        decode_json($imd);
-    };
-
-    my $uri = URI->new;
-    $uri->query_form(
-        ever_reported => $q->ever_reported,
-        been_fixed => $c->stash->{been_fixed},
-        category => $p->category,
-        num_reports_by_user => $by_user,
-        imd_decile => $imd->{UK_IMD_E_pop_decile},
-        cobrand => $p->cobrand,
-    );
-    return $uri->query;
+    my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
+    my $bodies = $features->{categories_restriction_bodies} || {};
+    $bodies = $bodies->{tfl} || [];
+    if ($body && any { $_ eq $body->name } @$bodies) {
+        my $areas = FixMyStreet::MapIt::call('areas', 'LBO');
+        foreach (keys %$areas) {
+            $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;
+        }
+        return $areas;
+    } else {
+        return $self->next::method(@_);
+    }
 }
 
 1;

@@ -1,0 +1,29 @@
+[% INCLUDE header.html
+    title = 'Unresponsive councils: What you can do', bodyclass = 'unresponsive-council fullwidthpage'
+%]
+
+<div class="unresponsive-council__header">
+  <h1>Bad news :(</h1>
+  <p><strong class="unresponsive-council-name">[% body.name %]</strong> no
+  longer accepts [% IF category %][% category | html %][% END %]
+  reports from Fill That Hole.</p>
+</div>
+
+<div class="unresponsive-council__body">
+  <p><strong class="unresponsive-council-name">[% body.name %]</strong> is one
+  of only a small number of councils that don’t accept reports from
+  Fill That Hole, so you will need to make your report directly to them on their
+  website.</p>
+
+  [% IF body.external_url %]
+  <a href="[% body.external_url %]" class="unresponsive-council-cta unresponsive-council-cta--primary">
+    <strong>Go to <span class="unresponsive-council-name">[% body.name %]</span>'s website</strong>
+  </a>
+  [% ELSE %]
+  <a href="https://www.google.co.uk/search?q=report+[% body.name | uri %]" class="unresponsive-council-cta unresponsive-council-cta--primary">
+    Find the website of <span class="unresponsive-council-name">[% body.name %]</span> and <strong>report your issue directly</strong>
+  </a>
+  [% END %]
+</div>
+
+[% INCLUDE footer.html %]

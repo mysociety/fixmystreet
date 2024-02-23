@@ -264,6 +264,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'Look up of address not in correct borough' => sub {
         $mech->get_ok('/waste');
@@ -349,6 +350,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'Garden type lookup' => sub {
         set_fixed_time('2021-03-09T17:00:00Z');
@@ -494,7 +496,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
 
-
+        is $form->value('ORDERID'), 'LBS-' . $new_report->id . '-' . '1000000002';
         is $form->value("AMOUNT"), 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report);
 
@@ -508,6 +510,12 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_contains('We will aim to deliver your garden waste bin ');
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        # Someone double-clicked
+        $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+        check_extra_data_post_confirm($new_report);
         $mech->content_contains('We will aim to deliver your garden waste bin ');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
@@ -1082,9 +1090,9 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check staff renewal' => sub {
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
         foreach ({ email => 'a_user@example.net' }, { phone => '07700900002' }) {
-            $mech->log_out_ok;
-            $mech->log_in_ok($staff_user->email);
             $mech->get_ok('/waste/12345/garden_renew');
             $mech->submit_form_ok({ with_fields => {
                 name => 'a user',
@@ -1093,6 +1101,10 @@ FixMyStreet::override_config {
                 bins_wanted => 1,
                 payment_method => 'credit_card',
             }});
+            if (!$_->{email}) {
+                $mech->content_contains("Please provide an email");
+                next;
+            }
             $mech->content_contains('20.00');
 
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1212,7 +1224,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
-        $mech->content_lacks('password', 'no password field');
+        $mech->content_lacks('name="password', 'no password field');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
@@ -1257,7 +1269,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        $mech->content_contains("Cheque reference field is required");
+        $mech->content_contains("Payment reference field is required");
         $mech->submit_form_ok({ with_fields => {
             cheque_reference => 'Cheque123',
         } });
@@ -1431,6 +1443,13 @@ sub check_extra_data_post_confirm {
     is $report->get_extra_field_value('LastPayMethod'), $pay_method, 'correct echo payment method field';
     is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+}
+
+sub mock_CancelReservedSlotsForEvent {
+    shift->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
 }
 
 done_testing;

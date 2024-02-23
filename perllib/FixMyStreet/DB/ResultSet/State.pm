@@ -18,11 +18,17 @@ sub _hardcoded_states {
 # we cache these in the package on first use, and clear on update.
 
 sub clear {
+    my $rs = shift;
     Memcached::set('states', '');
+    my $cache = $rs->result_source->schema->cache;
+    delete $cache->{states};
 }
 
 sub states {
     my $rs = shift;
+
+    my $cache = $rs->result_source->schema->cache;
+    return $cache->{states} if $cache->{states};
 
     my $states = Memcached::get('states');
     # If tests are run in parallel, the cached state in Memcached could be
@@ -31,6 +37,7 @@ sub states {
     if ($states && !FixMyStreet->test_mode) {
         # Need to reattach schema
         $states->[0]->result_source->schema( $rs->result_source->schema ) if $states->[0];
+        $cache->{states} = $states;
         return $states;
     }
 
@@ -45,6 +52,7 @@ sub states {
     my @states = ($rs->_hardcoded_states, $rs->search(undef, { order_by => 'label' })->all);
     $_->translated->{name} = $trans{$_->id} || {} foreach @states;
     $states = \@states;
+    $cache->{states} = $states;
     Memcached::set('states', $states);
     return $states;
 }

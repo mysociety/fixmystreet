@@ -210,7 +210,8 @@ sub dashboard_export_updates_add_columns {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    return unless $csv->user->has_body_permission_to('export_extra_columns');
+    # If running via DBI export, we need the extra columns saved
+    return unless $csv->dbi || $csv->user->has_body_permission_to('export_extra_columns');
 
     $csv->add_csv_columns(
         user_email => 'User Email',
@@ -227,14 +228,14 @@ sub dashboard_export_problems_add_columns {
 
     $csv->csv_extra_data(sub {
         my $report = shift;
-
-        my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
-        my $attribute_data = join "; ", map { $_->{name} . " = " . $_->{value} } @{ $report->get_extra_fields };
+        my $attribute_data = join "; ", map { $_->{name} . " = " . $_->{value} } @{ $csv->_extra_field($report) };
         return {
-            user_email => $report->user->email || '',
-            user_phone => $report->user->phone || '',
-            staff_user => $staff_user,
             attribute_data => $attribute_data,
+            $csv->dbi ? () : (
+                user_email => $report->user->email || '',
+                user_phone => $report->user->phone || '',
+                staff_user => $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup),
+            ),
         };
     });
 }

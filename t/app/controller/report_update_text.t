@@ -242,6 +242,7 @@ for my $test (
         },
         field_errors => [
             "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
+            "There was a problem with your login information. If you cannot remember your password, or do not have one, please select \x{2018}Fill in your details manually\x{2019}.",
             'Please enter your name', # FIXME Not really necessary error
         ],
     },

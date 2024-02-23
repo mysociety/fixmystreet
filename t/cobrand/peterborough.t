@@ -1,5 +1,7 @@
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
+use File::Temp 'tempdir';
 use Test::MockModule;
 use CGI::Simple;
 use Test::LongString;
@@ -19,6 +21,9 @@ $mock->mock('_fetch_features', sub {
         # adopted roads
         } elsif ( $x == 552721 && $args->{url} =~ m{7/query} ) {
             return [ { geometry => { type => 'Point' } } ];
+        } elsif ( $x == 551973 && $args->{url} =~ m{7/query} ) {
+            # site_code lookup test
+            return [ { geometry => { type => 'Polygon', coordinates => [ [ [ 551975, 298244 ], [ 551975, 298244 ] ] ] }, properties => { USRN => "ROAD" } } ];
         }
         return [];
     }
@@ -57,7 +62,7 @@ subtest 'open311 request handling', sub {
                 { description => 'Tree code', code => 'colour', required => 'True', automated => 'hidden_field' },
             ] },
         );
-        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Trees', latitude => 52.5608, longitude => 0.2405, cobrand => 'peterborough' });
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { category => 'Trees', latitude => 52.5609, longitude => 0.2405, cobrand => 'peterborough' });
         $p->push_extra_fields({ name => 'emergency', value => 'no'});
         $p->push_extra_fields({ name => 'private_land', value => 'no'});
         $p->push_extra_fields({ name => 'PCC-light', value => 'whatever'});
@@ -80,6 +85,7 @@ subtest 'open311 request handling', sub {
         is $c->param('attribute[private_land]'), undef, 'no private_land param sent';
         is $c->param('attribute[PCC-light]'), undef, 'no pcc- param sent';
         is $c->param('attribute[tree_code]'), 'tree-42', 'tree_code param sent';
+        is $c->param('attribute[site_code]'), 'ROAD', 'site_code found';
     };
 };
 
@@ -374,6 +380,7 @@ subtest "flytipping on non PCC land is emailed" => sub {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     $report->update({
         state => 'unable to fix',
     });
@@ -381,11 +388,26 @@ subtest 'Dashboard CSV extra columns' => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
     $mech->content_contains('"Reported As","Staff User",USRN,"Nearest address","External ID","External status code",Light,"CSC Ref"');
     $mech->content_like(qr/"No further action",.*?,peterborough,,[^,]*counciluser\@example.com,12345,"12 A Street, XX1 1SZ",248,EXT,light-ref,/);
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    }, sub {
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As","Staff User",USRN,"Nearest address","External ID","External status code",Light,"CSC Ref"');
+        $mech->content_like(qr/"No further action",.*?,peterborough,,[^,]*counciluser\@example.com,12345,"12 A Street, XX1 1SZ",248,EXT,light-ref,/);
+        $mech->get_ok('/dashboard?export=1&state=unable+to+fix');
+        $mech->content_contains("No further action");
+        $mech->get_ok('/dashboard?export=1&state=confirmed');
+        $mech->content_lacks("No further action");
+    };
 };
 
 subtest 'Resending between backends' => sub {

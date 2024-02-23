@@ -340,9 +340,11 @@ subtest "report_edit" => sub {
     is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Report now marked moderated' );
     is get_moderated_count(), 1;
 
-    # Set state back to 10 days ago so that report is overdue
+    # Set state back to 20 days ago so that report is overdue
+    # NB the previous value of 10 days was not enough to cover the Dec/Jan
+    # public holidays and tests would fail if run in early January.
     my $created = $report->created;
-    reset_report_state($report, $created->clone->subtract(days => 10));
+    reset_report_state($report, $created->clone->subtract(days => 20));
 
     is get_moderated_count(), 0;
 

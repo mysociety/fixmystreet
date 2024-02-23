@@ -1,4 +1,7 @@
-[% IF disallowed.match('reporter') AND (NOT disallowed.match('open') OR problem.is_open) %]
+[% IF disallowed.match('reporter')
+   AND (NOT disallowed.match('open') OR problem.is_open)
+   AND NOT (disallowed.match('reporter-not-open') AND problem.is_open)
+%]
     <p>
         [% loc('Only the original reporter may leave updates.') %]
         [% IF NOT c.user_exists %]

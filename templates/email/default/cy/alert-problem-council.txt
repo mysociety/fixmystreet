@@ -1,6 +1,6 @@
 Subject: Adroddiadau [% site_name %] newydd at [% area_name %]
 
-Mae'r adroddiadau newydd [% site name %] canlynol wedi'u hychwanegu at
+Mae'r adroddiadau newydd [% site_name %] canlynol wedi'u hychwanegu at
 [% area_name %] :
 
 [% INCLUDE '_email_report_list.txt' %]

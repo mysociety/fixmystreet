@@ -263,6 +263,28 @@ FixMyStreet::override_config {
 
         is($ua_mock->called('post'), 0);
     };
+
+    subtest "send_claims - claim location is 'Unknown location' if no features are found" => sub {
+        $ukc->mock('_fetch_features', sub { [] });
+        $ua_mock->mock('post', sub { $successful_response_mock });
+
+        my $problems = FixMyStreet::DB->resultset('Problem')->search({ id => $problem->id });
+        my $problem_id = $problem->id;
+
+        $client->verbose(1);
+        stdout_like { $client->send_claims($problems, $cobrand) } qr/FNOL submitted successfully for problem ID: $problem_id/, 'Check send_claims output';
+        $client->verbose(0);
+
+        # Make a list of calls made to the UA mock.
+        my @calls;
+        while (my ($method, $args) = $ua_mock->next_call()) {
+            my %args_hash = @{$args}[2..$#$args];
+            push @calls, { method => $method, url => $args->[1], headers => \%args_hash, body => decode_json($args_hash{Content}) };
+        }
+
+        my $fnol_submission_call = pop @calls;
+        is($fnol_submission_call->{body}->{location}, 'Unknown location', 'Request body contains location');
+    };
 };
 
 done_testing();

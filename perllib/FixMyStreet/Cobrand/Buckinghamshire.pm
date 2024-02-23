@@ -5,8 +5,10 @@ FixMyStreet::Cobrand::Buckinghamshire - code specific to the Buckinghamshire cob
 =head1 SYNOPSIS
 
 We integrate with Buckinghamshire's Alloy back end for highways reporting and
-Alloy+Evo for red claims, also send emails for some categories, and send
+Evo for red claims, also send emails for some categories, and send
 reports to Buckinghamshire parishes based on category/speed limit.
+Emails for parish bodies can be found on this link if they are found to have changed:
+ https://buckinghamshire.moderngov.co.uk/mgParishCouncilDetails.aspx?bcr=1
 
 =head1 DESCRIPTION
 
@@ -145,8 +147,7 @@ sub send_questionnaires {
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
 
-
-=head2 open311_extra_data_include
+=head2 open311_update_missing_data
 
 All reports sent to Alloy should have a parent asset they're associated with.
 This is indicated by the value in the asset_resource_id field. For certain
@@ -157,11 +158,8 @@ Alloy server and use that as the parent.
 
 =cut
 
-around open311_extra_data_include => sub {
-    my ($orig, $self) = (shift, shift);
-    my $open311_only = $self->$orig(@_);
-
-    my ($row, $h, $contact) = @_;
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
 
     # If the report doesn't already have an asset, associate it with the
     # closest feature from the Alloy highways network layer.
@@ -172,23 +170,50 @@ around open311_extra_data_include => sub {
             $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
         }
     }
+}
+
+=head2 open311_extra_data_include
+
+Reports in the "Apply for Access Protection Marking" category have some
+extra field values that we want to append to the report description
+before it's passed to Alloy.
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
+
+    if (my $address = $row->get_extra_field_value('ADDRESS_POSTCODE')) {
+        my $phone = $row->get_extra_field_value('TELEPHONE_NUMBER') || "";
+        for (@$open311_only) {
+            if ($_->{name} eq 'description') {
+                $_->{value} .= "\n\nAddress:\n$address\n\nPhone:\n$phone";
+            }
+        }
+    }
+
+    if ($contact->email =~ /^Abavus/ && $h->{closest_address}) {
+        push @$open311_only, {
+            name => 'closest_address', value => $h->{closest_address}->multiline(5) };
+        $h->{closest_address} = '';
+    }
 
     return $open311_only;
 };
 
+=head2 open311_pre_send
+
+We do not actually want to send claim reports via Open311, though there is a
+backend category for them, only email and Evo by a separate process
+
+=cut
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
-    if ($row->category eq 'Claim') {
-        if ($row->get_extra_metadata('fault_fixed') eq 'Yes') {
-            # We want to send via Open311, but with slightly altered information
-            $row->update_extra_field({ name => 'title', value => $row->get_extra_metadata('direction') }); # XXX See doc note
-            $row->update_extra_field({ name => 'description', value => $row->get_extra_metadata('describe_cause') });
-        } else {
-            # We do not want to send via Open311, only email
-            return 'SKIP';
-        }
-    }
+    return 'SKIP' if $row->category eq 'Claim';
 }
 
 sub open311_post_send {
@@ -196,21 +221,16 @@ sub open311_post_send {
 
     $self->_add_claim_auto_response($row, $h) if $row->category eq 'Claim';
 
-    # Check Open311 was successful (or a non-Open311 Claim)
-    my $non_open311_claim = $row->category eq 'Claim' && $row->get_extra_metadata('fault_fixed') ne 'Yes';
-    return unless $row->external_id || $non_open311_claim;
+    # Check Open311 was successful;
+    return unless $row->external_id;
     return if $row->get_extra_metadata('extra_email_sent');
 
     # For certain categories, send an email also
     my $emails = $self->feature('open311_email');
-    my $addresses = {
-        'Flytipping' => [ email_list($emails->{flytipping}, "TfB") ],
-        'Blocked drain' => [ email_list($emails->{flood}, "Flood Management") ],
-        'Ditch issue' => [ email_list($emails->{flood}, "Flood Management") ],
-        'Flooded subway' => [ email_list($emails->{flood}, "Flood Management") ],
-    };
-    my $dest = $addresses->{$row->category};
+    my $group = $row->get_extra_metadata('group') || '';
+    my $dest = $emails->{$row->category} || $emails->{$group};
     return unless $dest;
+    $dest = [ email_list($dest->[0], $dest->[1] || 'FixMyStreet') ];
 
     my $sender = FixMyStreet::SendReport::Email->new( to => $dest );
     $sender->send($row, $h);
@@ -254,17 +274,7 @@ sub _add_claim_auto_response {
             };
 
             # Stop any alerts being sent out about this update as included here.
-            my @alerts = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $row->id,
-                confirmed => 1,
-            });
-            for my $alert (@alerts) {
-                my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->find_or_create({
-                    alert_id  => $alert->id,
-                    parameter => $update->id,
-                });
-            }
+            $row->cancel_update_alert($update->id);
         }
     }
 }
@@ -282,6 +292,13 @@ sub open311_config_updates {
     $params->{mark_reopen} = 1;
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
 
@@ -297,6 +314,28 @@ sub open311_contact_meta_override {
             { key => 'off-road', name => 'Off the road/on a verge' },
         ],
     } if $service->{service_name} eq 'Flytipping';
+}
+
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    if ($comment->get_extra_metadata('external_status_code', '') eq '713') {
+        my $p = $comment->problem;
+        my %areas = map { $_ => 1 } split ',', $p->areas;
+        my $parish_id;
+        foreach my $id (@{ $self->_parish_ids }) {
+            $parish_id = $id if $areas{$id};
+        }
+        if ($parish_id) {
+            if (my $body = FixMyStreet::DB->resultset("Body")->for_areas($parish_id)->first) {
+                $p->bodies_str($body->id);
+                $p->category('Street lighting');
+                $p->external_id(undef);
+                $p->resend;
+                $p->update;
+            }
+        }
+    }
 }
 
 sub report_new_munge_before_insert {
@@ -334,6 +373,8 @@ sub _dashboard_export_add_columns {
     my ($self, $csv) = @_;
 
     $csv->add_csv_columns( staff_user => 'Staff User' );
+
+    return if $csv->dbi; # staff_user included by default
 
     my $user_lookup = $self->csv_staff_users;
 
@@ -566,8 +607,17 @@ sub add_extra_area_types {
 
 sub is_two_tier { 1 }
 
+=head2 should_skip_sending_update
+
+Only send updates to one particular backend
+
+=cut
+
 sub should_skip_sending_update {
-    my ($self, $update ) = @_;
+    my ($self, $update) = @_;
+
+    my $contact = $update->problem->contact || return 1;
+    return 0 if $contact->email =~ /^Abavus/;
     return 1;
 }
 
@@ -667,6 +717,11 @@ sub claim_location {
     my ($self, $row) = @_;
 
     my $road = $self->_lookup_site_name($row);
+
+    if (!$road) {
+        return "Unknown location";
+    }
+
     my $site_name = $road->{properties}->{site_name};
     $site_name =~ s/([\w']+)/\u\L$1/g;
     my $area_name = $road->{properties}->{area_name};
@@ -825,7 +880,7 @@ around 'report_validation' => sub {
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
-    my $parish_cats = [ 'Grass cutting', 'Hedge problem', 'Dirty signs' ];
+    my $parish_cats = [ 'Grass cutting', 'Hedge problem', 'Dirty signs', 'Unauthorised signs' ];
     my %parish_cats = map { $_ => 1 } @$parish_cats;
 
     return unless $parish_cats{$report->category};

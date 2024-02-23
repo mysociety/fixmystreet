@@ -229,6 +229,7 @@ create table problem (
 
     send_state text not null default 'unprocessed' check (
         send_state = 'unprocessed'
+        or send_state = 'processing'
         or send_state = 'processed'
         or send_state = 'skipped'
         or send_state = 'sent'
@@ -370,6 +371,7 @@ create table comment (
     extra jsonb,
     send_state text not null default 'unprocessed' check (
         send_state = 'unprocessed'
+        or send_state = 'processing'
         or send_state = 'processed'
         or send_state = 'skipped'
         or send_state = 'sent'
@@ -612,5 +614,7 @@ CREATE TABLE manifest_theme (
     short_name text not null,
     background_colour text,
     theme_colour text,
-    images text ARRAY
+    images text ARRAY,
+    wasteworks_name text,
+    wasteworks_short_name text
 );

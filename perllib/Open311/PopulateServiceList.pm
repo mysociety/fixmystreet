@@ -184,6 +184,7 @@ sub _handle_existing_contact {
     $self->_set_contact_group($contact) unless $protected;
     $self->_set_contact_non_public($contact);
     $self->_set_contact_as_waste($contact);
+    $self->_set_contact_inactive($contact);
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -220,6 +221,7 @@ sub _create_contact {
     $self->_set_contact_group($contact);
     $self->_set_contact_non_public($contact);
     $self->_set_contact_as_waste($contact);
+    $self->_set_contact_inactive($contact);
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
@@ -329,6 +331,19 @@ sub _set_contact_non_public {
     }) if $keywords{private};
 }
 
+sub _set_contact_inactive {
+    my ($self, $contact) = @_;
+
+    # We never want to make an inactive category active
+    return if $contact->state eq 'inactive';
+
+    my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
+    $contact->update({
+        state => 'inactive',
+        %{ $self->_action_params('marked inactive') },
+    }) if $keywords{inactive};
+}
+
 sub _set_contact_as_waste {
     my ($self, $contact) = @_;
 
@@ -356,12 +371,12 @@ sub _get_new_groups {
     return [] unless $self->_current_body_cobrand && $self->_current_body_cobrand->enable_category_groups;
 
     my $groups = $self->_current_service->{groups} || [];
-    my @groups = map { Utils::trim_text($_) } @$groups;
+    my @groups = map { Utils::trim_text($_ || '') } @$groups;
     return \@groups if @groups;
 
     my $group = $self->_current_service->{group} || [];
     $group = [] if @$group == 1 && !$group->[0]; # <group></group> becomes [undef]...
-    @groups = map { Utils::trim_text($_) } @$group;
+    @groups = map { Utils::trim_text($_ || '') } @$group;
     return \@groups;
 }
 

@@ -285,6 +285,7 @@ subtest "test password errors for a user who is signing in as they report" => su
     # check that we got the errors expected
     is_deeply $mech->page_errors, [
         "There was a problem with your login information. If you cannot remember your password, or do not have one, please fill in the \x{2018}No\x{2019} section of the form.",
+        "There was a problem with your login information. If you cannot remember your password, or do not have one, please select \x{2018}Fill in your details manually\x{2019}.",
     ], "check there were errors";
 
     $mech->content_lacks($user->email, 'email not displayed');

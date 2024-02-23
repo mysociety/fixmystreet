@@ -81,8 +81,6 @@ body.mappage {
 
 // Tiled background stripe, not plain colour
 #front-main {
-    background: $primary url(/cobrands/fixmystreet.com/images/tile-y.jpg);
-
     @media ($high-dpi-screen) {
         background-image: url(/cobrands/fixmystreet.com/images/tile-y@2x.jpg);
         background-size: 500px;
@@ -125,7 +123,8 @@ body.twothirdswidthpage,
 body.fullwidthpage {
     #front-main {
         color: #333;
-        padding-bottom: 4em;
+        padding-bottom: 5em;
+        padding-top: 4em;
 
         h1 {
             font-size: 3em;
@@ -162,56 +161,47 @@ body.fullwidthpage {
 }
 
 body.frontpage {
-    $fms-logo-width: 250px;
-    $fms-logo-height: 50px;
+    $fms-logo-width: 250px; // 300px without the mySociety badge
+    $fms-logo-height: 50px; // 60px "
     $fms-logo-vertical-margin: 2em;
     $mysociety-badge-width: (190px * 0.5);
     $mysociety-badge-height: (254px * 0.5);
 
     #site-logo {
         margin: $fms-logo-vertical-margin 0;
-        // width: 300px; Size without the mySociety badge
         width: $fms-logo-width;
         margin-left: $mysociety-badge-width;
-        position: relative;
         height: $fms-logo-height;
         background: none;
 
         // Override the width="175" height="35" attributes on the svg element,
         // forcing the SVG contents to stretch to the new, larger, size.
         svg {
-            // width: 300px; Size without the mySociety badge
             width: $fms-logo-width;
-            float: right;
             height: $fms-logo-height;
             margin-top: 0; // no need for the vertical centering any more
         }
     }
 
     #mysociety-badge {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        margin-left: -0.75em;
         top: -($fms-logo-vertical-margin + $header-top-border-width);
         width: $mysociety-badge-width;
         height: $mysociety-badge-height;
         outline-offset: -10px;
-
         svg {
-            &:nth-child(1) {
-                display: none; // Hides the mobile version
-            }
-            &:nth-child(2) {
-                display: block;
-            }
+            width: 100%;
+            height: auto;
         }
-    }
-
-    #front-main {
-        margin-top: 0;
     }
 
     #main-nav {
         height: calc(#{$fms-logo-height} + #{$fms-logo-vertical-margin} * 2);
         margin-top: 0;
-        margin-left: 380px; // Prevent overlapping with logo
+        margin-left: $fms-logo-width + $mysociety-badge-width + 16px; // Prevent overlapping with logo
     }
 
     .nav-menu li {
@@ -222,29 +212,16 @@ body.frontpage {
 
     .site-logo__fallback {
         width: $fms-logo-width;
-        padding-top: 60px;
+        padding-top: $fms-logo-height;
         // No need for svg-background-image() here because the
         // logo on the homepage is an inline SVG, and the only browsers
         // not to show it will be IE8 and below, which are @1x.
         background-image: url("/cobrands/fixmystreet.com/images/site-logo-homepage.png");
-        background-size: $fms-logo-width 60px;
+        background-size: $fms-logo-width $fms-logo-height;
     }
 
     .content {
         margin-top: -3em; // overlap the bottom of #front-main
-    }
-}
-
-.survey-cta {
-    padding: 2.5em 1.8em; // More vertical spacing on bigger screens
-
-    .survey-cta__content {
-        flex-basis: 55%;
-    }
-
-    .survey-cta__img {
-      max-width: none;
-      flex-basis: 40%;
     }
 }
 
@@ -348,78 +325,17 @@ footer {
   }
 }
 
-.fms-pro-promo {
-    @include clearfix();
-    @include flex-container();
+.fms-footer-cta {
+    flex-direction: row;
 
-    margin: 1em 0 3em 0;
-
-    h2 {
-        font-family: inherit;
-        font-weight: bold;
-    }
-
-    @media (min-width: 60em) {
-        p {
-            font-size: 1.2em;
-        }
-
-        h2 {
-            font-size: 2em;
-        }
-    }
-}
-
-.fms-pro-promo__pro,
-.fms-pro-promo__stats {
-    @include box-sizing(border-box);
-    float: left;
-    padding: 2em;
-
-    @media (min-width: 60em) {
-        padding: 3em;
-    }
-}
-
-.fms-pro-promo__pro {
-    width: 40%;
-    background: $primary url(/cobrands/fixmystreet.com/images/tile-y.jpg) 0 0 repeat;
-
-    @media ($high-dpi-screen) {
-        background-image: url(/cobrands/fixmystreet.com/images/tile-y@2x.jpg);
-        background-size: 500px;
-    }
-}
-
-.fms-pro-promo__stats {
-    width: 56%;
-    margin-left: 4%;
-    border-bottom: none;
-    background: #fff;
-    position: relative;
-
-    &:before {
-        content: "NEW";
-        display: block;
-        position: absolute;
-        top: -0.5em;
-        right: 0.5em;
-        background: $primary;
-        font-weight: bold;
-        width: 4em;
-        line-height: 4em;
-        text-align: center;
-        border-radius: 100%;
-        transform: rotate(5deg);
+    &__item {
+        flex-basis: 33%;
     }
 }
 
 .footer-marketing {
-  color: #ccc;
-
-  a {
-      color: white;
-  }
+    margin: 0;
+    width: auto;
 }
 
 .healthcheck-unit {

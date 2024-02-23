@@ -72,6 +72,9 @@
     [% ELSE %]
       <a class="map-pins-toggle" rel="nofollow" href="[% c.uri_with( { no_pins => 1 } ) %]"><span class="map-link-label">[% loc('Hide pins') %]</span></a>
     [% END %]
+    <a class="js-recentre-map hidden-nojs">
+      <span class="map-link-label">[% loc('Re-centre map') %]</span>
+    </a>
   [% END %]
 </div>
 

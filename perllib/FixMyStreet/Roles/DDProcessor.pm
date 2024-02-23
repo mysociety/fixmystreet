@@ -82,6 +82,10 @@ sub waste_reconcile_direct_debits {
         $payment = DDPayment->new({ data => $payment, cobrand => $self });
         next unless $payment->date;
 
+        # If there's a `reference` key in $params then we only want to look at
+        # payments that match that reference.
+        next if $params->{reference} && $payment->payer ne $params->{reference};
+
         $self->log( "looking at payment " . $payment->payer );
         $self->log( "payment date: " . $payment->date );
 
@@ -92,6 +96,11 @@ sub waste_reconcile_direct_debits {
         next unless $category;
 
         $self->log( "category: $category ($type)" );
+
+        if ( $params->{reference} && $params->{force_renewal} ) {
+            $self->log( "Overriding type $type to renew" );
+            $type = $self->waste_subscription_types->{Renew};
+        }
 
         my ($uprn, $rs) = $self->_process_reference($payment->payer);
         next unless $rs;
@@ -205,6 +214,8 @@ sub waste_reconcile_direct_debits {
 
         $payment = DDCancelPayment->new({ data => $payment, cobrand => $self });
         next unless $payment->date;
+
+        next if $params->{reference} && $payment->payer ne $params->{reference};
 
         $self->log("looking at payment " . $payment->payer);
 

@@ -40,7 +40,11 @@ $col_click_map: $bathnes-secondary;
 
 $col_fixed_label: $bathnes-secondary;
 
-$front_main_background: $bathnes-primary;
+$front-main-color: $primary_b;
+$front-main-color-desktop: $primary_b;
+$postcodeform-background: #fff;
+$postcodeform-color: $primary_b;
+$postcodeform-color-desktop: $primary_b;
 
 $menu-image: 'menu-black';
 $header-top-border: false;
@@ -53,3 +57,14 @@ $search-help-header-font-size-desktop: 1.25em;
 $heading-font: arial, sans-serif;
 $body-font: arial, sans-serif;
 $meta-font: arial, sans-serif;
+
+
+// Base on this styling https://beta.bathnes.gov.uk/
+$button-primary-bg-top: #00703c;
+$button-primary-border: #00703c;
+$button-primary-text: #fff;
+
+$button-primary-hover-bg-top: #005a30;
+$button-primary-hover-bg-bottom: #005a30;
+$button-primary-hover-border: #005a30;
+$button-primary-hover-text: #fff;

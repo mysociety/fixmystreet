@@ -1,10 +1,13 @@
 package FixMyStreet::Roles::CobrandEcho;
 
-use strict;
+use v5.14;
 use warnings;
+use DateTime;
+use DateTime::Format::Strptime;
 use Moo::Role;
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::DateRange;
+use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
 
@@ -13,6 +16,8 @@ use Open311::GetServiceRequestUpdates;
 FixMyStreet::Roles::CobrandEcho - shared code between cobrands using an Echo backend
 
 =cut
+
+sub bin_day_format { '%A, %-d~~~ %B' }
 
 sub bin_addresses_for_postcode {
     my $self = shift;
@@ -36,7 +41,7 @@ sub look_up_property {
     my $echo = Integrations::Echo->new(%$cfg);
     my $calls = $echo->call_api($self->{c}, $self->moniker,
         "look_up_property:$id",
-        0,
+        1,
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
@@ -51,6 +56,7 @@ sub look_up_property {
         address => FixMyStreet::Template::title($result->{Description}),
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
+        type_id => $result->{PointAddressType}{Id},
     };
 }
 
@@ -99,6 +105,70 @@ sub _get_current_service_task {
         }
     }
     return $current;
+}
+
+sub missed_event_types {}
+
+sub _closed_event {
+    my ($self, $event) = @_;
+    return 1 if $event->{ResolvedDate};
+    return 0;
+}
+
+sub _parse_events {
+    my $self = shift;
+    my $events_data = shift;
+    my $events = {};
+    my $missed_event_types = $self->missed_event_types;
+    foreach (@$events_data) {
+        my $event_type = $_->{EventTypeId};
+        my $type = $missed_event_types->{$event_type} || 'enquiry';
+
+        # Only care about open requests/enquiries
+        my $closed = $self->_closed_event($_);
+        next if $type ne 'missed' && $type ne 'bulky' && $closed;
+        next if $type eq 'bulky' && !$closed;
+
+        if ($type eq 'request') {
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+            foreach (@$data) {
+                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+                foreach (@$moredata) {
+                    if ($_->{DatatypeName} eq 'Container Type') {
+                        my $container = $_->{Value};
+                        $events->{request}->{$container} = $report ? { report => $report } : 1;
+                    }
+                }
+            }
+        } elsif ($type eq 'missed') {
+            $self->parse_event_missed($_, $closed, $events);
+        } elsif ($type eq 'bulky') {
+            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
+            my $resolved_date = construct_bin_date($_->{ResolvedDate});
+            $events->{enquiry}{$event_type}{$_->{Guid}} = {
+                date => $resolved_date,
+                report => $report,
+                resolution => $_->{ResolutionCodeId},
+                state => $_->{EventStateId},
+            };
+        } else { # General enquiry of some sort
+            $events->{enquiry}->{$event_type} = 1;
+        }
+    }
+    return $events;
+}
+
+sub parse_event_missed {
+    my ($self, $event, $closed, $events) = @_;
+    my $report = $self->problems->search({ external_id => $event->{Guid} })->first;
+    my $service_id = $event->{ServiceId};
+    my $data = {
+        closed => $closed,
+        date => construct_bin_date($event->{EventDate}),
+    };
+    $data->{report} = $report if $report;
+    push @{$events->{missed}->{$service_id}}, $data;
 }
 
 sub _events_since_date {
@@ -302,12 +372,10 @@ sub waste_fetch_events {
         if $cobrand;
     my $open311 = Open311->new(%open311_conf);
 
-    my $suppress_alerts = $self->moniker eq 'sutton' ? 1 : 0;
     my $updates = Open311::GetServiceRequestUpdates->new(
         current_open311 => $open311,
         current_body => $body,
         system_user => $body->comment_user,
-        suppress_alerts => $suppress_alerts,
         blank_updates_permitted => $body->blank_updates_permitted,
     );
 
@@ -344,6 +412,7 @@ sub waste_fetch_events {
 
         print "  Updating report to state $request->{status}, $request->{description} ($request->{external_status_code})\n" if $cfg->{verbose};
         if ($cobrand->moniker eq 'brent') {
+            # Suppress alerts for garden waste
             $cfg->{updates}->suppress_alerts($event->{EventTypeId} == 1159 ? 1 : 0);
         }
         $cfg->{updates}->process_update($request, $report);
@@ -365,12 +434,14 @@ sub construct_waste_open311_update {
     } else {
         $external_status_code = $resolution_id ? "$resolution_id,," : "",
     }
+    my %extra = $self->call_hook(open311_waste_update_extra => $cfg, $event);
     return {
         description => $description,
         status => $status,
         update_id => 'waste',
         external_status_code => $external_status_code,
         prefer_template => 1,
+        %extra,
     }
 }
 
@@ -503,6 +574,326 @@ sub garden_waste_cost_pa {
 
     my $cost = $per_bin_cost * $bin_count;
     return $cost;
+}
+
+sub clear_cached_lookups_property {
+    my ( $self, $id, $skip_echo ) = @_;
+
+    # Need to call this before clearing GUID
+    $self->clear_cached_lookups_bulky_slots( $id, $skip_echo );
+
+    foreach my $key (
+        $self->council_url . ":echo:look_up_property:$id",
+        $self->council_url . ":echo:bin_services_for_address:$id",
+        $self->council_url . ":echo:bulky_event_guid:$id",
+    ) {
+        delete $self->{c}->session->{$key};
+    }
+}
+
+sub clear_cached_lookups_bulky_slots {
+    my ( $self, $id, $skip_echo ) = @_;
+
+    for (qw/earlier later/) {
+        delete $self->{c}->session->{ $self->council_url
+                . ":echo:available_bulky_slots:$_:$id" };
+    }
+
+    return if $skip_echo;
+
+    # We also need to cancel the reserved slots in Echo
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:$id";
+    my $guid = $self->{c}->session->{$guid_key};
+
+    return unless $guid;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    $echo->CancelReservedSlotsForEvent($guid);
+}
+
+sub bulky_refetch_slots {
+    my ($self, $row, $verbose) = @_;
+
+    my $property_id = $row->get_extra_field_value('property_id');
+    my $date = $self->collection_date($row);
+    my $guid = $row->get_extra_field_value('GUID');
+    my $window = $self->_bulky_collection_window();
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    my $service_id = $cfg->{bulky_service_id};
+    my $event_type_id = $cfg->{bulky_event_type_id};
+
+    if ($row->whensent || !$guid) {
+        if ($row->whensent) {
+            say "Already sent, creating new GUID and fetching new reservation and resending" if $verbose;
+        } else {
+            say "No GUID? Creating new GUID and fetching new reservation and sending" if $verbose;
+        }
+        require UUID::Tiny;
+        $guid = UUID::Tiny::create_uuid_as_string();
+        $row->update_extra_field({ name => 'GUID', value => $guid });
+        $row->state('confirmed');
+        $row->resend;
+    } else {
+        say "Not already sent, fetching new reservation and trying again" if $verbose;
+        say "Cancelling existing slots for $guid" if $verbose;
+        $echo->CancelReservedSlotsForEvent($guid);
+    }
+
+    say "Getting more slots for $property_id $guid" if $verbose;
+    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property_id, $guid, $window->{date_from}, $window->{date_to});
+
+    my $slot_found = 0;
+    foreach (@$slots) {
+        my $slot_date = construct_bin_date($_->{StartDate});
+        my $ref = $_->{Reference};
+        if ($slot_date->ymd eq $date->ymd) {
+            $slot_found = 1;
+            say "Updating reservation to slot $ref for $slot_date" if $verbose;
+            $row->update_extra_field({ name => 'reservation', value => $ref });
+        }
+    }
+    if ($slot_found) {
+        $row->send_fail_count(0); # Assuming it's been failing, for an instant retry
+        $row->update;
+    } else {
+        say "No replacement slot for $date could be found" if $verbose;
+    }
+}
+
+sub bulky_check_missed_collection {
+    my ($self, $events, $blocked_codes) = @_;
+
+    my $cfg = $self->feature('echo');
+    my $service_id = $cfg->{bulky_service_id} or return;
+    my $service_id_missed = $cfg->{bulky_service_id_missed};
+    my $event_type_id = $cfg->{bulky_event_type_id} or return;
+    my $bulky_events = $events->{enquiry}{$event_type_id};
+    return unless $bulky_events;
+    my $missed_events = $events->{missed}->{$service_id} || [];
+
+    foreach my $guid (keys %$bulky_events) {
+        my $event = $bulky_events->{$guid};
+        my $row = {
+            service_name => 'Bulky waste',
+            service_id => $service_id_missed || $service_id,
+        };
+        my $in_time = $self->within_working_days($event->{date}, 2);
+        foreach my $state_id (keys %$blocked_codes) {
+            next unless $event->{state} eq $state_id;
+            foreach (keys %{$blocked_codes->{$state_id}}) {
+                if ($event->{resolution} eq $_ || $_ eq 'all') {
+                    $row->{report_locked_out} = 1;
+                    $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
+                }
+            }
+        }
+        $row->{report_allowed} = $in_time && !$row->{report_locked_out};
+
+        my $recent_events = $self->_events_since_date($event->{date}, $missed_events);
+        $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+        $self->{c}->stash->{bulky_missed}{$guid} = $row;
+    }
+}
+
+sub find_available_bulky_slots {
+    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
+
+    my $key
+        = $self->council_url . ":echo:available_bulky_slots:"
+        . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
+        . $property->{id};
+    return $self->{c}->session->{$key}
+        if $self->{c}->session->{$key} && !$no_cache;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+
+    my $service_id = $cfg->{bulky_service_id};
+    my $event_type_id = $cfg->{bulky_event_type_id};
+
+    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
+    my $guid = $self->{c}->session->{$guid_key};
+    unless ($guid) {
+        require UUID::Tiny;
+        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string();
+    }
+
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
+    my @available_slots;
+    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
+    $self->{c}->session->{first_date_returned} = undef;
+    foreach (@$slots) {
+        my $date = construct_bin_date($_->{StartDate})->datetime;
+        push @available_slots, {
+            date => $date,
+            reference => $_->{Reference},
+            expiry => construct_bin_date($_->{Expiry})->datetime,
+        };
+        $self->{c}->session->{first_date_returned} //= $date;
+    }
+
+    $self->{c}->session->{$key} = \@available_slots if !$no_cache;
+
+    return \@available_slots;
+}
+
+sub check_bulky_slot_available {
+    my ( $self, $chosen_date_string, %args ) = @_;
+
+    my $form = $args{form};
+
+    # chosen_date_string is of the form
+    # '2023-08-29T00:00:00;AS3aUwCS7NwGCTIzMDMtMTEwMTyNVqC8SCJe+A==;2023-08-25T15:49:38'
+    my ( $collection_date, undef, $slot_expiry_date )
+        = $chosen_date_string =~ /[^;]+/g;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $slot_expiry_dt = $parser->parse_datetime($slot_expiry_date);
+
+    my $now_dt = DateTime->now;
+
+    # Note: Both $slot_expiry_dt and $now_dt are UTC
+    if ( $slot_expiry_dt <= $now_dt ) {
+        # Cancel the expired slots and call ReserveAvailableSlots again, try to
+        # get the same collection date
+        my $property = $self->{c}->stash->{property};
+        $self->clear_cached_lookups_bulky_slots($property->{id});
+
+        my $available_slots = $self->find_available_bulky_slots(
+            $property, undef, 'no_cache' );
+
+        my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
+
+        if ($slot) {
+            $form->saved_data->{chosen_date}
+                = $slot->{date} . ";"
+                . $slot->{reference} . ";"
+                . $slot->{expiry};
+
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 1;
+    }
+}
+
+sub save_item_names_to_report {
+    my ($self, $data) = @_;
+
+    my $report = $self->{c}->stash->{report};
+    foreach (grep { /^item_(notes_)?\d/ } keys %$data) {
+        $report->set_extra_metadata($_ => $data->{$_}) if $data->{$_};
+    }
+}
+
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @items = sort { $a <=> $b } @item_nums;
+
+    my @fields;
+    for my $item (@items) {
+        if (my $value = $report->get_extra_metadata("item_$item")) {
+            my $display = $value;
+            if (my $note = $report->get_extra_metadata("item_notes_$item")) {
+                $display .= " ($note)";
+            }
+            push @fields, { item => $value, display => $display };
+        }
+    }
+    my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
+
+    return [
+        map {
+            value => $_->{display},
+            message => $items_extra->{$_->{item}}{message},
+        },
+        @fields,
+    ];
+}
+
+sub send_bulky_payment_echo_update_failed {
+    my ( $self, $params ) = @_;
+
+    my $email
+        = ( $self->feature('waste_features') || {} )
+        ->{echo_update_failure_email};
+    return unless $email;
+
+    # 3 hours to allow for Echo downtime
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $cutoff_date
+        = $dtf->format_datetime( DateTime->now->subtract( hours => 3 ) );
+
+    my $rs = FixMyStreet::DB->resultset('Problem')->search(
+        {   category => 'Bulky collection',
+            cobrand  => $self->moniker,
+            created  => { '<'  => $cutoff_date },
+            extra    => { '\?' => 'payment_reference' },
+            -not => {
+                extra => {
+                    '\?' => [
+                        'echo_update_failure_email_sent',
+                        'echo_update_sent',
+                    ],
+                },
+            },
+        },
+    );
+
+    while ( my $report = $rs->next ) {
+        # Ignore if there is an update in Comment table with an external_id
+        if ( $report->comments->search( { external_id => { '!=', undef } } )
+            ->count > 0
+        ) {
+            # Set flag so we don't repeatedly check the comments for this
+            # report
+            $report->set_extra_metadata( echo_update_sent => 1 );
+            $report->update;
+
+            next;
+        }
+
+        # Send email
+        my $h = {
+            report  => $report,
+            cobrand => $self,
+        };
+
+        my $result = eval {
+            FixMyStreet::Email::send_cron(
+                FixMyStreet::DB->schema,
+                'waste/bulky_payment_echo_update_failed.txt',
+                $h,
+                { To => $email },
+                undef,    # env_from
+                $params->{nomail},
+                $self,
+                $report->lang,
+            );
+        };
+
+        if ($@) {
+            warn 'Sending for report ' . $report->id . " failed: $@\n";
+        } elsif ($result) {
+            print 'Sending for report ' . $report->id . ": failed\n"
+                if $params->{verbose};
+        } else {
+            $report->set_extra_metadata(
+                echo_update_failure_email_sent => 1 );
+            $report->update;
+
+            print 'Sending for report ' . $report->id . ": succeeded\n"
+                if $params->{verbose};
+        }
+    }
 }
 
 1;

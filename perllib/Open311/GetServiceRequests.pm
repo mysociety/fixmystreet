@@ -97,11 +97,17 @@ sub create_problems {
             next;
         }
         my $request_id = $request->{service_request_id};
+        my $is_confirm_job = $request_id =~ /^JOB_/;
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
-        ($latitude, $longitude) = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
-            if $self->convert_latlong;
+        # Body may have convert_latlong set to true if it gets *enquiries* from
+        # Confirm (these use easting/northing), but *jobs* from Confirm use
+        # lat & long, so conversion is not needed for them
+        ( $latitude, $longitude )
+            = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
+            if $self->convert_latlong
+            && !$is_confirm_job;
 
         my $all_areas =
           FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude");
@@ -110,7 +116,7 @@ sub create_problems {
         my @areas = grep { $all_areas->{$_->area_id} } $body->body_areas;
         unless (@areas) {
             warn "Not creating request id $request_id for @{[$body->name]} as outside body area"
-                if $self->verbose;
+                if $self->verbose >= 2;
             next;
         }
 
@@ -121,7 +127,7 @@ sub create_problems {
         };
         if ($@) {
             warn "Not creating problem $request_id for @{[$body->name]}, bad update time"
-                if $self->verbose;
+                if $self->verbose >= 2;
             next;
         }
         my $updated = DateTime::Format::W3CDTF->format_datetime(
@@ -147,10 +153,20 @@ sub create_problems {
         # Skip if this problem already exists (e.g. it may have originated from FMS and is being mirrored back!)
         next if $self->schema->resultset('Problem')->to_body($body)->search( $criteria )->count;
 
-        if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
-            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
+        # Skip this date check for Confirm jobs, otherwise we are likely to
+        # skip a bunch of valid jobs if calling the fetch script using
+        # explicit start and end values
+        if (   !$is_confirm_job
+            && $args->{start_date}
+            && $args->{end_date}
+            && (   $updated lt $args->{start_date}
+                || $updated gt $args->{end_date} )
+            )
+        {
+            warn
+                "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
                 . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
-                if $self->verbose;
+                if $self->verbose >= 2;
             next;
         }
 
@@ -171,6 +187,7 @@ sub create_problems {
         my $title = $request->{title} || $cobrand && $cobrand->call_hook('open311_title_fetched_report', $request) || $request->{service_name} . ' problem';
         my $detail = $request->{description} || $title;
 
+        my $areas = ',' . join( ',', sort keys %$all_areas ) . ',';
         my $params = {
             user => $self->system_user,
             external_id => $request_id,
@@ -188,7 +205,7 @@ sub create_problems {
             used_map => 1,
             latitude => $latitude,
             longitude => $longitude,
-            areas => ',' . $body->id . ',',
+            areas => $areas,
             bodies_str => $body->id,
             send_method_used => 'Open311',
             category => $contact,

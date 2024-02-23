@@ -70,7 +70,12 @@ sub index : Path : Args(0) {
         }
     }
 
-    my @unsent = $c->cobrand->problems->search( {
+    $c->stash->{edit_body_contacts} = 1
+        if grep { $_ eq 'body' } keys %{$c->stash->{allowed_pages}};
+
+    my $problems = ($c->cobrand->moniker eq 'fixmystreet' && $c->user->is_superuser) ? $c->model('DB::Problem') : $c->cobrand->problems;
+
+    my @unsent = $problems->search( {
         send_state => ['unprocessed', 'acknowledged'],
         'me.state' => [ FixMyStreet::DB::Result::Problem::open_states() ],
         bodies_str => { '!=', undef },
@@ -79,7 +84,7 @@ sub index : Path : Args(0) {
     },
     {
         '+columns' => ['user.email'],
-        prefetch => 'contact',
+        prefetch => [ 'contact', 'user_planned_reports' ],
         join => 'user',
         order_by => 'confirmed',
     } )->all;
@@ -587,7 +592,7 @@ sub update_extra_fields : Private {
             $meta->{description} = FixMyStreet::Template::sanitize($desc);
             $meta->{datatype} = $c->get_param("metadata[$i].datatype");
 
-            if ( $meta->{datatype} eq "singlevaluelist" ) {
+            if ( $meta->{datatype} eq "singlevaluelist" || $meta->{datatype} eq "multivaluelist" ) {
                 $meta->{values} = [];
                 my $re = qr{^metadata\[$i\]\.values\[\d+\]\.key};
                 my @vindices = grep { /$re/ } keys %{ $c->req->params };
@@ -619,6 +624,28 @@ sub update_extra_fields : Private {
     }
     @extra_fields = sort { $a->{order} <=> $b->{order} } @extra_fields;
     $object->set_extra_fields(@extra_fields);
+}
+
+sub body_specific_page : Private {
+    my ( $self, $c, $load_all_action, $view_action ) = @_;
+
+    my $user = $c->user;
+
+    if ($user->is_superuser) {
+        $c->forward($load_all_action);
+    } elsif ( $user->from_body ) {
+        my $body_id = $user->from_body->id;
+        $body_id = $c->cobrand->call_hook(permission_body_override => [ $body_id ]) || [ $body_id ];
+        if (@$body_id > 1) {
+            $c->forward($load_all_action);
+            my %bodies = map { $_ => 1 } @$body_id;
+            $c->stash->{bodies} = [ grep { $bodies{$_->id} } @{$c->stash->{bodies}} ];
+        } else {
+            $c->res->redirect( $c->uri_for_action($view_action, $body_id) );
+        }
+    } else {
+        $c->detach( '/page_error_404_not_found' );
+    }
 }
 
 sub trim {

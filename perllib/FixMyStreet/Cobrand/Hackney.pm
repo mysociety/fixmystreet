@@ -102,33 +102,6 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
-=item * When sending via Open311, make sure closest address is included
-
-=cut
-
-around open311_extra_data_include => sub {
-    my ($orig, $self) = (shift, shift);
-    my $open311_only = $self->$orig(@_);
-
-    my ($row, $h, $contact) = @_;
-
-    # Make sure contact 'email' set correctly for Open311
-    if (my $split_match = $row->get_extra_metadata('split_match')) {
-        $row->unset_extra_metadata('split_match');
-        my $code = $split_match->{$contact->email};
-        $contact->email($code) if $code;
-    }
-
-    if (my $address = $row->nearest_address) {
-        push @$open311_only, (
-            { name => 'closest_address', value => $address }
-        );
-        $h->{closest_address} = '';
-    }
-
-    return $open311_only;
-};
-
 =item * Hackney use OSM maps
 
 =cut
@@ -260,6 +233,23 @@ sub munge_sendreport_params {
     }
 }
 
+# Bit of a hack, doing it here, but soon after this point the flag
+# from get_body_sender (above) will be erased by a re-fetch.
+around open311_config => sub {
+    my ($orig, $self, $row, $h, $open311, $contact) = @_;
+    $self->$orig($row, $h, $open311, $contact);
+
+    # Make sure contact 'email' set correctly for Open311
+    if (my $split_match = $row->get_extra_metadata('split_match')) {
+        my $code = $split_match->{$contact->email};
+        $contact->email($code) if $code;
+    }
+};
+
+=item * When sending via Open311, make sure closest address is included
+
+=cut
+
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
@@ -270,6 +260,8 @@ sub open311_extra_data_include {
           value => $row->detail },
         { name => 'category',
           value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group', '') },
     ];
 
     my $title = $row->title;
@@ -291,6 +283,13 @@ sub open311_extra_data_include {
               value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) };
     }
     push @$open311_only, { name => 'title', value => $title };
+
+    if (my $address = $row->nearest_address) {
+        push @$open311_only, (
+            { name => 'closest_address', value => $address }
+        );
+        $h->{closest_address} = '';
+    }
 
     return $open311_only;
 }
@@ -356,16 +355,23 @@ sub dashboard_export_problems_add_columns {
 
         my $address = '';
         my $postcode = '';
-
-        if ( $report->geocode ) {
-            $address = $report->nearest_address;
-            $postcode = $report->nearest_address_parts->{postcode};
+        if ($csv->dbi) {
+            if ( $report->{geocode} ) {
+                my $addr = FixMyStreet::Geocode::Address->new($report->{geocode});
+                $address = $addr->summary;
+                $postcode = $addr->parts->{postcode};
+            }
+        } else {
+            if ( $report->geocode ) {
+                $address = $report->nearest_address;
+                $postcode = $report->nearest_address_parts->{postcode};
+            }
         }
 
         return {
             nearest_address => $address,
             nearest_address_postcode => $postcode,
-            extra_details => $report->get_extra_metadata('detailed_information') || '',
+            extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
         };
     });
 }

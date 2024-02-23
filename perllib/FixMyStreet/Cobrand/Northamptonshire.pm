@@ -165,6 +165,8 @@ sub dashboard_export_problems_add_columns {
         external_id => 'External ID',
     );
 
+    return if $csv->dbi;
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 

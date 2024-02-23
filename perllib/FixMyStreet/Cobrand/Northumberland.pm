@@ -4,6 +4,9 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 
+use DateTime::Format::W3CDTF;
+use Utils;
+
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
 
@@ -25,13 +28,18 @@ sub disambiguate_location {
 
 sub admin_user_domain { 'northumberland.gov.uk' }
 
-sub allow_anonymous_reports { 'button' }
-
 sub default_map_zoom { 4 }
 
 sub abuse_reports_only { 1 }
 
 sub cut_off_date { '2023-05-03' }
+
+sub report_age {
+    return {
+        closed => '14 days',
+        fixed  => '14 days',
+    };
+}
 
 sub reopening_disallowed {
     my ($self, $problem) = @_;
@@ -46,36 +54,27 @@ sub reopening_disallowed {
     return 1;
 }
 
-sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
 
-    my $open311_only = [
-        { name => 'report_url',
-          value => $h->{url} },
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail },
-        { name => 'category',
-          value => $row->category },
-    ];
+    $self->SUPER::munge_report_new_contacts($contacts);
 
-    return $open311_only;
+    foreach (@$contacts) {
+        if (grep { $_ eq 'Staff Only - Out Of Hours' } @{$_->groups}) {
+            $_->set_extra_metadata(nh_council_cleaning => 1);
+        }
+    }
 }
 
 sub open311_title_fetched_report {
     my ($self, $request) = @_;
-    my ($group, $category) = split(/_/, $request->{service_name});
-    return sprintf("%s: %s", $group, $category);
+    return $request->{service_name};
 }
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->state eq 'not responsible' || !$self->owns_problem($p);
-    return 'green' if $p->state eq 'confirmed';
-    return 'yellow' if $p->state eq 'investigating';
-    return 'blue' if $p->state eq 'action scheduled';
-    return 'red' if $p->is_fixed;
+    return 'green' if $p->is_closed || $p->is_fixed;
+    return 'red' if $p->state eq 'confirmed';
     return 'orange'; # all the other `open_states` like "in progress"
 }
 
@@ -93,25 +92,55 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         staff_user => 'Staff User',
         staff_role => 'Staff Role',
+        assigned_to => 'Assigned To',
+        response_time => 'Response Time',
     );
+
+    my $response_time = sub {
+        my $hashref = shift;
+        if (my $response = ($hashref->{fixed} || $hashref->{closed}) ) {
+            $response = DateTime::Format::W3CDTF->parse_datetime($response)->epoch;
+            my $confirmed = DateTime::Format::W3CDTF->parse_datetime($hashref->{confirmed})->epoch;
+            return Utils::prettify_duration($response - $confirmed, 'minute');
+        }
+        return '';
+    };
+
+    if ($csv->dbi) {
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+            my $hashref = shift;
+            return {
+                user_name_display => $report->{name},
+                response_time => $response_time->($hashref),
+            };
+        });
+        return; # Rest already covered
+    }
 
     my $user_lookup = $self->csv_staff_users;
     my $userroles = $self->csv_staff_roles($user_lookup);
+    my $problems_to_user = $self->csv_active_planned_reports;
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+        my $hashref = shift;
 
         my $by = $report->get_extra_metadata('contributed_by');
         my $staff_user = '';
         my $staff_role = '';
+        my $assigned_to = '';
         if ($by) {
             $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
             $staff_role = join(',', @{$userroles->{$by} || []});
         }
+
         return {
             user_name_display => $report->name,
             staff_user => $staff_user,
             staff_role => $staff_role,
+            assigned_to => $problems_to_user->{$report->id} || '',
+            response_time => $response_time->($hashref),
         };
     });
 }

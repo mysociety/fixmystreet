@@ -47,13 +47,10 @@ has token => (
     default => sub {
         my $self = shift;
         my $key = "peterborough:bartec_token";
-        my $token = Memcached::get($key);
-        unless ($token) {
+        return Memcached::get_or_calculate($key, 60*30, sub {
             my $result = $self->Authenticate;
-            $token = $result->{Token}->{TokenString};
-            Memcached::set($key, $token, 60*30);
-        }
-        return $token;
+            return $result->{Token}->{TokenString};
+        });
     },
 );
 
@@ -399,12 +396,9 @@ sub Features_Types_Get {
     my ($self) = @_;
     # This expensive operation doesn't take any params so may as well cache it
     my $key = "peterborough:bartec:Features_Types_Get";
-    my $types = Memcached::get($key);
-    unless ($types) {
-        $types = force_arrayref($self->call('Features_Types_Get', token => $self->token), 'FeatureType');
-        Memcached::set($key, $types, 60*30);
-    }
-    return $types;
+    return Memcached::get_or_calculate($key, 60*30, sub {
+        return force_arrayref($self->call('Features_Types_Get', token => $self->token), 'FeatureType');
+    });
 }
 
 1;

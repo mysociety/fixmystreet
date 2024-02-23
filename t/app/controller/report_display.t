@@ -198,6 +198,8 @@ foreach my $meta (
     };
 }
 
+my $old_date = DateTime->new( year => 2009, month => 6, day => 12, hour => 9, minute => 43, second => 12 );
+
 for my $test (
     {
         description => 'new report',
@@ -209,14 +211,7 @@ for my $test (
     },
     {
         description => 'old report',
-        date => DateTime->new(
-            year => 2009,
-            month => 6,
-            day => 12,
-            hour => 9,
-            minute => 43,
-            second => 12
-        ),
+        date => $old_date,
         state => 'confirmed',
         banner_id => 'unknown',
         banner_text => 'unknown',
@@ -225,14 +220,7 @@ for my $test (
     {
         cobrand => 'fixmystreet',
         description => 'old open311 report',
-        date => DateTime->new(
-            year => 2009,
-            month => 6,
-            day => 12,
-            hour => 9,
-            minute => 43,
-            second => 12
-        ),
+        date => $old_date,
         state => 'confirmed',
         send_method => 'Open311',
         banner_id => undef,
@@ -240,16 +228,19 @@ for my $test (
         fixed => 0
     },
     {
+        cobrand => 'fixmystreet',
+        description => 'scheduled report',
+        date => $old_date,
+        state => 'action scheduled',
+        send_method => 'Open311',
+        banner_id => 'progress',
+        banner_text => 'Action scheduled',
+        fixed => 0
+    },
+    {
         cobrand => 'westminster',
         description => 'old westminster report',
-        date => DateTime->new(
-            year => 2009,
-            month => 6,
-            day => 12,
-            hour => 9,
-            minute => 43,
-            second => 12
-        ),
+        date => $old_date,
         state => 'confirmed',
         banner_id => undef,
         banner_text => undef,
@@ -257,14 +248,7 @@ for my $test (
     },
     {
         description => 'old fixed report',
-        date => DateTime->new(
-            year => 2009,
-            month => 6,
-            day => 12,
-            hour => 9,
-            minute => 43,
-            second => 12
-        ),
+        date => $old_date,
         state => 'fixed',
         banner_id => 'fixed',
         banner_text => 'fixed',
@@ -389,13 +373,13 @@ for my $test (
         }
 
         if ( $test->{banner_id} ) {
-            ok $banner->{class} =~ /banner--$test->{banner_id}/i, 'banner class';
+            like $banner->{class}, qr/banner--$test->{banner_id}/i, 'banner class';
         } else {
             is $banner->{class}, $test->{banner_id}, 'banner class';
         }
 
         if ($test->{banner_text}) {
-            ok $banner->{text} =~ /$test->{banner_text}/i, 'banner text';
+            like $banner->{text}, qr/$test->{banner_text}/i, 'banner text';
         } else {
             is $banner->{text}, $test->{banner_text}, 'banner text';
         }

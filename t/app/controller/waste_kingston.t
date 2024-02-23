@@ -1,8 +1,10 @@
 use utf8;
+use File::Temp 'tempdir';
 use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
@@ -223,6 +225,7 @@ FixMyStreet::override_config {
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
     $echo->mock('GetTasks', sub { [] });
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'Look up of address not in correct borough' => sub {
         $mech->get_ok('/waste');
@@ -236,9 +239,11 @@ FixMyStreet::override_config {
     };
 };
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'kingston',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         echo => { kingston => { url => 'http://example.org' } },
         waste => { kingston => 1 },
@@ -306,6 +311,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     my $sent_params;
     my $call_params;
@@ -549,13 +555,7 @@ FixMyStreet::override_config {
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -598,13 +598,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -638,13 +632,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -716,7 +704,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
-        like $body, qr/reference number is RBK-$report_id/, 'email has ID in it';
+        like $body, qr/Reference: RBK-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
@@ -1043,6 +1031,8 @@ FixMyStreet::override_config {
     subtest 'renew credit card sub with direct debit' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+        mock_CancelReservedSlotsForEvent($echo);
+
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
@@ -1174,13 +1164,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1227,13 +1211,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        # external redirects make Test::WWW::Mechanize unhappy so clone
-        # the mech for the redirect
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1406,40 +1384,34 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check staff renewal' => sub {
-        foreach ({ email => 'a_user@example.net' }, { phone => '07700900002' }) {
-            $mech->log_out_ok;
-            $mech->log_in_ok($staff_user->email);
-            $mech->get_ok('/waste/12345/garden_renew');
-            $mech->submit_form_ok({ with_fields => {
-                name => 'a user',
-                %$_, # email or phone,
-                current_bins => 1,
-                bins_wanted => 1,
-                payment_method => 'credit_card',
-            }});
-            $mech->content_contains('20.00');
+        $mech->log_out_ok;
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'a user',
+            email => 'a_user@example.net',
+            current_bins => 1,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+        }});
+        $mech->content_contains('20.00');
 
-            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-            is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
-            is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
-            if ($_->{email}) {
-                is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, $_->{email}, 'Correct email';
-            } else {
-                is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}, undef, 'No email section';
-            }
-            is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-            is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
+        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, 'a_user@example.net', 'Correct email';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
 
-            my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-            check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0);
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc');
 
-            $mech->get_ok("/waste/pay_complete/$report_id/$token");
-            is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-            check_extra_data_post_confirm($report);
-            $report->delete; # Otherwise next test sees this as latest
-        }
+        check_extra_data_post_confirm($report, LastPayMethod => 1);
+        $report->delete; # Otherwise next test sees this as latest
     };
 
     subtest 'check staff renewal with direct debit' => sub {
@@ -1483,7 +1455,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/waste subscription/s, 'direct debit email confirmation looks correct';
-        like $body, qr/reference number is RBK-$report_id/, 'email has ID in it';
+        like $body, qr/Reference: RBK-$report_id/, 'email has ID in it';
         $new_report->discard_changes;
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         is $new_report->get_extra_metadata('ddsubmitted'), 1, "direct debit marked as submitted";
@@ -1508,12 +1480,12 @@ FixMyStreet::override_config {
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2);
+        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-        check_extra_data_post_confirm($report);
+        check_extra_data_post_confirm($report, LastPayMethod => 1);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
@@ -1586,7 +1558,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
-        $mech->content_lacks('password', 'no password field');
+        $mech->content_lacks('name="password', 'no password field');
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
@@ -1605,12 +1577,12 @@ FixMyStreet::override_config {
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($report);
+        check_extra_data_pre_confirm($report, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
 
-        check_extra_data_post_confirm($report);
+        check_extra_data_post_confirm($report, LastPayMethod => 1);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
@@ -1631,7 +1603,7 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        $mech->content_contains("Cheque reference field is required");
+        $mech->content_contains("Payment reference field is required");
         $mech->submit_form_ok({ with_fields => {
             cheque_reference => 'Cheque123',
         } });
@@ -1765,11 +1737,11 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-        check_extra_data_post_confirm($new_report);
+        check_extra_data_post_confirm($new_report, LastPayMethod => 1);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
@@ -1785,14 +1757,28 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2, payment_method => 'csc');
 
         $mech->get_ok('/dashboard?export=1');
         $mech->content_lacks("Garden Subscription\n\n");
         $mech->content_contains('"a user"');
         $mech->content_contains(1000000002);
         $mech->content_contains('a_user@example.net');
-        $mech->content_contains('credit_card,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('csc,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('"a user 2"');
+        $mech->content_contains('a_user_2@example.net');
+        $mech->content_contains('unconfirmed');
+        $mech->content_contains('4000,,1500,26,1,2'); # Fee/fee/fee/bin/current/sub
+    };
+
+    subtest 'check CSV pregeneration' => sub {
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_lacks("Garden Subscription\n\n");
+        $mech->content_contains('"a user"');
+        $mech->content_contains(1000000002);
+        $mech->content_contains('a_user@example.net');
+        $mech->content_contains('csc,54321,2000,,0,26,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
         $mech->content_contains('"a user 2"');
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
@@ -1868,6 +1854,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'check no sub when disabled' => sub {
         set_fixed_time('2021-03-09T17:00:00Z');
@@ -1905,6 +1892,7 @@ FixMyStreet::override_config {
         };
     });
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+    mock_CancelReservedSlotsForEvent($echo);
 
     subtest 'check no renew when disabled' => sub {
         set_fixed_time('2021-03-05T17:00:00Z');
@@ -1975,11 +1963,22 @@ sub check_extra_data_pre_confirm {
 
 sub check_extra_data_post_confirm {
     my $report = shift;
+    my %params = (
+        LastPayMethod => 2,
+        @_
+    );
     $report->discard_changes;
     is $report->state, 'confirmed', 'report confirmed';
-    is $report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+    is $report->get_extra_field_value('LastPayMethod'), $params{LastPayMethod}, 'correct echo payment method field';
     is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+}
+
+sub mock_CancelReservedSlotsForEvent {
+    shift->mock( 'CancelReservedSlotsForEvent', sub {
+        my (undef, $guid) = @_;
+        ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
+    } );
 }
 
 done_testing;

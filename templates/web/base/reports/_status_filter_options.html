@@ -1,3 +1,7 @@
+[% IF page != 'my' %]
     [%~ IF c.cobrand.on_map_default_status == 'open' %]
       data-none="[% prettify_state('confirmed') %]"
+    [%~ ELSIF c.cobrand.on_map_default_status.0 == 'open' AND c.cobrand.on_map_default_status.1 == 'fixed' %]
+      data-none="[% prettify_state('confirmed') %], [% prettify_state('fixed') %]"
     [%~ END ~%]
+[% END ~%]

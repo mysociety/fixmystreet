@@ -1,0 +1,6 @@
+Make sure your items are out by [% cobrand.bulky_nice_collection_time %] on collection day.
+The crew will not enter your home[% IF cobrand.moniker == 'kingston' %] or garden to collect items[% END %].
+
+If you live in a house: Make sure items are accessible and clearly visible from the front of your house, as close to the pavement as possible without being on it.
+
+If you live in a block of flats: Put your items next to the bin store area (not inside it) on the morning of your collection.

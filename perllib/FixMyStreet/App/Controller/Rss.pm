@@ -288,12 +288,17 @@ sub add_row : Private {
 
     if ((my $photo_to_show = $c->cobrand->allow_photo_display($row)) && $row->{photo}) {
         # Bit yucky as we don't have full objects here
-        my $photoset = FixMyStreet::App::Model::PhotoSet->new({ db_data => $row->{photo} });
+        my $is_comment = $alert_type->item_table eq 'comment';
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            object_id => $row->{id},
+            object_type => $is_comment ? 'comment' : 'problem',
+            db_data => $row->{photo},
+        });
         my $idx = $photo_to_show - 1;
         my $first_fn = $photoset->get_id($idx);
         my ($hash, $format) = split /\./, $first_fn;
         my $cachebust = substr($hash, 0, 8);
-        my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
+        my $key = $is_comment ? 'c/' : '';
         $item{description} .= encode_entities("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.$idx.$format?$cachebust\">");
     }
 

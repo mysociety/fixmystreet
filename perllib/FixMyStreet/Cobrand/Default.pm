@@ -543,6 +543,10 @@ sub updates_disallowed {
     return '';
 }
 
+sub body_disallows_state_change {
+    return $_[0]->feature('update_states_disallowed');
+}
+
 =item reopening_disallowed
 
 Returns a boolean indicating whether reopening of a particular report is
@@ -822,7 +826,7 @@ cobrand's area_types_children type.
 =cut
 
 sub fetch_area_children {
-    my ($self, $area_ids, $all_generations) = @_;
+    my ($self, $area_ids, $body, $all_generations) = @_;
 
     $area_ids = [ $area_ids ] unless ref $area_ids eq 'ARRAY';
 
@@ -1499,6 +1503,18 @@ sub new_report_title_field_hint {
     return;
 }
 
+=item new_report_detail_field_label
+
+Return override text for the label of the detail field on a new report.
+Applied when it's known before submission that the report will go to a body with this cobrand.
+Superseded by a contact specific override if set.
+
+=cut
+
+sub new_report_detail_field_label {
+    return;
+}
+
 =item new_report_detail_field_hint
 
 Return override text for the hint text for the detail field on a new report.
@@ -1510,5 +1526,13 @@ Superseded by a contact specific override if set.
 sub new_report_detail_field_hint {
     return;
 }
+
+=item suppress_report_sent_email
+
+Returns true when a report sent email should not be sent for the given report.
+
+=cut
+
+sub suppress_report_sent_email { 0; }
 
 1;

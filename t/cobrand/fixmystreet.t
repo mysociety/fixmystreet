@@ -20,6 +20,8 @@ $resolver->mock('address', sub { $_[1] });
 my $body = $mech->create_body_ok( 2514, 'Birmingham', {}, { cobrand => 'birmingham' } );
 $mech->create_body_ok( 2482, 'Bromley', {}, { cobrand => 'bromley' });
 
+$mech->create_body_ok(2482, 'Bike provider');
+
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Traffic lights',
@@ -40,6 +42,11 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     TEST_DASHBOARD_DATA => $data,
     ALLOWED_COBRANDS => [ 'fixmystreet', 'birmingham' ],
+    COBRAND_FEATURES => {
+        categories_restriction_bodies => {
+            tfl => [ 'Bike provider' ],
+        }
+    },
 }, sub {
     ok $mech->host('www.fixmystreet.com');
 
@@ -120,6 +127,14 @@ FixMyStreet::override_config {
         $mech->log_out_ok();
         $mech->get_ok('/reports');
         $mech->content_lacks('Where we send Birmingham');
+    };
+
+    subtest 'Check All Reports page for bike bodies' => sub {
+        $mech->get_ok('/reports/Bike+provider');
+        $mech->content_contains('Bromley');
+        $mech->content_lacks('Trowbridge');
+        $mech->get_ok('/reports/Bike+provider/Bromley');
+        is $mech->uri->path, '/reports/Bike+provider/Bromley';
     };
 
     subtest 'check average fix time respects cobrand cut-off date and non-standard reports' => sub {
@@ -465,6 +480,7 @@ FixMyStreet::override_config {
     my $he = $mech->create_body_ok(2227, 'National Highways');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
+    $mech->create_contact_ok(body_id => $hampshire->id, category => 'Messy roads', email => 'foo@bexley', extra => {litter_category_for_he => 1});
     $mech->create_contact_ok(body_id => $he->id, category => 'Slip Roads (NH)', email => 'litter@he', group => 'Litter');
     $mech->create_contact_ok(body_id => $he->id, category => 'Main Carriageway (NH)', email => 'litter@he', group => 'Litter');
     $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he');
@@ -497,8 +513,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Slip Roads');
         $mech->content_contains('Main Carriageway');
         $mech->content_contains('Potholes');
-        $mech->content_contains('Trees');
-        $mech->content_contains('Flytipping');
+        $mech->content_contains("Trees'>");
+        $mech->content_contains("Flytipping'>");
 
         # A-road where NH responsible for litter, council categories will also be present
         mock_road("A5103", 1);
@@ -507,8 +523,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Slip Roads');
         $mech->content_contains('Main Carriageway');
         $mech->content_contains('Potholes');
-        $mech->content_contains('Trees');
-        $mech->content_contains('Flytipping');
+        $mech->content_contains("Trees'>");
+        $mech->content_contains("Flytipping'>");
 
         # A-road where NH not responsible for litter, no NH litter categories
         mock_road("A34", 0);
@@ -517,8 +533,8 @@ FixMyStreet::override_config {
         $mech->content_lacks('Slip Roads');
         $mech->content_lacks('Main Carriageway');
         $mech->content_contains('Potholes');
-        $mech->content_contains('Trees');
-        $mech->content_contains('Flytipping');
+        $mech->content_contains("Trees'>");
+        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
 
         # A-road where NH not responsible for litter, referred to FMS from National Highways
         # ajax call filters NH category to contain only litter related council categories
@@ -526,8 +542,9 @@ FixMyStreet::override_config {
         my $j = $mech->get_ok_json("/report/new/ajax?w=1&longitude=-0.912160&latitude=51.015143&he_referral=1");
         my $tree = HTML::TreeBuilder->new_from_content($j->{category});
         my @elements = $tree->find('input');
-        is @elements, 1, 'Only one category in National Highways category';
-        is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping';
+        is @elements, 2, 'Two categories in National Highways category';
+        is $elements[0]->attr('value') eq 'Flytipping', 1, 'Subcategory is Flytipping - default litter category';
+        is $elements[1]->attr('value') eq 'Messy roads', 1, 'Subcategory is Messy roads - checkbox selected litter category';
     };
 
     subtest "check things redacted appropriately" => sub {

@@ -26,6 +26,9 @@ my @PLACES = (
     [ '?', 53.387402, -2.943997, 2527, 'Liverpool City Council', 'MTD' ],
     [ 'EH1 1BB', 55.952055, -3.189579, 2651, 'Edinburgh City Council', 'UTA', 20728, 'City Centre', 'UTE' ],
     [ 'BS10 5EE', 51.494885, -2.602237, 2561, 'Bristol City Council', 'UTA', 148646, 'Bedminster', 'UTW' ],
+    [ '?', 51.444878, -2.641142, 2642, 'North Somerset Council', 'UTA' ],
+    [ '?', 51.452340, -2.654832, 2642, 'North Somerset Council', 'UTA' ],
+    [ '?', 51.495216, -2.551191, 2608, 'South Gloucestershire Council', 'UTA' ],
     [ 'BS20 5EE', 51.496194, -2.603439, 2608, 'Borsetshire County Council', 'CTY', 148646, 'Bedminster', 'UTW' ],
     [ 'SL9 0NX', 51.615559, -0.556903, 163793, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
     [ '?', 51.615499, -0.556667, 163793, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
@@ -45,12 +48,17 @@ my @PLACES = (
     [ 'OX16 9UP', 52.038712, -1.346397, 2237, 'Oxfordshire County Council', 'CTY', 2419, 'Cherwell District Council', 'DIS', 151767, "Banbury, Calthorpe & Easington", "DIW" ],
     [ 'RG9 6TL', 51.561705, -0.868388, 163793, 'Buckinghamshire Council', 'CTY'],
     [ 'PE9 2GX', 52.656144, -0.502566, 2232, 'Lincolnshire County Council', 'CTY'],
+    [ 'PE9 3GX', 52.655591, -0.510956, 2232, 'Lincolnshire County Council', 'CTY'],
     [ 'LE15 0GJ', 52.670447, -0.727877, 2600, 'Rutland County Council', 'CTY'],
     [ 'BR1 3UH', 51.4021, 0.01578, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402092, 0.015783, 2482, 'Bromley Council', 'LBO', 8141, 'Bromley Town', 'LBW' ],
     [ 'BR1 3EF', 51.4039, 0.018697, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 1AA', 51.401546, 0.015415, 2482, 'Bromley Council', 'LBO' ],
+    # Crystal Palace Park
+    [ '?', 51.422382, -0.064555, 2482, 'Bromley Council', 'LBO' ],
+    # National Sports Centre in Crystal Palace Park
+    [ '?', 51.419275, -0.071410, 2482, 'Bromley Council', 'LBO' ],
     [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],
     [ 'SM2 5HF', 51.354679, -0.183895, 2498, 'Sutton Borough Council', 'LBO' ],
     [ '?', 51.466707, 0.181108, 2494, 'London Borough of Bexley', 'LBO' ],
@@ -100,11 +108,15 @@ my @PLACES = (
     ['?', 51.563623, -0.274082, 2488, 'Brent Council', 'LBO'], # Park in Brent
     ['?', 51.563683, -0.276120, 2488, 'Brent Council', 'LBO'], # Road in Brent
     ['?', 51.551717, -0.260869, 2488, 'Brent Council', 'LBO'], # TfL road in Brent
+    ['?', 51.534948, -0.211045, 2488, 'Brent Council', 'LBO'], # Queen's Park in Brent
     [ 'SE1 2QH', 51.50351, -0.08051, 2491, 'Southwark Council', 'LBO' ],
     [ '?', 51.50352, -0.08052, 2491, 'Southwark Council', 'LBO' ],
     [ 'BA11 6BA', 51.26345, -2.28191, 2428, 'Mendip District Council', 'DIS' ],
     [ 'DL10 6BN', 54.45012, -1.65621, 2406, 'Richmondshire District Council', 'DIS' ],
     [ 'CA12 5FJ', 54.60102, -3.13648, 2274, 'Allerdale Borough Council', 'DIS' ],
+    [ 'NE61 1BE', 55.169081, -1.691012, 2248, 'Northumberland County Council', 'UTA' ],
+    [ 'SG17 5TQ', 52.03553, -0.36067, 21070, 'Central Bedfordshire Council', 'UTA' ],
+    [ '?', 51.558568, -0.207702, 2489, 'Barnet Borough Council', 'DIS' ],
 );
 
 sub dispatch_request {
@@ -209,6 +221,9 @@ sub dispatch_request {
                 151942 => {parent_area => 2514, id => 151942, name => "Birchfield", type => "MTW"},
             });
         }
+        if ($area eq '2508') {
+            return $self->output({144390 => {parent_area => 2508, id => 144390, name => "Brownswood", type => "LBW"}});
+        }
         if ($area eq '2326') {
             return $self->output({23261 => {parent_area => 2326, id => 23261, name => "Lansdown", type => "DIW"}});
         }
@@ -220,6 +235,30 @@ sub dispatch_request {
         }
         if ($area eq '164186') {
             return $self->output({53296 => {parent_area => 164186, id => 53296, name => "Sulgrave", type => "CPC"}});
+        }
+        if ($area eq '2457') { # Epsom Ewell
+            return $self->output({167337 => {parent_area => 2457, id => 167337, name => "Auriol", type => "DIW"}});
+        }
+        if ($area eq '2487') { # Harrow
+            return $self->output({165128 => {parent_area => 2487, id => 165128, name => "Belmont", type => "LBW"}});
+        }
+        if ($area eq '2488') { # Brent
+            return $self->output({165138 => {parent_area => 2488, id => 165138, name => "Alperton", type => "LBW"}});
+        }
+        if ($area eq '2489') { # Barnet
+            return $self->output({165692 => {parent_area => 2489, id => 165692, name => "Barnet Vale", type => "LBW"}});
+        }
+        if ($area eq '2505') { # Camden
+            return $self->output({165469 => {parent_area => 2505, id => 165469, name => "Belsize", type => "LBW"}});
+        }
+        if ($area eq '2561') { # Bristol
+            return $self->output({148666 => {parent_area => 2561, id => 148666, name => "Ashley", type => "UTW"}});
+        }
+        if ($area eq '2608') { # South Gloucestershire
+            return $self->output({153253 => {parent_area => 2608, id => 153253, name => "Bitton & Oldland Common", type => "UTW"}});
+        }
+        if ($area eq '2642') { # North Somerset
+            return $self->output({145739 => {parent_area => 2642, id => 145739, name => "Backwell", type => "UTW"}});
         }
         my $response = {
             "60705" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 60705, "codes" => { "ons" => "00HY226", "gss" => "E04011842", "unit_id" => "17101" }, "name" => "Trowbridge", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },

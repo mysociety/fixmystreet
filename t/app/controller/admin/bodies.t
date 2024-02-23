@@ -40,7 +40,7 @@ $mech->content_contains("http://www.example.org/around");
 subtest 'check contact creation' => sub {
     $mech->get_ok('/admin/body/' . $body->id);
 
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         category   => 'test category',
         title_hint => 'example in test category',
         email      => 'test@example.com',
@@ -54,7 +54,7 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( '<td>test note' );
     $mech->content_like( qr/<td>\s*unconfirmed\s*<\/td>/ ); # No private
 
-    $mech->submit_form_ok( { with_fields => { 
+    $mech->submit_form_ok( { with_fields => {
         category   => 'private category',
         email      => 'test@example.com',
         note       => 'test note',
@@ -152,7 +152,7 @@ subtest 'check contact updating' => sub {
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>confirmed}s);
 };
 
-$body->update({ send_method => undef }); 
+$body->update({ send_method => undef });
 
 subtest 'check open311 configuring' => sub {
     $mech->get_ok('/admin/body/' . $body->id);
@@ -335,6 +335,17 @@ subtest 'reopen disabling' => sub {
     $mech->content_contains('Values updated');
     my $contact = $body->contacts->find({ category => 'test category' });
     is $contact->get_extra_metadata('reopening_disallowed'), 1, 'Reopening disallowed flag set';
+};
+
+subtest 'set HE litter category' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        litter_category_for_he => 1,
+        note => 'Setting litter category for Highways England filtering',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is $contact->get_extra_metadata('litter_category_for_he'), 1, 'Litter category set for Highways England filtering';
 };
 
 subtest 'allow anonymous reporting' => sub {

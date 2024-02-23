@@ -15,7 +15,9 @@
         <div id="skipped-map">
 [% END %]
 
+[% TRY %][% INCLUDE 'my/_title.html' %][% CATCH file %]
 <h1>[% loc('Your account') %]</h1>
+[% END %]
 
 [% IF flash_message %]
 <p class="form-success">[% flash_message %]</p>
@@ -90,6 +92,19 @@ li .my-account-buttons a {
         <input type="radio" name="alert_notify" id="alert_notify_none" value="none"[% ' checked' IF current_pref == 'none' %]>
         <label class="btn" for="alert_notify_none">[% loc('None') %]</label>
     </p>
+    </fieldset>
+</li>
+[% current_pref = c.user.questionnaire_notify %]
+<li>
+    <fieldset>
+      <legend>[% loc('Receive questionnaires') %]:</legend>
+      <p class="segmented-control segmented-control--radio">
+        <input type="radio" name="questionnaire_notify" id="questionnaire_notify_yes" value="1"[% ' checked' IF current_pref %]>
+        <label class="btn" for="questionnaire_notify_yes">[% loc('Yes') %]</label>
+
+        <input type="radio" name="questionnaire_notify" id="questionnaire_notify_no" value="0"[% ' checked' IF !current_pref %]>
+        <label class="btn" for="questionnaire_notify_no">[% loc('No') %]</label>
+      </p>
     </fieldset>
     <p>
         <input class="btn btn--block" type="submit" value="[% loc('Update') %]">

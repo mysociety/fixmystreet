@@ -2,12 +2,13 @@
 
 $layout_front_stats_color: $primary !default;
 $mappage-header-height: 4em !default; // eg: might want this to equal outer height of #site-header on normal pages
-$mappage-sidebar-width: 29em;
+$mappage-sidebar-width: 29em !default;
 $mappage-sidebar-padding: 1em;
 $mappage-notes-width: 15em;
-$mappage-actions-width: 25em;
-$mappage-sidebar-width--medium: 24em;
-$mappage-actions-width--medium: 20em;
+$mappage-actions-width: 25em !default;
+$mappage-actions-sidebar-width: $mappage-sidebar-width !default;
+$mappage-sidebar-width--medium: 24em !default;
+$mappage-actions-width--medium: 20em !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
@@ -15,6 +16,22 @@ $container-max-width: 60em !default;
 
 $primary_link_color: null !default;
 $primary_link_hover_color: null !default;
+
+// None of the form variables control the mobile styling. For that refer to _base.scss
+// $front-main-color-desktop controls the colours of all elements inside #front-main and .postcode-form-box element.
+$front-main-color-desktop: $primary_text !default;
+// $front-main-background-desktop controls the background of the #front-main element. This is a full width element.
+$front-main-background-desktop: transparent !default;
+// $front-main-container-desktop changes the background of h1, h2, but without using the full width.
+$front-main-container-background-desktop: transparent !default;
+// $postcodeform-background-desktop controls the background of the postcode-form-box. It excludes the h1 and h2 elements.
+$postcodeform-background-desktop: transparent !default;
+$postcodeform-color-desktop: $primary_text !default;
+$form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
+$front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+
+//This variable controls the color of .content for the front-page
+$content-background-desktop: #fff !default;
 
 .internal-link-fixed-header {
     display: block;
@@ -165,6 +182,15 @@ h1 {
   color: #222;
 }
 
+.frontpage {
+  .content {
+    background: $content-background-desktop;
+    @if ($content-background-desktop == $base_bg) {
+      padding: 1em 0;
+    }
+  }
+}
+
 // map page - has fixed header and different styling
 body.mappage {
   .wrapper {
@@ -239,7 +265,7 @@ body.mappage.admin {
   }
 
   .with-actions & {
-    #{$left}: $mappage-sidebar-width + $mappage-actions-width;
+    #{$left}: $mappage-actions-sidebar-width + $mappage-actions-width;
 
     @media (max-width: 79em) {
       #{$left}: $mappage-sidebar-width--medium  + $mappage-actions-width--medium;
@@ -267,7 +293,7 @@ body.mappage.admin {
   }
 
   .with-actions & {
-    width: $mappage-sidebar-width + $mappage-actions-width;
+    width: $mappage-actions-sidebar-width + $mappage-actions-width;
     max-width: 100%; // Secondary column will squish on screens 768-960px
     padding: 0; // Padding will be handled by children of .two_column_sidebar
 
@@ -316,6 +342,10 @@ body.mappage.admin {
     @media (max-width: 79em) {
       width: $mappage-sidebar-width--medium;
     }
+
+    .with-actions & {
+      width: $mappage-actions-sidebar-width;
+    }
   }
 
   // Line up edge of .shadow-wrap with edge of #side-report
@@ -324,6 +354,10 @@ body.mappage.admin {
 
     @media (max-width: 79em) {
       width: $mappage-sidebar-width--medium;
+    }
+
+    .with-actions & {
+      width: $mappage-actions-sidebar-width;
     }
   }
 
@@ -433,44 +467,6 @@ body.twothirdswidthpage {
     // negative z-index.
     z-index: 1;
   }
-  .content {
-    width:40em;
-    position: relative;
-    aside {
-      background:#eee;
-      position:absolute;
-      #{$left}: 42em;
-      top:0;
-      width:13em;
-      padding:1em;
-      h2 {
-        margin-top: 0;
-      }
-      img {
-        margin-bottom: 0.25em;
-      }
-    }
-    .sticky-sidebar {
-      position: absolute;
-      #{$left}: 42em;
-      aside {
-        position: fixed;
-        top:7em;
-        #{$left}: auto;
-      }
-    }
-  }
-
-  @media (max-width: 61em) {
-    // make twothirdswidthpage nearly as small as main
-    // .content: just enough to still fit the sidebar in
-    .content {
-      width:30em;
-      .sticky-sidebar {
-        #{$left}: 32em;
-      }
-    }
-  }
 }
 
 // Centre the login and password change pages,
@@ -482,7 +478,6 @@ body.authpage {
     margin-#{$right}: auto;
   }
 }
-
 
 // table wrapper - this enables anything to become a
 // table with div children as table cells
@@ -759,7 +754,8 @@ textarea{
 /* form errors */
 div.form-error,
 p.form-error {
-  display:block;
+  display: block;
+  width: fit-content;
 }
 
 input.form-error,
@@ -821,33 +817,47 @@ textarea.form-error {
 
 // big yellow bit full screen width
 #front-main {
-  color: $primary_text;
-  background: $primary;
+  color: $front-main-color-desktop;
+  background: $front-main-background-desktop;
   margin: 0;
   padding: 1em;
   #front-main-container {
     max-width: $container-max-width;
     margin: 0 auto;
+    background: $front-main-container-background-desktop;
+    @if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
+      padding: 1em;
+    } @else {
+      padding: 0;
+    }
+  }
+  .form-hint {
+    margin-top: -0.25em;
+    color: $form-hint-color-desktop;
   }
   h2 {
     font-style:normal;
     margin:0;
-    color: inherit;
+    color: $front-main-h2-color-desktop;
   }
-  #postcodeForm {
-    color: inherit;
-    background:none;
-    overflow:hidden;
-    padding-bottom: 0;
-    label {
-      margin:0.5em 0;
-    }
-    .form-hint {
-        margin-top: -0.25em;
-    }
-    div {
-      width:20em;
-    }
+}
+
+.postcode-form-box {
+  color: $postcodeform-color-desktop;
+  background: $postcodeform-background-desktop;
+  @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
+    padding: 1em;
+    margin: 0 -1em;
+  } @else {
+    padding: 0;
+    margin: 1em auto 0;
+  }
+  overflow:hidden;
+  label {
+    margin:0.5em 0;
+  }
+  div {
+    width:20em;
   }
 }
 
@@ -882,6 +892,9 @@ textarea.form-error {
 #front-recently h2 {
    margin-top:0;
 }
+#front-howto lite-youtube ~ h2 {
+    margin-top: 1.3333em;
+}
 
 .alerts__columns {
     @include clearfix;
@@ -902,7 +915,7 @@ textarea.form-error {
 
 // Offline reporting UI
 #front-main {
-  .js-continue-draft p {
+  .draft-info-box p {
       background-color: white;
       border: solid 2px #ff3333;
   }

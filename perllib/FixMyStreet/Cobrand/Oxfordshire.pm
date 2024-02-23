@@ -85,7 +85,7 @@ sub reports_ordering {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' unless $self->owns_problem( $p );
+    return 'grey' if ($context||'') ne 'reports' && !$self->owns_problem($p);
     return 'grey' if $p->is_closed;
     return 'green' if $p->is_fixed;
     return 'yellow' if $p->state eq 'confirmed';
@@ -110,13 +110,14 @@ sub state_groups_inspect {
     [
         [ 'New', [ 'confirmed', 'investigating' ] ],
         [ 'Scheduled', [ 'action scheduled' ] ],
+        [ 'Pending', [ 'in progress' ] ],
         [ 'Fixed', [ 'fixed - council' ] ],
         [ 'Closed', [ 'not responsible', 'duplicate', 'unable to fix' ] ],
     ]
 }
 
 sub open311_config {
-    my ($self, $row, $h, $params) = @_;
+    my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
     $params->{extended_description} = 'oxfordshire';
@@ -142,6 +143,8 @@ sub open311_extra_data_include {
             value => $row->detail },
             { name => 'category',
             value => $row->category },
+            { name => 'group',
+              value => $row->get_extra_metadata('group', '') },
         ];
         push @$extra, { name => 'staff_role', value => $roles } if $roles;
         return $extra;
@@ -163,18 +166,10 @@ sub open311_config_updates {
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
-    $self->{ox_original_detail} = $row->detail;
-
     if (my $fid = $row->get_extra_field_value('feature_id')) {
         my $text = "Asset Id: $fid\n\n" . $row->detail;
         $row->detail($text);
     }
-}
-
-sub open311_post_send {
-    my ($self, $row, $h) = @_;
-
-    $row->detail($self->{ox_original_detail});
 }
 
 sub open311_munge_update_params {
@@ -344,14 +339,18 @@ sub dashboard_export_problems_add_columns {
 
     $csv->csv_extra_data(sub {
         my $report = shift;
-        my $usrn = $report->get_extra_field_value('usrn') || '';
+        my $usrn = $csv->_extra_field($report, 'usrn') || '';
         # Try and get a HIAMS reference first of all
-        my $ref = $report->get_extra_metadata('customer_reference');
+        my $ref = $csv->_extra_metadata($report, 'customer_reference');
         unless ($ref) {
             # No HIAMS ref which means it's either an older Exor report
             # or a HIAMS report which hasn't had its reference set yet.
             # We detect the latter case by the id and external_id being the same.
-            $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
+            if ($csv->dbi) {
+                $ref = $report->{external_id} if $report->{id} ne ( $report->{external_id} || '' );
+            } else {
+                $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
+            }
         }
         return {
             external_ref => ( $ref || '' ),

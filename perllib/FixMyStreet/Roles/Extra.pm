@@ -1,5 +1,6 @@
 package FixMyStreet::Roles::Extra;
 use Moo::Role;
+use JSON::MaybeXS;
 
 =head1 NAME
 
@@ -82,6 +83,25 @@ sub unset_extra_metadata {
     delete $extra->{$key};
     $self->extra($extra);
 };
+
+=head2 update_extra_metadata
+
+This immediately updates the database with the new data (so update in the
+DBIx::Class sense, not like update_extra_field), using the PostgreSQL ||
+operator, to not affect anything else in the column. It then refetches the
+data from the database so as to be up-to-date. Other changes on the object
+will be saved, apart from any changes already made to extra.
+
+=cut
+
+sub update_extra_metadata {
+    my ($self, %new) = @_;
+
+    $self->update({
+        extra => \[ "coalesce(extra, '{}') || ?", encode_json(\%new) ],
+    });
+    $self->discard_changes;
+}
 
 =head2 get_extra_metadata
 

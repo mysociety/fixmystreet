@@ -31,6 +31,8 @@ requires 'Net::Server', '2.009';
   requires 'MooseX::Traits::Pluggable', '0.12';
 # For OpenSSL 3 support
   requires 'Crypt::OpenSSL::RSA', '0.33';
+# For perl 5.38 deprecations
+  requires 'Carp::Assert', '0.22';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.90124';
@@ -145,6 +147,8 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     requires 'Net::Subnet';
     # Bromley
     requires 'Data::ICal';
+    # Echo
+    requires 'UUID::Tiny';
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {
@@ -164,7 +168,7 @@ requires 'Algorithm::Diff';
 # Modules used by CSS & watcher
 requires 'CSS::Sass';
 requires 'File::ChangeNotify', '0.31';
-requires 'Path::Tiny', '0.104';
+requires 'Path::Tiny', '0.144';
 requires 'File::Find::Rule';
 
 # Modules used for development

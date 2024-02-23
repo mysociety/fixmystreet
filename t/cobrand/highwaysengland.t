@@ -1,9 +1,11 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Cobrand::HighwaysEngland;
 use HighwaysEngland;
 use DateTime;
+use File::Temp 'tempdir';
 use Test::MockModule;
 
 my $he_mock = Test::MockModule->new('HighwaysEngland');
@@ -166,6 +168,15 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_lacks('Provide an update');
     };
+
+    subtest "check All Reports pages display councils correctly" => sub {
+        $mech->host('fixmystreet.com');
+        $mech->get_ok('/reports/National+Highways');
+        $mech->content_contains('Hackney'); # Mock has this returned
+        $mech->host('highwaysengland.example.org');
+        $mech->get_ok('/reports/National+Highways');
+        $mech->content_contains('Hackney');
+    };
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
@@ -175,10 +186,8 @@ subtest 'Dashboard CSV extra columns' => sub {
         extra => {
             where_hear => "Social media",
             _fields => [
-                {
-                    name => "area_name",
-                    value => "South West",
-                },
+                { name => "area_name", value => "South West", },
+                { name => 'road_name', value => 'M5', },
             ],
         },
         service => 'desktop',
@@ -188,10 +197,8 @@ subtest 'Dashboard CSV extra columns' => sub {
         extra => {
             where_hear => "Search engine",
             _fields => [
-                {
-                    name => "area_name",
-                    value => "Area 7",
-                },
+                { name => "area_name", value => "Area 7", },
+                { name => 'sect_label', value => 'M1/111', },
             ],
         },
         service => 'mobile',
@@ -208,21 +215,42 @@ subtest 'Dashboard CSV extra columns' => sub {
     $comment1->update;
     my $comment2 = $mech->create_comment_for_problem($problem1, $problem1->user, 'Jo Public', 'Second update', 't', 'confirmed', 'confirmed', { confirmed => $now });
 
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'highwaysengland',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
+    $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","Road name","Section label","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
     my @row1 = (
         'http://highwaysengland.example.org/report/' . $problem1->id,
-        'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', '"Social media"',
+        'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', 'M5', '', '"Social media"',
         '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
         '"Second update"', $comment2->confirmed->datetime, 'public',
     );
     $mech->content_contains(join ',', @row1);
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7","Search engine"');
+    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'highwaysengland',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    }, sub {
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+    };
+    $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","Road name","Section label","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
+    @row1 = (
+        'http://highwaysengland.example.org/report/' . $problem1->id,
+        'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', 'M5', '', '"Social media"',
+        '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
+        '"Second update"', $comment2->confirmed->datetime, 'public',
+    );
+    $mech->content_contains(join ',', @row1);
+    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
+
 };
 
 FixMyStreet::override_config {

@@ -1,0 +1,21 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Contact Us') %]
+
+[% IF success %]
+
+  <div class="confirmation-header">
+    <h1>[% loc('Thank you for your enquiry') %]</h1>
+    <p>[% loc('We’ll get back to you as soon as we can.') %]</p>
+  </div>
+
+[% ELSE %]
+
+  <div class="confirmation-header confirmation-header--failure">
+    <h1>[% loc('Failed to send message') %]</h1>
+    <p>[% loc('Try contacting us ') %] <a href="https://www.gloucestershire.gov.uk/contact-gloucestershire-county-council/">directly</a></p>
+  </div>
+
+[% END %]
+
+[% INCLUDE next_steps.html utm_content='contact form submitted' %]
+
+[% INCLUDE 'footer.html' %]

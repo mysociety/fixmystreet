@@ -53,9 +53,8 @@
         font-weight: normal;
         font-size: 1.5em;
     }
-    #postcodeForm {
-        margin-top: 0;
-        padding-top: 0;
+    .postcode-form-box {
+        padding-top: 0; // The UL above has a large margin bottom
     }
 
     a {
@@ -99,12 +98,6 @@ body.mappage {
     .global-footer {
         display: none;
     }
-}
-
-// Help
-
-body.twothirdswidthpage .content .sticky-sidebar aside {
-    top: 12em;
 }
 
 // Stats homepage

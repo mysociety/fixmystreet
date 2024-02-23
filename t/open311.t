@@ -10,6 +10,8 @@ use CGI::Simple;
 use HTTP::Response;
 use DateTime;
 use DateTime::Format::W3CDTF;
+use utf8;
+use Encode;
 
 use_ok( 'Open311' );
 
@@ -296,7 +298,7 @@ for my $test (
     };
 }
 
-for my $test ( 
+for my $test (
     {
         desc => 'Check uses report name over user name',
         name => 'Nom de Report',
@@ -512,6 +514,42 @@ subtest 'check media url set' => sub {
     };
 };
 
+subtest 'check images sent directly when comment on private report' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+
+    my $image_path = path('t/app/controller/sample.jpg');
+    $image_path->copy( path( $UPLOAD_DIR, '0123456789012345678901234567890123456789.jpeg' ) );
+
+    my $comment = make_comment('fixmystreet');
+    $comment->photo("0123456789012345678901234567890123456789");
+
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        $problem->non_public(1);
+        my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { upload_files_for_updates => 1 } );
+
+        is $results->{ res }, 248, 'got update id';
+        my $found = 0;
+        foreach ($results->{ req }->parts) {
+            my $cd = $_->header('Content-Disposition');
+            if ($cd =~ /description/) {
+                is decode_utf8($_->content), 'this is a comment', 'Correct description';
+                $found++;
+            }
+            if ($cd =~ /jpeg/) {
+                is $_->header('Content-Type'), 'image/jpeg', 'Correct image content type';
+                $found++;
+            }
+        }
+        is $found, 2, 'Found all tested headers';
+        $problem->non_public(0);
+    };
+};
+
 foreach my $test (
     {
         desc => 'comment with fixed state sends status of CLOSED',
@@ -588,6 +626,12 @@ foreach my $test (
         state => 'in progress',
         status => 'OPEN',
         extended => 'IN_PROGRESS',
+    },
+    {
+        desc => 'comment with for triage state sends status of CLOSED',
+        state => 'for triage',
+        status => 'CLOSED',
+        extended => 'FOR_TRIAGE',
     },
     {
         desc => 'comment that marks problem open sends OPEN if not mark_reopen',
@@ -829,7 +873,7 @@ subtest 'No request id in reponse' => sub {
             $problem,
             { url => 'http://example.com/report/1' },
             $problem->category,
-            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id></service_request_id></request></service_requests>' 
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id></service_request_id></request></service_requests>'
         );
     } qr/Failed to submit problem \d+ over Open311/, 'correct error message for missing request_id';
 
@@ -843,7 +887,7 @@ subtest 'Bad data in request_id element in reponse' => sub {
             $problem,
             { url => 'http://example.com/report/1' },
             $problem->category,
-            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id><bad_data>BAD</bad_data></service_request_id></request></service_requests>' 
+            '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id><bad_data>BAD</bad_data></service_request_id></request></service_requests>'
         );
     } qr/Failed to submit problem \d+ over Open311/, 'correct error message for bad data in request_id';
 

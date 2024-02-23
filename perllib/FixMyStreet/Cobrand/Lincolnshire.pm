@@ -176,10 +176,9 @@ Lincolnshire uses the following pin colours:
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    my $ext_status = $p->get_extra_metadata('external_status_code');
 
     return 'grey'
-        if $p->state eq 'not responsible' || !$self->owns_problem($p);
+        if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
     return 'orange'
         if $p->state eq 'investigating' || $p->state eq 'for triage';
     return 'yellow'
@@ -197,10 +196,10 @@ uploading of private photos, so we set the flag for this.
 =cut
 
 around 'open311_config' => sub {
-    my ($orig, $self, $row, $h, $params) = @_;
+    my ($orig, $self, $row, $h, $params, $contact) = @_;
 
     $params->{upload_files} = 1;
-    $self->$orig($row, $h, $params);
+    $self->$orig($row, $h, $params, $contact);
 };
 
 # Find or create a user to associate with externally created Open311 reports.

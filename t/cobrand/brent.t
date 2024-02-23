@@ -1,6 +1,8 @@
 use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::CSVExport;
+use File::Temp 'tempdir';
 use t::Mock::Tilma;
 use Test::MockTime qw(:all);
 use Test::MockModule;
@@ -81,7 +83,7 @@ use_ok 'FixMyStreet::Cobrand::Brent';
 
 my $super_user = $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $comment_user = $mech->create_user_ok('comment@example.org', email_verified => 1, name => 'Brent');
-my $brent = $mech->create_body_ok(2488, 'Brent', {
+my $brent = $mech->create_body_ok(2488, 'Brent Council', {
     api_key => 'abc',
     jurisdiction => 'brent',
     endpoint => 'http://endpoint.example.org',
@@ -91,11 +93,47 @@ my $brent = $mech->create_body_ok(2488, 'Brent', {
 }, {
     cobrand => 'brent'
 });
+my $atak_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'ATAK', email => 'ATAK');
+
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2505, body_id => $brent->id }); # Camden
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2487, body_id => $brent->id }); # Harrow
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2489, body_id => $brent->id }); # Barnet
+
+my $camden = $mech->create_body_ok(2505, 'Camden Borough Council', {},{cobrand => 'camden'});
+my $barnet = $mech->create_body_ok(2489, 'Barnet Borough Council');
+my $harrow = $mech->create_body_ok(2487, 'Harrow Borough Council');
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2488,
+    body_id => $barnet->id,
+});
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2488,
+    body_id => $camden->id,
+});
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2488,
+    body_id => $harrow->id,
+});
+
 my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
+my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Overgrown grass',
+    email => 'ATAK-OVERGROWN_GRASS', group => 'Parks and open spaces');
+my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category => 'Leaf clearance',
+    email => 'ATAK-LEAF_CLEARANCE', group => 'Parks and open spaces');
+my $parks_contact3 = $mech->create_contact_ok(body_id => $brent->id, category => 'Ponds',
+    email => 'ponds@example.org', group => 'Parks and open spaces');
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
+
+# Add location_name field to parks categories
+for my $contact ($parks_contact, $parks_contact2, $parks_contact3) {
+    $contact->set_extra_fields(
+        { code => 'location_name', required => 0, automated => 'hidden_field' },
+    );
+    $contact->update;
+}
 
 $mech->create_contact_ok(body_id => $brent->id, category => 'Potholes', email => 'potholes@brent.example.org');
 
@@ -110,6 +148,22 @@ sub create_contact {
     );
     $contact->update;
 }
+
+create_contact({ category => 'Fly-tipping', email => 'flytipping@brent.example.org' },
+    { code => 'Did_you_see_the_Flytip_take_place?_', required => 1, values => [
+        { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
+    ] },
+    { code => 'Are_you_willing_to_be_a_WItness?_', required => 1, values => [
+        { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
+    ] },
+    { code => 'Flytip_Size', required => 1, values => [
+        { name => 'Single item', key => 2 }, { name => 'Small van load', key => 4 }
+
+    ] },
+    { code => 'Flytip_Type', required => 1, values => [
+        { name => 'Appliance', key => 13 }, { name => 'Bagged waste', key => 3 }
+    ] },
+);
 
 create_contact({ category => 'Report missed collection', email => 'missed' });
 create_contact({ category => 'Request new container', email => 'request@example.org' },
@@ -140,6 +194,57 @@ create_contact({ category => 'Additional collection', email => 'general@brent.go
     { code => 'staff_form', automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
 );
+
+subtest "title is labelled 'location of problem' in open311 extended description" => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+        category => 'Graffiti' ,
+        areas => '2488',
+        cobrand => 'brent',
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_FLAGS => { send_reports => 1 },
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'anonymous'
+            },
+        },
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        like $c->param('description'), qr/location of problem: title/, "title labeled correctly";
+    };
+
+    $problem->delete;
+};
+
+subtest "ATAK reports go straight to investigating after being sent" => sub {
+    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+        category => 'ATAK' ,
+        areas => '2488',
+        cobrand => 'brent',
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_FLAGS => { send_reports => 1 },
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'anonymous'
+            },
+        },
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $problem = FixMyStreet::DB->resultset('Problem')->find( { id => $problem->id } );
+    is $problem->state, "investigating", "ATAK problem is in investigating after being sent";
+    $problem->delete;
+};
 
 for my $test (
     {
@@ -241,33 +346,88 @@ for my $test (
 };
 
 subtest "Open311 attribute changes" => sub {
-    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
-        areas => "2488", category => 'Gully grid missing', cobrand => 'brent',
-        geocode => { display_name => 'Constitution Hill' },
-    });
-    $problem->update_extra_field({ name => 'UnitID', value => '234' });
-    $problem->update;
+    subtest 'OSM geocoder' => sub {
+        my ($problem) = $mech->create_problems_for_body(
+            1,
+            $brent->id,
+            'Gully',
+            {   areas    => "2488",
+                category => 'Gully grid missing',
+                cobrand  => 'brent',
+                geocode  => { display_name => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom' },
+            }
+        );
+        $problem->update_extra_field( { name => 'UnitID', value => '234' } );
+        $problem->update;
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'brent',
-        MAPIT_URL => 'http://mapit.uk/',
-        STAGING_FLAGS => { send_reports => 1 },
-        COBRAND_FEATURES => {
-            anonymous_account => {
-                brent => 'anonymous'
-            },
-        },
-    }, sub {
-        FixMyStreet::Script::Reports::send();
-        my $req = Open311->test_req_used;
-        my $c = CGI::Simple->new($req->content);
-        is $c->param('attribute[UnitID]'), undef, 'UnitID removed from attributes';
-        like $c->param('description'), qr/ukey: 234/, 'UnitID on gully sent across in detail';
-        my $title = $problem->title . '; Nearest calculated address = Constitution Hill';
-        is $c->param('attribute[title]'), $title, 'Report title and location passed as attribute for Open311';
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL        => 'http://mapit.uk/',
+            STAGING_FLAGS    => { send_reports => 1 },
+            COBRAND_FEATURES =>
+                { anonymous_account => { brent => 'anonymous' }, },
+        }, sub {
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c   = CGI::Simple->new( $req->content );
+            is $c->param('attribute[UnitID]'), undef,
+                'UnitID removed from attributes';
+            like $c->param('description'), qr/ukey: 234/,
+                'UnitID on gully sent across in detail';
+            my $title = $problem->title
+                . '; Nearest calculated address = Engineers Way, London Borough of Brent, London, Greater London, HA9 0FJ';
+            is $c->param('attribute[title]'), $title,
+                'Report title and location passed as attribute for Open311';
+        };
+
+        $problem->delete;
     };
 
-    $problem->delete;
+    subtest 'OSPlaces geocoder' => sub {
+        my ($problem) = $mech->create_problems_for_body(
+            1,
+            $brent->id,
+            'Gully',
+            {   areas    => "2488",
+                category => 'Gully grid missing',
+                cobrand  => 'brent',
+                geocode => {
+                    LPI => {
+                        "ADDRESS" =>
+                            "STUDIO 1, 29, BUCKINGHAM ROAD, LONDON, BRENT, NW10 4RP",
+                    },
+                },
+            }
+        );
+        $problem->update_extra_field( { name => 'UnitID', value => '234' } );
+        $problem->update;
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL        => 'http://mapit.uk/',
+            STAGING_FLAGS    => { send_reports => 1 },
+            COBRAND_FEATURES => {
+                anonymous_account => { brent => 'anonymous' },
+                geocoder_reverse  => { brent => 'OSPlaces' },
+                os_places_api_key => { brent => 'key' },
+            },
+        }, sub {
+            # send() will overwrite report's geocode with one for OSPlaces
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c   = CGI::Simple->new( $req->content );
+            is $c->param('attribute[UnitID]'), undef,
+                'UnitID removed from attributes';
+            like $c->param('description'), qr/ukey: 234/,
+                'UnitID on gully sent across in detail';
+            my $title = $problem->title
+                . '; Nearest calculated address = Studio 1, 29, Buckingham Road, London, Brent, NW10 4RP';
+            is $c->param('attribute[title]'), $title,
+                'Report title and location passed as attribute for Open311';
+        };
+
+        $problem->delete;
+    };
 };
 
 my $tilma = t::Mock::Tilma->new;
@@ -280,10 +440,14 @@ FixMyStreet::override_config {
     subtest "hides the TfL River Piers category" => sub {
 
         my $tfl = $mech->create_body_ok(2488, 'TfL');
+        FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+            area_id => 2505, # Camden
+            body_id => $tfl->id,
+        });
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers', email => 'tfl@example.org');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers - Cleaning', email => 'tfl@example.org');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers Damage doors and glass', email => 'tfl@example.org');
-
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'Sweeping', email => 'tfl@example.org');
         ok $mech->host('brent.fixmystreet.com'), 'set host';
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.55904&longitude=-0.28168');
         is $json->{by_category}->{"River Piers"}, undef, "Brent doesn't have River Piers category";
@@ -310,6 +474,184 @@ FixMyStreet::override_config {
         $problem->state('in_progress');
         is $cobrand->pin_colour($problem, 'around'), 'orange', 'in_progress problem has correct pin colour';
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent', 'tfl', 'camden', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    $mech->create_contact_ok(body_id => $camden->id, category => 'Dead animal', email => 'animal@camden.org');
+    $mech->create_contact_ok(body_id => $camden->id, category => 'Fly-tipping', email => 'flytipping@camden.org');
+    $mech->create_contact_ok(body_id => $barnet->id, category => 'Abandoned vehicles', email => 'vehicles@barnet.org');
+    $mech->create_contact_ok(body_id => $barnet->id, category => 'Parking', email => 'parking@barnet.org');
+
+        my $brent_mock = Test::MockModule->new('FixMyStreet::Cobrand::Brent');
+        my $camden_mock = Test::MockModule->new('FixMyStreet::Cobrand::Camden');
+            foreach my $host (qw/brent fixmystreet/) {
+                subtest "categories on $host cobrand in Brent on Camden cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features', sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Camden' } } ]});
+                    $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_contains("Fly-tipping"), 1, 'Camden category present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                }
+            };
+
+            foreach my $host (qw/brent fixmystreet/) {
+                subtest "categories on $host cobrand in Brent not on cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features', sub {[]});
+                    $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_contains("Gully grid missing"), 1, 'Brent Symology category present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_lacks("Fly-tipping"), 1, 'Camden category not present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                };
+            };
+
+            foreach my $host (qw/camden fixmystreet/) {
+                subtest "categories on $host in Camden not on cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $camden_mock->mock('_fetch_features', sub { [] });
+                    $mech->get_ok("/report/new/ajax?longitude=-0.124514&latitude=51.529432");
+                    is $mech->content_lacks("Potholes"), 1, 'Brent category not present';
+                    is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_contains("Fly-tipping"), 1, 'Camden category present';
+                    is $mech->content_contains("Dead animal"), 1, 'Camden non-street category present';
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                };
+            }
+
+            foreach my $host (qw/fixmystreet brent camden/) {
+                subtest "categories on $host cobrand in Camden on Brent cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features',
+                        sub { [ { 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } } ] });
+                    $camden_mock->mock('_fetch_features',
+                        sub { [ { 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } } ] });
+                    $mech->get_ok("/report/new/ajax?longitude=-0.124514&latitude=51.529432");
+                    is $mech->content_lacks("Potholes"), 1, 'Brent category not present';
+                    is $mech->content_contains("Gully grid missing"), 1, 'Brent Symology category present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_lacks("Fly-tipping"), 1, 'Camden street category not present';
+                    is $mech->content_contains("Dead animal"), 1, 'Camden non-street category present';
+                }
+            };
+
+            foreach my $host (qw/fixmystreet brent/) {
+                subtest "categories on $host cobrand in Brent on Barnet cobrand layer" => sub {
+                    $mech->host("$host.fixmystreet.com");
+                    $brent_mock->mock('_fetch_features', sub {[ { 'ms:BrentDiffs' => { 'ms:name' => 'Barnet' } } ]});
+                    $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
+                    is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
+                    is $mech->content_contains("Parking"), 1, 'Barnet street category present';
+                    is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_contains("Sweeping"), 1, 'TfL category present';
+                    is $mech->content_lacks("Fly-tipping"), 1, 'Camden category not present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                }
+            };
+
+            subtest "can not access Camden from Brent off asset layer" => sub {
+                $mech->host("brent.fixmystreet.com");
+                $brent_mock->mock('_fetch_features',
+                    sub { [] });
+                $mech->get_ok("/report/new?longitude=-0.124514&latitude=51.529432");
+                is $mech->content_contains('That location is not covered by Brent Council'), 1, 'Can not make report in Camden off asset';
+            };
+
+            subtest "can access Camden from Brent on asset layer" => sub {
+                $mech->host("brent.fixmystreet.com");
+                $brent_mock->mock('_fetch_features',
+                    sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } }] });
+                $mech->get_ok("/report/new?longitude=-0.124514&latitude=51.529432");
+                is $mech->content_lacks('That location is not covered by Brent Council'), 1, 'Can not make report in Camden off asset';
+            };
+
+            subtest "can access Brent from Camden on Camden asset layer" => sub {
+                $mech->host("camden.fixmystreet.com");
+                $camden_mock->mock('_fetch_features', sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Camden' } }] });
+                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
+                is $mech->content_lacks('That location is not covered by Camden Council'), 1, "Can make a report on Camden asset";
+            };
+
+            subtest "can not access Brent from Camden not on asset layer" => sub {
+                $mech->host("camden.fixmystreet.com");
+                $camden_mock->mock('_fetch_features', sub { [] });
+                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
+                is $mech->content_contains('That location is not covered by Camden Council'), 1, "Can make a report on Camden asset";
+            };
+
+            for my $test (
+                {
+                    council => 'Brent',
+                    location => '/report/new?longitude=-0.28168&latitude=51.55904',
+                    asset => [ ],
+                },
+                {
+                    council => 'Barnet',
+                    location => '/report/new?longitude=-0.207702&latitude=51.558568',
+                    asset => [ ],
+                },
+
+            ) {
+                subtest "can not access $test->{council} from Camden cobrand" => sub {
+                    $mech->host("camden.fixmystreet.com");
+                    $camden_mock->mock('_fetch_features', sub { $test->{asset} });
+                    $mech->get_ok($test->{location});
+                    is $mech->content_contains('That location is not covered by Camden Council'), 1, "Can not make report in $test->{council} from Camden";
+                };
+            };
+
+    undef $brent_mock;
+    undef $camden_mock;
+
+    subtest "All reports page for Brent works appropriately" => sub {
+        $mech->host("brent.fixmystreet.com");
+        $mech->get_ok("/reports");
+        $mech->content_contains('data-area="2488"');
+        $mech->content_contains('Alperton');
+        $mech->content_lacks('Belsize');
+    };
+
+    subtest "All reports page for Camden works appropriately" => sub {
+        $mech->host("camden.fixmystreet.com");
+        $mech->get_ok("/reports");
+        $mech->content_contains('data-area="2505"');
+        $mech->content_contains('Belsize');
+        $mech->content_lacks('Alperton');
+        $mech->get_ok("/reports/Camden/Belsize");
+        is $mech->uri->path, '/reports/Camden/Belsize';
+    };
+
+    subtest "All reports on .com works appropriately" => sub {
+        $mech->host("fixmystreet.com");
+        $mech->get_ok("/reports/Brent");
+        $mech->content_contains('data-area="2488"');
+        $mech->content_contains('Alperton');
+        $mech->content_lacks('Belsize');
+        $mech->get_ok("/reports/Camden");
+        $mech->content_contains('data-area="2505"');
+        $mech->content_contains('Belsize');
+        $mech->content_lacks('Alperton');
+        $mech->get_ok("/reports/Harrow");
+        $mech->content_contains('data-area="2487"');
+        $mech->content_contains('Belmont');
+        $mech->content_lacks('Alperton');
+    };
+
+    $mech->host("brent.fixmystreet.com");
 };
 
 package SOAP::Result;
@@ -521,6 +863,108 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    COBRAND_FEATURES => {
+        anonymous_account => { brent => 'anonymous' },
+        category_groups => { brent => 1 },
+    }
+}, sub {
+    $mech->log_in_ok($user1->email); # Simplify report submission params by logging in
+    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Brent');
+
+    subtest 'Prevents reports being made outside maintained areas' => sub {
+        # Simulate no locations found
+        $cobrand->mock('_get', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
+
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Please select a location in a Brent maintained area');
+    };
+
+    subtest 'Allows reports to be made in maintained areas' => sub {
+        # Now simulate a location being found
+        $cobrand->mock('_get', sub {
+            '<wfs:FeatureCollection>
+  <gml:featureMember>
+    <ms:Parks_and_Open_Spaces gml:id="Parks_and_Open_Spaces.King Edward VII Park, Wembley">
+      <ms:site_name>King Edward VII Park, Wembley</ms:site_name>
+    </ms:Parks_and_Open_Spaces>
+  </gml:featureMember>
+</wfs:FeatureCollection>'
+        });
+
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+
+        FixMyStreet::Script::Reports::send();
+
+        # Get the most recent report
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
+    };
+
+    subtest "Doesn't overwrite location_name if already set" => sub {
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Overgrown grass',
+            }
+        }, "submit details");
+        $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+
+
+        # Get the most recent report and set the location_name
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report->update_extra_field( { name => 'location_name', value => 'Test location name' } );
+        $report->update;
+
+        FixMyStreet::Script::Reports::send();
+
+        $report->discard_changes;
+        is $report->get_extra_field_value('location_name'), 'Test location name', 'Location name is set';
+    };
+
+    subtest "Sets location_name on non-ATAK reports in ATAK groups" => sub {
+        $mech->get_ok('/report/new?latitude=51.55904&longitude=-0.28168');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Parks and open spaces',
+                'category.Parksandopenspaces' => 'Ponds',
+            }
+        }, "submit details");
+        $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
+
+        FixMyStreet::Script::Reports::send();
+
+        # Get the most recent report
+        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
+    };
+};
+
+FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'brent',
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
@@ -528,10 +972,13 @@ FixMyStreet::override_config {
         waste => { brent => 1 },
         anonymous_account => { brent => 'anonymous' },
         waste_calendar_links => { brent => {
-            'friday-2' => 'https://example.org/media/16420712/fridayweek2'
+            'wednesday-B2' => 'https://example.org/media/16420712/wednesdayweek2.pdf'
         } },
         ggw_calendar_links => { brent => {
-            'monday-2' => 'https://example.org/media/16420712/mondayweek2'
+            'monday-2' => [ {
+                href => 'https://example.org/media/16420712/mondayweek2',
+                text => 'Download PDF garden waste calendar',
+            } ]
         } },
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
@@ -544,16 +991,12 @@ FixMyStreet::override_config {
     return [
         {
             Id => 1001,
-            ServiceId => 262,
+            ServiceId => 265,
             ServiceName => 'Domestic Dry Recycling Collection',
             ServiceTasks => { ServiceTask => {
                 Id => 401,
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
                     ScheduleDescription => 'every other Wednesday',
-                    Allocation => {
-                        RoundName => 'Friday ',
-                        RoundGroupName => 'Delta 04 Week 2',
-                    },
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
@@ -569,12 +1012,16 @@ FixMyStreet::override_config {
             } },
         }, {
             Id => 1002,
-            ServiceId => 265,
+            ServiceId => 262,
             ServiceName => 'Domestic Refuse Collection',
             ServiceTasks => { ServiceTask => {
-                Id => 402,
+                Id => 36384495,
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
-                    ScheduleDescription => 'every other Wednesday',
+                    ScheduleDescription => 'Wednesday every other week',
+                    Allocation => {
+                        RoundName => 'Wednesday',
+                        RoundGroupName => 'Delta 12 Week 2',
+                    },
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
@@ -594,17 +1041,18 @@ FixMyStreet::override_config {
             ServiceName => 'Domestic Food Waste Collection',
             ServiceTasks => { ServiceTask => {
                 Id => 403,
+                ScheduleDescription => 'every Thursday fortnightly',
                 ServiceTaskSchedules => { ServiceTaskSchedule => {
-                    ScheduleDescription => 'every other Wednesday',
+                    ScheduleDescription => 'every other Thursday',
                     StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                     EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                     NextInstance => {
-                        CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
-                        OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-06-04T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-04T00:00:00Z' },
                     },
                     LastInstance => {
                         OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                        CurrentScheduledDate => { DateTime => '2020-05-20T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-21T00:00:00Z' },
                         Ref => { Value => { anyType => [ 345, 678 ] } },
                     },
                     TimeBand => {
@@ -614,6 +1062,33 @@ FixMyStreet::override_config {
                 } },
             } },
         }, {
+            Id => '36404180',
+            ServiceId => 807,
+            ServiceName => 'Domestic Paper/Card Collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 21507618,
+                TaskTypeId => 4317,
+                Data => '',
+                ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                    ScheduleDescription => 'every other Wednesday',
+                    Allocation => {
+                        RoundName => 'Wednesday',
+                        RoundGroupName => 'PaperCard07 WKB',
+                    },
+                    StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 567, 890 ] } },
+                    },
+                } ] },
+            } }
+        },{
             Id => 1004,
             ServiceId => 317,
             ServiceName => 'Garden waste collection',
@@ -655,20 +1130,11 @@ FixMyStreet::override_config {
         restore_time();
     };
 
-    subtest 'shows time band' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains("(07:30&ndash;08:30)");
-    };
-
-    subtest 'showing PDF calendar' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains('https://example.org/media/16420712/fridayweek2');
-    };
-
-    subtest 'showing green garden waste PDF calendar' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->content_contains('https://example.org/media/16420712/mondayweek2');
-    };
+    $mech->get_ok('/waste/12345');
+    $mech->content_contains("(07:30&ndash;08:30)", 'shows time band');
+    $mech->content_contains('https://example.org/media/16420712/wednesdayweek2', 'showing PDF calendar');
+    $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
+    $mech->content_contains('every Thursday', 'food showing right schedule');
 
     subtest 'test requesting a container' => sub {
         $mech->log_in_ok($user1->email);
@@ -777,6 +1243,185 @@ FixMyStreet::override_config {
         $report->delete;
         $report->update;
     };
+
+    $echo->mock('GetServiceUnitsForObject' => sub {
+    return [
+        {
+            Id => 1001,
+            ServiceId => 269,
+            ServiceName => 'FAS DMR Collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 401,
+                ServiceTaskSchedules => { ServiceTaskSchedule => {
+                    ScheduleDescription => 'every other Wednesday',
+                    StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                    },
+                } },
+            } },
+        }, ]
+    });
+    subtest 'test requesting a sack' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 8 } }, "Choose sack");
+        $mech->content_contains("Why do you need more sacks?");
+        $mech->content_lacks("My container is damaged", "Can report damaged container");
+        $mech->content_lacks("My container is missing", "Can report missing container");
+        $mech->content_contains("I am a new resident without any", "Can request new container as new resident");
+        $mech->content_contains("I have used all the sacks provided", "Can request more sacks");
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+        $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+        $mech->content_contains('Your container request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->get_extra_field_value('Container_Request_Container_Type'), '8';
+        is $report->get_extra_field_value('Container_Request_Action'), '1';
+        is $report->get_extra_field_value('Container_Request_Reason'), '6';
+        is $report->get_extra_field_value('Container_Request_Notes'), '';
+        is $report->get_extra_field_value('Container_Request_Quantity'), '1';
+        is $report->get_extra_field_value('service_id'), '269';
+    };
+    $echo->mock('GetServiceUnitsForObject' => sub {
+    return [
+        {
+            Id => 1004,
+            ServiceId => 317,
+            ServiceName => 'Garden waste collection',
+            ServiceTasks => { ServiceTask => {
+                Id => 405,
+                TaskTypeId => 1689,
+                Data => { ExtensibleDatum => [ {
+                    DatatypeName => 'BRT - Paid Collection Container Quantity',
+                    Value => 1,
+                }, {
+                    DatatypeName => 'BRT - Paid Collection Container Type',
+                    Value => 1,
+                } ] },
+                ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                    ScheduleDescription => 'Monday every 4th week',
+                    Allocation => {
+                        RoundName => 'Monday ',
+                        RoundGroupName => 'Delta 04 Week 2',
+                    },
+                    StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                    EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                    NextInstance => {
+                        CurrentScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                        OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
+                    },
+                    LastInstance => {
+                        OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
+                        Ref => { Value => { anyType => [ 567, 890 ] } },
+                    },
+                } ] },
+            } }
+        }, ]
+    });
+    subtest 'test variation in ScheduleDescription in winter months' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
+    }
+};
+
+subtest 'Dashboard CSV extra columns' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'brent',
+    MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+  }, sub {
+    my ($flexible_problem) = $mech->create_problems_for_body(1, $brent->id, 'Flexible problem', {
+        areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
+    $mech->log_in_ok( $staff_user->email );
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Inspection date","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Overall Grade","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
+    ok $mech->content_like(qr/Flexible problem.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
+    ok $mech->content_like(qr/Flexible problem.*?,,,,Y,,,,,,,,/, "All fields empty but photo exists");
+    $flexible_problem->set_extra_fields(
+        {name => 'Container_Request_Action', value => 1},
+        {name => 'Container_Request_Container_Type', value => 1},
+        {name => 'Container_Request_Reason', value => 1},
+        {name => 'service_id', value => 1},
+        {name => 'usrn', value => 1234},
+        {name => 'uprn', value => 4321},
+    );
+    $flexible_problem->external_id('121');
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,,,,,,,,Deliver,"Blue rubbish sack",Missing,1/, "Bin request values added");
+    $flexible_problem->category('Fly-tipping');
+    $flexible_problem->set_extra_fields(
+        {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
+        {name => 'Are_you_willing_to_be_a_WItness?_', value => 0},
+        {name => 'Flytip_Size', value => 4},
+        {name => 'Flytip_Type', value => 13},
+    );
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,121,Y,,,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    $flexible_problem->set_extra_fields(
+        {name => 'location_name', value => 'Test Park'},
+    );
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,,/, "Location name added") or diag $mech->content;
+    $flexible_problem->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
+    $flexible_problem->update;
+    $mech->get_ok('/dashboard?export=1');
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
+  }
+};
+
+subtest 'Dashboard CSV pre-generation' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'brent',
+    MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+  }, sub {
+    my @problems = $mech->create_problems_for_body(3, $brent->id, 'Pregen problem', {
+        areas => "2488", category => 'Request new container', cobrand => 'brent', user => $user1, state => 'confirmed'});
+    $problems[0]->set_extra_fields(
+        {name => 'Container_Request_Action', value => '2::1'},
+        {name => 'Container_Request_Container_Type', value => '11::11'},
+        {name => 'Container_Request_Reason', value => '4::4'},
+        {name => 'service_id', value => 1},
+        {name => 'usrn', value => 1234},
+        {name => 'uprn', value => 4321},
+    );
+    $problems[0]->external_id('121');
+    $problems[0]->update;
+    $problems[1]->category('Fly-tipping');
+    $problems[1]->state('investigating');
+    $problems[1]->set_extra_fields(
+        {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
+        {name => 'Are_you_willing_to_be_a_WItness?_', value => 0},
+        {name => 'Flytip_Size', value => 4},
+        {name => 'Flytip_Type', value => 13},
+    );
+    $problems[1]->update;
+    $problems[2]->set_extra_fields( {name => 'location_name', value => 'Test Park'},);
+    $problems[2]->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
+    $problems[2]->update;
+    FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Inspection date","Grade for Litter","Grade for Detritus","Grade for Graffiti","Grade for Fly-posting","Grade for Weeds","Overall Grade","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Service ID","Small Item 1","Small Item 2"', "New columns added");
+    $mech->content_like(qr/Pregen problem Test 3.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
+    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,,,,,,,Collect\+Deliver,"Food waste caddy",Damaged,1/, "Bin request values added");
+    $mech->content_like(qr/Pregen problem Test 2.*?,,Y,,,,,,,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
+    $mech->content_like(qr/Pregen problem Test 1.*?,,,"Test Park","Test User",.*?,,,,Y,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added");
+
+    $mech->get_ok('/dashboard?export=1&state=investigating');
+    $mech->content_contains('Pregen problem Test 2');
+    $mech->get_ok('/dashboard?export=1&state=fixed');
+    $mech->content_lacks('Pregen problem Test 2');
+  }
 };
 
 sub get_report_from_redirect {

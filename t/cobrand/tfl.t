@@ -1,7 +1,9 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
+use File::Temp 'tempdir';
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -72,6 +74,13 @@ $mech->create_contact_ok(
     email => 'av-hackney@example.com',
 );
 
+my $bike = $mech->create_body_ok(2482, 'Bike provider');
+$mech->create_contact_ok(
+    body_id => $bike->id,
+    category => 'Abandoned bike or scooter',
+    email => 'bike@bike.example.com',
+);
+
 my $contact1 = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Bus stops',
@@ -89,7 +98,7 @@ $contact1->set_extra_fields(
         description => 'Stop number',
         datatype => 'string',
         automated => 'hidden_field',
-    }
+    },
 );
 $contact1->update;
 my $contact2 = $mech->create_contact_ok(
@@ -202,10 +211,18 @@ $mech->create_contact_ok(
     category => 'Abandoned Santander Cycle',
     email => 'lonelybikes@example.net',
 );
+$mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Private Category',
+    email => 'privatereports@example.net',
+    non_public => 1,
+);
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet'],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => {
         category_groups => { tfl => 1 },
         internal_ips => { tfl => [ '127.0.0.1' ] },
@@ -283,6 +300,41 @@ subtest "test report creation anonymously by button" => sub {
     is $alert, undef, "no alert created";
 
     $mech->not_logged_in_ok;
+};
+
+subtest "test report creation anonymously for private categories" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok(
+        {
+            button => 'report_anonymously',
+            with_fields => {
+                title => 'Anonymous Private Test Report',
+                detail => 'Test report details.',
+                category => 'Private Category',
+            }
+        },
+        "submit report anonymously"
+    );
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Anonymous Private Test Report'});
+    ok $report, "Found the report";
+    ok $report->non_public, "Report is marked as private";
+    is $report->state, 'confirmed', "report confirmed";
+
+
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id);
+    is $mech->uri->path, "/report/confirmation/" . $report->id;
+
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    $mech->get( '/report/' . $report->id );
+    is $mech->res->code, 403, "got 403";
+    $mech->content_contains('Sorry, you don’t have permission to do that');
+    $mech->content_lacks($report->title);
+
+    $report->delete;
 };
 
 subtest "test report creation anonymously by staff user" => sub {
@@ -483,11 +535,41 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains($dt . ',,,confirmed,51.4021');
     $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
 
-    $report->set_extra_fields({ name => 'Question', value => '12345' });
+    $report->set_extra_fields({ name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
     $report->update;
 
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',12345,,no,busstops@example.com,,', "Bike number added to csv");
+    $mech->content_contains('"Council User",,,98756', "Stop code added to csv for all categories report");
+    $mech->get_ok('/dashboard?export=1&category=Bus+stops');
+    $mech->content_contains('"Council User",,98756', "Stop code added to csv for bus stop category report");
+
+    $report->set_extra_fields({ name => 'leaning', value => 'Yes' }, { name => 'safety_critical', value => 'yes' },
+        { name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
+    $report->update;
+
+    FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+
+    $mech->get_ok('/dashboard?export=1&category=Not+present');
+    is scalar(split /\n/, $mech->encoded_content), 1;
+    $mech->get_ok('/dashboard?export=1&category=Bus+stops');
+    $mech->content_like(qr/"Bus stops",(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d,){4}/, "Created, confirmed, acknowledged, and action scheduled in correct format");
+    $mech->content_contains('Category,Subcategory');
+    $mech->content_contains('Query,Borough');
+    $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains('"Bus things","Bus stops"');
+    $mech->content_contains('"BR1 3UH",Bromley,');
+    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
+
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('Category,Subcategory');
+    $mech->content_contains('Query,Borough');
+    $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains('(anonymous ' . $report->id . ')');
+    $mech->content_contains($dt . ',,,confirmed,51.4021');
+    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
 };
 
 subtest 'Inspect form state choices' => sub {
@@ -823,6 +905,9 @@ FixMyStreet::override_config {
         do_not_reply_email => {
             tfl => 'fms-tfl-DO-NOT-REPLY@example.com',
         },
+        categories_restriction_bodies => {
+            tfl => [ 'Bike provider' ],
+        },
     },
 }, sub {
 
@@ -834,12 +919,14 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
             'Flooding',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -852,11 +939,13 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter', # Tests TfL->_cleaning_categories
             'Bus stops',
             'Flooding (Bromley)',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -869,10 +958,12 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Bus stops',
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -885,10 +976,12 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Bus stops',
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -901,12 +994,14 @@ for my $test (
         lon => 0.018697,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter',
             'Bus stops',
             'Flooding',
             'Flytipping (Bromley)',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -919,11 +1014,13 @@ for my $test (
         lon => 0.01578,
         expected => [
             'Abandoned Santander Cycle',
+            'Abandoned bike or scooter',
             'Accumulated Litter',
             'Bus stops',
             'Flooding (Bromley)',
             'Flytipping (Bromley)',
             'Grit bins',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -940,6 +1037,7 @@ for my $test (
             'Flooding',
             'Grit bins',
             'Pothole',
+            'Private Category',
             'Timings',
             'Traffic lights',
             'Trees'
@@ -1127,7 +1225,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'fixmystreet', 'tfl' ],
+    ALLOWED_COBRANDS => [ 'tfl', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/'
 }, sub {
     foreach (qw(tfl.fixmystreet.com fixmystreet.com)) {
@@ -1200,5 +1298,27 @@ subtest 'check contact creation allows email from borough email addresses' => su
     $mech->content_lacks( 'Please enter a valid email' );
 
 }};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'tfl', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/'
+}, sub {
+    subtest "check All Reports pages display councils correctly" => sub {
+        $mech->host('tfl.fixmystreet.com');
+        $mech->get_ok('/reports/TfL');
+        $mech->content_contains('Bromley');
+        $mech->content_contains('Hounslow');
+        $mech->content_lacks('Auriol'); # 2457
+        $mech->content_lacks('Brownswood'); # 2508
+        $mech->content_contains('data-area="2482,2483,2508"'); # No 2457
+        $mech->host('fixmystreet.com');
+        $mech->get_ok('/reports/TfL');
+        $mech->content_contains('Bromley');
+        $mech->content_contains('Hounslow');
+        $mech->content_lacks('Auriol'); # 2457
+        $mech->content_lacks('Brownswood'); # 2508
+        $mech->content_contains('data-area="2482,2483,2508"'); # No 2457
+    };
+};
 
 done_testing();
