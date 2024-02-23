@@ -322,13 +322,13 @@ subtest 'Includes old Northamptonshire reports' => sub {
         my ($old_enough) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
             cobrand => 'northamptonshire',
             user => $user,
-            areas => ',164185,', # In North Northamptonshire.
+            areas => ',164186,', # In North Northamptonshire.
             created => '2021-03-31',
         });
         my ($too_recent) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
             cobrand => 'northamptonshire',
             user => $user,
-            areas => ',164185,', # In North Northamptonshire.
+            areas => ',164186,', # In North Northamptonshire.
             created => '2021-04-01',
         });
         my $rs = $cobrand->problems;
