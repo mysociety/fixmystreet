@@ -794,6 +794,24 @@ sub waste_munge_request_form_fields {
     );
 }
 
+=head2 waste_report_form_first_next
+
+After picking a service, we jump straight to the about you page unless it's
+bulky, where we ask for more information.
+
+=cut
+
+sub waste_report_form_first_next {
+    my $self = shift;
+    my $cfg = $self->feature('echo');
+    my $bulky_service_id = $cfg->{bulky_service_id};
+    return sub {
+        my $data = shift;
+        return 'notes' if $data->{"service-$bulky_service_id"};
+        return 'about_you';
+    };
+}
+
 =head2 waste_request_form_first_next
 
 After picking a container, we jump straight to the about you page if they've
@@ -904,6 +922,7 @@ sub waste_munge_report_data {
         $c->set_param('Exact_Location', $booking_report->get_extra_field_value('Exact_Location'));
         $c->set_param('Original_Event_ID', $booking_report->external_id);
     }
+    $c->set_param('Notes', $data->{extra_detail}) if $data->{extra_detail};
     $c->set_param('service_id', $id);
 }
 

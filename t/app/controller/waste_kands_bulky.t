@@ -26,6 +26,7 @@ my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report miss
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         { code => 'Exact_Location', required => 0, automated => 'hidden_field' },
         { code => 'Original_Event_ID', required => 0, automated => 'hidden_field' },
+        { code => 'Notes', required => 0, automated => 'hidden_field' },
     );
 $contact->update;
 
@@ -680,6 +681,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 }, "Follow link for reporting a missed bulky collection");
         $mech->content_contains('Bulky waste collection');
         $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { extra_detail => "They left the mattress" } });
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ form_number => 3 });
 
@@ -687,6 +689,7 @@ FixMyStreet::override_config {
         is $missed->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
         is $missed->title, 'Report missed bulky collection';
         is $missed->get_extra_field_value('Original_Event_ID'), 'a-guid';
+        is $missed->get_extra_field_value('Notes'), 'They left the mattress';
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
