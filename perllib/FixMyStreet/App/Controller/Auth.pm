@@ -109,7 +109,7 @@ sub sign_in : Private {
     $c->logout();
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
-
+    $c->cobrand->call_hook('disable_login_for_email', $parsed->{username}) unless $c->stash->{oauth_need_email};
     $c->forward('throttle_username', [$parsed]);
 
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
@@ -193,6 +193,8 @@ sub email_sign_in : Private {
         return;
     }
 
+    $c->cobrand->call_hook('disable_login_for_email', $good_email) unless $c->get_param('oauth_need_email');
+
     my $password = $c->get_param('password_register');
     if ($password) {
         return unless $c->forward('/auth/test_password', [ $password ]);
@@ -260,7 +262,7 @@ sub get_token : Private {
 sub set_oauth_token_data : Private {
     my ( $self, $c, $token_data ) = @_;
 
-    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri/) {
+    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri roles/) {
         $token_data->{$_} = $c->session->{oauth}{$_} if $c->session->{oauth}{$_};
     }
 }
@@ -335,7 +337,7 @@ sub process_login : Private {
         %{ $user->get_extra() },
         %{ $data->{extra} }
     }) if $data->{extra};
-
+    $c->cobrand->call_hook(roles_from_oidc => $user, $c->session->{oauth}{roles}) if $c->session->{oauth}{roles};
     $user->update_or_insert;
     $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 

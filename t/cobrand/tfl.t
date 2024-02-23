@@ -4,6 +4,7 @@ use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
 use File::Temp 'tempdir';
+use Test::MockModule;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -31,6 +32,7 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
 });
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
+
 $staffuser->user_body_permissions->create({
     body => $body,
     permission_type => 'contribute_as_body',
@@ -260,6 +262,20 @@ FixMyStreet::override_config {
 
 $mech->host("tfl.fixmystreet.com");
 
+subtest "creating a user on TfL creates tfl_password extra_metadata" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('disable_login_for_email', sub {});
+    for my $email ('test@tfl.gov.uk', 'test@elsewhere.org') {
+        $mech->get_ok('/auth/create');
+        $mech->submit_form_ok({ with_fields => { username => $email, password_register => 'xpasswordx'} });
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+        my $tfl_user = FixMyStreet::DB->resultset("User")->find({ email => $email});
+        ok $tfl_user->get_extra_metadata('tfl_password'), "TfL encrypted password created";
+        $mech->log_out_ok();
+    }
+};
+
 subtest "test report creation anonymously by button" => sub {
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
@@ -337,6 +353,21 @@ subtest "test report creation anonymously for private categories" => sub {
     $report->delete;
 };
 
+subtest "test users without tfl email asked to update their FMS password" => sub {
+    my $tfl_non_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@elsewhere.org'});
+    $tfl_non_staff->set_extra_metadata('last_password_change', DateTime->now->subtract(years => 2)->epoch);
+    $tfl_non_staff->update;
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        { with_fields => { username => $tfl_non_staff->email, password_sign_in => 'xpasswordx' } },
+        "sign in using form"
+    );
+    $tfl_non_staff->set_extra_metadata('last_password_change', time());
+    $tfl_non_staff->update;
+    is $mech->uri->path, '/auth/expired', "logged in to create new password page";
+    $mech->content_contains('Your password has expired, please create a new one below');
+};
+
 subtest "test report creation anonymously by staff user" => sub {
     $mech->clear_emails_ok;
     $mech->log_in_ok( $staffuser->email );
@@ -387,7 +418,49 @@ subtest "test report creation anonymously by staff user" => sub {
 
 FixMyStreet::DB->resultset("Problem")->delete_all;
 
+my $tfl_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@tfl.gov.uk'});
+
+subtest "test user with tfl email address can't login through standard login" => sub {
+    $mech->get_ok('/auth');
+    $mech->submit_form(
+            form_name => 'general_auth',
+            fields => { username => $tfl_staff->email, },
+            button => 'sign_in_by_code',
+    );
+    is $mech->status, '403', "status forbidden";
+    $mech->content_contains('Please use the staff login option');
+    $mech->get_ok('/auth');
+    $mech->submit_form(
+            form_name => 'general_auth',
+            fields => {
+                username => $tfl_staff->email,
+                password_sign_in => 'password'
+                },
+    );
+    is $mech->status, '403', "status forbidden";
+    $mech->content_contains('Please use the staff login option');
+};
+
+subtest "test user with tfl email address can't login by creating a report" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form(
+            fields => {
+                title => 'Test Report 1',
+                detail => 'Test report details.',
+                name => 'TfL Staff',
+                username_register => $tfl_staff->email,
+                category => 'Bus stops',
+            },
+    );
+    is $mech->status, '403', "status forbidden";
+    $mech->content_contains('Please use the staff login option');
+};
+
 subtest "test report creation and reference number" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->log_in_ok( $user->email );
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
@@ -419,7 +492,23 @@ subtest "test report creation and reference number" => sub {
     is $report->name, 'Joe Bloggs';
 };
 
+subtest "test user with tfl email address can't login by updating a report" => sub {
+    $mech->log_out_ok;
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    $mech->get_ok('/report/' . $report->id);
+    $mech->submit_form(
+        with_fields => {
+            update => 'This is an update',
+            username => $tfl_staff->email,
+            password_sign_in => 'xpasswordx',
+        }
+    );
+    is $mech->status, '403', "status forbidden";
+    $mech->content_contains('Please use the staff login option');
+};
+
 subtest "test bus report creation outside London, .com" => sub {
+    $mech->log_in_ok( $user->email );
     $mech->host('www.fixmystreet.com');
     $mech->get_ok('/report/new?latitude=51.345714&longitude=-0.227959');
     $mech->content_lacks('Bus things');
@@ -427,6 +516,8 @@ subtest "test bus report creation outside London, .com" => sub {
 };
 
 subtest "test bus report creation outside London" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->get_ok('/report/new?latitude=51.345714&longitude=-0.227959');
     $mech->submit_form_ok(
         {
@@ -582,6 +673,8 @@ subtest 'Inspect form state choices' => sub {
 };
 
 subtest "change category, report resent to new location" => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
     my $id = $report->id;
 
@@ -609,6 +702,8 @@ for my $test (
 ) {
     my ($postcode, $host, $category, $to, $name, $ref ) = @$test;
     subtest "test report is sent to $name on $host" => sub {
+        my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+        $tfl_mock->mock('password_expiry', sub {});
         $mech->host($host);
         $mech->log_in_ok( $user->email );
         $mech->get_ok('/around');
@@ -761,6 +856,8 @@ subtest 'check report age in general' => sub {
 };
 
 subtest 'TfL admin allows inspectors to be assigned to borough areas' => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->log_in_ok($superuser->email);
 
     $mech->get_ok("/admin/users/" . $staffuser->id) or diag $mech->content;
@@ -807,6 +904,8 @@ subtest 'TLRN categories cannot be renamed' => sub {
 };
 
 subtest 'Bromley staff cannot access TfL admin' => sub {
+    my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
+    $tfl_mock->mock('password_expiry', sub {});
     $mech->log_in_ok( $bromleyuser->email );
     ok $mech->get('/admin');
     is $mech->res->code, 403, "got 403";

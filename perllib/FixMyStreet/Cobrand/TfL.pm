@@ -159,7 +159,12 @@ sub inactive_reports_filter {
 }
 
 sub password_expiry {
-    return if FixMyStreet->test_mode;
+    my ($self) = @_;
+
+    my $email = $self->{c}->user->email;
+    my $domain_email = $self->admin_user_domain;
+    return if $email =~ /$domain_email$/;
+
     # uncoverable statement
     86400 * 365
 }
@@ -183,6 +188,56 @@ sub around_nearby_filter {
     my ($self, $params) = @_;
     # Include all reports in duplicate spotting
     delete $params->{states};
+}
+
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = join(" ", $payload->{given_name}, $payload->{family_name});
+    my $email = $payload->{email} ? lc($payload->{email}) : '';
+
+    return ($name, $email);
+}
+
+sub roles_from_oidc {
+    my ($self, $user, $roles) = @_;
+
+    $user->user_roles->delete;
+    $user->from_body($self->body->id);
+
+    return unless $roles && @$roles;
+
+    my %role_map = (
+        BasicEditorViewers => 'Streetcare - Basic Editor Viewers',
+        Contractor => 'Streetcare - Contractor',
+        AgentInspector => 'Streetcare - Agent Inspector',
+        Admin => 'Streetcare - Admin',
+        CustomerServices => 'Streetcare - Customer Services',
+    );
+
+    my @body_roles;
+    for ($user->from_body->roles->search(undef, { order_by => 'name' })->all) {
+        push @body_roles, {
+            id => $_->id,
+            name => $_->name,
+        }
+    }
+
+    for my $assign_role (@$roles) {
+        my ($body_role) = grep { $role_map{$assign_role} && $_->{name} eq $role_map{$assign_role} } @body_roles;
+
+        if ($body_role) {
+            $user->user_roles->find_or_create({
+                role_id => $body_role->{id},
+            });
+        }
+    }
 }
 
 sub state_groups_inspect {
@@ -423,6 +478,16 @@ sub munge_reports_area_list {
 }
 
 sub munge_report_new_contacts { }
+
+sub disable_login_for_email {
+    my ($self, $email) = @_;
+
+    my $staff_email = $self->admin_user_domain;
+
+    if ($email =~ /$staff_email$/) {
+        $self->{c}->detach('/page_error_403_access_denied', ['Please use the staff login option']);
+    }
+}
 
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;

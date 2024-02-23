@@ -110,6 +110,7 @@ sub process_user : Private {
         $params{username} = $c->get_param('username_register');
     }
     $params{username} ||= '';
+    $c->cobrand->call_hook('disable_login_for_email', $params{username}) unless $c->get_param('oauth_need_email');
 
     my $anon_button = $c->cobrand->allow_anonymous_updates eq 'button' && $c->get_param('report_anonymously');
     if ($anon_button) {
@@ -657,6 +658,7 @@ sub process_confirmation : Private {
                 %{ $comment->user->get_extra() },
                 %{ $data->{extra} }
             }) if $data->{extra};
+            $c->cobrand->call_hook(roles_from_oidc => $comment->user, $data->{roles});
             $comment->user->password( $data->{password}, 1 ) if $data->{password};
             $comment->user->update;
             # Make sure extra oauth state is restored, if applicable
