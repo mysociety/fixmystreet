@@ -11,5 +11,16 @@ has_page about_you => (
     next => 'summary',
 );
 
-1;
+has_page notes => (
+    fields => ['extra_detail', 'continue'],
+    title => 'Your missed collection',
+    next => 'about_you',
+);
 
+has_field extra_detail => (
+    type => 'Text',
+    widget => 'Textarea',
+    label => 'Please supply any additional information',
+);
+
+1;

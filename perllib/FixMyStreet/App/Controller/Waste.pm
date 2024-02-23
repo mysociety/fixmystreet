@@ -967,12 +967,14 @@ sub report : Chained('property') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     $c->stash->{first_page} = 'report';
+    my $next = $c->cobrand->call_hook('waste_report_form_first_next') || 'about_you';
+
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
     $c->stash->{page_list} = [
         report => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Select your missed collection',
-            next => 'about_you',
+            next => $next,
         },
     ];
     $c->stash->{field_list} = $field_list;
