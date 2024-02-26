@@ -617,6 +617,24 @@ FixMyStreet::override_config {
     undef $brent_mock;
     undef $camden_mock;
 
+    subtest "Brent categories not shown to admin in Camden for existing report" => sub {
+        $mech->host("camden.fixmystreet.com");
+        my $camden_staff = $mech->create_user_ok('staff@camden.example.org', from_body => $camden, name => 'Staff User');
+        $camden_staff->user_body_permissions->create({ body => $camden, permission_type => 'report_edit' });
+
+        my ($problem) = $mech->create_problems_for_body(1, $camden->id, 'Title', {
+            areas => ',11821,163653,163969,164863,164997,165466,2247,2505,34046,65576,67036,',
+            category => 'Dead animal', cobrand => 'camden',
+        });
+
+        $mech->log_in_ok($camden_staff->email);
+        $mech->get_ok("/admin/report_edit/" . $problem->id);
+        $mech->content_contains('Dead animal'); # Camden
+        $mech->content_contains('Sweeping'); # TfL
+        $mech->content_lacks('Leaf clearance'); # Brent
+        $mech->content_lacks('Potholes'); # Brent
+    };
+
     subtest "All reports page for Brent works appropriately" => sub {
         $mech->host("brent.fixmystreet.com");
         $mech->get_ok("/reports");
