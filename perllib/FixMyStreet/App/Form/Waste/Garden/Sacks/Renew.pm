@@ -63,7 +63,8 @@ has_page sacks_details => (
         my $c = $form->{c};
         my $data = $form->saved_data;
         my $bin_count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+        my $end_date = $c->stash->{garden_form_data}->{end_date};
+        my $cost_pa = $c->cobrand->garden_waste_renewal_sacks_cost_pa($end_date) * $bin_count;
         if ($data->{apply_discount}) {
             ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa);
         }

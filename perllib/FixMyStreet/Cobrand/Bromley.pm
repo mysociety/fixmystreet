@@ -929,14 +929,6 @@ sub waste_display_payment_method {
     return $display->{$method};
 }
 
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
-
-    $bin_count ||= 1;
-
-    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
-}
-
 sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_payment_ref_council_code { "LBB" }
