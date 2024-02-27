@@ -929,6 +929,21 @@ sub waste_display_payment_method {
     return $display->{$method};
 }
 
+=head2 garden_waste_renewal_cost_pa
+
+The price change for a renewal is based upon the end
+date of the subscription, not the current date.
+
+=cut
+
+sub garden_waste_renewal_cost_pa {
+    my ($self, $end_date, $bin_count) = @_;
+    $bin_count ||= 1;
+    my $per_bin_cost = $self->_get_cost('ggw_cost', $end_date);
+    my $cost = $per_bin_cost * $bin_count;
+    return $cost;
+}
+
 sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_payment_ref_council_code { "LBB" }
