@@ -31,7 +31,7 @@ has_page intro => (
         my $new_bins = $bin_count - $current_bins;
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($data->{end_date}, $bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         if ($form->saved_data->{apply_discount}) {
             ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
@@ -61,14 +61,15 @@ has_page summary => (
         my $c = $form->{c};
         my $data = $form->saved_data;
 
+        my $end_date = $c->stash->{garden_form_data}->{end_date};
         my $current_bins = $data->{current_bins} || 0;
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
         my $cost_pa;
         if (($data->{container_choice}||'') eq 'sack') {
-            $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+            $cost_pa = $c->cobrand->garden_waste_renewal_sacks_cost_pa($end_date) * $bin_count;
         } else {
-            $cost_pa = $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
+            $cost_pa = $form->{c}->cobrand->garden_waste_renewal_cost_pa($end_date, $bin_count);
         }
         my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         if ($data->{apply_discount}) {

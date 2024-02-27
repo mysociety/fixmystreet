@@ -1093,8 +1093,6 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
 
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_disabled};
 
-    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
-    $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
     $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
     $c->stash->{per_new_bin_first_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_first_cost} || $c->stash->{per_new_bin_cost};
 }
@@ -1120,6 +1118,9 @@ sub garden : Chained('garden_setup') : Args(0) {
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_new_disabled};
     $c->detach('property_redirect') if $c->cobrand->garden_current_subscription;
 
+    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
+    $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
+
     $c->stash->{first_page} = 'intro';
     my $service = $c->cobrand->garden_service_id;
     $c->stash->{garden_form_data} = {
@@ -1138,6 +1139,8 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_modify_disabled};
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
+
+    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
 
     if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
@@ -1235,7 +1238,11 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     $c->stash->{garden_form_data} = {
         max_bins => $max_bins,
         bins => $service->{garden_bins},
+        end_date => $service->{end_date},
     };
+
+    $c->stash->{per_bin_renewal_cost} = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date});
+    $c->stash->{per_sack_renewal_cost} = $c->cobrand->garden_waste_renewal_sacks_cost_pa($service->{end_date});
 
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
     $c->cobrand->call_hook('waste_garden_renew_form_setup');
@@ -1439,7 +1446,7 @@ sub process_garden_renew : Private {
         $data->{bin_count} = $bin_count;
         $data->{new_bins} = $bin_count - $data->{current_bins};
 
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date}, $bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
         ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
             $cost_pa, $cost_now_admin) if $data->{apply_discount};

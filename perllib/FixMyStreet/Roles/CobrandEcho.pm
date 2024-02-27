@@ -541,39 +541,46 @@ sub waste_sub_overdue {
 sub _get_cost_from_array {
     my ($self, $costs) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $date = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $date = $date->strftime('%Y-%m-%d %H:%M');
     my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
     foreach my $cost (@sorted) {
-        return $cost->{cost} if $cost->{start_date} le $now->strftime('%Y-%m-%d %H:%M')
+        return $cost->{cost} if $cost->{start_date} le $date;
     }
 
     die("Couldn't find a valid cost item");
 }
 
-sub garden_waste_sacks_cost_pa {
-    my ($self) = @_;
-    my $cost = $self->feature('payment_gateway')->{ggw_sacks_cost};
-
+sub _get_cost {
+    my ($self, $cost_ref) = @_;
+    my $cost = $self->feature('payment_gateway')->{$cost_ref};
     if (ref $cost eq 'ARRAY') {
         $cost = $self->_get_cost_from_array($cost);
     }
-
     return $cost;
+}
+
+sub garden_waste_sacks_cost_pa {
+    my ($self) = @_;
+    return $self->_get_cost('ggw_sacks_cost');
 }
 
 sub garden_waste_cost_pa {
     my ($self, $bin_count) = @_;
-
     $bin_count ||= 1;
-
-    my $per_bin_cost = $self->feature('payment_gateway')->{ggw_cost};
-
-    if (ref $per_bin_cost eq 'ARRAY') {
-        $per_bin_cost = $self->_get_cost_from_array($per_bin_cost);
-    }
-
+    my $per_bin_cost = $self->_get_cost('ggw_cost');
     my $cost = $per_bin_cost * $bin_count;
     return $cost;
+}
+
+sub garden_waste_renewal_cost_pa {
+    my ($self, $end_date, $bin_count) = @_;
+    return $self->garden_waste_cost_pa($bin_count);
+}
+
+sub garden_waste_renewal_sacks_cost_pa {
+    my ($self, $end_date) = @_;
+    return $self->garden_waste_sacks_cost_pa();
 }
 
 sub clear_cached_lookups_property {
