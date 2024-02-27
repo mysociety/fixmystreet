@@ -378,7 +378,99 @@ FixMyStreet::override_config {
         $mech->content_contains('You have a pending garden subscription');
         $mech->content_lacks('Subscribe to Green Garden Waste');
     };
+};
 
+subtest 'Checking correct renewal prices' => sub {
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock('GetServiceUnitsForObject', sub {
+        return [
+            {
+                Id => 1005,
+                ServiceId => 545,
+                ServiceName => 'Garden waste collection',
+                ServiceTasks => { ServiceTask => {
+                    Id => 405,
+                    Data => { ExtensibleDatum => [ {
+                        DatatypeName => 'LBB - GW Container',
+                        ChildData => { ExtensibleDatum => [ {
+                            DatatypeName => 'Quantity',
+                            Value => 1,
+                        }, {
+                            DatatypeName => 'Container',
+                            Value => 44,
+                        } ] },
+                    } ] },
+                    ServiceTaskSchedules => { ServiceTaskSchedule => [ {
+                        ScheduleDescription => 'every other Monday',
+                        StartDate => { DateTime => '2021-06-14T23:00:00Z' },
+                        EndDate => { DateTime => '2021-07-14T23:00:00Z' },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2021-07-05T06:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2021-07-04T23:00:00' },
+                        },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2021-06-20T23:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2021-06-21T06:00:00Z' },
+                            Ref => { Value => { anyType => [ 567, 890 ] } },
+                        }
+                    }, {
+                        StartDate => { DateTime => '2020-11-01T00:00:00Z' },
+                        EndDate => { DateTime => '2021-06-15T22:59:59Z' },
+                        LastInstance => {
+                            OriginalScheduledDate => { DateTime => '2021-06-20T23:00:00Z' },
+                            CurrentScheduledDate => { DateTime => '2021-06-21T06:00:00Z' },
+                            Ref => { Value => { anyType => [ 567, 890 ] } },
+                        },
+                        NextInstance => {
+                            CurrentScheduledDate => { DateTime => '2021-07-05T06:00:00Z' },
+                            OriginalScheduledDate => { DateTime => '2021-07-04T23:00:00' },
+                        },
+                    } ] },
+                } },
+            }
+        ];
+    });
+    set_fixed_time('2021-06-10T12:00:00Z');
+
+    for my $test (
+    {
+        config => { start_date => '2020-01-29 00:00'},
+        data => {
+            renewal_text => '£20.00 per bin per year',
+            test_text => 'Renewal price picks up higher cost when renewal date after price rise day',
+        },
+    },
+    {
+        config => { start_date => '2021-07-14 00:00'},
+        data => {
+            renewal_text => '£20.00 per bin per year',
+            test_text => 'Renewal price picks up higher cost when renewal date on price rise day',
+        },
+    },
+    {
+        config => { start_date => '2021-07-15 00:00'},
+        data => {
+            renewal_text => '£10.00 per bin per year',
+            test_text => 'Renewal price picks up lower cost when renewal date before price rise day',
+        },
+    }) {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'bromley',
+            COBRAND_FEATURES => {
+                payment_gateway => { bromley => { ggw_cost => [
+                    { start_date => '2019-02-27 00:00', cost => 1000 },
+                    { start_date => $test->{config}->{start_date}, cost => 2000 },
+                    ]}},
+                echo => { bromley => { sample_data => 1 } },
+                waste => { bromley => 1 }
+            },
+        }, sub {
+            subtest $test->{data}{test_text} => sub {
+                $mech->get_ok('/waste/12345/garden_renew');
+                $mech->content_contains($test->{data}->{renewal_text}, $test->{data}->{test_text});
+            };
+        };
+    }
 };
 
 subtest 'test waste max-per-day' => sub {

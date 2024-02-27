@@ -538,11 +538,15 @@ sub waste_sub_overdue {
     return 0;
 }
 
+# Provided with a list of costs, and optionally a date string or DateTime object
 sub _get_cost_from_array {
-    my ($self, $costs) = @_;
+    my ($self, $costs, $date) = @_;
 
-    my $date = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    $date = $date->strftime('%Y-%m-%d %H:%M');
+    # Default date if not provided to the current date
+    $date ||= DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $date = $date->strftime('%Y-%m-%d %H:%M') if ref $date; # A DateTime
+    $date .= ' 00:00' if $date =~ /^\d\d\d\d-\d\d-\d\d$/; # If only a date provided
+
     my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
     foreach my $cost (@sorted) {
         return $cost->{cost} if $cost->{start_date} le $date;
@@ -552,10 +556,10 @@ sub _get_cost_from_array {
 }
 
 sub _get_cost {
-    my ($self, $cost_ref) = @_;
+    my ($self, $cost_ref, $date) = @_;
     my $cost = $self->feature('payment_gateway')->{$cost_ref};
     if (ref $cost eq 'ARRAY') {
-        $cost = $self->_get_cost_from_array($cost);
+        $cost = $self->_get_cost_from_array($cost, $date);
     }
     return $cost;
 }
