@@ -217,7 +217,7 @@ FixMyStreet::override_config {
                     );
                 } else {
                     $mech->content_contains(
-                        'This report is now closed to updates.',
+                        'This report is now closed to updates from the public.',
                         'Correct message shown',
                     );
                     $mech->content_lacks(
