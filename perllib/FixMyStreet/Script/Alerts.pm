@@ -102,8 +102,7 @@ sub send_alert_type {
 
         next unless FixMyStreet::DB::Result::Problem::visible_states()->{$row->{state}};
 
-        next if $row->{alert_cobrand} ne 'tfl' && $row->{item_cobrand} eq 'tfl';
-        next if $row->{alert_cobrand} eq 'cyclinguk' && $row->{item_cobrand} ne 'cyclinguk';
+        next if alert_check_cobrand($row->{alert_cobrand}, $row->{item_cobrand});
 
         $schema->resultset('AlertSent')->create( {
             alert_id  => $row->{alert_id},
@@ -334,8 +333,8 @@ sub send_local {
         );
 
         foreach my $row (@reports) {
-            # Ignore TfL reports if the alert wasn't set up on TfL
-            next if $alert->cobrand ne 'tfl' && $row->{cobrand} eq 'tfl';
+            next if alert_check_cobrand($alert->cobrand, $row->{cobrand});
+
             # Ignore alerts created after the report was confirmed
             next if $whensubscribed gt $row->{confirmed_str};
             # Ignore alerts on reports by the same user
@@ -463,6 +462,14 @@ sub _send_aggregated_alert_phone {
         body => sprintf(_("Your report (%d) has had an update; to view: %s\n\nTo stop: %s"), $data{id}, $data{problem_url}, $data{unsubscribe_url}),
     );
     return $result;
+}
+
+# Ignore TfL reports if the alert wasn't set up on TfL, and similar
+sub alert_check_cobrand {
+    my ($alert_cobrand, $item_cobrand) = @_;
+    return 1 if $alert_cobrand ne 'tfl' && $item_cobrand eq 'tfl';
+    return 1 if $alert_cobrand eq 'cyclinguk' && $item_cobrand ne 'cyclinguk';
+    return 0;
 }
 
 1;
