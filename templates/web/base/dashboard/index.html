@@ -189,16 +189,4 @@
     </tr>
 </table>
 
-[% IF summary_open %]
-<p>
-[% loc('Within the specified timeframe:') %]
-[%
-summary_open = summary_open | format_number;
-summary_closed = summary_closed | format_number;
-summary_fixed = summary_fixed | format_number;
-tprintf( loc('%s opened, %s closed, %s fixed'),
-    decode(summary_open), decode(summary_closed), decode(summary_fixed) ) %]
-</p>
-[% END %]
-
 [% INCLUDE 'footer.html' %]
