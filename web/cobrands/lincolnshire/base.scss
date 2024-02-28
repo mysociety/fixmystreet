@@ -22,11 +22,8 @@ h1, h2, h3 {
 #site-logo {
   height: 64px;
   width: 163px;
-  background-size: 162.5px 55.5px;
-  background-image: url(/cobrands/lincolnshire/images/site-logo.png);
-  background-image: url(/cobrands/lincolnshire/images/site-logo.svg),none;
-  
-  
+  background-size: 162.5px 53.5px;
+  background-image: url(/cobrands/lincolnshire/images/logo.png);
 }
 
 .body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
@@ -34,7 +31,7 @@ h1, h2, h3 {
     @media (min-width: 48em) {
       height: 100px;
       width: 249px;
-      background-size: 249px 81px;
+      background-size: 249px 82px;
     }
   }
 }
