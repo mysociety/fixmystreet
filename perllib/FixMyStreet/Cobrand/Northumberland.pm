@@ -1,11 +1,24 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Northumberland - code specific to the Northumberland cobrand
+
+=head1 SYNOPSIS
+
+=cut
+
 package FixMyStreet::Cobrand::Northumberland;
 use base 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
-
 use DateTime::Format::W3CDTF;
 use Utils;
+
+=head2 Defaults
+
+=over 4
+
+=cut
 
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
@@ -28,11 +41,15 @@ sub disambiguate_location {
 
 sub admin_user_domain { 'northumberland.gov.uk' }
 
+=item * The default map zoom is a bit more zoomed-in
+
+=cut
+
 sub default_map_zoom { 4 }
 
-sub abuse_reports_only { 1 }
+=item * The default map view shows closed/fixed reports for 14 days
 
-sub cut_off_date { '2023-05-03' }
+=cut
 
 sub report_age {
     return {
@@ -40,6 +57,37 @@ sub report_age {
         fixed  => '14 days',
     };
 }
+
+=item * Pins are green if closed/fixed, red if confirmed, orange otherwise
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_closed || $p->is_fixed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'orange'; # all the other `open_states` like "in progress"
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/northumberland/images/';
+}
+
+=item * The cobrand doesn't show reports before 3rd May 2023
+
+=cut
+
+sub cut_off_date { '2023-05-03' }
+
+=item * The contact form is for abuse reports only
+
+=cut
+
+sub abuse_reports_only { 1 }
+
+=item * Only staff can reopen reports
+
+=cut
 
 sub reopening_disallowed {
     my ($self, $problem) = @_;
@@ -54,6 +102,10 @@ sub reopening_disallowed {
     return 1;
 }
 
+=item * Staff Only - Out Of Hours categories are treated as cleaning categories for National Highways
+
+=cut
+
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
@@ -66,25 +118,26 @@ sub munge_report_new_contacts {
     }
 }
 
+=item * Fetched reports via Open311 use the service name as their title
+
+=cut
+
 sub open311_title_fetched_report {
     my ($self, $request) = @_;
     return $request->{service_name};
 }
 
-sub pin_colour {
-    my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_closed || $p->is_fixed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
-}
+=item * The privacy policy is held on Northumberland's own site
 
-sub path_to_pin_icons {
-    return '/cobrands/northumberland/images/';
-}
+=cut
 
 sub privacy_policy_url {
     return 'https://www.northumberland.gov.uk/NorthumberlandCountyCouncil/media/About-the-Council/information%20governance/Privacy-notice-Fix-My-Street.pdf'
 }
+
+=item * The CSV export includes staff user/role, assigned to, and response time
+
+=cut
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
@@ -144,5 +197,9 @@ sub dashboard_export_problems_add_columns {
         };
     });
 }
+
+=back
+
+=cut
 
 1;
