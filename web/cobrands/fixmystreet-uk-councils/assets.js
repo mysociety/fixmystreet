@@ -608,6 +608,7 @@ function cb_should_not_require_road() {
             (selected.group === "Grass, Trees, Verges and Weeds" && !selected.category) ||
             selected.category === "Fly Tipping" ||
             (selected.group === "Flytipping, Bins and Graffiti" && !selected.category) ||
+            selected.category === 'Housing Fly-tipping' ||
             (!selected.group && !selected.category);
 }
 
