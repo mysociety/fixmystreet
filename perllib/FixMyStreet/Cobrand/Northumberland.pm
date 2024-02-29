@@ -73,6 +73,16 @@ sub path_to_pin_icons {
     return '/cobrands/northumberland/images/';
 }
 
+=item * Hovering over a pin includes the state as well as the title
+
+=cut
+
+sub pin_hover_title {
+    my ($self, $problem, $title) = @_;
+    my $state = FixMyStreet::DB->resultset("State")->display($problem->state, 1, 'northumberland');
+    return "$state: $title";
+}
+
 =item * The cobrand doesn't show reports before 3rd May 2023
 
 =cut
