@@ -910,10 +910,9 @@ sub waste_get_pro_rata_bin_cost {
     my $weeks = $end->delta_days($start)->in_units('weeks');
     $weeks -= 1 if $weeks > 0;
 
-    my $base = $self->feature('payment_gateway')->{pro_rata_minimum};
-    my $weekly_cost = $self->feature('payment_gateway')->{pro_rata_weekly};
-
-    my $cost = $base + ( $weeks * $weekly_cost );
+    my $base = $self->_get_cost('pro_rata_minimum', $start);
+    my $weekly_cost = $self->_get_cost('pro_rata_weekly', $start);
+    my $cost = sprintf "%.0f", ($base + ( $weeks * $weekly_cost ));
 
     return $cost;
 }
