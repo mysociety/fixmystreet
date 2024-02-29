@@ -709,80 +709,110 @@ EOF
     };
 };
 
-subtest 'check pro-rata calculation' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
-        COBRAND_FEATURES => {
-            payment_gateway => {
-                bromley => {
-                    ggw_cost => 2000,
-                    pro_rata_weekly => 86,
-                    pro_rata_minimum => 1586,
-                }
-            }
+for my $test (
+    {
+        config => {
+            ggw_cost => 2000,
+            pro_rata_weekly => 86,
+            pro_rata_minimum => 1586,
         },
-    }, sub {
-        my $c = FixMyStreet::Cobrand::Bromley->new;
+        data => {
+            four_days => '1586',
+            one_week => '1586',
+            two_weeks => '1672',
+            two_and_a_half_weeks => '1672',
+            twenty_five_weeks => '3650',
+            fifty_one_weeks => '5886',
+        }
+    },
+    {
+        config => {
+            ggw_cost => 2000,
+            pro_rata_weekly => [{ start_date => '2020-05-11 00:00', cost => '86'}, {start_date => '2021-01-01 00:00', cost => '107.7'}, {start_date => '2024-05-11 00:00', cost => '100'}],
+            pro_rata_minimum => [{ start_date => '2020-05-11 00:00', cost => '1586'}, {start_date => '2021-01-01 00:00', cost => '1500'}, {start_date => '2024-05-11 00:00', cost => '100'}],
+        },
+        data => {
+            four_days => '1500',
+            one_week => '1500',
+            two_weeks => '1608',
+            two_and_a_half_weeks => '1608',
+            twenty_five_weeks => '4085',
+            fifty_one_weeks => '6885',
+        }
+    }
+) {
 
-        my $start = DateTime->new(
-            year => 2021,
-            month => 02,
-            day => 19
-        );
+    subtest 'check pro-rata calculation' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'bromley',
+            COBRAND_FEATURES => {
+                payment_gateway => {
+                    bromley => $test->{config}
+                }
+            },
+        }, sub {
+            my $c = FixMyStreet::Cobrand::Bromley->new;
 
-        for my $test (
-            {
+            my $start = DateTime->new(
                 year => 2021,
-                month => 2,
-                day => 23,
-                expected => 1586,
-                desc => '4 days remaining',
-            },
-            {
-                year => 2021,
-                month => 2,
-                day => 26,
-                expected => 1586,
-                desc => 'one week remaining',
-            },
-            {
-                year => 2021,
-                month => 3,
-                day => 5,
-                expected => 1672,
-                desc => 'two weeks remaining',
-            },
-            {
-                year => 2021,
-                month => 3,
-                day => 8,
-                expected => 1672,
-                desc => 'two and a half weeks remaining',
-            },
-            {
-                year => 2021,
-                month => 8,
-                day => 19,
-                expected => 3650,
-                desc => '25 weeks remaining',
-            },
-            {
-                year => 2022,
-                month => 2,
-                day => 14,
-                expected => 5886,
-                desc => '51 weeks remaining',
-            },
-        ) {
-
-            my $end = DateTime->new(
-                year => $test->{year},
-                month => $test->{month},
-                day => $test->{day},
+                month => 02,
+                day => 19
             );
 
-            is $c->waste_get_pro_rata_bin_cost($end, $start), $test->{expected}, $test->{desc};
-        }
+            for my $test (
+                {
+                    year => 2021,
+                    month => 2,
+                    day => 23,
+                    expected => $test->{data}->{four_days},
+                    desc => '4 days remaining',
+                },
+                {
+                    year => 2021,
+                    month => 2,
+                    day => 26,
+                    expected => $test->{data}->{one_week},
+                    desc => 'one week remaining',
+                },
+                {
+                    year => 2021,
+                    month => 3,
+                    day => 5,
+                    expected => $test->{data}->{two_weeks},
+                    desc => 'two weeks remaining',
+                },
+                {
+                    year => 2021,
+                    month => 3,
+                    day => 8,
+                    expected => $test->{data}->{two_and_a_half_weeks},
+                    desc => 'two and a half weeks remaining',
+                },
+                {
+                    year => 2021,
+                    month => 8,
+                    day => 19,
+                    expected => $test->{data}->{twenty_five_weeks},
+                    desc => '25 weeks remaining',
+                },
+                {
+                    year => 2022,
+                    month => 2,
+                    day => 14,
+                    expected => $test->{data}->{fifty_one_weeks},
+                    desc => '51 weeks remaining',
+                },
+            ) {
+
+                my $end = DateTime->new(
+                    year => $test->{year},
+                    month => $test->{month},
+                    day => $test->{day},
+                );
+
+                is $c->waste_get_pro_rata_bin_cost($end, $start), $test->{expected}, $test->{desc};
+            }
+        };
     };
 };
 
