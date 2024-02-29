@@ -433,15 +433,38 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 _has_report_been_sent_to_echo
+
+Assumes a report has been sent to Echo if the external ID is a GUID.
+
+=cut
+
+sub _has_report_been_sent_to_echo {
+    my ($self, $report) = @_;
+    my $guid_regex = qr/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    return $report->external_id && $report->external_id =~ /$guid_regex/;
+}
+
 =head2 should_skip_sending_update
 
 Do not send updates to the backend if they were made by a staff user and
 don't have any text (public or private).
 
+If the update is reopening a closed echo report, skip the update and resend the report as Echo events can't be reopened.
+
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
+
+    if ($update->mark_open) {
+        # TODO: Is there a scenario where a preceeding close update hasn't gone through to echo yet and so this is problematic?
+        my $report = $update->problem;
+        if ($report->is_closed && $self->_has_report_been_sent_to_echo($report)) {
+            $report->resend;
+            return 1;
+        }
+    }
 
     my $private_comments = $update->get_extra_metadata('private_comments');
     my $has_text = $update->text || $private_comments;
