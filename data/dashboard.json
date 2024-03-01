@@ -14,9 +14,6 @@
         { "category": "Trees", "category_display": "Trees" },
         { "category": "Other", "category_display": "Other" }
     ],
-    "summary_open": 3133,
-    "summary_closed": 1928,
-    "summary_fixed": 1895,
     "totals": {
         "total": 543,
         "open": 139,

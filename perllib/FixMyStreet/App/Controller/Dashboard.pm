@@ -198,7 +198,6 @@ sub index : Path : Args(0) {
         }
     } else {
         $c->forward('generate_grouped_data');
-        $self->generate_summary_figures($c);
     }
 }
 
@@ -297,42 +296,6 @@ sub generate_grouped_data : Private {
 
     $c->stash->{grouped} = \%grouped;
     $c->stash->{totals} = \%totals;
-}
-
-sub generate_summary_figures {
-    my ($self, $c) = @_;
-    my $state_map = $c->stash->{state_map};
-
-    # problems this month by state
-    $c->stash->{"summary_$_"} = 0 for values %$state_map;
-
-    return if $c->cobrand->moniker =~ /^(fixmystreet|cyclinguk)/; # Not wanted on .com or cyclinguk
-
-    $c->stash->{summary_open} = $c->stash->{objects_rs}->count;
-
-    my $params = $c->stash->{params};
-    $params = { map { my $n = $_; s/me\./problem\./ unless /me\.confirmed/; $_ => $params->{$n} } keys %$params };
-
-    my $comments = $c->model('DB::Comment')->to_body(
-        $c->stash->{body}
-    )->search(
-        {
-            %$params,
-            'me.id' => { 'in' => \"(select min(id) from comment where me.problem_id=comment.problem_id and problem_state not in ('', 'confirmed') group by problem_state)" },
-        },
-        {
-            join     => 'problem',
-            group_by => [ 'problem_state' ],
-            select   => [ 'problem_state', { count => 'me.id' } ],
-            as       => [ qw/problem_state count/ ],
-        }
-    );
-
-    while (my $comment = $comments->next) {
-        my $meta_state = $state_map->{$comment->problem_state};
-        next if $meta_state eq 'open';
-        $c->stash->{"summary_$meta_state"} += $comment->get_column('count');
-    }
 }
 
 sub status : Local : Args(0) {

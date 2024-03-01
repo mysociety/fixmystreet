@@ -538,42 +538,53 @@ sub waste_sub_overdue {
     return 0;
 }
 
+# Provided with a list of costs, and optionally a date string or DateTime object
 sub _get_cost_from_array {
-    my ($self, $costs) = @_;
+    my ($self, $costs, $date) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # Default date if not provided to the current date
+    $date ||= DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $date = $date->strftime('%Y-%m-%d %H:%M') if ref $date; # A DateTime
+    $date .= ' 00:00' if $date =~ /^\d\d\d\d-\d\d-\d\d$/; # If only a date provided
+
     my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
     foreach my $cost (@sorted) {
-        return $cost->{cost} if $cost->{start_date} le $now->strftime('%Y-%m-%d %H:%M')
+        return $cost->{cost} if $cost->{start_date} le $date;
     }
 
     die("Couldn't find a valid cost item");
 }
 
+sub _get_cost {
+    my ($self, $cost_ref, $date) = @_;
+    my $cost = $self->feature('payment_gateway')->{$cost_ref};
+    if (ref $cost eq 'ARRAY') {
+        $cost = $self->_get_cost_from_array($cost, $date);
+    }
+    return $cost;
+}
+
 sub garden_waste_sacks_cost_pa {
     my ($self) = @_;
-    my $cost = $self->feature('payment_gateway')->{ggw_sacks_cost};
-
-    if (ref $cost eq 'ARRAY') {
-        $cost = $self->_get_cost_from_array($cost);
-    }
-
-    return $cost;
+    return $self->_get_cost('ggw_sacks_cost');
 }
 
 sub garden_waste_cost_pa {
     my ($self, $bin_count) = @_;
-
     $bin_count ||= 1;
-
-    my $per_bin_cost = $self->feature('payment_gateway')->{ggw_cost};
-
-    if (ref $per_bin_cost eq 'ARRAY') {
-        $per_bin_cost = $self->_get_cost_from_array($per_bin_cost);
-    }
-
+    my $per_bin_cost = $self->_get_cost('ggw_cost');
     my $cost = $per_bin_cost * $bin_count;
     return $cost;
+}
+
+sub garden_waste_renewal_cost_pa {
+    my ($self, $end_date, $bin_count) = @_;
+    return $self->garden_waste_cost_pa($bin_count);
+}
+
+sub garden_waste_renewal_sacks_cost_pa {
+    my ($self, $end_date) = @_;
+    return $self->garden_waste_sacks_cost_pa();
 }
 
 sub clear_cached_lookups_property {

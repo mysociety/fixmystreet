@@ -334,9 +334,13 @@ sub bin_services_for_address {
     my $property = shift;
 
     my %shared = (
+            4 => 'Refuse Blue Sack',
+            5 => 'Refuse Black Sack',
             6 => 'Refuse Red Stripe Bag',
             18 => 'Recycling Blue Stripe Bag',
+            29 => 'Recycling Single Use Bag',
             21 => 'Paper & Card Reusable Bag',
+            22 => 'Paper Sacks',
             30 => 'Paper Single Use Bag',
             7 => 'Communal Refuse bin (240L)',
             8 => 'Communal Refuse bin (360L)',

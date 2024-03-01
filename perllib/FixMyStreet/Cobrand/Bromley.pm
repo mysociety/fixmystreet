@@ -910,10 +910,9 @@ sub waste_get_pro_rata_bin_cost {
     my $weeks = $end->delta_days($start)->in_units('weeks');
     $weeks -= 1 if $weeks > 0;
 
-    my $base = $self->feature('payment_gateway')->{pro_rata_minimum};
-    my $weekly_cost = $self->feature('payment_gateway')->{pro_rata_weekly};
-
-    my $cost = $base + ( $weeks * $weekly_cost );
+    my $base = $self->_get_cost('pro_rata_minimum', $start);
+    my $weekly_cost = $self->_get_cost('pro_rata_weekly', $start);
+    my $cost = sprintf "%.0f", ($base + ( $weeks * $weekly_cost ));
 
     return $cost;
 }
@@ -929,12 +928,19 @@ sub waste_display_payment_method {
     return $display->{$method};
 }
 
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
+=head2 garden_waste_renewal_cost_pa
 
+The price change for a renewal is based upon the end
+date of the subscription, not the current date.
+
+=cut
+
+sub garden_waste_renewal_cost_pa {
+    my ($self, $end_date, $bin_count) = @_;
     $bin_count ||= 1;
-
-    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
+    my $per_bin_cost = $self->_get_cost('ggw_cost', $end_date);
+    my $cost = $per_bin_cost * $bin_count;
+    return $cost;
 }
 
 sub garden_waste_new_bin_admin_fee { 0 }
