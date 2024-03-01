@@ -80,6 +80,26 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+=head2 garden_waste_renewal_cost_pa
+
+The price change for a renewal is based upon the end
+date of the subscription, not the current date.
+
+=cut
+
+sub garden_waste_renewal_cost_pa {
+     my ($self, $end_date, $bin_count) = @_;
+     $bin_count ||= 1;
+     my $per_bin_cost = $self->_get_cost('ggw_cost_renewal', $end_date);
+     my $cost = $per_bin_cost * $bin_count;
+     return $cost;
+}
+
+sub garden_waste_renewal_sacks_cost_pa {
+     my ($self, $end_date) = @_;
+     return $self->_get_cost('ggw_sacks_cost_renewal', $end_date);
+}
+
 =head2 Bulky waste collection
 
 Kingston starts collections at 6:30am, and lets you cancel up until then.
