@@ -37,7 +37,7 @@ my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights & bells', 'White line
 for my $contact ( @cats ) {
     my $c = $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
     if ($contact eq 'Potholes' || $contact eq 'White lines') {
-        $c->set_extra_metadata(group => ['Road']);
+        $c->set_extra_metadata(group => ['Road & more']);
         $c->update;
     }
 }
@@ -160,10 +160,10 @@ FixMyStreet::override_config {
 
     subtest 'The correct categories and totals shown by default' => sub {
         $mech->get_ok("/dashboard");
-        my $expected_cats = [ 'Litter', 'Other', 'Traffic lights & bells', 'All Road', 'Potholes', 'White lines' ];
+        my $expected_cats = [ 'Litter', 'Other', 'Traffic lights & bells', 'All Road & more', 'Potholes', 'White lines' ];
         my $res = $categories->scrape( $mech->content );
-        $mech->content_contains('<optgroup label="Road">');
-        $mech->content_contains('<option value="group-Road"');
+        $mech->content_contains('<optgroup label="Road &amp; more">');
+        $mech->content_contains('<option value="group-Road &amp; more"');
         is_deeply( $res->{cats}, $expected_cats, 'correct list of categories' );
         # Three missing as more than a month ago
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 7, 3, 0, 10, 1, 0, 0, 1, 11, 3, 4, 18);
@@ -183,11 +183,15 @@ FixMyStreet::override_config {
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3);
         $mech->get_ok("/dashboard?category=Litter&category=Potholes");
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 7);
-        $mech->get_ok("/dashboard?category=group-Road");
+        $mech->get_ok("/dashboard?category=Traffic+lights+%26+bells");
+        $mech->content_contains("<option value='Traffic lights &amp; bells' selected>");
+        test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 0, 10, 0, 0, 0, 0, 7, 3, 0, 10);
+        $mech->get_ok("/dashboard?category=group-Road+%26+more");
+        $mech->content_contains('<option value="group-Road &amp; more" selected>');
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 1, 0, 0, 1, 3, 0, 4, 7);
-        $mech->get_ok("/dashboard?category=group-Road&category=Potholes");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Potholes");
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 1, 0, 0, 1, 3, 0, 4, 7);
-        $mech->get_ok("/dashboard?category=group-Road&category=Litter");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter");
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 1, 0, 0, 1, 4, 0, 4, 8);
     };
 
@@ -211,18 +215,18 @@ FixMyStreet::override_config {
     subtest 'csv for multiple categories' => sub {
         $mech->get_ok("/dashboard?category=Litter&category=Potholes&export=2");
         $mech->content_contains('www.example.org-body-' . $body->id . '-category-Litter,Potholes-start_date-2014-01-02.csv');
-        $mech->get_ok("/dashboard?category=Litter&category=Potholes&category=Traffic+lights+&amp;+bells&export=2");
+        $mech->get_ok("/dashboard?category=Litter&category=Potholes&category=Traffic+lights+%26+bells&export=2");
         $mech->content_contains('www.example.org-body-' . $body->id . '-category-multiple-categories-start_date-2014-01-02.csv');
         $mech->get_ok("/dashboard?category=Litter&category=Potholes&export=1");
         my @rows = $mech->content_as_csv;
         is scalar @rows, 8, '1 (header) + 7 (reports) found = 8 lines';
-        $mech->get_ok("/dashboard?category=group-Road&export=1");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&export=1");
         @rows = $mech->content_as_csv;
         is scalar @rows, 8, '1 (header) + 7 (reports) found = 8 lines';
-        $mech->get_ok("/dashboard?category=group-Road&category=Potholes&export=1");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Potholes&export=1");
         @rows = $mech->content_as_csv;
         is scalar @rows, 8, '1 (header) + 7 (reports) found = 8 lines';
-        $mech->get_ok("/dashboard?category=group-Road&category=Litter&export=1");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter&export=1");
         @rows = $mech->content_as_csv;
         is scalar @rows, 9, '1 (header) + 8 (reports) found = 9 lines';
     };

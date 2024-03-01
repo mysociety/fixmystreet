@@ -129,6 +129,10 @@ sub index : Path : Args(0) {
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
+        foreach (@{$c->stash->{category_groups}}) {
+            $_->{group_id} = "group-" . $_->{name};
+        }
+
         my %group_names = map { $_->{name} => $_->{categories} } @{$c->stash->{category_groups}};
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = [ $c->get_param_list('category') ];
