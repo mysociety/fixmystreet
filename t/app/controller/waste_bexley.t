@@ -32,6 +32,7 @@ FixMyStreet::override_config {
         url => 'http://example.org/',
         } },
         waste => { bexley => 1 },
+        waste_calendar_links => { bexley =>  { 'Wk-1' => 'PDF 1', 'Wk-2' => 'PDF 2'} },
     },
 }, sub {
     subtest 'Postcode search page is shown' => sub {
@@ -88,7 +89,7 @@ FixMyStreet::override_config {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
             $cobrand->{c} = Test::MockObject->new;
             $cobrand->{c}->mock( stash => sub { {} } );
-
+            $cobrand->{c}->mock( cobrand => sub { $cobrand });
             my @sorted = $cobrand->service_sort(
                 @{  $cobrand->bin_services_for_address( { uprn => 10001 } )
                 }
@@ -174,6 +175,15 @@ FixMyStreet::override_config {
         is @events, $expected_num, "$expected_num events in calendar";
         is $i, 10, 'Correct events in the calendar';
     };
+
+    subtest 'Correct PDF download link shown' => sub {
+        for my $test ({ address => 3, link => 1 }, { address => 4, link => 2 }) {
+            $mech->get_ok('/waste');
+            $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
+            $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
+            $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
+        }
+    };
 };
 
 done_testing;
@@ -232,6 +242,27 @@ sub _site_info {
                 SiteParentID     => 101,
             },
         },
+        3 => {
+            AccountSiteID   => 3,
+            AccountSiteUPRN => 10003,
+            Site            => {
+                SiteShortAddress => ', 3, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51,
+                SiteLongitude    => -0.1,
+                SiteParentID     => 101,
+            },
+        },
+        4 => {
+            AccountSiteID   => 4,
+            AccountSiteUPRN => 10004,
+            Site            => {
+                SiteShortAddress => ', 4, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51,
+                SiteLongitude    => -0.1,
+                SiteParentID     => 101,
+            },
+        },
+
     };
 }
 
@@ -336,6 +367,30 @@ sub _site_collections {
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
                 RoundSchedule => 'RND-8-9 Mon',
+            },
+        ],
+        10003 => [
+            {   SiteServiceID          => 1000,
+                ServiceID              => 1,
+                ServiceItemDescription => 'Residual 180 ltr bin',
+                ServiceItemName => 'RES-180',
+                NextCollectionDate   => '2024-04-30T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
+
+                RoundSchedule => 'RND-1 Tue Wk 1',
+            },
+        ],
+        10004 => [
+            {   SiteServiceID          => 2000,
+                ServiceID              => 1,
+                ServiceItemDescription => 'Residual 180 ltr bin',
+                ServiceItemName => 'RES-180',
+                NextCollectionDate   => '2024-04-30T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
+
+                RoundSchedule => 'RND-1 Tue Wk 2',
             },
         ],
     };

@@ -114,7 +114,12 @@ sub bin_services_for_address {
         }
 
         my $containers = $self->_containers($property);
-
+        if (!$self->{c}->stash->{calendar_link} && $service->{RoundSchedule} =~ /(Wk \d+)/) {
+            my ($id) = $service->{RoundSchedule} =~ /(Wk \d+)/;
+            $id =~ s/\s+/-/;
+            my $links = $self->{c}->cobrand->feature('waste_calendar_links');
+            $self->{c}->stash->{calendar_link} = $links->{$id};
+        }
         push @site_services_filtered, {
             id             => $service->{SiteServiceID},
             service_id     => $service->{ServiceItemName},
