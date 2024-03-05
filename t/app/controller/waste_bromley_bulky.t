@@ -57,6 +57,7 @@ create_contact(
     { category => 'Bulky collection', email => '2175@test.com' },
     { code => 'Collection_Date' },
     { code => 'Exact_Location' },
+    { code => 'Notes' },
     { code => 'payment' },
     { code => 'payment_method' },
     { code => 'Image' },
@@ -312,6 +313,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
+            is $report->get_extra_field_value('Notes'), 'in the middle of the drive';
             is $report->get_extra_field_value('Bulky_Collection_Details_Qty'), '2::2::2';
             is $report->get_extra_field_value('Bulky_Collection_Details_Item'), '3::85::83';
             is $report->get_extra_field_value('Bulky_Collection_Details_Description'), 'BBQ::Bicycle::Bath';
