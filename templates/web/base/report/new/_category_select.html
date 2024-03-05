@@ -1,7 +1,7 @@
 [%~ FOREACH group IN category_groups ~%]
     [% IF group.name AND include_group_option %]<optgroup label="[% group.name %]">
-        [% SET pseudo_category = "group-" _ group.name %]
-        <option value="group-[% group.name %]" [% ' selected' IF display_categories.$pseudo_category %]>All [% group.name %]</option>
+        [% SET pseudo_category = mark_safe(group.group_id) %]
+        <option value="[% group.group_id %]"[% ' selected' IF display_categories.$pseudo_category %]>All [% group.name %]</option>
     [% ELSIF group.name %]
         <optgroup label="[% group.name %]">
     [% END %]

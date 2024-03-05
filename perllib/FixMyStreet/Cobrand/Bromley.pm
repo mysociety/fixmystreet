@@ -1152,6 +1152,7 @@ sub waste_munge_bulky_data {
     $data->{category} = "Bulky collection";
     $data->{extra_Collection_Date} = $date;
     $data->{extra_Exact_Location} = $data->{location};
+    $data->{extra_Notes} = $data->{location}; # We also want to pass this in to the Notes field
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
