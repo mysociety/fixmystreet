@@ -260,10 +260,10 @@ sub _in_cab_logs {
         $dt_from->stringify,
     );
 
-    return {} unless @$cab_logs;
-
     my @property_logs;
     my @street_logs;
+
+    return ( \@property_logs, \@street_logs ) unless $cab_logs;
 
     for (@$cab_logs) {
         next if !$_->{Reason} || $_->{Reason} eq 'N/A'; # Skip non-exceptional logs
