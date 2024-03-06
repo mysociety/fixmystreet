@@ -33,11 +33,6 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodycl
             version('/cobrands/fixmystreet-uk-councils/roadworks.js'),
         );
     END;
-    IF tfl;
-        scripts.push(
-            version('/cobrands/tfl/assets.js'),
-        );
-    END;
     scripts.push(
         version('/cobrands/fixmystreet-uk-councils/assets.js'),
         version('/js/asset_layers.js')

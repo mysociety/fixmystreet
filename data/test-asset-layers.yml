@@ -381,6 +381,94 @@ shropshire:
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
+tfl:
+  - - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/tfl"
+      asset_type: 'spot'
+      max_resolution: 2.388657133579254
+      geometryName: 'msGeometry'
+      srsName: "EPSG:3857"
+    - name: 'assets'
+      template: 'default'
+      class: OpenLayers.Layer.VectorAssetMove
+      body: 'TfL'
+      actions:
+        asset_found: fixmystreet.assets.tfl.asset_found
+        asset_not_found: fixmystreet.assets.tfl.asset_not_found
+  - template: 'assets'
+    wfs_feature: "trafficsignals"
+    asset_id_field: 'Site'
+    attributes:
+        site: 'Site'
+    asset_group: "Traffic Lights"
+    asset_item: 'traffic signal'
+  - template: 'assets'
+    wfs_feature: "busstops"
+    asset_id_field: 'STOP_CODE'
+    attributes:
+        stop_code: 'STOP_CODE'
+        shelter_id: 'SHELTER_ID'
+    asset_group: "Bus Stops and Shelters"
+    asset_item: 'bus stop'
+  - template: 'assets'
+    wfs_feature: "busstations"
+    asset_id_field: 'Name'
+    feature_code: 'Name'
+    attributes:
+      station_name: 'Name'
+    asset_group: "Bus Stations"
+    asset_item: 'bus station'
+  - template: 'assets'
+    http_wfs_url: ''
+    http_options:
+      url: "https://tilma.staging.mysociety.org/streetmanager.php"
+      params:
+        points: 1
+        end_today: 1
+    srsName: "EPSG:27700"
+    format_class: OpenLayers.Format.GeoJSON
+    name: "Roadworks"
+    asset_category: "Roadworks"
+    stylemap: fixmystreet.assets.tfl.roadworks_stylemap
+    asset_id_field: 'work_ref'
+    asset_item: 'roadworks'
+    attributes:
+      promoter_works_ref: 'work_ref'
+      start: fixmystreet.assets.tfl.roadworks_attribute_start
+      end: fixmystreet.assets.tfl.roadworks_attribute_end
+      promoter: 'promoter'
+      works_desc: 'description'
+      works_state: 'status'
+      tooltip: 'summary'
+    filter_key: true
+    filter_value: fixmystreet.assets.tfl.roadworks_filter_value
+    actions:
+      asset_found: fixmystreet.assets.tfl.roadworks_asset_found
+      asset_not_found: fixmystreet.assets.tfl.roadworks_asset_not_found
+  - template: 'default'
+    wfs_feature: "RedRoutes"
+    name: "Red Routes"
+    max_resolution: 9.554628534317017
+    road: true
+    non_interactive: true
+    always_visible: true
+    nearest_radius: 0.1
+    stylemap: fixmystreet.assets.tfl.tlrn_stylemap
+    no_asset_msg_id: '#js-not-tfl-road'
+    actions:
+      found: fixmystreet.message_controller.road_found
+      not_found: fixmystreet.assets.tfl.red_routes_not_found
+  - template: 'default'
+    wfs_feature: "A13TLRN_DBFO"
+    max_resolution: 9.554628534317017
+    road: true
+    non_interactive: true
+    always_visible: true
+    nearest_radius: 0.1
+    stylemap: fixmystreet.assets.tfl.tlrn_stylemap
+    no_asset_msg_id: '#js-tlrn-dbfo-road'
+    actions:
+      found: fixmystreet.assets.tfl.a13_found
+      not_found: fixmystreet.message_controller.road_found
 westminster:
   - - asset_type: 'spot'
       max_resolution: 4.777314267158508

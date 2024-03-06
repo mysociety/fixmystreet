@@ -1389,6 +1389,228 @@ fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
     return out;
 };
 
+/* TfL */
+
+fixmystreet.assets.tfl = {};
+
+fixmystreet.assets.tfl.asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.tfl.asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
+// Roadworks asset layer
+
+fixmystreet.assets.tfl.roadworks_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillOpacity: 1,
+        fillColor: "#FFFF00",
+        strokeColor: "#000000",
+        strokeOpacity: 0.8,
+        strokeWidth: 2,
+        pointRadius: 6,
+        graphicWidth: 39,
+        graphicHeight: 25,
+        graphicOpacity: 1,
+        externalGraphic: '/cobrands/tfl/warning@2x.png'
+    }),
+    'hover': new OpenLayers.Style({
+        fillColor: "#55BB00",
+        externalGraphic: '/cobrands/tfl/warning-green@2x.png'
+    }),
+    'select': new OpenLayers.Style({
+        fillColor: "#55BB00",
+        externalGraphic: '/cobrands/tfl/warning-green@2x.png'
+    })
+});
+
+function tfl_to_ddmmyyyy(date) {
+    date = date.toISOString();
+    date = date.slice(8, 10) + '/' + date.slice(5, 7) + '/' + date.slice(0, 4);
+    return date;
+}
+
+fixmystreet.assets.tfl.roadworks_attribute_start = function() {
+    return tfl_to_ddmmyyyy(new Date(this.attributes.start_date));
+};
+fixmystreet.assets.tfl.roadworks_attribute_end = function() {
+    return tfl_to_ddmmyyyy(new Date(this.attributes.end_date));
+};
+
+fixmystreet.assets.tfl.roadworks_filter_value = function(feature) {
+    var red_routes = fixmystreet.map.getLayersByName("Red Routes");
+    if (!red_routes.length) {
+        return false;
+    }
+    red_routes = red_routes[0];
+
+    var point = feature.geometry;
+    var relevant = !!red_routes.getFeatureAtPoint(point);
+    if (!relevant) {
+        var nearest = red_routes.getFeaturesWithinDistance(point, 10);
+        relevant = nearest.length > 0;
+    }
+    return relevant;
+};
+
+fixmystreet.assets.tfl.roadworks_asset_found = function(feature) {
+    this.fixmystreet.actions.asset_not_found.call(this);
+    feature.layer = this;
+    var attr = feature.attributes,
+        start = tfl_to_ddmmyyyy(new Date(attr.start_date)),
+        end = tfl_to_ddmmyyyy(new Date(attr.end_date)),
+        summary = attr.summary,
+        desc = attr.description;
+
+    var $msg = $('<div class="js-roadworks-message js-roadworks-message-' + this.id + ' box-warning"></div>');
+    var $dl = $("<dl></dl>").appendTo($msg);
+    if (attr.promoter) {
+        $dl.append("<dt>Responsibility</dt>");
+        $dl.append($("<dd></dd>").text(attr.promoter));
+    }
+    $dl.append("<dt>Summary</dt>");
+    $dl.append($("<dd></dd>").text(summary));
+    if (desc) {
+        $dl.append("<dt>Description</dt>");
+        $dl.append($("<dd></dd>").text(desc));
+    }
+    $dl.append("<dt>Dates</dt>");
+    var $dates = $("<dd></dd>").appendTo($dl);
+    $dates.text(start + " until " + end);
+    $msg.prependTo('#js-post-category-messages');
+};
+
+fixmystreet.assets.tfl.roadworks_asset_not_found = function() {
+    $(".js-roadworks-message-" + this.id).remove();
+};
+
+/* Red routes (TLRN) asset layer & handling for disabling form when red route
+   is not selected for specific categories.
+   This comes after the point assets so that any asset is deselected by the
+   time the check for the red-route only categories is run.
+ */
+
+fixmystreet.assets.tfl.tlrn_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillColor: "#ff0000",
+        fillOpacity: 0.3,
+        strokeColor: "#ff0000",
+        strokeOpacity: 1,
+        strokeWidth: 2
+    })
+});
+
+/*
+    Reports in these categories can only be made on a red route.
+    NOTE: This must be kept in sync with the list in the TfL cobrand module.
+*/
+var tlrn_categories = [
+    "All out - three or more street lights in a row",
+    "Blocked drain",
+    "Damage - general (Trees)",
+    "Dead animal in the carriageway or footway",
+    "Debris in the carriageway",
+    "Drain Cover - Missing or Damaged",
+    "Fallen Tree",
+    "Flooding",
+    "Graffiti / Flyposting (non-offensive)",
+    "Graffiti / Flyposting (offensive)",
+    "Graffiti / Flyposting on street light (non-offensive)",
+    "Graffiti / Flyposting on street light (offensive)",
+    "Graffiti / Flyposting – Political or Anti-Vaccination",
+    "Grass Cutting and Hedges",
+    "Hoarding complaint",
+    "Light on during daylight hours",
+    "Lights out in Pedestrian Subway",
+    "Low hanging branches",
+    "Manhole Cover - Damaged (rocking or noisy)",
+    "Manhole Cover - Missing",
+    "Mobile Crane Operation",
+    "Other (TfL)",
+    "Overgrown vegetation",
+    "Pavement Defect (uneven surface / cracked paving slab)",
+    "Pavement Overcrowding",
+    "Pothole (major)",
+    "Pothole (minor)",
+    "Roadworks",
+    "Scaffold complaint",
+    "Single Light out (street light)",
+    "Standing water",
+    "Street Light - Equipment damaged, pole leaning",
+    "Streetspace Feedback",
+    "Unstable hoardings",
+    "Unstable scaffolding",
+    "Worn out road markings"
+];
+
+function is_tlrn_category_only(category, bodies) {
+    return OpenLayers.Util.indexOf(tlrn_categories, category) > -1 &&
+        OpenLayers.Util.indexOf(bodies, 'TfL') > -1 &&
+        bodies.length <= 1;
+}
+
+var a13dbfo_categories = tlrn_categories.concat([
+    "Flytipping (TfL)",
+    "Graffiti / Flyposting on traffic light (non-offensive)",
+    "Graffiti / Flyposting on traffic light (offensive)"
+]);
+
+function is_a13dbfo_category(category, bodies) {
+    return OpenLayers.Util.indexOf(a13dbfo_categories, category) > -1 &&
+        OpenLayers.Util.indexOf(bodies, 'TfL') > -1 &&
+        bodies.length <= 1;
+}
+
+fixmystreet.assets.tfl.red_routes_not_found = function(layer) {
+    // Only care about this on TfL cobrand
+    if (fixmystreet.cobrand !== 'tfl') {
+        return;
+    }
+    var category = fixmystreet.reporting.selectedCategory().category;
+    if (is_tlrn_category_only(category, fixmystreet.bodies)) {
+        fixmystreet.message_controller.road_not_found(layer);
+    } else {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
+$(function(){
+    var layer = fixmystreet.map.getLayersByName('Red Routes')[0];
+    if (!layer) {
+        return;
+    }
+    layer.events.register( 'loadend', layer, function(){
+        // The roadworks layer may have finished loading before this layer, so
+        // ensure the filters to only show markers that intersect with a red route
+        // are re-applied.
+        var roadworks = fixmystreet.map.getLayersByName("Roadworks");
+        if (roadworks.length) {
+            // .redraw() reapplies filters without issuing any new requests
+            roadworks[0].redraw();
+        }
+    });
+});
+
+fixmystreet.assets.tfl.a13_found = function(layer) {
+    // Only care about this on TfL cobrand
+    if (fixmystreet.cobrand !== 'tfl') {
+        return;
+    }
+    // "Other (TfL)" has a stopper message set in the admin"
+    $('#js-category-stopper').remove();
+    var category = fixmystreet.reporting.selectedCategory().category;
+    if (is_a13dbfo_category(category, fixmystreet.bodies)) {
+        fixmystreet.message_controller.road_not_found(layer);
+        var body = new RegExp('&body=.*');
+        ($('#a13dbfolink').attr('href', $('#a13dbfolink').attr('href').replace(body, '&body=' +  encodeURIComponent(window.location.href))));
+    } else {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
 /* Thamesmead */
 
 fixmystreet.assets.thamesmead = {};
