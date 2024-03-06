@@ -114,7 +114,11 @@
           <dt class="govuk-summary-list__key">Next collection</dt>
           <dd class="govuk-summary-list__value">
             [% IF unit.next %]
-              [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+              [% IF unit.next.is_today %]
+                <strong>Being collected today</strong>
+              [% ELSE %]
+                [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+              [% END %]
               [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
               [% IF unit.next.state %]([% unit.next.state %])[% END %]
             [% ELSE %]

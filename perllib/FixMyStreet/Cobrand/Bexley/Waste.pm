@@ -146,6 +146,7 @@ sub bin_services_for_address {
                 date    => $service->{NextCollectionDate},
                 ordinal => ordinal( $next_dt->day ),
                 changed => 0,
+                is_today => $now_dt->ymd eq $next_dt->ymd,
             },
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };

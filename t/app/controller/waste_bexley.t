@@ -25,6 +25,15 @@ $whitespace_mock->mock('call' => sub {
   }
 });
 
+my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {}, { cobrand => 'bexley' });
+$mech->create_contact_ok(
+    body => $body,
+    category => 'Report missed collection',
+    email => 'missed@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
     MAPIT_URL => 'http://mapit.uk/',
@@ -117,6 +126,7 @@ FixMyStreet::override_config {
                     changed => 0,
                     ordinal => ignore(),
                     date => ignore(),
+                    is_today => ignore(),
                 },
                 last => {
                     ordinal => ignore(),
@@ -240,6 +250,17 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
             $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
         }
+    };
+
+    subtest 'Shows when a collection is due today' => sub {
+        set_fixed_time('2024-04-01T07:00:00'); # April 1st, 08:00 BST
+
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
+        $mech->submit_form_ok( { with_fields => { address => 1 } } );
+
+        # Blue and green recycling boxes are due today
+        $mech->content_contains('Being collected today');
     };
 };
 
