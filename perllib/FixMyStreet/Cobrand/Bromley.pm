@@ -698,7 +698,8 @@ sub bin_services_for_address {
             service_task_id => $servicetask->{Id},
             service_task_name => $servicetask->{TaskTypeName},
             service_task_type_id => $servicetask->{TaskTypeId},
-            schedule => $schedules->{description},
+            # FD-3942 - comment this out so Frequency not shown in front end
+            # schedule => $schedules->{description},
             last => $schedules->{last},
             next => $schedules->{next},
             end_date => $schedules->{end_date},
