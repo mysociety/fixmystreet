@@ -24,7 +24,10 @@ sub pick_asset_layers {
         %cobrands = %$cobrands;
     } elsif ($cobrand eq 'greenwich' || $cobrand eq 'bexley') {
         # Special case for Thamesmead crossing the border
-        %cobrands = map { $_ => $cobrands->{$_} } ($cobrand, 'thamesmead');
+        %cobrands = map { $_ => $cobrands->{$_} } ($cobrand, 'tfl', 'thamesmead');
+    } elsif ($cobrand eq 'brent' || $cobrand eq 'bromley' || $cobrand eq 'camden' || $cobrand eq 'hackney' || $cobrand eq 'hounslow' || $cobrand eq 'merton' || $cobrand eq 'southwark' || $cobrand eq 'westminster') {
+        # All London cobrands also need the TfL assets
+        %cobrands = map { $_ => $cobrands->{$_} } ($cobrand, 'tfl');
     } else {
         # Only the cobrand's assets itself
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand);
@@ -33,13 +36,17 @@ sub pick_asset_layers {
     my $layers = [];
     for my $moniker (sort keys %cobrands) {
         my @layers = @{ $cobrands{$moniker} || [] };
-        push @$layers, _add_layer($moniker, @layers) if @layers;
+        push @$layers, _add_layer($cobrand, $moniker, @layers) if @layers;
     }
     return $layers;
 }
 
+# cobrand is the one the layer is being generated for,
+# moniker is the cobrand whose assets are being generated
+# (so normally the same, but not for .com or thamesmead
+# layers are the layers to be generated
 sub _add_layer {
-    my ($moniker, @layers) = @_;
+    my ($cobrand, $moniker, @layers) = @_;
     my $default = shift @layers;
     unless (ref $default eq 'ARRAY') {
         $default = [ $default ];
@@ -54,6 +61,14 @@ sub _add_layer {
             $default_lookup->{$d{name}} = { %{$default_lookup->{$template}}, %d };
         }
     }
+
+    if ($cobrand eq 'tfl') {
+        # On .com we change the categories depending on where is clicked; on
+        # the cobrand we use the standard 'Please click on a road' message
+        # which needs the body to be set so is_only_body passes.
+        $default_lookup->{default} = { %{$default_lookup->{default}}, body => 'TfL' };
+    }
+
     return {
         moniker => $moniker,
         default => _encode_json_with_js_classes($default_lookup),
