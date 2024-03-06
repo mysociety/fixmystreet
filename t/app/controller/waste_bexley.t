@@ -262,6 +262,12 @@ FixMyStreet::override_config {
         # Blue and green recycling boxes are due today
         $mech->content_contains('Being collected today');
     };
+
+    subtest 'Asks user for location of bins on missed collection form' => sub {
+        $mech->get_ok('/waste/1/report');
+        $mech->content_contains('Please supply any additional information such as the location of the bin.');
+        $mech->content_contains('name="extra_detail"');
+    };
 };
 
 done_testing;
