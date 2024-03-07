@@ -12,7 +12,7 @@
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
   [% END %]
-  [% UNLESS waste_features.request_disabled OR open_service_requests.428 %]
+  [% UNLESS waste_features.request_disabled OR open_service_requests.428 OR (c.cobrand.wasteworks_config.food_bags_disabled AND date.format < 20240325) %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?bags_only=1">
             <input type="hidden" name="token" value="[% csrf_token %]">
@@ -20,9 +20,7 @@
             <input type="hidden" name="quantity-428" value="1">
             <input type="hidden" name="process" value="request">
             [% IF c.cobrand.wasteworks_config.food_bags_disabled %]
-              [% IF date.format >= 20240325 %]
               <input type="submit" disabled value="Food bags currently out of stock" class="waste-service-descriptor">
-              [% END %]
             [% ELSE %]
               <input type="submit" value="Request more food bags" class="waste-service-descriptor waste-service-link">
             [% END %]
