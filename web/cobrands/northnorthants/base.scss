@@ -71,6 +71,15 @@
   }
 }
 
+.dev-site-notice {
+  pointer-events: initial !important;
+
+}
+
+.dev-site-notice:hover {
+  opacity: 0;
+}
+
 a#geolocate_link {
   border-width: 2px; 
 }
