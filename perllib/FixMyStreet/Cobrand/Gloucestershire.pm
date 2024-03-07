@@ -236,19 +236,29 @@ sub disambiguate_location {
     };
 }
 
+=head2 is_defect
+
+Returns true if it's a fetched job from Confirm.
+
+=cut
+
+sub is_defect {
+    my ($self, $p) = @_;
+    return $p->external_id && $p->external_id =~ /^JOB_/;
+}
+
 =head2 pin_colour
 
-Green for anything completed or closed, yellow for the rest.
+Green for anything completed or closed, yellow for the rest,
+apart from defects which are blue.
 
 =cut
 
 sub pin_colour {
     my ( $self, $p ) = @_;
 
-    return 'defects' if $p->external_id && $p->external_id =~ /^JOB_/;
-
+    return 'defects' if $self->is_defect($p);
     return 'green' if $p->is_fixed || $p->is_closed;
-
     return 'yellow';
 }
 

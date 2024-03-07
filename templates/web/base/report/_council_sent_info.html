@@ -26,6 +26,12 @@
             [%- IF NOT c.cobrand.is_defect(problem) %]
                 [% tprintf(loc('ref:&nbsp;%s'), problem.id) %].
             [%- END -%]
+        [%- ELSIF c.cobrand.moniker == 'gloucestershire' %]
+            [%- IF c.cobrand.is_defect(problem) %]
+                [%- tprintf('Reference:&nbsp;%s', problem.external_id) %].
+            [%- ELSE %]
+                [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
+            [%- END -%]
         [%- ELSE %]
             [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
         [%- END %]
