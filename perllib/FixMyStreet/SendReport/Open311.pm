@@ -30,7 +30,7 @@ sub send {
         fixmystreet_body => $body,
     );
 
-    my $contact = $self->fetch_category($body, $row) or return;
+    my $contact = $self->fetch_category($body, $row, $row->get_extra_metadata('open311_category_override')) or return;
 
     my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
     $cobrand->call_hook(open311_config => $row, $h, \%open311_params, $contact);

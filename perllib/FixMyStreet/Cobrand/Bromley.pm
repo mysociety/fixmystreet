@@ -213,7 +213,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $title = $row->title;
 
@@ -250,7 +250,7 @@ sub open311_extra_data_include {
           value => $row->user->email }
     ];
 
-    if ( $row->category eq 'Garden Subscription' ) {
+    if ( $contact->category eq 'Garden Subscription' ) {
         if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
@@ -295,6 +295,14 @@ sub open311_pre_send {
     if (my $handover_notes = $row->get_extra_metadata('handover_notes')) {
         my $text = $row->detail . " | Handover notes - $handover_notes";
         $row->detail($text);
+    }
+
+    if (my $comment_id = $row->get_extra_metadata('echo_report_reopened_with_comment')) {
+        my $comment = FixMyStreet::DB->resultset('Comment')->find($comment_id);
+        if ($comment && $comment->text) {
+            my $text = "Closed report has a new comment: " . $comment->text . "\n\n" . $row->detail;
+            $row->detail($text);
+        }
     }
 }
 
@@ -474,15 +482,49 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 _has_report_been_sent_to_echo
+
+Assumes a report has been sent to Echo if the external ID is a GUID.
+
+=cut
+
+sub _has_report_been_sent_to_echo {
+    my ($self, $report) = @_;
+    my $guid_regex = qr/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    return $report->external_id && $report->external_id =~ /$guid_regex/;
+}
+
 =head2 should_skip_sending_update
 
 Do not send updates to the backend if they were made by a staff user and
 don't have any text (public or private).
 
+Also, if an update is on a closed echo-backed report, skip it and instead
+set the report to be resent under the referring to Veolia category, since we
+can't update closed echo events.
+
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
+
+    my $report = $update->problem;
+    if ($self->_has_report_been_sent_to_echo($report)) {
+        # We need to know whether to treat this as a normal update or a referral.
+        # We have the GUID but not the ID so we look this up.
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($report->external_id);
+        if ($event->{ResolvedDate}) {
+            $report->update_extra_field({ name => 'Event_ID', value => $event->{Id} });
+            $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
+            $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
+            $report->state('confirmed');
+            $report->resend;
+            $report->update;
+            return 1;
+        }
+    }
 
     my $private_comments = $update->get_extra_metadata('private_comments');
     my $has_text = $update->text || $private_comments;
