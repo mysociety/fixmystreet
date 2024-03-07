@@ -146,6 +146,7 @@ sub bin_services_for_address {
                 date    => $service->{NextCollectionDate},
                 ordinal => ordinal( $next_dt->day ),
                 changed => 0,
+                is_today => $now_dt->ymd eq $next_dt->ymd,
             },
         };
 
@@ -533,6 +534,20 @@ sub waste_munge_report_data {
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
+}
+
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+
+    push @$field_list, "extra_detail" => {
+        type => 'Text',
+        widget => 'Textarea',
+        label => 'Please supply any additional information such as the location of the bin.',
+        maxlength => 1_000,
+        messages => {
+            text_maxlength => 'Please use 1000 characters or less for additional information.',
+        },
+    };
 }
 
 1;
