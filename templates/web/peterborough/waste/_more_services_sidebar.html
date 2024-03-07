@@ -1,3 +1,4 @@
+[% USE date(format='%Y%m%d') %]
 [% SET pboro_staff_request = ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
 <h3>More services</h3>
 <ul>
@@ -19,7 +20,9 @@
             <input type="hidden" name="quantity-428" value="1">
             <input type="hidden" name="process" value="request">
             [% IF c.cobrand.wasteworks_config.food_bags_disabled %]
+              [% IF date.format >= 20240325 %]
               <input type="submit" disabled value="Food bags currently out of stock" class="waste-service-descriptor">
+              [% END %]
             [% ELSE %]
               <input type="submit" value="Request more food bags" class="waste-service-descriptor waste-service-link">
             [% END %]
