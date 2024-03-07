@@ -1333,7 +1333,7 @@ subtest "report confirmation page" => sub {
 
         subtest "going to confirmation page now redirects to the report page" => sub {
             # make report 10 minutes old and regenerate token
-            my $created = $report->created->subtract({ minutes => 10 });
+            my $created = $report->created->subtract({ minutes => 45 });
             $report->update({ created => $created, confirmed => $created });
             $token = $report->confirmation_token;
             $mech->get_ok("/report/confirmation/" . $report->id . "?token=$token");

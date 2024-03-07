@@ -678,7 +678,9 @@ sub confirmation : Path('confirmation') : Args(1) {
     # If the token is valid but expired then may as well be helpful and bounce
     # the user to report page rather than 404.
     # (NB the report may still be unconfirmed, but end result is the same - a 404)
-    my $cutoff = DateTime->now()->subtract( minutes => 3 );
+    # As each test file runs in a single transaction, it's possible for creation timestamps to be quite old
+    my $expiry = FixMyStreet->test_mode ? 30 : 3;
+    my $cutoff = DateTime->now()->subtract( minutes => $expiry );
     my $timestamp = $report->confirmed || $report->created;
     if ( $timestamp < $cutoff ) {
         # there's a chance it's not available on this cobrand (e.g. made on Oxon

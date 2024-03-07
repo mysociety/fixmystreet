@@ -333,6 +333,7 @@ FixMyStreet::override_config {
     };
     subtest 'Request food bags link can be disabled via config' => sub {
         $mech->log_in_ok($user->email);
+        set_fixed_time('2024-04-01T10:00:00Z');
 
         $body->set_extra_metadata( wasteworks_config => {} );
         $body->update;
@@ -350,6 +351,7 @@ FixMyStreet::override_config {
 
         $body->set_extra_metadata( wasteworks_config => {} );
         $body->update;
+        set_fixed_time('2021-08-06T10:00:00Z'); # To what it was before this subtest
     };
     subtest 'Request food bags from front page as non-staff' => sub {
         $mech->log_in_ok($user->email);

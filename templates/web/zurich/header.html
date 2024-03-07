@@ -2,8 +2,6 @@
     SET html_att = ' lang="' _ lang_code _ '"';
     # For a right-to-left language, use the following line in your own header:
     # SET html_att = html_att _ ' dir="rtl"';
-
-    USE date;
 -%]
 <!doctype html>
 <!--[if IE 9]>   <html class="no-js ie9"[% html_att | safe %]><![endif]-->
@@ -78,9 +76,6 @@
 
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
                 [% IF NOT admin %]
-                  [% IF bodyclass.match('frontpage') AND date.format(format = '%Y%m%d') < 20210712 AND date.format(format = '%Y%m%d') >= 20210531 %]
-                    [% INCLUDE 'bikeable_banner.html' %]
-                  [% END %]
                   [% INCLUDE 'nav_over_content.html' %]
                 [% END %]
 
