@@ -612,4 +612,67 @@ for my $test (
     };
 }
 
+subtest "comment on a closed echo report result in a resend under 'Investigation Required'" => sub {
+    my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+    my $event_id = 123;
+
+    my $echo = Test::MockModule->new('Integrations::Echo');
+
+    $echo->mock('GetEvent', sub { {
+        Guid => $event_guid,
+        Id => $event_id,
+    } } );
+
+    $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Investigation Required',
+        email => 'investigation_required',
+    );
+
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'echo report', {
+            cobrand => 'bromley',
+            whensent => 'now()',
+            send_state => 'sent',
+            send_method_used => 'Open311',
+            external_id => $event_guid,
+        });
+    $report->state('closed');
+    my $comment = $report->add_to_comments({
+        text => 'comment on closed event',
+        user => $user,
+        mark_open => 1,
+    });
+    $report->update;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+    };
+
+    $report->discard_changes;
+    is $report->get_extra_metadata('open311_category_override'), 'Investigation Required', 'category override applied';
+    is $report->send_state, 'unprocessed', 'report set to be resent';
+
+    $comment->discard_changes;
+    is $comment->send_state, 'skipped', "skipped sending comment";
+
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'bromley' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $report->discard_changes;
+    is $report->send_state, 'sent', 'report was resent';
+
+    my $req = Open311->test_req_used;
+    my $c = CGI::Simple->new($req->content);
+    is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
+    like $c->param('description'), qr/Closed report has a new comment: comment on closed event/, 'private comments included in description';
+};
+
+
 done_testing();
