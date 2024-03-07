@@ -183,7 +183,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $title = $row->title;
 
@@ -220,7 +220,7 @@ sub open311_extra_data_include {
           value => $row->user->email }
     ];
 
-    if ( $row->category eq 'Garden Subscription' ) {
+    if ( $contact->category eq 'Garden Subscription' ) {
         if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
@@ -234,6 +234,11 @@ sub open311_extra_data_include {
     }
     if (!$row->get_extra_field_value('fms_extra_title') && $row->user->title) {
         push @$open311_only, { name => 'fms_extra_title', value => $row->user->title };
+    }
+
+    # Investigation required needs a reference to the relevant event ID.
+    if ($contact->category eq 'Investigation Required') {
+        push @$open311_only, { name => 'Event_ID', value => $row->external_id };
     }
 
     return $open311_only;
@@ -260,6 +265,14 @@ sub open311_pre_send {
     if ($private_comments) {
         my $text = $row->detail . "\n\nPrivate comments: $private_comments";
         $row->detail($text);
+    }
+
+    if (my $comment_id = $row->get_extra_metadata('echo_report_reopened_with_comment')) {
+        my $comment = FixMyStreet::DB->resultset('Comment')->find($comment_id);
+        if ($comment && $comment->text) {
+            my $text = "Closed report reopened with comment: " . $comment->text . "\n\n" . $row->detail;
+            $row->detail($text);
+        }
     }
 }
 
@@ -374,15 +387,41 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 _has_report_been_sent_to_echo
+
+Assumes a report has been sent to Echo if the external ID is a GUID.
+
+=cut
+
+sub _has_report_been_sent_to_echo {
+    my ($self, $report) = @_;
+    my $guid_regex = qr/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    return $report->external_id && $report->external_id =~ /$guid_regex/;
+}
+
 =head2 should_skip_sending_update
 
 Do not send updates to the backend if they were made by a staff user and
 don't have any text (public or private).
 
+Also, if an update is marking a closed echo-backed report as open, skip it and instead
+set the report to be resent under the 'Investigation Required' category, since we
+can't update closed echo events.
+
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
+
+    my $report = $update->problem;
+    if ($report->is_closed && $update->mark_open && $self->_has_report_been_sent_to_echo($report)) {
+        $report->set_extra_metadata('open311_category_override' => 'Investigation Required');
+        $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
+        $report->state('confirmed');
+        $report->resend;
+        $report->update;
+        return 1;
+    }
 
     my $private_comments = $update->get_extra_metadata('private_comments');
     my $has_text = $update->text || $private_comments;
