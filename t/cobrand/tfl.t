@@ -318,6 +318,21 @@ subtest "test report creation anonymously by button" => sub {
     $mech->not_logged_in_ok;
 };
 
+subtest "test users without tfl email asked to update their FMS password" => sub {
+    my $tfl_non_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@elsewhere.org'});
+    $tfl_non_staff->set_extra_metadata('last_password_change', DateTime->now->subtract(years => 2)->epoch);
+    $tfl_non_staff->update;
+    $mech->get_ok('/auth');
+    $mech->submit_form_ok(
+        { with_fields => { username => $tfl_non_staff->email, password_sign_in => 'xpasswordx' } },
+        "sign in using form"
+    );
+    $tfl_non_staff->set_extra_metadata('last_password_change', time());
+    $tfl_non_staff->update;
+    is $mech->uri->path, '/auth/expired', "logged in to create new password page";
+    $mech->content_contains('Your password has expired, please create a new one below');
+};
+
 subtest "test report creation anonymously for private categories" => sub {
     $mech->get_ok('/around');
     $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );

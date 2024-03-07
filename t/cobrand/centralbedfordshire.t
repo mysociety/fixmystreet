@@ -230,6 +230,8 @@ subtest 'check geolocation overrides' => sub {
 subtest 'Dashboard CSV extra columns' => sub {
     my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     $mech->log_in_ok( $staffuser->email );
+    $report->update_extra_field({ name => 'Type', value => ['Furniture', 'Bin bags'] });
+    $report->update;
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'centralbedfordshire',
@@ -238,7 +240,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         $mech->get_ok('/dashboard?export=1');
     };
     $mech->content_contains('"Site Used","Reported As",CRNo');
-    $mech->content_contains('centralbedfordshire,,' . $report->external_id);
+    $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
 };
 
 
