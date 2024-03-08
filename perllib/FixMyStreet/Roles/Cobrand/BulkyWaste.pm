@@ -552,9 +552,13 @@ sub bulky_reminders {
 sub _bulky_send_reminder_email {
     my ($self, $report, $h, $params) = @_;
 
-    return unless $report->user->email;
+    return unless $report->user->email || $report->get_extra_field_value('bulky_text_updates');
 
     $h->{url} = $self->base_url_for_report($report) . $report->tokenised_url($report->user);
+
+    $self->call_hook('_bulky_send_optional_text' => $report, $h, {text_type => 'reminder'}) if $report->get_extra_field_value('bulky_text_updates');
+
+    return unless $report->user->email;
 
     my $result = FixMyStreet::Email::send_cron(
         FixMyStreet::DB->schema,
