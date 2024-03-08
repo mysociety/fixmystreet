@@ -303,6 +303,10 @@ sub open311_post_send {
         my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
         $sender->send($row, $h);
     }
+
+    if ($h->{report}->get_extra_field_value('bulky_text_updates')) {
+        $self->call_hook('_bulky_send_optional_text' => $h->{report}, $h->{url}, { text_type => 'confirmed' });
+    };
 }
 
 sub suppress_report_sent_email {
